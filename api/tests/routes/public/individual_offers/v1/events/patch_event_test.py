@@ -22,11 +22,14 @@ from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
-@pytest.mark.usefixtures("db_session")
-class PatchEventTest(PublicAPIVenueEndpointHelper):
+class PatchEventEndpointHelper(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/events/{offer_id}"
     endpoint_method = "patch"
     default_path_params = {"offer_id": 1}
+
+    # redefined below in `Returns404Test`, so that they are not inherited by every class
+    test_should_raise_404_because_has_no_access_to_venue = None
+    test_should_raise_404_because_venue_provider_is_inactive = None
 
     def setup_base_resource(
         self,
@@ -59,54 +62,20 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             **shared_data, subcategoryId="CONCERT", extraData={"gtl_id": "02000000"}
         )
 
-    def test_should_raise_404_because_has_no_access_to_venue(self):
-        plain_api_key, _ = self.setup_provider()
-        offer = self.setup_base_resource()
-        response = self.make_request(plain_api_key, {"offer_id": offer.id})
-        assert response.status_code == 404
 
-    def test_should_raise_404_because_venue_provider_is_inactive(self):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        response = self.make_request(plain_api_key, {"offer_id": offer.id})
-        assert response.status_code == 404
-
-    def test_should_raise_404_because_venue_in_payload_is_not_linked_to_provider(self):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        venue = self.setup_venue()
-        response = self.make_request(
-            plain_api_key,
-            {"offer_id": offer.id, "location": {"type": "physical", "venue_id": venue.id}},
-        )
-        assert response.status_code == 404
-
-    def test_deactivate_offer(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": False})
-
-        assert response.status_code == 200
-        assert response.json["status"] == "INACTIVE"
-        assert offer.isActive is False
-
-    def test_activate_offer_default_publication_datetime(self):
+@pytest.mark.usefixtures("db_session")
+class Returns200Test(PatchEventEndpointHelper):
+    def test_update_external_ticket_office_url(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            lastProvider=venue_provider.provider,
-            publicationDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
-            isActive=False,
-        )
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+        assert offer.externalTicketOfficeUrl is None
 
-        now = datetime.datetime.now(datetime.timezone.utc)
-        with time_machine.travel(now, tick=False):
-            response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": True})
-        assert response.status_code == 200
-        db.session.refresh(offer)
-        assert offer.isActive is True
-        assert offer.publicationDatetime == now
+        json_data = {"externalTicketOfficeUrl": "https://bloup.com"}
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
+        assert response.status_code == 200, response.json
+
+        assert offer.externalTicketOfficeUrl == "https://bloup.com"
 
     def test_sets_field_to_none_and_leaves_other_unchanged(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -130,6 +99,57 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert offer.bookingEmail == "notify@example.com"
         assert offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
         assert offer.withdrawalDelay == 86400
+
+    def test_patch_all_fields(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        offer = offers_factories.EventOfferFactory(
+            venue=venue_provider.venue,
+            bookingContact="contact@example.com",
+            bookingEmail="notify@passq.com",
+            subcategoryId="CONCERT",
+            durationMinutes=20,
+            isDuo=False,
+            lastProvider=venue_provider.provider,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            withdrawalDelay=86400,
+            withdrawalDetails="Around there",
+            description="A description",
+            extraData={"gtl_id": "02000000"},
+        )
+
+        new_name = offer.name + "_updated"
+        response = self.make_request(
+            plain_api_key,
+            {"offer_id": offer.id},
+            json_body={
+                "bookingContact": "test@myemail.com",
+                "bookingEmail": "test@myemail.com",
+                "eventDuration": 40,
+                "enableDoubleBookings": "true",
+                "itemCollectionDetails": "Here !",
+                "description": "A new description",
+                "image": {"file": image_data.GOOD_IMAGE},
+                "idAtProvider": "oh it has been updated",
+                "name": new_name,
+            },
+        )
+
+        assert response.status_code == 200
+        assert offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
+        assert offer.durationMinutes == 40
+        assert offer.isDuo is True
+        assert offer.bookingContact == "test@myemail.com"
+        assert offer.bookingEmail == "test@myemail.com"
+        assert offer.withdrawalDetails == "Here !"
+        assert offer.description == "A new description"
+        assert offer.idAtProvider == "oh it has been updated"
+        assert offer.name == new_name
+
+        assert db.session.query(offers_models.Mediation).one()
+        assert (
+            offer.image.url
+            == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(offer.activeMediation.id)}"
+        )
 
     def test_sets_accessibility_partially(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -244,57 +264,6 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         }
         assert not offer.ean
 
-    def test_patch_all_fields(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@passq.com",
-            subcategoryId="CONCERT",
-            durationMinutes=20,
-            isDuo=False,
-            lastProvider=venue_provider.provider,
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-            withdrawalDelay=86400,
-            withdrawalDetails="Around there",
-            description="A description",
-            extraData={"gtl_id": "02000000"},
-        )
-
-        new_name = offer.name + "_updated"
-        response = self.make_request(
-            plain_api_key,
-            {"offer_id": offer.id},
-            json_body={
-                "bookingContact": "test@myemail.com",
-                "bookingEmail": "test@myemail.com",
-                "eventDuration": 40,
-                "enableDoubleBookings": "true",
-                "itemCollectionDetails": "Here !",
-                "description": "A new description",
-                "image": {"file": image_data.GOOD_IMAGE},
-                "idAtProvider": "oh it has been updated",
-                "name": new_name,
-            },
-        )
-
-        assert response.status_code == 200
-        assert offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
-        assert offer.durationMinutes == 40
-        assert offer.isDuo is True
-        assert offer.bookingContact == "test@myemail.com"
-        assert offer.bookingEmail == "test@myemail.com"
-        assert offer.withdrawalDetails == "Here !"
-        assert offer.description == "A new description"
-        assert offer.idAtProvider == "oh it has been updated"
-        assert offer.name == new_name
-
-        assert db.session.query(offers_models.Mediation).one()
-        assert (
-            offer.image.url
-            == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(offer.activeMediation.id)}"
-        )
-
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
     @pytest.mark.parametrize(
         "partial_request_json,expected_publication_datetime,expected_response_publication_datetime",
@@ -334,6 +303,48 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         update_offer = db.session.query(offers_models.Offer).filter_by(id=offer.id).one()
         assert update_offer.publicationDatetime == expected_publication_datetime
 
+    def test_update_with_non_nullable_fields_does_not_update_them(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        offer = offers_factories.EventOfferFactory(
+            venue=venue_provider.venue,
+            lastProvider=venue_provider.provider,
+            publicationDatetime=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+            - datetime.timedelta(days=1),
+        )
+
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": None})
+        assert response.status_code == 200
+
+        db.session.refresh(offer)
+        assert offer.isActive
+
+    def test_deactivate_offer(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": False})
+
+        assert response.status_code == 200
+        assert response.json["status"] == "INACTIVE"
+        assert offer.isActive is False
+
+    def test_activate_offer_default_publication_datetime(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        offer = offers_factories.EventOfferFactory(
+            venue=venue_provider.venue,
+            lastProvider=venue_provider.provider,
+            publicationDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
+            isActive=False,
+        )
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        with time_machine.travel(now, tick=False):
+            response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": True})
+        assert response.status_code == 200
+        db.session.refresh(offer)
+        assert offer.isActive is True
+        assert offer.publicationDatetime == now
+
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
     @pytest.mark.parametrize(
         "partial_request_json,expected_booking_allowed_datetime,expected_response_booking_allowed_datetime",
@@ -368,21 +379,6 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         update_offer = db.session.query(offers_models.Offer).filter_by(id=offer.id).one()
         assert update_offer.bookingAllowedDatetime == expected_booking_allowed_datetime
 
-    def test_update_with_non_nullable_fields_does_not_update_them(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            lastProvider=venue_provider.provider,
-            publicationDatetime=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
-            - datetime.timedelta(days=1),
-        )
-
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": None})
-        assert response.status_code == 200
-
-        db.session.refresh(offer)
-        assert offer.isActive
-
     def test_update_location_with_physical_location(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
         offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
@@ -416,6 +412,28 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
 
         assert offer.offererAddress.addressId == address.id
+
+    def test_update_location_at_venue_location_as_physical(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        venue = offer.venue
+        json_data = {
+            "location": {
+                "type": "address",
+                "venue_id": venue.id,
+                "address_id": venue.offererAddress.addressId,
+                "address_label": venue.publicName,
+            }
+        }
+
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
+        assert response.status_code == 200
+
+        assert offer.venueId == venue.id
+        assert offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+        assert offer.offererAddress.id != venue.offererAddress.id
+        assert offer.offererAddress.addressId == venue.offererAddress.addressId
+        assert offer.offererAddress.label is None
 
     @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
     def test_update_video(self, get_video_metadata_from_cache_mock):
@@ -470,35 +488,8 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.json["videoUrl"] == None
 
-    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeNotFoundBackend")
-    def test_video_metadata_not_found(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
-
-        json_data = {"videoUrl": "https://www.youtube.com/watch?v=Mm-KMkg_hgU"}
-
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 400
-
-        assert response.json == {
-            "videoUrl": [
-                "This video cannot be found on youtube. It is most likely a private video. Please check your URL."
-            ]
-        }
-
-    def test_update_external_ticket_office_url(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
-        assert offer.externalTicketOfficeUrl is None
-
-        json_data = {"externalTicketOfficeUrl": "https://bloup.com"}
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 200, response.json
-
-        assert offer.externalTicketOfficeUrl == "https://bloup.com"
-
+@pytest.mark.usefixtures("db_session")
+class Returns400Test(PatchEventEndpointHelper):
     @pytest.mark.parametrize(
         "partial_request_json, expected_response_json",
         [
@@ -611,24 +602,43 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == expected_response_json
 
-    def test_update_location_at_venue_location_as_physical(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        venue = offer.venue
-        json_data = {
-            "location": {
-                "type": "address",
-                "venue_id": venue.id,
-                "address_id": venue.offererAddress.addressId,
-                "address_label": venue.publicName,
-            }
-        }
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeNotFoundBackend")
+    def test_video_metadata_not_found(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+
+        json_data = {"videoUrl": "https://www.youtube.com/watch?v=Mm-KMkg_hgU"}
 
         response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 200
+        assert response.status_code == 400
 
-        assert offer.venueId == venue.id
-        assert offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
-        assert offer.offererAddress.id != venue.offererAddress.id
-        assert offer.offererAddress.addressId == venue.offererAddress.addressId
-        assert offer.offererAddress.label is None
+        assert response.json == {
+            "videoUrl": [
+                "This video cannot be found on youtube. It is most likely a private video. Please check your URL."
+            ]
+        }
+
+@pytest.mark.usefixtures("db_session")
+class Returns404Test(PatchEventEndpointHelper):
+    def test_should_raise_404_because_has_no_access_to_venue(self):
+        plain_api_key, _ = self.setup_provider()
+        offer = self.setup_base_resource()
+        response = self.make_request(plain_api_key, {"offer_id": offer.id})
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        response = self.make_request(plain_api_key, {"offer_id": offer.id})
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_venue_in_payload_is_not_linked_to_provider(self):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        venue = self.setup_venue()
+        response = self.make_request(
+            plain_api_key,
+            {"offer_id": offer.id, "location": {"type": "physical", "venue_id": venue.id}},
+        )
+        assert response.status_code == 404
