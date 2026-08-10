@@ -32,6 +32,21 @@ import {
 } from 'apiClient/v1'
 import styles from './SimulatorResults.module.scss'
 
+function targetAudiencesToTargets(
+  targetAudiences:
+    | Partial<Record<'individual' | 'collective', boolean | undefined>>
+    | undefined
+): TargetAudience[] {
+  const targets = []
+  if (targetAudiences?.individual) {
+    targets.push(TargetAudience.INDIVIDUAL)
+  }
+  if (targetAudiences?.collective) {
+    targets.push(TargetAudience.COLLECTIVE)
+  }
+  return targets
+}
+
 export const SimulatorResults = (): JSX.Element => {
   const {
     openToPublic,
@@ -64,13 +79,7 @@ export const SimulatorResults = (): JSX.Element => {
             ? targetAudiences
             : tryRestoreTargetAudienceFromStorage(setTargetAudiences)
 
-        const targets = []
-        if (finalTargetAudience?.individual) {
-          targets.push(TargetAudience.INDIVIDUAL)
-        }
-        if (finalTargetAudience?.collective) {
-          targets.push(TargetAudience.COLLECTIVE)
-        }
+        const targets = targetAudiencesToTargets(finalTargetAudience)
 
         if (
           !finalActivity ||
@@ -106,6 +115,29 @@ export const SimulatorResults = (): JSX.Element => {
     siret,
     targetAudiences,
   ])
+
+  const buildSignupLink = (): string => {
+    const searchParams = new URLSearchParams(
+      Object.entries({
+        ...(openToPublic && { isOpenToPublic: openToPublic }),
+        ...(activity && { activity }),
+        ...(siret && { siret }),
+      })
+    )
+    if (targetAudiences) {
+      targetAudiencesToTargets(targetAudiences).forEach(
+        (item: TargetAudience) => {
+          searchParams.append('targets', String(item))
+        }
+      )
+    }
+
+    const queryString = searchParams.toString()
+
+    return queryString
+      ? `/inscription/compte/creation?${queryString}`
+      : '/inscription/compte/creation'
+  }
 
   if (!result && !showErrorBanner) {
     return <Spinner />
@@ -170,11 +202,7 @@ export const SimulatorResults = (): JSX.Element => {
           variant={ButtonVariant.SECONDARY}
           label={showErrorBanner ? 'Recommencer' : 'Retour'}
         />
-        <Button
-          as="router-link"
-          to="/inscription/compte/creation"
-          label="Continuer"
-        />
+        <Button as="router-link" to={buildSignupLink()} label="Continuer" />
       </div>
 
       {!showErrorBanner && (
