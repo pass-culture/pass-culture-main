@@ -89,21 +89,21 @@ export const Offerer = (): JSX.Element => {
 
   useEffect(() => {
     // Try to restore the "offerer" and "initialAddress" context from storage
-    if (
-      offerer === null ||
-      offerer === DEFAULT_OFFERER_FORM_VALUES ||
-      initialAddress === null ||
-      initialAddress === DEFAULT_ADDRESS_FORM_VALUES
-    ) {
-      try {
+    try {
+      if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
         const storedOfferer = tryRestoreOffererFromStorage(setOfferer)
         setInitialValues(storedOfferer)
-        tryRestoreInitialAddressFromStorage(setInitialAddress)
-      } catch {
-        cleanSignupJourneyStorage()
-        navigate('/inscription/structure/recherche')
-        return
       }
+      if (
+        initialAddress === null ||
+        initialAddress === DEFAULT_ADDRESS_FORM_VALUES
+      ) {
+        tryRestoreInitialAddressFromStorage(setInitialAddress)
+      }
+    } catch {
+      cleanSignupJourneyStorage()
+      navigate('/inscription/structure/recherche')
+      return
     }
   }, [
     offerer,
@@ -123,7 +123,10 @@ export const Offerer = (): JSX.Element => {
           '{}'
       ) as unknown as OffererType
 
-      if (offererStoredData?.siret?.trim() === formValues.siret.trim()) {
+      if (
+        offererStoredData?.siret?.trim() === formValues.siret.trim() &&
+        offererStoredData?.siren
+      ) {
         navigateToNextStep(offererStoredData.hasVenueWithSiret)
         return false
       }
@@ -187,12 +190,15 @@ export const Offerer = (): JSX.Element => {
         ) !== undefined
 
       const offererData = {
+        ...offerer,
         ...formValues,
         name: offererSiretData.name ?? '',
         ...addressValues,
         hasVenueWithSiret,
         apeCode: offererSiretData.apeCode ?? undefined,
-        siren: venueOfOffererProvidersResponse.offererSiren,
+        siren:
+          venueOfOffererProvidersResponse.offererSiren ??
+          offererSiretData.siren,
         isDiffusible: offererSiretData.isDiffusible,
       } satisfies OffererType
 

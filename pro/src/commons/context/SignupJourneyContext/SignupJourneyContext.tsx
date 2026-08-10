@@ -17,7 +17,12 @@ import {
 } from '@/components/SignupJourneyForm/Offerer/constants'
 
 import { DEFAULT_ACTIVITY_VALUES } from './constants'
-import { saveActivityToStorage, saveOffererToStorage } from './storage'
+import {
+  saveActivityToStorage,
+  saveOffererToStorage,
+  tryRestoreActivityFromStorage,
+  tryRestoreOffererFromStorage,
+} from './storage'
 import type { Address } from './types'
 
 export interface Offerer
@@ -85,34 +90,42 @@ function buildDefaultActivity(
   activity: ActivityOpenToPublic | ActivityNotOpenToPublic | null,
   audiences: TargetAudience[]
 ): ActivityContext {
-  const initialActivityContext = {
-    ...DEFAULT_ACTIVITY_VALUES,
-    ...(activity && { activity }),
-    ...(audiences.length && {
-      targetCustomer: targetAudiencesToTarget(audiences),
-    }),
-  }
+  try {
+    return tryRestoreActivityFromStorage(noop)
+  } catch {
+    const initialActivityContext = {
+      ...DEFAULT_ACTIVITY_VALUES,
+      ...(activity && { activity }),
+      ...(audiences.length && {
+        targetCustomer: targetAudiencesToTarget(audiences),
+      }),
+    }
 
-  if (activity || audiences.length) {
-    saveActivityToStorage(initialActivityContext)
+    if (activity || audiences.length) {
+      saveActivityToStorage(initialActivityContext)
+    }
+    return initialActivityContext
   }
-  return initialActivityContext
 }
 
 function buildDefaultOfferer(
   siret: string | null,
   isOpenToPublic: string | null
 ): Offerer {
-  const initialOfferer = {
-    ...DEFAULT_OFFERER_FORM_VALUES,
-    ...(siret && { siret }),
-    ...(isOpenToPublic && { isOpenToPublic }),
-  }
+  try {
+    return tryRestoreOffererFromStorage(noop)
+  } catch {
+    const initialOfferer = {
+      ...DEFAULT_OFFERER_FORM_VALUES,
+      ...(siret && { siret }),
+      ...(isOpenToPublic && { isOpenToPublic }),
+    }
 
-  if (siret || isOpenToPublic) {
-    saveOffererToStorage(initialOfferer)
+    if (siret || isOpenToPublic) {
+      saveOffererToStorage(initialOfferer)
+    }
+    return initialOfferer
   }
-  return initialOfferer
 }
 
 export function SignupJourneyContextProvider({
