@@ -150,12 +150,8 @@ $connector-width: rem.torem(2px);
 
     .step-content {
       flex-direction: row;
-      align-items: flex-start;
+      align-items: center;
       gap: var(--size-spacing-m);
-    }
-
-    .text-container {
-      padding-top: var(--size-spacing-xxs);
     }
 
     .connector {

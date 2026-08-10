@@ -49,9 +49,9 @@ describe('Stepper', () => {
       </MemoryRouter>
     )
 
-    expect(screen.getByText('01')).toBeInTheDocument()
-    expect(screen.getByText('02')).toBeInTheDocument()
-    expect(screen.getByText('03')).toBeInTheDocument()
+    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.getByText('3')).toBeInTheDocument()
 
     expect(screen.getByText('Choisissez votre catégorie')).toBeInTheDocument()
     expect(screen.getByText('Définissez un tarif')).toBeInTheDocument()

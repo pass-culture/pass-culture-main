@@ -121,9 +121,7 @@ export const Stepper = ({
         const visualContent = (
           <div className={styles['step-content']} aria-hidden="true">
             <div className={styles.indicator}>
-              <span className={styles.number}>
-                {(index + 1).toString().padStart(2, '0')}
-              </span>
+              <span className={styles.number}>{(index + 1).toString()}</span>
               {
                 <div
                   className={cn(styles.connector, {
