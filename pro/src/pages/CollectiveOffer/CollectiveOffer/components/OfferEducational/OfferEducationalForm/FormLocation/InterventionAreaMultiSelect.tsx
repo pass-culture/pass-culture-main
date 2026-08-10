@@ -31,6 +31,7 @@ export const InterventionAreaMultiSelect = ({
       })
       setValue('interventionArea', Array.from(newSelectedOptions), {
         shouldValidate: true,
+        shouldDirty: true,
       })
     },
     [setValue]
