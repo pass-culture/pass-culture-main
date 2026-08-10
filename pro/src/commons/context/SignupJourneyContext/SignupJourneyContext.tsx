@@ -15,6 +15,14 @@ import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from '@/components/SignupJourneyForm/Offerer/constants'
+import {
+  resetSimulatorActivityAndTargetStorage,
+  resetSimulatorSiretAndOpenToPublicStorage,
+  tryRestoreOpenToPublicFromStorage,
+  tryRestoreActivityFromStorage as tryRestoreSimulatorActivityFromStorage,
+  tryRestoreSiretFromStorage,
+  tryRestoreTargetAudienceFromStorage,
+} from '@/pages/Simulator/storage'
 
 import { DEFAULT_ACTIVITY_VALUES } from './constants'
 import {
@@ -86,6 +94,15 @@ const targetAudiencesToTarget = (audiences: TargetAudience[]): Target => {
   return Target.INDIVIDUAL
 }
 
+const simulatorAudiencesToTarget = (
+  audiences: Partial<Record<'individual' | 'collective', boolean | undefined>>
+): Target => {
+  if (audiences.collective && audiences.individual)
+    return Target.INDIVIDUAL_AND_EDUCATIONAL
+  if (audiences.collective) return Target.EDUCATIONAL
+  return Target.INDIVIDUAL
+}
+
 function buildDefaultActivity(
   activity: ActivityOpenToPublic | ActivityNotOpenToPublic | null,
   audiences: TargetAudience[]
@@ -93,16 +110,28 @@ function buildDefaultActivity(
   try {
     return tryRestoreActivityFromStorage(noop)
   } catch {
+    const simulatorActivity = tryRestoreSimulatorActivityFromStorage(noop)
+    const simulatorAudiences = tryRestoreTargetAudienceFromStorage(noop)
     const initialActivityContext = {
       ...DEFAULT_ACTIVITY_VALUES,
+      ...(simulatorActivity && { activity: simulatorActivity }),
+      ...(simulatorAudiences && {
+        targetCustomer: simulatorAudiencesToTarget(simulatorAudiences),
+      }),
       ...(activity && { activity }),
       ...(audiences.length && {
         targetCustomer: targetAudiencesToTarget(audiences),
       }),
     }
 
-    if (activity || audiences.length) {
+    if (
+      simulatorActivity ||
+      simulatorAudiences ||
+      activity ||
+      audiences.length
+    ) {
       saveActivityToStorage(initialActivityContext)
+      resetSimulatorActivityAndTargetStorage()
     }
     return initialActivityContext
   }
@@ -115,14 +144,21 @@ function buildDefaultOfferer(
   try {
     return tryRestoreOffererFromStorage(noop)
   } catch {
+    const simulatorSiret = tryRestoreSiretFromStorage(noop)
+    const simulatorIsOpenToPublic = tryRestoreOpenToPublicFromStorage(noop)
     const initialOfferer = {
       ...DEFAULT_OFFERER_FORM_VALUES,
+      ...(simulatorSiret && { siret: simulatorSiret }),
+      ...(simulatorIsOpenToPublic && {
+        isOpenToPublic: simulatorIsOpenToPublic,
+      }),
       ...(siret && { siret }),
       ...(isOpenToPublic && { isOpenToPublic }),
     }
 
-    if (siret || isOpenToPublic) {
+    if (simulatorSiret || simulatorIsOpenToPublic || siret || isOpenToPublic) {
       saveOffererToStorage(initialOfferer)
+      resetSimulatorSiretAndOpenToPublicStorage()
     }
     return initialOfferer
   }
@@ -133,7 +169,7 @@ export function SignupJourneyContextProvider({
 }: Readonly<SignupJourneyContextProviderProps>) {
   const [searchParams, _setSearchParams] = useSearchParams()
 
-  const [activity, setActivity] = useState<ActivityContext | null>(
+  const [activity, setActivity] = useState<ActivityContext | null>(() =>
     buildDefaultActivity(
       searchParams.get('activity') as
         | ActivityOpenToPublic
@@ -143,7 +179,7 @@ export function SignupJourneyContextProvider({
     )
   )
 
-  const [offerer, setOfferer] = useState<Offerer | null>(
+  const [offerer, setOfferer] = useState<Offerer | null>(() =>
     buildDefaultOfferer(
       searchParams.get('siret'),
       searchParams.get('isOpenToPublic')
