@@ -28,10 +28,13 @@ from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 from tests.routes.public.individual_offers.v1 import utils as test_utils
 
 
-@pytest.mark.usefixtures("db_session")
-class PatchProductTest(PublicAPIVenueEndpointHelper):
+class PatchProductEndpointHelper(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products"
     endpoint_method = "patch"
+
+    # redefined below in `Returns404Test`, so that they are not inherited by every class
+    test_should_raise_404_because_has_no_access_to_venue = None
+    test_should_raise_404_because_venue_provider_is_inactive = None
 
     @staticmethod
     def setup_base_resource(
@@ -49,42 +52,31 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
             bookingAllowedDatetime=bookingAllowedDatetime,
         )
 
-    def test_should_raise_404_because_has_no_access_to_venue(self):
-        plain_api_key, _ = self.setup_provider()
-        venue = self.setup_venue()
-        offer = self.setup_base_resource(venue)
 
-        response = self.make_request(plain_api_key, json_body={"offerId": offer.id, "isActive": False})
-        assert response.status_code == 404
-
-    def test_should_raise_404_because_venue_provider_is_inactive(self):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue)
-
-        response = self.make_request(plain_api_key, json_body={"offerId": offer.id, "isActive": False})
-        assert response.status_code == 404
-
-    def test_should_raise_404_because_venue_in_payload_is_not_linked_to_provider(self):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        venue = self.setup_venue()
-
-        response = self.make_request(
-            plain_api_key,
-            json_body={"offerId": offer.id, "location": {"type": "physical", "venue_id": venue.id}},
-        )
-        assert response.status_code == 404, response.json
-
-    def test_deactivate_offer(self):
+@pytest.mark.usefixtures("db_session")
+class Returns200Test(PatchProductEndpointHelper):
+    def test_updates_booking_email(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = self.setup_base_resource(venue_provider.venue, venue_provider.provider)
 
-        response = self.make_request(plain_api_key, json_body={"offerId": offer.id, "isActive": False})
+        response = self.make_request(plain_api_key, json_body={"offerId": offer.id, "bookingEmail": "spam@example.com"})
 
         assert response.status_code == 200
-        assert response.json["status"] == "INACTIVE"
-        assert offer.isActive is False
+        assert offer.bookingEmail == "spam@example.com"
+
+    def test_update_external_ticket_office_url(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+        assert offer.externalTicketOfficeUrl is None
+
+        response = self.make_request(
+            plain_api_key,
+            json_body={"offerId": offer.id, "externalTicketOfficeUrl": "https://bloup.com"},
+        )
+        assert response.status_code == 200, response.json
+
+        assert offer.externalTicketOfficeUrl == "https://bloup.com"
 
     def test_sets_field_to_none_and_leaves_other_unchanged(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -105,29 +97,37 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         assert offer.withdrawalDetails is None
         assert offer.bookingEmail == "notify@example.com"
 
-    def test_update_product_image(self, clear_tests_assets_bucket):
+    def test_update_name_and_description(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = self.setup_base_resource(venue_provider.venue, venue_provider.provider)
 
-        response = self.make_request(
-            plain_api_key, json_body={"offerId": offer.id, "image": {"file": image_data.GOOD_IMAGE}}
-        )
+        offer_id = offer.id
 
-        assert response.status_code == 200
-        assert db.session.query(offers_models.Mediation).one()
-        assert (
-            offer.image.url
-            == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(offer.activeMediation.id)}"
-        )
+        expected_num_queries = 1  # get api key
+        expected_num_queries += 1  # get offer
 
-    def test_updates_booking_email(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = self.setup_base_resource(venue_provider.venue, venue_provider.provider)
+        expected_num_queries += 1  # get mediations
+        expected_num_queries += 1  # get stocks
+        expected_num_queries += 1  # get price categories
 
-        response = self.make_request(plain_api_key, json_body={"offerId": offer.id, "bookingEmail": "spam@example.com"})
+        expected_num_queries += 1  # update offer
 
-        assert response.status_code == 200
-        assert offer.bookingEmail == "spam@example.com"
+        with assert_num_queries(expected_num_queries):
+            response = self.make_request(
+                plain_api_key,
+                json_body={
+                    "offerId": offer_id,
+                    "name": "Municipal ça ne va pas dire éclaté au sol jeune homme",
+                    "description": "En plus de la la Pléiade, on a aussi tous les Tintin !",
+                },
+            )
+
+            assert response.status_code == 200
+            assert response.json["name"] == "Municipal ça ne va pas dire éclaté au sol jeune homme"
+            assert response.json["description"] == "En plus de la la Pléiade, on a aussi tous les Tintin !"
+
+        assert offer.name == "Municipal ça ne va pas dire éclaté au sol jeune homme"
+        assert offer.description == "En plus de la la Pléiade, on a aussi tous les Tintin !"
 
     def test_sets_accessibility_partially(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -148,6 +148,199 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         assert offer.mentalDisabilityCompliant is False
         assert offer.motorDisabilityCompliant is False
         assert offer.visualDisabilityCompliant is False
+
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
+    @pytest.mark.parametrize(
+        "payload,expected_publication_datetime,expected_response_publication_datetime",
+        [
+            # should set new value
+            (
+                {"publicationDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
+                datetime.datetime(2025, 8, 1, 6, tzinfo=datetime.UTC),
+                "2025-08-01T06:00:00Z",
+            ),
+            (
+                {"publicationDatetime": "now"},
+                datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC),
+                "2025-06-25T12:30:00Z",
+            ),
+            # should unset previous value
+            ({"publicationDatetime": None}, None, None),
+            # should keep previous value
+            ({}, datetime.datetime(2025, 5, 1, 3, tzinfo=datetime.UTC), "2025-05-01T03:00:00Z"),
+        ],
+    )
+    def test_publication_datetime_param(
+        self, payload, expected_publication_datetime, expected_response_publication_datetime
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = offers_factories.ThingOfferFactory(
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
+            lastProvider=venue_provider.provider,
+            publicationDatetime=datetime.datetime(2025, 5, 1, 3),
+        )
+
+        payload["offerId"] = offer.id
+
+        response = self.make_request(plain_api_key, json_body=payload)
+
+        assert response.status_code == 200
+        assert response.json["publicationDatetime"] == expected_response_publication_datetime
+
+        update_offer = db.session.query(offers_models.Offer).filter_by(id=offer.id).one()
+        assert update_offer.publicationDatetime == expected_publication_datetime
+
+    def test_deactivate_offer(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = self.setup_base_resource(venue_provider.venue, venue_provider.provider)
+
+        response = self.make_request(plain_api_key, json_body={"offerId": offer.id, "isActive": False})
+
+        assert response.status_code == 200
+        assert response.json["status"] == "INACTIVE"
+        assert offer.isActive is False
+
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
+    @pytest.mark.parametrize(
+        "payload,expected_booking_allowed_datetime,expected_response_booking_allowed_datetime",
+        [
+            # should set new value
+            (
+                {"bookingAllowedDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
+                datetime.datetime(2025, 8, 1, 6, tzinfo=datetime.UTC),
+                "2025-08-01T06:00:00Z",
+            ),
+            # should unset value
+            ({"bookingAllowedDatetime": None}, None, None),
+            # should keep previous value
+            ({}, datetime.datetime(2025, 5, 1, 3, tzinfo=datetime.UTC), "2025-05-01T03:00:00Z"),
+        ],
+    )
+    def test_booking_allowed_datetime_param(
+        self,
+        payload,
+        expected_booking_allowed_datetime,
+        expected_response_booking_allowed_datetime,
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = self.setup_base_resource(
+            venue_provider.venue, venue_provider.provider, bookingAllowedDatetime=datetime.datetime(2025, 5, 1, 3)
+        )
+
+        payload["offerId"] = offer.id
+
+        response = self.make_request(plain_api_key, json_body=payload)
+
+        assert response.status_code == 200
+        assert response.json["bookingAllowedDatetime"] == expected_response_booking_allowed_datetime
+
+        update_offer = db.session.query(offers_models.Offer).filter_by(id=offer.id).one()
+        assert update_offer.bookingAllowedDatetime == expected_booking_allowed_datetime
+
+    def test_update_location_with_physical_location(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        other_venue = providers_factories.VenueProviderFactory(provider=venue_provider.provider).venue
+
+        response = self.make_request(
+            plain_api_key,
+            json_body={"offerId": offer.id, "location": {"type": "physical", "venueId": other_venue.id}},
+        )
+        assert response.status_code == 200
+
+        assert offer.venueId == other_venue.id
+        assert offer.venue.offererAddress.id == other_venue.offererAddress.id
+
+    def test_update_location_with_address(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        address = geography_factories.AddressFactory(
+            latitude=50.63153,
+            longitude=3.06089,
+            postalCode=59000,
+            city="Lille",
+        )
+
+        providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
+
+        response = self.make_request(
+            plain_api_key,
+            json_body={
+                "offerId": offer.id,
+                "location": {"type": "address", "venueId": other_venue.id, "addressId": address.id},
+            },
+        )
+        assert response.status_code == 200
+
+        assert offer.offererAddress.addressId == address.id
+
+    def test_update_location_at_venue_location_as_physical(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        venue = offer.venue
+
+        response = self.make_request(
+            plain_api_key,
+            json_body={
+                "offerId": offer.id,
+                "location": {
+                    "type": "address",
+                    "venue_id": venue.id,
+                    "address_id": venue.offererAddress.addressId,
+                    "address_label": venue.publicName,
+                },
+            },
+        )
+        assert response.status_code == 200, response.json
+
+        assert offer.venueId == venue.id
+        assert offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+        assert offer.offererAddress.id != venue.offererAddress.id
+        assert offer.offererAddress.addressId == venue.offererAddress.addressId
+        assert offer.offererAddress.label is None
+
+    def test_update_location_for_digital_product(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        offer = offers_factories.ThingOfferFactory(
+            venue=venue_provider.venue,
+            lastProvider=venue_provider.provider,
+            subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            url="https://ebook.download",
+        )
+
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
+
+        response = self.make_request(
+            plain_api_key,
+            json_body={
+                "offerId": offer.id,
+                "location": {"type": "digital", "venueId": other_venue.id, "url": "https://oops.fr"},
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"offererAddress": ["Une offre numérique ne peut pas avoir d'adresse"]}
+
+    def test_update_product_image(self, clear_tests_assets_bucket):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = self.setup_base_resource(venue_provider.venue, venue_provider.provider)
+
+        response = self.make_request(
+            plain_api_key, json_body={"offerId": offer.id, "image": {"file": image_data.GOOD_IMAGE}}
+        )
+
+        assert response.status_code == 200
+        assert db.session.query(offers_models.Mediation).one()
+        assert (
+            offer.image.url
+            == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(offer.activeMediation.id)}"
+        )
 
     def test_create_stock(self, client, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -210,18 +403,24 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         assert offer.activeStocks[0] == stock
         assert offer.activeStocks[0].quantity is None
 
-    def test_error_if_no_offer_is_found(self, client):
-        plain_api_key, _ = self.setup_active_venue_provider()
+    def test_update_stock_booking_limit_datetime(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = self.setup_base_resource(venue_provider.venue, venue_provider.provider)
+        stock = offers_factories.StockFactory(offer=offer, bookingLimitDatetime=None)
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url,
-            json={
-                "offerId": "33",
-                "stock": {"bookingLimitDatetime": None},
-            },
+        new_limit = datetime.datetime.now() + datetime.timedelta(minutes=1)
+
+        response = self.make_request(
+            plain_api_key,
+            json_body={"offerId": offer.id, "stock": {"bookingLimitDatetime": format_into_utc_date(new_limit)}},
         )
-        assert response.status_code == 404
-        assert response.json == {"offerId": ["The product offer could not be found"]}
+
+        assert response.status_code == 200
+        assert response.json["stock"]["bookingLimitDatetime"] == format_into_utc_date(new_limit)
+
+        assert len(offer.activeStocks) == 1
+        assert offer.activeStocks[0] == stock
+        assert offer.activeStocks[0].bookingLimitDatetime == new_limit
 
     def test_remove_stock_booking_limit_datetime(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -244,25 +443,6 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         assert offer.activeStocks[0] == stock
         assert offer.activeStocks[0].bookingLimitDatetime is None
 
-    def test_update_stock_booking_limit_datetime(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = self.setup_base_resource(venue_provider.venue, venue_provider.provider)
-        stock = offers_factories.StockFactory(offer=offer, bookingLimitDatetime=None)
-
-        new_limit = datetime.datetime.now() + datetime.timedelta(minutes=1)
-
-        response = self.make_request(
-            plain_api_key,
-            json_body={"offerId": offer.id, "stock": {"bookingLimitDatetime": format_into_utc_date(new_limit)}},
-        )
-
-        assert response.status_code == 200
-        assert response.json["stock"]["bookingLimitDatetime"] == format_into_utc_date(new_limit)
-
-        assert len(offer.activeStocks) == 1
-        assert offer.activeStocks[0] == stock
-        assert offer.activeStocks[0].bookingLimitDatetime == new_limit
-
     def test_delete_stock(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = self.setup_base_resource(venue_provider.venue, venue_provider.provider)
@@ -280,85 +460,8 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         assert confirmed_booking.status == bookings_models.BookingStatus.CANCELLED
         assert used_booking.status == bookings_models.BookingStatus.USED
 
-    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    @pytest.mark.parametrize(
-        "payload,expected_publication_datetime,expected_response_publication_datetime",
-        [
-            # should set new value
-            (
-                {"publicationDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
-                datetime.datetime(2025, 8, 1, 6, tzinfo=datetime.UTC),
-                "2025-08-01T06:00:00Z",
-            ),
-            (
-                {"publicationDatetime": "now"},
-                datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC),
-                "2025-06-25T12:30:00Z",
-            ),
-            # should unset previous value
-            ({"publicationDatetime": None}, None, None),
-            # should keep previous value
-            ({}, datetime.datetime(2025, 5, 1, 3, tzinfo=datetime.UTC), "2025-05-01T03:00:00Z"),
-        ],
-    )
-    def test_publication_datetime_param(
-        self, payload, expected_publication_datetime, expected_response_publication_datetime
-    ):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = offers_factories.ThingOfferFactory(
-            venue=venue_provider.venue,
-            subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
-            lastProvider=venue_provider.provider,
-            publicationDatetime=datetime.datetime(2025, 5, 1, 3),
-        )
-
-        payload["offerId"] = offer.id
-
-        response = self.make_request(plain_api_key, json_body=payload)
-
-        assert response.status_code == 200
-        assert response.json["publicationDatetime"] == expected_response_publication_datetime
-
-        update_offer = db.session.query(offers_models.Offer).filter_by(id=offer.id).one()
-        assert update_offer.publicationDatetime == expected_publication_datetime
-
-    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    @pytest.mark.parametrize(
-        "payload,expected_booking_allowed_datetime,expected_response_booking_allowed_datetime",
-        [
-            # should set new value
-            (
-                {"bookingAllowedDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
-                datetime.datetime(2025, 8, 1, 6, tzinfo=datetime.UTC),
-                "2025-08-01T06:00:00Z",
-            ),
-            # should unset value
-            ({"bookingAllowedDatetime": None}, None, None),
-            # should keep previous value
-            ({}, datetime.datetime(2025, 5, 1, 3, tzinfo=datetime.UTC), "2025-05-01T03:00:00Z"),
-        ],
-    )
-    def test_booking_allowed_datetime_param(
-        self,
-        payload,
-        expected_booking_allowed_datetime,
-        expected_response_booking_allowed_datetime,
-    ):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = self.setup_base_resource(
-            venue_provider.venue, venue_provider.provider, bookingAllowedDatetime=datetime.datetime(2025, 5, 1, 3)
-        )
-
-        payload["offerId"] = offer.id
-
-        response = self.make_request(plain_api_key, json_body=payload)
-
-        assert response.status_code == 200
-        assert response.json["bookingAllowedDatetime"] == expected_response_booking_allowed_datetime
-
-        update_offer = db.session.query(offers_models.Offer).filter_by(id=offer.id).one()
-        assert update_offer.bookingAllowedDatetime == expected_booking_allowed_datetime
-
+@pytest.mark.usefixtures("db_session")
+class Returns400Test(PatchProductEndpointHelper):
     @pytest.mark.parametrize(
         "payload, expected_response_json",
         [
@@ -528,137 +631,44 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
             ]
         }
 
-    def test_update_name_and_description(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = self.setup_base_resource(venue_provider.venue, venue_provider.provider)
+@pytest.mark.usefixtures("db_session")
+class Returns404Test(PatchProductEndpointHelper):
+    def test_error_if_no_offer_is_found(self, client):
+        plain_api_key, _ = self.setup_active_venue_provider()
 
-        offer_id = offer.id
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url,
+            json={
+                "offerId": "33",
+                "stock": {"bookingLimitDatetime": None},
+            },
+        )
+        assert response.status_code == 404
+        assert response.json == {"offerId": ["The product offer could not be found"]}
 
-        expected_num_queries = 1  # get api key
-        expected_num_queries += 1  # get offer
+    def test_should_raise_404_because_has_no_access_to_venue(self):
+        plain_api_key, _ = self.setup_provider()
+        venue = self.setup_venue()
+        offer = self.setup_base_resource(venue)
 
-        expected_num_queries += 1  # get mediations
-        expected_num_queries += 1  # get stocks
-        expected_num_queries += 1  # get price categories
+        response = self.make_request(plain_api_key, json_body={"offerId": offer.id, "isActive": False})
+        assert response.status_code == 404
 
-        expected_num_queries += 1  # update offer
+    def test_should_raise_404_because_venue_provider_is_inactive(self):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue)
 
-        with assert_num_queries(expected_num_queries):
-            response = self.make_request(
-                plain_api_key,
-                json_body={
-                    "offerId": offer_id,
-                    "name": "Municipal ça ne va pas dire éclaté au sol jeune homme",
-                    "description": "En plus de la la Pléiade, on a aussi tous les Tintin !",
-                },
-            )
+        response = self.make_request(plain_api_key, json_body={"offerId": offer.id, "isActive": False})
+        assert response.status_code == 404
 
-            assert response.status_code == 200
-            assert response.json["name"] == "Municipal ça ne va pas dire éclaté au sol jeune homme"
-            assert response.json["description"] == "En plus de la la Pléiade, on a aussi tous les Tintin !"
-
-        assert offer.name == "Municipal ça ne va pas dire éclaté au sol jeune homme"
-        assert offer.description == "En plus de la la Pléiade, on a aussi tous les Tintin !"
-
-    def test_update_location_with_physical_location(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
+    def test_should_raise_404_because_venue_in_payload_is_not_linked_to_provider(self):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        other_venue = providers_factories.VenueProviderFactory(provider=venue_provider.provider).venue
+        venue = self.setup_venue()
 
         response = self.make_request(
             plain_api_key,
-            json_body={"offerId": offer.id, "location": {"type": "physical", "venueId": other_venue.id}},
+            json_body={"offerId": offer.id, "location": {"type": "physical", "venue_id": venue.id}},
         )
-        assert response.status_code == 200
-
-        assert offer.venueId == other_venue.id
-        assert offer.venue.offererAddress.id == other_venue.offererAddress.id
-
-    def test_update_location_for_digital_product(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        venue = venue_provider.venue
-        offer = offers_factories.ThingOfferFactory(
-            venue=venue_provider.venue,
-            lastProvider=venue_provider.provider,
-            subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
-            url="https://ebook.download",
-        )
-
-        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
-
-        response = self.make_request(
-            plain_api_key,
-            json_body={
-                "offerId": offer.id,
-                "location": {"type": "digital", "venueId": other_venue.id, "url": "https://oops.fr"},
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json == {"offererAddress": ["Une offre numérique ne peut pas avoir d'adresse"]}
-
-    def test_update_location_with_address(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
-
-        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        address = geography_factories.AddressFactory(
-            latitude=50.63153,
-            longitude=3.06089,
-            postalCode=59000,
-            city="Lille",
-        )
-
-        providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
-
-        response = self.make_request(
-            plain_api_key,
-            json_body={
-                "offerId": offer.id,
-                "location": {"type": "address", "venueId": other_venue.id, "addressId": address.id},
-            },
-        )
-        assert response.status_code == 200
-
-        assert offer.offererAddress.addressId == address.id
-
-    def test_update_external_ticket_office_url(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
-        assert offer.externalTicketOfficeUrl is None
-
-        response = self.make_request(
-            plain_api_key,
-            json_body={"offerId": offer.id, "externalTicketOfficeUrl": "https://bloup.com"},
-        )
-        assert response.status_code == 200, response.json
-
-        assert offer.externalTicketOfficeUrl == "https://bloup.com"
-
-    def test_update_location_at_venue_location_as_physical(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        venue = offer.venue
-
-        response = self.make_request(
-            plain_api_key,
-            json_body={
-                "offerId": offer.id,
-                "location": {
-                    "type": "address",
-                    "venue_id": venue.id,
-                    "address_id": venue.offererAddress.addressId,
-                    "address_label": venue.publicName,
-                },
-            },
-        )
-        assert response.status_code == 200, response.json
-
-        assert offer.venueId == venue.id
-        assert offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
-        assert offer.offererAddress.id != venue.offererAddress.id
-        assert offer.offererAddress.addressId == venue.offererAddress.addressId
-        assert offer.offererAddress.label is None
+        assert response.status_code == 404, response.json
