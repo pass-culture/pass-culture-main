@@ -267,19 +267,19 @@ class UserProfilingRiskRating(enum.Enum):
 
 
 class UserProfilingFraudData(pydantic.BaseModel):
-    account_email_first_seen: datetime.date | None
+    account_email_first_seen: datetime.date | None = None
     account_email_result: str
-    account_email_score: int | None
+    account_email_score: int | None = None
     account_email: str
-    account_telephone_first_seen: datetime.date | None
-    account_telephone_is_valid: str | None  # Optional because Phone Validation may be disabled by FF
-    account_telephone_result: str | None  # Optional because Phone Validation may be disabled by FF
-    account_telephone_score: int | None
+    account_telephone_first_seen: datetime.date | None = None
+    account_telephone_is_valid: str | None = None  # Optional because Phone Validation may be disabled by FF
+    account_telephone_result: str | None = None  # Optional because Phone Validation may be disabled by FF
+    account_telephone_score: int | None = None
     bb_bot_rating: str
     bb_bot_score: float
     bb_fraud_rating: str
     bb_fraud_score: float
-    device_id: str | None
+    device_id: str | None = None
     digital_id_confidence: int
     digital_id_confidence_rating: str
     digital_id_result: str
@@ -295,5 +295,5 @@ class UserProfilingFraudData(pydantic.BaseModel):
     session_id: str
     summary_risk_score: int
     tmx_risk_rating: str
-    tmx_summary_reason_code: list[str] | None
-    unknown_session: str | None
+    tmx_summary_reason_code: list[str] | None = None
+    unknown_session: str | None = None
