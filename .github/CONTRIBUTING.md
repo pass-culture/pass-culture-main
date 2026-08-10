@@ -8,7 +8,7 @@ Les workflows sont divisés en 4 grandes catégories :
 - les workflows **partagés dédiés à des services particuliers**, préfixés par le nom du service, par exemple `slack_` ou `docker_`
 - les workflows **dédiés aux tests de job et de GitHub actions**, préfixés par `test_`
 
-Au sein de ces catégories, les sous-workflows, ie. les workflows qui sont appelés par d'autres workflows (qui ont la configugration `on: workflow_call`), sont préfixés avec `sub_`.
+Au sein de ces catégories, les sous-workflows, ie. les workflows qui sont appelés par d'autres workflows (qui ont la configuration `on: workflow_call`), sont préfixés avec `sub_`.
 Par exemple, pour la CI le workflow [`ci_sub_test_changes.yml`](workflows/ci_sub_test_changes.yml) et pour la CD le workflow [`cd_sub_create_release.yml`](workflows/cd_sub_create_release.yml).
 
 ## CI
