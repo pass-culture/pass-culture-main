@@ -1,4 +1,5 @@
 import datetime
+import logging
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -14,16 +15,24 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.connectors import api_adresse
+from pcapi.core.artist import factories as artist_factories
+from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
+from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.geography import models as geography_models
+from pcapi.core.highlights import factories as highlights_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.reminders import factories as reminders_factories
+from pcapi.core.reminders import models as reminders_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -1021,246 +1030,1432 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["hasCulturalOutreachClaim"] is True
 
+    def test_patch_offer_with_empty_body_does_not_change_the_offer(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            name="Un nom",
+            description="Une description",
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={})
+
+        assert response.status_code == 200, response.json
+        assert response.json["id"] == offer.id
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.name == "Un nom"
+        assert updated_offer.description == "Une description"
+
+    def test_patch_offer_simple_fields(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            name="Un nom",
+            description="Une description",
+            bookingEmail="old@example.com",
+            isNational=False,
+            isDuo=False,
+            durationMinutes=None,
+        )
+
+        data = {
+            "description": "Une toute nouvelle description",
+            "bookingEmail": "new@example.com",
+            "isNational": True,
+            "isDuo": True,
+            "durationMinutes": 90,
+        }
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert response.json["description"] == "Une toute nouvelle description"
+        assert response.json["bookingEmail"] == "new@example.com"
+        assert response.json["isNational"] is True
+        assert response.json["isDuo"] is True
+        assert response.json["durationMinutes"] == 90
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.description == "Une toute nouvelle description"
+        assert updated_offer.bookingEmail == "new@example.com"
+        assert updated_offer.isNational is True
+        assert updated_offer.isDuo is True
+        assert updated_offer.durationMinutes == 90
+
+    def test_patch_offer_accessibility_fields(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            audioDisabilityCompliant=False,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=False,
+            visualDisabilityCompliant=False,
+        )
+
+        data = {
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+        }
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.audioDisabilityCompliant is True
+        assert updated_offer.mentalDisabilityCompliant is True
+        assert updated_offer.motorDisabilityCompliant is True
+        assert updated_offer.visualDisabilityCompliant is True
+
+    def test_patch_offer_subcategory_id_on_draft_offer(self, client, venue, auth_client):
+        offer = offers_factories.DraftOfferFactory(
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            venue=venue,
+        )
+
+        data = {"subcategoryId": subcategories.ESCAPE_GAME.id}
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert response.json["subcategoryId"] == subcategories.ESCAPE_GAME.id
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.subcategoryId == subcategories.ESCAPE_GAME.id
+
+    def test_patch_offer_creates_artist_offer_links(self, client, venue, auth_client):
+        artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, venue=venue)
+
+        data = {
+            "artistOfferLinks": [
+                {"artistId": artist.id, "artistType": "performer", "artistName": artist.name},
+                {"artistId": None, "artistType": "author", "artistName": "Artiste inconnu"},
+            ]
+        }
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert sorted(response.json["artistOfferLinks"], key=lambda link: link["artistType"]) == [
+            {"artistId": None, "artistName": "Artiste inconnu", "artistType": "author"},
+            {"artistId": artist.id, "artistName": artist.name, "artistType": "performer"},
+        ]
+
+        links = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer.id).all()
+        assert len(links) == 2
+
+    def test_patch_offer_replaces_artist_offer_links(self, client, venue, auth_client):
+        artist = artist_factories.ArtistFactory()
+        new_artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, venue=venue)
+        artist_factories.ArtistOfferLinkFactory(
+            offer_id=offer.id,
+            artist_id=artist.id,
+            artist_type=artist_models.ArtistType.PERFORMER,
+        )
+
+        data = {
+            "artistOfferLinks": [
+                {"artistId": new_artist.id, "artistType": "author", "artistName": new_artist.name},
+            ]
+        }
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert response.json["artistOfferLinks"] == [
+            {"artistId": new_artist.id, "artistName": new_artist.name, "artistType": "author"},
+        ]
+
+        links = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer.id).all()
+        assert len(links) == 1
+        assert links[0].artist_id == new_artist.id
+        assert links[0].artist_type == artist_models.ArtistType.AUTHOR
+
+    def test_patch_offer_removes_artist_offer_links(self, client, venue, auth_client):
+        artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, venue=venue)
+        artist_factories.ArtistOfferLinkFactory(
+            offer_id=offer.id,
+            artist_id=artist.id,
+            artist_type=artist_models.ArtistType.PERFORMER,
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"artistOfferLinks": []})
+
+        assert response.status_code == 200, response.json
+        assert response.json["artistOfferLinks"] == []
+        assert db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer.id).count() == 0
+
+    def test_withdrawal_type_on_site_requires_a_delay(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            bookingContact="booking@conta.ct",
+            withdrawalType=WithdrawalTypeEnum.NO_TICKET,
+            withdrawalDelay=None,
+        )
+
+        data = {"withdrawalType": "on_site", "withdrawalDelay": 60 * 30}
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.withdrawalType == WithdrawalTypeEnum.ON_SITE
+        assert updated_offer.withdrawalDelay == 60 * 30
+
+    def test_should_send_mail_without_withdrawal_nor_address_change_sends_nothing(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            bookingContact="booking@conta.ct",
+            name="Un nom",
+        )
+        stock = offers_factories.StockFactory(offer=offer)
+        bookings_factories.BookingFactory(stock=stock)
+
+        data = {"name": "Un autre nom", "shouldSendMail": True}
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).name == "Un autre nom"
+        assert len(mails_testing.outbox) == 0
+
+    def test_patch_offer_does_not_update_an_already_claimed_cultural_outreach(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.MUSEUM
+        )
+        offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.ESCAPE_GAME.id)
+        claimed_datetime = datetime.datetime(2026, 4, 20, 12, 0, 0)
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer, claimedDatetime=claimed_datetime)
+
+        response = client.with_session_auth(user_offerer.user.email).patch(
+            self.endpoint.format(offer_id=offer.id), json={"hasCulturalOutreachClaim": True}
+        )
+
+        assert response.status_code == 200
+        assert response.json["hasCulturalOutreachClaim"] is True
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.culturalOutreach.claimedDatetime == claimed_datetime
+
+    def test_patch_offer_notifies_users_who_asked_for_a_reminder(self, client, venue, auth_client):
+        offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            name="Super Future Offer",
+            publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
+            bookingAllowedDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=10),
+        )
+        user = users_factories.BeneficiaryGrant18Factory()
+        reminders_factories.OfferReminderFactory(offer=offer, user=user)
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"bookingAllowedDatetime": None})
+
+        assert response.status_code == 200, response.json
+        assert response.json["bookingAllowedDatetime"] is None
+
+        assert len(push_testing.requests) == 1
+        assert push_testing.requests[0]["payload"] == [
+            {
+                "id": str(user.id),
+                "events": [
+                    {
+                        "name": "ue.future_offer_activated",
+                        "attributes": {
+                            "offer_id": offer.id,
+                            "offer_name": "Super Future Offer",
+                            "offer_category": "CINEMA",
+                            "offer_subcategory": "SEANCE_CINE",
+                            "offer_type": "solo",
+                        },
+                    }
+                ],
+            }
+        ]
+        assert db.session.query(reminders_models.OfferReminder).filter_by(offerId=offer.id).count() == 0
+
+    def test_patch_draft_offer_skips_url_and_address_coherence_checks(self, client, venue, auth_client):
+        # The creation tunnel is split into several steps: a draft may be
+        # inconsistent (no url and no address) until it is finalized.
+        offer = offers_factories.DraftOfferFactory(
+            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            venue=venue,
+            url=None,
+            offererAddress=None,
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"name": "Un brouillon"})
+
+        assert response.status_code == 200, response.json
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.name == "Un brouillon"
+        assert updated_offer.url is None
+        assert updated_offer.offererAddress is None
+
+    def test_patch_editable_field_of_an_offer_from_public_api_provider(self, client):
+        provider = providers_factories.PublicApiProviderFactory()
+        providers_factories.OffererProviderFactory(provider=provider)
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.EventOfferFactory(
+            lastProviderId=provider.id,
+            venue=venue,
+            name="Old name",
+            description="Old description",
+            bookingEmail="old@example.com",
+            bookingContact="old-contact@example.com",
+            audioDisabilityCompliant=False,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=False,
+            visualDisabilityCompliant=False,
+            externalTicketOfficeUrl="http://old.com",
+            isDuo=False,
+            durationMinutes=60,
+            publicationDatetime=datetime.datetime(2026, 8, 15, 12, 0, tzinfo=datetime.timezone.utc),
+            bookingAllowedDatetime=datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc),
+            extraData={"old": "data"},
+            idAtProvider="old-id",
+            offererAddress=None,
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        new_publication_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=3)
+        new_booking_allowed_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=2)
+
+        data = {
+            "name": "New name",
+            "description": "New description",
+            "bookingEmail": "new@example.com",
+            "bookingContact": "new-contact@example.com",
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+            "externalTicketOfficeUrl": "http://new.com",
+            "isDuo": True,
+            "durationMinutes": 90,
+            "publicationDatetime": format_into_utc_date(new_publication_datetime),
+            "bookingAllowedDatetime": format_into_utc_date(new_booking_allowed_datetime),
+            "extraData": {"ean": "1234567890123", "author": "New author"},
+            "location": {
+                "isVenueLocation": True,
+                "street": venue.offererAddress.address.street,
+                "city": venue.offererAddress.address.city,
+                "postalCode": venue.offererAddress.address.postalCode,
+                "latitude": venue.offererAddress.address.latitude,
+                "longitude": venue.offererAddress.address.longitude,
+            },
+        }
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
+
+        assert response.status_code == 200, response.json
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.name == "New name"
+        assert updated_offer.description == "New description"
+        assert updated_offer.bookingEmail == "new@example.com"
+        assert updated_offer.bookingContact == "new-contact@example.com"
+        assert updated_offer.audioDisabilityCompliant is True
+        assert updated_offer.mentalDisabilityCompliant is True
+        assert updated_offer.motorDisabilityCompliant is True
+        assert updated_offer.visualDisabilityCompliant is True
+        assert updated_offer.externalTicketOfficeUrl == "http://new.com"
+        assert updated_offer.isDuo is True
+        assert updated_offer.durationMinutes == 90
+        assert updated_offer.publicationDatetime == new_publication_datetime
+        assert updated_offer.bookingAllowedDatetime == new_booking_allowed_datetime
+        assert updated_offer.extraData == {"author": "New author"}
+        assert updated_offer.ean == "1234567890123"
+        assert updated_offer.offererAddress.address == venue.offererAddress.address
+
+    def test_patch_allocine_offer_keeps_track_of_updated_fields(self, client):
+        venue = offerers_factories.VenueFactory()
+        allocine_provider = providers_factories.AllocineProviderFactory()
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            lastProvider=allocine_provider,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            name="Film",
+            isDuo=False,
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=venue.managingOfferer)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"name": "Un autre nom", "isDuo": True}
+        )
+
+        assert response.status_code == 200, response.json
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.name == "Un autre nom"
+        assert updated_offer.isDuo is True
+        assert set(updated_offer.fieldsUpdated) == {"name", "isDuo"}
+
+    def test_patch_offer_withdrawing_a_cultural_outreach_claim_that_does_not_exist_is_a_noop(self, client):
+        # `update_cultural_outreach_claim` is only called when the offer
+        # already has a cultural outreach, so nothing happens here.
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.MUSEUM
+        )
+        offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.ESCAPE_GAME.id)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"hasCulturalOutreachClaim": False}
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["hasCulturalOutreachClaim"] is False
+        assert db.session.get(Offer, offer.id).culturalOutreach is None
+
+    def test_patch_offer_derives_gtl_id_from_music_type(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            venue=venue,
+            extraData={},
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"extraData": {"musicType": "501"}})
+
+        assert response.status_code == 200, response.json
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.extraData == {"musicType": "501", "gtl_id": "02000000"}
+
+    def test_patch_draft_offer_does_not_derive_gtl_id_when_subcategory_becomes_musical(
+        self, client, venue, auth_client
+    ):
+        # `deserialize_extra_data` is called with the subcategory the offer
+        # currently has, not the one sent in the body: switching to a musical
+        # subcategory and sending a musicType in the same request does not
+        # derive the gtl_id.
+        offer = offers_factories.DraftOfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            extraData={},
+        )
+
+        response = auth_client.patch(
+            self.endpoint.format(offer_id=offer.id),
+            json={
+                "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+                "extraData": {"musicType": "501"},
+            },
+        )
+
+        assert response.status_code == 200, response.json
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
+        assert updated_offer.extraData == {"musicType": "501"}
+
+    def test_patch_offer_extracts_the_ean_from_extra_data(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            extraData={},
+            ean=None,
+        )
+
+        data = {"extraData": {"ean": "1234567890123", "author": "Kewis Larol"}}
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert response.json["extraData"] == {"author": "Kewis Larol", "ean": "1234567890123"}
+
+        # the EAN has its own column, it is not kept in `extraData`
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.ean == "1234567890123"
+        assert updated_offer.extraData == {"author": "Kewis Larol"}
+        assert updated_offer.product is None
+
+    def test_patch_offer_stores_extra_data_outside_of_the_subcategory_conditional_fields(
+        self, client, venue, auth_client
+    ):
+        # ESCAPE_GAME has no conditional field: `_format_extra_data` filters
+        # them for the validation only, the payload is persisted as is.
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            extraData={},
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"extraData": {"author": "Moi"}})
+
+        assert response.status_code == 200, response.json
+        assert response.json["extraData"] == {"author": "Moi"}
+        assert db.session.get(Offer, offer.id).extraData == {"author": "Moi"}
+
+    def test_patch_extra_data_ignores_the_fields_only_mandatory_for_the_public_api(self, client, venue, auth_client):
+        # musicType and ean are only required in the external form: this route
+        # updates the offer with `is_from_private_api=True`.
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            venue=venue,
+            extraData={},
+            ean=None,
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"extraData": {"performer": "Toi"}})
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).extraData == {"performer": "Toi"}
+
+    def test_patch_offer_does_not_notify_users_when_booking_is_still_not_allowed(self, client, venue, auth_client):
+        offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
+            bookingAllowedDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=10),
+        )
+        user = users_factories.BeneficiaryGrant18Factory()
+        reminders_factories.OfferReminderFactory(offer=offer, user=user)
+
+        data = {
+            "bookingAllowedDatetime": format_into_utc_date(date_utils.get_naive_utc_now() + datetime.timedelta(days=20))
+        }
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+
+        # the offer is still not bookable: nobody is notified and the reminders are kept
+        assert push_testing.requests == []
+        assert db.session.query(reminders_models.OfferReminder).filter_by(offerId=offer.id).count() == 1
+
+    def test_patch_offer_response_contains_headline_bookings_and_location_data(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            name="Un nom",
+        )
+        offers_factories.MediationFactory(offer=offer)
+        offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
+        stock = offers_factories.StockFactory(offer=offer, price=Decimal("12.00"), quantity=10)
+        bookings_factories.BookingFactory(stock=stock)
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"name": "Un autre nom"})
+
+        assert response.status_code == 200, response.json
+        assert response.json["name"] == "Un autre nom"
+        assert response.json["isHeadlineOffer"] is True
+        assert response.json["hasPendingBookings"] is True
+        assert response.json["bookingsCount"] == 1
+        assert response.json["isNonFreeOffer"] is True
+        assert response.json["location"]["street"] == venue.offererAddress.address.street
+        assert response.json["location"]["isVenueLocation"] is True
+
+    def test_patch_url_does_not_change_is_national(self, client, venue, auth_client):
+        # `isNational` is only recomputed from the url when it is part of the
+        # body: an offer keeps its value otherwise.
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            venue=venue,
+            url="https://example.com/offer",
+            offererAddress=None,
+            isNational=False,
+        )
+
+        response = auth_client.patch(
+            self.endpoint.format(offer_id=offer.id), json={"url": "https://example.com/another-offer"}
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["isNational"] is False
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.url == "https://example.com/another-offer"
+        assert updated_offer.isNational is False
+
+    def test_patch_url_forces_is_national_when_both_are_sent(self, client, venue, auth_client):
+        # `UpdateOffer.validate_is_national` (core/offers/schemas.py) is declared
+        # after `url` so that it can read it: the value sent in the body is
+        # overridden as soon as an url is part of the same request.
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            venue=venue,
+            url="https://example.com/offer",
+            offererAddress=None,
+            isNational=False,
+        )
+
+        data = {"url": "https://example.com/another-offer", "isNational": False}
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert response.json["isNational"] is True
+        assert db.session.get(Offer, offer.id).isNational is True
+
+    def test_patch_draft_offer_changes_subcategory_and_artist_offer_links_together(self, client, venue, auth_client):
+        # artist links are checked against the subcategory sent in the body,
+        # not the one the offer currently has: `performer` is allowed by
+        # CONCERT but not by LIVRE_PAPIER.
+        artist = artist_factories.ArtistFactory()
+        offer = offers_factories.DraftOfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, venue=venue)
+
+        data = {
+            "subcategoryId": subcategories.CONCERT.id,
+            "artistOfferLinks": [{"artistId": artist.id, "artistType": "performer", "artistName": artist.name}],
+        }
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert response.json["subcategoryId"] == subcategories.CONCERT.id
+
+        links = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer.id).all()
+        assert len(links) == 1
+        assert links[0].artist_type == artist_models.ArtistType.PERFORMER
+
+    def test_patch_draft_offer_becoming_withdrawable_does_not_check_the_withdrawal_data(
+        self, client, venue, auth_client
+    ):
+        # `check_offer_withdrawal` only runs when a withdrawal field is part of
+        # the update: switching to a withdrawable subcategory alone leaves the
+        # offer without a withdrawal type nor a booking contact.
+        offer = offers_factories.DraftOfferFactory(
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            venue=venue,
+            url=None,
+            withdrawalType=None,
+            bookingContact=None,
+        )
+
+        response = auth_client.patch(
+            self.endpoint.format(offer_id=offer.id), json={"subcategoryId": subcategories.CONCERT.id}
+        )
+
+        assert response.status_code == 200, response.json
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.subcategoryId == subcategories.CONCERT.id
+        assert updated_offer.withdrawalType is None
+        assert updated_offer.bookingContact is None
+
+    def test_patch_offer_with_an_ean_used_by_an_offer_of_another_venue(self, client, venue, user_offerer, auth_client):
+        # EAN unicity is scoped to the venue
+        other_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=other_venue,
+            ean="1111111111111",
+        )
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, venue=venue, ean=None)
+
+        response = auth_client.patch(
+            self.endpoint.format(offer_id=offer.id), json={"extraData": {"ean": "1111111111111"}}
+        )
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).ean == "1111111111111"
+
+    def test_patch_offer_does_not_track_updated_fields_of_a_non_allocine_offer(self, client, venue, auth_client):
+        # `fieldsUpdated` is only maintained for Allocine offers
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id, venue=venue, name="Un nom")
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"name": "Un autre nom"})
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).fieldsUpdated == []
+
+    def test_patch_offer_does_not_check_a_lower_bound_for_duration_minutes(self, client, venue, auth_client):
+        # `check_duration_minutes` only rejects durations of 24 hours or more
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id, venue=venue, durationMinutes=60
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"durationMinutes": -30})
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).durationMinutes == -30
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_patch_offer_with_unchanged_values_does_not_reindex_the_offer(
+        self, mocked_async_index_offer_ids, client, venue, auth_client
+    ):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            name="Un nom",
+            withdrawalDetails="Retrait à l'accueil",
+        )
+        stock = offers_factories.StockFactory(offer=offer)
+        bookings_factories.BookingFactory(stock=stock)
+
+        data = {"name": "Un nom", "withdrawalDetails": "Retrait à l'accueil", "shouldSendMail": True}
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).name == "Un nom"
+        mocked_async_index_offer_ids.assert_not_called()
+        assert len(mails_testing.outbox) == 0
+
+    def test_patch_offer_logs_message(self, client, caplog, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            name="Un nom",
+            description="Une description",
+        )
+
+        # `description` is left unchanged: only the modified fields are indexed
+        data = {"name": "Un autre nom", "description": "Une description"}
+        with caplog.at_level(logging.INFO):
+            response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert len([log for log in caplog.records if log.message == "Offer has been updated"]) == 1
+        log = next(log for log in caplog.records if log.message == "Offer has been updated")
+        assert log.extra == {
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "product_id": offer.productId,
+            "changes": {"name": {"newValue": "Un autre nom", "oldValue": "Un nom"}},
+        }
+
+        assert log.technical_message_id == "offer.updated"
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_patch_offer_reindexes_the_offer(self, mocked_async_index_offer_ids, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            name="Un nom",
+            description="Une description",
+        )
+
+        # `description` is left unchanged: only the modified fields are indexed
+        data = {"name": "Un autre nom", "description": "Une description"}
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": {"name"}},
+        )
+
+    def test_patch_offer_with_an_ean_already_used_by_an_inactive_offer(self, client, venue, auth_client):
+        # only *active* offers of the venue make an EAN unavailable
+        offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            ean="1111111111111",
+            publicationDatetime=None,
+        )
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, venue=venue, ean=None)
+
+        response = auth_client.patch(
+            self.endpoint.format(offer_id=offer.id), json={"extraData": {"ean": "1111111111111"}}
+        )
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).ean == "1111111111111"
+
+    def test_patch_offer_removes_the_ean(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            ean="1111111111111",
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"extraData": {"ean": None}})
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).ean is None
+
+    def test_patch_offer_removes_the_extra_data(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venue=venue,
+            extraData={"author": "Un auteur", "visa": "123456"},
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"extraData": None})
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).extraData is None
+
+    def test_patch_offer_update_extra_data_removes_the_previous_value(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venue=venue,
+            extraData={"author": "Un auteur", "visa": "123456"},
+        )
+
+        response = auth_client.patch(
+            self.endpoint.format(offer_id=offer.id), json={"extraData": {"author": "deux auteur"}}
+        )
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).extraData == {"author": "deux auteur"}
+
+    def test_patch_offer_removes_the_external_ticket_office_url(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            externalTicketOfficeUrl="https://example.com/tickets",
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"externalTicketOfficeUrl": None})
+
+        assert response.status_code == 200, response.json
+        assert response.json["externalTicketOfficeUrl"] is None
+        assert db.session.get(Offer, offer.id).externalTicketOfficeUrl is None
+
+    def test_patch_offer_name_with_the_maximum_length(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id, venue=venue, name="Un nom")
+        name = "a" * 90
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"name": name})
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).name == name
+
+    def test_patch_offer_withdrawal_delay_alone(self, client, venue, auth_client):
+        # the withdrawal type is not part of the body: it is read back from the offer
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            bookingContact="booking@conta.ct",
+            withdrawalType=WithdrawalTypeEnum.ON_SITE,
+            withdrawalDelay=60 * 30,
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"withdrawalDelay": 60 * 60})
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).withdrawalDelay == 60 * 60
+
+    def test_booking_contact_update_sends_email_to_each_related_booker(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            bookingContact="old@conta.ct",
+            withdrawalType=WithdrawalTypeEnum.NO_TICKET,
+        )
+        stock = offers_factories.StockFactory(offer=offer)
+        bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
+
+        data = {"bookingContact": "new@conta.ct", "shouldSendMail": True}
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).bookingContact == "new@conta.ct"
+        assert len(mails_testing.outbox) == 2
+
+    def test_patch_withdrawal_details_of_an_in_app_offer_from_a_provider_with_a_ticketing_service(self, client):
+        # `in_app` is only allowed when the offer provider supports ticketing
+        provider = providers_factories.PublicApiProviderFactory()
+        providers_factories.OffererProviderFactory(provider=provider)
+        offer = offers_factories.EventOfferFactory(
+            lastProvider=provider,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            bookingContact="booking@conta.ct",
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"withdrawalDetails": "Billet dans l'application"}
+        )
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).withdrawalDetails == "Billet dans l'application"
+
+    def test_patch_offer_response_contains_video_highlight_and_cultural_outreach_data(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.MUSEUM
+        )
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id, venue=venue, name="Un nom")
+        offers_factories.OfferMetaDataFactory(
+            offer=offer,
+            videoDuration=262,
+            videoExternalId="lm20v6ASSFI",
+            videoThumbnailUrl="https://example.com/thumbnail.jpg",
+            videoTitle="Un titre de vidéo",
+            videoUrl="https://www.youtube.com/watch?v=lm20v6ASSFI",
+        )
+        highlight = highlights_factories.HighlightFactory(name="Un temps fort")
+        highlights_factories.HighlightRequestFactory(offer=offer, highlight=highlight)
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"name": "Un autre nom"}
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["videoData"] == {
+            "videoDuration": 262,
+            "videoExternalId": "lm20v6ASSFI",
+            "videoThumbnailUrl": "https://example.com/thumbnail.jpg",
+            "videoTitle": "Un titre de vidéo",
+            "videoUrl": "https://www.youtube.com/watch?v=lm20v6ASSFI",
+        }
+        assert response.json["highlightRequests"] == [{"id": highlight.id, "name": "Un temps fort"}]
+        assert response.json["hasCulturalOutreachClaim"] is True
+
+    @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.timezone.utc), tick=False)
+    @pytest.mark.parametrize(
+        "request_publication_datetime,expected_status",
+        [
+            ("2025-06-28T14:30:00Z", "SCHEDULED"),
+            ("now", "ACTIVE"),
+            (None, "INACTIVE"),
+        ],
+    )
+    def test_patch_publication_datetime_changes_the_offer_status(
+        self, request_publication_datetime, expected_status, client
+    ):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            publicationDatetime=datetime.datetime(2025, 6, 26),
+        )
+        offers_factories.StockFactory(offer=offer, quantity=10)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id),
+            json={"publicationDatetime": request_publication_datetime},
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["status"] == expected_status
+
+    def test_patch_publication_datetime_on_a_draft_does_not_publish_it(self, client, venue, auth_client):
+        # a draft is published through the dedicated route: patching its
+        # publicationDatetime stores the value but keeps the DRAFT status
+        offer = offers_factories.DraftOfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            venue=venue,
+            publicationDatetime=None,
+        )
+        publication_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=2)
+
+        response = auth_client.patch(
+            self.endpoint.format(offer_id=offer.id),
+            json={"publicationDatetime": format_into_utc_date(publication_datetime)},
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["status"] == "DRAFT"
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.publicationDatetime == publication_datetime
+        assert updated_offer.validation == OfferValidationStatus.DRAFT
+
+    def test_should_not_fail_when_updating_duration_or_description_of_an_offer_with_a_product_but_not_update_them(
+        self, client, venue, auth_client
+    ):
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            ean="1111111111111",
+            name="New name",
+            description="description",
+            durationMinutes=60,
+        )
+        offer = offers_factories.OfferFactory(venue=venue, product=product, extraData={})
+
+        response = auth_client.patch(
+            self.endpoint.format(offer_id=offer.id), json={"description": "tototo", "durationMinutes": 120}
+        )
+
+        assert response.status_code == 200
+        assert db.session.get(Offer, offer.id).description == "description"
+        assert db.session.get(Offer, offer.id).durationMinutes == 60
+
 
 class Returns400Test:
     endpoint = "/offers/{offer_id}"
 
-    @pytest.mark.parametrize(
-        "offer_data, patch_body, expected_response_json",
-        [
-            (
-                {},
-                {
-                    "dateCreated": format_into_utc_date(datetime.datetime(2019, 1, 1)),
-                    "dateModifiedAtLastProvider": format_into_utc_date(datetime.datetime(2019, 1, 1)),
-                    "id": 1,
-                    "idAtProviders": 1,
-                    "lastProviderId": 1,
-                    "thumbCount": 2,
-                    "subcategoryId": subcategories.LIVRE_PAPIER.id,
-                },
-                {
-                    "dateCreated": ["Vous ne pouvez pas changer cette information"],
-                    "dateModifiedAtLastProvider": ["Vous ne pouvez pas changer cette information"],
-                    "id": ["Vous ne pouvez pas changer cette information"],
-                    "idAtProviders": ["Vous ne pouvez pas changer cette information"],
-                    "lastProviderId": ["Vous ne pouvez pas changer cette information"],
-                    "thumbCount": ["Vous ne pouvez pas changer cette information"],
-                },
-            ),
-            (
-                {},
-                {
-                    "url": "missing.something",
-                    "externalTicketOfficeUrl": "missing.something",
-                },
-                {
-                    "url": ['L\'URL doit commencer par "http://" ou "https://"'],
-                    "externalTicketOfficeUrl": ['L\'URL doit commencer par "http://" ou "https://"'],
-                },
-            ),
-            (
-                {},
-                {
-                    "url": "https:///not/domain",
-                    "externalTicketOfficeUrl": "https:///not/domain",
-                },
-                {
-                    "url": ['L\'URL doit terminer par une extension (ex. ".fr")'],
-                    "externalTicketOfficeUrl": ['L\'URL doit terminer par une extension (ex. ".fr")'],
-                },
-            ),
-            (
-                {},
-                {
-                    "url": "https://10.11.12.13",
-                    "externalTicketOfficeUrl": "https://10.11.12.13",
-                },
-                {
-                    "url": ["IP address are forbidden."],
-                    "externalTicketOfficeUrl": ["IP address are forbidden."],
-                },
-            ),
-            (
-                {},
-                {
-                    "url": "https://example.com/../../etc/password",
-                    "externalTicketOfficeUrl": "https://example.com/../../etc/password",
-                },
-                {
-                    "url": ["Relative path are forbidden."],
-                    "externalTicketOfficeUrl": ["Relative path are forbidden."],
-                },
-            ),
-            (
-                {},
-                {
-                    "url": "https://login:password@example.com",
-                    "externalTicketOfficeUrl": "https://login:password@example.com",
-                },
-                {
-                    "url": ["Authenticated urls are forbidden."],
-                    "externalTicketOfficeUrl": ["Authenticated urls are forbidden."],
-                },
-            ),
-            (
-                {},
-                {
-                    "url": "https://[::1]",
-                    "externalTicketOfficeUrl": "https://[::1]",
-                },
-                {
-                    "url": ["IP address are forbidden."],
-                    "externalTicketOfficeUrl": ["IP address are forbidden."],
-                },
-            ),
-            (
-                {},
-                {
-                    "url": "https://missing",
-                    "externalTicketOfficeUrl": "https://missing",
-                },
-                {
-                    "url": ['L\'URL doit terminer par une extension (ex. ".fr")'],
-                    "externalTicketOfficeUrl": ['L\'URL doit terminer par une extension (ex. ".fr")'],
-                },
-            ),
-            (
-                {},
-                {"name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256"},
-                {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
-            ),
-            (
-                {},
-                {
-                    "name": "Le nom d'une histoire qui est quand même sacrément longue, ce qui est pratique si on lit trop vite, mais ce qui est dommage si on n'a qu'un seul oeil, parce qu'on lit deux fois plus lentement, c'est bien connu"
-                },
-                {"name": ["Le titre de l’offre doit faire au maximum 90 caractères."]},
-            ),
-            (
-                {},
-                {
-                    "publicationDatetime": (datetime.datetime.now() + datetime.timedelta(days=2)).isoformat(),
-                    "bookingAllowedDatetime": (datetime.datetime.now() + datetime.timedelta(days=2)).isoformat(),
-                },
-                {
-                    "publicationDatetime": ["The datetime must be timezone-aware."],
-                    "bookingAllowedDatetime": ["The datetime must be timezone-aware."],
-                },
-            ),
-            (
-                {},
-                {
-                    "publicationDatetime": format_into_utc_date(datetime.datetime.now() - datetime.timedelta(days=2)),
-                    "bookingAllowedDatetime": format_into_utc_date(
-                        datetime.datetime.now() - datetime.timedelta(days=2)
-                    ),
-                },
-                {
-                    "publicationDatetime": ["The datetime must be in the future."],
-                    "bookingAllowedDatetime": ["The datetime must be in the future."],
-                },
-            ),
-            (
-                {"validation": OfferValidationStatus.PENDING},
-                {"visualDisabilityCompliant": True},
-                {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]},
-            ),
-            (
-                {"validation": OfferValidationStatus.REJECTED},
-                {"visualDisabilityCompliant": True},
-                {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]},
-            ),
-            (
-                {
-                    "subcategoryId": subcategories.CONCERT.id,
-                    "withdrawalType": WithdrawalTypeEnum.BY_EMAIL,
-                    "withdrawalDelay": 60 * 15,
-                    "bookingContact": "booking@conta.ct",
-                    "name": "New name",
-                    "url": "test@test.com",
-                    "description": "description",
-                },
-                {"bookingContact": None},
-                {"offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]},
-            ),
-            (
-                {
-                    "subcategoryId": subcategories.CONCERT.id,
-                    "withdrawalType": WithdrawalTypeEnum.BY_EMAIL,
-                    "withdrawalDelay": 60 * 15,
-                    "bookingContact": "booking@conta.ct",
-                    "name": "New name",
-                    "url": "test@test.com",
-                    "description": "description",
-                },
-                {"withdrawalType": "no_ticket"},
-                {"offer": ["Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket"]},
-            ),
-            # TODO (igabriele, 2025-08-22): Investigate this dubious case and comment it if valid.
-            (
-                {"subcategoryId": subcategories.FESTIVAL_MUSIQUE.id, "name": "New name", "url": None},
-                {"withdrawalType": WithdrawalTypeEnum.NO_TICKET.value},
-                {"offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]},
-            ),
-            (
-                {"subcategoryId": subcategories.FESTIVAL_MUSIQUE.id},
-                {"durationMinutes": 1440},
-                {
-                    "durationMinutes": [
-                        "La durée doit être inférieure à 24 heures. Pour les événements durant 24 heures ou plus (par exemple, un pass festival de 3 jours), veuillez laisser ce champ vide."
-                    ]
-                },
-            ),
-            (
-                {"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
-                {
-                    "extraData": {
-                        "malicious_data": ["a", "very", "large", "dict"],
-                    },
-                },
-                {
-                    "extraData.maliciousData": ["Vous ne pouvez pas changer cette information"],
-                },
-            ),
-            (
-                {"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
-                {"extraData": {"cast": ["A" * 70000]}},
-                {
-                    "extraData": ["extraData field is too big (maximum 64 Ko)."],
-                },
-            ),
-            (
-                {"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
-                {"extraData": {"cast": ["><img+stc=x+oneerror=alert(document.cookie)>"]}},
-                {
-                    "extraData": ["extraData field includes forbidden caracters or scripts"],
-                },
-            ),
-            (
-                {"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
-                {"extraData": 1312},
-                {
-                    "extraData.__root__": ["OfferExtraData expected dict not int"],
-                },
-            ),
-        ],
-    )
-    def when_sending_incorrect_patch_body_to_offer(self, offer_data, patch_body, expected_response_json, client):
+    def _assert_patch_is_rejected(self, client, patch_body, expected_response_json, offer_data=None):
         default_offer_data = {
             "subcategoryId": subcategories.CARTE_MUSEE.id,
             "name": "New name",
             "url": "test@test.com",
             "description": "description",
         }
-        default_offer_data.update(**offer_data)
+        default_offer_data.update(**(offer_data or {}))
         offer = offers_factories.OfferFactory(**default_offer_data)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=patch_body)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=patch_body
+        )
 
         assert response.status_code == 400
         assert response.json == expected_response_json
+
+    def when_sending_non_editable_fields(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "dateCreated": format_into_utc_date(datetime.datetime(2019, 1, 1)),
+                "dateModifiedAtLastProvider": format_into_utc_date(datetime.datetime(2019, 1, 1)),
+                "id": 1,
+                "idAtProviders": 1,
+                "lastProviderId": 1,
+                "thumbCount": 2,
+                "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            },
+            expected_response_json={
+                "dateCreated": ["Vous ne pouvez pas changer cette information"],
+                "dateModifiedAtLastProvider": ["Vous ne pouvez pas changer cette information"],
+                "id": ["Vous ne pouvez pas changer cette information"],
+                "idAtProviders": ["Vous ne pouvez pas changer cette information"],
+                "lastProviderId": ["Vous ne pouvez pas changer cette information"],
+                "thumbCount": ["Vous ne pouvez pas changer cette information"],
+            },
+        )
+
+    def when_sending_urls_without_a_scheme(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "url": "missing.something",
+                "externalTicketOfficeUrl": "missing.something",
+            },
+            expected_response_json={
+                "url": ['L\'URL doit commencer par "http://" ou "https://"'],
+                "externalTicketOfficeUrl": ['L\'URL doit commencer par "http://" ou "https://"'],
+            },
+        )
+
+    def when_sending_urls_without_a_domain(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "url": "https:///not/domain",
+                "externalTicketOfficeUrl": "https:///not/domain",
+            },
+            expected_response_json={
+                "url": ['L\'URL doit terminer par une extension (ex. ".fr")'],
+                "externalTicketOfficeUrl": ['L\'URL doit terminer par une extension (ex. ".fr")'],
+            },
+        )
+
+    def when_sending_urls_with_an_ip_address(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "url": "https://10.11.12.13",
+                "externalTicketOfficeUrl": "https://10.11.12.13",
+            },
+            expected_response_json={
+                "url": ["IP address are forbidden."],
+                "externalTicketOfficeUrl": ["IP address are forbidden."],
+            },
+        )
+
+    def when_sending_urls_with_a_relative_path(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "url": "https://example.com/../../etc/password",
+                "externalTicketOfficeUrl": "https://example.com/../../etc/password",
+            },
+            expected_response_json={
+                "url": ["Relative path are forbidden."],
+                "externalTicketOfficeUrl": ["Relative path are forbidden."],
+            },
+        )
+
+    def when_sending_authenticated_urls(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "url": "https://login:password@example.com",
+                "externalTicketOfficeUrl": "https://login:password@example.com",
+            },
+            expected_response_json={
+                "url": ["Authenticated urls are forbidden."],
+                "externalTicketOfficeUrl": ["Authenticated urls are forbidden."],
+            },
+        )
+
+    def when_sending_urls_with_an_ipv6_address(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "url": "https://[::1]",
+                "externalTicketOfficeUrl": "https://[::1]",
+            },
+            expected_response_json={
+                "url": ["IP address are forbidden."],
+                "externalTicketOfficeUrl": ["IP address are forbidden."],
+            },
+        )
+
+    def when_sending_urls_without_an_extension(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "url": "https://missing",
+                "externalTicketOfficeUrl": "https://missing",
+            },
+            expected_response_json={
+                "url": ['L\'URL doit terminer par une extension (ex. ".fr")'],
+                "externalTicketOfficeUrl": ['L\'URL doit terminer par une extension (ex. ".fr")'],
+            },
+        )
+
+    def when_sending_a_name_containing_an_ean(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={"name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256"},
+            expected_response_json={"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
+        )
+
+    def when_sending_a_name_longer_than_90_characters(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "name": "Le nom d'une histoire qui est quand même sacrément longue, ce qui est pratique si on lit trop vite, mais ce qui est dommage si on n'a qu'un seul oeil, parce qu'on lit deux fois plus lentement, c'est bien connu"
+            },
+            expected_response_json={"name": ["Le titre de l’offre doit faire au maximum 90 caractères."]},
+        )
+
+    def when_sending_datetimes_without_a_timezone(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "publicationDatetime": (datetime.datetime.now() + datetime.timedelta(days=2)).isoformat(),
+                "bookingAllowedDatetime": (datetime.datetime.now() + datetime.timedelta(days=2)).isoformat(),
+            },
+            expected_response_json={
+                "publicationDatetime": ["The datetime must be timezone-aware."],
+                "bookingAllowedDatetime": ["The datetime must be timezone-aware."],
+            },
+        )
+
+    def when_sending_datetimes_in_the_past(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "publicationDatetime": format_into_utc_date(datetime.datetime.now() - datetime.timedelta(days=2)),
+                "bookingAllowedDatetime": format_into_utc_date(datetime.datetime.now() - datetime.timedelta(days=2)),
+            },
+            expected_response_json={
+                "publicationDatetime": ["The datetime must be in the future."],
+                "bookingAllowedDatetime": ["The datetime must be in the future."],
+            },
+        )
+
+    def when_updating_an_offer_pending_validation(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"validation": OfferValidationStatus.PENDING},
+            patch_body={"visualDisabilityCompliant": True},
+            expected_response_json={
+                "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+            },
+        )
+
+    def when_updating_a_rejected_offer(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"validation": OfferValidationStatus.REJECTED},
+            patch_body={"visualDisabilityCompliant": True},
+            expected_response_json={
+                "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+            },
+        )
+
+    def when_removing_the_booking_contact_of_a_withdrawable_offer(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={
+                "subcategoryId": subcategories.CONCERT.id,
+                "withdrawalType": WithdrawalTypeEnum.BY_EMAIL,
+                "withdrawalDelay": 60 * 15,
+                "bookingContact": "booking@conta.ct",
+            },
+            patch_body={"bookingContact": None},
+            expected_response_json={
+                "offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]
+            },
+        )
+
+    def when_setting_a_no_ticket_withdrawal_type_while_keeping_a_withdrawal_delay(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={
+                "subcategoryId": subcategories.CONCERT.id,
+                "withdrawalType": WithdrawalTypeEnum.BY_EMAIL,
+                "withdrawalDelay": 60 * 15,
+                "bookingContact": "booking@conta.ct",
+            },
+            patch_body={"withdrawalType": "no_ticket"},
+            expected_response_json={
+                "offer": ["Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket"]
+            },
+        )
+
+    # TODO (igabriele, 2025-08-22): Investigate this dubious case and comment it if valid.
+    def when_setting_a_no_ticket_withdrawal_type_without_a_booking_contact(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.FESTIVAL_MUSIQUE.id, "url": None},
+            patch_body={"withdrawalType": WithdrawalTypeEnum.NO_TICKET.value},
+            expected_response_json={
+                "offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]
+            },
+        )
+
+    def when_sending_a_duration_of_24_hours_or_more(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.FESTIVAL_MUSIQUE.id},
+            patch_body={"durationMinutes": 1440},
+            expected_response_json={
+                "durationMinutes": [
+                    "La durée doit être inférieure à 24 heures. Pour les événements durant 24 heures ou plus (par exemple, un pass festival de 3 jours), veuillez laisser ce champ vide."
+                ]
+            },
+        )
+
+    def when_sending_an_unknown_extra_data_field(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+            patch_body={
+                "extraData": {
+                    "malicious_data": ["a", "very", "large", "dict"],
+                },
+            },
+            expected_response_json={
+                "extraData.maliciousData": ["Vous ne pouvez pas changer cette information"],
+            },
+        )
+
+    def when_sending_an_extra_data_field_larger_than_64_ko(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+            patch_body={"extraData": {"cast": ["A" * 70000]}},
+            expected_response_json={
+                "extraData": ["extraData field is too big (maximum 64 Ko)."],
+            },
+        )
+
+    def when_sending_an_extra_data_field_containing_a_script(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+            patch_body={"extraData": {"cast": ["><img+stc=x+oneerror=alert(document.cookie)>"]}},
+            expected_response_json={
+                "extraData": ["extraData field includes forbidden caracters or scripts"],
+            },
+        )
+
+    def when_sending_extra_data_that_is_not_a_dict(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+            patch_body={"extraData": 1312},
+            expected_response_json={
+                "extraData.__root__": ["OfferExtraData expected dict not int"],
+            },
+        )
+
+    def when_sending_an_unknown_subcategory(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={"subcategoryId": "UNKNOWN_SUBCATEGORY"},
+            expected_response_json={"subcategory": ["La sous-catégorie de cette offre est inconnue"]},
+        )
+
+    def when_sending_a_non_selectable_subcategory(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={"subcategoryId": subcategories.ABO_LUDOTHEQUE.id},
+            expected_response_json={
+                "subcategory": ["Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"]
+            },
+        )
+
+    def when_changing_the_subcategory_of_an_offer_that_is_no_longer_a_draft(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={"subcategoryId": subcategories.ESCAPE_GAME.id},
+            expected_response_json={"UnallowedUpdate": ["unallowed update: subcategoryId"]},
+        )
+
+    def when_enabling_double_bookings_on_a_subcategory_that_does_not_allow_them(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+            patch_body={"isDuo": True},
+            expected_response_json={"enableDoubleBookings": ["the category chosen does not allow double bookings"]},
+        )
+
+    def when_unsetting_an_accessibility_field(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={"audioDisabilityCompliant": None},
+            expected_response_json={"global": ["L’accessibilité de l’offre doit être définie"]},
+        )
+
+    def when_sending_an_artist_type_not_allowed_by_the_subcategory(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={
+                "artistOfferLinks": [{"artistId": None, "artistType": "author", "artistName": "Artiste inconnu"}]
+            },
+            expected_response_json={
+                "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
+            },
+        )
+
+    def when_updating_a_withdrawable_offer_that_has_no_withdrawal_type(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={
+                "subcategoryId": subcategories.CONCERT.id,
+                "url": None,
+                "bookingContact": "booking@conta.ct",
+                "withdrawalType": None,
+            },
+            patch_body={"withdrawalDetails": "Retrait à l'accueil"},
+            expected_response_json={
+                "offer": ["Une offre qui a un ticket retirable doit avoir un type de retrait renseigné"]
+            },
+        )
+
+    def when_setting_an_on_site_withdrawal_type_without_a_delay(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={
+                "subcategoryId": subcategories.CONCERT.id,
+                "url": None,
+                "bookingContact": "booking@conta.ct",
+                "withdrawalType": WithdrawalTypeEnum.NO_TICKET,
+            },
+            patch_body={"withdrawalType": "on_site"},
+            expected_response_json={"offer": ["Un évènement avec ticket doit avoir un délai de renseigné"]},
+        )
+
+    def when_setting_a_by_email_withdrawal_type_without_a_delay(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={
+                "subcategoryId": subcategories.CONCERT.id,
+                "url": None,
+                "bookingContact": "booking@conta.ct",
+                "withdrawalType": WithdrawalTypeEnum.NO_TICKET,
+            },
+            patch_body={"withdrawalType": "by_email"},
+            expected_response_json={"offer": ["Un évènement avec ticket doit avoir un délai de renseigné"]},
+        )
+
+    def when_setting_an_in_app_withdrawal_type_without_a_ticketing_system(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={
+                "subcategoryId": subcategories.CONCERT.id,
+                "url": None,
+                "bookingContact": "booking@conta.ct",
+                "withdrawalType": WithdrawalTypeEnum.NO_TICKET,
+            },
+            patch_body={"withdrawalType": "in_app"},
+            expected_response_json={
+                "offer": ["Vous devez supporter l'interface de billeterie pour créer des offres avec billet"]
+            },
+        )
+
+    def when_removing_a_mandatory_conditional_extra_data_field(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id, "url": None},
+            patch_body={"extraData": {"showType": "100"}},
+            expected_response_json={"showSubType": ["Ce champ est obligatoire"]},
+        )
+
+    def when_sending_a_show_type_outside_of_the_allowed_values(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id, "url": None},
+            patch_body={"extraData": {"showType": "999999", "showSubType": "101"}},
+            expected_response_json={"showType": ["should be in allowed values"]},
+        )
+
+    @pytest.mark.xfail(
+        reason=(
+            "Known bug: `deserialize_extra_data` (offers/api.py) derives `gtl_id` from `musicType` "
+            "before any validation and raises a KeyError on an unknown code, so the route answers 500 "
+            "instead of 400. Remove this marker once the lookup is guarded."
+        ),
+        strict=True,
+    )
+    def when_sending_a_music_type_outside_of_the_allowed_values(self, client):
+        default_offer_data = {
+            "subcategoryId": subcategories.CONCERT.id,
+            "name": "New name",
+            "url": None,
+            "description": "description",
+        }
+        offer = offers_factories.OfferFactory(**default_offer_data)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"extraData": {"musicType": "999999"}}
+        )
+
+        assert response.status_code == 500
+        assert response.json == {
+            "global": ["Il semble que nous ayons des problèmes techniques :( On répare ça au plus vite"]
+        }
+
+    def when_sending_an_invalid_gtl_id(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.LIVRE_PAPIER.id, "url": None},
+            patch_body={"extraData": {"gtl_id": "99999999"}},
+            expected_response_json={"gtl_id": ["should be a valid GTL id"]},
+        )
+
+    def when_sending_an_ean_that_is_not_made_of_13_digits(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            offer_data={"subcategoryId": subcategories.LIVRE_PAPIER.id, "url": None},
+            patch_body={"extraData": {"ean": "123"}},
+            expected_response_json={"ean": ["L'EAN doit être composé de 13 chiffres"]},
+        )
+
+    def when_unsetting_the_name(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={"name": None},
+            expected_response_json={"name": ["cannot be null"]},
+        )
+
+    def when_sending_an_invalid_booking_email(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={"bookingEmail": "not-an-email"},
+            expected_response_json={"bookingEmail": ["Le format d'email est incorrect."]},
+        )
+
+    def when_sending_an_invalid_booking_contact(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={"bookingContact": "not-an-email"},
+            expected_response_json={"bookingContact": ["Le format d'email est incorrect."]},
+        )
+
+    def when_sending_a_withdrawal_type_outside_of_the_enum(self, client):
+        self._assert_patch_is_rejected(
+            client,
+            patch_body={"withdrawalType": "by_carrier_pigeon"},
+            expected_response_json={
+                "withdrawalType": [
+                    "value is not a valid enumeration member; permitted: 'by_email', 'in_app', 'no_ticket', 'on_site'"
+                ]
+            },
+        )
 
     def when_trying_to_change_the_withdrawalType_of_a_synchronized_offer(self, client):
         provider = providers_factories.PublicApiProviderFactory()
@@ -1277,6 +2472,222 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"withdrawalType": ["Vous ne pouvez pas modifier ce champ"]}
+
+    def when_trying_to_change_a_non_editable_field_of_an_allocine_offer(self, client):
+        venue = offerers_factories.VenueFactory()
+        allocine_provider = providers_factories.AllocineProviderFactory()
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            lastProvider=allocine_provider,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            name="Film",
+            durationMinutes=90,
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=venue.managingOfferer)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"durationMinutes": 120}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"durationMinutes": ["Vous ne pouvez pas modifier ce champ"]}
+        assert db.session.get(Offer, offer.id).durationMinutes == 90
+
+    def when_removing_the_url_of_an_online_only_offer(self, client):
+        offer = offers_factories.DigitalOfferFactory(
+            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            url="https://example.com/streaming",
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"url": None}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "url": [
+                f'Une offre de catégorie "{subcategories.ABO_PLATEFORME_VIDEO.pro_label}" doit contenir un champ `url`'
+            ]
+        }
+        assert db.session.get(Offer, offer.id).url == "https://example.com/streaming"
+
+    def when_setting_an_url_on_an_offline_only_offer(self, client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id, url=None)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"url": "https://example.com/escape"}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "url": [
+                f'Une offre de sous-catégorie "{subcategories.ESCAPE_GAME.pro_label}" ne peut contenir un champ `url`'
+            ]
+        }
+        assert db.session.get(Offer, offer.id).url is None
+
+    def when_setting_a_location_on_a_digital_offer(self, client):
+        offer = offers_factories.DigitalOfferFactory(
+            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            url="https://example.com/streaming",
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {
+            "location": {
+                "street": "1 rue de la paix",
+                "city": "Paris",
+                "postalCode": "75102",
+                "latitude": 48.8566,
+                "longitude": 2.3522,
+                "banId": "75102_7560_00001",
+                "inseeCode": "75102",
+                "label": None,
+                "isManualEdition": True,
+                "isVenueLocation": False,
+            }
+        }
+        with patch(
+            "pcapi.connectors.api_adresse.get_municipality_centroid",
+            return_value=api_adresse.AddressInfo(
+                id="75102",
+                label="Paris",
+                postcode="75102",
+                citycode="75102",
+                latitude=48.8566,
+                longitude=2.3522,
+                score=0.9,
+                city="Paris",
+                street="unused",
+            ),
+        ):
+            response = client.with_session_auth("user@example.com").patch(
+                self.endpoint.format(offer_id=offer.id), json=data
+            )
+
+        assert response.status_code == 400
+        assert response.json == {"offererAddress": ["Une offre numérique ne peut pas avoir d'adresse"]}
+        assert db.session.get(Offer, offer.id).offererAddress is None
+
+    def when_the_venue_activity_does_not_allow_cultural_outreach(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.RECORD_STORE
+        )
+        offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.ESCAPE_GAME.id)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"hasCulturalOutreachClaim": True}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "global": ["L'activité principale de la structure ne permet pas de déclarer une action de médiation"]
+        }
+        assert db.session.get(Offer, offer.id).culturalOutreach is None
+
+    def when_trying_to_change_a_non_editable_field_of_an_offer_from_a_generic_provider(self, client):
+        provider = providers_factories.ProviderFactory()
+        offer = offers_factories.EventOfferFactory(lastProvider=provider, isDuo=False)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"isDuo": True}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"isDuo": ["Vous ne pouvez pas modifier ce champ"]}
+        assert db.session.get(Offer, offer.id).isDuo is False
+
+    @pytest.mark.parametrize(
+        "patch_body, expected_error_key",
+        [
+            ({"unknownField": "whatever"}, "unknownField"),
+            ({"durationMinutes": "not-an-int"}, "durationMinutes"),
+            ({"isDuo": "not-a-bool"}, "isDuo"),
+        ],
+    )
+    def when_the_body_does_not_match_the_schema(self, patch_body, expected_error_key, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id, venue=venue)
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=patch_body)
+
+        assert response.status_code == 400
+        assert expected_error_key in response.json
+
+    @pytest.mark.parametrize(
+        "location",
+        [
+            # city is missing
+            {"street": "1 rue de la paix", "postalCode": "75102", "latitude": 48.8566, "longitude": 2.3522},
+            # postal code is not a french one
+            {
+                "street": "1 rue de la paix",
+                "city": "Paris",
+                "postalCode": "AB",
+                "latitude": 48.8566,
+                "longitude": 2.3522,
+            },
+        ],
+    )
+    def when_the_location_is_invalid(self, location, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id, venue=venue)
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"location": location})
+
+        assert response.status_code == 400
+
+    def when_removing_the_url_of_an_offer_that_has_no_address(self, client, venue, auth_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+            venue=venue,
+            url="https://example.com/offer",
+            offererAddress=None,
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"url": None})
+
+        assert response.status_code == 400
+        assert response.json == {"offererAddress": ["Une offre physique doit avoir une adresse"]}
+        assert db.session.get(Offer, offer.id).url == "https://example.com/offer"
+
+    def when_the_update_fails_the_artist_offer_links_are_rolled_back(self, client, venue, auth_client):
+        # artist links are upserted before most of the validations: the whole
+        # request must be rolled back when a later check fails.
+        artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, venue=venue, name="Un nom")
+
+        data = {
+            "artistOfferLinks": [{"artistId": artist.id, "artistType": "performer", "artistName": artist.name}],
+            "name": None,
+        }
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"name": ["cannot be null"]}
+        assert db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer.id).count() == 0
+        assert db.session.get(Offer, offer.id).name == "Un nom"
+
+    def when_the_update_fails_the_cultural_outreach_claim_is_rolled_back(self, client):
+        # the claim is created before most of the validations: the whole
+        # request must be rolled back when a later check fails.
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.MUSEUM
+        )
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id, venue=venue, name="Un nom")
+
+        data = {"hasCulturalOutreachClaim": True, "name": None}
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"name": ["cannot be null"]}
+        assert db.session.get(Offer, offer.id).culturalOutreach is None
+        assert db.session.get(Offer, offer.id).name == "Un nom"
 
     def should_fail_when_trying_to_update_offer_with_product_with_new_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -1300,6 +2711,109 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
+
+    def should_fail_when_updating_a_non_ean_extra_data_of_an_offer_with_a_product(self, client, venue, auth_client):
+        # no extraData of an offer with a product can be changed, not only its EAN
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            ean="1111111111111",
+            name="New name",
+            description="description",
+        )
+        offer = offers_factories.OfferFactory(venue=venue, product=product, extraData={})
+
+        response = auth_client.patch(
+            self.endpoint.format(offer_id=offer.id), json={"extraData": {"author": "Kewis Larol"}}
+        )
+
+        assert response.status_code == 400
+        assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
+        assert db.session.get(Offer, offer.id).extraData == {}
+
+    def when_only_the_venue_provider_has_a_ticketing_service(self, client, venue, auth_client):
+        # the route does not pass any venue_provider to `update_offer`, so
+        # `check_offer_withdrawal` only ever looks at the offer provider: a
+        # ticketing service set at the venue level does not unlock `in_app`.
+        venue_provider = providers_factories.VenueProviderFactory(venue=venue)
+        providers_factories.VenueProviderExternalUrlsFactory(venueProvider=venue_provider)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            url=None,
+            bookingContact="booking@conta.ct",
+            withdrawalType=WithdrawalTypeEnum.NO_TICKET,
+        )
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"withdrawalType": "in_app"})
+
+        assert response.status_code == 400
+        assert response.json == {
+            "offer": ["Vous devez supporter l'interface de billeterie pour créer des offres avec billet"]
+        }
+        assert db.session.get(Offer, offer.id).withdrawalType == WithdrawalTypeEnum.NO_TICKET
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def when_the_update_fails_the_offer_is_not_reindexed(
+        self, mocked_async_index_offer_ids, client, venue, auth_client
+    ):
+        # the indexation is scheduled with `on_commit`: a rolled back request
+        # must not reach the search index.
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id, venue=venue, name="Un nom")
+
+        data = {"name": "Un autre nom", "audioDisabilityCompliant": None}
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["L’accessibilité de l’offre doit être définie"]}
+        assert db.session.get(Offer, offer.id).name == "Un nom"
+        mocked_async_index_offer_ids.assert_not_called()
+
+    def test_returns_400_if_ean_already_exists_in_same_venue(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        ean = "1234567890123"
+        offers_factories.OfferFactory(venue=venue, ean=ean)
+        offer2 = offers_factories.OfferFactory(venue=venue, ean="9876543210987")
+
+        data = {"extraData": {"ean": ean}}
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer2.id), json=data
+        )
+
+        assert response.status_code == 400
+        assert "ean" in response.json
+        assert "Une offre avec cet EAN existe déjà" in response.json["ean"][0]
+
+    def test_returns_400_if_updating_forbidden_field_on_imported_offer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        provider = providers_factories.ProviderFactory(localClass="TiteliveMusicProvider")
+        offer = offers_factories.OfferFactory(venue=venue, lastProvider=provider)
+
+        # bookingEmail is not in EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
+        data = {"bookingEmail": "test@example.com"}
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
+
+        assert response.status_code == 400
+        assert "bookingEmail" in response.json
+        assert "Vous ne pouvez pas modifier ce champ" in response.json["bookingEmail"][0]
+
+
+class Returns401Test:
+    endpoint = "/offers/{offer_id}"
+
+    def when_user_is_not_logged_in(self, client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            name="Old name",
+        )
+
+        response = client.patch(self.endpoint.format(offer_id=offer.id), json={"name": "New name"})
+
+        assert response.status_code == 401
+        assert db.session.get(Offer, offer.id).name == "Old name"
 
 
 class Returns404Test:
@@ -1326,6 +2840,26 @@ class Returns404Test:
         assert response.json["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]
         assert db.session.get(Offer, offer.id).name == "Old name"
 
+    @pytest.mark.parametrize(
+        "user_offerer_factory_name",
+        ["NewUserOffererFactory", "PendingUserOffererFactory", "RejectedUserOffererFactory"],
+    )
+    def when_the_user_offerer_link_is_not_validated(self, user_offerer_factory_name, app, client):
+        offer = offers_factories.OfferFactory(
+            name="Old name",
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+        )
+        user_offerer_factory = getattr(offerers_factories, user_offerer_factory_name)
+        user_offerer = user_offerer_factory(offerer=offer.venue.managingOfferer)
+
+        response = client.with_session_auth(user_offerer.user.email).patch(
+            self.endpoint.format(offer_id=offer.id), json={"name": "New name"}
+        )
+
+        assert response.status_code == 404
+        assert response.json["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]
+        assert db.session.get(Offer, offer.id).name == "Old name"
+
     def test_returns_404_if_offer_does_not_exist(self, app, client):
         # given
         users_factories.UserFactory(email="user@example.com")
@@ -1336,6 +2870,19 @@ class Returns404Test:
         # then
         assert response.status_code == 404
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_returns_404_if_user_has_no_access_to_offerer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="authorized@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(venue=venue)
+
+        users_factories.UserFactory(email="unauthorized@example.com")
+
+        response = client.with_session_auth("unauthorized@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"name": "New Name"}
+        )
+
+        assert response.status_code == 404
 
 
 @pytest.fixture(name="user_offerer")
