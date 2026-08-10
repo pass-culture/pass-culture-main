@@ -58,12 +58,14 @@ export const ImageDragAndDrop = forwardRef(
     }: ImageDragAndDropProps,
     dragAndDropInputRef: ForwardedRef<HTMLInputElement>
   ) => {
+    const [hasInput, setHasInput] = useState(false)
     const [isDraggedOver, setIsDraggedOver] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
     const [isFocused, setIsFocused] = useState(false)
     const [customErrors, setCustomErrors] = useState<string[]>([])
 
     const handleDrop = async (files: File[]) => {
+      setHasInput(true)
       setCustomErrors([])
       const file = files[0]
       if (!file) {
@@ -120,6 +122,7 @@ export const ImageDragAndDrop = forwardRef(
       onDropRejected: (files) => {
         const file = files[0]
         const errors = file.errors.map((e) => e.code)
+        setHasInput(true)
         onError?.(errors)
         setIsDraggedOver(false)
       },
@@ -250,40 +253,47 @@ export const ImageDragAndDrop = forwardRef(
           role="alert"
           aria-relevant="additions"
         >
-          <ImageConstraintCheck
-            label="Formats acceptés"
-            constraint="JPG, JPEG, PNG, mpo, webP"
-            hasError={errors.hasWrongType}
-            errorMessage="Le format de l’image n’est pas valide"
-          />
-          <ImageConstraintCheck
-            label="Poids maximal du fichier"
-            constraint="10 Mo"
-            hasError={errors.hasWrongSize}
-            errorMessage="Le poids du fichier est trop lourd"
-          />
-          <ImageConstraintCheck
-            label="Résolution maximale de l’image"
-            constraint="80 Mégapixels"
-            hasError={errors.hasWrongDimensions}
-            errorMessage="L’image doit comporter au maximum 80 Mégapixels"
-          />
-          {minSizes?.height && (
+          <div className={styles['image-drag-and-drop-description']}>
             <ImageConstraintCheck
-              label="Hauteur minimum"
-              constraint={`${minSizes.height} px`}
-              hasError={errors.hasWrongHeight}
-              errorMessage={`L’image doit faire au moins ${minSizes.height} pixels de haut`}
+              label="Formats acceptés"
+              constraint="JPG, JPEG, PNG, mpo, webP"
+              hasInput={hasInput}
+              hasError={errors.hasWrongType}
+              errorMessage="Le format de l’image n’est pas valide"
             />
-          )}
-          {minSizes?.width && (
             <ImageConstraintCheck
-              label="Largeur minimum"
-              constraint={`${minSizes.width} px`}
-              hasError={errors.hasWrongWidth}
-              errorMessage={`L’image doit faire au moins ${minSizes.width} pixels de large`}
+              label="Poids maximal du fichier"
+              constraint="10 Mo"
+              hasInput={hasInput}
+              hasError={errors.hasWrongSize}
+              errorMessage="Le poids du fichier est trop lourd"
             />
-          )}
+            <ImageConstraintCheck
+              label="Résolution maximale de l’image"
+              constraint="80 Mégapixels"
+              hasInput={hasInput}
+              hasError={errors.hasWrongDimensions}
+              errorMessage="Image trop volumineuse. La résolution maximale acceptée est d'environ 80 millions de pixels (9000 x 9000 pixels)"
+            />
+            {minSizes?.height && (
+              <ImageConstraintCheck
+                label="Hauteur minimum"
+                constraint={`${minSizes.height} px`}
+                hasInput={hasInput}
+                hasError={errors.hasWrongHeight}
+                errorMessage={`L’image doit faire au moins ${minSizes.height} pixels de haut`}
+              />
+            )}
+            {minSizes?.width && (
+              <ImageConstraintCheck
+                label="Largeur minimum"
+                constraint={`${minSizes.width} px`}
+                hasInput={hasInput}
+                hasError={errors.hasWrongWidth}
+                errorMessage={`L’image doit faire au moins ${minSizes.width} pixels de large`}
+              />
+            )}
+          </div>
         </div>
       </div>
     )

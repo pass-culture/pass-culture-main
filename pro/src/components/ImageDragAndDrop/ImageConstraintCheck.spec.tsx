@@ -12,6 +12,7 @@ describe('ImageConstraintCheck', () => {
         constraint="JPG, PNG"
         hasError={false}
         errorMessage="Le format n'est pas valide"
+        hasInput={true}
       />
     )
 
@@ -27,6 +28,7 @@ describe('ImageConstraintCheck', () => {
         constraint="10MB"
         hasError={true}
         errorMessage="Le fichier est trop lourd"
+        hasInput={true}
       />
     )
 
@@ -53,6 +55,7 @@ describe('ImageConstraintCheck', () => {
         constraint="500px by 500px"
         hasError={false}
         errorMessage="Les dimensions sont incorrectes"
+        hasInput={true}
       />
     )
 
@@ -67,5 +70,46 @@ describe('ImageConstraintCheck', () => {
       'Les dimensions sont incorrectes'
     )
     expect(visuallyHiddenMessage).not.toBeInTheDocument()
+  })
+
+  it('should render validate state with visually hidden success indicator when hasInput is true and hasError is false', () => {
+    render(
+      <ImageConstraintCheck
+        label="Format"
+        constraint="JPG, PNG"
+        hasError={false}
+        errorMessage="Le format n'est pas valide"
+        hasInput={true}
+      />
+    )
+
+    const validateSpan = screen.getByText('Format :').closest('span')
+    expect(validateSpan).toHaveClass(
+      styles['image-drag-and-drop-description-validate']
+    )
+
+    expect(screen.getByText('Valide :')).toHaveClass(styles['visually-hidden'])
+  })
+
+  it('should render neutral state when hasInput is false', () => {
+    render(
+      <ImageConstraintCheck
+        label="Format"
+        constraint="JPG, PNG"
+        hasError={false}
+        errorMessage="Le format n'est pas valide"
+        hasInput={false}
+      />
+    )
+
+    const neutralSpan = screen.getByText('Format :').closest('span')
+    expect(neutralSpan).toHaveClass(
+      styles['image-drag-and-drop-description-neutral']
+    )
+
+    expect(screen.queryByText('Valide :')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText("Le format n'est pas valide")
+    ).not.toBeInTheDocument()
   })
 })

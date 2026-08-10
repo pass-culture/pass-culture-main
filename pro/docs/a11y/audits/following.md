@@ -21,6 +21,41 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 3.1 - RGAA - Dans chaque page web, l'information ne doit pas être donnée uniquement par la couleur ?
+</summary>
+
+**RAWeb/RGAA** : [Critère 3.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-3-1)
+**Ticket** : [PC-42846](https://passculture.atlassian.net/browse/PC-42846)  
+**PR** : [#23848](https://github.com/pass-culture/pass-culture-main/pull/23848)
+
+**Problème** 😱  
+1. P05 → Création offre réservable (5 étapes et confirmation)
+
+Au moins une information donnée uniquement par la couleur n'a pas d'alternative :
+
+L'indication d'un critère non respecté dans le bloc « Illustrez votre offre » repose uniquement sur un changement de couleur.
+
+2. P06 → Création offre individuelle (7 étapes et confirmation)
+
+Au moins une information donnée uniquement par la couleur n'a pas d'alternative :
+
+Dans la fenêtre modale « Définir le calendrier », à l'étape « Horaires et stocks », lorsque l'événement est défini sur « Toutes les semaines », les cases à cocher personnalisées correspondant aux jours de la semaine se distinguent uniquement par leur couleur pour indiquer si elles sont cochées ou non.
+
+--> Comme vu par mail, le critère est déjà respecté par la présence de la couleur et de la présence d'une bordure.
+
+**Correction** 💡  
+1. Ajout d'une icone croix / check pour signifier la validation ou non du critère
+2. Epaississement de la bordure dans le cas "sélectionné", pour renforcer la distinction avec le cas "non sélectionné", comme conseillé par mail.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 1.3 - Pour chaque image porteuse d'information ayant une alternative textuelle, cette alternative est-elle pertinente ?</summary>
 
 **RAWeb** : [Critère 1.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-1-3)
@@ -67,10 +102,10 @@ TBD
 
 <details>
 
-<summary> ⏳ Critère 10.9 - RAWeb - Le service d’assistance répond aux besoins de communication des personnes handicapées directement ou par l’intermédiaire d’un service de relais ?</summary>
+<summary> ⏳ Critère 10.9 - RGAA - Dans chaque page web, l'information ne doit pas être donnée uniquement par la forme, taille ou position ?</summary>
 
 **RAWeb** : [Critère 10.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-9)
-**Ticket** : [PC-42915](https://passculture.atlassian.net/browse/PC-42915)  
+**Ticket** : [PC-42860](https://passculture.atlassian.net/browse/PC-42860)  
 **PR** : [#23701](https://github.com/pass-culture/pass-culture-main/pull/23701)
 
 **Problème** 😱  

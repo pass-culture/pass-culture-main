@@ -92,9 +92,27 @@
     color: var(--color-text-default);
     display: flex;
     flex-direction: column;
+    gap: var(--size-spacing-xs);
+
+    &-neutral,
+    &-error,
+    &-validate {
+      display: flex;
+      align-items: center;
+      gap: var(--size-spacing-xs);
+      flex-wrap: wrap;
+    }
+
+    &-neutral {
+      color: var(--color-text-disabled);
+    }
 
     &-error {
       color: var(--color-text-error);
+    }
+
+    &-validate {
+      color: var(--color-text-success);
     }
 
     &-values {

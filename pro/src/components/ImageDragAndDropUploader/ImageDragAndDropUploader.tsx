@@ -61,6 +61,7 @@ export const ImageDragAndDropUploader = ({
   const [isDeleteImageOpen, setIsDeleteImageOpen] = useState(false)
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
   const [draftCredit, setDraftCredit] = useState<string | undefined>(credit)
+  const [dragDropResetKey, setDragDropResetKey] = useState(0)
   const previousDraftImage = usePrevious(draftImage)
 
   const [refToFocusOnClose, setRefToFocusOnClose] = useState<
@@ -151,7 +152,13 @@ export const ImageDragAndDropUploader = ({
             draftImage,
             credit: draftCredit,
           }}
-          onOpenChange={setIsModalImageOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setDraftImage(undefined)
+              setDragDropResetKey((prev) => prev + 1)
+            }
+            setIsModalImageOpen(open)
+          }}
           open={isModalImageOpen}
           trigger={
             shouldDisplayActions && (
@@ -181,6 +188,7 @@ export const ImageDragAndDropUploader = ({
       </div>
       {!hasImage && (
         <ImageDragAndDrop
+          key={dragDropResetKey}
           ref={inputDragAndDropRef}
           className={dragAndDropClassName}
           onDropOrSelected={(draftImage) => {
