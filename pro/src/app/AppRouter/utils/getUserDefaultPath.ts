@@ -1,7 +1,7 @@
 import { getCurrentUserPermissions } from '@/commons/auth/getCurrentUserPermissions'
 import { rootStore } from '@/commons/store/store'
 
-export const getUserDefaultPath = () => {
+export const getUserDefaultPath = (search: string = '') => {
   const state = rootStore.getState()
   const userPermissions = getCurrentUserPermissions(state.user)
 
@@ -10,7 +10,7 @@ export const getUserDefaultPath = () => {
       return '/connexion'
 
     case !userPermissions.hasVenues:
-      return '/inscription/structure/recherche'
+      return `/inscription/structure/recherche${search}`
 
     case !userPermissions.hasSelectedPartnerVenue:
       return '/hub'

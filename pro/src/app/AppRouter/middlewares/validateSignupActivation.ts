@@ -70,5 +70,6 @@ export const validateSignupActivation = async (
 
   await validateToken(token)
 
-  throw redirect(getUserDefaultPath())
+  const url = new URL(args.request.url)
+  throw redirect(getUserDefaultPath(url.search))
 }

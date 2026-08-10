@@ -2,11 +2,17 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import cn from 'classnames'
 import { useCallback, useEffect, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { ProUserCreationBodyV2Model } from '@/apiClient/v1'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+  ProUserCreationBodyV2Model,
+  SignupSimulationPayload,
+  TargetAudience,
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -26,6 +32,24 @@ import styles from './SignupContainer.module.scss'
 import { SignupForm } from './SignupForm'
 import { validationSchema } from './validationSchema'
 
+function extractStructureInfoFromParams(
+  searchParams: URLSearchParams
+): SignupSimulationPayload | null {
+  const siret = searchParams.get('siret')
+  if (siret !== null) {
+    return {
+      activity: searchParams.get('activity') as
+        | ActivityOpenToPublic
+        | ActivityNotOpenToPublic,
+      isOpenToPublic: searchParams.get('isOpenToPublic') === 'true',
+      siret,
+      targets: searchParams.getAll('targets') as TargetAudience[],
+    }
+  }
+
+  return null
+}
+
 export const SignupContainer = (): JSX.Element => {
   const navigate = useNavigate()
   const snackBar = useSnackBar()
@@ -33,6 +57,7 @@ export const SignupContainer = (): JSX.Element => {
   const isSignupSimulationEnabled = useActiveFeature(
     'WIP_PRE_SIGNUP_SIMULATION'
   )
+  const [searchParams, _setSearchParams] = useSearchParams()
 
   useInitReCaptcha()
 
@@ -53,18 +78,21 @@ export const SignupContainer = (): JSX.Element => {
     try {
       /* istanbul ignore next : ENV dependant */
       const token = await getReCaptchaToken('signup')
+      const structureSimulationInfos =
+        extractStructureInfoFromParams(searchParams)
       await api.signupPro({
         body: {
           ...values,
           token, // set token at form submission
+          structureSimulationInfos,
         },
       })
       onHandleSuccess()
-    } catch (response) {
-      if (response === RECAPTCHA_ERROR) {
+    } catch (error) {
+      if (error === RECAPTCHA_ERROR) {
         snackBar.error(RECAPTCHA_ERROR_MESSAGE)
       } else {
-        const body = isErrorAPIError(response) ? response.body : {}
+        const body = isErrorAPIError(error) ? error.body : {}
         onHandleFail(body)
       }
     }

@@ -1,7 +1,13 @@
 import type React from 'react'
 import { createContext, useContext, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router'
 
-import type { Target } from '@/apiClient/v1'
+import {
+  type ActivityNotOpenToPublic,
+  type ActivityOpenToPublic,
+  Target,
+  TargetAudience,
+} from '@/apiClient/v1'
 import { noop } from '@/commons/utils/noop'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 import type { OffererAuthenticationFormValues } from '@/components/SignupJourneyForm/Authentication/OffererAuthenticationForm'
@@ -11,6 +17,7 @@ import {
 } from '@/components/SignupJourneyForm/Offerer/constants'
 
 import { DEFAULT_ACTIVITY_VALUES } from './constants'
+import { saveActivityToStorage, saveOffererToStorage } from './storage'
 import type { Address } from './types'
 
 export interface Offerer
@@ -64,15 +71,70 @@ interface SignupJourneyContextProviderProps {
   children: React.ReactNode
 }
 
+// TODO(mdesquilbet, 07-08-2026): use the same enum in simulator and signup journey
+const targetAudiencesToTarget = (audiences: TargetAudience[]): Target => {
+  const hasCollective = audiences.includes(TargetAudience.COLLECTIVE)
+  const hasIndividual = audiences.includes(TargetAudience.INDIVIDUAL)
+
+  if (hasCollective && hasIndividual) return Target.INDIVIDUAL_AND_EDUCATIONAL
+  if (hasCollective) return Target.EDUCATIONAL
+  return Target.INDIVIDUAL
+}
+
+function buildDefaultActivity(
+  activity: ActivityOpenToPublic | ActivityNotOpenToPublic | null,
+  audiences: TargetAudience[]
+): ActivityContext {
+  const initialActivityContext = {
+    ...DEFAULT_ACTIVITY_VALUES,
+    ...(activity && { activity }),
+    ...(audiences.length && {
+      targetCustomer: targetAudiencesToTarget(audiences),
+    }),
+  }
+
+  if (activity || audiences.length) {
+    saveActivityToStorage(initialActivityContext)
+  }
+  return initialActivityContext
+}
+
+function buildDefaultOfferer(
+  siret: string | null,
+  isOpenToPublic: string | null
+): Offerer {
+  const initialOfferer = {
+    ...DEFAULT_OFFERER_FORM_VALUES,
+    ...(siret && { siret }),
+    ...(isOpenToPublic && { isOpenToPublic }),
+  }
+
+  if (siret || isOpenToPublic) {
+    saveOffererToStorage(initialOfferer)
+  }
+  return initialOfferer
+}
+
 export function SignupJourneyContextProvider({
   children,
 }: Readonly<SignupJourneyContextProviderProps>) {
+  const [searchParams, _setSearchParams] = useSearchParams()
+
   const [activity, setActivity] = useState<ActivityContext | null>(
-    DEFAULT_ACTIVITY_VALUES
+    buildDefaultActivity(
+      searchParams.get('audience') as
+        | ActivityOpenToPublic
+        | ActivityNotOpenToPublic
+        | null,
+      searchParams.getAll('targets') as TargetAudience[]
+    )
   )
 
   const [offerer, setOfferer] = useState<Offerer | null>(
-    DEFAULT_OFFERER_FORM_VALUES
+    buildDefaultOfferer(
+      searchParams.get('siret'),
+      searchParams.get('isOpenToPublic')
+    )
   )
 
   const [initialAddress, setInitialAddress] = useState<InitialAddress | null>(
