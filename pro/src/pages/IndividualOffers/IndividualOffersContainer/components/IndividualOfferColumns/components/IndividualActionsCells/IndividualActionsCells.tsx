@@ -27,6 +27,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import penIcon from '@/icons/full-edit.svg'
 import fullMessageIcon from '@/icons/full-message.svg'
 import fullStarIcon from '@/icons/full-star.svg'
@@ -39,7 +40,6 @@ import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/ty
 import { computeDeletionErrorMessage } from '@/pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from '@/pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
@@ -317,30 +317,41 @@ export const IndividualActionsCells = ({
           )}
         </Dropdown>
       </div>
-      <ConfirmDialog
-        icon={strokeTrashIcon}
-        cancelText="Annuler"
-        confirmText="Supprimer ce brouillon"
-        onCancel={closeDeleteDraftDialog}
-        onConfirm={onConfirmDeleteDraftOffer}
+      <SimpleModal
+        iconPath={strokeTrashIcon}
         title={`Voulez-vous supprimer le brouillon : "${offer.name}" ?`}
-        open={isConfirmDialogDeleteDraftOpen}
-        refToFocusOnClose={
-          isNewProAdviceAccess ? headlineButtonTriggerRef : dropdownTriggerRef
+        isOpen={isConfirmDialogDeleteDraftOpen}
+        onClose={closeDeleteDraftDialog}
+        actionButtons={
+          <>
+            <Button
+              onClick={closeDeleteDraftDialog}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
+            <Button
+              onClick={onConfirmDeleteDraftOffer}
+              label="Supprimer ce brouillon"
+            />
+          </>
         }
       />
-      <ConfirmDialog
-        icon={strokeStarIcon}
-        cancelText="Annuler"
-        confirmText="Confirmer"
-        onCancel={closeReplaceHeadlineOfferDialog}
-        onConfirm={onConfirmReplaceHeadlineOffer}
-        title={
-          'Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre.'
-        }
-        open={isConfirmDialogReplaceHeadlineOfferOpen}
-        refToFocusOnClose={
-          isNewProAdviceAccess ? headlineButtonTriggerRef : dropdownTriggerRef
+      <SimpleModal
+        iconPath={strokeStarIcon}
+        title="Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre."
+        isOpen={isConfirmDialogReplaceHeadlineOfferOpen}
+        onClose={closeReplaceHeadlineOfferDialog}
+        actionButtons={
+          <>
+            <Button
+              onClick={closeReplaceHeadlineOfferDialog}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
+            <Button onClick={onConfirmReplaceHeadlineOffer} label="Confirmer" />
+          </>
         }
       />
       <HeadlineOfferImageDialogs

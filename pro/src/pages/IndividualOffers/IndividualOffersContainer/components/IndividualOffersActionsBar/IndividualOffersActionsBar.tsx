@@ -223,33 +223,6 @@ export const IndividualOffersActionsBar = ({
 
   return (
     <>
-      <IndividualDeactivationConfirmDialog
-        areAllOffersSelected={areAllOffersSelected}
-        nbSelectedOffers={
-          selectedOffers.filter(
-            (offer) =>
-              offer.status === OfferStatus.ACTIVE ||
-              offer.status === OfferStatus.SOLD_OUT ||
-              offer.status === OfferStatus.EXPIRED
-          ).length
-        }
-        onConfirm={handleDeactivateOffers}
-        onCancel={() => setIsDeactivationDialogOpen(false)}
-        isDialogOpen={isDeactivationDialogOpen}
-        refToFocusOnClose={dactivateButtonRef}
-      />
-
-      <DeleteConfirmDialog
-        nbSelectedOffers={
-          selectedOffers.filter((offer) => offer.status === OfferStatus.DRAFT)
-            .length
-        }
-        onConfirm={handleDelete}
-        onCancel={() => setIsDeleteDialogOpen(false)}
-        isDialogOpen={isDeleteDialogOpen}
-        refToFocusOnClose={deleteButtonRef}
-      />
-
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           {computeSelectedOffersLabel(selectedOffers.length)}
@@ -290,6 +263,31 @@ export const IndividualOffersActionsBar = ({
           )}
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
+
+      <IndividualDeactivationConfirmDialog
+        areAllOffersSelected={areAllOffersSelected}
+        nbSelectedOffers={
+          selectedOffers.filter(
+            (offer) =>
+              offer.status === OfferStatus.ACTIVE ||
+              offer.status === OfferStatus.SOLD_OUT ||
+              offer.status === OfferStatus.EXPIRED
+          ).length
+        }
+        onConfirm={handleDeactivateOffers}
+        onCancel={() => setIsDeactivationDialogOpen(false)}
+        isDialogOpen={isDeactivationDialogOpen}
+      />
+
+      <DeleteConfirmDialog
+        nbSelectedOffers={
+          selectedOffers.filter((offer) => offer.status === OfferStatus.DRAFT)
+            .length
+        }
+        onConfirm={handleDelete}
+        onCancel={() => setIsDeleteDialogOpen(false)}
+        isDialogOpen={isDeleteDialogOpen}
+      />
     </>
   )
 }

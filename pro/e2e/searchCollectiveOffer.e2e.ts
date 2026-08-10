@@ -121,7 +121,10 @@ test.describe('Search collective offers', () => {
     collectiveOffersUserData: userData,
   }) => {
     await page.getByText('Filtrer').click()
-    await page.getByLabel('Format').selectOption(FORMAT_NAME)
+    await page
+      .getByTestId('offers-filter')
+      .getByLabel('Format')
+      .selectOption(FORMAT_NAME)
 
     const responsePromise = page.waitForResponse(
       (response) =>
@@ -195,7 +198,10 @@ test.describe('Search collective offers', () => {
     await page.getByText('Filtrer').click()
 
     await page.getByLabel('Localisation').selectOption('À déterminer')
-    await page.getByLabel('Format').selectOption('Représentation')
+    await page
+      .getByTestId('offers-filter')
+      .getByLabel('Format')
+      .selectOption('Représentation')
     await page.getByLabel('Nom de l’offre').fill('brouillon')
 
     await page.getByRole('button', { name: 'Statut' }).click()

@@ -370,25 +370,6 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           />
         )}
       </div>
-      <ArchiveConfirmationModal
-        onDismiss={() => setIsArchiveModalOpen(false)}
-        onValidate={archiveOffer}
-        offer={offer}
-        isDialogOpen={isArchiveModalOpen}
-        refToFocusOnClose={
-          cancelBookingButtonRef.current
-            ? cancelBookingButtonRef
-            : duplicateButtonRef
-        }
-      />
-      <CancelCollectiveBookingModal
-        onDismiss={() => setIsCancelBookingModalOpen(false)}
-        onValidate={cancelBooking}
-        isDialogOpen={isCancelBookingModalOpen}
-        refToFocusOnClose={
-          archiveButtonRef.current ? archiveButtonRef : duplicateButtonRef
-        }
-      />
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
@@ -399,6 +380,17 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           />
         </ActionsBarSticky.Left>
       </ActionsBarSticky>
+      <ArchiveConfirmationModal
+        onDismiss={() => setIsArchiveModalOpen(false)}
+        onValidate={archiveOffer}
+        offer={offer}
+        isDialogOpen={isArchiveModalOpen}
+      />
+      <CancelCollectiveBookingModal
+        onDismiss={() => setIsCancelBookingModalOpen(false)}
+        onValidate={cancelBooking}
+        isDialogOpen={isCancelBookingModalOpen}
+      />
     </BasicLayout>
   )
 }

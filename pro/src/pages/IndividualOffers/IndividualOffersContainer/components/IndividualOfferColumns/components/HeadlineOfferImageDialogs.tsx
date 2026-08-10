@@ -112,8 +112,8 @@ export const HeadlineOfferImageDialogs = ({
     <>
       <SimpleModal
         iconPath={strokeVisualArtIcon}
-        isOpen={isFirstDialogOpen}
         title="Ajoutez une image pour mettre votre offre à la une"
+        isOpen={isFirstDialogOpen}
         onClose={() => setIsFirstDialogOpen(false)}
         actionButtons={
           <>
@@ -121,7 +121,7 @@ export const HeadlineOfferImageDialogs = ({
               onClick={() => setIsFirstDialogOpen(false)}
               variant={ButtonVariant.SECONDARY}
               color={ButtonColor.NEUTRAL}
-              label={'Annuler'}
+              label="Annuler"
             />
             <Button
               onClick={() => {
@@ -130,7 +130,7 @@ export const HeadlineOfferImageDialogs = ({
               }}
               variant={ButtonVariant.PRIMARY}
               color={ButtonColor.BRAND}
-              label={'Ajouter une image'}
+              label="Ajouter une image"
             />
           </>
         }

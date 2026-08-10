@@ -72,7 +72,10 @@ test.describe('Search collective template offers (Optimized)', () => {
     )
 
     await page.getByRole('button', { name: 'Filtrer' }).click()
-    await page.getByLabel('Format').selectOption('Atelier de pratique')
+    await page
+      .getByTestId('offers-filter')
+      .getByLabel('Format')
+      .selectOption('Atelier de pratique')
     await page.getByRole('button', { name: 'Rechercher' }).click()
 
     expect((await collectiveOffersResponse).status()).toBe(200)
@@ -99,7 +102,10 @@ test.describe('Search collective template offers (Optimized)', () => {
     )
 
     await page.getByRole('button', { name: 'Filtrer' }).click()
-    await page.getByLabel('Format').selectOption('Représentation')
+    await page
+      .getByTestId('offers-filter')
+      .getByLabel('Format')
+      .selectOption('Représentation')
     await page.getByRole('button', { name: 'Rechercher' }).click()
 
     expect((await collectiveOffersResponse).status()).toBe(200)

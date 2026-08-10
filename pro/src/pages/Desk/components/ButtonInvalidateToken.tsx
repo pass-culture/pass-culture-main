@@ -2,7 +2,8 @@ import type React from 'react'
 import { useState } from 'react'
 
 import { Button } from '@/design-system/Button/Button'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 
 interface ButtonInvalidateTokenProps {
   onConfirm: () => void
@@ -26,21 +27,29 @@ export const ButtonInvalidateToken = ({
   }
 
   return (
-    <ConfirmDialog
-      cancelText="Annuler"
-      confirmText="Continuer"
-      onCancel={closeDialog}
-      onConfirm={handleOnConfirm}
-      title="Voulez-vous vraiment invalider cette contremarque ?"
-      open={isDialogOpen}
-      trigger={
-        <Button onClick={openDialog} label="Invalider la contremarque" />
-      }
-    >
-      <p>
-        Cette contremarque a déjà été validée. Si vous l’invalidez, la
-        réservation ne vous sera pas remboursée.
-      </p>
-    </ConfirmDialog>
+    <>
+      <Button onClick={openDialog} label="Invalider la contremarque" />
+      <SimpleModal
+        title="Voulez-vous vraiment invalider cette contremarque ?"
+        isOpen={isDialogOpen}
+        onClose={closeDialog}
+        actionButtons={
+          <>
+            <Button
+              onClick={closeDialog}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
+            <Button onClick={handleOnConfirm} label="Continuer" />
+          </>
+        }
+      >
+        <p>
+          Cette contremarque a déjà été validée. Si vous l'invalidez, la
+          réservation ne vous sera pas remboursée.
+        </p>
+      </SimpleModal>
+    </>
   )
 }

@@ -190,7 +190,7 @@ describe('ActionsBar', () => {
       ],
     })
 
-    await userEvent.click(screen.getByText('Mettre en pause'))
+    await userEvent.click(screen.getAllByText('Mettre en pause')[0])
     const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
 
@@ -218,7 +218,7 @@ describe('ActionsBar', () => {
   it('should unselect offers and hide action bar on click on "Annuler" button', async () => {
     renderActionsBar(props)
 
-    await userEvent.click(screen.getByText('Annuler'))
+    await userEvent.click(screen.getAllByText('Annuler')[0])
 
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
   })
@@ -270,7 +270,7 @@ describe('ActionsBar', () => {
       },
     }
 
-    const deactivateButton = screen.getByText('Mettre en pause')
+    const deactivateButton = screen.getAllByText('Mettre en pause')[0]
     await userEvent.click(deactivateButton)
     const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
@@ -292,7 +292,7 @@ describe('ActionsBar', () => {
   it('should track cancel all offers on click on "Annuler" button', async () => {
     props.areAllOffersSelected = true
     renderActionsBar(props)
-    const deactivateButton = screen.getByText('Mettre en pause')
+    const deactivateButton = screen.getAllByText('Mettre en pause')[0]
 
     await userEvent.click(deactivateButton)
     const cancelDeactivateButton = screen.getAllByText('Annuler')[1]
@@ -311,7 +311,7 @@ describe('ActionsBar', () => {
   it('should track cancel offer on click on "Annuler" button', async () => {
     props.areAllOffersSelected = false
     renderActionsBar(props)
-    const deactivateButton = screen.getByText('Mettre en pause')
+    const deactivateButton = screen.getAllByText('Mettre en pause')[0]
 
     await userEvent.click(deactivateButton)
     const cancelDeactivateButton = screen.getAllByText('Annuler')[1]
@@ -381,7 +381,7 @@ describe('ActionsBar', () => {
 
     expect(screen.queryByText('Supprimer')).not.toBeInTheDocument()
     expect(screen.queryByText('Publier')).not.toBeInTheDocument()
-    expect(screen.queryByText('Mettre en pause')).not.toBeInTheDocument()
+    expect(screen.queryByText('Mettre en pause')).not.toBeVisible()
   })
 
   describe('OA feature flag', () => {

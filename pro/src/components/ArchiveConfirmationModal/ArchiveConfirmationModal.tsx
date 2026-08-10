@@ -7,9 +7,10 @@ import type {
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { ButtonColor } from '@/design-system/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokeArchiveIcon from '@/icons/stroke-archive.svg'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface Offer {
   id: string | number
@@ -26,9 +27,6 @@ interface OfferEducationalModalProps<T extends Offer> {
   hasMultipleOffers?: boolean
   selectedOffers?: T[]
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<
-    HTMLButtonElement | HTMLAnchorElement | null
-  >
 }
 
 export const ArchiveConfirmationModal = <T extends Offer>({
@@ -38,7 +36,6 @@ export const ArchiveConfirmationModal = <T extends Offer>({
   selectedOffers = [],
   offer,
   isDialogOpen,
-  refToFocusOnClose,
 }: OfferEducationalModalProps<T>): JSX.Element => {
   const { logEvent } = useAnalytics()
 
@@ -63,22 +60,32 @@ export const ArchiveConfirmationModal = <T extends Offer>({
   }
 
   return (
-    <ConfirmDialog
-      onCancel={onDismiss}
-      onConfirm={onConfirmArchive}
-      confirmColor={ButtonColor.DANGER}
-      cancelText="Annuler"
-      confirmText={
-        hasMultipleOffers ? 'Archiver les offres' : 'Archiver l’offre'
-      }
-      icon={strokeArchiveIcon}
+    <SimpleModal
+      iconPath={strokeArchiveIcon}
       title={
         hasMultipleOffers
           ? 'Êtes-vous sûr de vouloir archiver ces offres ?'
           : 'Êtes-vous sûr de vouloir archiver cette offre ?'
       }
-      open={isDialogOpen}
-      refToFocusOnClose={refToFocusOnClose}
+      isOpen={isDialogOpen}
+      onClose={onDismiss}
+      actionButtons={
+        <>
+          <Button
+            onClick={onDismiss}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
+          <Button
+            onClick={onConfirmArchive}
+            color={ButtonColor.DANGER}
+            label={
+              hasMultipleOffers ? 'Archiver les offres' : 'Archiver l’offre'
+            }
+          />
+        </>
+      }
     >
       <p>Une offre archivée ne peut pas être désarchivée.</p>
       <strong>Cette action est irréversible.</strong>
@@ -86,6 +93,6 @@ export const ArchiveConfirmationModal = <T extends Offer>({
         Vous pourrez la retrouver facilement en filtrant sur le statut
         “archivée”.
       </p>
-    </ConfirmDialog>
+    </SimpleModal>
   )
 }
