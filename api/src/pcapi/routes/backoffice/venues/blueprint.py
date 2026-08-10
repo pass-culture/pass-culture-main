@@ -1480,9 +1480,19 @@ def close_venue(venue_id: int) -> response_utils.BackofficeResponse:
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
-    offerers_api.close_venue(venue, author=current_user, comment=form.comment.data)
+    try:
+        offerers_api.close_venue(venue, author=current_user, comment=form.comment.data)
+    except offerers_exceptions.VenueHasIncomingReimbursements:
+        mark_transaction_as_invalid()
+        flash(
+            Markup(
+                "Impossible de procéder à la fermeture du partenaire culturel {name}: des réservations sont encore en cours ou non-remboursées"
+            ).format(name=venue.name),
+            "warning",
+        )
+    else:
+        flash(Markup("Le partenaire culturel <b>{name}</b> a été fermé").format(name=venue.name), "success")
 
-    flash(Markup("Le partenaire culturel <b>{name}</b> a été fermé").format(name=venue.name), "success")
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
 
