@@ -403,7 +403,8 @@ def _create_or_update_ean_offers(
             if not_found_eans:
                 logger.warning(
                     "Some provided eans were not found",
-                    extra={"eans": ",".join(not_found_eans), "venue": venue_id},
+                    # TODO: remove extra data without `_id`
+                    extra={"eans": ",".join(not_found_eans), "venue": venue_id, "venue_id": venue_id},
                     technical_message_id="ean.not_found",
                 )
             for product in existing_products:

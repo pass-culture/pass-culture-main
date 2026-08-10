@@ -352,10 +352,12 @@ def deserialize_extra_data(
                 extra_data["musicSubType"] = str(music.MUSIC_SUB_TYPES_BY_SLUG[music_slug].code)
             else:
                 extra = {
-                    "venue": venue_id if venue_id else "",
+                    "venue_id": venue_id if venue_id else "",
                     "field_name": field_name,
                     "field_value": field_value.value,
                     "enum_used": type(field_value).__name__,
+                    # TODO: remove extra data without `_id`
+                    "venue": venue_id if venue_id else "",
                 }
 
                 logger.info("offer: using old music type", extra=extra)
