@@ -75,7 +75,8 @@ def create_venue_provider(
 
 def reset_stock_quantity(venue: offerers_models.Venue) -> None:
     """Reset all stock quantity with the number of non-cancelled bookings."""
-    logger.info("Resetting all stock quantity for changed sync", extra={"venue": venue.id})
+    # TODO: remove extra data without `_id`
+    logger.info("Resetting all stock quantity for changed sync", extra={"venue": venue.id, "venue_id": venue.id})
     stocks = db.session.query(offers_models.Stock).filter(
         offers_models.Stock.offerId == offers_models.Offer.id,
         offers_models.Offer.venueId == venue.id,

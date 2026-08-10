@@ -56,6 +56,10 @@ def synchronize_data_for_provider(provider_name: str, limit: int | None = None) 
 def synchronize_venue_providers(venue_providers: list[provider_models.VenueProvider], limit: int | None = None) -> None:
     for venue_provider in venue_providers:
         log_data = {
+            "venue_provider_id": venue_provider.id,
+            "venue_id": venue_provider.venueId,
+            "provider_id": venue_provider.providerId,
+            # TODO: remove extra data without `_id`
             "venue_provider": venue_provider.id,
             "venue": venue_provider.venueId,
             "provider": venue_provider.providerId,

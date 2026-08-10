@@ -501,7 +501,8 @@ def index_offers_of_venues_in_queue() -> None:
             count=settings.REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE,
         ) as venue_ids:
             for venue_id in venue_ids:
-                logger.info("Starting to index offers of venue", extra={"venue": venue_id})
+                # TODO: remove extra data without `_id`
+                logger.info("Starting to index offers of venue", extra={"venue": venue_id, "venue_id": venue_id})
                 offer_ids_iterator = offers_repository.get_paginated_offer_ids_by_venue_id(
                     venue_id=venue_id, chunk_size=settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE
                 )
@@ -511,7 +512,8 @@ def index_offers_of_venues_in_queue() -> None:
                         async_index_offer_ids(offer_ids, reason=IndexationReason.VENUE_UPDATE)
                     else:
                         reindex_offer_ids(offer_ids, from_error_queue=False)
-                logger.info("Finished indexing offers of venue", extra={"venue": venue_id})
+                # TODO: remove extra data without `_id`
+                logger.info("Finished indexing offers of venue", extra={"venue": venue_id, "venue_id": venue_id})
     except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise

@@ -874,10 +874,14 @@ def link_venue_to_pricing_point(
     logger.info(
         "Linked venue to pricing point",
         extra={
+            "venue_id": venue.id,
+            "new_pricing_point_id": pricing_point_id,
+            "previous_pricing_point_id": current_link.pricingPointId if current_link else None,
+            "updated_finance_events": typing.cast(sa.engine.cursor.CursorResult, ppoint_update_result).rowcount,
+            # TODO: remove extra data without `_id`
             "venue": venue.id,
             "new_pricing_point": pricing_point_id,
             "previous_pricing_point": current_link.pricingPointId if current_link else None,
-            "updated_finance_events": typing.cast(sa.engine.cursor.CursorResult, ppoint_update_result).rowcount,
         },
     )
 
