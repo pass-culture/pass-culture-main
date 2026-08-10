@@ -39,7 +39,7 @@ jobs:
         with:
           workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
           service_account: ${{ vars.PRO_DEPLOY_SERVICE_ACCOUNT }}
-      - uses: pass-culture/common-workflows/actions/setup-firebase-tools@IC-1390-create-setup-firebase-tools-action
+      - uses: pass-culture/common-workflows/actions/setup-firebase-tools@e6bcac798f0e97e8071b2e87a5c6a28c9bb538f4
       - name: "Clone version to live channel"
         id: "clone-version"
         env:
