@@ -1,13 +1,14 @@
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface DeleteConfirmDialogProps {
   onCancel: () => void
   nbSelectedOffers: number
   onConfirm: () => void
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const DeleteConfirmDialog = ({
@@ -15,19 +16,30 @@ export const DeleteConfirmDialog = ({
   nbSelectedOffers,
   onConfirm,
   isDialogOpen,
-  refToFocusOnClose,
 }: DeleteConfirmDialogProps): JSX.Element => {
   return (
-    <ConfirmDialog
-      cancelText="Annuler"
-      confirmText="Supprimer ces brouillons"
-      onCancel={onCancel}
-      onConfirm={onConfirm}
-      icon={strokeTrashIcon}
+    <SimpleModal
+      iconPath={strokeTrashIcon}
       title={`Vous avez sélectionné ${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre', 'offres')} brouillon`}
-      secondTitle={`êtes-vous sûr de vouloir ${pluralizeFr(nbSelectedOffers, 'la supprimer', 'toutes les supprimer')} ?`}
-      open={isDialogOpen}
-      refToFocusOnClose={refToFocusOnClose}
-    />
+      isOpen={isDialogOpen}
+      onClose={onCancel}
+      actionButtons={
+        <>
+          <Button
+            onClick={onCancel}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
+          <Button onClick={onConfirm} label="Supprimer ces brouillons" />
+        </>
+      }
+    >
+      <p>
+        Êtes-vous sûr de vouloir{' '}
+        {pluralizeFr(nbSelectedOffers, 'la supprimer', 'toutes les supprimer')}{' '}
+        ?
+      </p>
+    </SimpleModal>
   )
 }

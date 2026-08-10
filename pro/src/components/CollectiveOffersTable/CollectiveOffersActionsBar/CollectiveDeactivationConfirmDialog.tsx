@@ -2,8 +2,10 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { NBSP } from '@/commons/core/shared/constants'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import fullEyeIcon from '@/icons/full-hide.svg'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 export interface CollectiveDeactivationConfirmDialogProps {
   areAllOffersSelected: boolean
@@ -11,7 +13,6 @@ export interface CollectiveDeactivationConfirmDialogProps {
   onCancel: (status: boolean) => void
   onConfirm: () => void
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const CollectiveDeactivationConfirmDialog = ({
@@ -20,39 +21,57 @@ export const CollectiveDeactivationConfirmDialog = ({
   nbSelectedOffers,
   onConfirm,
   isDialogOpen,
-  refToFocusOnClose,
 }: CollectiveDeactivationConfirmDialogProps): JSX.Element => {
   const { logEvent } = useAnalytics()
 
   return (
-    <ConfirmDialog
-      cancelText={'Annuler'}
-      confirmText={'Mettre en pause'}
-      onCancel={() => {
+    <SimpleModal
+      iconPath={fullEyeIcon}
+      title={`Vous avez sélectionné ${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre', 'offres')},`}
+      isOpen={isDialogOpen}
+      onClose={() => {
         logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
           has_selected_all_offers: areAllOffersSelected,
         })
         onCancel(false)
       }}
-      onConfirm={() => {
-        logEvent(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
-          has_selected_all_offers: areAllOffersSelected,
-        })
-        onConfirm()
-      }}
-      icon={fullEyeIcon}
-      title={`Vous avez sélectionné ${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre', 'offres')},`}
-      secondTitle={`êtes-vous sûr de vouloir ${pluralizeFr(nbSelectedOffers, 'la', 'toutes les')} mettre en pause${NBSP}?`}
-      open={isDialogOpen}
-      refToFocusOnClose={refToFocusOnClose}
+      actionButtons={
+        <>
+          <Button
+            onClick={() => {
+              logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
+                has_selected_all_offers: areAllOffersSelected,
+              })
+              onCancel(false)
+            }}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
+          <Button
+            onClick={() => {
+              logEvent(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
+                has_selected_all_offers: areAllOffersSelected,
+              })
+              onConfirm()
+            }}
+            label="Mettre en pause"
+          />
+        </>
+      }
     >
-      Dans ce cas,{' '}
-      {pluralizeFr(
-        nbSelectedOffers,
-        'elle ne sera plus visible',
-        'elles ne seront plus visibles'
-      )}{' '}
-      par les enseignants sur ADAGE.
-    </ConfirmDialog>
+      <p>
+        {`êtes-vous sûr de vouloir ${pluralizeFr(nbSelectedOffers, 'la', 'toutes les')} mettre en pause${NBSP}?`}
+      </p>
+      <p>
+        Dans ce cas,{' '}
+        {pluralizeFr(
+          nbSelectedOffers,
+          'elle ne sera plus visible',
+          'elles ne seront plus visibles'
+        )}{' '}
+        par les enseignants sur ADAGE.
+      </p>
+    </SimpleModal>
   )
 }

@@ -290,8 +290,8 @@ describe('BookableOfferSummary', () => {
     })
 
     expect(
-      screen.queryByText('Êtes-vous sûr de vouloir archiver cette offre ?')
-    ).not.toBeInTheDocument()
+      screen.getByText('Êtes-vous sûr de vouloir archiver cette offre ?')
+    ).not.toBeVisible()
   })
 
   it('should open the confirmation modal and call the API when confirming cancellation', async () => {
@@ -310,9 +310,9 @@ describe('BookableOfferSummary', () => {
       screen.getByText(/Êtes-vous sûr de vouloir annuler la réservation/i)
     ).toBeInTheDocument()
 
-    const confirmButton = screen.getByRole('button', {
+    const confirmButton = screen.getAllByRole('button', {
       name: /Annuler la réservation/i,
-    })
+    })[1]
     await userEvent.click(confirmButton)
 
     expect(snackBarSuccess).toHaveBeenCalledWith(
@@ -326,8 +326,8 @@ describe('BookableOfferSummary', () => {
     })
 
     expect(
-      screen.queryByText(/Êtes-vous sûr de vouloir annuler la réservation/i)
-    ).not.toBeInTheDocument()
+      screen.getByText(/Êtes-vous sûr de vouloir annuler la réservation/i)
+    ).not.toBeVisible()
   })
 
   it('should display an error notification if the cancellation API fails', async () => {
@@ -337,12 +337,12 @@ describe('BookableOfferSummary', () => {
 
     renderBookableOfferSummary(props)
 
-    const cancelButton = screen.getByText('Annuler la réservation')
+    const cancelButton = screen.getAllByText('Annuler la réservation')[0]
     await userEvent.click(cancelButton)
 
-    const confirmButton = screen.getByRole('button', {
+    const confirmButton = screen.getAllByRole('button', {
       name: /Annuler la réservation/i,
-    })
+    })[1]
     await userEvent.click(confirmButton)
 
     expect(snackBarError).toHaveBeenCalledWith(
@@ -358,12 +358,12 @@ describe('BookableOfferSummary', () => {
 
     renderBookableOfferSummary(invalidProps)
 
-    const cancelButton = screen.getByText('Annuler la réservation')
+    const cancelButton = screen.getAllByText('Annuler la réservation')[0]
     await userEvent.click(cancelButton)
 
-    const confirmButton = screen.getByRole('button', {
+    const confirmButton = screen.getAllByRole('button', {
       name: /Annuler la réservation/i,
-    })
+    })[1]
     await userEvent.click(confirmButton)
 
     expect(snackBarError).toHaveBeenCalledWith(
@@ -415,9 +415,7 @@ describe('BookableOfferSummary', () => {
       ).not.toBeInTheDocument()
       expect(screen.queryByText('Dupliquer')).not.toBeInTheDocument()
       expect(screen.queryByText('Archiver')).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Annuler la réservation')
-      ).not.toBeInTheDocument()
+      expect(screen.getByText('Annuler la réservation')).not.toBeVisible()
     })
 
     it('should still render the "Aperçu" action', () => {

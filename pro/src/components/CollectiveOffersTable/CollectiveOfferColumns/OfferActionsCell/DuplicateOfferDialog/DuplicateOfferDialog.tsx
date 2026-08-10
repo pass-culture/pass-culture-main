@@ -1,7 +1,9 @@
 import { useState } from 'react'
 
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 
 import styles from './DuplicateOfferDialog.module.scss'
 
@@ -9,30 +11,37 @@ export const DuplicateOfferDialog = ({
   onCancel,
   onConfirm,
   isDialogOpen,
-  refToFocusOnClose,
 }: {
   onCancel: () => void
   onConfirm: (shouldNotDisplayModalAgain: boolean) => void
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }) => {
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false)
 
   return (
-    <ConfirmDialog
-      onCancel={onCancel}
-      onConfirm={() => onConfirm(isCheckboxChecked)}
+    <SimpleModal
       title="Créer une offre réservable pour un établissement scolaire"
-      confirmText="Créer une offre réservable"
-      cancelText="Annuler"
-      hideIcon
-      open={isDialogOpen}
-      refToFocusOnClose={refToFocusOnClose}
+      isOpen={isDialogOpen}
+      onClose={onCancel}
+      actionButtons={
+        <>
+          <Button
+            onClick={onCancel}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
+          <Button
+            onClick={() => onConfirm(isCheckboxChecked)}
+            label="Créer une offre réservable"
+          />
+        </>
+      }
     >
       <p className={styles['duplicate-offer-dialog-text']}>
-        Les informations que vous avez renseignées dans l’offre vitrine seront
-        copiées. Vous pourrez modifier les informations de l’offre. Il vous
-        restera alors à sélectionner l’établissement scolaire qui a fait une
+        Les informations que vous avez renseignées dans l'offre vitrine seront
+        copiées. Vous pourrez modifier les informations de l'offre. Il vous
+        restera alors à sélectionner l'établissement scolaire qui a fait une
         demande et à renseigner les informations de dates et prix.
       </p>
       <Checkbox
@@ -40,6 +49,6 @@ export const DuplicateOfferDialog = ({
         checked={isCheckboxChecked}
         onChange={() => setIsCheckboxChecked(!isCheckboxChecked)}
       />
-    </ConfirmDialog>
+    </SimpleModal>
   )
 }

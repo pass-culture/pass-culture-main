@@ -165,7 +165,7 @@ describe('ActionsBar', () => {
       ],
     })
 
-    await userEvent.click(screen.getByText('Mettre en pause'))
+    await userEvent.click(screen.getAllByText('Mettre en pause')[0])
     const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
 
@@ -192,7 +192,7 @@ describe('ActionsBar', () => {
   it('should unselect offers and hide action bar on click on "Annuler" button', async () => {
     renderActionsBar(props)
 
-    await userEvent.click(screen.getByText('Annuler'))
+    await userEvent.click(screen.getAllByText('Annuler')[0])
 
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
   })
@@ -238,8 +238,9 @@ describe('ActionsBar', () => {
       ],
     })
 
-    await userEvent.click(screen.getByText('Mettre en pause'))
-    const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
+    const pauseButtons = screen.getAllByText('Mettre en pause')
+    await userEvent.click(pauseButtons[0])
+    const confirmDeactivateButton = pauseButtons[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(

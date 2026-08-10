@@ -210,8 +210,8 @@ test.describe('Adage confirmation', () => {
     expect(clearEmailResponse3.status()).toBe(200)
 
     await page.getByRole('button', { name: 'Voir les actions' }).click()
-    await page.getByText('Annuler la réservation').click()
-    await page.getByTestId('confirm-dialog-button-confirm').click()
+    await page.getByRole('menuitem', { name: 'Annuler la réservation' }).click()
+    await page.getByRole('button', { name: 'Annuler la réservation' }).click()
 
     await page.waitForResponse(
       (response) =>

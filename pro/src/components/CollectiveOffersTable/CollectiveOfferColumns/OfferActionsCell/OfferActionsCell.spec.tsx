@@ -154,7 +154,7 @@ describe('OfferActionsCells', () => {
     expect(screen.getByText('Archiver')).toBeInTheDocument()
     expect(screen.getByText('Dupliquer')).toBeInTheDocument()
     expect(screen.getByText('Modifier')).toBeInTheDocument()
-    expect(screen.getByText('Annuler la réservation')).toBeInTheDocument()
+    expect(screen.getAllByText('Annuler la réservation')[0]).toBeInTheDocument()
   })
 
   it('should show action buttons when action is allowed on template offer', async () => {
@@ -176,7 +176,9 @@ describe('OfferActionsCells', () => {
     )
 
     expect(screen.getByText('Archiver')).toBeInTheDocument()
-    expect(screen.getByText('Créer une offre réservable')).toBeInTheDocument()
+    expect(
+      screen.getAllByText('Créer une offre réservable')[0]
+    ).toBeInTheDocument()
     expect(screen.getByText('Modifier')).toBeInTheDocument()
     expect(screen.getByText('Mettre en pause')).toBeInTheDocument()
     expect(screen.getByText('Publier')).toBeInTheDocument()
@@ -198,7 +200,7 @@ describe('OfferActionsCells', () => {
     expect(screen.getByText('Archiver')).toBeInTheDocument()
     expect(screen.queryByText('Dupliquer')).not.toBeInTheDocument()
     expect(screen.queryByText('Modifier')).not.toBeInTheDocument()
-    expect(screen.queryByText('Annuler la réservation')).not.toBeInTheDocument()
+    expect(screen.getByText('Annuler la réservation')).not.toBeVisible()
   })
 
   it('should not show "Voir les actions" button when no action is allowed', () => {
@@ -346,7 +348,9 @@ describe('OfferActionsCells', () => {
       await userEvent.click(
         screen.getByRole('button', { name: 'Voir les actions' })
       )
-      await userEvent.click(screen.getByText('Créer une offre réservable'))
+      await userEvent.click(
+        screen.getAllByText('Créer une offre réservable')[1]
+      )
       expect(api.createCollectiveOffer).toHaveBeenCalledWith({
         body: {
           audioDisabilityCompliant: false,

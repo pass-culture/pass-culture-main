@@ -190,9 +190,6 @@ export const CollectiveOfferTemplateEditionNavigation = ({
         onValidate={archiveOffer}
         offer={offer}
         isDialogOpen={isArchiveModalOpen}
-        refToFocusOnClose={
-          archiveButtonRef.current ? archiveButtonRef : adagePreviewButtonRef
-        }
       />
     </div>
   )

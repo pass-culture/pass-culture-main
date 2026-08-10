@@ -1,36 +1,45 @@
-import { ButtonColor } from '@/design-system/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokeWrongIcon from '@/icons/stroke-wrong.svg'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface OfferEducationalModalProps {
   onDismiss(): void
   onValidate(): void
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const CancelCollectiveBookingModal = ({
   onDismiss,
   onValidate,
   isDialogOpen,
-  refToFocusOnClose,
 }: OfferEducationalModalProps): JSX.Element => {
   const modalTitle =
     'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ? '
 
   return (
-    <ConfirmDialog
-      onCancel={onDismiss}
-      onConfirm={onValidate}
-      cancelText={'Annuler'}
-      confirmText={'Annuler la réservation'}
-      confirmColor={ButtonColor.DANGER}
-      icon={strokeWrongIcon}
+    <SimpleModal
+      iconPath={strokeWrongIcon}
       title={modalTitle}
-      open={isDialogOpen}
-      refToFocusOnClose={refToFocusOnClose}
+      isOpen={isDialogOpen}
+      onClose={onDismiss}
+      actionButtons={
+        <>
+          <Button
+            onClick={onDismiss}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
+          <Button
+            onClick={onValidate}
+            color={ButtonColor.DANGER}
+            label="Annuler la réservation"
+          />
+        </>
+      }
     >
-      <strong>Cette action est irréversible.</strong>
-    </ConfirmDialog>
+      Cette action est irréversible.
+    </SimpleModal>
   )
 }

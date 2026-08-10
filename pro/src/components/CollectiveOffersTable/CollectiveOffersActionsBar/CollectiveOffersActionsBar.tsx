@@ -273,34 +273,6 @@ export function CollectiveOffersActionsBar<
 
   return (
     <>
-      <CollectiveDeactivationConfirmDialog
-        areAllOffersSelected={areAllOffersSelected}
-        nbSelectedOffers={selectedOffers.length}
-        onConfirm={async () => {
-          await updateOfferStatus(CollectiveOfferDisplayedStatus.HIDDEN)
-          setTimeout(() => {
-            searchButtonRef?.current?.focus()
-          })
-        }}
-        onCancel={() => setIsDeactivationDialogOpen(false)}
-        isDialogOpen={isDeactivationDialogOpen}
-        refToFocusOnClose={deActivateButtonRef}
-      />
-
-      <ArchiveConfirmationModal
-        onDismiss={() => setIsArchiveDialogOpen(false)}
-        onValidate={async () => {
-          await updateOfferStatus(CollectiveOfferDisplayedStatus.ARCHIVED)
-          setTimeout(() => {
-            searchButtonRef?.current?.focus()
-          })
-        }}
-        hasMultipleOffers={selectedOffers.length > 1}
-        selectedOffers={selectedOffers}
-        isDialogOpen={isArchiveDialogOpen}
-        refToFocusOnClose={archiveButtonRef}
-      />
-
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           {computeSelectedOffersLabel(selectedOffers.length)}
@@ -323,6 +295,32 @@ export function CollectiveOffersActionsBar<
           {getTemplateOffersCTAs()}
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
+
+      <CollectiveDeactivationConfirmDialog
+        areAllOffersSelected={areAllOffersSelected}
+        nbSelectedOffers={selectedOffers.length}
+        onConfirm={async () => {
+          await updateOfferStatus(CollectiveOfferDisplayedStatus.HIDDEN)
+          setTimeout(() => {
+            searchButtonRef?.current?.focus()
+          })
+        }}
+        onCancel={() => setIsDeactivationDialogOpen(false)}
+        isDialogOpen={isDeactivationDialogOpen}
+      />
+
+      <ArchiveConfirmationModal
+        onDismiss={() => setIsArchiveDialogOpen(false)}
+        onValidate={async () => {
+          await updateOfferStatus(CollectiveOfferDisplayedStatus.ARCHIVED)
+          setTimeout(() => {
+            searchButtonRef?.current?.focus()
+          })
+        }}
+        hasMultipleOffers={selectedOffers.length > 1}
+        selectedOffers={selectedOffers}
+        isDialogOpen={isArchiveDialogOpen}
+      />
     </>
   )
 }
