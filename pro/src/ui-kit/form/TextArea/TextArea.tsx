@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react'
 
+import { useFormLayoutSideComponentDescribedBy } from '@/commons/context/FormLayoutSideComponentContext/FormLayoutSideComponentContext'
 import { Button } from '@/design-system/Button/Button'
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import type { RequiredIndicator } from '@/design-system/common/types'
@@ -65,6 +66,7 @@ export type TextAreaProps = {
   onChange?: (e: { target: { value: string; name?: string } }) => void
   onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
   value?: string
+  describedBy?: string
 } & (
   | {
       /**
@@ -81,7 +83,7 @@ export type TextAreaProps = {
       onPressTemplateButton: () => void
     }
   | {
-      hasTemplateButton?: false | undefined
+      hasTemplateButton?: false
       wordingTemplate?: never
       onPressTemplateButton?: never
     }
@@ -119,9 +121,11 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       onChange,
       onBlur,
       value,
+      describedBy,
     }: TextAreaProps,
     ref: ForwardedRef<HTMLTextAreaElement>
   ) => {
+    const formLayoutDescribedBy = useFormLayoutSideComponentDescribedBy()
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
     const [textValue, setTextValue] = useState(value)
@@ -155,12 +159,15 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       updateTextAreaHeight()
     }, [updateTextAreaHeight])
 
-    // Constructing aria-describedby attribute
-    const describedBy = [charactersCountId, errorId]
-
-    if (description) {
-      describedBy.unshift(descriptionId)
-    }
+    const describedByIds = [
+      description ? descriptionId : '',
+      error ? errorId : '',
+      charactersCountId,
+      describedBy ?? '',
+      formLayoutDescribedBy ?? '',
+    ]
+      .filter(Boolean)
+      .join(' ')
 
     const generateTemplate = () => {
       wordingTemplate && setTextValue(wordingTemplate)
@@ -200,7 +207,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           <textarea
             ref={textAreaRef}
             aria-invalid={!!error}
-            aria-describedby={describedBy.join(' ')}
+            aria-describedby={describedByIds || undefined}
             className={cn(styles['text-area'], {
               [styles['has-error']]: !!error,
             })}

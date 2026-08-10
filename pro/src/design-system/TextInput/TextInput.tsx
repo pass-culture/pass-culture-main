@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react'
 
+import { useFormLayoutSideComponentDescribedBy } from '@/commons/context/FormLayoutSideComponentContext/FormLayoutSideComponentContext'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { FieldFooter } from '../common/FieldFooter/FieldFooter'
@@ -78,13 +79,22 @@ export const TextInput = forwardRef(
     }: TextInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
+    const formLayoutDescribedBy = useFormLayoutSideComponentDescribedBy()
     const inputId = useId()
     const descriptionId = useId()
     const errorId = useId()
     const charactersCountId = useId()
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const describedByIds = `${description ? descriptionId : ''} ${error ? errorId : ''} ${maxCharactersCount ? charactersCountId : ''} ${describedBy ?? ''}`
+    const describedByIds = [
+      description ? descriptionId : '',
+      error ? errorId : '',
+      maxCharactersCount ? charactersCountId : '',
+      describedBy ?? '',
+      formLayoutDescribedBy ?? '',
+    ]
+      .filter(Boolean)
+      .join(' ')
 
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
 
@@ -116,7 +126,7 @@ export const TextInput = forwardRef(
             id={inputId}
             type={type}
             disabled={disabled}
-            aria-describedby={describedByIds}
+            aria-describedby={describedByIds || undefined}
             aria-invalid={Boolean(error)}
             aria-required={required}
             ref={inputRef}

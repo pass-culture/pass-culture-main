@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { EacFormat } from '@/apiClient/v1'
@@ -43,6 +43,8 @@ export const FormOfferType = ({
 
   const { logEvent } = useAnalytics()
 
+  const offerTitleId = useId()
+
   const getAssociatedPrograms = (selectedDomainIds: string[]) => {
     const selectedDomains = domainsOptions.filter((domain) =>
       selectedDomainIds.includes(domain.id)
@@ -78,7 +80,7 @@ export const FormOfferType = ({
     logEvent(Events.CLICKED_GENERATE_TEMPLATE_DESCRIPTION, {
       ...(domainsValue &&
         domainsValue.length > 0 && {
-          domainIds: domainsValue.map((id) => Number(id)),
+          domainIds: domainsValue.map(Number),
         }),
     })
   })
@@ -87,7 +89,7 @@ export const FormOfferType = ({
     logEvent(Events.CLICKED_SEE_TEMPLATE_OFFER_EXAMPLE, {
       ...(domainsValue &&
         domainsValue.length > 0 && {
-          domainIds: domainsValue.map((id) => Number(id)),
+          domainIds: domainsValue.map(Number),
         }),
     })
   }
@@ -199,6 +201,7 @@ export const FormOfferType = ({
             {...register('title')}
             error={getFieldState('title').error?.message}
             disabled={disableForm}
+            describedBy={offerTitleId}
           />
         </FormLayout.Row>
         <FormLayout.Row

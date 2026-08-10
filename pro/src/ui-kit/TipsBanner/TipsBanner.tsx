@@ -18,15 +18,20 @@ export interface TipsBannerProps {
    * Extra classnames to apply to the TipsBanner.
    */
   className?: string
+  /**
+   * The id attribute for the TipsBanner.
+   */
+  id?: string
 }
 
 export const TipsBanner = ({
   decorativeImage,
   children,
   className,
+  id,
 }: TipsBannerProps): JSX.Element => {
   return (
-    <div className={cn(className, styles['tips-banner'])}>
+    <div className={cn(className, styles['tips-banner'])} id={id}>
       <div className={styles['tips-banner-text']}>
         <div className={styles['tips-banner-header']}>
           <SvgIcon src={fullBulbIcon} className={styles['tips-banner-icon']} />À

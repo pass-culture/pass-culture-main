@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { useId } from 'react'
 
+import { useFormLayoutSideComponentDescribedBy } from '@/commons/context/FormLayoutSideComponentContext/FormLayoutSideComponentContext'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import {
   RadioButton,
@@ -40,6 +41,7 @@ export type RadioButtonGroupProps = {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   /** Event handler for blur */
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
+  describedBy?: string
 }
 
 export const RadioButtonGroup = ({
@@ -56,10 +58,17 @@ export const RadioButtonGroup = ({
   asset,
   onChange,
   onBlur,
+  describedBy,
 }: RadioButtonGroupProps): JSX.Element => {
+  const formLayoutDescribedBy = useFormLayoutSideComponentDescribedBy()
   const errorId = useId()
   const descriptionId = useId()
-  const describedBy = [error && errorId, description && descriptionId]
+  const describedByIds = [
+    error ? errorId : '',
+    description ? descriptionId : '',
+    describedBy ?? '',
+    formLayoutDescribedBy ?? '',
+  ]
     .filter(Boolean)
     .join(' ')
 
@@ -75,7 +84,7 @@ export const RadioButtonGroup = ({
 
   return (
     <fieldset
-      aria-describedby={describedBy}
+      aria-describedby={describedByIds || undefined}
       className={cn(styles['radio-button-group'], {
         [styles['label-as-text']]: isStringLabel,
       })}

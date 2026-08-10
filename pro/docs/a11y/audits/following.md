@@ -56,6 +56,32 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 11.10 - RGAA - Dans chaque formulaire, le contrôle de saisie est-il utilisé de manière pertinente ?</summary>
+
+**RGAA** : [Critère 11.10](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-10)
+**Ticket** : [PC-42864](https://passculture.atlassian.net/browse/PC-42864)  
+**PR** : [#23850](https://github.com/pass-culture/pass-culture-main/pull/23850)
+
+**Problème** 😱  
+P05 → Création offre réservable (5 étapes et confirmation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Le contrôle de saisie n'est pas pertinent :
+
+Les messages d'indication ne sont pas correctement reliés à leur champ respectif. (les blocs "À savoir")
+
+**Correction** 💡  
+Relier tous les messages d'aides qui apparaissent à proximité des champs par la relation aria-describedby="id".
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 1.3 - Pour chaque image porteuse d'information ayant une alternative textuelle, cette alternative est-elle pertinente ?</summary>
 
 **RAWeb** : [Critère 1.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-1-3)
@@ -66,8 +92,6 @@ Texte
 Au moins une alternative d'image porteuse d'information n'est pas pertinente.
 
 Le composant <canvas aria-label="Editeur d’image"> dans la fenêtre modale « Modifier une image » (suite à l’import d’une image) dispose d’un aria-label insuffisamment précis. Celui-ci ne décrit pas de manière explicite la fonction réelle du composant, à savoir un éditeur de cadrage permettant de repositionner et recadrer l’image.
-
-Egalement, 
 
 **Correction** 💡  
 Modifier le aria-label afin de décrire plus précisément la fonctionnalité réelle du composant par "Editeur de cadrage et de zoom de l'image".

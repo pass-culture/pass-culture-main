@@ -1,5 +1,8 @@
 import cn from 'classnames'
 import type React from 'react'
+import { useId } from 'react'
+
+import { FormLayoutSideComponentContextProvider } from '@/commons/context/FormLayoutSideComponentContext/FormLayoutSideComponentContext'
 
 import style from './FormLayout.module.scss'
 import { Row } from './FormLayoutRow'
@@ -25,6 +28,7 @@ export const RowWithInfo = ({
   sideComponent,
   testId,
 }: FormLayoutRowWithInfoProps): JSX.Element => {
+  const sideComponentId = useId()
   return (
     <Row
       className={cn(className, style['form-layout-row-info'])}
@@ -33,10 +37,16 @@ export const RowWithInfo = ({
       smSpaceAfter={smSpaceAfter}
       testId={testId}
     >
-      <Row className={style['form-layout-row-info-field']} inline={inline}>
-        {children}
-      </Row>
-      <div className={style['form-layout-row-info-info']}>
+      <FormLayoutSideComponentContextProvider describedById={sideComponentId}>
+        <Row
+          className={style['form-layout-row-info-field']}
+          inline={inline}
+          describedById={sideComponentId}
+        >
+          {children}
+        </Row>
+      </FormLayoutSideComponentContextProvider>
+      <div className={style['form-layout-row-info-info']} id={sideComponentId}>
         <div className={style['form-layout-row-info-info-inner']}>
           {sideComponent}
         </div>
