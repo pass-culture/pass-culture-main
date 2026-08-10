@@ -1,644 +1,935 @@
-import base64
 import datetime
-import pathlib
 from unittest import mock
 
 import pytest
 import time_machine
 
-from pcapi import settings
 from pcapi.connectors import youtube
+from pcapi.core.categories import subcategories
 from pcapi.core.geography import factories as geography_factories
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.models import db
-from pcapi.utils import human_ids
 
-import tests
 from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
-class PatchEventEndpointHelper(PublicAPIVenueEndpointHelper):
-    endpoint_url = "/public/offers/v1/events/{offer_id}"
-    endpoint_method = "patch"
-    default_path_params = {"offer_id": 1}
+FROZEN_NOW = datetime.datetime(2026, 6, 25, 12, 30, tzinfo=datetime.timezone.utc)
 
-    # redefined below in `Returns404Test`, so that they are not inherited by every class
+VIDEO_URL = "https://www.youtube.com/watch?v=fW6goBu8aP0"
+VIDEO_METADATA = youtube.YoutubeVideoMetadata(
+    id="fW6goBu8aP0",
+    title="Les Quatre Cents Coups — bande-annonce",
+    thumbnail_url="/thumbnails/fW6goBu8aP0.jpg",
+    duration=131,
+)
+
+PREVIOUS_VIDEO_METADATA = {
+    "videoUrl": "https://www.youtube.com/watch?v=ECNtXXewvHY",
+    "videoExternalId": "ECNtXXewvHY",
+    "videoTitle": "Jules et Jim — bande-annonce",
+    "videoThumbnailUrl": "/thumbnails/ECNtXXewvHY.jpg",
+    "videoDuration": 262,
+}
+
+
+def has_log(caplog: pytest.LogCaptureFixture, technical_message_id: str) -> bool:
+    return any(getattr(record, "technical_message_id", None) == technical_message_id for record in caplog.records)
+
+
+class PatchEventEndpointHelper(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/public/offers/v1/events/{event_id}"
+    endpoint_method = "patch"
+    default_path_params = {"event_id": 1}
+
+    DEFAULT_EVENT_DATA = {
+        # SEANCE_CINE because it is an event, accepts double bookings, and is not withdrawable
+        "subcategoryId": subcategories.SEANCE_CINE.id,
+        "name": "Les Quatre Cents Coups",
+        "description": "Antoine Doinel, treize ans, fugue dans les rues de Paris.",
+        "durationMinutes": 99,
+        "bookingEmail": "notify@cinema.example.com",
+        "bookingContact": "contact@cinema.example.com",
+        "withdrawalDetails": "À retirer à la caisse du cinéma",
+        "isDuo": True,
+        "audioDisabilityCompliant": True,
+        "mentalDisabilityCompliant": False,
+        "motorDisabilityCompliant": True,
+        "visualDisabilityCompliant": False,
+        # `stageDirector` and `visa` are two of the three conditional fields for SEANCE_CINE
+        "extraData": {"stageDirector": "François Truffaut", "visa": "22757"},
+        # in the past relative to `FROZEN_NOW`, so the base event is published
+        "publicationDatetime": datetime.datetime(2026, 1, 15, 10, 0),
+        # in the past relative to `FROZEN_NOW`, so the base event is bookable
+        "bookingAllowedDatetime": datetime.datetime(2026, 2, 1, 10, 0),
+    }
+
+    def setup_base_resource(self, venue=None, provider=None, **kwargs) -> offers_models.Offer:
+        return offers_factories.EventOfferFactory(
+            venue=venue or self.setup_venue(),
+            lastProvider=provider,
+            # `kwargs` always wins over `DEFAULT_EVENT_DATA`, including when it passes `None`
+            **{**self.DEFAULT_EVENT_DATA, **kwargs},
+        )
+
+    def setup_product_based_resource(self, venue, provider) -> tuple[offers_models.Product, offers_models.Offer]:
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            name="Les Quatre Cents Coups",
+            description="Le film de François Truffaut, restauré en 4K.",
+            durationMinutes=99,
+            extraData={"stageDirector": "François Truffaut", "visa": "22757"},
+        )
+        event = self.setup_base_resource(
+            venue=venue,
+            provider=provider,
+            product=product,
+            description=None,
+            durationMinutes=None,
+            extraData=None,
+        )
+        return product, event
+
     test_should_raise_404_because_has_no_access_to_venue = None
     test_should_raise_404_because_venue_provider_is_inactive = None
-
-    def setup_base_resource(
-        self,
-        venue=None,
-        provider=None,
-        digital=False,
-        booking_allowed_datetime=None,
-        publication_datetime=None,
-    ) -> offers_models.Offer:
-        venue = venue or self.setup_venue()
-        shared_data = {
-            "venue": venue,
-            "withdrawalDetails": "Des conditions de retrait sur la sellette",
-            "withdrawalType": offers_models.WithdrawalTypeEnum.BY_EMAIL,
-            "withdrawalDelay": 86400,
-            "bookingContact": "contact@example.com",
-            "bookingEmail": "notify@example.com",
-            "lastProvider": provider,
-        }
-
-        if booking_allowed_datetime:
-            shared_data["bookingAllowedDatetime"] = booking_allowed_datetime
-
-        if publication_datetime:
-            shared_data["publicationDatetime"] = publication_datetime
-
-        if digital:
-            return offers_factories.DigitalOfferFactory(**shared_data, subcategoryId="LIVESTREAM_MUSIQUE")
-        return offers_factories.EventOfferFactory(
-            **shared_data, subcategoryId="CONCERT", extraData={"gtl_id": "02000000"}
-        )
+    test_should_raise_401_because_not_authenticated = None
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test(PatchEventEndpointHelper):
-    def test_update_external_ticket_office_url(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
-        assert offer.externalTicketOfficeUrl is None
+    # --- Plain fields
 
-        json_data = {"externalTicketOfficeUrl": "https://bloup.com"}
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 200, response.json
-
-        assert offer.externalTicketOfficeUrl == "https://bloup.com"
-
-    def test_sets_field_to_none_and_leaves_other_unchanged(self):
+    @pytest.mark.parametrize(
+        "request_field,column,new_value",
+        [
+            ("name", "name", "Jules et Jim"),
+            ("description", "description", "Deux amis épris de la même femme."),
+            ("bookingEmail", "bookingEmail", "nouvelle-adresse@cinema.example.com"),
+            ("bookingContact", "bookingContact", "nouveau-contact@cinema.example.com"),
+            ("itemCollectionDetails", "withdrawalDetails", "À retirer au distributeur du hall"),
+            ("eventDuration", "durationMinutes", 105),
+            ("externalTicketOfficeUrl", "externalTicketOfficeUrl", "https://cinema.example.com/billetterie"),
+            ("idAtProvider", "idAtProvider", "seance-du-soir"),
+        ],
+    )
+    def test_should_update_a_single_field(self, request_field, column, new_value):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = offers_factories.EventOfferFactory(
-            subcategoryId="CONCERT",
-            venue=venue_provider.venue,
-            withdrawalDetails="Des conditions de retrait sur la sellette",
-            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
-            withdrawalDelay=86400,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@example.com",
-            lastProvider=venue_provider.provider,
-            extraData={"gtl_id": "03000000"},
-        )
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        assert getattr(event, column) != new_value
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"itemCollectionDetails": None})
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={request_field: new_value})
 
-        assert response.status_code == 200
-        assert response.json["itemCollectionDetails"] is None
-        assert offer.withdrawalDetails is None
-        assert offer.bookingEmail == "notify@example.com"
-        assert offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
-        assert offer.withdrawalDelay == 86400
+        assert response.status_code == 200, response.json
+        assert response.json[request_field] == new_value
 
-    def test_patch_all_fields(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@passq.com",
-            subcategoryId="CONCERT",
-            durationMinutes=20,
-            isDuo=False,
-            lastProvider=venue_provider.provider,
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-            withdrawalDelay=86400,
-            withdrawalDetails="Around there",
-            description="A description",
-            extraData={"gtl_id": "02000000"},
-        )
+        db.session.refresh(event)
+        assert getattr(event, column) == new_value
 
-        new_name = offer.name + "_updated"
+    @pytest.mark.parametrize(
+        "request_field,column",
+        [
+            ("description", "description"),
+            ("bookingEmail", "bookingEmail"),
+            ("bookingContact", "bookingContact"),
+            ("itemCollectionDetails", "withdrawalDetails"),
+            ("eventDuration", "durationMinutes"),
+            ("idAtProvider", "idAtProvider"),
+            ("publicationDatetime", "publicationDatetime"),
+            ("bookingAllowedDatetime", "bookingAllowedDatetime"),
+        ],
+    )
+    def test_should_clear_a_field_sent_as_null(self, request_field, column):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        assert getattr(event, column) is not None
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={request_field: None})
+
+        assert response.status_code == 200, response.json
+        assert response.json[request_field] is None
+
+        db.session.refresh(event)
+        assert getattr(event, column) is None
+
+
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    def test_should_update_many_fields_at_once(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
         response = self.make_request(
             plain_api_key,
-            {"offer_id": offer.id},
+            {"event_id": event.id},
             json_body={
-                "bookingContact": "test@myemail.com",
-                "bookingEmail": "test@myemail.com",
-                "eventDuration": 40,
-                "enableDoubleBookings": "true",
-                "itemCollectionDetails": "Here !",
-                "description": "A new description",
-                "image": {"file": image_data.GOOD_IMAGE},
-                "idAtProvider": "oh it has been updated",
-                "name": new_name,
+                "name": "Jules et Jim",
+                "description": "Deux amis épris de la même femme.",
+                "bookingEmail": "nouvelle-adresse@cinema.example.com",
+                "bookingContact": "nouveau-contact@cinema.example.com",
+                "itemCollectionDetails": "À retirer au distributeur du hall",
+                "eventDuration": 105,
+                "externalTicketOfficeUrl": "https://cinema.example.com/billetterie",
+                "enableDoubleBookings": False,
+                "idAtProvider": "seance-du-soir",
+                "accessibility": {
+                    "audioDisabilityCompliant": False,
+                    "mentalDisabilityCompliant": True,
+                    "motorDisabilityCompliant": False,
+                    "visualDisabilityCompliant": True,
+                },
+                "categoryRelatedFields": {
+                    "category": "SEANCE_CINE",
+                    "stageDirector": "Jean-Luc Godard",
+                    "visa": "27414",
+                },
+                # sent in Europe/Paris
+                "publicationDatetime": "2026-08-01T08:00:00+02:00",
+                "bookingAllowedDatetime": "2026-07-15T10:00:00+02:00",
             },
         )
 
-        assert response.status_code == 200
-        assert offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
-        assert offer.durationMinutes == 40
-        assert offer.isDuo is True
-        assert offer.bookingContact == "test@myemail.com"
-        assert offer.bookingEmail == "test@myemail.com"
-        assert offer.withdrawalDetails == "Here !"
-        assert offer.description == "A new description"
-        assert offer.idAtProvider == "oh it has been updated"
-        assert offer.name == new_name
+        assert response.status_code == 200, response.json
 
-        assert db.session.query(offers_models.Mediation).one()
-        assert (
-            offer.image.url
-            == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(offer.activeMediation.id)}"
-        )
+        db.session.refresh(event)
+        expected = {
+            "name": "Jules et Jim",
+            "description": "Deux amis épris de la même femme.",
+            "bookingEmail": "nouvelle-adresse@cinema.example.com",
+            "bookingContact": "nouveau-contact@cinema.example.com",
+            "withdrawalDetails": "À retirer au distributeur du hall",
+            "durationMinutes": 105,
+            "externalTicketOfficeUrl": "https://cinema.example.com/billetterie",
+            "isDuo": False,
+            "idAtProvider": "seance-du-soir",
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": True,
+            "extraData": {"stageDirector": "Jean-Luc Godard", "visa": "27414"},
+        }
+        assert {column: getattr(event, column) for column in expected} == expected
+        # stored in UTC
+        assert event.publicationDatetime == datetime.datetime(2026, 8, 1, 6, 0, tzinfo=datetime.UTC)
+        assert event.bookingAllowedDatetime == datetime.datetime(2026, 7, 15, 8, 0, tzinfo=datetime.UTC)
 
-    def test_sets_accessibility_partially(self):
+    # --- `accessibility`
+
+
+    def test_should_update_accessibility_partially_and_leave_the_other_ones_unchanged(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-            lastProvider=venue_provider.provider,
-        )
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        assert event.audioDisabilityCompliant is True
 
         response = self.make_request(
             plain_api_key,
-            {"offer_id": offer.id},
+            {"event_id": event.id},
             json_body={"accessibility": {"audioDisabilityCompliant": False}},
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
         assert response.json["accessibility"] == {
             "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": True,
-            "visualDisabilityCompliant": True,
+            "mentalDisabilityCompliant": self.DEFAULT_EVENT_DATA["mentalDisabilityCompliant"],
+            "motorDisabilityCompliant": self.DEFAULT_EVENT_DATA["motorDisabilityCompliant"],
+            "visualDisabilityCompliant": self.DEFAULT_EVENT_DATA["visualDisabilityCompliant"],
         }
-        assert offer.audioDisabilityCompliant is False
-        assert offer.mentalDisabilityCompliant is True
-        assert offer.motorDisabilityCompliant is True
-        assert offer.visualDisabilityCompliant is True
 
-    def test_update_extra_data_partially(self):
+        db.session.refresh(event)
+        assert event.audioDisabilityCompliant is False
+
+    # --- `categoryRelatedFields`
+
+    def test_should_update_category_related_fields(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            subcategoryId="FESTIVAL_ART_VISUEL",
-            extraData={
-                "author": "Maurice",
-                "stageDirector": "Robert",
-                "performer": "Pink Pâtisserie",
-            },
-            lastProvider=venue_provider.provider,
-            withdrawalDelay=86400,
-            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@example.com",
-        )
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
         response = self.make_request(
             plain_api_key,
-            {"offer_id": offer.id},
+            {"event_id": event.id},
             json_body={
                 "categoryRelatedFields": {
-                    "category": "FESTIVAL_ART_VISUEL",
-                    "author": "Maurice",
-                    "stageDirector": "Robert",
-                    "performer": "Pink Pâtisserie",
+                    "category": "SEANCE_CINE",
+                    "stageDirector": "Jean-Luc Godard",
+                    "visa": "27414",
                 }
             },
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
+        # `author` is the third conditional field of SEANCE_CINE
         assert response.json["categoryRelatedFields"] == {
-            "author": "Maurice",
-            "category": "FESTIVAL_ART_VISUEL",
-            "performer": "Pink Pâtisserie",
-        }
-        assert offer.extraData == {
-            "author": "Maurice",
-            "performer": "Pink Pâtisserie",
-            "stageDirector": "Robert",
+            "category": "SEANCE_CINE",
+            "author": None,
+            "stageDirector": "Jean-Luc Godard",
+            "visa": "27414",
         }
 
-    def test_should_update_extra_data_even_if_extra_data_has_an_empty_stage_director(self):
+        db.session.refresh(event)
+        assert event.extraData == {"stageDirector": "Jean-Luc Godard", "visa": "27414"}
+
+    @pytest.mark.parametrize("kept_stage_director", ["François Truffaut", ""])
+    def test_should_keep_the_extra_data_subfields_that_are_not_sent(self, kept_stage_director):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = offers_factories.EventOfferFactory(
+        event = self.setup_base_resource(
             venue=venue_provider.venue,
-            subcategoryId="FESTIVAL_ART_VISUEL",
-            extraData={
-                "author": "Maurice",
-                "stageDirector": "",  # faulty stageDirector
-                "performer": "Pink Pâtisserie",
-            },
-            lastProvider=venue_provider.provider,
-            withdrawalDelay=86400,
-            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@example.com",
+            provider=venue_provider.provider,
+            extraData={"stageDirector": kept_stage_director, "visa": "22757"},
         )
 
         response = self.make_request(
             plain_api_key,
-            {"offer_id": offer.id},
-            json_body={
-                "categoryRelatedFields": {
-                    "category": "FESTIVAL_ART_VISUEL",
-                    "author": "Maurice",
-                    "performer": "Pink Pâtisserie",
-                }
-            },
+            {"event_id": event.id},
+            json_body={"categoryRelatedFields": {"category": "SEANCE_CINE", "visa": "27414"}},
         )
 
-        assert response.status_code == 200
-        assert response.json["categoryRelatedFields"] == {
-            "author": "Maurice",
-            "category": "FESTIVAL_ART_VISUEL",
-            "performer": "Pink Pâtisserie",
-        }
-        assert offer.extraData == {
-            "author": "Maurice",
-            "performer": "Pink Pâtisserie",
-            "stageDirector": "",
-        }
-        assert not offer.ean
+        assert response.status_code == 200, response.json
+        assert response.json["categoryRelatedFields"]["stageDirector"] == kept_stage_director
 
-    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
+        db.session.refresh(event)
+        assert event.extraData == {"stageDirector": kept_stage_director, "visa": "27414"}
+
+    def test_should_store_an_empty_category_related_field_as_an_empty_string(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        assert event.extraData["stageDirector"] == "François Truffaut"
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"categoryRelatedFields": {"category": "SEANCE_CINE", "stageDirector": ""}},
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["categoryRelatedFields"]["stageDirector"] == ""
+
+        db.session.refresh(event)
+        assert event.extraData == {"stageDirector": "", "visa": "22757"}
+
+
+    # --- `publicationDatetime`
+
+    @time_machine.travel(FROZEN_NOW, tick=False)
     @pytest.mark.parametrize(
-        "partial_request_json,expected_publication_datetime,expected_response_publication_datetime",
+        "partial_body,expected_stored,expected_returned",
         [
-            # should set new value
+            # sent in Europe/Paris, read back in UTC
             (
-                {"publicationDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
-                datetime.datetime(2025, 8, 1, 6, tzinfo=datetime.UTC),
-                "2025-08-01T06:00:00Z",
+                {"publicationDatetime": "2026-08-01T08:00:00+02:00"},
+                datetime.datetime(2026, 8, 1, 6, 0, tzinfo=datetime.UTC),
+                "2026-08-01T06:00:00Z",
             ),
+            # the `now` literal resolves to the current instant
             (
                 {"publicationDatetime": "now"},
-                datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC),
-                "2025-06-25T12:30:00Z",
+                datetime.datetime(2026, 6, 25, 12, 30, tzinfo=datetime.UTC),
+                "2026-06-25T12:30:00Z",
             ),
-            # should unset previous value
-            ({"publicationDatetime": None}, None, None),
-            # should keep previous value
-            ({}, datetime.datetime(2025, 5, 1, 3, tzinfo=datetime.UTC), "2025-05-01T03:00:00Z"),
         ],
     )
-    def test_publication_datetime_param(
-        self, partial_request_json, expected_publication_datetime, expected_response_publication_datetime
-    ):
+    def test_should_publish_the_event_at_the_requested_datetime(self, partial_body, expected_stored, expected_returned):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = self.setup_base_resource(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            publication_datetime=datetime.datetime(2025, 5, 1, 3),
-        )
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=partial_request_json)
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body=partial_body)
 
-        assert response.status_code == 200
-        assert response.json["publicationDatetime"] == expected_response_publication_datetime
+        assert response.status_code == 200, response.json
+        assert response.json["publicationDatetime"] == expected_returned
 
-        update_offer = db.session.query(offers_models.Offer).filter_by(id=offer.id).one()
-        assert update_offer.publicationDatetime == expected_publication_datetime
+        db.session.refresh(event)
+        assert event.publicationDatetime == expected_stored
 
-    def test_update_with_non_nullable_fields_does_not_update_them(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            lastProvider=venue_provider.provider,
-            publicationDatetime=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
-            - datetime.timedelta(days=1),
-        )
+    # --- `isActive` (deprecated)
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": None})
-        assert response.status_code == 200
-
-        db.session.refresh(offer)
-        assert offer.isActive
-
-    def test_deactivate_offer(self):
+    def test_should_ignore_deprecated_is_active_when_it_is_none(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        before_update = event.dateUpdated
+        assert event.isActive is True
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": False})
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"isActive": None})
 
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
+
+        db.session.refresh(event)
+        assert event.dateUpdated == before_update
+        # `isActive` is derived from `publicationDatetime`, which was left untouched
+        assert event.isActive is True
+
+    def test_should_deactivate_with_deprecated_is_active_false(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        assert event.publicationDatetime is not None
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"isActive": False})
+
+        assert response.status_code == 200, response.json
+        assert response.json["publicationDatetime"] is None
         assert response.json["status"] == "INACTIVE"
-        assert offer.isActive is False
 
-    def test_activate_offer_default_publication_datetime(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            lastProvider=venue_provider.provider,
-            publicationDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
-            isActive=False,
-        )
+        db.session.refresh(event)
+        assert event.publicationDatetime is None
 
-        now = datetime.datetime.now(datetime.timezone.utc)
-        with time_machine.travel(now, tick=False):
-            response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": True})
-        assert response.status_code == 200
-        db.session.refresh(offer)
-        assert offer.isActive is True
-        assert offer.publicationDatetime == now
-
-    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    @pytest.mark.parametrize(
-        "partial_request_json,expected_booking_allowed_datetime,expected_response_booking_allowed_datetime",
-        [
-            # should set new value
-            (
-                {"bookingAllowedDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
-                datetime.datetime(2025, 8, 1, 6, tzinfo=datetime.UTC),
-                "2025-08-01T06:00:00Z",
-            ),
-            # should unset value
-            ({"bookingAllowedDatetime": None}, None, None),
-            # should keep previous value
-            ({}, datetime.datetime(2025, 5, 1, 3, tzinfo=datetime.UTC), "2025-05-01T03:00:00Z"),
-        ],
-    )
-    def test_booking_allowed_datetime_param(
-        self, partial_request_json, expected_booking_allowed_datetime, expected_response_booking_allowed_datetime
-    ):
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    def test_should_activate_with_deprecated_is_active_true(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = self.setup_base_resource(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            booking_allowed_datetime=datetime.datetime(2025, 5, 1, 3),
+        event = self.setup_base_resource(
+            venue=venue_provider.venue, provider=venue_provider.provider, publicationDatetime=None
+        )
+        assert event.isActive is False
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"isActive": True})
+
+        assert response.status_code == 200, response.json
+        assert response.json["publicationDatetime"] == "2026-06-25T12:30:00Z"
+
+        db.session.refresh(event)
+        assert event.publicationDatetime == datetime.datetime(2026, 6, 25, 12, 30, tzinfo=datetime.UTC)
+        assert event.isActive is True
+
+
+    # --- `bookingAllowedDatetime`
+
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
+    def test_should_delay_bookings_until_the_booking_allowed_datetime(self, notify_mock):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(
+            # sent in Europe/Paris, read back in UTC
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"bookingAllowedDatetime": "2026-07-15T10:00:00+02:00"},
         )
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=partial_request_json)
+        assert response.status_code == 200, response.json
+        assert response.json["bookingAllowedDatetime"] == "2026-07-15T08:00:00Z"
+        # bookings are not open yet: users are notified when the datetime is reached
+        notify_mock.assert_not_called()
 
-        assert response.status_code == 200
-        assert response.json["bookingAllowedDatetime"] == expected_response_booking_allowed_datetime
+        db.session.refresh(event)
+        assert event.bookingAllowedDatetime == datetime.datetime(2026, 7, 15, 8, 0, tzinfo=datetime.UTC)
 
-        update_offer = db.session.query(offers_models.Offer).filter_by(id=offer.id).one()
-        assert update_offer.bookingAllowedDatetime == expected_booking_allowed_datetime
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
+    def test_should_notify_users_when_bookings_are_opened_immediately(self, notify_mock):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-    def test_update_location_with_physical_location(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"bookingAllowedDatetime": None})
 
+        assert response.status_code == 200, response.json
+        assert response.json["bookingAllowedDatetime"] is None
+        assert notify_mock.call_count == 1
+
+        db.session.refresh(event)
+        assert event.bookingAllowedDatetime is None
+
+    # --- `location`
+
+    def test_should_move_the_event_to_another_venue_with_a_physical_location(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        # a venue of another offerer: the only requirement is that it is linked to the calling provider
         other_venue = providers_factories.VenueProviderFactory(provider=venue_provider.provider).venue
-        json_data = {"location": {"type": "physical", "venueId": other_venue.id}}
+        assert other_venue.managingOffererId != venue_provider.venue.managingOffererId
+        offerer_address_id = event.offererAddressId
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 200
-
-        assert offer.venueId == other_venue.id
-        assert offer.venue.offererAddress.id == other_venue.offererAddress.id
-
-    def test_update_location_with_address(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
-
-        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        address = geography_factories.AddressFactory(
-            latitude=50.63153,
-            longitude=3.06089,
-            postalCode=59000,
-            city="Lille",
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"location": {"type": "physical", "venueId": other_venue.id}},
         )
 
-        providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
-        json_data = {"location": {"type": "address", "venueId": other_venue.id, "addressId": address.id}}
+        assert response.status_code == 200, response.json
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 200
+        db.session.refresh(event)
+        assert event.offererAddress.addressId == other_venue.offererAddress.addressId
+        assert event.offererAddress.label is None
 
-        assert offer.offererAddress.addressId == address.id
+        assert event.venueId == other_venue.id
+        assert event.venue.managingOffererId == other_venue.managingOffererId
 
-    def test_update_location_at_venue_location_as_physical(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        venue = offer.venue
-        json_data = {
-            "location": {
-                "type": "address",
-                "venue_id": venue.id,
-                "address_id": venue.offererAddress.addressId,
-                "address_label": venue.publicName,
-            }
+        assert event.offererAddressId != offerer_address_id
+
+
+    @pytest.mark.parametrize("address_label", [None, "Salle Truffaut"])
+    def test_should_update_the_offerer_address_with_an_address_location(self, address_label):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        event = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+        address = geography_factories.AddressFactory(street="28 boulevard des Capucines")
+        assert address.id != venue.offererAddress.addressId
+        offerer_address_id = event.offererAddressId
+
+        location = {"type": "address", "venueId": venue.id, "addressId": address.id}
+        if address_label is not None:
+            location["addressLabel"] = address_label
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"location": location})
+
+        assert response.status_code == 200, response.json
+        # `get_location` reports an address location because the offerer address differs from
+        # the venue one and its label differs from the venue public name
+        assert response.json["location"] == {
+            "type": "address",
+            "venueId": venue.id,
+            "addressId": address.id,
+            "addressLabel": address_label,
         }
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 200
+        db.session.refresh(event)
+        assert event.offererAddress.addressId == address.id
+        assert event.offererAddress.label == address_label
+        assert event.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
 
-        assert offer.venueId == venue.id
-        assert offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
-        assert offer.offererAddress.id != venue.offererAddress.id
-        assert offer.offererAddress.addressId == venue.offererAddress.addressId
-        assert offer.offererAddress.label is None
+        assert event.offererAddressId != offerer_address_id
+
+    def test_should_drop_the_address_label_when_the_address_and_label_match_the_venue_ones(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        event = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+        offerer_address_id = event.offererAddressId
+        before_update = event.dateUpdated
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={
+                "location": {
+                    "type": "address",
+                    "venueId": venue.id,
+                    "addressId": venue.offererAddress.addressId,
+                    "addressLabel": venue.publicName,
+                }
+            },
+        )
+
+        assert response.status_code == 200, response.json
+
+        db.session.refresh(event)
+        assert event.offererAddress.label is None
+        assert event.offererAddress.addressId == venue.offererAddress.addressId
+        assert event.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+        assert event.offererAddress.id != venue.offererAddress.id
+        assert event.offererAddressId == offerer_address_id
+        assert event.dateUpdated == before_update
+
+
+    # --- `videoUrl`
 
     @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
-    def test_update_video(self, get_video_metadata_from_cache_mock):
+    def test_should_add_a_video(self, get_video_metadata_mock):
+        get_video_metadata_mock.return_value = VIDEO_METADATA
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        assert event.metaData is None
+        before_update = event.dateUpdated
 
-        get_video_metadata_from_cache_mock.return_value = youtube.YoutubeVideoMetadata(
-            id="ZjSlDZhwHs8",
-            title="Gilbert organisé",
-            thumbnail_url="/mon/thumnail/url.jpg",
-            duration=1312,
-        )
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"videoUrl": VIDEO_URL})
 
-        offers_factories.OfferMetaDataFactory(
-            offer=offer,
-            videoDuration=262,
-            videoExternalId="lm20v6ASSFI",
-            videoThumbnailUrl="/mocked/thumbnail/lm20v6ASSFI.jpg",
-            videoTitle="WILDFLOWER",
-            videoUrl="https://www.youtube.com/watch?v=lm20v6ASSFI",
-        )
-        assert offer.metaData.videoUrl == "https://www.youtube.com/watch?v=lm20v6ASSFI"
-        json_data = {"videoUrl": "https://www.youtube.com/watch?v=ZjSlDZhwHs8"}
+        assert response.status_code == 200, response.json
+        assert response.json["videoUrl"] == VIDEO_URL
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
+        db.session.refresh(event)
+        assert event.metaData.videoUrl == VIDEO_URL
+        assert event.metaData.videoExternalId == VIDEO_METADATA.id
+        assert event.metaData.videoTitle == VIDEO_METADATA.title
+        assert event.metaData.videoThumbnailUrl == VIDEO_METADATA.thumbnail_url
+        assert event.metaData.videoDuration == VIDEO_METADATA.duration
+        # the video lives in its own OfferMetaData row: the offer itself is left untouched
+        assert event.dateUpdated == before_update
 
-        assert response.json["videoUrl"] == "https://www.youtube.com/watch?v=ZjSlDZhwHs8"
-        assert response.status_code == 200
-        assert offer.metaData.videoExternalId == "ZjSlDZhwHs8"
-        assert offer.metaData.videoTitle == "Gilbert organisé"
-
-    def test_delete_video(self):
+    @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
+    def test_should_replace_the_existing_video(self, get_video_metadata_mock):
+        get_video_metadata_mock.return_value = VIDEO_METADATA
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        offers_factories.OfferMetaDataFactory(offer=event, **PREVIOUS_VIDEO_METADATA)
 
-        offers_factories.OfferMetaDataFactory(
-            offer=offer,
-            videoDuration=262,
-            videoExternalId="lm20v6ASSFI",
-            videoThumbnailUrl="/mocked/thumbnail/lm20v6ASSFI.jpg",
-            videoTitle="WILDFLOWER",
-            videoUrl="https://www.youtube.com/watch?v=lm20v6ASSFI",
-        )
-        json_data = {"videoUrl": None}
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"videoUrl": VIDEO_URL})
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 200
-        assert offer.metaData.videoUrl == None
-        assert offer.metaData.videoExternalId == None
+        assert response.status_code == 200, response.json
+        assert response.json["videoUrl"] == VIDEO_URL
 
-        assert response.json["videoUrl"] == None
+        db.session.refresh(event)
+        assert event.metaData.videoUrl == VIDEO_URL
+        assert event.metaData.videoExternalId == VIDEO_METADATA.id
+        assert event.metaData.videoTitle == VIDEO_METADATA.title
+        assert event.metaData.videoThumbnailUrl == VIDEO_METADATA.thumbnail_url
+        assert event.metaData.videoDuration == VIDEO_METADATA.duration
+
+    def test_should_delete_the_video_when_video_url_is_none(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        offers_factories.OfferMetaDataFactory(offer=event, **PREVIOUS_VIDEO_METADATA)
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"videoUrl": None})
+
+        assert response.status_code == 200, response.json
+        assert response.json["videoUrl"] is None
+
+        db.session.refresh(event)
+        assert event.metaData.videoUrl is None
+        assert event.metaData.videoExternalId is None
+        assert event.metaData.videoTitle is None
+        assert event.metaData.videoThumbnailUrl is None
+        assert event.metaData.videoDuration is None
+
+
+    # --- Response
+
+    def test_should_return_the_updated_event(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"name": "Jules et Jim"})
+
+        assert response.status_code == 200, response.json
+        assert response.json == {
+            "id": event.id,
+            "name": "Jules et Jim",
+            "description": "Antoine Doinel, treize ans, fugue dans les rues de Paris.",
+            "accessibility": {
+                "audioDisabilityCompliant": True,
+                "mentalDisabilityCompliant": False,
+                "motorDisabilityCompliant": True,
+                "visualDisabilityCompliant": False,
+            },
+            "bookingContact": "contact@cinema.example.com",
+            "bookingEmail": "notify@cinema.example.com",
+            "categoryRelatedFields": {
+                "category": "SEANCE_CINE",
+                "author": None,
+                "stageDirector": "François Truffaut",
+                "visa": "22757",
+            },
+            "enableDoubleBookings": True,
+            "eventDuration": 99,
+            "externalTicketOfficeUrl": None,
+            "hasTicket": False,
+            "idAtProvider": event.idAtProvider,
+            "image": None,
+            "itemCollectionDetails": "À retirer à la caisse du cinéma",
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
+            "priceCategories": [],
+            "publicationDatetime": "2026-01-15T10:00:00Z",
+            "bookingAllowedDatetime": "2026-02-01T10:00:00Z",
+            "status": "SOLD_OUT",
+            "videoUrl": None,
+        }
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns401Test(PatchEventEndpointHelper):
+    def test_should_raise_401_because_not_authenticated(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        before_update = event.dateUpdated
+
+        response = self.make_request(path_params={"event_id": event.id}, json_body={"name": "Jules et Jim"})
+
+        assert response.status_code == 401
+        assert response.json == {"auth": "API key required"}
+
+        db.session.refresh(event)
+        assert event.dateUpdated == before_update
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test(PatchEventEndpointHelper):
-    @pytest.mark.parametrize(
-        "partial_request_json, expected_response_json",
-        [
-            # errors on name
-            (
-                {"name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256"},
-                {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
-            ),
-            (
-                {"name": "Jean Tartine est de retour", "description": "A" * 10_001},
-                {"description": ["ensure this value has at most 10000 characters"]},
-            ),
-            ({"name": None}, {"name": ["cannot be null"]}),
-            # errors on datetimes
-            (
-                {"bookingAllowedDatetime": "2021-01-01T00:00:00"},
-                {"bookingAllowedDatetime": ["The datetime must be timezone-aware."]},
-            ),
-            (
-                {"bookingAllowedDatetime": "2021-01-01T00:00:00+00:00"},
-                {"bookingAllowedDatetime": ["The datetime must be in the future."]},
-            ),
-            (
-                {"publicationDatetime": "2021-01-01T00:00:00"},
-                {"publicationDatetime": ["The datetime must be timezone-aware."]},
-            ),
-            (
-                {"publicationDatetime": "2021-01-01T00:00:00+00:00"},
-                {"publicationDatetime": ["The datetime must be in the future."]},
-            ),
-            (
-                {"publicationDatetime": "NOW"},
-                {"publicationDatetime": ["invalid datetime format", "unexpected value; permitted: 'now'"]},
-            ),
-            # errors on idAtProvider
-            (
-                {"idAtProvider": "a" * 71},
-                {"idAtProvider": ["ensure this value has at most 70 characters"]},
-            ),
-            (
-                {"idAtProvider": "c'est déjà pris :'("},
-                {"idAtProvider": ["`c'est déjà pris :'(` is already taken by another venue offer"]},
-            ),
-            # errors on image
-            (
-                {
-                    "image": {
-                        "file": base64.b64encode(
-                            (pathlib.Path(tests.__path__[0]) / "files" / "mouette_square.jpg").read_bytes()
-                        ).decode()
-                    }
-                },
-                {"imageFile": "Bad image ratio: expected 0.66, found 1.0"},
-            ),
-            (
-                {"image": {"file": image_data.WRONG_IMAGE_SIZE}},
-                {"imageFile": "The image is too small. It must be above 400x600 pixels."},
-            ),
-            # error on location
-            (
-                {"location": {"type": "address", "venueId": 1, "addressId": "coucou"}},
-                {"location.AddressLocation.addressId": ["value is not a valid integer"]},
-            ),
-            (
-                {"location": {"type": "address", "venueId": 1, "addressId": 1, "addressLabel": ""}},
-                {"location.AddressLocation.addressLabel": ["ensure this value has at least 1 characters"]},
-            ),
-            (
-                {"location": {"type": "address", "venueId": 1, "addressId": 1, "addressLabel": "a" * 201}},
-                {"location.AddressLocation.addressLabel": ["ensure this value has at most 200 characters"]},
-            ),
-            # errors on videoUrl
-            (
-                {"videoUrl": "https://peer.tube/w/jZ7ky5kZ4Bk3u88aCvRZPe"},
-                {
-                    "videoUrl": [
-                        "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile"
-                    ]
-                },
-            ),
-            # additional properties not allowed
-            ({"tkilol": ""}, {"tkilol": ["extra fields not permitted"]}),
-            # category related fields
-            (
-                {"categoryRelatedFields": {"category": "CONCERT", "musicType": None}},
-                {"categoryRelatedFields": ["If musicType is set, it cannot be NULL"]},
-            ),
-            # errors on externalTicketOfficeUrl
-            (
-                {"externalTicketOfficeUrl": "https:bloup.com"},
-                {"externalTicketOfficeUrl": ["invalid or missing URL scheme"]},
-            ),
-            (
-                {"externalTicketOfficeUrl": 5},
-                {"externalTicketOfficeUrl": ["invalid or missing URL scheme"]},
-            ),
-            (
-                {"externalTicketOfficeUrl": ""},
-                {"externalTicketOfficeUrl": ["ensure this value has at least 1 characters"]},
-            ),
-        ],
-    )
-    def test_incorrect_payload_should_return_400(self, partial_request_json, expected_response_json):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offers_factories.OfferFactory(venue=venue_provider.venue, idAtProvider="c'est déjà pris :'(")
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+    # --- Request body schema
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=partial_request_json)
+    def test_should_raise_400_because_an_unknown_field_is_sent(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"withdrawalDetails": "À retirer au guichet"},
+        )
 
         assert response.status_code == 400
-        assert response.json == expected_response_json
+        assert response.json == {"withdrawalDetails": ["extra fields not permitted"]}
+
+
+    def test_should_raise_400_because_description_is_too_long(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"description": "a" * 10_001})
+
+        assert response.status_code == 400
+        assert response.json == {"description": ["ensure this value has at most 10000 characters"]}
+
+
+    @pytest.mark.parametrize(
+        "url,expected_error",
+        [
+            ("https:bloup.com", "invalid or missing URL scheme"),
+            (5, "invalid or missing URL scheme"),
+            ("", "ensure this value has at least 1 characters"),
+        ],
+        ids=["missing scheme", "not a string", "empty"],
+    )
+    def test_should_raise_400_because_external_ticket_office_url_is_invalid(self, url, expected_error):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"externalTicketOfficeUrl": url})
+
+        assert response.status_code == 400
+        assert response.json == {"externalTicketOfficeUrl": [expected_error]}
+
+    def test_should_raise_400_because_id_at_provider_is_too_long(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"idAtProvider": "a" * 71})
+
+        assert response.status_code == 400
+        assert response.json == {"idAtProvider": ["ensure this value has at most 70 characters"]}
+
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    @pytest.mark.parametrize("request_field", ["publicationDatetime", "bookingAllowedDatetime"])
+    def test_should_raise_400_because_the_datetime_is_not_timezone_aware(self, request_field):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(
+            plain_api_key, {"event_id": event.id}, json_body={request_field: "2027-01-01T00:00:00"}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {request_field: ["The datetime must be timezone-aware."]}
+
+    @pytest.mark.parametrize("request_field", ["publicationDatetime", "bookingAllowedDatetime"])
+    def test_should_raise_400_because_the_datetime_is_in_the_past(self, request_field):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(
+            plain_api_key, {"event_id": event.id}, json_body={request_field: "2021-01-01T00:00:00+00:00"}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {request_field: ["The datetime must be in the future."]}
+
+    def test_should_raise_400_because_publication_datetime_literal_is_not_lowercase_now(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"publicationDatetime": "NOW"})
+
+        assert response.status_code == 400
+        assert response.json == {
+            "publicationDatetime": ["invalid datetime format", "unexpected value; permitted: 'now'"]
+        }
+
+
+    def test_should_raise_400_because_video_url_is_not_a_youtube_url(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"videoUrl": "https://peer.tube/w/jZ7ky5kZ4Bk3u88aCvRZPe"},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "videoUrl": [
+                "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile"
+            ]
+        }
+
+    # --- `location`
+
+
+    def test_should_raise_400_because_address_location_address_id_is_not_an_integer(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"location": {"type": "address", "venueId": venue_provider.venueId, "addressId": "coucou"}},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"location.AddressLocation.addressId": ["value is not a valid integer"]}
+
+    @pytest.mark.parametrize(
+        "address_label,expected_error",
+        [
+            ("", "ensure this value has at least 1 characters"),
+            ("a" * 201, "ensure this value has at most 200 characters"),
+        ],
+        ids=["empty", "too long"],
+    )
+    def test_should_raise_400_because_address_location_label_length_is_out_of_bounds(
+        self, address_label, expected_error
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        address = geography_factories.AddressFactory(street="6 rue de la Paix")
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={
+                "location": {
+                    "type": "address",
+                    "venueId": venue_provider.venueId,
+                    "addressId": address.id,
+                    "addressLabel": address_label,
+                }
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"location.AddressLocation.addressLabel": [expected_error]}
+
+
+    # --- `categoryRelatedFields`
+
+
+    def test_should_raise_400_because_music_type_is_null(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.CONCERT.id,
+            extraData={"author": "Ray Charles"},
+        )
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"categoryRelatedFields": {"category": "CONCERT", "musicType": None}},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"categoryRelatedFields": ["If musicType is set, it cannot be NULL"]}
+
+
+    # --- `image`
+
+    def test_should_raise_400_because_the_image_is_invalid(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(
+            plain_api_key, {"event_id": event.id}, json_body={"image": {"file": image_data.WRONG_IMAGE_SIZE}}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"imageFile": "The image is too small. It must be above 400x600 pixels."}
+
+    # --- `videoUrl`
 
     @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeNotFoundBackend")
-    def test_video_metadata_not_found(self):
+    def test_should_raise_400_because_video_cannot_be_found_on_youtube(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-        json_data = {"videoUrl": "https://www.youtube.com/watch?v=Mm-KMkg_hgU"}
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"videoUrl": VIDEO_URL})
 
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
         assert response.status_code == 400
-
         assert response.json == {
             "videoUrl": [
                 "This video cannot be found on youtube. It is most likely a private video. Please check your URL."
             ]
         }
 
+    # --- `name`
+
+    def test_should_raise_400_because_name_is_null(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"name": None})
+
+        assert response.status_code == 400
+        assert response.json == {"name": ["cannot be null"]}
+
+    def test_should_raise_400_because_name_contains_an_ean(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"name": "Les Quatre Cents Coups - 9782070286256"},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"name": ["Le titre d'une offre ne peut contenir l'EAN"]}
+
+    # --- `idAtProvider`
+
+    def test_should_raise_400_because_id_at_provider_is_already_taken_by_another_offer_of_the_venue(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        id_at_provider = "seance-du-soir"
+        offers_factories.OfferFactory(venue=venue_provider.venue, idAtProvider=id_at_provider)
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"idAtProvider": id_at_provider})
+
+        assert response.status_code == 400
+        assert response.json == {"idAtProvider": [f"`{id_at_provider}` is already taken by another venue offer"]}
+
+
 @pytest.mark.usefixtures("db_session")
 class Returns404Test(PatchEventEndpointHelper):
+    EVENT_NOT_FOUND = {"event_id": ["The event offer could not be found"]}
+    VENUE_NOT_FOUND = {"global": "Venue cannot be found"}
+
+    # --- The event
+
+
     def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
-        offer = self.setup_base_resource()
-        response = self.make_request(plain_api_key, {"offer_id": offer.id})
+        event = self.setup_base_resource()
+
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"name": "Jules et Jim"})
+
         assert response.status_code == 404
+        assert response.json == self.EVENT_NOT_FOUND
 
     def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        response = self.make_request(plain_api_key, {"offer_id": offer.id})
-        assert response.status_code == 404
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-    def test_should_raise_404_because_venue_in_payload_is_not_linked_to_provider(self):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        venue = self.setup_venue()
+        response = self.make_request(plain_api_key, {"event_id": event.id}, json_body={"name": "Jules et Jim"})
+
+        assert response.status_code == 404
+        assert response.json == self.EVENT_NOT_FOUND
+
+
+    # --- `location`
+
+    def test_should_raise_404_because_venue_in_location_is_not_linked_to_provider(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        other_venue = self.setup_venue()
+        before_update = event.dateUpdated
+
         response = self.make_request(
             plain_api_key,
-            {"offer_id": offer.id, "location": {"type": "physical", "venue_id": venue.id}},
+            {"event_id": event.id},
+            json_body={"location": {"type": "physical", "venueId": other_venue.id}},
         )
+
         assert response.status_code == 404
+        assert response.json == self.VENUE_NOT_FOUND
+
+        db.session.refresh(event)
+        assert event.dateUpdated == before_update
+
+
