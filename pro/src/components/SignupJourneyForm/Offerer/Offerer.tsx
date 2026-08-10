@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
@@ -16,8 +16,6 @@ import {
   cleanSignupJourneyStorage,
   saveInitialAddressToStorage,
   saveOffererToStorage,
-  tryRestoreInitialAddressFromStorage,
-  tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -39,30 +37,17 @@ import { Button } from '@/design-system/Button/Button'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { ActionBar } from '../ActionBar/ActionBar'
-import {
-  DEFAULT_ADDRESS_FORM_VALUES,
-  DEFAULT_OFFERER_FORM_VALUES,
-} from './constants'
+import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
 import styles from './Offerer.module.scss'
 
 export const Offerer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
-  const {
-    offerer,
-    setOfferer,
-    setActivity,
-    initialAddress,
-    setInitialAddress,
-  } = useSignupJourneyContext()
+  const { offerer, setOfferer, setActivity, setInitialAddress } =
+    useSignupJourneyContext()
   const isSignupSimulationEnabled = useActiveFeature(
     'WIP_PRE_SIGNUP_SIMULATION'
-  )
-  const [initialValues, setInitialValues] = useState<SiretInputFormValues>(
-    offerer
-      ? { siret: offerer.siret }
-      : { siret: DEFAULT_OFFERER_FORM_VALUES.siret }
   )
 
   const navigateToNextStep = useCallback(
@@ -87,33 +72,6 @@ export const Offerer = (): JSX.Element => {
     [navigate, isSignupSimulationEnabled]
   )
 
-  useEffect(() => {
-    // Try to restore the "offerer" and "initialAddress" context from storage
-    try {
-      if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
-        const storedOfferer = tryRestoreOffererFromStorage(setOfferer)
-        setInitialValues(storedOfferer)
-      }
-      if (
-        initialAddress === null ||
-        initialAddress === DEFAULT_ADDRESS_FORM_VALUES
-      ) {
-        tryRestoreInitialAddressFromStorage(setInitialAddress)
-      }
-    } catch {
-      cleanSignupJourneyStorage()
-      navigate('/inscription/structure/recherche')
-      return
-    }
-  }, [
-    offerer,
-    initialAddress,
-    setOfferer,
-    setInitialAddress,
-    setInitialValues,
-    navigate,
-  ])
-
   const beforeCallCheck = (formValues: SiretInputFormValues): boolean => {
     // Check here if the siret we've just submitted is the same as already stored in localStorage
     // In that case, we don't need to fetch the siret data again and we can immediately redirect the user to the next step
@@ -125,7 +83,7 @@ export const Offerer = (): JSX.Element => {
 
       if (
         offererStoredData?.siret?.trim() === formValues.siret.trim() &&
-        offererStoredData?.siren
+        offererStoredData?.siren // we have a siren if we already validated the siret step (this step)
       ) {
         navigateToNextStep(offererStoredData.hasVenueWithSiret)
         return false
@@ -154,9 +112,13 @@ export const Offerer = (): JSX.Element => {
         localStorageManager.getItem(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER) ??
           '{}'
       ) as unknown as OffererType
-      if (offererStoredData?.siret?.trim() !== formValues.siret.trim()) {
+      if (
+        offererStoredData?.siret?.trim() !== formValues.siret.trim() &&
+        offererStoredData?.siren // we have a siren if we already validated the siret step (this step)
+      ) {
         setActivity(DEFAULT_ACTIVITY_VALUES)
-        // (no need to reset offerer + initialAddress because they're redefined below)
+        // we just need to reset offerer.isOpenToPublic, since it's used in the new offerer data below
+        delete offerer?.isOpenToPublic
         cleanSignupJourneyStorage()
       }
 
@@ -190,7 +152,6 @@ export const Offerer = (): JSX.Element => {
         ) !== undefined
 
       const offererData = {
-        ...offerer,
         ...formValues,
         name: offererSiretData.name ?? '',
         ...addressValues,
@@ -200,6 +161,7 @@ export const Offerer = (): JSX.Element => {
           venueOfOffererProvidersResponse.offererSiren ??
           offererSiretData.siren,
         isDiffusible: offererSiretData.isDiffusible,
+        isOpenToPublic: offerer?.isOpenToPublic,
       } satisfies OffererType
 
       saveOffererToStorage(offererData)
@@ -264,7 +226,9 @@ export const Offerer = (): JSX.Element => {
       )}
       <SiretInputForm
         submitElement={submitElement}
-        initialValues={initialValues}
+        initialValues={{
+          siret: offerer?.siret || DEFAULT_OFFERER_FORM_VALUES.siret,
+        }}
         checkShouldSubmit={beforeCallCheck}
         handleSiretData={handleSiretData}
       />

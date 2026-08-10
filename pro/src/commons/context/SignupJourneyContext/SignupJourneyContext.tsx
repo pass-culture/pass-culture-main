@@ -135,7 +135,7 @@ export function SignupJourneyContextProvider({
 
   const [activity, setActivity] = useState<ActivityContext | null>(
     buildDefaultActivity(
-      searchParams.get('audience') as
+      searchParams.get('activity') as
         | ActivityOpenToPublic
         | ActivityNotOpenToPublic
         | null,
