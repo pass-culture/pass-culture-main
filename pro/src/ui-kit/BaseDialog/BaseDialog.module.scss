@@ -19,5 +19,6 @@
   &::backdrop {
     background-color: var(--color-background-overlay);
     backdrop-filter: blur(4px); // Modern blur effect
+    pointer-events: none;
   }
 }

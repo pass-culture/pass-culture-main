@@ -4,7 +4,6 @@
 @use "styles/mixins/_size.scss" as size;
 
 .dialog {
-  margin-top: var(--size-spacing-l);
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -26,7 +25,6 @@
   }
 
   &-checkboxes {
-    max-height: rem.torem(200px);
     overflow-y: auto;
   }
 

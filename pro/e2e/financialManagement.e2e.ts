@@ -1,4 +1,9 @@
-import { expect, request as playwrightRequest, test } from '@playwright/test'
+import {
+  expect,
+  type Page,
+  request as playwrightRequest,
+  test,
+} from '@playwright/test'
 
 import { checkAccessibility } from './helpers/accessibility'
 import { expectSuccessSnackbar } from './helpers/assertions'
@@ -14,6 +19,18 @@ interface ProUserWithFinancialDataResponse {
   user: {
     email: string
   }
+}
+
+const unlinkWarningDialogTitle =
+  'Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire'
+
+const confirmUnlinkWarningDialog = async (page: Page) => {
+  const unlinkWarningDialog = page.getByRole('dialog', {
+    name: unlinkWarningDialogTitle,
+  })
+  await expect(unlinkWarningDialog).toBeVisible()
+  await unlinkWarningDialog.getByRole('button', { name: 'Confirmer' }).click()
+  await expect(unlinkWarningDialog).toBeHidden()
 }
 
 test.describe('Financial Management - messages, links to external help page, reimbursement details, unattach (Optimized)', () => {
@@ -96,7 +113,11 @@ test.describe('Financial Management - messages, links to external help page, rei
         page,
         'Vos modifications ont bien été prises en compte.'
       )
-      await expect(page.getByRole('dialog')).toHaveCount(0)
+      await expect(
+        page.getByRole('dialog', {
+          name: unlinkWarningDialogTitle,
+        })
+      ).toHaveCount(0)
 
       const linkedVenuesSection = page.getByTestId(
         'reimbursement-bank-account-linked-venues'
@@ -115,18 +136,17 @@ test.describe('Financial Management - messages, links to external help page, rei
       await modifyDialog.getByText('Mon lieu 1').click()
       await modifyDialog.getByText('Mon lieu 2').click()
       await modifyDialog.getByText('Enregistrer').click()
-      await expect(
-        modifyDialog.getByText(
-          'Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire'
-        )
-      ).toBeVisible()
-      await modifyDialog.getByText('Confirmer').click()
+      await confirmUnlinkWarningDialog(page)
 
       await expectSuccessSnackbar(
         page,
         'Vos modifications ont bien été prises en compte.'
       )
-      await expect(page.getByRole('dialog')).toHaveCount(0)
+      await expect(
+        page.getByRole('dialog', {
+          name: unlinkWarningDialogTitle,
+        })
+      ).toHaveCount(0)
 
       await expect(
         linkedVenuesSection.getByText(
@@ -156,7 +176,11 @@ test.describe('Financial Management - messages, links to external help page, rei
         page,
         'Vos modifications ont bien été prises en compte.'
       )
-      await expect(page.getByRole('dialog')).toHaveCount(0)
+      await expect(
+        page.getByRole('dialog', {
+          name: unlinkWarningDialogTitle,
+        })
+      ).toHaveCount(0)
 
       await expect(
         page.getByText('Structures rattachées à ce compte bancaire')
@@ -166,18 +190,17 @@ test.describe('Financial Management - messages, links to external help page, rei
       const modifyDialog = page.getByRole('dialog')
       await modifyDialog.getByText('Tout désélectionner').click()
       await modifyDialog.getByText('Enregistrer').click()
-      await expect(
-        modifyDialog.getByText(
-          'Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire'
-        )
-      ).toBeVisible()
-      await modifyDialog.getByText('Confirmer').click()
+      await confirmUnlinkWarningDialog(page)
 
       await expectSuccessSnackbar(
         page,
         'Vos modifications ont bien été prises en compte.'
       )
-      await expect(page.getByRole('dialog')).toHaveCount(0)
+      await expect(
+        page.getByRole('dialog', {
+          name: unlinkWarningDialogTitle,
+        })
+      ).toBeHidden()
 
       const linkedVenuesSection = page.getByTestId(
         'reimbursement-bank-account-linked-venues'

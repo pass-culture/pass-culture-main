@@ -64,6 +64,21 @@ const IntersectionObserverMock = vi.fn(
 
 vi.stubGlobal('IntersectionObserver', IntersectionObserverMock)
 
+// jsdom does not always implement the native <dialog> API used by BaseDialog.
+if (typeof HTMLDialogElement !== 'undefined') {
+  if (!HTMLDialogElement.prototype.showModal) {
+    HTMLDialogElement.prototype.showModal = function showModal() {
+      this.open = true
+    }
+  }
+
+  if (!HTMLDialogElement.prototype.close) {
+    HTMLDialogElement.prototype.close = function close() {
+      this.open = false
+    }
+  }
+}
+
 // Fail on console errors and warnings
 // https://github.com/thomasbrodusch/vitest-fail-on-console#readme
 failOnConsole()

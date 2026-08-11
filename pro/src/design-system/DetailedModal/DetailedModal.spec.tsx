@@ -21,19 +21,6 @@ function renderDetailedModal(props?: Partial<DetailedModalProps>) {
 }
 
 describe('DetailedModal', () => {
-  beforeEach(() => {
-    HTMLDialogElement.prototype.showModal = vi
-      .fn()
-      .mockImplementation(function (this: HTMLDialogElement) {
-        this.setAttribute('open', '')
-      })
-    HTMLDialogElement.prototype.close = vi.fn().mockImplementation(function (
-      this: HTMLDialogElement
-    ) {
-      this.removeAttribute('open')
-    })
-  })
-
   afterEach(() => {
     vi.restoreAllMocks()
   })

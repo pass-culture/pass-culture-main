@@ -117,6 +117,81 @@ describe('LinkVenueDialog', () => {
     ).toBeInTheDocument()
   })
 
+  it('should close link venues modal when clicking cancel without changes', async () => {
+    const closeDialog = vi.fn()
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+    ]
+
+    renderLinkVenuesDialog(
+      1,
+      { ...defaultBankAccount, linkedVenues: [] },
+      managedVenues,
+      closeDialog
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    expect(closeDialog).toHaveBeenCalledTimes(1)
+  })
+
+  it('should open discard confirmation on cancel with changes and close on confirm', async () => {
+    const closeDialog = vi.fn()
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+    ]
+
+    renderLinkVenuesDialog(
+      1,
+      { ...defaultBankAccount, linkedVenues: [] },
+      managedVenues,
+      closeDialog
+    )
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Lieu 1' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    expect(
+      screen.getByText(
+        'Les informations non sauvegardées ne seront pas prises en compte'
+      )
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Quitter sans enregistrer' })
+    )
+
+    expect(closeDialog).toHaveBeenCalledTimes(1)
+  })
+
+  it('should close pricing point pop-in when clicking cancel', async () => {
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, hasPricingPoint: false },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Sélectionner un SIRET',
+      })
+    )
+
+    expect(
+      screen.getByRole('heading', {
+        name: /Sélectionnez un SIRET pour la structure “Mon super lieu”/,
+      })
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getAllByRole('button', { name: 'Annuler' })[1])
+
+    expect(
+      screen.queryByRole('heading', {
+        name: /Sélectionnez un SIRET pour la structure “Mon super lieu”/,
+      })
+    ).not.toBeInTheDocument()
+  })
+
   it('should update venue selection when selecting pricing point', async () => {
     vi.spyOn(api, 'linkVenueToPricingPoint').mockResolvedValue()
     const managedVenues = [
