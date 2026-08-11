@@ -2233,3 +2233,88 @@ class ValidateCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):
             collectiveOffer__validation=OfferValidationStatus.PENDING,
         )
         return url_for(self.endpoint, collective_offer_id=stock.collectiveOffer.id)
+
+
+class GetMoveCollectiveOfferFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.collective_offer.get_move_collective_offer_form"
+    endpoint_kwargs = {"collective_offer_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+
+    # session
+    expected_num_queries = 1
+
+    def test_get_move_collective_offer_form(self, legit_user, authenticated_client):
+        collective_offer_id = educational_factories.CollectiveStockFactory().collectiveOfferId
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, collective_offer_id=collective_offer_id))
+            assert response.status_code == 200
+
+
+class MoveCollectiveOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_web.collective_offer.move_collective_offer"
+    endpoint_kwargs = {"collective_offer_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+
+    @patch("pcapi.core.educational.api.offer.move_collective_offer")
+    def test_move_collective_offer(self, mock_move_offer, authenticated_client):
+        collective_booking = educational_factories.PendingCollectiveBookingFactory()
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"venue": destination_venue.id},
+            collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert (
+            html_parser.extract_alert(response.data)
+            == "L'offre collective a été transférée vers le nouveau partenaire culturel"
+        )
+        mock_move_offer.assert_called_once_with(
+            collective_booking.collectiveStock.collectiveOffer.id, destination_venue.id
+        )
+
+    @pytest.mark.parametrize(
+        "exception,expected_error",
+        [
+            (
+                educational_exceptions.OffererNotAllowedOnAdage,
+                "L'entité juridique cible ne peut pas créer d'offre EAC",
+            ),
+            (
+                educational_exceptions.BookingIsAlreadyRefunded,
+                "La réservation de l'offre collective est déjà remboursée",
+            ),
+        ],
+    )
+    @patch("pcapi.core.educational.api.offer.move_collective_offer")
+    def test_cant_move_collective_offer(self, mock_move_offer, exception, expected_error, authenticated_client):
+        collective_booking = educational_factories.PendingCollectiveBookingFactory()
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        mock_move_offer.side_effect = exception()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"venue": destination_venue.id},
+            collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == expected_error
+        mock_move_offer.assert_called_once_with(
+            collective_booking.collectiveStock.collectiveOffer.id, destination_venue.id
+        )
+
+    def test_cant_move_collective_offer_not_found(self, authenticated_client):
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        response = self.post_to_endpoint(
+            authenticated_client, form={"venue": destination_venue.id}, collective_offer_id=99999
+        )
+
+        assert response.status_code == 404

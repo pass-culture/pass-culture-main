@@ -184,6 +184,31 @@ class AutocompletePricingPointTest(AutocompleteTestBase):
         self._test_autocomplete(authenticated_client, search_query, expected_texts)
 
 
+class AutocompleteVenuesAllowedOnAdageTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_venues_allowed_on_adage"
+
+    @pytest.mark.parametrize(
+        "search_query, expected_texts",
+        [
+            ("", set()),
+            ("123", {"Cinéma fabuleux (56123478900023)"}),
+            ("Cinéma", {"Cinéma fabuleux (56123478900023)"}),
+            ("1234", set()),
+            ("magique", set()),
+            ("12345", set()),
+        ],
+    )
+    def test_autocomplete_venues(self, authenticated_client, search_query, expected_texts):
+        offerers_factories.VenueWithoutSiretFactory(
+            id=12345, siret="56123478900010", managingOfferer__allowedOnAdage=False, name="Cinéma magique"
+        )
+        offerers_factories.VenueFactory(
+            id=123, siret="56123478900023", managingOfferer__allowedOnAdage=True, name="Cinéma fabuleux"
+        )
+
+        self._test_autocomplete(authenticated_client, search_query, expected_texts)
+
+
 class AutocompleteCriteriaTest(AutocompleteTestBase):
     endpoint = "backoffice_web.autocomplete_criteria"
 
