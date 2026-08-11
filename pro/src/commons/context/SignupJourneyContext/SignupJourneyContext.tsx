@@ -29,6 +29,7 @@ import {
   saveActivityToStorage,
   saveOffererToStorage,
   tryRestoreActivityFromStorage,
+  tryRestoreInitialAddressFromStorage,
   tryRestoreOffererFromStorage,
 } from './storage'
 import type { Address } from './types'
@@ -164,6 +165,14 @@ function buildDefaultOfferer(
   }
 }
 
+function buildDefaultInitialAddress(): InitialAddress {
+  try {
+    return tryRestoreInitialAddressFromStorage(noop)
+  } catch {
+    return DEFAULT_ADDRESS_FORM_VALUES
+  }
+}
+
 export function SignupJourneyContextProvider({
   children,
 }: Readonly<SignupJourneyContextProviderProps>) {
@@ -187,7 +196,7 @@ export function SignupJourneyContextProvider({
   )
 
   const [initialAddress, setInitialAddress] = useState<InitialAddress | null>(
-    DEFAULT_ADDRESS_FORM_VALUES
+    buildDefaultInitialAddress
   )
 
   const contextValue = useMemo(

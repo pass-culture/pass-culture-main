@@ -297,6 +297,7 @@ describe('Signup', () => {
               firstName: 'Prénom',
               lastName: 'Nom',
               password: 'user@AZERTY123', // NOSONAR
+              structureSimulationInfos: null,
               token: 'token',
             },
           })
@@ -356,6 +357,68 @@ describe('Signup', () => {
               firstName: 'Prénom',
               lastName: 'Nom',
               password: 'user@AZERTY123', // NOSONAR
+              structureSimulationInfos: null,
+              token: 'token',
+            },
+          })
+          await expect(
+            screen.findByText('I’m the confirmation page')
+          ).resolves.toBeInTheDocument()
+        })
+
+        it('should pass through the simulation information when given in the searchParams', async () => {
+          vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+            remove: vi.fn(),
+          } as unknown as HTMLScriptElement)
+          vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+          renderSignUp({
+            initialRouterEntries: [
+              '/inscription/compte/creation?isOpenToPublic=true&activity=RECORD_STORE&siret=11111111000011&targets=INDIVIDUAL&targets=COLLECTIVE',
+            ],
+          })
+          const submitButton = screen.getByRole('button', {
+            name: /S’inscrire/,
+          })
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Adresse email */,
+            }),
+            'test@example.com'
+          )
+          await userEvent.type(
+            screen.getByLabelText(/Mot de passe/),
+            'user@AZERTY123'
+          )
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Nom/,
+            }),
+            'Nom'
+          )
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Prénom/,
+            }),
+            'Prénom'
+          )
+          await userEvent.tab()
+
+          expect(submitButton).toBeEnabled()
+          await userEvent.click(submitButton)
+
+          expect(api.signupPro).toHaveBeenCalledWith({
+            body: {
+              contactOk: false,
+              email: 'test@example.com',
+              firstName: 'Prénom',
+              lastName: 'Nom',
+              password: 'user@AZERTY123', // NOSONAR
+              structureSimulationInfos: {
+                activity: 'RECORD_STORE',
+                isOpenToPublic: true,
+                siret: '11111111000011',
+                targets: ['INDIVIDUAL', 'COLLECTIVE'],
+              },
               token: 'token',
             },
           })

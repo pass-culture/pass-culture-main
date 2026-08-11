@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs } from 'react-router'
 
 import { api } from '@/apiClient/api'
+import * as auth from '@/commons/auth/getCurrentUserPermissions'
 import * as handleUnexpectedErrorModule from '@/commons/errors/handleUnexpectedError'
 import * as storeModule from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
@@ -42,10 +43,13 @@ const setupStore = () => {
 }
 
 const createMockLoaderArgs = (
-  token?: string
+  token?: string,
+  searchParams: string = ''
 ): LoaderFunctionArgs<{ token: string }> =>
   ({
-    request: new Request('http://localhost/inscription/compte/confirmation'),
+    request: new Request(
+      `http://localhost/inscription/compte/confirmation${searchParams}`
+    ),
     params: token ? { token } : {},
   }) as unknown as LoaderFunctionArgs<{ token: string }>
 
@@ -187,5 +191,32 @@ describe('validateSignupActivation', () => {
     expect(api.validateUser).toHaveBeenCalledTimes(1)
     expect(api.getProfile).toHaveBeenCalledTimes(1)
     expect(handleUnexpectedErrorSpy).not.toHaveBeenCalled()
+  })
+
+  it('should pass the searchParams', async () => {
+    const store = setupStore()
+    const mockUser = sharedCurrentUserFactory()
+    vi.spyOn(api, 'validateUser').mockResolvedValueOnce(undefined)
+    vi.spyOn(api, 'getProfile').mockResolvedValueOnce(mockUser)
+    vi.spyOn(store, 'dispatch').mockReturnValue({
+      unwrap: vi.fn().mockResolvedValueOnce(undefined),
+    } as unknown as ReturnType<typeof store.dispatch>)
+
+    vi.spyOn(auth, 'getCurrentUserPermissions').mockReturnValueOnce({
+      hasSelectedPartnerVenue: false,
+      hasSelectedAdminOfferer: false,
+      hasVenues: false,
+      isAuthenticated: true,
+      isSelectedPartnerVenueActive: false,
+      isSelectedAdminOffererAssociated: false,
+      isSelectedPartnerVenueAssociated: false,
+      isSelectedPartnerVenueOnboarded: false,
+    })
+    const args = createMockLoaderArgs('test-token', '?siret=12121212121')
+
+    await expect(validateSignupActivation(args)).rejects.toEqual({
+      type: 'redirect',
+      path: '/inscription/structure/recherche?siret=12121212121',
+    })
   })
 })

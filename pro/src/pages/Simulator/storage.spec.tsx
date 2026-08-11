@@ -1,5 +1,7 @@
 import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from 'commons/utils/localStorageManager'
 import {
+  resetSimulatorActivityAndTargetStorage,
+  resetSimulatorSiretAndOpenToPublicStorage,
   saveActivityToStorage,
   saveOpenToPublicToStorage,
   saveSiretToStorage,
@@ -13,7 +15,7 @@ import { vi } from 'vitest'
 
 import { ActivityOpenToPublic } from 'apiClient/v1'
 
-const inMemoryLocalStorage = new Map<string, string>()
+let inMemoryLocalStorage = new Map<string, string>()
 
 vi.mock('@/commons/utils/localStorageManager', async () => {
   const actual = await vi.importActual('@/commons/utils/localStorageManager')
@@ -27,6 +29,9 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
       setItem: vi.fn((key: LocalStorageKeyType, value: string) => {
         inMemoryLocalStorage.set(key, value)
       }),
+      removeItem: vi.fn((key: LocalStorageKeyType) => {
+        inMemoryLocalStorage.delete(key)
+      }),
     },
   }
 })
@@ -36,6 +41,10 @@ const mockSetTargetAudience = vi.fn()
 const mockSetActivity = vi.fn()
 
 describe('storage', () => {
+  beforeEach(() => {
+    inMemoryLocalStorage = new Map<string, string>()
+  })
+
   it('should save and retrieve siret', () => {
     const initialValue = tryRestoreSiretFromStorage(mockSetSiret)
     expect(initialValue).toBeUndefined()
@@ -80,5 +89,38 @@ describe('storage', () => {
     )
     expect(storedValue).toEqual({ individual: true })
     expect(mockSetTargetAudience).toHaveBeenCalledWith({ individual: true })
+  })
+
+  it('should reset activity and target altogether', () => {
+    saveActivityToStorage(ActivityOpenToPublic.ARTISTIC_PRACTICE)
+    saveTargetAudienceToStorage({ individual: true, collective: false })
+    expect(Array.from(inMemoryLocalStorage.entries())).toEqual(
+      expect.arrayContaining([
+        ['PASS_CULTURE_SIMULATOR_ACTIVITY', 'ARTISTIC_PRACTICE'],
+        [
+          'PASS_CULTURE_SIMULATOR_TARGET_CUSTOMER',
+          '{"individual":true,"collective":false}',
+        ],
+      ])
+    )
+    resetSimulatorActivityAndTargetStorage()
+    expect(Array.from(inMemoryLocalStorage.entries())).toEqual(
+      expect.arrayContaining([])
+    )
+  })
+
+  it('should reset siret and openToPublic altogether', () => {
+    saveSiretToStorage('12312312312312')
+    saveOpenToPublicToStorage('true')
+    expect(Array.from(inMemoryLocalStorage.entries())).toEqual(
+      expect.arrayContaining([
+        ['PASS_CULTURE_SIMULATOR_SIRET', '12312312312312'],
+        ['PASS_CULTURE_SIMULATOR_OPEN_TO_PUBLIC', 'true'],
+      ])
+    )
+    resetSimulatorSiretAndOpenToPublicStorage()
+    expect(Array.from(inMemoryLocalStorage.entries())).toEqual(
+      expect.arrayContaining([])
+    )
   })
 })
