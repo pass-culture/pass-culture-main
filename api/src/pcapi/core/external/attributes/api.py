@@ -203,12 +203,13 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 joinedload(offerers_models.Offerer.managedVenues)
                 .load_only(
                     offerers_models.Venue.activity,
-                    offerers_models.Venue.publicName,
-                    offerers_models.Venue.name,
-                    offerers_models.Venue.venueTypeCode,
-                    offerers_models.Venue.venueLabelId,
                     offerers_models.Venue.adageId,
                     offerers_models.Venue.isSoftDeleted,
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.publicName,
+                    offerers_models.Venue.state,
+                    offerers_models.Venue.venueTypeCode,
+                    offerers_models.Venue.venueLabelId,
                 )
                 .options(
                     joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
@@ -242,7 +243,9 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
         if offerers:
             for offerer in offerers:
-                all_venues += [venue for venue in offerer.managedVenues if not venue.isSoftDeleted]
+                all_venues += [
+                    venue for venue in offerer.managedVenues if not venue.isSoftDeleted and not venue.is_closed
+                ]
                 offerers_names.add(offerer.name)
                 offerers_tags.update(tag.name for tag in offerer.tags)
 
@@ -252,7 +255,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                     user_is_attached = True
 
                 # Avoid offerers_repository.offerer_has_venue_with_adage_id which makes one extra request for each offerer
-                if not is_eac and any(bool(venue.adageId) for venue in offerer.managedVenues):
+                if not is_eac and any(bool(venue.adageId) for venue in offerer.managedVenues if not venue.is_closed):
                     is_eac = True
 
         attributes.update(
@@ -271,6 +274,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         .filter(
             offerers_models.Venue.bookingEmail == email,
             offerers_models.Venue.isSoftDeleted.is_(False),
+            offerers_models.Venue.state.is_distinct_from(offerers_models.VenueState.CLOSED),
         )
         .join(
             offerers_models.Offerer,
@@ -376,7 +380,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         venues_activities={venue.activity.name for venue in all_venues if venue.activity},
         venues_cultural_domains={domain.name for venue in all_venues for domain in venue.collectiveDomains if domain},
         venues_ids={venue.id for venue in all_venues},
-        venues_names={venue.publicName or venue.name for venue in all_venues},
+        venues_names={venue.publicName for venue in all_venues},
         venues_types=venues_types,
         venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabel is not None},
         departement_code={venue.offererAddress.address.departmentCode for venue in all_venues},

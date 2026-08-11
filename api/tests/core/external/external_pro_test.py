@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.external.attributes.api import get_pro_attributes
@@ -153,6 +154,15 @@ def test_update_external_pro_user_attributes(
         venueTypeCode=VenueTypeCode.PERFORMING_ARTS,
         venueLabelId=venue_label_b.id,
     )
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer1,
+        name="Closed venue",
+        bookingEmail=email,
+        siret="11122233300003",
+        isPermanent=create_permanent,
+        venueTypeCode=VenueTypeCode.PERFORMING_ARTS,
+        state=offerers_models.VenueState.CLOSED,
+    )
 
     if create_dms_accepted:
         offerers_factories.VenueBankAccountLinkFactory(
@@ -181,6 +191,16 @@ def test_update_external_pro_user_attributes(
         isPermanent=False,
         venueTypeCode=VenueTypeCode.PERFORMING_ARTS,
         venueLabelId=None,
+    )
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer2,
+        name="Second closed venue",
+        bookingEmail=email,
+        siret="77789988800002",
+        isPermanent=False,
+        venueTypeCode=VenueTypeCode.PERFORMING_ARTS,
+        venueLabelId=None,
+        state=offerers_models.VenueState.CLOSED,
     )
 
     if create_individual_offer:
@@ -275,46 +295,46 @@ def test_update_external_pro_user_attributes(
     with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
         attributes = get_pro_attributes(email)
 
-    assert attributes.is_pro is True
-    assert attributes.is_active_pro is True
-    assert attributes.is_user_email is True
-    assert attributes.is_booking_email is True
-    assert attributes.marketing_email_subscription is enable_subscription
-    assert attributes.offerers_names == {"Juste Libraire", "Plage Culture", "Plage Events"}
-    assert attributes.offerers_tags == {"top-acteur", "collectivite"}
-    assert len(attributes.venues_ids) == 4
-    assert attributes.venues_names == {
-        "Cinéma de la plage",
-        "Festival de la mer",
-        "Théâtre de la plage",
-        "Librairie du port",
-    }
-    assert attributes.venues_types == {
-        VenueTypeCode.MOVIE.name,
-        VenueTypeCode.PERFORMING_ARTS.name,
-        VenueTypeCode.BOOKSTORE.name,
-    }
-    assert attributes.venues_labels == {"Cinéma d'art et d'essai", "Scènes conventionnées"}
-    assert attributes.departement_code == {"06", "83", "13"}
-    assert attributes.postal_code == {"06590", "83700", "13260"}
+        assert attributes.is_pro is True
+        assert attributes.is_active_pro is True
+        assert attributes.is_user_email is True
+        assert attributes.is_booking_email is True
+        assert attributes.marketing_email_subscription is enable_subscription
+        assert attributes.offerers_names == {"Juste Libraire", "Plage Culture", "Plage Events"}
+        assert attributes.offerers_tags == {"top-acteur", "collectivite"}
+        assert len(attributes.venues_ids) == 4
+        assert attributes.venues_names == {
+            "Cinéma de la plage",
+            "Festival de la mer",
+            "Théâtre de la plage",
+            "Librairie du port",
+        }
+        assert attributes.venues_types == {
+            VenueTypeCode.MOVIE.name,
+            VenueTypeCode.PERFORMING_ARTS.name,
+            VenueTypeCode.BOOKSTORE.name,
+        }
+        assert attributes.venues_labels == {"Cinéma d'art et d'essai", "Scènes conventionnées"}
+        assert attributes.departement_code == {"06", "83", "13"}
+        assert attributes.postal_code == {"06590", "83700", "13260"}
 
-    assert attributes.user_id == pro_user.id
-    assert attributes.first_name == pro_user.firstName
-    assert attributes.last_name == pro_user.lastName
-    assert attributes.user_is_attached is (attached in ("one", "all"))
-    assert attributes.user_is_creator is not (attached == "all")
+        assert attributes.user_id == pro_user.id
+        assert attributes.first_name == pro_user.firstName
+        assert attributes.last_name == pro_user.lastName
+        assert attributes.user_is_attached is (attached in ("one", "all"))
+        assert attributes.user_is_creator is not (attached == "all")
 
-    assert attributes.dms_application_submitted is create_dms_draft
-    assert attributes.dms_application_approved is (create_dms_accepted and not create_dms_draft)
-    assert attributes.isPermanent is create_permanent
-    assert attributes.isOpenToPublic is create_permanent
-    assert attributes.has_individual_offers is (create_individual_offer and offer_is_bookable)
-    assert attributes.has_bookings is create_booking
-    assert attributes.has_collective_offers == (create_collective_offer or create_template_offer)
-    assert attributes.has_offers == (
-        (create_individual_offer and offer_is_bookable) or create_collective_offer or create_template_offer
-    )
-    assert attributes.is_eac_meg == create_collective_offer_meg
+        assert attributes.dms_application_submitted is create_dms_draft
+        assert attributes.dms_application_approved is (create_dms_accepted and not create_dms_draft)
+        assert attributes.isPermanent is create_permanent
+        assert attributes.isOpenToPublic is create_permanent
+        assert attributes.has_individual_offers is (create_individual_offer and offer_is_bookable)
+        assert attributes.has_bookings is create_booking
+        assert attributes.has_collective_offers == (create_collective_offer or create_template_offer)
+        assert attributes.has_offers == (
+            (create_individual_offer and offer_is_bookable) or create_collective_offer or create_template_offer
+        )
+        assert attributes.is_eac_meg == create_collective_offer_meg
 
 
 def test_update_external_pro_user_attributes_no_offerer_no_venue():
