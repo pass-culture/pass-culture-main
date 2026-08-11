@@ -8,6 +8,7 @@ import { api } from '@/apiClient/api'
 import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
 import {
   SignupJourneyContext,
+  SignupJourneyContextProvider,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import {
@@ -18,15 +19,12 @@ import {
 import * as getSiretData from '@/commons/core/Venue/utils/getSiretData'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
-import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
+import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { ApiError } from 'apiClient/compat'
-import {
-  DEFAULT_ADDRESS_FORM_VALUES,
-  DEFAULT_OFFERER_FORM_VALUES,
-} from './constants'
+import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
 import { Offerer } from './Offerer'
 
 const fetchMock = createFetchMock(vi)
@@ -41,8 +39,15 @@ vi.mock('@/commons/context/SignupJourneyContext/storage', async () => {
 
   return {
     ...actual,
-    cleanSignupJourneyStorage: vi.fn(),
-    tryRestoreOffererFromStorage: vi.fn(),
+    cleanSignupJourneyStorage: vi.fn(() => {
+      inMemoryLocalStorage.clear()
+    }),
+    tryRestoreOffererFromStorage: vi.fn(() => {
+      const offererStr = inMemoryLocalStorage.get(
+        LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER
+      )
+      return JSON.parse(offererStr || 'null')
+    }),
     tryRestoreInitialAddressFromStorage: vi.fn(),
   }
 })
@@ -53,13 +58,13 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
   return {
     ...actual,
     localStorageManager: {
-      getItem: vi.fn((key: LocalStorageKeyType) => {
+      getItem: vi.fn((key: LOCAL_STORAGE_KEY) => {
         return inMemoryLocalStorage.get(key) ?? null
       }),
-      setItem: vi.fn((key: LocalStorageKeyType, value: string) => {
+      setItem: vi.fn((key: LOCAL_STORAGE_KEY, value: string) => {
         inMemoryLocalStorage.set(key, value)
       }),
-      removeItem: vi.fn((key: LocalStorageKeyType) => {
+      removeItem: vi.fn((key: LOCAL_STORAGE_KEY) => {
         inMemoryLocalStorage.delete(key)
       }),
       clear: vi.fn(() => {
@@ -124,28 +129,32 @@ const renderOffererScreen = (
   )
 }
 
-const renderOffererScreenForRestoreFailure = (
-  contextValue: SignupJourneyContextValues
-) => {
+const renderRealOffererScreen = (features: string[] = []) => {
   return renderWithProviders(
     <>
-      <SignupJourneyContext.Provider value={contextValue}>
+      <SignupJourneyContextProvider>
         <Routes>
           <Route
-            path="/inscription/structure/identification"
+            path="/inscription/structure/recherche"
             element={<Offerer />}
           />
           <Route
-            path="/inscription/structure/recherche"
-            element={<div>Search screen</div>}
+            path="/inscription/structure/identification"
+            element={<div>Authentication screen</div>}
           />
+          <Route
+            path="/inscription/structure/rattachement"
+            element={<div>Offerers screen</div>}
+          />
+          <Route path="/hub" element={<div>Hub screen</div>} />
         </Routes>
-      </SignupJourneyContext.Provider>
+      </SignupJourneyContextProvider>
       <SnackBarContainer />
     </>,
     {
+      features,
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/inscription/structure/identification'],
+      initialRouterEntries: ['/inscription/structure/recherche'],
     }
   )
 }
@@ -181,64 +190,20 @@ describe('Offerer', () => {
 
   describe('Restore contexts from storage', () => {
     it('should try to restore offerer and initialAddress and reset the form when context is missing', async () => {
-      const setOfferer = vi.fn()
-      const setInitialAddress = vi.fn()
-      contextValue.offerer = null
-      contextValue.initialAddress = null
-      contextValue.setOfferer = setOfferer
-      contextValue.setInitialAddress = setInitialAddress
-
-      const storedOfferer = {
-        ...DEFAULT_OFFERER_FORM_VALUES,
-        siret: '12345678933333',
-      }
-      vi.mocked(tryRestoreOffererFromStorage).mockReturnValue(storedOfferer)
-
-      renderOffererScreen(contextValue)
+      renderRealOffererScreen()
 
       await waitFor(() => {
-        expect(tryRestoreOffererFromStorage).toHaveBeenCalledWith(setOfferer)
-        expect(tryRestoreInitialAddressFromStorage).toHaveBeenCalledWith(
-          setInitialAddress
-        )
+        expect(tryRestoreOffererFromStorage).toHaveBeenCalled()
+        expect(tryRestoreInitialAddressFromStorage).toHaveBeenCalled()
       })
     })
 
     it('should try to restore offerer and initialAddress when context equals default values', async () => {
-      const setOfferer = vi.fn()
-      const setInitialAddress = vi.fn()
-      contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
-      contextValue.initialAddress = DEFAULT_ADDRESS_FORM_VALUES
-      contextValue.setOfferer = setOfferer
-      contextValue.setInitialAddress = setInitialAddress
-
-      vi.mocked(tryRestoreOffererFromStorage).mockReturnValue({
-        ...DEFAULT_OFFERER_FORM_VALUES,
-        siret: '12345678933333',
-      })
-
-      renderOffererScreen(contextValue)
+      renderRealOffererScreen()
 
       await waitFor(() => {
-        expect(tryRestoreOffererFromStorage).toHaveBeenCalledWith(setOfferer)
-        expect(tryRestoreInitialAddressFromStorage).toHaveBeenCalledWith(
-          setInitialAddress
-        )
-      })
-    })
-
-    it('should clean storage and navigate to search when restoring offerer/address fails', async () => {
-      contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
-      contextValue.initialAddress = null
-      vi.mocked(tryRestoreOffererFromStorage).mockImplementation(() => {
-        throw new Error('ANY_ERROR')
-      })
-
-      renderOffererScreenForRestoreFailure(contextValue)
-
-      await waitFor(() => {
-        expect(cleanSignupJourneyStorage).toHaveBeenCalled()
-        expect(screen.getByText('Search screen')).toBeInTheDocument()
+        expect(tryRestoreOffererFromStorage).toHaveBeenCalled()
+        expect(tryRestoreInitialAddressFromStorage).toHaveBeenCalled()
       })
     })
   })
@@ -387,6 +352,7 @@ describe('Offerer', () => {
       postalCode: '75001',
       street: '4 rue Carnot',
       isDiffusible: true,
+      isOpenToPublic: undefined,
     })
     expect(api.getVenuesOfOffererFromSiret).toHaveBeenCalled()
   })
@@ -643,5 +609,148 @@ describe('Offerer', () => {
     )
 
     expect(screen.getByText('Hub screen')).toBeInTheDocument()
+  })
+
+  it('should clean storage, reset activity and clear isOpenToPublic when submitting a different siret while a siren is stored', async () => {
+    const user = userEvent.setup()
+    inMemoryLocalStorage.set(
+      LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER,
+      JSON.stringify({
+        siret: '11111111111111',
+        siren: '111111111',
+        isOpenToPublic: true,
+      })
+    )
+    inMemoryLocalStorage.set(LOCAL_STORAGE_KEY.NEW_STRUCTURE_ACTIVITY, 'MUSEE')
+
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+      offererName: 'Tom Waits',
+      offererSiren: '123456789',
+      venues: [],
+    })
+
+    renderRealOffererScreen()
+
+    const input = screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)
+    await user.clear(input)
+    await user.type(input, '12345678933333')
+    await user.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(
+      inMemoryLocalStorage.get(LOCAL_STORAGE_KEY.NEW_STRUCTURE_ACTIVITY)
+    ).toBeUndefined()
+    expect(cleanSignupJourneyStorage).toHaveBeenCalled()
+    const newOfferer = JSON.parse(
+      inMemoryLocalStorage.get(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER) || '{}'
+    )
+    expect(newOfferer?.siret).toEqual('12345678933333')
+    expect(newOfferer?.isOpenToPublic).toBeUndefined()
+  })
+
+  it('should NOT clean storage when submitting a different siret if no siren is stored', async () => {
+    const user = userEvent.setup()
+    inMemoryLocalStorage.set(
+      LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER,
+      JSON.stringify({ siret: '11111111111111', isOpenToPublic: true })
+    )
+    inMemoryLocalStorage.set(LOCAL_STORAGE_KEY.NEW_STRUCTURE_ACTIVITY, 'MUSEE')
+
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+      offererName: 'Tom Waits',
+      offererSiren: '123456789',
+      venues: [],
+    })
+
+    renderRealOffererScreen()
+
+    const input = screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)
+    await user.clear(input)
+    await user.type(input, '12345678933333')
+    await user.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(
+      inMemoryLocalStorage.get(LOCAL_STORAGE_KEY.NEW_STRUCTURE_ACTIVITY)
+    ).toEqual('MUSEE')
+    expect(cleanSignupJourneyStorage).not.toHaveBeenCalled()
+    const newOfferer = JSON.parse(
+      inMemoryLocalStorage.get(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER) || '{}'
+    )
+    expect(newOfferer?.siret).toEqual('12345678933333')
+    expect(newOfferer?.isOpenToPublic).toBe(true)
+  })
+
+  it('should immediately navigate to next step if the same siret with siren is already stored', async () => {
+    const user = userEvent.setup()
+    inMemoryLocalStorage.set(
+      LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER,
+      JSON.stringify({
+        siret: '12345678933333',
+        siren: '123456789',
+        hasVenueWithSiret: false,
+      })
+    )
+    const apiSpy = vi.spyOn(api, 'getVenuesOfOffererFromSiret')
+
+    renderRealOffererScreen()
+
+    expect(screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)).toHaveValue(
+      '12345678933333'
+    )
+    await user.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(apiSpy).not.toHaveBeenCalled()
+    await waitFor(() => {
+      expect(screen.getByText('Authentication screen')).toBeInTheDocument()
+    })
+  })
+
+  it('should NOT immediately navigate if the same siret is stored but WITHOUT siren', async () => {
+    const user = userEvent.setup()
+    inMemoryLocalStorage.set(
+      LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER,
+      JSON.stringify({ siret: '12345678933333', hasVenueWithSiret: false })
+    )
+    const apiSpy = vi
+      .spyOn(api, 'getVenuesOfOffererFromSiret')
+      .mockResolvedValue({
+        offererName: 'Tom Waits',
+        offererSiren: '123456789',
+        venues: [],
+      })
+
+    renderRealOffererScreen()
+
+    expect(screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)).toHaveValue(
+      '12345678933333'
+    )
+    await user.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(apiSpy).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(screen.getByText('Authentication screen')).toBeInTheDocument()
+    })
+  })
+
+  it('should use siren from structure data if not provided by venues api', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+      venues: [],
+    })
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue({
+      ...structureDataBodyModelFactory(),
+      siren: '987654321',
+    })
+
+    renderRealOffererScreen()
+
+    const input = screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)
+    await user.clear(input)
+    await user.type(input, '12345678933333')
+    await user.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    const newOfferer = JSON.parse(
+      inMemoryLocalStorage.get(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER) || '{}'
+    )
+    expect(newOfferer?.siren).toEqual('987654321')
   })
 })
