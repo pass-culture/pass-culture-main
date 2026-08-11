@@ -32,7 +32,7 @@
   border-bottom-left-radius: var(--size-border-radius-l);
   background-color: var(--color-background-default);
   box-shadow: var(--shadow-overlay);
-  padding: var(--size-spacing-xxl);
+  padding: var(--size-spacing-xxl) var(--size-spacing-xxl) 0;
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-l);
@@ -48,7 +48,7 @@
 }
 
 .detailed-modal-fixed-footer {
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .detailed-modal-fixed-footer .detailed-modal-footer {
@@ -126,9 +126,8 @@
 }
 
 .detailed-modal-fixed-footer .detailed-modal-body {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
+  flex: 0 0 auto;
+  overflow: visible;
   padding-bottom: var(--size-spacing-l);
 }
 
@@ -139,7 +138,8 @@
 
 .detailed-modal-footer {
   border-top: rem.torem(1px) solid var(--color-border-subtle);
-  padding-top: var(--size-spacing-l);
+  padding-top: var(--size-spacing-xl);
+  padding-bottom: var(--size-spacing-xxl);
   margin-top: var(--size-spacing-s);
   background-color: var(--color-background-default);
 }
@@ -186,7 +186,7 @@
   .detailed-modal {
     width: 100vw;
     border-radius: 0;
-    padding: var(--size-spacing-m);
+    padding: var(--size-spacing-xl) var(--size-spacing-xl) 0;
     gap: var(--size-spacing-m);
 
     @media not (prefers-reduced-motion) {

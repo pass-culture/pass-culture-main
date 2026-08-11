@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
+import { useId } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
@@ -8,7 +8,7 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { Select } from '@/ui-kit/form/Select/Select'
 
 import styles from './PricingPointDialog.module.scss'
@@ -19,6 +19,7 @@ type PricingPointFormValues = {
 }
 
 type PricingPointDialogProps = {
+  isOpen: boolean
   selectedVenue: ManagedVenue | null
   venues: ManagedVenue[]
   closeDialog: () => void
@@ -26,12 +27,14 @@ type PricingPointDialogProps = {
 }
 
 export const PricingPointDialog = ({
+  isOpen,
   selectedVenue,
   venues,
   closeDialog,
   updateVenuePricingPoint,
 }: PricingPointDialogProps) => {
   const snackBar = useSnackBar()
+  const formId = useId()
 
   const methods = useForm<PricingPointFormValues>({
     defaultValues: {
@@ -78,46 +81,55 @@ export const PricingPointDialog = ({
   ]
 
   return (
-    <div className={styles.dialog}>
-      <div className={styles['callout']}>
-        <Banner
-          title="Sélection du SIRET de remboursement"
-          description="Choisissez le SIRET qui déterminera votre taux de remboursement pour cette structure. Ce choix sera définitif après validation."
+    <DetailedModal
+      isOpen={isOpen}
+      isFooterFixed
+      onGoBack={closeDialog}
+      onClose={closeDialog}
+      title={`Sélectionnez un SIRET pour la structure “${selectedVenue.commonName}”`}
+      secondaryAction={
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          onClick={closeDialog}
+          label="Annuler"
         />
+      }
+      primaryAction={
+        <Button
+          type="submit"
+          form={formId}
+          disabled={methods.formState.isSubmitting}
+          label="Valider la sélection"
+        />
+      }
+    >
+      <div className={styles.dialog}>
+        <div className={styles['callout']}>
+          <Banner
+            title="Sélection du SIRET de remboursement"
+            description="Choisissez le SIRET qui déterminera votre taux de remboursement pour cette structure. Ce choix sera définitif après validation."
+          />
+        </div>
+        <form
+          id={formId}
+          onSubmit={(event) => {
+            // Necessary to prevent the form submission event from bubbling up and potentially triggering parent Dialog close.
+            event.stopPropagation()
+            methods.handleSubmit(onSubmit)(event)
+          }}
+          className={styles['dialog-form']}
+        >
+          <Select
+            {...methods.register('pricingPointId')}
+            name="pricingPointId"
+            label="Structure avec SIRET utilisée pour le calcul du barème de remboursement"
+            options={venuesOptions}
+            className={styles['venues-select']}
+            error={methods.formState.errors.pricingPointId?.message}
+          />
+        </form>
       </div>
-      <form
-        onSubmit={(event) => {
-          // Necessary to prevent the form submission event from bubbling up and potentially triggering parent Dialog close.
-          event.stopPropagation()
-          methods.handleSubmit(onSubmit)(event)
-        }}
-        className={styles['dialog-form']}
-      >
-        <Select
-          {...methods.register('pricingPointId')}
-          name="pricingPointId"
-          label="Structure avec SIRET utilisée pour le calcul du barème de remboursement"
-          options={venuesOptions}
-          className={styles['venues-select']}
-          error={methods.formState.errors.pricingPointId?.message}
-        />
-        <DialogBuilder.Footer>
-          <div className={styles['dialog-actions']}>
-            <Dialog.Close asChild>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                label="Annuler"
-              />
-            </Dialog.Close>
-            <Button
-              type="submit"
-              disabled={methods.formState.isSubmitting}
-              label="Valider la sélection"
-            />
-          </div>
-        </DialogBuilder.Footer>
-      </form>
-    </div>
+    </DetailedModal>
   )
 }

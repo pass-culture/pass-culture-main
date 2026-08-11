@@ -28,11 +28,6 @@ const props: SimpleModalProps = {
 }
 
 describe('SimpleModal', () => {
-  beforeEach(() => {
-    HTMLDialogElement.prototype.showModal = vi.fn()
-    HTMLDialogElement.prototype.close = vi.fn()
-  })
-
   it('should have an accessible structure', async () => {
     const { container } = renderModalSimple(props)
 

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import {
   type BankAccountResponseModel,
@@ -10,7 +11,6 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullEditIcon from '@/icons/full-edit.svg'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { PricingPointDialog } from '../PricingPointDialog/PricingPointDialog'
 import styles from './ManagedVenueItem.module.scss'
@@ -72,33 +72,31 @@ export function ManadgedVenueItem({
         )}
       </div>
       {!venue.hasPricingPoint && (
-        <DialogBuilder
-          open={isPricingPointDialogOpen}
-          onOpenChange={setIsPricingPointDialogOpen}
-          variant="drawer"
-          title={`Sélectionnez un SIRET pour la structure “${venue.commonName}”`}
-          trigger={
-            <Button
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              icon={fullEditIcon}
-              onClick={() => {
-                setSelectedVenue(venue)
-              }}
-              label="Sélectionner un SIRET"
-            />
-          }
-        >
-          <PricingPointDialog
-            selectedVenue={selectedVenue}
-            venues={venuesForPricingPoint}
-            closeDialog={() => {
-              setSelectedVenue(null)
-              setIsPricingPointDialogOpen(false)
+        <>
+          <Button
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            icon={fullEditIcon}
+            onClick={() => {
+              setSelectedVenue(venue)
+              setIsPricingPointDialogOpen(true)
             }}
-            updateVenuePricingPoint={updateBankAccountVenuePricingPoint}
+            label="Sélectionner un SIRET"
           />
-        </DialogBuilder>
+          {createPortal(
+            <PricingPointDialog
+              isOpen={isPricingPointDialogOpen}
+              selectedVenue={selectedVenue}
+              venues={venuesForPricingPoint}
+              closeDialog={() => {
+                setSelectedVenue(null)
+                setIsPricingPointDialogOpen(false)
+              }}
+              updateVenuePricingPoint={updateBankAccountVenuePricingPoint}
+            />,
+            document.body
+          )}
+        </>
       )}
     </div>
   )

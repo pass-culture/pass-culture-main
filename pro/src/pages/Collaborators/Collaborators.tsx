@@ -184,6 +184,9 @@ const Collaborators = () => {
         title="Ajout de collaborateurs"
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
+        description="Vous pouvez inviter des collaborateurs à rejoindre votre espace. Une
+            invitation leur sera envoyée par email. Vous serez notifié quand ils
+            auront rejoint l’espace."
         primaryAction={
           <Button
             type="submit"
@@ -208,12 +211,6 @@ const Collaborators = () => {
           className={styles['invitation-form']}
           onSubmit={handleSubmit(onSubmit)}
         >
-          <p className={styles['description']}>
-            Vous pouvez inviter des collaborateurs à rejoindre votre espace. Une
-            invitation leur sera envoyée par email. Vous serez notifié quand ils
-            auront rejoint l’espace.
-          </p>
-
           <FormLayout>
             <FormLayout.Row>
               <TextInput

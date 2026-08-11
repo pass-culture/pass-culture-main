@@ -56,17 +56,6 @@ const renderCollaborators = (options?: RenderWithProvidersOptions) => {
 
 describe('Collaborators', () => {
   beforeEach(() => {
-    HTMLDialogElement.prototype.showModal = vi
-      .fn()
-      .mockImplementation(function (this: HTMLDialogElement) {
-        this.setAttribute('open', '')
-      })
-    HTMLDialogElement.prototype.close = vi.fn().mockImplementation(function (
-      this: HTMLDialogElement
-    ) {
-      this.removeAttribute('open')
-    })
-
     vi.spyOn(api, 'getOffererMembers').mockResolvedValue({ members: [] })
 
     vi.spyOn(api, 'inviteMember').mockResolvedValue(undefined)
@@ -74,10 +63,6 @@ describe('Collaborators', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
   })
 
   it('should display a button to open invite form', () => {
@@ -212,6 +197,50 @@ describe('Collaborators', () => {
           'Une erreur est survenue lors de l’envoi de l’invitation.'
         )
       ).toBeInTheDocument()
+    })
+  })
+
+  it('should close modal when clicking cancel button', async () => {
+    renderCollaborators()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter un collaborateur' })
+    )
+
+    expect(
+      screen.getByText(
+        /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
+      )
+    ).toBeVisible()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
+        )
+      ).not.toBeVisible()
+    })
+  })
+
+  it('should close modal when clicking close icon', async () => {
+    renderCollaborators()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter un collaborateur' })
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Fermer la boite de dialogue' })
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
+        )
+      ).not.toBeVisible()
     })
   })
 })

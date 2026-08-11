@@ -7,19 +7,10 @@
   margin: var(--size-spacing-xxl) 0;
 }
 
-.description {
-  margin-bottom: var(--size-spacing-xl);
-}
-
 .invitation-form {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-}
-
-.action-buttons {
-  display: flex;
-  gap: var(--size-spacing-l);
 }
 
 .members-container {
