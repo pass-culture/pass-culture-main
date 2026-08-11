@@ -57,6 +57,7 @@ from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
+from pcapi.core.offers import validation
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 from pcapi.core.providers.allocine import get_allocine_products_provider
@@ -4023,7 +4024,7 @@ class FormatExtraDataTest:
             "other": "value",  # not applicable field
             "performer": "",  # applicable but empty
         }
-        assert api._format_extra_data(subcategories.FESTIVAL_MUSIQUE.id, extra_data) == {
+        assert validation.format_extra_data(subcategories.FESTIVAL_MUSIQUE.id, extra_data) == {
             "musicType": "-1",
             "musicSubType": "100",
             "gtl_id": "19000000",
