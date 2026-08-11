@@ -233,23 +233,43 @@ def _get_token_key(token_type: TokenType, token: str) -> str:
     return f"pcapi:token:{token_type.value}:{token}"
 
 
-def create_token(token_type: TokenType, ttl: timedelta | int, data: dict | None = None) -> str:
+def create_token(
+    token_type: TokenType, data: dict | None = None, *, ttl: timedelta | int = 0, at: datetime | int = 0
+) -> str:
     """
     Create a single use secure token that emphasis on security over any other concerns
 
-    ttl can be either a timedelta or an in in seconds
+    ttl can be either a timedelta or an int in seconds
+    at can be either a datetime or an timestamp
+
+    exactly one of {ttl, at} must be filled.
     """
     if isinstance(ttl, timedelta):
         ttl = int(ttl.total_seconds())
 
-    if ttl <= 0:
-        raise ValueError("A strictly positive ttl value is mandatory when creating a token")
+    if isinstance(at, datetime):
+        at = int(at.timestamp())
+
+    expiration = {}
+
+    if not (ttl or at):
+        raise ValueError("At least one of {ttl, at} must be filled")
+    elif ttl and at:
+        raise ValueError("Only one of {ttl, at} can be filled")
+    elif ttl:
+        if ttl <= 0:
+            raise ValueError("A strictly positive ttl value is mandatory when creating a token")
+        expiration["ex"] = ttl
+    elif at:
+        if at <= time.time():
+            raise ValueError("Cannot create an already expired token")
+        expiration["exat"] = at
 
     # generate a 512 bits secure token
     token = secrets.token_urlsafe(64)
     raw_data = json.dumps(data or {})
     key = _get_token_key(token_type, token)
-    get_redis_client().set(key, raw_data, ex=ttl)
+    get_redis_client().set(key, raw_data, **expiration)  # type: ignore [arg-type]
     return token
 
 
