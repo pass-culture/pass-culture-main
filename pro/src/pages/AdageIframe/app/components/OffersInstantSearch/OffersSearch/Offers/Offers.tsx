@@ -32,8 +32,6 @@ import {
   HighlightBanner,
   HighlightBannerVariant,
 } from '@/components/HighlightBanner/HighlightBanner'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonVariant } from '@/design-system/Button/types'
 import fullGoTopIcon from '@/icons/full-go-top.svg'
 import fullGridIcon from '@/icons/full-grid.svg'
 import fullListIcon from '@/icons/full-list.svg'
@@ -49,7 +47,6 @@ import {
   ToggleButtonGroup,
 } from '../../../ToggleButtonGroup/ToggleButtonGroup'
 import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
-import TFD2025 from './assets/TFD2025.svg'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import styles from './Offers.module.scss'
 
@@ -86,11 +83,7 @@ export const Offers = ({
     ? scopedResults.find((res) => res.indexId === indexId)?.results
     : nonScopedResult
 
-  const highlightTargetDate = new Date('2025-08-10').getTime()
-  const currentDate = Date.now()
-
-  const showDiffuseHelp =
-    (submitCount ?? 0) > 0 && currentDate >= highlightTargetDate
+  const showDiffuseHelp = (submitCount ?? 0) > 0
 
   const isInSuggestions = indexId?.startsWith('no_results_offers')
 
@@ -182,16 +175,6 @@ export const Offers = ({
     })
   }
 
-  const logOpenHighlightBanner = (bannerName: string) => {
-    apiAdage.logOpenHighlightBanner({
-      body: {
-        iframeFrom: location.pathname,
-        queryId: results.queryID,
-        banner: bannerName,
-      },
-    })
-  }
-
   return (
     <>
       {!isInSuggestions && (
@@ -253,7 +236,7 @@ export const Offers = ({
                   viewType={adageViewType}
                 />
               )}
-              {adageViewType === 'list' && index === 0 && showDiffuseHelp ? (
+              {adageViewType === 'list' && index === 0 && showDiffuseHelp && (
                 <HighlightBanner
                   title={'Le saviez-vous ?'}
                   description={
@@ -267,36 +250,6 @@ export const Offers = ({
                   }
                   variant={HighlightBannerVariant.ADAGE}
                 />
-              ) : (
-                adageViewType === 'list' &&
-                index === 0 &&
-                currentDate < highlightTargetDate && (
-                  <HighlightBanner
-                    title={"Permettre aux jeunes de s'exprimer par la danse"}
-                    description={
-                      "Du 23 juin au 10 août 2025, le pass Culture propose aux jeunes de 15 à 21 ans de participer au concours d'été de danse en filmant une chorégraphie dans la thématique des “soulèvements”. Des sélections de spectacles, livres, médias et vidéos d’artistes chorégraphes et danseurs seront diffusées sur l'application pour nourrir la créativité des jeunes."
-                    }
-                    localStorageKey={`${PASS_CULTURE_PREFIX}TFD_2025_ADAGE_SEEN`}
-                    img={
-                      <img
-                        src={TFD2025}
-                        className={styles['banner']}
-                        alt="Soulèvements"
-                      />
-                    }
-                    cta={
-                      <Button
-                        as="a"
-                        variant={ButtonVariant.PRIMARY}
-                        to="https://passculture.docsend.com/view/nn7q3isav3dmhue2/d/pkhf9bba2ft4myz8"
-                        opensInNewTab
-                        onClick={() => logOpenHighlightBanner('TFD-2025')}
-                        label="en savoir plus"
-                      />
-                    }
-                    variant={HighlightBannerVariant.ADAGE}
-                  />
-                )
               )}
             </li>
           ))}
