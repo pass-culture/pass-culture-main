@@ -89,7 +89,11 @@ class GetAccountSearchForm(utils.PCForm):
 
     method = "GET"
 
-    q = fields.PCOptStringField(label="Recherche (nom, prénom, ID, téléphone, email)", full_width=True)
+    q = fields.PCOptStringField(
+        label="Recherche (prénom et nom, ID ou liste d'IDs, email ou liste d'emails, téléphone)",
+        validators=[validators.Optional("")],
+        full_width=True,
+    )
 
     def is_empty(self) -> bool:
         return not self.q.data
@@ -171,7 +175,11 @@ class GetAccountsListSearchForm(utils.PCForm):
     form_field_configuration = ADVANCED_FORM_FIELDS_CONFIG
     search_attributes = AdvancedFormFieldKeys
 
-    q = fields.PCOptStringField(label="Recherche", full_width=True)
+    q = fields.PCOptStringField(
+        label="Recherche (prénom et nom, ID ou liste d'IDs, email ou liste d'emails, téléphone)",
+        full_width=True,
+        validators=[validators.Optional("")],
+    )
     search = fields.PCFieldListField(
         fields.PCFormField(AccountsSearchSubForm),
         label="recherches",
@@ -184,9 +192,7 @@ class GetAccountsListSearchForm(utils.PCForm):
         "Nombre maximum de résultats",
         choices=(
             (100, "Afficher 100 résultats maximum"),
-            (500, "Afficher 500 résultats maximum"),
             (1000, "Afficher 1000 résultats maximum"),
-            (3000, "Afficher 3000 résultats maximum"),
         ),
         default="100",
         coerce=int,

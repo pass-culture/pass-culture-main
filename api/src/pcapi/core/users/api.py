@@ -56,6 +56,7 @@ from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.redis import get_redis_client
 from pcapi.utils.requests import ExternalAPIException
+from pcapi.utils import string as string_utils
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -965,7 +966,7 @@ def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Qu
     split_terms = [email_utils.sanitize_email(term) for term in re.split(r"[,;\s]+", search_term) if term]
 
     # numeric (single id or multiple ids)
-    if all(term.isnumeric() for term in split_terms):
+    if all(string_utils.is_numeric(term) for term in split_terms):
         term_filters.append(models.User.id.in_([int(term) for term in split_terms]))
 
     # email
@@ -1001,13 +1002,20 @@ def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Qu
     # each result must match all terms in any column
     accounts = accounts.filter(*filters)
 
+    new_col = sa.func.levenshtein(sa.func.lower(models.User.firstName + " " + models.User.lastName), name_term).label(
+        "search_score"
+    )
     if name_term:
         name_term = name_term.lower()
-        accounts = accounts.order_by(
-            sa.func.levenshtein(sa.func.lower(models.User.firstName + " " + models.User.lastName), name_term)
-        )
+        new_col = sa.func.levenshtein(
+            sa.func.lower(models.User.firstName + " " + models.User.lastName), name_term
+        ).label("search_score")
+        accounts = accounts.add_columns(new_col)
+    else:
+        new_col = models.User.id.label("search_score")
+        accounts = accounts.add_columns(new_col)
 
-    accounts = accounts.order_by(models.User.id)
+    accounts = accounts.order_by(new_col)
 
     return accounts
 

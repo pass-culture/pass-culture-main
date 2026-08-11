@@ -125,8 +125,11 @@
         {% if form.llm_search %}{{ form.llm_search }}{% endif %}
         {% if form.q %}{{ form.q }}{% endif %}
         <div class="input-group mb-3 w-100">{{ form.search }}</div>
-        <div class="text-center d-flex  justify-content-between">
-          {{ form.limit }}
+        <div class="text-center d-flex justify-content-between">
+          <div>
+            {{ form.limit }}
+            {% if form.can_reset_form %}<button><i class="bi bi-search"></i></button>{% endif %}
+          </div>
           <button type="submit"
                   class="btn py-2 px-3 btn-primary">
             Rechercher<i class="bi bi-search ms-2"></i>

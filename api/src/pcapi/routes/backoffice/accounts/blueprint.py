@@ -79,6 +79,7 @@ from pcapi.utils import regions as regions_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
+from pcapi.utils import string as string_utils
 
 from . import forms as account_forms
 from . import report
@@ -427,7 +428,10 @@ def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> N
             flash("L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans", "success")
 
 
-def _get_user_ids_query(advanced_form: account_forms.GetAccountsListSearchForm, base_query: sa_orm.Query) -> sa_orm.Query:
+def _get_user_ids_query(
+    advanced_form: account_forms.GetAccountsListSearchForm, base_query: sa_orm.Query
+) -> sa_orm.Query:
+    print(base_query)
     query, _, _, warnings = advanced_search.generate_search_query(
         query=base_query,
         search_parameters=advanced_form.search.data,
@@ -447,15 +451,11 @@ def _get_and_sort_users(user_ids_query: sa_orm.Query) -> list[users_models.User]
     query = _load_suspension_info(query)
     query = _load_current_deposit_data(query, join_needed=True)
 
-    return (
-        query.options(
-            sa_orm.joinedload(users_models.User.tags).load_only(
-                users_models.UserTag.id, users_models.UserTag.name, users_models.UserTag.label
-            )
+    return query.options(
+        sa_orm.joinedload(users_models.User.tags).load_only(
+            users_models.UserTag.id, users_models.UserTag.name, users_models.UserTag.label
         )
-        .order_by(users_models.User.id)
-        .all()
-    )
+    ).all()
 
 
 def _search_users(advanced_form: account_forms.GetAccountsListSearchForm) -> list[users_models.User]:
