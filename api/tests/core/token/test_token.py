@@ -1,7 +1,9 @@
 import hashlib
 import json
 import logging
+import time
 import uuid
+from datetime import datetime
 from datetime import timedelta
 from unittest import mock
 
@@ -157,20 +159,32 @@ class TokenTest:
 
 
 class SecureTokenTest:
-    def test_create_token_with_data(self, app, clear_redis):
+    @pytest.mark.parametrize("ttl", [30, timedelta(seconds=30)])
+    def test_create_token_with_ttl(self, app, clear_redis, ttl):
         data = {"int": 12, "str": "Ça c'est pas de l'ascii 😉"}
 
-        token = token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, data=data, ttl=30)
+        token = token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, data=data, ttl=ttl)
 
         redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token=token)
-        assert 29 < app.redis_client.ttl(redis_key) <= 30
+        assert 29 <= app.redis_client.ttl(redis_key) <= 30
         assert len(token) == 86
 
-    def test_create_token_without_data(self, app, clear_redis):
+    @pytest.mark.parametrize("ttl", [30, timedelta(seconds=30)])
+    def test_create_token_with_int_at(self, app, clear_redis, ttl):
+        data = {"int": 12, "str": "Ça c'est pas de l'ascii 😉"}
+        at = int(time.time()) + ttl if isinstance(ttl, int) else datetime.now() + ttl
+
+        token = token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, data=data, at=at)
+
+        redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token=token)
+        assert 29 <= app.redis_client.ttl(redis_key) <= 30
+        assert len(token) == 86
+
+    def test_create_token_without_data_at(self, app, clear_redis):
         token = token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, ttl=10)
 
         redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token=token)
-        assert 9 < app.redis_client.ttl(redis_key) <= 10
+        assert 9 <= app.redis_client.ttl(redis_key) <= 10
         assert len(token) == 86
 
     def test_retrieve_token_with_data(self, app, clear_redis):
@@ -203,9 +217,34 @@ class SecureTokenTest:
         with pytest.raises(InvalidToken):
             token_tools.load_token(token_type=token_tools.TokenType.CONNECT_AS, token=original_token)
 
-    def test_negative_ttl(self, app, clear_redis):
+    @pytest.mark.parametrize("ttl", [-1, timedelta(seconds=-1)])
+    def test_negative_ttl(self, app, clear_redis, ttl):
         with pytest.raises(ValueError):
-            token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, ttl=-1)
+            token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, ttl=ttl)
+
+        redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token="*")
+        assert app.redis_client.keys(redis_key) == []
+
+    @pytest.mark.parametrize("ttl", [-1, timedelta(seconds=-1)])
+    def test_past_at(self, app, clear_redis, ttl):
+        at = int(time.time()) + ttl if isinstance(ttl, int) else datetime.now() + ttl
+
+        with pytest.raises(ValueError):
+            token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, at=at)
+
+        redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token="*")
+        assert app.redis_client.keys(redis_key) == []
+
+    def test_ttl_and_at(self, app, clear_redis):
+        with pytest.raises(ValueError):
+            token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, ttl=10, at=10)
+
+        redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token="*")
+        assert app.redis_client.keys(redis_key) == []
+
+    def test_no_expiration(self, app, clear_redis):
+        with pytest.raises(ValueError):
+            token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS)
 
         redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token="*")
         assert app.redis_client.keys(redis_key) == []
