@@ -11,6 +11,7 @@ export const partnerRouteGroup: CustomRouteGroup = {
   children: [
     {
       path: 'accueil',
+      loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
       lazy: () => import('@/pages/Homepage/Homepage'),
       handle: {
         title: 'Espace acteurs culturels',

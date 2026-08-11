@@ -1,13 +1,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
+import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { handleError } from '@/commons/errors/handleError'
+import { addSnackBar } from '@/commons/store/snackBar/reducer'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
+import { SnackBarVariant } from '@/design-system/SnackBar/SnackBar'
 
 import type { AppThunkApiConfig } from '../../store'
 import { setSelectedPartnerVenue } from '../reducer'
@@ -15,7 +18,7 @@ import { logout } from './logout'
 import { setSelectedAdminOffererById } from './setSelectedAdminOffererById'
 
 type SetSelectedPartnerVenueByIdReturn = {
-  selectedPartnerVenue: GetVenueResponseModel
+  selectedPartnerVenue: GetVenueResponseModel | null
 }
 
 export const setSelectedPartnerVenueById = createAsyncThunk<
@@ -103,12 +106,28 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         selectedPartnerVenue: nextSelectedPartnerVenue,
       }
     } catch (err) {
-      handleError(
-        err,
-        'Une erreur est survenue lors du changement de la structure.'
-      )
+      if (isErrorAPIError(err)) {
+        dispatch(
+          addSnackBar({
+            description:
+              'Une erreur est survenue lors du changement de la structure.',
+            variant: SnackBarVariant.ERROR,
+          })
+        )
+        dispatch(setSelectedPartnerVenue(null))
+        localStorageManager.removeItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
 
-      return await logout()
+        return {
+          selectedPartnerVenue: null,
+        }
+      } else {
+        handleError(
+          err,
+          'Une erreur est survenue lors du changement de la structure.'
+        )
+
+        return await logout()
+      }
     }
   }
 )

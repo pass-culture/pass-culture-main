@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
+import { ApiError } from '@/apiClient/compat'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import * as handleErrorModule from '@/commons/errors/handleError'
 import type { RootState } from '@/commons/store/store'
@@ -237,6 +238,35 @@ describe('setSelectedPartnerVenueById', () => {
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
 
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
+  })
+
+  it('should not call handleError when getVenue fails with ApiError', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(api, 'getVenue').mockRejectedValue(
+      new ApiError('/venues/922', 503, 'Service Unavailable', {
+        global: 'failed',
+      })
+    )
+    const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
+    const logoutSpy = vi.spyOn(logoutModule, 'logout')
+
+    const store = configureTestStore(storeDataBase)
+
+    await store
+      .dispatch(
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: 101,
+          shouldAlignSelectedAdminOfferer: false,
+        })
+      )
+      .unwrap()
+
+    expect(handleErrorSpy).not.toHaveBeenCalled()
+    expect(logoutSpy).not.toHaveBeenCalled()
+
+    const state = store.getState()
+    expect(state.user.selectedPartnerVenue).toBeNull()
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 

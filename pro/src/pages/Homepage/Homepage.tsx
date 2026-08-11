@@ -1,10 +1,7 @@
 import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
-import {
-  DMSApplicationstatus,
-  type GetVenueResponseModel,
-} from '@/apiClient/v1'
+import { DMSApplicationstatus } from '@/apiClient/v1'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -41,9 +38,7 @@ import { WebinarCard } from './components/WebinarCard/WebinarCard'
 import styles from './Homepage.module.scss'
 
 export const Homepage = (): JSX.Element => {
-  const selectedPartnerVenue: GetVenueResponseModel = useAppSelector(
-    ensureSelectedPartnerVenue
-  )
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const collectiveDmsApplication =
     selectedPartnerVenue.lastCollectiveDmsApplication
