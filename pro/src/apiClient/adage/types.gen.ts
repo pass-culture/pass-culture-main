@@ -640,28 +640,6 @@ export type GetTemplateIdsModel = {
 };
 
 /**
- * HighlightBannerBody
- */
-export type HighlightBannerBody = {
-    /**
-     * Banner
-     */
-    banner: string;
-    /**
-     * Iframefrom
-     */
-    iframeFrom: string;
-    /**
-     * Isfromnoresult
-     */
-    isFromNoResult?: boolean | null;
-    /**
-     * Queryid
-     */
-    queryId?: string | null;
-};
-
-/**
  * InstitutionRuralLevel
  */
 export enum InstitutionRuralLevel {
@@ -2077,39 +2055,6 @@ export type postAdageIframeLogsHeaderLinkClickResponses = {
 };
 
 export type postAdageIframeLogsHeaderLinkClickResponse = postAdageIframeLogsHeaderLinkClickResponses[keyof postAdageIframeLogsHeaderLinkClickResponses];
-
-export type postAdageIframeLogsHighlightBannerData = {
-    body: HighlightBannerBody;
-    path?: never;
-    query?: never;
-    url: '/adage-iframe/logs/highlight-banner';
-};
-
-export type postAdageIframeLogsHighlightBannerErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Not Found
-     */
-    404: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type postAdageIframeLogsHighlightBannerError = postAdageIframeLogsHighlightBannerErrors[keyof postAdageIframeLogsHighlightBannerErrors];
-
-export type postAdageIframeLogsHighlightBannerResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type postAdageIframeLogsHighlightBannerResponse = postAdageIframeLogsHighlightBannerResponses[keyof postAdageIframeLogsHighlightBannerResponses];
 
 export type postAdageIframeLogsOfferDetailData = {
     body: StockIdBody;
