@@ -156,6 +156,10 @@ class OffererNotAllowedToDuplicate(Exception):
     pass
 
 
+class OffererNotAllowedOnAdage(Exception):
+    pass
+
+
 class CantGetImageFromUrl(Exception):
     pass
 

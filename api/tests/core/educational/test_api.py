@@ -7,6 +7,7 @@ import dateutil
 import pytest
 import time_machine
 
+import pcapi.core.users.testing as brevo_testing
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
@@ -14,7 +15,10 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import institution as institution_api
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api import stock as educational_api_stock
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import testing as mails_testing
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
@@ -613,3 +617,124 @@ class CheckAllowedActionTest:
         }
         assert len(educational_api_offer.PATCH_DETAILS_FIELDS_PUBLIC) == len(expected)
         assert set(educational_api_offer.PATCH_DETAILS_FIELDS_PUBLIC) == expected
+
+
+@pytest.mark.usefixtures("db_session")
+class MoveCollectiveOfferTest:
+    def test_move_collective_offer_with_confirmed_booking(self):
+        offer = factories.CollectiveOfferOnAddressVenueLocationFactory()
+        source_venue = offer.venue
+        booking = factories.PendingCollectiveBookingFactory(collectiveStock=offer.collectiveStock)
+        destination_venue = offerers_factories.VenueFactory()
+        educational_api_offer.move_collective_offer(offer.id, destination_venue.id)
+
+        db.session.refresh(booking)
+        db.session.refresh(offer)
+
+        assert offer.venue == destination_venue
+        assert offer.offererAddress.venue == destination_venue
+        assert booking.offerer == destination_venue.managingOfferer
+        assert booking.venue == destination_venue
+
+        assert len(brevo_testing.brevo_requests) == 2
+        assert {request.get("email") for request in brevo_testing.brevo_requests} == {
+            source_venue.bookingEmail,
+            destination_venue.bookingEmail,
+        }
+
+    def test_move_collective_offer_with_used_booking(self):
+        offer = factories.CollectiveOfferOnOtherAddressLocationFactory()
+        source_venue = offer.venue
+        booking = factories.UsedCollectiveBookingFactory(collectiveStock=offer.collectiveStock)
+        finance_factories.CollectivePricingFactory(collectiveBooking=booking)
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        educational_api_offer.move_collective_offer(offer.id, destination_venue.id)
+
+        db.session.refresh(booking)
+        db.session.refresh(offer)
+
+        assert offer.venue == destination_venue
+        assert offer.offererAddress.venue == destination_venue
+        assert booking.offerer == destination_venue.managingOfferer
+        assert booking.venue == destination_venue
+
+        assert len(booking.pricings) == 0
+        assert len(booking.finance_events) == 1
+        assert booking.finance_events[0].status == finance_models.FinanceEventStatus.READY
+        assert booking.finance_events[0].venue == destination_venue
+        assert booking.finance_events[0].pricingPoint == destination_venue
+
+        assert len(brevo_testing.brevo_requests) == 2
+        assert {request.get("email") for request in brevo_testing.brevo_requests} == {
+            source_venue.bookingEmail,
+            destination_venue.bookingEmail,
+        }
+
+    @pytest.mark.parametrize(
+        "factory",
+        [factories.PendingReimbursementCollectiveBookingFactory, factories.ReimbursedCollectiveBookingFactory],
+    )
+    def test_move_collective_offer_with_reimbursed_booking(self, factory):
+        booking = factory()
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
+            educational_api_offer.move_collective_offer(booking.collectiveStock.collectiveOfferId, destination_venue.id)
+
+    def test_move_collective_offer_with_cancelled_booking(self):
+        booking = factories.CancelledCollectiveBookingFactory()
+        offer = booking.collectiveStock.collectiveOffer
+        source_venue = offer.venue
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        educational_api_offer.move_collective_offer(offer.id, destination_venue.id)
+
+        db.session.refresh(booking)
+        db.session.refresh(offer)
+
+        assert offer.venue == destination_venue
+        assert booking.offerer == source_venue.managingOfferer
+        assert booking.venue == source_venue
+
+    def test_move_collective_offer_with_two_bookings(self):
+        canceled_booking = factories.CancelledCollectiveBookingFactory()
+        offer = canceled_booking.collectiveStock.collectiveOffer
+        source_venue = offer.venue
+        new_booking = factories.PendingCollectiveBookingFactory(collectiveStock=offer.collectiveStock)
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        educational_api_offer.move_collective_offer(offer.id, destination_venue.id)
+
+        db.session.refresh(canceled_booking)
+        db.session.refresh(offer)
+
+        assert offer.venue == destination_venue
+        assert canceled_booking.offerer == source_venue.managingOfferer
+        assert canceled_booking.venue == source_venue
+        assert new_booking.offerer == destination_venue.managingOfferer
+        assert new_booking.venue == destination_venue
+
+    def test_move_collective_offer_without_adage(self):
+        booking = factories.PendingCollectiveBookingFactory()
+        offer = booking.collectiveStock.collectiveOffer
+        source_venue = offer.venue
+        destination_venue = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
+
+        with pytest.raises(exceptions.OffererNotAllowedOnAdage):
+            educational_api_offer.move_collective_offer(offer.id, destination_venue.id)
+
+        assert offer.venue == source_venue
+        assert booking.offerer == source_venue.managingOfferer
+        assert booking.venue == source_venue
+
+    def test_move_collective_offer_on_same_venue(self):
+        booking = factories.PendingCollectiveBookingFactory()
+        offer = booking.collectiveStock.collectiveOffer
+        source_venue = offer.venue
+
+        educational_api_offer.move_collective_offer(offer.id, source_venue.id)
+
+        assert offer.venue == source_venue
+        assert booking.offerer == source_venue.managingOfferer
+        assert booking.venue == source_venue

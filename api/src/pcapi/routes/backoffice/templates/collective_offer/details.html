@@ -41,6 +41,9 @@
   {% if allowed_actions.actions.ADJUST_PRICE in allowed_actions.inline_actions %}
     {{ action_bar_button("pencil-square", "Ajuster le prix", modal_id="#update-collective-offer-price") }}
   {% endif %}
+  {% if allowed_actions.actions.MOVE_OFFER in allowed_actions.inline_actions %}
+    {{ action_bar_button("shop", "Déplacer l'offre", modal_id="#move-collective-offer") }}
+  {% endif %}
   <!-- ADDITIONAL BUTTONS TO PUT IN DROPDOWN MENU -->
   {% if allowed_actions.additional_actions %}
     <ul class="dropdown-menu">
@@ -68,6 +71,9 @@
       {% endif %}
       {% if allowed_actions.actions.ADJUST_PRICE in allowed_actions.additional_actions %}
         {{ action_bar_additional_button("pencil-square", "Ajuster le prix", modal_id="#update-collective-offer-price") }}
+      {% endif %}
+      {% if allowed_actions.actions.MOVE_OFFER in allowed_actions.additional_actions %}
+        {{ action_bar_additional_button("shop", "Déplacer l'offre", modal_id="#move-collective-offer") }}
       {% endif %}
     </ul>
     <button type="button"
@@ -348,5 +354,8 @@
   {% endif %}
   {% if allowed_actions.actions.ADJUST_PRICE in allowed_actions.allowed_actions %}
     {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_collective_offer_price_form", collective_offer_id=collective_offer.id) , "update-collective-offer-price") }}
+  {% endif %}
+  {% if allowed_actions.actions.MOVE_OFFER in allowed_actions.allowed_actions %}
+    {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_move_collective_offer_form", collective_offer_id=collective_offer.id) , "move-collective-offer") }}
   {% endif %}
 {% endblock extra_main_content %}
