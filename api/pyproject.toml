@@ -224,114 +224,114 @@ ignore = [
   "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy
 
   # a lot of rules have been added in 0.16.0, we ignore the following for now and will decide later for each rule if we fix it or leave it ignored
-  "B006",
-  "B008",
-  "B009",
-  "B010",
-  "B013",
-  "B015",
-  "B017",
-  "B018",
-  "B019",
-  "BLE001",
-  "C400",
-  "C401",
-  "C403",
-  "C405",
-  "C408",
-  "C409",
-  "C414",
-  "C417",
-  "C419",
-  "DTZ001",
-  "DTZ002",
-  "DTZ005",
-  "DTZ006",
-  "DTZ007",
-  "DTZ011",
-  "DTZ901",
-  "EXE001",
-  "EXE002",
-  "FLY002",
-  "FURB105",
-  "FURB136",
-  "FURB157",
-  "FURB163",
-  "FURB192",
-  "G010",
-  "G201",
-  "ISC004",
-  "LOG015",
-  "PERF402",
-  "PGH005",
-  "PIE790",
-  "PIE794",
-  "PIE796",
-  "PIE800",
-  "PIE808",
-  "PIE810",
-  "PLC0206",
-  "PLR0402",
-  "PLW1508",
-  "PT014",
-  "PYI009",
-  "PYI020",
-  "PYI030",
-  "PYI034",
-  "PYI036",
-  "PYI041",
-  "PYI052",
-  "PYI063",
-  "RET501",
-  "RUF010",
-  "RUF012",
-  "RUF013",
-  "RUF015",
-  "RUF017",
-  "RUF018",
-  "RUF019",
-  "RUF022",
-  "RUF028",
-  "RUF032",
-  "RUF034",
-  "RUF046",
-  "RUF059",
-  "RUF100",
-  "S110",
-  "SIM102",
-  "SIM103",
-  "SIM113",
-  "SIM114",
-  "SIM115",
-  "SIM117",
-  "SIM118",
-  "SIM201",
-  "SIM401",
-  "SIM905",
-  "T100",
-  "TRY002",
-  "TRY004",
-  "TRY201",
-  "TRY401",
-  "UP006",
-  "UP007",
-  "UP012",
-  "UP017",
-  "UP018",
-  "UP022",
-  "UP028",
-  "UP031",
-  "UP032",
-  "UP034",
-  "UP035",
-  "UP036",
-  "UP037",
-  "UP040",
-  "UP043",
-  "UP045",
-  "UP047",
-  "UP049",
-  "W605",
+  "B006",  # mutable-argument-default : Do not use mutable data structures for argument defaults
+  "B008",  # function-call-in-default-argument : Do not perform function calls in argument defaults
+  "B009",  # get-attr-with-constant : Do not call `getattr` with a constant attribute value
+  "B010",  # set-attr-with-constant : Do not call `setattr` with a constant attribute value
+  "B013",  # redundant-tuple-in-exception-handler : A length-one tuple literal is redundant in exception handlers
+  "B015",  # useless-comparison : Pointless comparison. This comparison does nothing but waste CPU instructions
+  "B017",  # assert-raises-exception : `pytest.raises(Exception)` should be considered evil
+  "B018",  # useless-expression : Found useless expression. Either assign it to a variable or remove it
+  "B019",  # cached-instance-method : Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
+  "BLE001",  # blind-except : Do not catch blind exception: `Exception`
+  "C400",  # unnecessary-generator-list : Unnecessary generator (rewrite as a `list` comprehension)
+  "C401",  # unnecessary-generator-set : Unnecessary generator (rewrite as a `set` comprehension)
+  "C403",  # unnecessary-list-comprehension-set : Unnecessary list comprehension (rewrite as a `set` comprehension)
+  "C405",  # unnecessary-literal-set : Unnecessary literal (rewrite as a `set` literal)
+  "C408",  # unnecessary-collection-call : Unnecessary collection call (rewrite as a literal)
+  "C409",  # unnecessary-literal-tuple : Unnecessary literal passed to `tuple()` (rewrite as a `tuple` literal)
+  "C414",  # nested-iterable : Unnecessary nested iterable
+  "C417",  # unnecessary-map : Unnecessary `map` usage (rewrite using a generator expression or comprehension)
+  "C419",  # unnecessary-comprehension-any-all : Unnecessary list comprehension passed to `any()` or `all()`
+  "DTZ001",  # call-datetime-without-tzinfo : The use of `datetime.datetime()` without `tzinfo` argument is not allowed
+  "DTZ002",  # call-datetime-today : The use of `datetime.datetime.today()` is not allowed
+  "DTZ005",  # call-datetime-now-without-tzinfo : The use of `datetime.datetime.now()` without `tzinfo` argument is not allowed
+  "DTZ006",  # call-datetime-fromtimestamp : The use of `datetime.datetime.fromtimestamp()` without `tzinfo` argument is not allowed
+  "DTZ007",  # call-datetime-strptime-without-zone : The use of `datetime.datetime.strptime()` without %z must be followed by `.replace(tzinfo=)`
+  "DTZ011",  # call-date-today : The use of `datetime.date.today()` is not allowed
+  "DTZ901",  # datetime-min-max : `datetime.datetime.min` and `datetime.datetime.max` lack timezone information
+  "EXE001",  # shebang-not-executable : Shebang is present but file is not executable
+  "EXE002",  # shebang-missing-executable-file : The file is executable but no shebang is present
+  "FLY002",  # static-join-to-f-string : Consider f-string instead of string join
+  "FURB105",  # print-empty-string : Unnecessary empty string passed to `print`
+  "FURB136",  # if-expr-min-max : Replace if-expression with `min()` or `max()`
+  "FURB157",  # verbose-decimal-constructor : Use `Decimal()` rather than `Decimal("0")`
+  "FURB163",  # redundant-log-base : `math.log()` base is redundant
+  "FURB192",  # sorted-min-max : Prefer `min()` / `max()` over `sorted()`
+  "G010",  # logging-warn : Logging statement uses `warn` instead of `warning`
+  "G201",  # logging-exc-info : Logging `.exception(...)` should be used instead of `.error(..., exc_info=True)`
+  "ISC004",  # implicit-string-concatenation-in-collection-literal : Implicitly concatenated string literals on one line
+  "LOG015",  # root-logger-call : Use of root logger
+  "PERF402",  # manual-list-copy : Use `list` or `list.copy` to create a copy of a list
+  "PGH005",  # invalid-mock-access : Mock objects have no attribute
+  "PIE790",  # unnecessary-placeholder : Unnecessary `pass` statement
+  "PIE794",  # duplicate-class-field-definition : Class field is defined multiple times
+  "PIE796",  # non-unique-enums : Enum contains duplicate value
+  "PIE800",  # unnecessary-spread : Unnecessary spread `**`
+  "PIE808",  # unnecessary-range-start : Unnecessary `start` argument in `range`
+  "PIE810",  # multiple-starts-ends-with : Call `.startswith()` or `.endswith()` once with a tuple
+  "PLC0206",  # dict-index-missing-items : Extracting value from dictionary without calling `.items()`
+  "PLR0402",  # manual-from-import : Use `from module import name` in lieu of alias
+  "PLW1508",  # invalid-envvar-default : Invalid type for environment variable default
+  "PT014",  # pytest-duplicate-parametrize-test-cases : Duplicate test cases in `@pytest.mark.parametrize`
+  "PYI009",  # pass-statement-stub-body : Empty body should contain `...`, not `pass`
+  "PYI020",  # quoted-annotation-in-stub : Quoted annotations should not be included in stubs
+  "PYI030",  # unnecessary-literal-union : Multiple literal members in a union
+  "PYI034",  # non-self-return-type : `__new__` methods usually return `self` at runtime
+  "PYI036",  # bad-exit-annotation : Star-args in `__exit__` should be annotated with `object`
+  "PYI041",  # redundant-numeric-union : Use `float` instead of `int | float`
+  "PYI052",  # unannotated-assignment-in-stub : Unannotated assignment in stub
+  "PYI063",  # pep484-style-positional-only-parameter : Use PEP 570 syntax for positional-only arguments
+  "RET501",  # unnecessary-return-none : Do not explicitly `return None` in function if it is the only possible return value
+  "RUF010",  # explicit-f-string-type-conversion : Use explicit conversion flag
+  "RUF012",  # mutable-class-default : Mutable class attributes should be annotated with `typing.ClassVar`
+  "RUF013",  # implicit-optional : PEP 484 prohibits implicit `Optional`
+  "RUF015",  # unnecessary-iterable-allocation-for-first-element : Prefer `next(iter(...))` over single element slice
+  "RUF017",  # quadratic-list-summation : Avoid quadratic list summation
+  "RUF018",  # assignment-in-assert : Avoid assignment expressions in `assert` statements
+  "RUF019",  # unnecessary-key-check : Unnecessary key check before dictionary access
+  "RUF022",  # unsorted-dunder-all : `__all__` is not sorted
+  "RUF028",  # invalid-formatter-suppression-comment : `fmt: off` is not supported
+  "RUF032",  # decimal-from-float-literal : Decimal constructor passed a float literal
+  "RUF034",  # useless-if-else : Useless `if`-`else` condition
+  "RUF046",  # unnecessary-cast-to-int : Unnecessary `int` cast
+  "RUF059",  # unused-unpacked-variable : Unpacked variable is never used
+  "RUF100",  # unused-noqa : Unused `noqa` directive
+  "S110",  # try-except-pass : `try`-`except`-`pass` detected, consider logging the exception
+  "SIM102",  # nested-if : Use a single `if` statement instead of nested `if` statements
+  "SIM103",  # return-bool-condition-directly : Return the boolean condition directly
+  "SIM113",  # enumerate-for-loop : Use `enumerate()` for index variable in `for` loop
+  "SIM114",  # if-with-same-arms : Combine `if` branches using logical `or` operator
+  "SIM115",  # open-file-with-context-handler : Use context handler for opening files
+  "SIM117",  # multiple-with-statements : Use a single `with` statement with multiple contexts
+  "SIM118",  # in-dict-keys : Use `key in dict` instead of `key in dict.keys()`
+  "SIM201",  # negate-cmp-op-with-not : Use `!=` instead of `not ==`
+  "SIM401",  # if-else-block-instead-of-dict-get : Use `dict.get(key, default)` instead of an `if` block
+  "SIM905",  # split-static-string : Unnecessary string split
+  "T100",  # debugger : Trace found: `breakpoint` used
+  "TRY002",  # raise-vanilla-class : Create your own exception
+  "TRY004",  # type-check-without-type-error : Prefer `TypeError` exception for invalid type
+  "TRY201",  # verbose-raise : Use `raise` without specifying exception name
+  "TRY401",  # verbose-log-message : Redundant exception object included in `logging.exception` call
+  "UP006",  # non-pep585-annotation : Use standard library generic types instead of typing module
+  "UP007",  # non-pep604-annotation : Use `X | Y` for type annotations
+  "UP012",  # unnecessary-encode-utf8 : Unnecessary call to `encode` as UTF-8
+  "UP017",  # datetime-timezone-utc : Use `datetime.UTC` alias
+  "UP018",  # native-literals : Unnecessary native literal call
+  "UP022",  # replace-stdout-stderr : Sending stdout and stderr to `PIPE` is deprecated, use `capture_output`
+  "UP028",  # yield-in-for-loop : Replace `yield` over `for` loop with `yield from`
+  "UP031",  # printf-string-formatting : Use format specifiers instead of percent format
+  "UP032",  # f-string : Use f-string instead of `format` call
+  "UP034",  # extraneous-parentheses : Avoid extraneous parentheses
+  "UP035",  # deprecated-import : Import from standard library instead of deprecated modules
+  "UP036",  # outdated-version-block : Version block is outdated for minimum Python version
+  "UP037",  # quoted-annotation : Remove quotes from type annotation
+  "UP040",  # non-pep695-type-alias : Type alias uses `TypeAlias` annotation instead of the `type` keyword
+  "UP043",  # unnecessary-default-type-args : Unnecessary default type arguments
+  "UP045",  # non-pep604-annotation-optional : Use `X | None` instead of `Optional[X]`
+  "UP047",  # non-pep695-generic-function : Generic function uses `TypeVar` instead of the `type` keyword
+  "UP049",  # private-type-parameter : Private type parameter
+  "W605",  # invalid-escape-sequence : Invalid escape sequence
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
