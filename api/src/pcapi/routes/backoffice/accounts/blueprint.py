@@ -63,6 +63,7 @@ from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import advanced_search
@@ -96,30 +97,59 @@ public_accounts_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 
 
 def _get_credits_filter(credit_names: typing.Iterable[str]) -> sa.ColumnElement:
-    predicates = {
-        account_forms.AccountCreditKeys.PASS_17_V3.name: sa.and_(
+    beneficiary_predicates = {
+        search_forms.AccountSearchFilter.PASS_17_V3.name: sa.and_(
             finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
             users_models.User.has_underage_beneficiary_role,
             users_models.User.isActive.is_(True),
         ),
-        account_forms.AccountCreditKeys.PASS_18_V3.name: sa.and_(
+        search_forms.AccountSearchFilter.PASS_18_V3.name: sa.and_(
             finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
             users_models.User.has_beneficiary_role,
             users_models.User.isActive.is_(True),
         ),
-        account_forms.AccountCreditKeys.PASS_15_17.name: sa.and_(
+        search_forms.AccountSearchFilter.PASS_15_17.name: sa.and_(
             finance_models.Deposit.type != finance_models.DepositType.GRANT_17_18,
             users_models.User.has_underage_beneficiary_role,
             users_models.User.isActive.is_(True),
         ),
-        account_forms.AccountCreditKeys.PASS_18.name: sa.and_(
+        search_forms.AccountSearchFilter.PASS_18.name: sa.and_(
             finance_models.Deposit.type != finance_models.DepositType.GRANT_17_18,
             users_models.User.has_beneficiary_role,
             users_models.User.isActive.is_(True),
         ),
     }
 
-    return sa.or_(*[predicates[name] for name in credit_names])
+    filters: list[sa.ColumnElement] = []
+    # Non-beneficiary filter
+    if search_forms.AccountSearchFilter.PUBLIC.name in credit_names:
+        filters.append(
+            sa.and_(
+                sa.not_(users_models.User.is_beneficiary),
+                users_models.User.isActive.is_(True),
+            )
+        )
+
+    selected_beneficiary_predicates = [
+        beneficiary_predicates[name] for name in beneficiary_predicates if name in credit_names
+    ]
+    if selected_beneficiary_predicates:
+        filters.append(
+            sa.exists()
+            .where(
+                sa.and_(
+                    finance_models.Deposit.userId == users_models.User.id,
+                    finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
+                    sa.or_(*selected_beneficiary_predicates),
+                )
+            )
+            .correlate(users_models.User)
+        )
+
+    if not filters:
+        return sa.true()
+
+    return sa.or_(*filters)
 
 
 def _get_deposit_expiration_filter(operator: str) -> typing.Callable[[datetime.date], sa.ColumnElement]:
@@ -140,26 +170,27 @@ def _get_deposit_expiration_filter(operator: str) -> typing.Callable[[datetime.d
     return build_filter
 
 
+def _get_tags_filter(tag_ids: typing.Iterable[int]) -> sa.ColumnElement:
+    return (
+        sa.exists()
+        .where(
+            sa.and_(
+                users_models.UserTagMapping.userId == users_models.User.id,
+                users_models.UserTagMapping.tagId.in_(tag_ids),
+            )
+        )
+        .correlate(users_models.User)
+    )
+
+
 ADVANCED_SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
     "BIRTHDAY": {"field": "date", "column": users_models.User.birth_date},
     "CREDITS": {
         "field": "credits",
         "custom_filters": {
             "IN": _get_credits_filter,
-            "NOT_IN": lambda credit_names: (
-                sa.exists()
-                .where(
-                    sa.and_(
-                        finance_models.Deposit.userId == users_models.User.id,
-                        finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
-                        _get_credits_filter(credit_names),
-                    )
-                )
-                .correlate(users_models.User)
-                .is_(False)
-            ),
+            "NOT_IN": lambda credit_names: sa.not_(_get_credits_filter(credit_names)),
         },
-        "custom_filters_inner_joins": {"IN": {"non_expired_deposit"}},
     },
     "DEPOSIT_EXPIRATION_DATE": {
         "field": "date",
@@ -168,6 +199,12 @@ ADVANCED_SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
         },
     },
     "EMAIL_DOMAIN": {"field": "string", "column": sa.func.email_domain(users_models.User.email)},
+    "IS_SUSPENDED": {
+        "field": "boolean",
+        "column": users_models.User.is_active,
+        "custom_filters": {"NULLABLE": lambda is_suspended: users_models.User.isActive.is_(not is_suspended)},
+        "special": lambda x: x == "true",
+    },
     "REGIONS": {
         "field": "regions",
         "column": users_models.User.departementCode,
@@ -175,39 +212,8 @@ ADVANCED_SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
     },
     "TAGS": {
         "field": "tags",
-        "column": users_models.UserTag.id,
-        "inner_join": "tag",  # applied only when no custom filter (with operator IN)
-        "custom_filters": {
-            "NOT_IN": lambda tag_ids: (
-                sa.exists()
-                .where(
-                    sa.and_(
-                        users_models.UserTagMapping.userId == users_models.User.id,
-                        users_models.UserTagMapping.tagId.in_(tag_ids),
-                    )
-                )
-                .correlate(users_models.User)
-                .is_(False)
-            )
-        },
+        "custom_filters": {"IN": _get_tags_filter, "NOT_IN": lambda tag_ids: sa.not_(_get_tags_filter(tag_ids))},
     },
-}
-
-
-ADVANCED_SEARCH_JOIN_DEFINITIONS: dict[str, list[dict[str, typing.Any]]] = {
-    "non_expired_deposit": [
-        {
-            "name": "deposit",
-            "args": (
-                finance_models.Deposit,
-                sa.and_(
-                    finance_models.Deposit.userId == users_models.User.id,
-                    finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
-                ),
-            ),
-        }
-    ],
-    "tag": [{"name": "tag", "args": (users_models.UserTag, users_models.User.tags)}],
 }
 
 
@@ -427,23 +433,27 @@ def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> N
             flash("L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans", "success")
 
 
-def _get_user_ids_query(advanced_form: account_forms.GetAccountsListSearchForm, base_query: sa_orm.Query) -> sa_orm.Query:
+def _get_user_ids_with_search_scores_query(
+    advanced_form: account_forms.GetAccountsListSearchForm, base_query: sa_orm.Query, search_score_col: sa.ColumnElement
+) -> sa_orm.Query:
     query, _, _, warnings = advanced_search.generate_search_query(
         query=base_query,
         search_parameters=advanced_form.search.data,
         fields_definition=ADVANCED_SEARCH_FIELDS_DEFINITION,
-        joins_definition=ADVANCED_SEARCH_JOIN_DEFINITIONS,
+        joins_definition={},
         subqueries_definition={},
     )
     for warning in warnings:
         flash(warning, "warning")
 
     # +1 to check if there are more results than requested
-    return query.with_entities(users_models.User.id).limit(advanced_form.limit.data + 1)
+    return query.with_entities(users_models.User.id, search_score_col).limit(advanced_form.limit.data + 1)
 
 
-def _get_and_sort_users(user_ids_query: sa_orm.Query) -> list[users_models.User]:
-    query = db.session.query(users_models.User).filter(users_models.User.id.in_(user_ids_query))
+def _get_and_sort_users(user_ids_with_search_scores_query: sa_orm.Query) -> list[users_models.User]:
+    user_ids_subquery = user_ids_with_search_scores_query.subquery()
+
+    query = db.session.query(users_models.User).join(user_ids_subquery, users_models.User.id == user_ids_subquery.c.id)
     query = _load_suspension_info(query)
     query = _load_current_deposit_data(query, join_needed=True)
 
@@ -453,7 +463,7 @@ def _get_and_sort_users(user_ids_query: sa_orm.Query) -> list[users_models.User]
                 users_models.UserTag.id, users_models.UserTag.name, users_models.UserTag.label
             )
         )
-        .order_by(users_models.User.id)
+        .order_by(user_ids_subquery.c.search_score, user_ids_subquery.c.id)
         .all()
     )
 
@@ -464,14 +474,16 @@ def _search_users(advanced_form: account_forms.GetAccountsListSearchForm) -> lis
     Looking into the email history upfront would slow down every single search for a rare use case.
     """
     q = advanced_form.q.data or ""
+    base_query, search_score_col = users_api.search_public_account(q)
     users = _get_and_sort_users(
-        _get_user_ids_query(advanced_form, users_api.search_public_account(q)),
+        _get_user_ids_with_search_scores_query(advanced_form, base_query, search_score_col),
     )
     if users or not email_utils.is_valid_email(email_utils.sanitize_email(q)):
         return users
 
+    base_query, search_score_col = users_api.search_public_account_in_history_email(q)
     return _get_and_sort_users(
-        _get_user_ids_query(advanced_form, users_api.search_public_account_in_history_email(q)),
+        _get_user_ids_with_search_scores_query(advanced_form, base_query, search_score_col),
     )
 
 
@@ -495,7 +507,7 @@ def list_public_accounts() -> response_utils.BackofficeResponse:
 
     rows = search_utils.limit_rows(_search_users(advanced_form), advanced_form.limit.data)
     if len(rows) == 1:
-        return redirect(_get_public_account_link(rows[0].id, advanced_form))
+        return redirect(_get_public_account_link(rows[0].id, advanced_form, search_rank=1, total_items=1), 303)
 
     return render_template(
         "accounts/list.html",
@@ -695,7 +707,7 @@ def render_public_account_details(
             },
         )
 
-    search_form = account_forms.GetAccountSearchForm(formdata=request_utils.get_query_params())
+    search_form = account_forms.GetAccountDetailsSearchForm(formdata=request_utils.get_query_params())
     search_hidden_filters = [
         (name, value) for name, values in _get_advanced_search_hidden_filters().items() for value in values
     ]

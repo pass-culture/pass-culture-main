@@ -19,6 +19,7 @@ from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
+from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.utils import advanced_search
 from pcapi.routes.backoffice.utils import geography as geography_utils
@@ -31,15 +32,9 @@ class AdvancedFormFieldKeys(enum.Enum):
     CREDITS = "Crédits"
     DEPOSIT_EXPIRATION_DATE = "Date d’expiration du crédit"
     EMAIL_DOMAIN = "Nom de domaine de l'email"
+    IS_SUSPENDED = "Compte suspendu"
     REGIONS = "Régions"
     TAGS = "Tags"
-
-
-class AccountCreditKeys(enum.Enum):
-    PASS_17_V3 = "Pass 17"
-    PASS_18_V3 = "Pass 18"
-    PASS_15_17 = "Ancien Pass 15-17"
-    PASS_18 = "Ancien Pass 18"
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
@@ -56,6 +51,7 @@ ADVANCED_FORM_FIELDS_CONFIG: dict[str, dict[str, typing.Any]] = {
         "field": "string",
         "operator": ["EQUALS", "NOT_EQUALS"],
     },
+    AdvancedFormFieldKeys.IS_SUSPENDED.name: {"field": "boolean", "operator": ["NULLABLE"]},
     AdvancedFormFieldKeys.REGIONS.name: {"field": "regions", "operator": ["IN", "NOT_IN"]},
     AdvancedFormFieldKeys.TAGS.name: {"field": "tags", "operator": ["IN", "NOT_IN"]},
 }
@@ -82,14 +78,18 @@ def _get_tags_choices() -> list[tuple[int, str]]:
     return g._account_tags_choices
 
 
-class GetAccountSearchForm(utils.PCForm):
+class GetAccountDetailsSearchForm(utils.PCForm):
     class Meta:
         csrf = False
         locales = ["fr_FR", "fr"]
 
     method = "GET"
 
-    q = fields.PCOptStringField(label="Recherche (nom, prénom, ID, téléphone, email)", full_width=True)
+    q = fields.PCOptStringField(
+        label="Recherche (prénom et nom, ID ou liste d'IDs, email ou liste d'emails, téléphone)",
+        validators=[validators.Optional(strip_whitespace=True)],
+        full_width=True,
+    )
 
     def is_empty(self) -> bool:
         return not self.q.data
@@ -104,6 +104,7 @@ class AccountsSearchSubForm(utils.PCForm):
         {
             "display_configuration": ADVANCED_FORM_FIELDS_CONFIG,
             "all_available_fields": [
+                "boolean",
                 "credits",
                 "date",
                 "regions",
@@ -130,9 +131,19 @@ class AccountsSearchSubForm(utils.PCForm):
             wtforms.validators.Optional(strip_whitespace=True),
         ],
     )
+    boolean = fields.PCSelectField(
+        "Booléen",
+        choices=(("true", "Oui"), ("false", "Non")),
+        default="true",
+        validators=[
+            wtforms.validators.Optional(strip_whitespace=True),
+        ],
+    )
     credits = fields.PCSelectMultipleField(
         "Crédits",
-        choices=utils.choices_from_enum(AccountCreditKeys),
+        choices=utils.choices_from_enum(
+            search_forms.AccountSearchFilter, exclude_opts=(search_forms.AccountSearchFilter.SUSPENDED,)
+        ),
         field_list_compatibility=True,
         search_inline=True,
     )
@@ -171,7 +182,11 @@ class GetAccountsListSearchForm(utils.PCForm):
     form_field_configuration = ADVANCED_FORM_FIELDS_CONFIG
     search_attributes = AdvancedFormFieldKeys
 
-    q = fields.PCOptStringField(label="Recherche", full_width=True)
+    q = fields.PCOptStringField(
+        label="Recherche (prénom et nom, ID ou liste d'IDs, email ou liste d'emails, téléphone)",
+        full_width=True,
+        validators=[validators.Optional(strip_whitespace=True)],
+    )
     search = fields.PCFieldListField(
         fields.PCFormField(AccountsSearchSubForm),
         label="recherches",
@@ -184,9 +199,7 @@ class GetAccountsListSearchForm(utils.PCForm):
         "Nombre maximum de résultats",
         choices=(
             (100, "Afficher 100 résultats maximum"),
-            (500, "Afficher 500 résultats maximum"),
             (1000, "Afficher 1000 résultats maximum"),
-            (3000, "Afficher 3000 résultats maximum"),
         ),
         default="100",
         coerce=int,

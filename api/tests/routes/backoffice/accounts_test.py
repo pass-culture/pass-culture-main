@@ -242,13 +242,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=str(user_id)))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=user_id,
             q=user_id,
+            search_rank=1,
+            total_items=1,
         )
 
     def test_can_search_public_account_by_multiple_ids(self, authenticated_client):
@@ -292,13 +294,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=accounts[expected_index].id,
             q=query,
+            search_rank=1,
+            total_items=1,
         )
 
     @pytest.mark.parametrize("query", ["ALGÉZIC", "Algézic", "Algezic"])
@@ -307,13 +311,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=random.id,
             q=query,
+            search_rank=1,
+            total_items=1,
         )
 
     def test_can_search_public_account_by_email(self, authenticated_client):
@@ -322,13 +328,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=email))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=random.id,
             q=email,
+            search_rank=1,
+            total_items=1,
         )
 
     def test_can_search_public_account_by_multiple_emails(self, authenticated_client):
@@ -369,13 +377,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=old_grant_18.id,
             q=query,
+            search_rank=1,
+            total_items=1,
         )
 
     def test_can_search_public_account_even_with_missing_city_address(self, authenticated_client):
@@ -384,13 +394,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=phone_number))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=no_address.id,
             q=phone_number,
+            search_rank=1,
+            total_items=1,
         )
 
     @pytest.mark.parametrize("query", ["Abdel Yves Akhim Flaille", "Abdel Flaille", "Flaille Akhim", "Yves Abdel"])
@@ -399,13 +411,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=old_grant_18.id,
             q=query,
+            search_rank=1,
+            total_items=1,
         )
 
         redirected_response = authenticated_client.get(response.location)
@@ -417,13 +431,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="Ann A"))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=user.id,
             q="Ann A",
+            search_rank=1,
+            total_items=1,
         )
 
         redirected_response = authenticated_client.get(response.location)
@@ -485,13 +501,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=email))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=young_and_pro.id,
             q=email,
+            search_rank=1,
+            total_items=1,
         )
 
     def test_can_search_public_account_by_credit_type_only(self, authenticated_client):
@@ -501,13 +519,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         query_args = advanced_filter_args("CREDITS", "IN", "credits", "PASS_18_V3")
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=new_grant_18.id,
             **query_args,
+            search_rank=1,
+            total_items=1,
         )
 
     def test_can_search_public_account_by_tag(self, authenticated_client):
@@ -519,13 +539,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         query_args = advanced_filter_args("TAGS", "IN", "tags", tag_id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=user_with_tag.id,
             **query_args,
+            search_rank=1,
+            total_items=1,
         )
 
     def test_can_search_public_account_by_mulitple_tags(self, authenticated_client):
@@ -563,6 +585,20 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         assert len(cards_text) == 2
         user_ids = {user_id_from_card(card_text) for card_text in cards_text}
         assert user_ids == {str(user_with_tag1.id), str(user_with_tag1_and_tag2.id)}
+
+    def test_can_list_all_public_accounts_matching_several_tags_each(self, authenticated_client):
+        # Regression test: A join-based tags filter would emit 120 rows for 60 users,
+        # which would exceed the 101 budget (limit per page + 1) and silently drop users from the list
+        tag1, tag2 = users_factories.UserTagFactory.create_batch(2)
+        users = users_factories.UserFactory.create_batch(60, tags=[tag1, tag2])
+
+        query_args = advanced_filter_args("TAGS", "IN", "tags", [tag1.id, tag2.id])
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert {user_id_from_card(card_text) for card_text in cards_text} == {str(user.id) for user in users}
 
     def test_can_search_public_account_by_tags_and_query(self, authenticated_client):
         tag1, tag2, _ = users_factories.UserTagFactory.create_batch(3)
@@ -684,7 +720,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         # Ensure that search result is redirected, no single card result with "4 résultats"
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=email))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         # Redirected to single result
         assert_response_location(
@@ -692,6 +728,8 @@ class SearchPublicAccountsTest(GetEndpointHelper):
             "backoffice_web.public_accounts.get_public_account",
             user_id=user.id,
             q=email,
+            search_rank=1,
+            total_items=1,
         )
 
     def test_can_search_old_email(self, authenticated_client):
@@ -703,7 +741,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries_when_old_email):
             response = authenticated_client.get(url_for(self.endpoint, q=old_email))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         # Redirected to single result
         assert_response_location(
@@ -711,6 +749,8 @@ class SearchPublicAccountsTest(GetEndpointHelper):
             "backoffice_web.public_accounts.get_public_account",
             user_id=event.user.id,
             q=old_email,
+            search_rank=1,
+            total_items=1,
         )
 
     @pytest.mark.parametrize(
@@ -720,18 +760,30 @@ class SearchPublicAccountsTest(GetEndpointHelper):
             (search_forms.AccountSearchFilter.PASS_18_V3.name, "beneficiary_user"),
             (search_forms.AccountSearchFilter.PASS_15_17.name, "old_underage_user"),
             (search_forms.AccountSearchFilter.PASS_18.name, "old_beneficiary_user"),
+            (search_forms.AccountSearchFilter.PUBLIC.name, "public_user"),
         ],
     )
-    def test_search_with_single_filter(self, authenticated_client, credit_key, expected_user):
+    def test_search_by_credit(self, authenticated_client, credit_key, expected_user):
         users = self._create_users_by_credit()
 
         query_args = advanced_filter_args("CREDITS", "IN", "credits", credit_key)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         redirected_id = int(re.match(r".*/(\d+)\?.*", response.location).group(1))
         assert redirected_id == users[expected_user].id
+
+    def test_search_by_is_suspended(self, authenticated_client):
+        users = self._create_users_by_credit()
+
+        query_args = advanced_filter_args("IS_SUSPENDED", "NULLABLE", "boolean", "true")
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 303
+
+        redirected_id = int(re.match(r".*/(\d+)\?.*", response.location).group(1))
+        assert redirected_id == users["suspended_user"].id
 
     def test_search_with_several_filters(self, authenticated_client):
         users = self._create_users_by_credit()
@@ -807,7 +859,9 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         [
             ("DATE_EQUALS", datetime.date(2006, 5, 12), ["born_in_2006"]),
             ("DATE_FROM", datetime.date(2007, 1, 1), ["born_in_2008"]),
+            ("DATE_FROM", datetime.date(2008, 11, 2), ["born_in_2008"]),
             ("DATE_TO", datetime.date(2007, 1, 1), ["born_in_2006"]),
+            ("DATE_TO", datetime.date(2008, 11, 2), ["born_in_2006", "born_in_2008"]),
         ],
     )
     def test_list_accounts_by_birth_date(self, authenticated_client, operator, date_value, expected_groups):
@@ -958,13 +1012,15 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         }
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 302
+            assert response.status_code == 303
 
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=matching_user.id,
             **query_args,
+            search_rank=1,
+            total_items=1,
         )
 
     @pytest.mark.parametrize(
@@ -1019,7 +1075,7 @@ class AdvancedSearchFiltersPersistenceTest:
             "search-0-search_field": "TAGS",
             "search-0-operator": "IN",
             "search-0-tags": [first_tag.id, second_tag.id],
-            "limit": 500,
+            "limit": 100,
         }
 
     def test_round_trip_keeps_the_same_results(self, authenticated_client):
