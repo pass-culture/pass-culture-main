@@ -4133,6 +4133,21 @@ class CloseVenueTest:
         assert not venue.current_bank_account_link
         assert venue.state == offerers_models.VenueState.CLOSED
 
+    def test_close_venue_adds_immediate_close_action_with_comment(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.BaseUserFactory()
+        comment = "hey"
+
+        with atomic():
+            offerers_api.close_venue(venue, author, comment=comment)
+
+        venue_closed_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(venueId=venue.id, actionType=history_models.ActionType.VENUE_CLOSED)
+            .one()
+        )
+        assert venue_closed_action.comment == comment
+
     def test_closed_venue_stays_closed_and_nothing_is_done(self):
         venue = offerers_factories.VenueFactory(
             state=offerers_models.VenueState.CLOSED, bookingEmail=None, contact=None

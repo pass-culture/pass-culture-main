@@ -3281,6 +3281,15 @@ class GetCloseVenueFormTest(GetEndpointHelper):
             "1 réservation collective"
         )
 
+    def test_get_close_venue_form_displays_optional_comment_field(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+
+        assert response.status_code == 200
+        content = html_parser.content_as_text(response.data)
+        assert "Motif de la fermeture (optionnel)" in content
+
 
 class CloseVenueTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.close_venue"
@@ -3301,6 +3310,44 @@ class CloseVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
         assert venue.state == offerers_models.VenueState.CLOSED
+
+    def test_close_venue_with_comment(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        comment = "Fermeture demandee par le support"
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={"comment": comment},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+
+        venue_closed_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(venueId=venue.id, actionType=history_models.ActionType.VENUE_CLOSED)
+            .one()
+        )
+        assert venue_closed_action.comment == comment
+
+    def test_close_venue_with_too_long_comment(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={"comment": "a" * 1025},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        alert = html_parser.extract_alert(response.data)
+        assert "Les données envoyées comportent des erreurs." in alert
+        assert "Motif de la fermeture (optionnel)" in alert
+
+        db.session.refresh(venue)
+        assert venue.state != offerers_models.VenueState.CLOSED
 
     @pytest.mark.parametrize(
         "validation_status",

@@ -3502,12 +3502,13 @@ def get_user_pending_and_validated_offerers(
     return PendingAndValidatedOfferers(validated=validated, pending=pending)
 
 
-def close_venue(venue: models.Venue, author: users_models.User) -> None:
+def close_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
     if venue.is_closed:
         return
 
     venue.state = models.VenueState.CLOSING
     nullify_venue_emails(venue, author)
+    history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
 
     finance_api.unlink_venue_bank_accounts(venue)
 

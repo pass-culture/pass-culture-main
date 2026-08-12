@@ -1408,7 +1408,7 @@ def get_remove_siret_form(venue_id: int) -> response_utils.BackofficeResponse:
 def get_close_venue_form(venue_id: int) -> response_utils.BackofficeResponse:
     venue = get_or_404(offerers_models.Venue, venue_id)
 
-    form = forms.FlaskForm()
+    form = forms.CloseVenueForm()
     info = None
 
     count_individual_bookings = len(offerers_api.get_individual_bookings_to_cancel(venue_id=venue.id))
@@ -1474,13 +1474,13 @@ def close_venue(venue_id: int) -> response_utils.BackofficeResponse:
         flash("Seul un partenaire culturel validé peut être fermé", "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
-    form = forms.FlaskForm()
+    form = forms.CloseVenueForm()
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
-    offerers_api.close_venue(venue, author=current_user)
+    offerers_api.close_venue(venue, author=current_user, comment=form.comment.data)
 
     flash(Markup("Le partenaire culturel <b>{name}</b> a été fermé").format(name=venue.name), "success")
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
