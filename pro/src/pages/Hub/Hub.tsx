@@ -63,14 +63,23 @@ export const Hub = () => {
     nextSelectedVenueId: number
   ) => {
     setIsLoading(true)
-    await dispatch(
-      setSelectedPartnerVenueById({
-        nextSelectedPartnerVenueId: nextSelectedVenueId,
-        shouldAlignSelectedAdminOfferer: true,
-      })
-    ).unwrap()
+    try {
+      const { selectedPartnerVenue } = await dispatch(
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: nextSelectedVenueId,
+          shouldAlignSelectedAdminOfferer: true,
+        })
+      ).unwrap()
 
-    navigate('/accueil')
+      if (!selectedPartnerVenue) {
+        setIsLoading(false)
+        return
+      }
+
+      navigate('/accueil')
+    } catch {
+      setIsLoading(false)
+    }
   }
 
   if (isLoading) {

@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
+import { ApiError } from '@/apiClient/compat'
 import { type VenueListItemLiteResponseModel, VenueState } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
@@ -211,6 +212,28 @@ describe('Hub', () => {
         screen.getByText('Chargement de la structure en cours…')
       ).toBeInTheDocument()
     })
+  })
+
+  it('should stop showing spinner when venue selection fails', async () => {
+    vi.spyOn(api, 'getVenue').mockRejectedValue(
+      new ApiError('/venues/922', 503, 'Service Unavailable', {
+        global: 'failed',
+      })
+    )
+
+    renderHub({ venues: venuesBase })
+
+    await userEvent.click(screen.getByRole('button', { name: /Café des Arts/ }))
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Chargement de la structure en cours…')
+      ).not.toBeInTheDocument()
+    })
+
+    expect(
+      screen.getByRole('button', { name: /Café des Arts/ })
+    ).toBeInTheDocument()
   })
 
   describe('search functionality', () => {
