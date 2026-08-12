@@ -1,8 +1,8 @@
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
-export const MarkdownInfoBox = () => {
+export const MarkdownInfoBox = ({ id }: { id?: string }) => {
   return (
-    <TipsBanner>
+    <TipsBanner id={id}>
       Vous pouvez modifier la mise en forme de votre texte.
       <br />
       Utilisez des doubles astérisques pour mettre en <strong>gras</strong> :

@@ -3,6 +3,8 @@ import fullError from 'icons/full-error.svg'
 import { useId } from 'react'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import { useFormLayoutSideComponentDescribedBy } from '@/commons/context/FormLayoutSideComponentContext/FormLayoutSideComponentContext'
+
 import { Checkbox, type CheckboxProps } from '../Checkbox/Checkbox'
 import styles from './CheckboxGroup.module.scss'
 
@@ -23,6 +25,7 @@ export type CheckboxGroupProps = {
   variant?: 'default' | 'detailed'
   /** If the checkbox group is disabled, making all options unselectable */
   disabled?: boolean
+  describedBy?: string
 }
 
 export const CheckboxGroup = ({
@@ -33,16 +36,25 @@ export const CheckboxGroup = ({
   display = 'vertical',
   variant = 'default',
   disabled = false,
+  describedBy,
 }: CheckboxGroupProps) => {
+  const formLayoutDescribedBy = useFormLayoutSideComponentDescribedBy()
   const errorId = useId()
   const descriptionId = useId()
-  const describedBy = `${error ? errorId : ''} ${description ? descriptionId : ''}`
+  const describedByIds = [
+    error ? errorId : '',
+    description ? descriptionId : '',
+    describedBy ?? '',
+    formLayoutDescribedBy ?? '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   const isStringLabel = typeof label === 'string'
 
   return (
     <fieldset
-      aria-describedby={describedBy}
+      aria-describedby={describedByIds || undefined}
       className={classNames(
         styles['checkbox-group'],
         styles[`display-${display}`],

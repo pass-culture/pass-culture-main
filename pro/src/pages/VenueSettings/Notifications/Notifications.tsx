@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useId } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -58,6 +59,8 @@ const Notifications = () => {
   const { navigationGuardDialog, navigationGuardedSubmitHandler } =
     useFormNavigationGuard({ form, onSubmit })
 
+  const notificationId = useId()
+
   return (
     <>
       <FormProvider {...form}>
@@ -73,10 +76,11 @@ const Notifications = () => {
                   description="Format : email@exemple.com"
                   error={errors.bookingEmail?.message}
                   disabled={isVenueClosed}
+                  describedBy={notificationId}
                 />
               </FormLayout.Row>
               <FormLayout.Row>
-                <TipsBanner>
+                <TipsBanner id={notificationId}>
                   Cette adresse s’applique par défaut à toutes vos offres, vous
                   pouvez la modifier à l’échelle de chaque offre.
                 </TipsBanner>

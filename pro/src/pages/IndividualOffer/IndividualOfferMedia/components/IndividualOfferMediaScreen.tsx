@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -53,6 +54,7 @@ export const IndividualOfferMediaScreen = ({
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const tipsVideoUploaderId = useId()
 
   const initialImageOffer = getIndividualOfferImage(offer)
   const {
@@ -239,8 +241,12 @@ export const IndividualOfferMediaScreen = ({
                   title="Ajoutez une vidéo"
                   className={styles['media-sub-section']}
                 >
-                  <VideoUploader />
-                  {!videoData?.videoThumbnailUrl && <VideoUploaderTips />}
+                  <VideoUploader aria-describedby={tipsVideoUploaderId} />
+                  {!videoData?.videoThumbnailUrl && (
+                    <div id={tipsVideoUploaderId}>
+                      <VideoUploaderTips />
+                    </div>
+                  )}
                 </FormLayout.SubSection>
               </FormLayout.Row>
             </FormLayout.Section>

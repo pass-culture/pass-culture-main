@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { type ForwardedRef, forwardRef, useId } from 'react'
 
+import { useFormLayoutSideComponentDescribedBy } from '@/commons/context/FormLayoutSideComponentContext/FormLayoutSideComponentContext'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import { FieldHeader } from '@/design-system/common/FieldHeader/FieldHeader'
@@ -27,6 +28,7 @@ export interface SelectProps<T extends number | string = string> {
   error?: string
   value?: string
   ariaLabel?: string
+  describedBy?: string
 }
 
 export const Select = forwardRef(
@@ -45,9 +47,11 @@ export const Select = forwardRef(
       value,
       onChange,
       onBlur,
+      describedBy,
     }: Readonly<SelectProps<string | number>>,
     ref: ForwardedRef<HTMLSelectElement>
   ) => {
+    const formLayoutDescribedBy = useFormLayoutSideComponentDescribedBy()
     const fieldId = useId()
     const errorId = useId()
 
@@ -70,7 +74,11 @@ export const Select = forwardRef(
             aria-label={ariaLabel}
             aria-required={required}
             aria-invalid={Boolean(error)}
-            aria-describedby={error ? errorId : undefined}
+            aria-describedby={
+              [error ? errorId : '', describedBy ?? '', formLayoutDescribedBy]
+                .filter(Boolean)
+                .join(' ') || undefined
+            }
             className={cn(styles['select-input'], {
               [styles['has-error']]: Boolean(error),
               [styles['select-input-placeholder']]: value === '',

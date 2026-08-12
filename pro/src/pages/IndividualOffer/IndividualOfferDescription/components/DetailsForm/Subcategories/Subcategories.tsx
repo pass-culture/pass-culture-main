@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react'
+import { type ChangeEvent, useId } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type {
@@ -43,6 +43,7 @@ export function Subcategories({
 
   const categoryId = watch('categoryId')
   const subcategoryId = watch('subcategoryId')
+  const subcategoryBannerId = useId()
 
   const categoryOptions = buildCategoryOptions(filteredCategories)
   const subcategoryOptions = buildSubcategoryOptions(
@@ -159,9 +160,13 @@ export function Subcategories({
               subcategoryOptions.length === 1
             }
             error={errors.subcategoryId?.message}
+            describedBy={subcategoryBannerId}
           />
           {!readOnlyFields.includes('categoryId') && (
-            <div className={styles['subcategory-callout']}>
+            <div
+              className={styles['subcategory-callout']}
+              id={subcategoryBannerId}
+            >
               <Banner
                 title="Étapes adaptatives"
                 description="Le formulaire s'adaptera automatiquement selon la sous-catégorie sélectionnée."
