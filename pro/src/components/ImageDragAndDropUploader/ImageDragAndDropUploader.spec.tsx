@@ -232,6 +232,38 @@ describe('ImageDragAndDropUploader', () => {
     expect(snackBarSuccess).not.toHaveBeenCalled()
   })
 
+  it('should reset drag and drop state on image modal close and focus the input back', async () => {
+    renderImageUploader({
+      onImageUpload: () => {},
+      onImageDelete: () => {},
+      mode: UploaderModeEnum.OFFER,
+    })
+
+    const inputField = screen.getByLabelText('Importez une image')
+    await userEvent.upload(inputField, mockImageFile)
+
+    await waitFor(() => {
+      expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    await waitFor(() => {
+      expect(screen.queryByText('Modifier une image')).not.toBeInTheDocument()
+      expect(screen.getByLabelText('Importez une image')).toHaveFocus()
+    })
+
+    // Uploading the same file again validates that the drag-and-drop input was remounted.
+    await userEvent.upload(
+      screen.getByLabelText('Importez une image'),
+      mockImageFile
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+    })
+  })
+
   it('should display a toaster and call onImageDelete, as soon as a file is delete successfully', async () => {
     const mockDelete = vi.fn()
 
@@ -286,5 +318,51 @@ describe('ImageDragAndDropUploader', () => {
     )
     expect(mockDelete).toHaveBeenCalled()
     expect(snackBarSuccess).toHaveBeenCalledWith('L’image a bien été supprimée')
+  })
+
+  it('should close the warning dialog when clicking Annuler', async () => {
+    const mockDelete = vi.fn()
+
+    renderImageUploader({
+      onImageUpload: () => {},
+      onImageDelete: mockDelete,
+      mode: UploaderModeEnum.OFFER,
+      initialValues: {
+        croppedImageUrl: 'noimage.jpg',
+        originalImageUrl: 'noimage.jpg',
+      },
+      warnBeforeDeleting: true,
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: /Supprimer/i }))
+    expect(screen.getByText('Votre offre ne sera plus à la une')).toBeVisible()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    expect(mockDelete).not.toHaveBeenCalled()
+  })
+
+  it('should close the warning dialog when clicking the close button', async () => {
+    const mockDelete = vi.fn()
+
+    renderImageUploader({
+      onImageUpload: () => {},
+      onImageDelete: mockDelete,
+      mode: UploaderModeEnum.OFFER,
+      initialValues: {
+        croppedImageUrl: 'noimage.jpg',
+        originalImageUrl: 'noimage.jpg',
+      },
+      warnBeforeDeleting: true,
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: /Supprimer/i }))
+    expect(screen.getByText('Votre offre ne sera plus à la une')).toBeVisible()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Fermer la boite de dialogue' })
+    )
+
+    expect(mockDelete).not.toHaveBeenCalled()
   })
 })
