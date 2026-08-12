@@ -55,6 +55,20 @@ def signin(body: authentication.SigninRequestV2) -> authentication.SigninRespons
     if user.account_state.is_deleted or user.account_state == user_models.AccountState.ANONYMIZED:
         raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]})
 
+    logger.info(
+        "Successful authentication attempt",
+        extra={
+            "identifier": body.identifier,
+            "user": user.id,
+            "avoid_current_user": True,
+            "success": True,
+            "api_version": "v2",
+            "feature": "users",
+            "action": "login",
+        },
+        technical_message_id="users.login",
+    )
+
     users_api.save_device_info_and_notify_user(user, body.device_info)
 
     users_api.update_last_connection_date(user)
