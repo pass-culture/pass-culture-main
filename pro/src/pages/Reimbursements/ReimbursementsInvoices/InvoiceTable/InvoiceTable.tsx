@@ -122,6 +122,9 @@ export const InvoiceTable = ({
 }: InvoiceTableProps) => {
   const [checkedInvoices, setCheckedInvoices] = useState<string[]>([])
 
+  const getInvoiceDateLabel = (invoice: ExtendedInvoiceResponseV2Model) =>
+    format(new Date(invoice.date), FORMAT_DD_MM_YYYY)
+
   const invoices: ExtendedInvoiceResponseV2Model[] = hasInvoice
     ? data.map((invoice) => ({
         ...invoice,
@@ -138,6 +141,7 @@ export const InvoiceTable = ({
         columns={columns}
         data={invoices}
         selectable={true}
+        getRowSelectionDateTime={getInvoiceDateLabel}
         isLoading={isLoading}
         onSelectionChange={(rows) => {
           setCheckedInvoices(rows.map((row) => row.reference.toString()))

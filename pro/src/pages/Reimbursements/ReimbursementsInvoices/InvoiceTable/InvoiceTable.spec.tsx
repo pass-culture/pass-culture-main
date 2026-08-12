@@ -80,7 +80,7 @@ describe('InvoiceTable', () => {
   it('renders invoice rows correctly', () => {
     renderReimbursementsInvoicesTable(invoices)
 
-    const rows = screen.getAllByLabelText(/ligne/)
+    const rows = screen.getAllByLabelText(/Sélectionner la ligne du/i)
     expect(rows).toHaveLength(invoices.length)
     expect(screen.getByLabelText('Tout sélectionner')).toBeInTheDocument()
   })
@@ -89,7 +89,9 @@ describe('InvoiceTable', () => {
     const user = userEvent.setup()
     renderReimbursementsInvoicesTable(invoices)
 
-    const firstCheckbox = screen.getByLabelText('ligne INV-001')
+    const firstCheckbox = screen.getByLabelText(
+      'Sélectionner la ligne du 01/06/2024'
+    )
     await user.click(firstCheckbox)
 
     expect(firstCheckbox).toBeChecked()
@@ -102,13 +104,21 @@ describe('InvoiceTable', () => {
     const selectAll = screen.getByLabelText('Tout sélectionner')
     await user.click(selectAll)
 
-    expect(screen.getByLabelText('ligne INV-001')).toBeChecked()
-    expect(screen.getByLabelText('ligne INV-002')).toBeChecked()
+    expect(
+      screen.getByLabelText('Sélectionner la ligne du 01/06/2024')
+    ).toBeChecked()
+    expect(
+      screen.getByLabelText('Sélectionner la ligne du 15/05/2024')
+    ).toBeChecked()
 
     await user.click(selectAll)
 
-    expect(screen.getByLabelText('ligne INV-001')).not.toBeChecked()
-    expect(screen.getByLabelText('ligne INV-002')).not.toBeChecked()
+    expect(
+      screen.getByLabelText('Sélectionner la ligne du 01/06/2024')
+    ).not.toBeChecked()
+    expect(
+      screen.getByLabelText('Sélectionner la ligne du 15/05/2024')
+    ).not.toBeChecked()
   })
 
   it('calls download APIs when clicking buttons', async () => {

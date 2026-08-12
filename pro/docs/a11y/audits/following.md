@@ -21,6 +21,41 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 11.2 - RGAA - Chaque étiquette associée à un champ de formulaire est-elle pertinente ?</summary>
+
+**RAWeb/RGAA** : [Critère 11.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-2)
+**Ticket** : [PC-42862](https://passculture.atlassian.net/browse/PC-42862)  
+**PR** : [#23860](https://github.com/pass-culture/pass-culture-main/pull/23860)
+
+**Problème** 😱  
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Au moins une étiquette de champ de formulaire n'est pas pertinente.
+
+- Dans le tableau de données à l'étape "Horaires et stocks", la première colonne ne possède pas d’intitulé. Elle contient des cases à cocher permettant de sélectionner une ligne (correspondant à une date d’un événement), sans indication explicite du contexte.
+
+- Les cases à cocher ne disposent pas d’un libellé explicite et visible, ce qui empêche de comprendre clairement l’élément sélectionné (ex. ligne 205171).
+
+- Le titre du tableau de données à l'étape "Horaires et stocks" n’est pas pertinent.
+
+**Correction** 💡  
+- Ajout d'un intitulé explicite à la première colonne du tableau : checkbox globale + tooltip accessible "Tout sélectionner"
+
+- Pour le tableau, modification du titre pour "Horaires, tarifs et stocks".
+
+- Association de chaque case à cocher à un libellé explicite reprenant l’information de la ligne (date et heure de l’événement).
+
+- Ajout d'un attribut title sur chaque case à cocher reprenant l’intitulé
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 3.1 - RGAA - Dans chaque page web, l'information ne doit pas être donnée uniquement par la couleur ?
 </summary>
 
