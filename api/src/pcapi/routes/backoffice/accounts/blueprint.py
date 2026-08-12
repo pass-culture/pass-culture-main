@@ -543,10 +543,6 @@ def _convert_check_item_to_fraud_action_dict(id_check_item: serialization.IdChec
     }
 
 
-def get_user_tags() -> list[users_models.UserTag]:
-    return db.session.query(users_models.UserTag).order_by(users_models.UserTag.label, users_models.UserTag.name).all()
-
-
 def _apply_bookings_joined_loads(query: OptionableType) -> OptionableType:
     result = query.options(
         sa_orm.joinedload(bookings_models.Booking.stock, innerjoin=True)

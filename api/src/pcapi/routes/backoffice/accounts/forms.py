@@ -72,11 +72,15 @@ def _get_tags_query() -> sa_orm.Query:
     )
 
 
+def _get_tags() -> list[users_models.UserTag]:
+    # cached per request: shared between TagAccountForm and the advanced search tags filter
+    if not hasattr(g, "_account_tags"):
+        g._account_tags = _get_tags_query().all()
+    return g._account_tags
+
+
 def _get_tags_choices() -> list[tuple[int, str]]:
-    # cached per request: one sub-form is built per advanced filter row, and each needs the same choices
-    if not hasattr(g, "_account_tags_choices"):
-        g._account_tags_choices = [(tag.id, str(tag)) for tag in _get_tags_query()]
-    return g._account_tags_choices
+    return [(tag.id, str(tag)) for tag in _get_tags()]
 
 
 def is_ignoring_advanced_search_filters(query_params: datastructures.MultiDict[str, str]) -> bool:
@@ -100,8 +104,15 @@ class GetAccountDetailsSearchForm(utils.PCForm):
     def __init__(self, formdata: datastructures.ImmutableMultiDict[str, str]):
         super().__init__(formdata=formdata)
 
-        list_form = GetAccountsListSearchForm(formdata=formdata)
-        advanced_filters_count = sum(1 for row in list_form.search.data if row.get("search_field"))
+        # count filters from raw params: building GetAccountsListSearchForm would query the tags choices for nothing
+        if is_ignoring_advanced_search_filters(formdata):
+            advanced_filters_count = 0
+        else:
+            advanced_filters_count = sum(
+                1
+                for name, value in formdata.items()
+                if name.startswith("search-") and name.endswith("-search_field") and value
+            )
         if advanced_filters_count > 0:
             self.ignore_advanced_search_filters_field.label.text = (
                 f"Ignorer {advanced_filters_count} filtre(s) masqué(s)"
@@ -542,7 +553,7 @@ class CreateUserTagCategoryForm(UserTagBaseForm):
 class TagAccountForm(FlaskForm):
     tags = fields.PCQuerySelectMultipleField(
         "Tags",
-        query_factory=_get_tags_query,
+        query_factory=_get_tags,
         get_pk=lambda tag: tag.id,
         get_label=lambda tag: str(tag),
     )
