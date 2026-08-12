@@ -2186,6 +2186,8 @@ def comment_public_account(user_id: int) -> response_utils.BackofficeResponse:
 
 def _get_advanced_search_hidden_filters() -> dict[str, list[str]]:
     query_params = request_utils.get_query_params()
+    if account_forms.is_ignoring_advanced_search_filters(query_params):
+        return {}
 
     return {
         name: query_params.getlist(name)

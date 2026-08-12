@@ -8,6 +8,7 @@ import wtforms
 from flask import flash
 from flask import g
 from flask_wtf import FlaskForm
+from werkzeug import datastructures
 from wtforms import validators
 
 from pcapi.connectors.dms import models as dms_models
@@ -78,6 +79,10 @@ def _get_tags_choices() -> list[tuple[int, str]]:
     return g._account_tags_choices
 
 
+def is_ignoring_advanced_search_filters(query_params: datastructures.MultiDict[str, str]) -> bool:
+    return query_params.get("ignore_advanced_search_filters_field", "") not in fields.PCCheckboxField.false_values
+
+
 class GetAccountDetailsSearchForm(utils.PCForm):
     class Meta:
         csrf = False
@@ -90,6 +95,19 @@ class GetAccountDetailsSearchForm(utils.PCForm):
         validators=[validators.Optional(strip_whitespace=True)],
         full_width=True,
     )
+    ignore_advanced_search_filters_field = fields.PCCheckboxField(label="Ignorer les filtres masqués")
+
+    def __init__(self, formdata: datastructures.ImmutableMultiDict[str, str]):
+        super().__init__(formdata=formdata)
+
+        list_form = GetAccountsListSearchForm(formdata=formdata)
+        advanced_filters_count = sum(1 for row in list_form.search.data if row.get("search_field"))
+        if advanced_filters_count > 0:
+            self.ignore_advanced_search_filters_field.label.text = (
+                f"Ignorer {advanced_filters_count} filtre(s) masqué(s)"
+            )
+        else:
+            del self.ignore_advanced_search_filters_field
 
     def is_empty(self) -> bool:
         return not self.q.data
@@ -205,6 +223,11 @@ class GetAccountsListSearchForm(utils.PCForm):
         coerce=int,
         validators=(wtforms.validators.Optional(),),
     )
+
+    def __init__(self, formdata: datastructures.ImmutableMultiDict[str, str]):
+        if formdata is not None and is_ignoring_advanced_search_filters(formdata):
+            formdata = datastructures.ImmutableMultiDict({"q": formdata.get("q", "")})
+        super().__init__(formdata=formdata)
 
     def is_empty(self) -> bool:
         if self.q.data:

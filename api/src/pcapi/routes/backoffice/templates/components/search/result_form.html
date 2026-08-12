@@ -1,4 +1,4 @@
-{% macro build_result_page_form(form, dst, col_width=6, extra_hidden_params=[]) %}
+{% macro build_result_page_form(form, dst, col_width=6) %}
   <form action="{{ dst }}"
         name="{{ dst | action_to_name }}"
         method="get">
@@ -17,11 +17,6 @@
         </div>
         {% for form_field in form %}
           {% if "Hidden" in form_field.type %}{{ form_field }}{% endif %}
-        {% endfor %}
-        {% for name, value in extra_hidden_params %}
-          <input type="hidden"
-                 name="{{ name }}"
-                 value="{{ value }}">
         {% endfor %}
       </div>
       <div class="col-1 d-flex align-items-center">
