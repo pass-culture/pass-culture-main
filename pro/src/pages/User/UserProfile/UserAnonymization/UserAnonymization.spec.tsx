@@ -120,6 +120,31 @@ describe('UserAnonymization', () => {
       ).toBeInTheDocument()
     })
 
+    it('should close modal when clicking the close icon', async () => {
+      useUserAnonymizationEligibilityMock.mockReturnValue({
+        isLoading: false,
+        isEligible: true,
+        isSoleUserWithOngoingActivities: false,
+      })
+
+      renderUserAnonymization({
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Supprimer mon compte' })
+      )
+
+      const dialog = screen.getByRole('dialog', { hidden: true })
+      expect(dialog).toHaveAttribute('open')
+
+      await userEvent.click(
+        screen.getByLabelText('Fermer la boite de dialogue')
+      )
+
+      expect(dialog).not.toHaveAttribute('open')
+    })
+
     it('should display uneligibility message for user without ongoing activities', async () => {
       useUserAnonymizationEligibilityMock.mockReturnValue({
         isLoading: false,
@@ -179,6 +204,23 @@ describe('UserAnonymization', () => {
   })
 
   describe('anonymization form', () => {
+    it('should close modal when clicking cancel in anonymization form', async () => {
+      renderUserAnonymization({
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Supprimer mon compte' })
+      )
+
+      const dialog = screen.getByRole('dialog', { hidden: true })
+      expect(dialog).toHaveAttribute('open')
+
+      await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+      expect(dialog).not.toHaveAttribute('open')
+    })
+
     it('should call anonymize and dispatch logout when form is submitted', async () => {
       vi.mocked(api.anonymize).mockResolvedValueOnce()
       const logoutSpy = vi.spyOn(logoutModule, 'logout').mockReturnValue({
@@ -191,15 +233,15 @@ describe('UserAnonymization', () => {
       })
 
       await userEvent.click(
-        screen.getByRole('button', { name: 'Supprimer mon compte' })
+        screen.getAllByRole('button', { name: 'Supprimer mon compte' })[0]
       )
 
       const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
       await userEvent.type(emailInput, 'user@example.com')
 
-      const submitButton = screen.getByRole('button', {
+      const submitButton = screen.getAllByRole('button', {
         name: 'Supprimer mon compte',
-      })
+      })[1]
 
       await userEvent.click(submitButton!)
 
@@ -219,15 +261,15 @@ describe('UserAnonymization', () => {
       })
 
       await userEvent.click(
-        screen.getByRole('button', { name: 'Supprimer mon compte' })
+        screen.getAllByRole('button', { name: 'Supprimer mon compte' })[0]
       )
 
       const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
       await userEvent.type(emailInput, 'user@example.com')
 
-      const submitButton = screen.getByRole('button', {
+      const submitButton = screen.getAllByRole('button', {
         name: 'Supprimer mon compte',
-      })
+      })[1]
 
       await userEvent.click(submitButton!)
 
@@ -312,20 +354,47 @@ describe('UserAnonymization', () => {
       })
 
       await userEvent.click(
-        screen.getByRole('button', { name: 'Supprimer mon compte' })
+        screen.getAllByRole('button', { name: 'Supprimer mon compte' })[0]
       )
 
       const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
       await userEvent.type(emailInput, 'invalid-email')
 
-      const submitButton = screen.getByRole('button', {
+      const submitButton = screen.getAllByRole('button', {
         name: 'Supprimer mon compte',
-      })
+      })[1]
       await userEvent.click(submitButton!)
 
       await waitFor(() => {
         expect(api.anonymize).toHaveBeenCalledTimes(0)
       })
+    })
+  })
+
+  describe('uneligibility dialog close action', () => {
+    it("should close modal when clicking 'J'ai compris'", async () => {
+      useUserAnonymizationEligibilityMock.mockReturnValue({
+        isLoading: false,
+        isEligible: false,
+        isSoleUserWithOngoingActivities: false,
+      })
+
+      renderUserAnonymization({
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Supprimer mon compte' })
+      )
+
+      const dialog = screen.getByRole('dialog', { hidden: true })
+      expect(dialog).toHaveAttribute('open')
+
+      await userEvent.click(
+        screen.getByRole('button', { name: "J'ai compris" })
+      )
+
+      expect(dialog).not.toHaveAttribute('open')
     })
   })
 })

@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
@@ -339,6 +339,162 @@ describe('LinkVenueDialog', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
 
     expect(closeDialog).toHaveBeenCalledWith(true)
+  })
+
+  it('should close dialog without update when submitting unchanged venues selection', async () => {
+    const closeDialog = vi.fn()
+    const linkVenueToBankAccountSpy = vi.spyOn(api, 'linkVenueToBankAccount')
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues, closeDialog)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+    expect(closeDialog).toHaveBeenCalledWith(false)
+    expect(linkVenueToBankAccountSpy).not.toHaveBeenCalled()
+  })
+
+  it('should call handleCancel from DetailedModal onClose when no confirmation dialog is open', async () => {
+    const closeDialog = vi.fn()
+
+    renderLinkVenuesDialog(
+      1,
+      defaultBankAccount,
+      [defaultManagedVenue],
+      closeDialog
+    )
+
+    const detailedDialog = screen.getByRole('dialog', {
+      name: 'Compte bancaire : Mon compte bancaire',
+    })
+
+    await userEvent.click(
+      within(detailedDialog).getByLabelText('Fermer la boite de dialogue')
+    )
+
+    expect(closeDialog).toHaveBeenCalledOnce()
+  })
+
+  it('should not call handleCancel from DetailedModal onClose when discard dialog is open', async () => {
+    const closeDialog = vi.fn()
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+      {
+        ...defaultManagedVenue,
+        id: 2,
+        commonName: 'Lieu 2',
+        bankAccountId: null,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues, closeDialog)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Lieu 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    expect(
+      screen.getByText(
+        'Les informations non sauvegardées ne seront pas prises en compte'
+      )
+    ).toBeInTheDocument()
+
+    const detailedDialog = screen.getByRole('dialog', {
+      name: 'Compte bancaire : Mon compte bancaire',
+    })
+
+    await userEvent.click(
+      within(detailedDialog).getByLabelText('Fermer la boite de dialogue')
+    )
+
+    expect(closeDialog).not.toHaveBeenCalled()
+  })
+
+  it('should close discard dialog on close icon click without closing parent dialog', async () => {
+    const closeDialog = vi.fn()
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+      {
+        ...defaultManagedVenue,
+        id: 2,
+        commonName: 'Lieu 2',
+        bankAccountId: null,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues, closeDialog)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Lieu 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    const discardDialog = screen.getByRole('dialog', {
+      name: 'Les informations non sauvegardées ne seront pas prises en compte',
+    })
+
+    await userEvent.click(
+      within(discardDialog).getByLabelText('Fermer la boite de dialogue')
+    )
+
+    expect(closeDialog).not.toHaveBeenCalled()
+  })
+
+  it('should close discard dialog on cancel button click without closing parent dialog', async () => {
+    const closeDialog = vi.fn()
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+      {
+        ...defaultManagedVenue,
+        id: 2,
+        commonName: 'Lieu 2',
+        bankAccountId: null,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues, closeDialog)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Lieu 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    const discardDialog = screen.getByRole('dialog', {
+      name: 'Les informations non sauvegardées ne seront pas prises en compte',
+    })
+
+    await userEvent.click(
+      within(discardDialog).getByRole('button', { name: 'Annuler' })
+    )
+
+    expect(closeDialog).not.toHaveBeenCalled()
+  })
+
+  it('should close discard dialog and close parent dialog when clicking "Quitter sans enregistrer"', async () => {
+    const closeDialog = vi.fn()
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+      {
+        ...defaultManagedVenue,
+        id: 2,
+        commonName: 'Lieu 2',
+        bankAccountId: null,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues, closeDialog)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Lieu 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    const discardDialog = screen.getByRole('dialog', {
+      name: 'Les informations non sauvegardées ne seront pas prises en compte',
+    })
+
+    await userEvent.click(
+      within(discardDialog).getByRole('button', {
+        name: 'Quitter sans enregistrer',
+      })
+    )
+
+    expect(closeDialog).toHaveBeenCalledOnce()
   })
 
   it('should call serializeApiErrors when linkVenueToBankAccount fails with a 400 error', async () => {

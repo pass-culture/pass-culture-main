@@ -68,9 +68,11 @@ describe('Offerers trackers', () => {
   })
 
   it('should track displaying the confirmation dialog', async () => {
+    const user = userEvent.setup()
     renderOfferersScreen(contextValue)
 
-    await userEvent.click(await screen.findByText('Rejoindre cet espace'))
+    const buttons = await screen.findAllByText('Rejoindre cet espace')
+    await user.click(buttons[0])
 
     expect(
       await screen.findByText('Rejoindre cet espace ?')
@@ -88,15 +90,18 @@ describe('Offerers trackers', () => {
   })
 
   it('should track closing the not link offerer modal', async () => {
+    const user = userEvent.setup()
+
     renderOfferersScreen(contextValue)
 
-    await userEvent.click(await screen.findByText('Rejoindre cet espace'))
+    const buttons = await screen.findAllByText('Rejoindre cet espace')
+    await user.click(buttons[0])
 
     expect(
       await screen.findByText('Rejoindre cet espace ?')
     ).toBeInTheDocument()
 
-    await userEvent.click(await screen.findByText('Annuler'))
+    await user.click(await screen.findByText('Annuler'))
 
     // The first one is the one called when opening the modal
     expect(mockLogEvent).toHaveBeenCalledTimes(2)

@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
-import { Dialog } from '@/ui-kit/Dialog/Dialog'
 
 import { UserAnonymizationForm } from './components/UserAnonymizationForm'
 import { UserAnonymizationUneligibility } from './components/UserAnonymizationUneligibility'
@@ -26,32 +26,33 @@ export const UserAnonymization = (): JSX.Element | null => {
   }
 
   return (
-    <Dialog
-      onCancel={() => setIsDialogOpen(false)}
-      title={
-        isEligible
-          ? 'Vous êtes sur le point de supprimer votre compte'
-          : 'La suppression de compte n’est pas possible en l’état'
-      }
-      icon={strokeWarningIcon}
-      open={isDialogOpen}
-      trigger={
-        <Button
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-          icon={fullTrashIcon}
-          onClick={() => setIsDialogOpen(true)}
-          label="Supprimer mon compte"
-        />
-      }
-    >
-      {isEligible ? (
-        <UserAnonymizationForm />
-      ) : (
-        <UserAnonymizationUneligibility
-          isSoleUserWithOngoingActivities={isSoleUserWithOngoingActivities}
-        />
-      )}
-    </Dialog>
+    <>
+      <Button
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
+        icon={fullTrashIcon}
+        onClick={() => setIsDialogOpen(true)}
+        label="Supprimer mon compte"
+      />
+      <SimpleModal
+        iconPath={strokeWarningIcon}
+        title={
+          isEligible
+            ? 'Vous êtes sur le point de supprimer votre compte'
+            : 'La suppression de compte n’est pas possible en l’état'
+        }
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+      >
+        {isEligible ? (
+          <UserAnonymizationForm onClose={() => setIsDialogOpen(false)} />
+        ) : (
+          <UserAnonymizationUneligibility
+            isSoleUserWithOngoingActivities={isSoleUserWithOngoingActivities}
+            onClose={() => setIsDialogOpen(false)}
+          />
+        )}
+      </SimpleModal>
+    </>
   )
 }

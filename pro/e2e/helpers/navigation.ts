@@ -49,7 +49,10 @@ export async function joinExistingVenueSpace(page: Page, siret: string) {
   await page.getByText('Continuer').click()
   await venuesSiretPromise
 
-  await page.getByText('Rejoindre cet espace').click()
+  await page
+    .getByRole('button', { name: 'Rejoindre cet espace', exact: true })
+    .first()
+    .click()
 
   const postOfferersPromise = page.waitForResponse(
     (response) =>
@@ -57,7 +60,10 @@ export async function joinExistingVenueSpace(page: Page, siret: string) {
       response.request().method() === 'POST' &&
       response.status() === 201
   )
-  await page.getByTestId('confirm-dialog-button-confirm').click()
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: 'Rejoindre cet espace', exact: true })
+    .click()
   await postOfferersPromise
 
   await page.getByText('Accéder à mon espace').click()

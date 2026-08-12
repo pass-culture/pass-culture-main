@@ -1,4 +1,9 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
@@ -296,10 +301,10 @@ describe('BankInformations page', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(
-      screen.queryByText(
+      screen.getByText(
         'Vous allez être redirigé vers le site demarche.numerique.gouv.fr'
       )
-    ).not.toBeInTheDocument()
+    ).not.toBeVisible()
 
     await user.click(await screen.findByText('Ajouter un compte bancaire'))
 
@@ -310,14 +315,14 @@ describe('BankInformations page', () => {
     ).toBeInTheDocument()
 
     await user.click(
-      await screen.findByRole('button', { name: 'Fermer la fenêtre modale' })
+      await screen.findByRole('button', { name: 'Fermer la boite de dialogue' })
     )
 
     expect(
-      screen.queryByText(
+      screen.getByText(
         'Vous allez être redirigé vers le site demarche.numerique.gouv.fr'
       )
-    ).not.toBeInTheDocument()
+    ).not.toBeVisible()
   })
 
   it('should track add bank account button', async () => {
@@ -352,9 +357,19 @@ describe('BankInformations page', () => {
 
     await user.click(screen.getByRole('button', { name: 'Modifier' }))
 
-    await user.click(screen.getByRole('checkbox', { name: 'Mon super lieu' }))
-    await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
-    await user.click(screen.getByRole('button', { name: 'Confirmer' }))
+    const dialog = screen.getByRole('dialog')
+    await user.click(
+      within(dialog).getByRole('checkbox', { name: 'Mon super lieu' })
+    )
+
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Enregistrer' })
+    )
+
+    const confirmButton = await screen.findByRole('button', {
+      name: 'Confirmer',
+    })
+    await user.click(confirmButton)
 
     expect(getOffererBankAccountsSpy).toHaveBeenLastCalledWith({
       path: { offerer_id: 1 },
@@ -377,7 +392,7 @@ describe('BankInformations page', () => {
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       id: 1,
-      bankAccounts: [{ ...defaultBankAccount }],
+      bankAccounts: [{ ...defaultBankAccount, linkedVenues: [] }],
       managedVenues: [{ ...defaultManagedVenue }],
     })
     const getVenueSpy = vi
@@ -408,12 +423,14 @@ describe('BankInformations page', () => {
     )
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    await user.click(screen.getByRole('button', { name: 'Modifier' }))
-
+    await user.click(
+      screen.getByRole('button', { name: 'Rattacher une structure' })
+    )
     await user.click(screen.getByRole('checkbox', { name: 'Mon super lieu' }))
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
-    await user.click(screen.getByRole('button', { name: 'Confirmer' }))
 
-    expect(getVenueSpy).toHaveBeenCalledWith({ path: { venue_id: venue.id } })
+    await waitFor(() => {
+      expect(getVenueSpy).toHaveBeenCalledWith({ path: { venue_id: venue.id } })
+    })
   })
 })

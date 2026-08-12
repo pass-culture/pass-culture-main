@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
@@ -19,7 +18,11 @@ interface UserAnonymizationFormValues {
   email: string
 }
 
-export const UserAnonymizationForm = (): JSX.Element => {
+export const UserAnonymizationForm = ({
+  onClose,
+}: {
+  onClose: () => void
+}): JSX.Element => {
   const snackBar = useSnackBar()
   const currentUser = useAppSelector(ensureCurrentUser)
 
@@ -71,13 +74,12 @@ export const UserAnonymizationForm = (): JSX.Element => {
         />
       </div>
       <div className={styles['dialog-footer']}>
-        <Dialog.Close asChild>
-          <Button
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label="Annuler"
-          />
-        </Dialog.Close>
+        <Button
+          onClick={onClose}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler"
+        />
         <Button
           type="submit"
           isLoading={isSubmitting}

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
@@ -16,9 +16,9 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { ManadgedVenueItem } from '../ManagedVenueItem/ManagedVenueItem'
 import styles from './LinkVenuesDialog.module.scss'
@@ -29,7 +29,6 @@ interface LinkVenuesDialogProps {
   managedVenues: Array<ManagedVenue>
   closeDialog: (update?: boolean) => void
   updateBankAccountVenuePricingPoint: (venueId: number) => void
-  editBankAccountDialogTriggerRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const LinkVenuesDialog = ({
@@ -38,7 +37,6 @@ export const LinkVenuesDialog = ({
   managedVenues,
   closeDialog,
   updateBankAccountVenuePricingPoint,
-  editBankAccountDialogTriggerRef,
 }: LinkVenuesDialogProps) => {
   const [showDiscardDialog, setShowDiscardDialog] = useState<boolean>(false)
   const [showUnlinkDialog, setShowUnlinkDialog] = useState<boolean>(false)
@@ -127,19 +125,36 @@ export const LinkVenuesDialog = ({
   )
 
   const venuesForPricingPoint = managedVenues.filter((x) => Boolean(x.siret))
-
+  const formId = useId()
   return (
     <>
-      <DialogBuilder
-        defaultOpen
-        variant="drawer"
-        refToFocusOnClose={editBankAccountDialogTriggerRef}
-        onOpenChange={(open) => {
-          if (!open) {
-            closeDialog()
+      <DetailedModal
+        isOpen
+        onClose={() => {
+          if (!showDiscardDialog && !showUnlinkDialog) {
+            handleCancel()
           }
         }}
+        description="Sélectionnez les structures dont les offres seront remboursées sur ce compte bancaire."
         title={`Compte bancaire : ${selectedBankAccount.label}`}
+        secondaryAction={
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            onClick={handleCancel}
+            label="Annuler"
+          />
+        }
+        primaryAction={
+          <Button
+            type="submit"
+            form={formId}
+            isLoading={methods.formState.isSubmitting}
+            ref={saveButtonRef}
+            label="Enregistrer"
+          />
+        }
+        isFooterFixed
       >
         <div className={cn(styles['dialog'])}>
           {hasVenuesWithoutPricingPoint && (
@@ -151,11 +166,8 @@ export const LinkVenuesDialog = ({
               />
             </div>
           )}
-          <div className={styles['dialog-subtitle']}>
-            Sélectionnez les structures dont les offres seront remboursées sur
-            ce compte bancaire.
-          </div>
           <form
+            id={formId}
             onSubmit={methods.handleSubmit(onSubmit)}
             className={styles['dialog-form']}
           >
@@ -214,52 +226,54 @@ export const LinkVenuesDialog = ({
               </div>
               <FieldFooter error={venuesIdsError} />
             </div>
-            <DialogBuilder.Footer>
-              <div className={styles['dialog-actions']}>
-                <Button
-                  variant={ButtonVariant.SECONDARY}
-                  color={ButtonColor.NEUTRAL}
-                  onClick={handleCancel}
-                  label="Annuler"
-                />
-
-                <Button
-                  type="submit"
-                  isLoading={methods.formState.isSubmitting}
-                  ref={saveButtonRef}
-                  label="Enregistrer"
-                />
-              </div>
-            </DialogBuilder.Footer>
           </form>
         </div>
-      </DialogBuilder>
-
-      <ConfirmDialog
-        icon={strokeWarningIcon}
-        onCancel={() => setShowDiscardDialog(false)}
+      </DetailedModal>
+      <SimpleModal
+        iconPath={strokeWarningIcon}
         title="Les informations non sauvegardées ne seront pas prises en compte"
-        onConfirm={() => {
-          setShowDiscardDialog(false)
-          closeDialog()
-        }}
-        confirmText="Quitter sans enregistrer"
-        cancelText="Annuler"
-        open={showDiscardDialog}
-        refToFocusOnClose={saveButtonRef}
+        isOpen={showDiscardDialog}
+        onClose={() => setShowDiscardDialog(false)}
+        actionButtons={
+          <>
+            <Button
+              onClick={() => setShowDiscardDialog(false)}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
+            <Button
+              onClick={() => {
+                setShowDiscardDialog(false)
+                closeDialog()
+              }}
+              label="Quitter sans enregistrer"
+            />
+          </>
+        }
       />
-      <ConfirmDialog
-        icon={strokeWarningIcon}
-        onCancel={() => setShowUnlinkDialog(false)}
+      <SimpleModal
+        iconPath={strokeWarningIcon}
         title="Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire"
-        onConfirm={() => {
-          setShowUnlinkDialog(false)
-          submitVenuesIds(methods.getValues('venuesIds'), true)
-        }}
-        confirmText="Confirmer"
-        cancelText="Retour"
-        open={showUnlinkDialog}
-        refToFocusOnClose={saveButtonRef}
+        isOpen={showUnlinkDialog}
+        onClose={() => setShowUnlinkDialog(false)}
+        actionButtons={
+          <>
+            <Button
+              onClick={() => setShowUnlinkDialog(false)}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Retour"
+            />
+            <Button
+              onClick={() => {
+                setShowUnlinkDialog(false)
+                submitVenuesIds(methods.getValues('venuesIds'), true)
+              }}
+              label="Confirmer"
+            />
+          </>
+        }
       />
     </>
   )
