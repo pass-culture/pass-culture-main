@@ -11,7 +11,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.transaction_manager import atomic
@@ -113,8 +112,6 @@ def finalize_closing_venue_task(payload: FinalizeClosingVenuePayload) -> None:
         logger.info("closing venue: pivots deleted", extra={"venue_id": venue.id})
 
         venue.state = offerers_models.VenueState.CLOSED
-        author = db.session.query(users_models.User).filter(users_models.User.id == payload.author_id).one()
-        history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue)
         db.session.flush()
 
         logger.info("closing venue: closed", extra={"venue_id": venue.id})

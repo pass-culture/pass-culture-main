@@ -318,3 +318,7 @@ class PricingPointForm(utils.PCForm):
 class RemoveSiretForm(RemovePricingPointForm, PricingPointForm):
     allow_self = False
     comment = fields.PCCommentField("Commentaire qui apparaîtra sur le partenaire culturel")
+
+
+class CloseVenueForm(utils.PCForm):
+    comment = fields.PCOptCommentField("Motif de la fermeture (optionnel)")
