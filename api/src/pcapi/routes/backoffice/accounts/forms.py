@@ -211,8 +211,6 @@ class GetAccountsListSearchForm(utils.PCForm):
         min_entries=1,
     )
 
-    sort = wtforms.HiddenField("sort", default="id")
-    order = wtforms.HiddenField("order", default="asc")
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(

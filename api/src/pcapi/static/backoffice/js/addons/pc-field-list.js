@@ -6,7 +6,6 @@
  */
 addonList.push(
   class PcFieldList extends PcAddOn {
-
     static ID = 'PCFieldListId'
     static PC_FIELD_LIST_CONTAINER_SELECTOR = '[data-field-list-container]'
     static PC_FIELD_LIST_UL_SELECTOR = 'ul.field-list'
@@ -40,12 +39,14 @@ addonList.push(
       EventHandler.on(document.body, 'click', PcFieldList.ADD_BUTTON_SELECTOR, this.#onAdd)
       EventHandler.on(document.body, 'click', PcFieldList.REMOVE_BUTTON_SELECTOR, this.#onRemove)
       EventHandler.on(document.body, 'click', PcFieldList.REMOVE_ALL_BUTTON_SELECTOR, this.#onRemoveAll)
+      EventHandler.on(document.body, 'change', `${PcFieldList.PC_FIELD_LIST_UL_SELECTOR} .${PcFieldList.PC_FORM_FIELD_CLASS} > .pc-select-with-placeholder`, this.#onChange)
     }
 
     unbindEvents = () => {
       EventHandler.off(document.body, 'click', PcFieldList.ADD_BUTTON_SELECTOR, this.#onAdd)
       EventHandler.off(document.body, 'click', PcFieldList.REMOVE_BUTTON_SELECTOR, this.#onRemove)
       EventHandler.off(document.body, 'click', PcFieldList.REMOVE_ALL_BUTTON_SELECTOR, this.#onRemoveAll)
+      EventHandler.off(document.body, 'change', `${PcFieldList.PC_FIELD_LIST_UL_SELECTOR} .${PcFieldList.PC_FORM_FIELD_CLASS} > .pc-select-with-placeholder`, this.#onChange)
     }
 
     #getFieldListContainerFromId(fieldListContainerId) {
@@ -104,13 +105,27 @@ addonList.push(
       if (minEntries && minEntries !== undefined) {
         const fieldsCount = $ul.children.length
         if (fieldsCount <= minEntries) {
-          this.#changeButtonDisplay($ul, PcFieldList.REMOVE_BUTTON_SELECTOR, false)
+          this.#toggleLastRowBinDisplay($ul)
           this.#changeButtonDisplay($ul.parentElement, PcFieldList.REMOVE_ALL_BUTTON_SELECTOR, false)
         }
         if (fieldsCount < minEntries && !skipError) {
           throw new Error('Already min entries');
         }
       }
+    }
+
+    #toggleLastRowBinDisplay = ($ul) => {
+      const minEntries = Number($ul.dataset.minEntries)
+      let shouldDisplayRemoveButton = false
+      if (minEntries === 1 && $ul.children.length === 1) {
+        const $li = $ul.lastElementChild
+        if ($li) {
+          const $select = $li.querySelector(`.${PcFieldList.PC_FORM_FIELD_CLASS} > .pc-select-with-placeholder select`)
+          shouldDisplayRemoveButton = !!$select?.value
+        }
+      }
+
+      this.#changeButtonDisplay($ul, PcFieldList.REMOVE_BUTTON_SELECTOR, shouldDisplayRemoveButton)
     }
 
     #cloneElementFunction = ($ul) => {
@@ -251,6 +266,10 @@ addonList.push(
       const $fieldListContainer = this.#getFieldListContainerFromId(fieldListContainerId)
       const $ul = $fieldListContainer.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
       const $li = $target.parentElement // remove button is within li
+      const minEntries = Number($ul.dataset.minEntries)
+      if (minEntries === 1 && $ul.children.length === 1) {
+        this.#cloneElementFunction($ul)
+      }
       $li.remove()
       this.#filterMinEntries($ul)
       this.#changeButtonDisplay($ul, PcFieldList.ADD_BUTTON_SELECTOR, true)
@@ -273,5 +292,11 @@ addonList.push(
       this.#filterMinEntries($ul, false)
     }
 
+    #onChange = (event) => {
+      const $ul = event.target.closest(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
+      if (Number($ul.dataset.minEntries) === 1 && $ul.children.length === 1) {
+        this.#toggleLastRowBinDisplay($ul)
+      }
+    }
   }
 )
