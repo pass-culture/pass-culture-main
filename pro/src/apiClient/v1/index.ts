@@ -298,6 +298,7 @@ export {
   type InvoiceListV2QueryModel,
   type InvoiceListV2ResponseModel,
   type InvoiceResponseV2Model,
+  InvoiceStatus,
   type LegalStatusResponseModel,
   type LinkVenueToBankAccountBodyModel,
   type LinkVenueToPricingPointBodyModel,

@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
-import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import { type InvoiceResponseV2Model, InvoiceStatus } from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -26,8 +26,7 @@ const mockInvoice: InvoiceResponseV2Model = {
   reference: 'INV-001',
   date: '2024-06-01',
   amount: 150,
-  bankAccountLabel: 'Bank A',
-  cashflowLabels: ['VIRE-001'],
+  status: InvoiceStatus.PAID,
   url: 'https://example.com/invoice.pdf',
 }
 

@@ -46,10 +46,9 @@ class GetInvoicesTest:
         assert invoices[0] == {
             "reference": invoice2.reference,
             "date": invoice2.date.date().isoformat(),
-            "cashflowLabels": ["VIR1"],
             "amount": 15.00,
             "url": invoice2.url,
-            "bankAccountLabel": bank_account.label,
+            "status": "paid",
         }
         assert invoices[1]["reference"] == invoice1.reference
 
@@ -86,17 +85,15 @@ class GetInvoicesTest:
             "reference": invoice2.reference,
             "date": invoice2.date.date().isoformat(),
             "amount": 15.0,
-            "cashflowLabels": ["VIR1"],
             "url": invoice2.url,
-            "bankAccountLabel": bank_account1.label,
+            "status": "paid",
         }
         assert invoices[1] == {
             "reference": invoice1.reference,
             "date": invoice1.date.date().isoformat(),
             "amount": 10.0,
-            "cashflowLabels": ["VIR1"],
             "url": invoice1.url,
-            "bankAccountLabel": bank_account1.label,
+            "status": "paid",
         }
 
     def test_get_invoices_specify_bank_account(self, client):

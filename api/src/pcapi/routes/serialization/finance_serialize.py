@@ -51,8 +51,7 @@ class InvoiceResponseV2Model(HttpBodyModel):
     date: datetime.date
     amount: float
     url: str
-    bank_account_label: str | None
-    cashflow_labels: list[str]
+    status: finance_models.InvoiceStatus
 
 
 class InvoiceListV2ResponseModel(RootModel):
