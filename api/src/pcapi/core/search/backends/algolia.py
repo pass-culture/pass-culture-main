@@ -161,6 +161,8 @@ class AlgoliaBackend(
                 raise SearchError("Failed to search in algolia")
 
             for hit in results.hits:
+                if not hit:
+                    continue
                 object_id = hit.object_id
                 if object_id.isdigit():
                     ids.append(int(object_id))
