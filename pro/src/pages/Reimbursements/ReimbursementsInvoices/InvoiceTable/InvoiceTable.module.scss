@@ -7,18 +7,12 @@
   margin: var(--size-spacing-xxl) 0;
 }
 
-.more-icon {
-  color: var(--color-icon-success);
-  flex-shrink: 0;
-}
-
-.less-icon {
-  color: var(--color-icon-error);
-  flex-shrink: 0;
-}
-
 .negative-amount {
   color: var(--color-text-error);
+}
+
+.positive-amount {
+  color: var(--color-text-success);
 }
 
 .cell-document-type {
@@ -27,22 +21,12 @@
 }
 
 .cell-actions {
-  text-align: center;
+  text-align: right;
 }
 
 @media (min-width: size.$tablet) {
   .cell-document-type {
     text-align: left;
     white-space: nowrap;
-  }
-
-  .cell-bank-account {
-    min-width: 250px;
-  }
-
-  .cell-amount {
-    cursor: default;
-    justify-content: right;
-    text-align: right;
   }
 }

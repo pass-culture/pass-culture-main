@@ -45,7 +45,9 @@ export function formatPrice(
       style: 'currency',
       currency: 'EUR',
       ...options,
-    }).format(price)
+    })
+      .format(price)
+      .replace(/^([+-])/, '$1 ') // space after sign (ex: - 10,00 €)
   } catch (e) {
     // Safari 14.1.2 throws an exception here.
     if (
@@ -54,10 +56,13 @@ export function formatPrice(
         'Failed to initialize NumberFormat since used feature is not supported in the linked ICU version'
       )
     ) {
-      formattedPrice = `${price
-        .toFixed(2)
-        .replaceAll(/\d(?=(\d{3})+\.)/g, '$& ') // space after each group of 3
-        .replace('.', ',')} €`
+      formattedPrice = `${
+        price
+          .toFixed(2)
+          .replaceAll(/\d(?=(\d{3})+\.)/g, '$& ') // space after each group of 3
+          .replace('.', ',')
+          .replace(/^([+-])/, '$1 ') // space after sign (ex: - 10,00 €)
+      } €`
     } else {
       sendSentryCustomError(e)
     }

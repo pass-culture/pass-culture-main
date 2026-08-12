@@ -9,10 +9,7 @@ import {
 } from '@/commons/utils/convertEuroToPacificFranc'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
-import strokeLessIcon from '@/icons/stroke-less.svg'
-import strokeMoreIcon from '@/icons/stroke-more.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { InvoiceActions } from './InvoiceActions'
@@ -21,11 +18,11 @@ import styles from './InvoiceTable.module.scss'
 
 const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
   {
-    id: 'date',
-    label: 'Date du justificatif',
+    id: 'reference',
+    label: 'Référence',
     sortable: true,
-    ordererField: 'date',
-    render: (invoice) => format(new Date(invoice.date), FORMAT_DD_MM_YYYY),
+    ordererField: 'reference',
+    render: (invoice) => invoice.reference,
   },
   {
     id: 'documentType',
@@ -34,45 +31,32 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
     ordererField: 'amount',
     render: (invoice) =>
       invoice.amount >= 0 ? (
-        <span className={styles['cell-document-type']}>
-          <SvgIcon
-            src={strokeMoreIcon}
-            alt=""
-            className={styles['more-icon']}
-            width="16"
-          />
-          Remboursement
-        </span>
+        <span className={styles['cell-document-type']}>Remboursement</span>
       ) : (
-        <span className={styles['cell-document-type']}>
-          <SvgIcon
-            src={strokeLessIcon}
-            alt=""
-            className={styles['less-icon']}
-            width="16"
-          />
-          Trop&nbsp;perçu
-        </span>
+        <span className={styles['cell-document-type']}>Trop&nbsp;perçu</span>
       ),
   },
   {
-    id: 'status',
-    label: 'Statut du justificatif',
+    id: 'date',
+    label: "Date d'émission",
     sortable: true,
-    ordererField: 'status',
-    render: (invoice: ExtendedInvoiceResponseV2Model) => invoice.status,
+    ordererField: 'date',
+    render: (invoice) => format(new Date(invoice.date), FORMAT_DD_MM_YYYY),
   },
   {
     id: 'amount',
-    label: 'Montant remboursé',
+    label: 'Montant',
     render: (invoice: ExtendedInvoiceResponseV2Model) => (
       <div
-        className={cn(styles['cell-amount'], {
+        className={cn({
           [styles['negative-amount']]: invoice.amount < 0,
+          [styles['positive-amount']]: invoice.amount > 0,
         })}
       >
         {invoice.isCaledonian
-          ? formatPacificFranc(convertEuroToPacificFranc(invoice.amount))
+          ? formatPacificFranc(convertEuroToPacificFranc(invoice.amount), {
+              signDisplay: 'always',
+            })
           : formatPrice(invoice.amount, { signDisplay: 'always' })}
       </div>
     ),
@@ -85,6 +69,7 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
         <InvoiceActions invoice={invoice} />
       </div>
     ),
+    header: <div className={styles['cell-actions']}>Actions</div>,
   },
 ]
 

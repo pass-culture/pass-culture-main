@@ -113,8 +113,8 @@ describe('reimbursementsWithFilters', () => {
         periodEndingDate: '2020-12-15',
       },
     })
-    expect((await screen.findAllByRole('row')).length).toEqual(4)
-    expect(screen.queryAllByRole('columnheader').length).toEqual(7)
+    expect(await screen.findAllByRole('row')).toHaveLength(4)
+    expect(screen.queryAllByRole('columnheader')).toHaveLength(6)
 
     // first line
     expect(
@@ -122,9 +122,8 @@ describe('reimbursementsWithFilters', () => {
         name: 'Sélectionner la ligne du 02/11/2022',
       })
     ).toBeInTheDocument()
-    expect(screen.getAllByText('First bank account')).toHaveLength(2)
-    expect(screen.getByText('VIR7')).toBeInTheDocument()
-    expect(screen.getByText(/100,00/)).toBeInTheDocument()
+    expect(screen.getByText('J123456789')).toBeInTheDocument()
+    expect(screen.getByText(/\+ 100,00/)).toBeInTheDocument()
 
     // second line
     expect(
@@ -132,8 +131,8 @@ describe('reimbursementsWithFilters', () => {
         name: 'Sélectionner la ligne du 03/11/2022',
       })
     ).toBeInTheDocument()
-    expect(screen.getByText('N/A')).toBeInTheDocument()
-    expect(screen.getByText(/50,00/)).toBeInTheDocument()
+    expect(screen.getByText('J666666666')).toBeInTheDocument()
+    expect(screen.getByText(/- 50,00/)).toBeInTheDocument()
 
     // third line
     expect(
@@ -141,8 +140,8 @@ describe('reimbursementsWithFilters', () => {
         name: 'Sélectionner la ligne du 02/10/2023',
       })
     ).toBeInTheDocument()
-    expect(screen.getByText('VIR9, VIR12')).toBeInTheDocument()
-    expect(screen.getByText(/75,00/)).toBeInTheDocument()
+    expect(screen.getByText('J987654321')).toBeInTheDocument()
+    expect(screen.getByText(/\+ 75,00/)).toBeInTheDocument()
   })
 
   it('should display the invoice table', async () => {

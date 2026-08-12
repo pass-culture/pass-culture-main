@@ -6,6 +6,7 @@ import * as apiModule from '@/apiClient/api'
 import { type InvoiceResponseV2Model, InvoiceStatus } from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { MAX_ITEMS_DOWNLOAD } from './InvoiceDownloadActionsButton'
 import { InvoiceTable } from './InvoiceTable'
@@ -64,7 +65,7 @@ const invoices: InvoiceResponseV2Model[] = [
 const renderReimbursementsInvoicesTable = (
   invoices: InvoiceResponseV2Model[]
 ) => {
-  return render(
+  return renderWithProviders(
     <InvoiceTable
       data={invoices}
       isLoading={false}
@@ -134,8 +135,10 @@ describe('InvoiceTable', () => {
 
     await user.click(screen.getByLabelText('Tout sélectionner'))
 
-    await user.click(screen.getByText('Télécharger les justificatifs'))
-    await user.click(screen.getByText('Télécharger les détails'))
+    await user.click(screen.getByText('Télécharger les justificatifs (.pdf)'))
+    await user.click(
+      screen.getByText('Télécharger le détail des réservations (.csv)')
+    )
 
     expect(getCombinedInvoicesMock).toHaveBeenCalledWith({
       query: {
@@ -167,7 +170,7 @@ describe('InvoiceTable', () => {
     renderReimbursementsInvoicesTable(manyInvoices)
 
     await user.click(screen.getByLabelText('Tout sélectionner'))
-    await user.click(screen.getByText('Télécharger les justificatifs'))
+    await user.click(screen.getByText('Télécharger les justificatifs (.pdf)'))
 
     expect(snackBarError).toHaveBeenCalledWith(
       `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`
@@ -184,8 +187,8 @@ describe('InvoiceTable', () => {
       />
     )
 
-    expect(screen.getByText('+150,00 €')).toBeInTheDocument()
-    expect(screen.getByText('-50,00 €')).toBeInTheDocument()
+    expect(screen.getByText('+ 150,00 €')).toBeInTheDocument()
+    expect(screen.getByText('- 50,00 €')).toBeInTheDocument()
   })
 
   it('should display invoice signed amount in pacific francs', () => {
@@ -199,7 +202,43 @@ describe('InvoiceTable', () => {
       />
     )
 
-    expect(screen.getByText('17 900 F')).toBeInTheDocument()
-    expect(screen.getByText('-5 965 F')).toBeInTheDocument()
+    expect(screen.getByText('+ 17 900 F')).toBeInTheDocument()
+    expect(screen.getByText('- 5 965 F')).toBeInTheDocument()
+  })
+
+  it('should display the correct document type based on amount', () => {
+    renderReimbursementsInvoicesTable(invoices)
+
+    expect(screen.getByText('Remboursement')).toBeInTheDocument() // INV-001
+    expect(screen.getByText(/Trop\s?perçu/)).toBeInTheDocument() // INV-002
+  })
+
+  it('should format dates correctly to DD/MM/YYYY', () => {
+    renderReimbursementsInvoicesTable(invoices)
+
+    expect(screen.getByText('01/06/2024')).toBeInTheDocument()
+    expect(screen.getByText('15/05/2024')).toBeInTheDocument()
+  })
+
+  it('should display empty state when hasInvoice is false', () => {
+    renderWithProviders(
+      <InvoiceTable
+        data={[]}
+        isLoading={false}
+        onFilterReset={vi.fn()}
+        hasInvoice={false}
+      />
+    )
+
+    expect(
+      screen.getByText(
+        'Vous n’avez pas encore de justificatifs de remboursement disponibles'
+      )
+    ).toBeVisible()
+    expect(
+      screen.getByText(
+        'Lorsqu’ils auront été édités, vous pourrez les télécharger ici'
+      )
+    ).toBeVisible()
   })
 })
