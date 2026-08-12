@@ -1,9 +1,8 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import type { ApiResult } from '@/apiClient/compat'
 import type { VenueOfOffererFromSiretResponseModel } from '@/apiClient/v1'
 import {
   SignupJourneyContext,
@@ -20,7 +19,6 @@ import {
 import * as storageAvailable from '@/commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 
-import { ApiError, type ApiRequestOptions } from 'apiClient/compat'
 import { Offerers } from '../Offerers'
 
 const inMemoryLocalStorage = new Map<string, string>()
@@ -120,8 +118,10 @@ const renderOfferersScreen = async (
 describe('screens:SignupJourney::Offerers', () => {
   let contextValue: SignupJourneyContextValues
   let venues: VenueOfOffererFromSiretResponseModel[]
+  let user: ReturnType<typeof userEvent.setup>
 
   beforeEach(() => {
+    user = userEvent.setup()
     inMemoryLocalStorage.clear()
     contextValue = {
       activity: null,
@@ -270,7 +270,7 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(screen.queryByText('Venue Public Name 3')).not.toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('Voir plus de structures'))
+    await user.click(screen.getByText('Voir plus de structures'))
 
     await waitFor(() => {
       expect(
@@ -288,7 +288,7 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(screen.queryByText('Venue Public Name 3')).toBeVisible()
 
-    await userEvent.click(screen.getByText('Voir moins de structures'))
+    await user.click(screen.getByText('Voir moins de structures'))
 
     expect(
       screen.getByRole('button', {
@@ -320,7 +320,7 @@ describe('screens:SignupJourney::Offerers', () => {
 
     await renderOfferersScreen(contextValueForLocalAuthority)
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Ajouter une nouvelle structure',
       })
@@ -332,7 +332,7 @@ describe('screens:SignupJourney::Offerers', () => {
   it('should redirect to offerer on back button click', async () => {
     await renderOfferersScreen(contextValue)
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Retour à la recherche de SIRET',
       })
@@ -382,8 +382,9 @@ describe('screens:SignupJourney::Offerers', () => {
     it('should display confirmation dialog when user want to be linked to the structure', async () => {
       await renderOfferersScreen(contextValue)
 
-      await userEvent.click(await screen.findByText('Rejoindre cet espace'))
-
+      await user.click(
+        screen.getByRole('button', { name: 'Rejoindre cet espace' })
+      )
       expect(
         await screen.findByText('Rejoindre cet espace ?')
       ).toBeInTheDocument()
@@ -392,17 +393,17 @@ describe('screens:SignupJourney::Offerers', () => {
     it('should not link offerer to user when they cancel', async () => {
       await renderOfferersScreen(contextValue)
 
-      await userEvent.click(await screen.findByText('Rejoindre cet espace'))
+      await user.click(
+        screen.getByRole('button', { name: 'Rejoindre cet espace' })
+      )
 
       expect(
         await screen.findByText('Rejoindre cet espace ?')
       ).toBeInTheDocument()
 
-      await userEvent.click(await screen.findByText('Annuler'))
+      await user.click(await screen.findByText('Annuler'))
 
-      expect(
-        screen.queryByText('Rejoindre cet espace ?')
-      ).not.toBeInTheDocument()
+      expect(screen.getByText('Rejoindre cet espace ?')).not.toBeVisible()
       expect(api.createOfferer).not.toHaveBeenCalled()
     })
 
@@ -415,16 +416,16 @@ describe('screens:SignupJourney::Offerers', () => {
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue(expect.anything())
       vi.spyOn(api, 'getOfferer').mockResolvedValue(expect.anything())
 
-      await userEvent.click(await screen.findByText('Rejoindre cet espace'))
-
-      expect(
-        await screen.findByText('Rejoindre cet espace ?')
-      ).toBeInTheDocument()
-
-      await userEvent.click(
-        await screen.findByRole('button', { name: 'Rejoindre cet espace' })
+      await user.click(
+        screen.getByRole('button', { name: 'Rejoindre cet espace' })
       )
 
+      const dialog = screen.getByRole('dialog')
+      const confirmButton = within(dialog).getByRole('button', {
+        name: 'Rejoindre cet espace',
+      })
+
+      await user.click(confirmButton)
       expect(api.createOfferer).toHaveBeenCalledWith({
         body: {
           city: 'lille',
@@ -448,25 +449,23 @@ describe('screens:SignupJourney::Offerers', () => {
       )
       await renderOfferersScreen(contextValue)
 
-      const apiError = new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 400,
-          body: {},
-        } as ApiResult,
-        ''
-      )
+      const apiError = {
+        status: 400,
+        body: {},
+        message: 'Bad Request',
+      }
       vi.spyOn(api, 'createOfferer').mockRejectedValueOnce(apiError)
 
-      await userEvent.click(await screen.findByText('Rejoindre cet espace'))
-
-      expect(
-        await screen.findByText('Rejoindre cet espace ?')
-      ).toBeInTheDocument()
-
-      await userEvent.click(
-        await screen.findByRole('button', { name: 'Rejoindre cet espace' })
+      await user.click(
+        screen.getByRole('button', { name: 'Rejoindre cet espace' })
       )
+
+      const dialog = screen.getByRole('dialog')
+      const confirmButton = within(dialog).getByRole('button', {
+        name: 'Rejoindre cet espace',
+      })
+
+      await user.click(confirmButton)
 
       await waitFor(() => {
         expect(snackBarError).toHaveBeenCalledWith(

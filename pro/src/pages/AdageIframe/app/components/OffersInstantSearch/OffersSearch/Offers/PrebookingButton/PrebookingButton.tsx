@@ -149,7 +149,6 @@ export const PrebookingButton = ({
         preBookCurrentStock={preBookCurrentStock}
         isPreview={isPreview}
         isDialogOpen={isModalOpen}
-        refToFocusOnClose={prebookButtonRef}
       />
     </>
   ) : null

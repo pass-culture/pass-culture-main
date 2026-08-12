@@ -1,5 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
-
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 
@@ -10,10 +8,12 @@ const PERSONAL_DATA_CHARTER_URL =
 
 interface UserAnonymizationUneligibilityProps {
   isSoleUserWithOngoingActivities?: boolean
+  onClose: () => void
 }
 
 export const UserAnonymizationUneligibility = ({
   isSoleUserWithOngoingActivities,
+  onClose,
 }: UserAnonymizationUneligibilityProps): JSX.Element => {
   return (
     <>
@@ -35,9 +35,7 @@ export const UserAnonymizationUneligibility = ({
         />
       </div>
       <div className={styles['dialog-footer']}>
-        <Dialog.Close asChild>
-          <Button label="J‘ai compris" />
-        </Dialog.Close>
+        <Button onClick={onClose} label="J'ai compris" />
       </div>
     </>
   )

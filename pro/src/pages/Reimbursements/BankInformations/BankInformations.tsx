@@ -47,7 +47,6 @@ const BankInformations = (): JSX.Element => {
     useState(false)
 
   const addBankAccountButtonRef = useRef<HTMLButtonElement>(null)
-  const editBankAccountDialogTriggerRef = useRef<HTMLButtonElement>(null)
 
   const hasBankAccount =
     selectedAdminOfferer.hasValidBankAccount ||
@@ -175,7 +174,6 @@ const BankInformations = (): JSX.Element => {
                   selectedAdminOfferer
                     .venuesWithNonFreeOffersWithoutBankAccounts.length > 0
                 }
-                updateButtonRef={editBankAccountDialogTriggerRef}
               />
             ))}
           </div>
@@ -186,14 +184,12 @@ const BankInformations = (): JSX.Element => {
           setShowAddBankInformationsDialog(false)
         }}
         isDialogOpen={showAddBankInformationsDialog}
-        dialogTriggerRef={addBankAccountButtonRef}
       />
       {selectedBankAccount !== null && (
         <LinkVenuesDialog
           offererId={selectedAdminOfferer.id}
           selectedBankAccount={selectedBankAccount}
           managedVenues={bankAccountVenues ?? []}
-          editBankAccountDialogTriggerRef={editBankAccountDialogTriggerRef}
           updateBankAccountVenuePricingPoint={
             updateBankAccountVenuePricingPoint
           }

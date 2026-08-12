@@ -35,10 +35,10 @@ import {
   ButtonVariant,
   IconPositionEnum,
 } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import fullNextIcon from '@/icons/full-next.svg'
 import { MAYBE_LOCAL_AUTHORITY_APE_CODE } from '@/pages/Signup/SignupContainer/constants'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -285,22 +285,25 @@ export const Offerers = (): JSX.Element => {
         />
       )}
 
-      <ConfirmDialog
-        hideIcon={true}
-        onCancel={cancelLinkUserToOfferer}
+      <SimpleModal
         title="Rejoindre cet espace ?"
-        onConfirm={doLinkAccount}
-        confirmText="Rejoindre cet espace"
-        cancelText="Annuler"
-        extraClassNames={styles['dialog-content']}
-        open={showLinkDialog}
-        refToFocusOnClose={joinSpaceButtonRef}
+        isOpen={showLinkDialog}
+        onClose={cancelLinkUserToOfferer}
+        actionButtons={
+          <>
+            <Button
+              onClick={cancelLinkUserToOfferer}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
+            <Button onClick={doLinkAccount} label="Rejoindre cet espace" />
+          </>
+        }
       >
-        <div className={styles['dialog-info']}>
-          Votre demande sera transmise à nos équipes, qui valideront votre
-          rattachement par email.
-        </div>
-      </ConfirmDialog>
+        Votre demande sera transmise à nos équipes, qui valideront votre
+        rattachement par email.
+      </SimpleModal>
     </div>
   )
 }

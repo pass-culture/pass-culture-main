@@ -1,12 +1,13 @@
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokePassIcon from '@/icons/stroke-pass.svg'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface PrebookingModalProps {
   closeModal: () => void
   preBookCurrentStock: () => Promise<void>
   isPreview?: boolean
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLElement | null>
 }
 
 export const PrebookingModal = ({
@@ -14,19 +15,28 @@ export const PrebookingModal = ({
   preBookCurrentStock,
   isPreview = false,
   isDialogOpen,
-  refToFocusOnClose,
 }: PrebookingModalProps): JSX.Element => {
   return (
-    <ConfirmDialog
-      icon={strokePassIcon}
-      onConfirm={preBookCurrentStock}
-      onCancel={closeModal}
+    <SimpleModal
+      iconPath={strokePassIcon}
       title="Êtes-vous sûr de vouloir préréserver ?"
-      confirmText="Préréserver"
-      cancelText="Fermer"
-      confirmButtonDisabled={isPreview}
-      open={isDialogOpen}
-      refToFocusOnClose={refToFocusOnClose}
+      isOpen={isDialogOpen}
+      onClose={closeModal}
+      actionButtons={
+        <>
+          <Button
+            onClick={closeModal}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Fermer"
+          />
+          <Button
+            onClick={preBookCurrentStock}
+            disabled={isPreview}
+            label="Préréserver"
+          />
+        </>
+      }
     >
       <p>
         Si oui, une fois votre préréservation confirmée :
@@ -42,6 +52,6 @@ export const PrebookingModal = ({
         <strong>2)</strong> Votre chef d’établissement pourra alors{' '}
         <strong>confirmer la préréservation</strong>
       </p>
-    </ConfirmDialog>
+    </SimpleModal>
   )
 }
