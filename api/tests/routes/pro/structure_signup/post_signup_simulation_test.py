@@ -128,7 +128,7 @@ class Returns400Test:
 
     def test_invalid_siret(self, client: TestClient):
         data = {
-            "siret": "12345678912345",
+            "siret": "1234567891234",
             "isOpenToPublic": True,
             "targets": ["COLLECTIVE", "INDIVIDUAL"],
             "activity": "BOOKSTORE",

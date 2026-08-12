@@ -82,7 +82,7 @@ class Returns400Test:
     def test_invalid_siret(self, client: TestClient):
         data = {
             **VALID_PAYLOAD,
-            "siret": "12345678912345",
+            "siret": "1234567891234",
         }
         response = client.post(URL, json=data)
 
