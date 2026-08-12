@@ -3840,14 +3840,6 @@ export type InvoiceResponseV2Model = {
      */
     amount: number;
     /**
-     * Bankaccountlabel
-     */
-    bankAccountLabel: string | null;
-    /**
-     * Cashflowlabels
-     */
-    cashflowLabels: Array<string>;
-    /**
      * Date
      */
     date: string;
@@ -3855,11 +3847,21 @@ export type InvoiceResponseV2Model = {
      * Reference
      */
     reference: string;
+    status: InvoiceStatus;
     /**
      * Url
      */
     url: string;
 };
+
+/**
+ * InvoiceStatus
+ */
+export enum InvoiceStatus {
+    PENDING = 'pending',
+    PENDING_PAYMENT = 'pending_payment',
+    PAID = 'paid'
+}
 
 /**
  * LegalStatusResponseModel

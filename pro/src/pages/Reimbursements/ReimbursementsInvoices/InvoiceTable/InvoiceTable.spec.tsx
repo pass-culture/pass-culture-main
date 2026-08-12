@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
 import * as apiModule from '@/apiClient/api'
-import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import { type InvoiceResponseV2Model, InvoiceStatus } from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 
@@ -49,16 +49,14 @@ const invoices: InvoiceResponseV2Model[] = [
     reference: 'INV-001',
     date: '2024-06-01',
     amount: 150,
-    bankAccountLabel: 'Bank A',
-    cashflowLabels: ['VIRE-001'],
+    status: InvoiceStatus.PAID,
     url: '',
   },
   {
     reference: 'INV-002',
     date: '2024-05-15',
     amount: -50,
-    bankAccountLabel: 'Bank B',
-    cashflowLabels: ['VIRE-002'],
+    status: InvoiceStatus.PAID,
     url: '',
   },
 ]
@@ -161,8 +159,7 @@ describe('InvoiceTable', () => {
         reference: `INV-${i + 1}`,
         date: '2024-06-01',
         amount: 100,
-        bankAccountLabel: 'Bank A',
-        cashflowLabels: [`CF-${i + 1}`],
+        status: InvoiceStatus.PAID,
         url: '',
       })
     )

@@ -56,23 +56,11 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
       ),
   },
   {
-    id: 'bankAccountLabel',
-    label: 'Point de remboursement',
+    id: 'status',
+    label: 'Statut du justificatif',
     sortable: true,
-    ordererField: 'bankAccountLabel',
-    render: (invoice: ExtendedInvoiceResponseV2Model) => (
-      <div className={styles['cell-bank-account']}>
-        {invoice.bankAccountLabel}
-      </div>
-    ),
-  },
-  {
-    id: 'cashflowLabel',
-    label: 'N° de virement',
-    sortable: true,
-    ordererField: 'cashflowLabels',
-    render: (invoice: ExtendedInvoiceResponseV2Model) =>
-      invoice.amount >= 0 ? invoice.cashflowLabels[0] : 'N/A',
+    ordererField: 'status',
+    render: (invoice: ExtendedInvoiceResponseV2Model) => invoice.status,
   },
   {
     id: 'amount',

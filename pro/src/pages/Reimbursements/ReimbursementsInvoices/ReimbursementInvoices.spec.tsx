@@ -7,7 +7,7 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import type { BankAccountResponseModel } from '@/apiClient/v1'
+import { type BankAccountResponseModel, InvoiceStatus } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -52,24 +52,21 @@ const BASE_INVOICES = [
     date: '2022-11-02',
     amount: 100,
     url: 'J123456789.invoice',
-    bankAccountLabel: 'First bank account',
-    cashflowLabels: ['VIR7', 'VIR5'],
+    status: InvoiceStatus.PENDING,
   },
   {
     reference: 'J666666666',
     date: '2022-11-03',
     amount: -50,
     url: 'J666666666.invoice',
-    bankAccountLabel: 'Second bank account',
-    cashflowLabels: ['VIR4'],
+    status: InvoiceStatus.PAID,
   },
   {
     reference: 'J987654321',
     date: '2023-10-02',
     amount: 75,
     url: 'J987654321.invoice',
-    bankAccountLabel: 'First bank account',
-    cashflowLabels: ['VIR9, VIR12'],
+    status: InvoiceStatus.PENDING_PAYMENT,
   },
 ]
 
@@ -156,16 +153,14 @@ describe('reimbursementsWithFilters', () => {
         date: '2022-11-02',
         amount: 100,
         url: 'J123456789.invoice',
-        bankAccountLabel: 'First reimbursement point',
-        cashflowLabels: ['VIR7', 'VIR5'],
+        status: InvoiceStatus.PAID,
       },
       {
         reference: 'J666666666',
         date: '2022-11-03',
         amount: -50,
         url: 'J666666666.invoice',
-        bankAccountLabel: 'Second reimbursement point',
-        cashflowLabels: ['VIR4'],
+        status: InvoiceStatus.PAID,
       },
     ])
 
@@ -270,8 +265,7 @@ describe('reimbursementsWithFilters', () => {
         date: '2022-11-02',
         amount: 100,
         url: 'J123456789.invoice',
-        bankAccountLabel: 'First reimbursement point',
-        cashflowLabels: ['VIR7', 'VIR5'],
+        status: InvoiceStatus.PAID,
       },
     ])
     vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
@@ -375,8 +369,7 @@ describe('reimbursementsWithFilters', () => {
         date: '2022-11-02',
         amount: 100,
         url: 'J123456789.invoice',
-        bankAccountLabel: 'First bank account',
-        cashflowLabels: [`VIR${i + 1}`],
+        status: InvoiceStatus.PAID,
       }))
     )
 

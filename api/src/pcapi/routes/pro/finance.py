@@ -48,8 +48,7 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
                 date=invoice.date.date(),
                 amount=float(-finance_utils.cents_to_full_unit(invoice.amount)),
                 url=invoice.url,
-                cashflow_labels=[cashflow.batch.label for cashflow in invoice.cashflows],
-                bank_account_label=invoice.bankAccount.label,
+                status=invoice.status,
             )
             for invoice in invoices
         ]
