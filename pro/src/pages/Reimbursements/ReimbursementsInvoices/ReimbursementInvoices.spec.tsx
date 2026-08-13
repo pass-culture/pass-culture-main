@@ -21,7 +21,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { MAX_ITEMS_DOWNLOAD } from './InvoiceTable/InvoiceDownloadActionsButton'
+import { MAX_ITEMS_DOWNLOAD } from './InvoiceTable/InvoiceDownloadActionsBar'
 import { Component as ReimbursementsInvoices } from './ReimbursementsInvoices'
 
 const mockLogEvent = vi.fn()
@@ -336,7 +336,9 @@ describe('reimbursementsWithFilters', () => {
       screen.getByRole('checkbox', { name: 'Sélectionner toutes les lignes' })
     )
 
-    await userEvent.click(screen.getByText('Télécharger les justificatifs'))
+    await userEvent.click(
+      screen.getByText('Télécharger les justificatifs (.pdf)')
+    )
 
     expect(api.getCombinedInvoices).toHaveBeenCalledTimes(1)
     expect(api.getCombinedInvoices).toHaveBeenNthCalledWith(1, {
@@ -378,7 +380,9 @@ describe('reimbursementsWithFilters', () => {
       screen.getByRole('checkbox', { name: 'Sélectionner toutes les lignes' })
     )
 
-    await userEvent.click(screen.getByText('Télécharger les justificatifs'))
+    await userEvent.click(
+      screen.getByText('Télécharger les justificatifs (.pdf)')
+    )
 
     expect(api.getCombinedInvoices).not.toHaveBeenCalled()
   })
@@ -396,7 +400,9 @@ describe('reimbursementsWithFilters', () => {
       screen.getByRole('checkbox', { name: 'Sélectionner toutes les lignes' })
     )
 
-    await userEvent.click(screen.getByText('Télécharger les détails'))
+    await userEvent.click(
+      screen.getByText('Télécharger le détail des réservations (.csv)')
+    )
 
     expect(api.getReimbursementsCsvV2).toHaveBeenCalledTimes(1)
     expect(api.getReimbursementsCsvV2).toHaveBeenNthCalledWith(1, {

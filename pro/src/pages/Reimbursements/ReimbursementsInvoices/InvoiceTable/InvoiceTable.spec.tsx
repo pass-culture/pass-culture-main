@@ -8,7 +8,7 @@ import * as analyticsHook from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { MAX_ITEMS_DOWNLOAD } from './InvoiceDownloadActionsButton'
+import { MAX_ITEMS_DOWNLOAD } from './InvoiceDownloadActionsBar'
 import { InvoiceTable } from './InvoiceTable'
 
 vi.mock('@/app/App/analytics/firebase', () => ({
