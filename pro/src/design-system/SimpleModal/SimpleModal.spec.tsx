@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { createRef } from 'react'
 import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -65,5 +66,32 @@ describe('SimpleModal', () => {
     await user.click(closeButton)
 
     expect(onCloseMock).toHaveBeenCalled()
+  })
+
+  it('should focus refToFocusOnClose when the dialog closes', () => {
+    const refToFocusOnClose = createRef<HTMLButtonElement>()
+    const { rerender } = renderWithProviders(
+      <>
+        <button ref={refToFocusOnClose} type="button">
+          Outside
+        </button>
+        <SimpleModal {...props} refToFocusOnClose={refToFocusOnClose} />
+      </>
+    )
+
+    rerender(
+      <>
+        <button ref={refToFocusOnClose} type="button">
+          Outside
+        </button>
+        <SimpleModal
+          {...props}
+          isOpen={false}
+          refToFocusOnClose={refToFocusOnClose}
+        />
+      </>
+    )
+
+    expect(screen.getByRole('button', { name: 'Outside' })).toHaveFocus()
   })
 })

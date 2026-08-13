@@ -25,6 +25,12 @@ export interface BaseDialogProps {
    * Modal content.
    */
   children: React.ReactNode
+  /**
+   * Element to focus after the dialog has closed.
+   * Native `<dialog>` already restores focus to the opener; use this to
+   * override that target (e.g. a dropdown trigger instead of a menu item).
+   */
+  refToFocusOnClose?: React.RefObject<HTMLElement | null>
 }
 
 /**
@@ -41,6 +47,7 @@ export const BaseDialog = ({
   ariaLabelledBy,
   ariaDescribedBy,
   children,
+  refToFocusOnClose,
 }: BaseDialogProps): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null)
 
@@ -82,12 +89,18 @@ export const BaseDialog = ({
     }
   }
 
+  // Native `close` is queued after dialog.close() (focus trap already gone).
+  const handleNativeClose = () => {
+    refToFocusOnClose?.current?.focus()
+  }
+
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click is pointer-only; keyboard dismissal is handled via onCancel (Escape)
     <dialog
       ref={dialogRef}
       onCancel={handleCancel}
       onClick={handleBackdropClick}
+      onClose={handleNativeClose}
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
       className={styles['base-dialog']}
