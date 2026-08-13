@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import type { AvatarEditorRef } from 'react-avatar-editor'
@@ -22,13 +21,10 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import {
-  DialogBuilder,
-  type DialogBuilderProps,
-} from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ImageEditor } from './components/ImageEditor/ImageEditor'
@@ -48,8 +44,9 @@ export interface OnImageUploadArgs {
   credit: string | null
 }
 
-export interface ModalImageUpsertOrEditProps
-  extends Omit<DialogBuilderProps, 'children'> {
+export interface ModalImageUpsertOrEditProps {
+  open: boolean
+  onOpenChange?: (open: boolean) => void
   mode: UploaderModeEnum
   onImageUpload: (values: OnImageUploadArgs, successMessage: string) => void
   onImageDelete?: () => void
@@ -59,11 +56,12 @@ export interface ModalImageUpsertOrEditProps
 const AppPreviewCollectiveOffer = () => <></>
 
 export const ModalImageUpsertOrEdit = ({
+  open,
+  onOpenChange,
   mode,
   onImageUpload,
   onImageDelete,
   initialValues = {},
-  ...dialogBuilderProps
 }: ModalImageUpsertOrEditProps): JSX.Element | null => {
   const { logEvent } = useAnalytics()
   const { draftImage, ...previouslyUploadedImage } = initialValues
@@ -145,10 +143,10 @@ export const ModalImageUpsertOrEdit = ({
 
     // Waiting the dialog to be opened is a minor optimization to avoid loading an image that
     // might never be displayed since the dialog is always rendered.
-    if (dialogBuilderProps.open && previouslyUploadedImageUrl) {
+    if (open && previouslyUploadedImageUrl) {
       setImageFromUrl(previouslyUploadedImageUrl)
     }
-  }, [dialogBuilderProps.open, previouslyUploadedImageUrl, snackBar])
+  }, [open, previouslyUploadedImageUrl, snackBar])
 
   useEffect(() => {
     setImage(draftImage)
@@ -257,31 +255,46 @@ export const ModalImageUpsertOrEdit = ({
   const onImageEditorChange = () => handleImageChange()
   const onImageSave = () => handleImageChange(onEditedImageSave)
 
-  return (
-    <DialogBuilder
-      {...dialogBuilderProps}
-      onOpenChange={(open: boolean) => {
-        // When dialog closes, its either :
-        // - via the close button, which is a cancel action, we need a reset to inital values.
-        // - externally, via dialogBuilderProps.onOpenChange, which usually
-        // happens after a submit, initial values are updated so its safe to operate
-        // a reset too, without a need of extra conditions.
-        if (!open) {
-          resetWithInitialValues()
-        }
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      resetWithInitialValues()
+    }
 
-        dialogBuilderProps.onOpenChange?.(open)
-      }}
+    onOpenChange?.(open)
+  }
+
+  if (!open) {
+    return null
+  }
+
+  return (
+    <DetailedModal
+      isOpen={open}
+      onClose={() => handleOpenChange(false)}
       title="Modifier une image"
-      variant="drawer"
+      isFooterFixed
+      description={
+        'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci.'
+      }
+      secondaryAction={
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          onClick={() => handleOpenChange(false)}
+          label="Annuler"
+        />
+      }
+      primaryAction={
+        <Button
+          type="button"
+          onClick={onImageSave}
+          disabled={!image}
+          label="Importer"
+        />
+      }
     >
-      <form className={style['modal-image-crop']}>
+      <div className={style['modal-image-crop']}>
         <div className={style['modal-image-crop-content']}>
-          <p className={style['modal-image-crop-right']}>
-            En utilisant ce contenu, je certifie que je suis propriétaire ou que
-            je dispose des autorisations nécessaires pour l’utilisation de
-            celui-ci.
-          </p>
           {isLoadingImage && <Spinner testId="spinner-img-load" />}
           {!isLoadingImage && image && (
             <>
@@ -313,16 +326,17 @@ export const ModalImageUpsertOrEdit = ({
                       label="Remplacer l’image"
                     />
 
-                    <Dialog.Close asChild>
-                      <Button
-                        icon={fullTrashIcon}
-                        onClick={onImageDelete}
-                        variant={ButtonVariant.SECONDARY}
-                        color={ButtonColor.NEUTRAL}
-                        size={ButtonSize.SMALL}
-                        label="Supprimer l’image"
-                      />
-                    </Dialog.Close>
+                    <Button
+                      icon={fullTrashIcon}
+                      onClick={() => {
+                        onImageDelete?.()
+                        handleOpenChange(false)
+                      }}
+                      variant={ButtonVariant.SECONDARY}
+                      color={ButtonColor.NEUTRAL}
+                      size={ButtonSize.SMALL}
+                      label="Supprimer l’image"
+                    />
                   </div>
                 </div>
                 {previewImageUrl && <AppPreview imageUrl={previewImageUrl} />}
@@ -360,7 +374,7 @@ export const ModalImageUpsertOrEdit = ({
               </div>
             </>
           )}
-          {!isLoadingImage && !image && (
+          {open && !isLoadingImage && !image && (
             <ImageDragAndDrop
               onDropOrSelected={onImageReplacementDropOrSelected}
               {...(mode === UploaderModeEnum.OFFER_COLLECTIVE
@@ -374,27 +388,7 @@ export const ModalImageUpsertOrEdit = ({
             />
           )}
         </div>
-        <DialogBuilder.Footer>
-          <div className={style['modal-image-crop-footer']}>
-            <Dialog.Close asChild>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                label="Annuler"
-              />
-            </Dialog.Close>
-            <Button
-              type="submit"
-              onClick={(e) => {
-                e.preventDefault()
-                onImageSave()
-              }}
-              disabled={!image}
-              label="Importer"
-            />
-          </div>
-        </DialogBuilder.Footer>
-      </form>
-    </DialogBuilder>
+      </div>
+    </DetailedModal>
   )
 }

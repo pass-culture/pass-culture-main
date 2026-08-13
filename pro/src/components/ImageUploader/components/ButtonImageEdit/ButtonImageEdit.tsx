@@ -69,41 +69,47 @@ export const ButtonImageEdit = ({
   }
 
   return (
-    <ModalImageUpsertOrEdit
-      mode={mode}
-      onImageUpload={onImageUploadHandler}
-      onImageDelete={onImageDelete}
-      initialValues={initialValues}
-      onOpenChange={setIsModalImageOpen}
-      open={isModalImageOpen}
-      trigger={
-        imageUrl ? (
-          <Button
-            onClick={onClickButtonImageAdd}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            size={ButtonSize.SMALL}
-            aria-label="Modifier l’image"
-            icon={fullEditIcon}
-            label={label ?? 'Modifier'}
-          />
-        ) : (
-          <button
-            className={cn(style['button-image-add'], {
-              [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
-              [style['add-image-offer']]:
-                mode === UploaderModeEnum.OFFER ||
-                mode === UploaderModeEnum.OFFER_COLLECTIVE,
-            })}
-            onClick={onClickButtonImageAdd}
-            type="button"
-            disabled={disableForm}
-          >
-            <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
-            <span className={style['label']}>Ajouter une image</span>
-          </button>
-        )
-      }
-    />
+    <>
+      {imageUrl ? (
+        <Button
+          onClick={() => {
+            onClickButtonImageAdd()
+            setIsModalImageOpen(true)
+          }}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+          aria-label="Modifier l’image"
+          icon={fullEditIcon}
+          label={label ?? 'Modifier'}
+        />
+      ) : (
+        <button
+          className={cn(style['button-image-add'], {
+            [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
+            [style['add-image-offer']]:
+              mode === UploaderModeEnum.OFFER ||
+              mode === UploaderModeEnum.OFFER_COLLECTIVE,
+          })}
+          onClick={() => {
+            onClickButtonImageAdd()
+            setIsModalImageOpen(true)
+          }}
+          type="button"
+          disabled={disableForm}
+        >
+          <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
+          <p className={style['label']}>Ajouter une image</p>
+        </button>
+      )}
+      <ModalImageUpsertOrEdit
+        mode={mode}
+        onImageUpload={onImageUploadHandler}
+        onImageDelete={onImageDelete}
+        initialValues={initialValues}
+        onOpenChange={setIsModalImageOpen}
+        open={isModalImageOpen}
+      />
+    </>
   )
 }

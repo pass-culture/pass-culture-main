@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
+import { useId } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
@@ -12,8 +12,8 @@ import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
@@ -31,9 +31,10 @@ export interface RequestFormDialogProps {
   contactPhone: string
   contactForm: string
   contactUrl: string
+  isDialogOpen: boolean
   isPreview: boolean
+  onCloseDialog: () => void
   onConfirmDialog: () => void
-  dialogTriggerRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const RequestFormDialog = ({
@@ -44,10 +45,13 @@ export const RequestFormDialog = ({
   contactPhone,
   contactForm,
   contactUrl,
+  isDialogOpen,
   isPreview,
+  onCloseDialog,
   onConfirmDialog,
 }: RequestFormDialogProps): JSX.Element => {
   const snackBar = useSnackBar()
+  const requestFormId = useId()
 
   const initialValues = {
     teacherEmail: userEmail ?? '',
@@ -107,6 +111,11 @@ export const RequestFormDialog = ({
       })
     }
     reset()
+  }
+
+  const closeDialog = () => {
+    onCancel()
+    onCloseDialog()
   }
 
   const logContactUrl = () => {
@@ -296,12 +305,32 @@ export const RequestFormDialog = ({
   )
 
   return (
-    <>
-      <Dialog.DialogTitle>
-        Vous souhaitez contacter ce partenaire ?
-      </Dialog.DialogTitle>
-
+    <DetailedModal
+      isOpen={isDialogOpen}
+      onClose={closeDialog}
+      title="Vous souhaitez contacter ce partenaire ?"
+      secondaryAction={
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          onClick={closeDialog}
+          type="button"
+          label="Annuler"
+        />
+      }
+      primaryAction={
+        <Button
+          type="submit"
+          form={requestFormId}
+          variant={ButtonVariant.PRIMARY}
+          isLoading={isSubmitting}
+          disabled={isPreview}
+          label="Envoyer ma demande"
+        />
+      }
+    >
       <form
+        id={requestFormId}
         onSubmit={(e) => {
           e.stopPropagation()
           e.preventDefault()
@@ -370,27 +399,7 @@ export const RequestFormDialog = ({
             />
           </FormLayout.Row>
         </FormLayout>
-        <DialogBuilder.Footer>
-          <div className={styles['buttons-container']}>
-            <Dialog.Close asChild>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                onClick={onCancel}
-                type="button"
-                label="Annuler"
-              />
-            </Dialog.Close>
-            <Button
-              type="submit"
-              variant={ButtonVariant.PRIMARY}
-              isLoading={isSubmitting}
-              disabled={isPreview}
-              label="Envoyer ma demande"
-            />
-          </div>
-        </DialogBuilder.Footer>
       </form>
-    </>
+    </DetailedModal>
   )
 }

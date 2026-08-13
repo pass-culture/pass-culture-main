@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
@@ -16,22 +15,20 @@ import {
 
 const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
   renderWithProviders(
-    <Dialog.Root defaultOpen>
-      <Dialog.Content aria-describedby={undefined}>
-        <RequestFormDialog
-          onConfirmDialog={vi.fn()}
-          offerId={1}
-          userEmail={'contact@example.com'}
-          userRole={AdageFrontRoles.REDACTOR}
-          contactEmail=""
-          contactForm="form"
-          contactPhone=""
-          contactUrl=""
-          isPreview={false}
-          {...props}
-        />{' '}
-      </Dialog.Content>
-    </Dialog.Root>
+    <RequestFormDialog
+      onConfirmDialog={vi.fn()}
+      onCloseDialog={vi.fn()}
+      offerId={1}
+      userEmail={'contact@example.com'}
+      userRole={AdageFrontRoles.REDACTOR}
+      contactEmail=""
+      contactForm="form"
+      contactPhone=""
+      contactUrl=""
+      isDialogOpen
+      isPreview={false}
+      {...props}
+    />
   )
 }
 

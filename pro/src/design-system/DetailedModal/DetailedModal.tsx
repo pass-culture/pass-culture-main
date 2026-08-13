@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { type ReactNode, useId, useRef } from 'react'
+import { type ReactNode, useEffect, useId, useRef } from 'react'
 
 import { Button } from '@/design-system/Button/Button'
 import { Spinner } from '@/design-system/Button/components/Spinner/Spinner'
@@ -52,6 +52,12 @@ export const DetailedModal = ({
   const loadingDescriptionId = useId()
   const closeButtonRef = useRef<HTMLButtonElement | HTMLAnchorElement>(null)
   const isLoadingState = Boolean(loadingState)
+
+  useEffect(() => {
+    if (isOpen) {
+      closeButtonRef.current?.focus()
+    }
+  }, [isOpen])
   const hasActions = Boolean(primaryAction || secondaryAction || tertiaryAction)
 
   let computedDescriptionId: string | undefined
@@ -95,7 +101,6 @@ export const DetailedModal = ({
           <div className={styles['detailed-modal-close-button']}>
             <Button
               ref={closeButtonRef}
-              autoFocus
               icon={fullCloseIcon}
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.NEUTRAL}

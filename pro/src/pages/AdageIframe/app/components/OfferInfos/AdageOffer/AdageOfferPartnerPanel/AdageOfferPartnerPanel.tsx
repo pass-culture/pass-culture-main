@@ -119,7 +119,7 @@ export function AdageOfferPartnerPanel({
           userRole={adageUser?.role}
           isPreview={isPreview}
           playlistId={playlistId}
-        ></ContactButton>
+        />
       </div>
     </div>
   )
