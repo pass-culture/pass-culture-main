@@ -38,6 +38,18 @@ describe('getInitialAdminOffererId', () => {
 
       expect(result).toBe(100)
     })
+
+    it('should ignore offerer id from URL param when it is not in offererNames', () => {
+      vi.spyOn(localStorageManager, 'getItem').mockReturnValue('200')
+      window.history.pushState({}, '', '/?offerer=999')
+
+      const result = getInitialAdminOffererId({
+        offererNames,
+        selectedPartnerVenue: null,
+      })
+
+      expect(result).toBe(200)
+    })
   })
 
   describe('Priority 2: localStorage', () => {

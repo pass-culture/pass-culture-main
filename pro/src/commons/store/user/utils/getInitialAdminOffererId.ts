@@ -23,7 +23,13 @@ export const getInitialAdminOffererId = ({
   const urlSearchParams = new URLSearchParams(globalThis.location.search)
   const selectedOffererIdFromUrl = Number(urlSearchParams.get('offerer'))
   if (selectedOffererIdFromUrl) {
-    return selectedOffererIdFromUrl
+    const selectedOffererFromUrl = offererNames.find(
+      (offerer) => offerer.id === selectedOffererIdFromUrl
+    )
+
+    if (selectedOffererFromUrl) {
+      return selectedOffererFromUrl.id
+    }
   }
 
   // ---------------------------------------------------------------------------
