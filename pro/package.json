@@ -104,7 +104,7 @@
     "axe-core": "4.12.1",
     "check-unused-css": "0.5.5",
     "dotenv": "17.4.2",
-    "jsdom": "29.1.1",
+    "jsdom": "30.0.1",
     "knip": "6.32.0",
     "node-fetch": "3.3.2",
     "openapi-typescript-codegen": "0.29.0",
