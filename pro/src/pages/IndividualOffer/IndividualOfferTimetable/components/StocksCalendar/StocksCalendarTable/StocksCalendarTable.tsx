@@ -96,30 +96,34 @@ export function StocksCalendarTable({
     }
   }
 
+  const getStockDateLabel = (stock: GetOfferStockResponseModel) =>
+    stock.beginningDatetime
+      ? formatLocalTimeDateString(
+          stock.beginningDatetime,
+          departmentCode,
+          FORMAT_DD_MM_YYYY
+        )
+      : 'Date invalide'
+
+  const getStockTimeLabel = (stock: GetOfferStockResponseModel) =>
+    stock.beginningDatetime
+      ? formatLocalTimeDateString(
+          stock.beginningDatetime,
+          departmentCode,
+          FORMAT_HH_mm
+        )
+      : 'Horaire invalide'
+
   const columns: Column<GetOfferStockResponseModel>[] = [
     {
       id: 'beginningDate',
       label: 'Date',
-      render: (stock) =>
-        stock.beginningDatetime
-          ? formatLocalTimeDateString(
-              stock.beginningDatetime,
-              departmentCode,
-              FORMAT_DD_MM_YYYY
-            )
-          : 'Date invalide',
+      render: (stock) => getStockDateLabel(stock),
     },
     {
       id: 'time',
       label: 'Horaire',
-      render: (stock) =>
-        stock.beginningDatetime
-          ? formatLocalTimeDateString(
-              stock.beginningDatetime,
-              departmentCode,
-              FORMAT_HH_mm
-            )
-          : 'Horaire invalide',
+      render: (stock) => getStockTimeLabel(stock),
     },
     {
       id: 'priceCategory',
@@ -258,10 +262,14 @@ export function StocksCalendarTable({
       </DialogBuilder>
       <Table
         columns={columns}
+        title="Horaires, tarifs et stocks"
         selectable={mode === OFFER_WIZARD_MODE.CREATION}
         selectedIds={checkedStocks}
         onSelectionChange={(stocks) =>
           updateCheckedStocks(new Set(stocks.map((s) => s.id)))
+        }
+        getRowSelectionDateTime={(stock) =>
+          `${getStockDateLabel(stock)} à ${getStockTimeLabel(stock)}`
         }
         data={stocks}
         isLoading={isLoading}

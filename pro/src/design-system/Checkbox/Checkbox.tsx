@@ -42,6 +42,10 @@ type CheckboxBaseProps = {
   required?: boolean
   /** What type of required indicator is displayed */
   requiredIndicator?: RequiredIndicator
+  /** Native title attribute applied to the checkbox input. */
+  title?: string
+  /** Accessible name override for assistive technologies. */
+  ariaLabel?: string
 }
 
 export type CheckboxProps = CheckboxBaseProps &
@@ -93,6 +97,8 @@ export const Checkbox = forwardRef(
       name,
       required,
       requiredIndicator = 'symbol',
+      title,
+      ariaLabel,
     }: CheckboxProps,
     ref?: ForwardedRef<HTMLInputElement>
   ) => {
@@ -143,6 +149,8 @@ export const Checkbox = forwardRef(
             onChange={onChange}
             onBlur={onBlur}
             name={name}
+            title={title}
+            aria-label={ariaLabel}
             aria-required={required}
             aria-invalid={hasError}
           />

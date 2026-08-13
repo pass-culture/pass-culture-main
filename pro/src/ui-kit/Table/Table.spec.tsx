@@ -171,6 +171,47 @@ describe('<Table />', () => {
     expect(handleSelection).toHaveBeenCalledWith([data[0]])
   })
 
+  it('uses a date/time selection label when provided', () => {
+    renderTable({
+      selectable: true,
+      data: [data[0]],
+      getRowSelectionDateTime: () => '01/06/2024 à 14:30',
+    })
+
+    expect(
+      screen.getByLabelText('Sélectionner la ligne du 01/06/2024 à 14:30')
+    ).toBeInTheDocument()
+  })
+
+  it('falls back to row name, then row id, when no date/time label is provided', () => {
+    const rows: Array<{ id: number; name?: string; value: number }> = [
+      { id: 1, name: 'Named row', value: 10 },
+      { id: 2, value: 20 },
+    ]
+    const cols: Column<{ id: number; name?: string; value: number }>[] = [
+      { id: 'name', label: 'Name', ordererField: 'name' },
+      { id: 'value', label: 'Value', ordererField: 'value' },
+    ]
+
+    render(
+      <Table
+        columns={cols}
+        data={rows}
+        selectable
+        isLoading={false}
+        variant={TableVariant.COLLAPSE}
+        noResult={{ message: 'Aucun résultat trouvé', onFilterReset: vi.fn() }}
+        noData={{
+          hasNoData: false,
+          message: { icon: '', title: '', subtitle: '' },
+        }}
+      />
+    )
+
+    expect(screen.getByLabelText('Named row')).toBeInTheDocument()
+    expect(screen.getByLabelText('ligne 2')).toBeInTheDocument()
+  })
+
   it('renders empty state message when noData.hasNoData is true', () => {
     renderTable({
       data: [],
@@ -236,7 +277,9 @@ describe('<Table />', () => {
       onSelectionChange: handleSelection,
     })
 
-    const header = screen.getByRole('checkbox', { name: /tout sélectionner/i })
+    const header = screen.getByRole('checkbox', {
+      name: 'Sélectionner toutes les lignes',
+    })
     expect(header).not.toBeChecked()
 
     await userEvent.click(screen.getByLabelText('A'))

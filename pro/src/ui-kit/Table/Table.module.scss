@@ -79,7 +79,6 @@
 
     &:first-child {
       border-top-left-radius: var(--size-border-radius-m);
-      padding-left: var(--size-spacing-l);
     }
 
     &:last-child {
@@ -100,8 +99,13 @@
 
 .table-select-all {
   display: flex;
-  margin: var(--size-spacing-l) 0;
   gap: var(--size-spacing-s);
+  align-items: center;
+}
+
+.table-select-all-tooltip {
+  z-index: 99;
+  margin-left: var(--size-spacing-xxl);
 }
 
 .table-checkbox-label {
@@ -126,10 +130,6 @@
 @media (max-width: size.$tablet) {
   .table-header {
     display: none;
-  }
-
-  .table-select-all {
-    margin: var(--size-spacing-s) 0;
   }
 
   .table-row {

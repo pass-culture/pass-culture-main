@@ -122,7 +122,7 @@ describe('reimbursementsWithFilters', () => {
     // first line
     expect(
       screen.getByRole('checkbox', {
-        name: 'ligne J123456789',
+        name: 'Sélectionner la ligne du 02/11/2022',
       })
     ).toBeInTheDocument()
     expect(screen.getAllByText('First bank account')).toHaveLength(2)
@@ -131,14 +131,18 @@ describe('reimbursementsWithFilters', () => {
 
     // second line
     expect(
-      screen.getByRole('checkbox', { name: 'ligne J666666666' })
+      screen.getByRole('checkbox', {
+        name: 'Sélectionner la ligne du 03/11/2022',
+      })
     ).toBeInTheDocument()
     expect(screen.getByText('N/A')).toBeInTheDocument()
     expect(screen.getByText(/50,00/)).toBeInTheDocument()
 
     // third line
     expect(
-      screen.getByRole('checkbox', { name: 'ligne J987654321' })
+      screen.getByRole('checkbox', {
+        name: 'Sélectionner la ligne du 02/10/2023',
+      })
     ).toBeInTheDocument()
     expect(screen.getByText('VIR9, VIR12')).toBeInTheDocument()
     expect(screen.getByText(/75,00/)).toBeInTheDocument()
@@ -175,12 +179,16 @@ describe('reimbursementsWithFilters', () => {
     ).not.toBeInTheDocument()
     expect(screen.getByText('Remboursement')).toBeInTheDocument()
     expect(
-      screen.getByRole('checkbox', { name: 'ligne J123456789' })
+      screen.getByRole('checkbox', {
+        name: 'Sélectionner la ligne du 02/11/2022',
+      })
     ).toBeInTheDocument()
 
     expect(screen.getByText('Trop perçu')).toBeInTheDocument()
     expect(
-      screen.getByRole('checkbox', { name: 'ligne J666666666' })
+      screen.getByRole('checkbox', {
+        name: 'Sélectionner la ligne du 03/11/2022',
+      })
     ).toBeInTheDocument()
   })
 
@@ -336,7 +344,7 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     await userEvent.click(
-      screen.getByRole('checkbox', { name: 'Tout sélectionner' })
+      screen.getByRole('checkbox', { name: 'Sélectionner toutes les lignes' })
     )
 
     await userEvent.click(screen.getByText('Télécharger les justificatifs'))
@@ -379,7 +387,7 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     await userEvent.click(
-      screen.getByRole('checkbox', { name: 'Tout sélectionner' })
+      screen.getByRole('checkbox', { name: 'Sélectionner toutes les lignes' })
     )
 
     await userEvent.click(screen.getByText('Télécharger les justificatifs'))
@@ -397,7 +405,7 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     await userEvent.click(
-      screen.getByRole('checkbox', { name: 'Tout sélectionner' })
+      screen.getByRole('checkbox', { name: 'Sélectionner toutes les lignes' })
     )
 
     await userEvent.click(screen.getByText('Télécharger les détails'))

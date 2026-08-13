@@ -8,6 +8,7 @@ import {
   type PaginationProps,
 } from '@/design-system/Pagination/Pagination'
 import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
+import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
 import { SortColumn } from './SortColumn/SortColumn'
 import styles from './Table.module.scss'
@@ -62,6 +63,7 @@ interface TableProps<T extends { id: string | number }> {
   selectedNumber?: string
   selectedIds?: Set<string | number>
   onSelectionChange?: (rows: T[]) => void
+  getRowSelectionDateTime?: (row: T) => string
   getFullRowContent?: (row: T) => React.ReactNode | null
   isRowSelectable?: (row: T) => boolean
   noResult: NoResultProps
@@ -106,10 +108,11 @@ export function Table<
   noResult,
   noData,
   onSelectionChange,
+  getRowSelectionDateTime,
   getFullRowContent,
   isRowSelectable,
   pagination,
-}: TableProps<T>) {
+}: Readonly<TableProps<T>>) {
   const fullScope = allData ?? data
 
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
@@ -196,21 +199,6 @@ export function Table<
 
   return (
     <div className={classNames(styles.wrapper, className)}>
-      {selectable && (
-        <div className={styles['table-select-all']}>
-          <Checkbox
-            label={headerLabel}
-            checked={headerChecked}
-            indeterminate={headerIndeterminate}
-            onChange={toggleSelectAll}
-          />
-          <span className={styles['visually-hidden']}>
-            Sélectionner toutes les lignes
-          </span>
-          <div>{selectedNumber}</div>
-        </div>
-      )}
-
       <table
         className={classNames(styles['table'], {
           [styles['table-separate']]: variant === TableVariant.SEPARATE,
@@ -228,7 +216,26 @@ export function Table<
           >
             {selectable && (
               <th scope="col" className={styles['table-header-th']}>
-                <span className={styles['visually-hidden']}>Sélectionner</span>
+                <div className={styles['table-select-all']}>
+                  <Tooltip
+                    content="Tout sélectionner"
+                    className={styles['table-select-all-tooltip']}
+                  >
+                    <Checkbox
+                      label={headerLabel}
+                      title={headerLabel}
+                      ariaLabel="Sélectionner toutes les lignes"
+                      checked={headerChecked}
+                      indeterminate={headerIndeterminate}
+                      onChange={toggleSelectAll}
+                      className={styles['table-checkbox-label']}
+                    />
+                  </Tooltip>
+                  <span className={styles['visually-hidden']}>
+                    Sélectionner toutes les lignes
+                  </span>
+                  <div>{selectedNumber}</div>
+                </div>
               </th>
             )}
             {columns.map((col) => {
@@ -296,6 +303,16 @@ export function Table<
           {sortedData.map((row) => {
             const isSelected = selectedIds.has(row.id)
             const tableFullRowContent = getFullRowContent?.(row)
+            const rowDateTime = getRowSelectionDateTime?.(row)
+            const hasDateTimeSelectionLabel = rowDateTime !== undefined
+
+            const rowSelectionLabel = hasDateTimeSelectionLabel
+              ? `Sélectionner la ligne du ${rowDateTime}`
+              : `Sélectionner la ligne ${row.name || row.id}`
+
+            const rowCheckboxLabel = hasDateTimeSelectionLabel
+              ? rowSelectionLabel
+              : (row.name ?? `ligne ${row.id}`)
 
             return (
               <React.Fragment key={row.id}>
@@ -315,7 +332,8 @@ export function Table<
                       })}
                     >
                       <Checkbox
-                        label={row.name ?? `ligne ${row.id}`}
+                        label={rowCheckboxLabel}
+                        title={rowSelectionLabel}
                         checked={isSelected}
                         onChange={() => toggleSelectRow(row)}
                         className={styles['table-checkbox-label']}
@@ -324,7 +342,7 @@ export function Table<
                         }
                       />
                       <span className={styles['visually-hidden']}>
-                        Selectionner la ligne {row.name || row.id}
+                        {rowSelectionLabel}
                       </span>
                     </td>
                   )}
