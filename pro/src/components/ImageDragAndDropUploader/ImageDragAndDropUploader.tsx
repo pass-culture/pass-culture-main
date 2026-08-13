@@ -64,10 +64,6 @@ export const ImageDragAndDropUploader = ({
   const [dragDropResetKey, setDragDropResetKey] = useState(0)
   const previousDraftImage = usePrevious(draftImage)
 
-  const [refToFocusOnClose, setRefToFocusOnClose] = useState<
-    React.RefObject<HTMLElement | null> | undefined
-  >(inputDragAndDropRef)
-
   const imageUrl = croppedImageUrl || originalImageUrl
   const hasImage = !!imageUrl
   const shouldDisplayActions = hasImage && !hideActionButtons
@@ -90,7 +86,6 @@ export const ImageDragAndDropUploader = ({
     setIsModalImageOpen(false)
     setDraftImage(undefined)
     setDraftCredit(undefined)
-    setRefToFocusOnClose(inputDragAndDropRef)
     onImageDelete()
     snackBar.success('L’image a bien été supprimée')
   }
@@ -102,7 +97,6 @@ export const ImageDragAndDropUploader = ({
     setIsModalImageOpen(false)
     setDraftImage(values.imageFile)
     setDraftCredit(values.credit ?? '')
-    setRefToFocusOnClose(updateImageRef)
     try {
       await Promise.resolve(onImageUpload(values))
       snackBar.success(successMessage)
@@ -143,6 +137,18 @@ export const ImageDragAndDropUploader = ({
           [styles['image-uploader-actions-visible']]: shouldDisplayActions,
         })}
       >
+        {shouldDisplayActions && (
+          <Button
+            ref={updateImageRef}
+            onClick={() => setIsModalImageOpen(true)}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
+            aria-label="Modifier l’image"
+            icon={fullEditIcon}
+            label="Modifier"
+          />
+        )}
         <ModalImageUpsertOrEdit
           mode={mode}
           onImageUpload={onImageUploadHandler}
@@ -160,20 +166,6 @@ export const ImageDragAndDropUploader = ({
             setIsModalImageOpen(open)
           }}
           open={isModalImageOpen}
-          trigger={
-            shouldDisplayActions && (
-              <Button
-                ref={updateImageRef}
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                size={ButtonSize.SMALL}
-                aria-label="Modifier l’image"
-                icon={fullEditIcon}
-                label="Modifier"
-              />
-            )
-          }
-          refToFocusOnClose={refToFocusOnClose}
         />
         {shouldDisplayActions && (
           <Button

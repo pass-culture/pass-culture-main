@@ -60,12 +60,6 @@
     }
   }
 
-  &-right {
-    @include fonts.body-s;
-
-    margin-bottom: var(--size-spacing-l);
-  }
-
   &-credit {
     max-width: 410px;
     margin-top: var(--size-spacing-xl);
@@ -73,13 +67,5 @@
     &-loading {
       visibility: hidden;
     }
-  }
-
-  &-footer {
-    display: flex;
-    justify-content: flex-start;
-    padding-left: rem.torem(6px);
-    padding-right: var(--size-spacing-m);
-    gap: var(--size-spacing-l);
   }
 }
