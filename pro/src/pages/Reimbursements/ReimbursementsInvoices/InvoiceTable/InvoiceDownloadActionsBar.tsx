@@ -4,21 +4,22 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadFile } from '@/commons/utils/downloadFile'
+import { pluralizeFr } from '@/commons/utils/pluralize'
+import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import fullDownloadIcon from '@/icons/full-download.svg'
+import { ButtonVariant } from '@/design-system/Button/types'
 
-import styles from './InvoiceDownloadActionsButton.module.scss'
+import styles from './InvoiceDownloadActionsBar.module.scss'
 
-type InvoiceDownloadActionsButtonProps = {
+type InvoiceDownloadActionsBarProps = {
   checkedInvoices: string[]
 }
 
 export const MAX_ITEMS_DOWNLOAD = 75
 
-export const InvoiceDownloadActionsButton = ({
+export const InvoiceDownloadActionsBar = ({
   checkedInvoices,
-}: InvoiceDownloadActionsButtonProps) => {
+}: InvoiceDownloadActionsBarProps) => {
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   async function downloadCSVFiles(references: string[]) {
@@ -74,25 +75,30 @@ export const InvoiceDownloadActionsButton = ({
     }
   }
 
+  const checkedInvoicesCountText = `${checkedInvoices.length} ${pluralizeFr(checkedInvoices.length, 'justificatif sélectionné', 'justificatifs sélectionnés')}`
+
   return (
-    <div className={styles['download-actions']} aria-live="polite">
+    <div aria-live="polite">
       {checkedInvoices.length > 0 && (
-        <>
-          <Button
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            icon={fullDownloadIcon}
-            onClick={() => downloadInvoices(checkedInvoices)}
-            label="Télécharger les justificatifs"
-          />
-          <Button
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            icon={fullDownloadIcon}
-            onClick={() => downloadCSVFiles(checkedInvoices)}
-            label="Télécharger les détails"
-          />
-        </>
+        <ActionsBarSticky>
+          <ActionsBarSticky.Left>
+            <p className={styles['checked-invoice-count']}>
+              {checkedInvoicesCountText}
+            </p>
+          </ActionsBarSticky.Left>
+          <ActionsBarSticky.Right>
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              onClick={() => downloadCSVFiles(checkedInvoices)}
+              label="Télécharger le détail des réservations (.csv)"
+            />
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              onClick={() => downloadInvoices(checkedInvoices)}
+              label="Télécharger les justificatifs (.pdf)"
+            />
+          </ActionsBarSticky.Right>
+        </ActionsBarSticky>
       )}
     </div>
   )

@@ -13,7 +13,7 @@ import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { InvoiceActions } from './InvoiceActions'
-import { InvoiceDownloadActionsButton } from './InvoiceDownloadActionsButton'
+import { InvoiceDownloadActionsBar } from './InvoiceDownloadActionsBar'
 import styles from './InvoiceTable.module.scss'
 
 const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
@@ -108,7 +108,6 @@ export const InvoiceTable = ({
 
   return (
     <div className={styles['invoices-table']}>
-      <InvoiceDownloadActionsButton checkedInvoices={checkedInvoices} />
       <Table
         title="Justificatif de remboursement ou de trop perçu"
         columns={columns}
@@ -136,6 +135,7 @@ export const InvoiceTable = ({
           },
         }}
       />
+      <InvoiceDownloadActionsBar checkedInvoices={checkedInvoices} />
     </div>
   )
 }
