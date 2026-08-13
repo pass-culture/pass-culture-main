@@ -1,10 +1,11 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   type GetVenueResponseModel,
+  OfferStatus,
   VenueState,
 } from '@/apiClient/v1'
 import {
@@ -115,5 +116,19 @@ describe('IndividualOfferExposureScreen', () => {
     })
     expect(link).toHaveAttribute('aria-disabled', 'true')
     expect(link).not.toHaveAttribute('href')
+  })
+
+  it('should not display title if no actions are displayed', async () => {
+    const offer = getIndividualOfferFactory({ status: OfferStatus.REJECTED })
+    renderIndividualOfferLocationScreen({
+      offer,
+      venueOverrides: { state: VenueState.CLOSED },
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('heading', { name: 'Actions de mise en avant' })
+      ).not.toBeInTheDocument()
+    })
   })
 })
