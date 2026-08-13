@@ -14,11 +14,11 @@
 {% block before_title %}
   {% if search_form %}
     <form action="{{ search_dst }}"
-          class="mb-4"
+          class="mb-3"
           name="{{ search_dst | action_to_name }}"
           method="get">
-      <div class="row">
-        <div class="input-group">
+      <div class="d-flex align-items-center">
+        <div class="input-group flex-grow-1">
           {{ search_form.q }}
           {% if search_form.q.errors %}
             <div class="w-100 my-4">
@@ -26,20 +26,8 @@
             </div>
           {% endif %}
         </div>
-        {% for name, value in search_hidden_params %}
-          <input type="hidden"
-                 name="{{ name }}"
-                 value="{{ value }}">
-        {% endfor %}
-      </div>
-      <div class="d-flex align-items-center mt-2">
-        <div class="flex-grow-1">
-          {% if search_form.ignore_advanced_search_filters_field %}
-            {{ search_form.ignore_advanced_search_filters_field }}
-          {% endif %}
-        </div>
         <button type="submit"
-                class="btn py-2 px-3 btn-primary ms-2">
+                class="btn py-2 px-3 btn-primary ms-2 text-nowrap">
           Rechercher
           <i class="bi bi-search ms-2"></i>
         </button>

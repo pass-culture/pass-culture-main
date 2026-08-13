@@ -3,7 +3,6 @@ import datetime
 import decimal
 import os
 import re
-import urllib.parse
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -525,7 +524,6 @@ class SearchPublicAccountsTest(GetEndpointHelper):
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=new_grant_18.id,
-            **query_args,
             search_rank=1,
             total_items=1,
         )
@@ -545,7 +543,6 @@ class SearchPublicAccountsTest(GetEndpointHelper):
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=user_with_tag.id,
-            **query_args,
             search_rank=1,
             total_items=1,
         )
@@ -1018,7 +1015,6 @@ class SearchPublicAccountsTest(GetEndpointHelper):
             response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=matching_user.id,
-            **query_args,
             search_rank=1,
             total_items=1,
         )
@@ -1041,64 +1037,6 @@ class SearchPublicAccountsTest(GetEndpointHelper):
             assert response.status_code == 400
 
         assert "est vide" in html_parser.extract_alert(response.data)
-
-
-class AdvancedSearchFiltersPersistenceTest:
-    """The list page advanced filters must survive the trip to a details page and back.
-
-    The details page search bar is a GET form: submitting it overwrites the whole query string,
-    so the filters only survive as hidden inputs inside that form.
-    """
-
-    list_endpoint = "backoffice_web.public_accounts.list_public_accounts"
-    details_endpoint = "backoffice_web.public_accounts.get_public_account"
-
-    def _create_tagged_users(self):
-        first_tag = users_factories.UserTagFactory(name="tag-a")
-        second_tag = users_factories.UserTagFactory(name="tag-b")
-        # two matching users, so that the list page is rendered instead of redirecting to a single result
-        tagged = users_factories.BeneficiaryGrant18Factory(firstName="Vincent", tags=[first_tag])
-        users_factories.BeneficiaryGrant18Factory(firstName="Vicky", tags=[second_tag])
-        users_factories.BeneficiaryGrant18Factory(firstName="Victor", tags=[])
-        return first_tag, second_tag, tagged
-
-    def _extract_hidden_inputs(self, html_content: str) -> list[tuple[str, str]]:
-        return [
-            (input_field.attrs["name"], input_field.attrs.get("value", ""))
-            for input_field in html_parser.get_soup(html_content).find_all("input", attrs={"type": "hidden"})
-            if "name" in input_field.attrs
-        ]
-
-    def _query_args(self, first_tag, second_tag):
-        return {
-            "q": "vi",
-            "search-0-search_field": "TAGS",
-            "search-0-operator": "IN",
-            "search-0-tags": [first_tag.id, second_tag.id],
-            "limit": 100,
-        }
-
-    def test_round_trip_keeps_the_same_results(self, authenticated_client):
-        first_tag, second_tag, tagged = self._create_tagged_users()
-
-        listed = authenticated_client.get(url_for(self.list_endpoint, **self._query_args(first_tag, second_tag)))
-        assert listed.status_code == 200
-        expected_ids = {user_id_from_card(card) for card in html_parser.extract_cards_text(listed.data)}
-        assert str(tagged.id) in expected_ids
-
-        details_href = html_parser.get_soup(listed.data).find("a", href=re.compile(rf"/public-accounts/{tagged.id}\?"))[
-            "href"
-        ]
-        details = authenticated_client.get(details_href)
-        assert details.status_code == 200
-
-        # replay the details page search form exactly as the browser would submit it
-        submitted = [(name, value) for name, value in self._extract_hidden_inputs(details.data) if name != "csrf_token"]
-        submitted.append(("q", html_parser.extract_input_value(details.data, "q")))
-
-        replayed = authenticated_client.get(f"{url_for(self.list_endpoint)}?{urllib.parse.urlencode(submitted)}")
-        assert replayed.status_code == 200
-        assert {user_id_from_card(card) for card in html_parser.extract_cards_text(replayed.data)} == expected_ids
 
 
 class GetPublicAccountTest(GetEndpointHelper):

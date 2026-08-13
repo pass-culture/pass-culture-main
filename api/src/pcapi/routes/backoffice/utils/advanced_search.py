@@ -73,8 +73,6 @@ LLM_OPERATOR_DICT: dict[str, str] = {
     "LESS_THAN_OR_EQUAL_TO": "=<",
 }
 
-ADVANCED_SEARCH_COMMON_PARAM_NAMES = frozenset({"limit"})
-
 
 class AdvancedSearchOperators(enum.Enum):
     EQUALS = "est égal à"
@@ -304,7 +302,3 @@ def generate_llm_search_dict(
         )
 
     return filters, warnings
-
-
-def is_query_param_an_advanced_search_filter(name: str) -> bool:
-    return name.startswith("search-") or name in ADVANCED_SEARCH_COMMON_PARAM_NAMES

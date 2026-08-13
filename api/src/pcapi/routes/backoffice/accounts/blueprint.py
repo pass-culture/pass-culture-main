@@ -704,9 +704,6 @@ def render_public_account_details(
         )
 
     search_form = account_forms.GetAccountDetailsSearchForm(formdata=request_utils.get_query_params())
-    search_hidden_filters = [
-        (name, value) for name, values in _get_advanced_search_hidden_filters().items() for value in values
-    ]
 
     if AccountDetailsActionType.EXTEND_DEPOSIT in allowed_actions:
         assert user.deposit  # helps mypy
@@ -745,7 +742,6 @@ def render_public_account_details(
     return render_template(
         "accounts/get.html",
         search_form=search_form,
-        search_hidden_params=search_hidden_filters,
         search_dst=url_for(".list_public_accounts"),
         user=user,
         tunnel=tunnel,
@@ -2180,24 +2176,11 @@ def comment_public_account(user_id: int) -> response_utils.BackofficeResponse:
     return redirect(_get_public_account_link(user_id, active_tab="history"), code=303)
 
 
-def _get_advanced_search_hidden_filters() -> dict[str, list[str]]:
-    query_params = request_utils.get_query_params()
-    if account_forms.is_ignoring_advanced_search_filters(query_params):
-        return {}
-
-    return {
-        name: query_params.getlist(name)
-        for name in query_params
-        if advanced_search.is_query_param_an_advanced_search_filter(name)
-    }
-
-
 def _get_public_account_link(
     user_id: int, form: account_forms.GetAccountsListSearchForm | None = None, **kwargs: typing.Any
 ) -> str:
     if form and not form.is_empty():
         kwargs["q"] = form.q.data
-        kwargs.update(_get_advanced_search_hidden_filters())
 
     return url_for(".get_public_account", user_id=user_id, **kwargs)
 
