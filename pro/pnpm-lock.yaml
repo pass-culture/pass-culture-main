@@ -27,13 +27,13 @@ importers:
         version: 1.19.9(@algolia/client-search@5.56.0)(algoliasearch@5.56.0)
       '@firebase/analytics':
         specifier: 0.10.22
-        version: 0.10.22(@firebase/app@0.15.1)
+        version: 0.10.22(@firebase/app@0.16.0)
       '@firebase/app':
-        specifier: 0.15.1
-        version: 0.15.1
+        specifier: 0.16.0
+        version: 0.16.0
       '@firebase/remote-config':
         specifier: 0.9.0
-        version: 0.9.0(@firebase/app@0.15.1)
+        version: 0.9.0(@firebase/app@0.16.0)
       '@hookform/resolvers':
         specifier: 5.5.7
         version: 5.5.7(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.83.0(react@19.2.8))(yup@1.7.1)(zod@4.4.3)
@@ -780,12 +780,16 @@ packages:
     peerDependencies:
       '@firebase/app': 0.x
 
-  '@firebase/app@0.15.1':
-    resolution: {integrity: sha512-iD9+Z5HcPo0Uop5f72/VYMeXwKucBhW7iFrISkJFvQ+lSZikTNgTz0FgAtaaTkAG0pEZSnCymA2Fu49n0rcufQ==}
+  '@firebase/app@0.16.0':
+    resolution: {integrity: sha512-G+ZGEyVP8YTb3ay6A+XpcYgFH3sTESHcnHU/EyTktodqhz2BHkLq+QEP7IVwjiMX0cxYwpVKip0/wC0KZcn9vQ==}
     engines: {node: '>=20.0.0'}
 
   '@firebase/component@0.7.3':
     resolution: {integrity: sha512-wFofIaa2879ogD/WvkjYXJxRmfnL0scen6ORgaC3na1FNOR9ASIUANQdhqQcmWu/h77/pVHY7ch5flewa5Bcew==}
+    engines: {node: '>=20.0.0'}
+
+  '@firebase/component@0.7.4':
+    resolution: {integrity: sha512-tLpOaaCol9ugUIYp2R3CbWPPA8Ajg/papX/XHEy8U52b/QXH3BbX8tTJX9aShDCjp+9sMAxMLD94i7lresdugQ==}
     engines: {node: '>=20.0.0'}
 
   '@firebase/installations@0.6.22':
@@ -804,6 +808,10 @@ packages:
 
   '@firebase/util@1.15.1':
     resolution: {integrity: sha512-LUdM4Wg7YM9Pq/49nGYySJA0CSQEKnGffFzWV8+6gXN7mGxn+FL1IqvFbuZUtAQcfZgHYDwCE1wwlK7rB7gl2g==}
+    engines: {node: '>=20.0.0'}
+
+  '@firebase/util@1.15.2':
+    resolution: {integrity: sha512-974pWIZVLDMc5GW5YAsj8y0XxULxIy/sPUy7tsxmWbF93KRIyh9xpuHlh0zDL+shUcf5nHDjFOg9YLiQ763eiA==}
     engines: {node: '>=20.0.0'}
 
   '@floating-ui/core@1.8.0':
@@ -4840,20 +4848,20 @@ snapshots:
 
   '@exodus/bytes@1.15.1': {}
 
-  '@firebase/analytics@0.10.22(@firebase/app@0.15.1)':
+  '@firebase/analytics@0.10.22(@firebase/app@0.16.0)':
     dependencies:
-      '@firebase/app': 0.15.1
+      '@firebase/app': 0.16.0
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.15.1)
+      '@firebase/installations': 0.6.22(@firebase/app@0.16.0)
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/app@0.15.1':
+  '@firebase/app@0.16.0':
     dependencies:
-      '@firebase/component': 0.7.3
+      '@firebase/component': 0.7.4
       '@firebase/logger': 0.5.1
-      '@firebase/util': 1.15.1
+      '@firebase/util': 1.15.2
       idb: 7.1.1
       tslib: 2.8.1
 
@@ -4862,9 +4870,14 @@ snapshots:
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/installations@0.6.22(@firebase/app@0.15.1)':
+  '@firebase/component@0.7.4':
     dependencies:
-      '@firebase/app': 0.15.1
+      '@firebase/util': 1.15.2
+      tslib: 2.8.1
+
+  '@firebase/installations@0.6.22(@firebase/app@0.16.0)':
+    dependencies:
+      '@firebase/app': 0.16.0
       '@firebase/component': 0.7.3
       '@firebase/util': 1.15.1
       idb: 7.1.1
@@ -4874,16 +4887,20 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@firebase/remote-config@0.9.0(@firebase/app@0.15.1)':
+  '@firebase/remote-config@0.9.0(@firebase/app@0.16.0)':
     dependencies:
-      '@firebase/app': 0.15.1
+      '@firebase/app': 0.16.0
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.15.1)
+      '@firebase/installations': 0.6.22(@firebase/app@0.16.0)
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
   '@firebase/util@1.15.1':
+    dependencies:
+      tslib: 2.8.1
+
+  '@firebase/util@1.15.2':
     dependencies:
       tslib: 2.8.1
 
