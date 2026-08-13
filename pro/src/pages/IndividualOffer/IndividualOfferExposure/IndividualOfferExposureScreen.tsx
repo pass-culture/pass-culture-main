@@ -44,7 +44,9 @@ export const IndividualOfferExposureScreen = ({
     <SummaryLayout className={styles['individual-offer-exposure-screen']}>
       <SummaryContent>
         <OfferExposureCards offer={offer} />
-        <h2 className={styles['title']}>Actions de mise en avant</h2>
+        {(shouldDisplayRecommendationAction || shouldDisplayHeadlineAction) && (
+          <h2 className={styles['title']}>Actions de mise en avant</h2>
+        )}
         <div className={styles['cards-container']}>
           {shouldDisplayRecommendationAction && (
             <OfferRecommendationCard
