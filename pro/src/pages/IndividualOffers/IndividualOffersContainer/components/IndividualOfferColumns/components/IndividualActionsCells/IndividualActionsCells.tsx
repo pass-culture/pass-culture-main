@@ -336,12 +336,16 @@ export const IndividualActionsCells = ({
             />
           </>
         }
+        refToFocusOnClose={dropdownTriggerRef}
       />
       <SimpleModal
         iconPath={strokeStarIcon}
         title="Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre."
         isOpen={isConfirmDialogReplaceHeadlineOfferOpen}
         onClose={closeReplaceHeadlineOfferDialog}
+        refToFocusOnClose={
+          isNewProAdviceAccess ? headlineButtonTriggerRef : dropdownTriggerRef
+        }
         actionButtons={
           <>
             <Button
@@ -358,6 +362,9 @@ export const IndividualActionsCells = ({
         offerId={offer.id}
         isFirstDialogOpen={isDialogForHeadlineOfferWithoutImageOpen}
         setIsFirstDialogOpen={setIsDialogForHeadlineOfferWithoutImageOpen}
+        refToFocusOnClose={
+          isNewProAdviceAccess ? headlineButtonTriggerRef : dropdownTriggerRef
+        }
       />
     </>
   )

@@ -30,6 +30,7 @@ type HeadlineOfferImageDialogsProps = {
   offerId: number
   setIsFirstDialogOpen: (state: boolean) => void
   isInOfferJourney?: boolean
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const HeadlineOfferImageDialogs = ({
@@ -37,6 +38,7 @@ export const HeadlineOfferImageDialogs = ({
   setIsFirstDialogOpen,
   offerId,
   isInOfferJourney = false,
+  refToFocusOnClose,
 }: HeadlineOfferImageDialogsProps) => {
   const { mutate } = useSWRConfig()
 
@@ -115,6 +117,7 @@ export const HeadlineOfferImageDialogs = ({
         title="Ajoutez une image pour mettre votre offre à la une"
         isOpen={isFirstDialogOpen}
         onClose={() => setIsFirstDialogOpen(false)}
+        refToFocusOnClose={refToFocusOnClose}
         actionButtons={
           <>
             <Button

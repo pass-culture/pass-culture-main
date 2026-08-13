@@ -41,6 +41,12 @@ export interface SimpleModalProps {
    * Identifier of the description element for screen readers (aria-describedby).
    */
   ariaDescribedBy?: string
+  /**
+   * Element to focus after the dialog has closed.
+   * Native `<dialog>` already restores focus to the opener; use this to
+   * override that target (e.g. a dropdown trigger instead of a menu item).
+   */
+  refToFocusOnClose?: React.RefObject<HTMLElement | null>
 }
 
 export const SimpleModal = ({
@@ -52,6 +58,7 @@ export const SimpleModal = ({
   isOpen,
   actionButtons,
   ariaDescribedBy,
+  refToFocusOnClose,
 }: Readonly<SimpleModalProps>) => {
   const dialogTitleId = useId()
 
@@ -61,6 +68,7 @@ export const SimpleModal = ({
       onClose={onClose}
       ariaLabelledBy={dialogTitleId}
       ariaDescribedBy={ariaDescribedBy}
+      refToFocusOnClose={refToFocusOnClose}
     >
       <div className={styles['dialog-wrapper']}>
         <span className={styles['close-button']}>
