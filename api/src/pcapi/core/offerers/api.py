@@ -3611,13 +3611,13 @@ def deactivate_venue_offers(venue: models.Venue) -> None:
         logger.info(log_msg, extra=log_extra)
 
 
-def venue_has_ongoing_bookings(venue: models.Venue) -> bool:
+def venue_has_incoming_reimbursements(venue: models.Venue) -> bool:
     return db.session.query(
         db.session.query(bookings_models.Booking)
         .filter_by(venueId=venue.id)
         .filter(
-            bookings_models.Booking.status.not_in(
-                [bookings_models.BookingStatus.REIMBURSED, bookings_models.BookingStatus.CANCELLED]
+            bookings_models.Booking.status.in_(
+                [bookings_models.BookingStatus.PENDING_REIMBURSEMENT, bookings_models.BookingStatus.USED]
             )
         )
         .exists()

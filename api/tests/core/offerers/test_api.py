@@ -4376,10 +4376,10 @@ class NullifyVenueEmailsTest:
         assert not venue.action_history
 
 
-class VenueHasOngoingBookingsTest:
+class VenueHasIncomingReimbursementsTest:
     def test_venue_without_any_bookings_is_false(self):
         venue = offerers_factories.VenueFactory()
-        assert not offerers_api.venue_has_ongoing_bookings(venue)
+        assert not offerers_api.venue_has_incoming_reimbursements(venue)
 
     def test_venue_with_only_cancelled_and_reimbursed_bookings_is_false(self):
         venue = offerers_factories.VenueFactory()
@@ -4387,26 +4387,28 @@ class VenueHasOngoingBookingsTest:
         bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
         bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
 
-        assert not offerers_api.venue_has_ongoing_bookings(venue)
+        assert not offerers_api.venue_has_incoming_reimbursements(venue)
 
-    def test_venue_with_only_ongoing_bookings_is_true(self):
+    def test_venue_with_only_ongoing_reimbursements_is_true(self):
         venue = offerers_factories.VenueFactory()
 
         bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
         bookings_factories.PendingReimbursementBookingFactory(stock__offer__venue=venue)
 
-        assert offerers_api.venue_has_ongoing_bookings(venue)
+        assert offerers_api.venue_has_incoming_reimbursements(venue)
 
-    def test_venue_with_mixed_ongoing_and_not_bookings_is_true(self):
+    def test_venue_with_mixed_bookings_is_true(self):
         venue = offerers_factories.VenueFactory()
 
-        bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
-        bookings_factories.PendingReimbursementBookingFactory(stock__offer__venue=venue)
+        bookings_factories.BookingFactory(stock__offer__venue=venue)
 
         bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
         bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
 
-        assert offerers_api.venue_has_ongoing_bookings(venue)
+        bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        bookings_factories.PendingReimbursementBookingFactory(stock__offer__venue=venue)
+
+        assert offerers_api.venue_has_incoming_reimbursements(venue)
 
 
 class CancelIndividualBookingsOnVenueClosureTest:

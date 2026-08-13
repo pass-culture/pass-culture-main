@@ -3730,7 +3730,7 @@ def unlink_venue_bank_accounts(venue: offerers_models.Venue) -> None:
     if not venue.bankAccountLinks:
         return
 
-    if offerers_api.venue_has_ongoing_bookings(venue):
+    if offerers_api.venue_has_incoming_reimbursements(venue):
         raise CannotUnlinkBankAccount()
 
     bank_account_link = venue.current_bank_account_link
