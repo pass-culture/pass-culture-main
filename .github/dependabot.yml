@@ -15,6 +15,9 @@ updates:
       time: '10:00'
       timezone: "Europe/Paris"
     open-pull-requests-limit: 15
+    pull-request-branch-name:
+      max-length: 76
+      template: '{dependency}-{version}'
     cooldown:
       default-days: 7
       semver-major-days: 14
@@ -35,6 +38,9 @@ updates:
       time: '08:00'
       timezone: "Europe/Paris"
     open-pull-requests-limit: 10
+    pull-request-branch-name:
+      max-length: 76
+      template: '{dependency}-{version}'
     cooldown:
       default-days: 7
       semver-major-days: 14
@@ -49,6 +55,9 @@ updates:
       time: '07:00'
       timezone: "Europe/Paris"
     open-pull-requests-limit: 15
+    pull-request-branch-name:
+      max-length: 76
+      template: '{dependency}-{version}'
     cooldown:
       default-days: 7
       semver-major-days: 14
@@ -76,6 +85,9 @@ updates:
       # first day og the month
       interval: 'monthly'
     open-pull-requests-limit: 10
+    pull-request-branch-name:
+      max-length: 76
+      template: '{dependency}-{version}'
     cooldown:
       # The property 'semver-major-days' is not supported for the package ecosystem 'github-actions'.
       default-days: 14
