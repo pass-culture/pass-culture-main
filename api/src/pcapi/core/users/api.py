@@ -951,7 +951,7 @@ def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> tuple[sa_
     search_score_col = models.User.id.label("search_score")
 
     if not search_term:
-        return accounts, search_score_col
+        return accounts.order_by(search_score_col), search_score_col
 
     term_filters: list[sa.ColumnElement] = []
 
@@ -1043,6 +1043,7 @@ def search_public_account_in_history_email(search_query: str) -> tuple[sa_orm.Qu
                 }
             ),
         )
+        .distinct()
         .order_by(models.User.id)
     ), search_score_col
 

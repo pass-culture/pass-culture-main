@@ -198,10 +198,13 @@ ADVANCED_SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
             operator: _get_deposit_expiration_filter(operator) for operator in ("DATE_FROM", "DATE_TO", "DATE_EQUALS")
         },
     },
-    "EMAIL_DOMAIN": {"field": "string", "column": sa.func.email_domain(users_models.User.email)},
+    "EMAIL_DOMAIN": {
+        "field": "string",
+        "column": sa.func.email_domain(users_models.User.email),
+        "special": lambda value: value.strip().lower(),
+    },
     "IS_SUSPENDED": {
         "field": "boolean",
-        "column": users_models.User.is_active,
         "custom_filters": {"NULLABLE": lambda is_suspended: users_models.User.isActive.is_(not is_suspended)},
         "special": lambda x: x == "true",
     },
