@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 
 
 class MovieScreeningsRequest(HttpQueryParamsModel):
-    allocine_id: str | None = None
-    visa: str | None = None
+    allocine_id: str | None = pydantic_v2.Field(default=None, pattern=r"^\d+$")
+    visa: str | None = pydantic_v2.Field(default=None, pattern=r"^[a-zA-Z0-9]+$")
     latitude: float
     longitude: float
     around_radius: int = 50_000  # meters
@@ -41,6 +41,13 @@ class MovieScreeningsRequest(HttpQueryParamsModel):
             raise ValueError("Only one of allocine_id and visa must be provided")
 
         return self
+
+    @pydantic_v2.field_validator("allocine_id", mode="before")
+    @classmethod
+    def remove_leading_zeros(cls, value: str | None) -> str | None:
+        if isinstance(value, str) and value.isdigit():
+            return value.lstrip("0") or "0"
+        return value
 
 
 class VenueMovieScreeningsRequest(HttpBodyModel):
