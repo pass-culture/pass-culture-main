@@ -26,7 +26,6 @@
     "scripts/customRequest.ts",
     "scripts/format_generated_index_exports.js",
     "scripts/sanitize_enum_keys.js",
-    "src/design-system/Dropdown/Dropdown.tsx",
     "src/design-system/DetailedModal/DetailedModal.tsx"
   ],
   "ignoreDependencies": ["openapi-typescript-codegen"],

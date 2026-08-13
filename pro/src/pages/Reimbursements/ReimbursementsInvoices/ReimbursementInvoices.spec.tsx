@@ -288,16 +288,12 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
+    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
     await userEvent.click(
-      screen.getByRole('button', { name: 'Téléchargement des justificatifs' })
-    )
-    await userEvent.click(
-      screen.getByText('Télécharger le justificatif comptable (.pdf)')
+      screen.getByText('Télécharger le justificatif (.pdf)')
     )
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Téléchargement des justificatifs' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
     await userEvent.click(
       screen.getByText('Télécharger le détail des réservations (.csv)')
     )

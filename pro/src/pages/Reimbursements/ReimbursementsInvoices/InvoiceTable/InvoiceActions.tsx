@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { api } from '@/apiClient/api'
 import type { InvoiceResponseV2Model } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -10,19 +12,22 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
+  IconPositionEnum,
 } from '@/design-system/Button/types'
 import { Dropdown } from '@/design-system/Dropdown/Dropdown'
+import fullDownIcon from '@/icons/full-down.svg'
 import fullDownloadIcon from '@/icons/full-download.svg'
+import fullUpIcon from '@/icons/full-up.svg'
 
 type InvoiceActionsProps = {
   invoice: InvoiceResponseV2Model
 }
 
-import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
-
-export function InvoiceActions({ invoice }: InvoiceActionsProps) {
+export function InvoiceActions({ invoice }: Readonly<InvoiceActionsProps>) {
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
+
+  const [isOpen, setIsOpen] = useState<boolean>(false)
 
   async function downloadPDFFile(url: string) {
     try {
@@ -63,31 +68,36 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
 
   return (
     <Dropdown
-      label="Téléchargement des justificatifs"
-      trigger={
-        <Button
-          variant={ButtonVariant.SECONDARY}
-          icon={fullThreeDotsIcon}
-          size={ButtonSize.SMALL}
-          color={ButtonColor.NEUTRAL}
-          tooltip="Téléchargement des justificatifs"
-        />
-      }
-      width={370}
+      label="Télécharger"
       items={[
         [
           {
-            text: 'Télécharger le justificatif comptable (.pdf)',
+            text: 'Télécharger le justificatif (.pdf)',
             icon: fullDownloadIcon,
-            onClick: () => downloadPDFFile(invoice.url),
+            onSelect: () => downloadPDFFile(invoice.url),
           },
           {
             text: 'Télécharger le détail des réservations (.csv)',
             icon: fullDownloadIcon,
-            onClick: () => downloadCSVFile(invoice.reference),
+            onSelect: () => downloadCSVFile(invoice.reference),
           },
         ],
       ]}
+      width={383}
+      trigger={
+        <Button
+          label="Télécharger"
+          variant={ButtonVariant.SECONDARY}
+          size={ButtonSize.SMALL}
+          color={ButtonColor.NEUTRAL}
+          icon={isOpen ? fullUpIcon : fullDownIcon}
+          iconPosition={IconPositionEnum.RIGHT}
+        />
+      }
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      side="right"
+      align="start"
     />
   )
 }
