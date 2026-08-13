@@ -27,6 +27,7 @@ from pcapi.core.finance import utils
 from pcapi.core.history import models as history_models
 from pcapi.core.object_storage.testing import recursive_listdir
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -5651,7 +5652,7 @@ class UnlinkVenueBankAccountsTest:
 
         bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
 
-        with pytest.raises(api.CannotUnlinkBankAccount):
+        with pytest.raises(offerers_exceptions.VenueHasIncomingReimbursements):
             api.unlink_venue_bank_accounts(venue)
 
         db.session.refresh(venue)

@@ -4161,6 +4161,23 @@ class CloseVenueTest:
         assert not venue.contact
         assert venue.state == offerers_models.VenueState.CLOSED
 
+    @pytest.mark.parametrize(
+        "booking_factory",
+        [bookings_factories.UsedBookingFactory, bookings_factories.PendingReimbursementBookingFactory],
+    )
+    def test_cannot_close_venue_with_incoming_reimbursements(self, booking_factory):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.BaseUserFactory()
+
+        booking_factory(stock__offer__venue=venue)
+
+        with pytest.raises(offerers_exceptions.VenueHasIncomingReimbursements):
+            with atomic():
+                offerers_api.close_venue(venue, author)
+
+        db.session.refresh(venue)
+        assert not venue.is_closed
+
     def test_close_venue_with_external_ticket(self, requests_mock):
         venue = offerers_factories.VenueFactory()
 

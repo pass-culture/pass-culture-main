@@ -48,6 +48,8 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.offerers.api as offerers_api
+import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.reference.models as reference_models
@@ -67,7 +69,6 @@ from pcapi.core.mails.transactional.finance_incidents.finance_incident_notificat
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
 from pcapi.core.mails.transactional.pro.provider_reimbursement_csv import send_provider_reimbursement_email
 from pcapi.core.object_storage import store_public_object
-from pcapi.core.offerers import api as offerers_api
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
@@ -3722,16 +3723,13 @@ def clean_duplicate_bank_accounts() -> None:
         db.session.delete(bank_account)
 
 
-class CannotUnlinkBankAccount(Exception):
-    pass
-
-
 def unlink_venue_bank_accounts(venue: offerers_models.Venue) -> None:
+    """Deactivate current venue bank account link"""
     if not venue.bankAccountLinks:
         return
 
     if offerers_api.venue_has_incoming_reimbursements(venue):
-        raise CannotUnlinkBankAccount()
+        raise offerers_exceptions.VenueHasIncomingReimbursements()
 
     bank_account_link = venue.current_bank_account_link
     if bank_account_link:
