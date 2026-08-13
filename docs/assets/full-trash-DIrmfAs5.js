@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";var t,n=e((()=>{t=``+new URL(`full-trash-CiD7meqh.svg`,import.meta.url).href}));export{n,t};
