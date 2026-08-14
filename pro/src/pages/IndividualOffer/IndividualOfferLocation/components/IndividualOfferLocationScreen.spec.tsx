@@ -191,18 +191,7 @@ describe('<IndividualOfferLocationScreen />', () => {
         expect(api.patchOffer).toHaveBeenCalledWith({
           path: { offer_id: 3 },
           body: expect.objectContaining({
-            location: expect.objectContaining({
-              city: 'Paris',
-              isManualEdition: false,
-              isVenueLocation: true,
-              label: 'MINISTERE DE LA CULTURE',
-              latitude: '48.87171',
-              longitude: '2.30829',
-              postalCode: '75001',
-              street: '3 Rue de Valois',
-              banId: '75101_9575_00003',
-              inseeCode: '75056',
-            }),
+            location: { isVenueLocation: true },
             shouldSendMail: false,
           }),
         })
