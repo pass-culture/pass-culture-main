@@ -109,7 +109,7 @@ def get_import_deposit_data(path: str) -> dict[str, Decimal]:
         csv_rows = csv.DictReader(csv_file, delimiter=";")
         headers = csv_rows.fieldnames
         if not headers or ("UAICode" not in headers and "UAI" not in headers):
-            raise ValueError("UAICode or depositAmount missing in CSV headers")
+            raise ValueError("UAICode or UAI missing in CSV headers")
 
         data: dict[str, Decimal] = {}
         # sometimes we get 1 row per institution and sometimes 1 row per class.
@@ -124,7 +124,7 @@ def get_import_deposit_data(path: str) -> dict[str, Decimal]:
             elif "montant par élève" in headers and "Effectif" in headers:
                 amount = Decimal(row["Effectif"]) * Decimal(row["montant par élève"])
             else:
-                raise ValueError("Now way to get the amount found")
+                raise ValueError("No way to get the amount found")
 
             if uai in data:
                 data[uai] += amount
