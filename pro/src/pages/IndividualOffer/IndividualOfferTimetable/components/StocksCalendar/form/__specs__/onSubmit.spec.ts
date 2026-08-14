@@ -458,7 +458,7 @@ describe('onSubmit', () => {
     })
   })
 
-  it(`should create nothing when creation limit is reach`, async () => {
+  it(`should create nothing when a creation error occurs`, async () => {
     const formValues = {
       recurrenceType: RecurrenceType.MONTHLY,
       days: [],
@@ -486,5 +486,42 @@ describe('onSubmit', () => {
       `Une erreur est survenue lors de l’enregistrement de vos stocks.`
     )
     expect(result).toEqual(undefined)
+  })
+  it(`should show error when exceeding max stocks limit of 2500`, async () => {
+    const formValues = {
+      recurrenceType: RecurrenceType.DAILY,
+      days: [],
+      startingDate: '2020-01-01',
+      endingDate: '2027-09-11',
+      beginningTimes: [
+        { beginningTime: '10:00' },
+        { beginningTime: '11:00' },
+        { beginningTime: '12:00' },
+      ],
+      quantityPerPriceCategories: [
+        { quantity: 5, priceCategory: '1' },
+        { quantity: 5, priceCategory: '2' },
+        { quantity: 5, priceCategory: '3' },
+        { quantity: 5, priceCategory: '4' },
+      ],
+      bookingLimitDateInterval: 2,
+      monthlyOption: null,
+    }
+
+    const bulkCreateSpy = vi
+      .spyOn(api, 'bulkCreateEventStocks')
+      .mockResolvedValueOnce(
+        getStocksResponseFactory({
+          totalStockCount: 0,
+          editedStockCount: 0,
+        })
+      )
+
+    await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])
+
+    expect(bulkCreateSpy).not.toHaveBeenCalled()
+    expect(snackBarError).toHaveBeenCalledWith(
+      `Impossible d'ajouter plus de 2500 lignes de dates à un évènement.`
+    )
   })
 })
