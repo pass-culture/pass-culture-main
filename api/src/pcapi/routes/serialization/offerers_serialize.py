@@ -73,7 +73,6 @@ class GetOffererVenueResponseModel(HttpBodyModel):
 # GetOffererResponseModel includes sensitive information and can be returned only if authenticated user has a validated
 # access to the offerer. During subscription process, use PostOffererResponseModel
 class GetOffererResponseModel(HttpBodyModel):
-    has_available_pricing_points: bool
     is_validated: bool
     is_active: bool
     managed_venues: list[GetOffererVenueResponseModel]
@@ -84,7 +83,6 @@ class GetOffererResponseModel(HttpBodyModel):
     has_pending_bank_account: bool
     has_non_free_offer: bool
     venues_with_non_free_offers_without_bank_accounts: list[int]
-    has_active_offer: bool
     allowed_on_adage: bool
     has_bank_account_with_pending_corrections: bool
     is_onboarded: bool
@@ -104,8 +102,6 @@ class GetOffererResponseModel(HttpBodyModel):
         return cls(
             allowed_on_adage=offerer.allowedOnAdage,
             can_display_highlights=row.canDisplayHighlights,
-            has_active_offer=row.hasActiveOffer,
-            has_available_pricing_points=any(venue.siret for venue in offerer.managedVenues),
             has_bank_account_with_pending_corrections=row.hasBankAccountWithPendingCorrections,
             has_non_free_offer=row.hasNonFreeOffer,
             has_partner_page=row.hasPartnerPage,
