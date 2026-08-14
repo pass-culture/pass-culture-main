@@ -26,8 +26,6 @@ export const saveEventOfferPriceTable = async (
       [GET_OFFER_QUERY_KEY, offer.id],
       api.patchOffer({
         path: { offer_id: offer.id },
-        // TODO (rchaffal) to remove once PatchOfferBodyModel is migrated to Pydantic V2
-        // @ts-expect-error
         body: { isDuo: formValues.isDuo },
       }),
       { revalidate: false }
