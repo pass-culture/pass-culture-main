@@ -5,9 +5,6 @@ import {
   LAPTOP_MEDIA_QUERY,
   useMediaQuery,
 } from '@/commons/hooks/useMediaQuery'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import fullSmsIcon from '@/icons/full-sms.svg'
 
 import { HelpDropdownNavItem } from './components/HelpDropdownNavItem'
 import { RenderNavItem } from './components/SideNavLink'
@@ -100,17 +97,7 @@ export const SideNavLinks = ({
             </div>
             <ul>
               <li className={styles['review']}>
-                <UserReviewDialog
-                  dialogTrigger={
-                    <Button
-                      icon={fullSmsIcon}
-                      label="Donner mon avis"
-                      variant={ButtonVariant.TERTIARY}
-                      color={ButtonColor.NEUTRAL}
-                    />
-                  }
-                  isAdminSpace={isAdminSpace}
-                />
+                <UserReviewDialog isAdminSpace={isAdminSpace} />
               </li>
               <li>
                 <HelpDropdownNavItem isMobileScreen={isMobileScreen ?? false} />

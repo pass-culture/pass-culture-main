@@ -150,7 +150,9 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         textAreaRef.current.style.height = 'unset'
 
         const scrollHeight = textAreaRef.current.scrollHeight
-        textAreaRef.current.style.height = `${hasTemplateButton ? scrollHeight + 92 : scrollHeight}px`
+        if (scrollHeight > 0) {
+          textAreaRef.current.style.height = `${hasTemplateButton ? scrollHeight + 92 : scrollHeight}px`
+        }
       }
     }, [hasTemplateButton])
 

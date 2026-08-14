@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
@@ -8,7 +7,6 @@ import { defaultGetOffererResponseModel } from '@/commons/utils/factories/indivi
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Button } from '@/design-system/Button/Button'
 
 import { UserReviewDialog } from './UserReviewDialog'
 
@@ -30,25 +28,18 @@ const renderUserReviewDialog = ({
       ...storeUserOverrides,
     },
   }
-  return renderWithProviders(
-    <Dialog.Root defaultOpen>
-      <Dialog.Content aria-describedby={undefined}>
-        <Dialog.Title>Title</Dialog.Title>
-        <UserReviewDialog
-          dialogTrigger={<Button label="Trigger"></Button>}
-          isAdminSpace={isAdminSpace}
-        />
-      </Dialog.Content>
-    </Dialog.Root>,
-    { storeOverrides }
-  )
+  return renderWithProviders(<UserReviewDialog isAdminSpace={isAdminSpace} />, {
+    storeOverrides,
+  })
 }
 
 describe('UserReviewDialog', () => {
   it('should close dialog on cancel button click', async () => {
     renderUserReviewDialog()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Donner mon avis' })
+    )
 
     const cancelButton = screen.getByRole('button', { name: 'Annuler' })
     await userEvent.click(cancelButton)
@@ -62,7 +53,9 @@ describe('UserReviewDialog', () => {
     vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Donner mon avis' })
+    )
 
     await userEvent.type(screen.getByRole('textbox'), 'Commentaire utilisateur')
 
@@ -86,7 +79,9 @@ describe('UserReviewDialog', () => {
     vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Donner mon avis' })
+    )
 
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
     await userEvent.type(screen.getByRole('textbox'), 'description')
@@ -103,7 +98,9 @@ describe('UserReviewDialog', () => {
     vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Donner mon avis' })
+    )
 
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
     await userEvent.type(screen.getByRole('textbox'), 'description')
@@ -126,7 +123,9 @@ describe('UserReviewDialog', () => {
       },
     })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Donner mon avis' })
+    )
 
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
     await userEvent.type(screen.getByRole('textbox'), 'description')
@@ -151,7 +150,9 @@ describe('UserReviewDialog', () => {
       },
     })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Donner mon avis' })
+    )
 
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
     await userEvent.type(screen.getByRole('textbox'), 'description')
@@ -179,7 +180,9 @@ describe('UserReviewDialog', () => {
 
     renderUserReviewDialog()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Donner mon avis' })
+    )
 
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
     await userEvent.type(screen.getByRole('textbox'), 'description')
