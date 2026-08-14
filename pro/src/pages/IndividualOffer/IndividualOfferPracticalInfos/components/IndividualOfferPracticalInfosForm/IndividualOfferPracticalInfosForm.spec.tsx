@@ -136,7 +136,7 @@ describe('IndividualOfferPracticalInfosForm', () => {
       )
     ).toBeInTheDocument()
   })
-  it('should allow the user to edit the external url and the complementary info even if the offer is synchronized', () => {
+  it('should allow the user to edit the external url even if the offer is synchronized', () => {
     renderIndividualOfferPracticalInfosForm({
       offer: getIndividualOfferFactory({
         subcategoryId: SubcategoryIdEnum.LIVRE_PAPIER,
@@ -148,7 +148,6 @@ describe('IndividualOfferPracticalInfosForm', () => {
       }),
     })
 
-    expect(screen.getByLabelText(/Informations complémentaires/)).toBeEnabled()
     expect(
       screen.getByLabelText(/URL de votre site ou billetterie/)
     ).toBeEnabled()
@@ -164,5 +163,35 @@ describe('IndividualOfferPracticalInfosForm', () => {
     expect(
       screen.getByLabelText(/URL de votre site ou billetterie/)
     ).toBeDisabled()
+  })
+
+  it('should not allow the user to edit the complementary infos if the venue is synchronized but not with allocine', () => {
+    renderIndividualOfferPracticalInfosForm({
+      offer: getIndividualOfferFactory({
+        subcategoryId: SubcategoryIdEnum.LIVRE_PAPIER,
+        isEvent: false,
+        lastProvider: { name: 'provider' },
+      }),
+      subCategory: subcategoryFactory({
+        id: SubcategoryIdEnum.LIVRE_PAPIER,
+      }),
+    })
+
+    expect(screen.getByLabelText(/Informations complémentaires/)).toBeDisabled()
+  })
+
+  it('should allow the user to edit the complementary infos if the venue is synchronized with allocine', () => {
+    renderIndividualOfferPracticalInfosForm({
+      offer: getIndividualOfferFactory({
+        subcategoryId: SubcategoryIdEnum.LIVRE_PAPIER,
+        isEvent: false,
+        lastProvider: { name: 'allociné' },
+      }),
+      subCategory: subcategoryFactory({
+        id: SubcategoryIdEnum.LIVRE_PAPIER,
+      }),
+    })
+
+    expect(screen.getByLabelText(/Informations complémentaires/)).toBeEnabled()
   })
 })

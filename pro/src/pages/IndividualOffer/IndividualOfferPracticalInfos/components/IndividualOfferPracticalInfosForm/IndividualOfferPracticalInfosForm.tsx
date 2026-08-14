@@ -9,7 +9,10 @@ import {
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
-import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
+import {
+  isOfferAllocineSynchronized,
+  isOfferSynchronized,
+} from '@/commons/core/Offers/utils/typology'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
   ensureCurrentUser,
@@ -93,7 +96,10 @@ export function IndividualOfferPracticalInfosForm({
               {...form.register('withdrawalDetails')}
               label="Informations complémentaires"
               maxLength={500}
-              disabled={isOfferDisabled(offer) || isVenueClosed}
+              disabled={
+                isOfferDisabledOrSynchronized &&
+                !isOfferAllocineSynchronized(offer)
+              }
               description="Ces informations seront communiquées aux jeunes après leur réservation."
             />
           </FormLayout.Row>
