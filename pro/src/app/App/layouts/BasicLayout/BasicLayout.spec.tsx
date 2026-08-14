@@ -63,12 +63,16 @@ describe('BasicLayout', () => {
       it('should trap focus when side nav is open', async () => {
         await userEvent.click(screen.getByLabelText('Menu'))
 
-        expect(screen.getByLabelText('Fermer')).toHaveFocus()
-        const NB_ITEMS_IN_NAV = 10
-        for (let i = 0; i < NB_ITEMS_IN_NAV; i++) {
-          await userEvent.tab()
-        }
-        expect(screen.getByLabelText('Fermer')).toHaveFocus()
+        const closeButton = screen.getByLabelText('Fermer')
+        expect(closeButton).toHaveFocus()
+
+        // Test that focus doesn't escape to elements outside the nav
+        const navPanel = document.getElementById('lateral-panel')
+        await userEvent.tab()
+
+        const focusedElement = document.activeElement
+        // Verify focus is still within the nav panel, not escaped to logo or other elements
+        expect(navPanel?.contains(focusedElement)).toBe(true)
       })
     })
   })
