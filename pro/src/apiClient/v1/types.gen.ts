@@ -3226,28 +3226,6 @@ export type GetOffererResponseModel = {
 };
 
 /**
- * GetOffererV2StatsResponseModel
- */
-export type GetOffererV2StatsResponseModel = {
-    /**
-     * Pendingeducationaloffers
-     */
-    pendingEducationalOffers: number;
-    /**
-     * Pendingpublicoffers
-     */
-    pendingPublicOffers: number;
-    /**
-     * Publishededucationaloffers
-     */
-    publishedEducationalOffers: number;
-    /**
-     * Publishedpublicoffers
-     */
-    publishedPublicOffers: number;
-};
-
-/**
  * GetOffererVenueResponseModel
  */
 export type GetOffererVenueResponseModel = {
@@ -3312,28 +3290,6 @@ export type GetOfferersNamesResponseModel = {
      * Offerersnames
      */
     offerersNames: Array<GetOffererNameResponseModel>;
-};
-
-/**
- * GetOffersStatsResponseModel
- */
-export type GetOffersStatsResponseModel = {
-    /**
-     * Pendingeducationaloffers
-     */
-    pendingEducationalOffers: number;
-    /**
-     * Pendingpublicoffers
-     */
-    pendingPublicOffers: number;
-    /**
-     * Publishededucationaloffers
-     */
-    publishedEducationalOffers: number;
-    /**
-     * Publishedpublicoffers
-     */
-    publishedPublicOffers: number;
 };
 
 /**
@@ -9284,37 +9240,6 @@ export type postOfferersByOffererIdSynchronizeOnboardingResponses = {
 
 export type postOfferersByOffererIdSynchronizeOnboardingResponse = postOfferersByOffererIdSynchronizeOnboardingResponses[keyof postOfferersByOffererIdSynchronizeOnboardingResponses];
 
-export type getOfferersByOffererIdV2StatsData = {
-    body?: never;
-    path: {
-        offerer_id: number;
-    };
-    query?: never;
-    url: '/offerers/{offerer_id}/v2/stats';
-};
-
-export type getOfferersByOffererIdV2StatsErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getOfferersByOffererIdV2StatsError = getOfferersByOffererIdV2StatsErrors[keyof getOfferersByOffererIdV2StatsErrors];
-
-export type getOfferersByOffererIdV2StatsResponses = {
-    /**
-     * OK
-     */
-    200: GetOffererV2StatsResponseModel;
-};
-
-export type getOfferersByOffererIdV2StatsResponse = getOfferersByOffererIdV2StatsResponses[keyof getOfferersByOffererIdV2StatsResponses];
-
 export type getOffersData = {
     body?: never;
     path?: never;
@@ -11213,37 +11138,6 @@ export type putVenueProvidersByVenueProviderIdResponses = {
 };
 
 export type putVenueProvidersByVenueProviderIdResponse = putVenueProvidersByVenueProviderIdResponses[keyof putVenueProvidersByVenueProviderIdResponses];
-
-export type getVenueByVenueIdOffersStatisticsData = {
-    body?: never;
-    path: {
-        venue_id: number;
-    };
-    query?: never;
-    url: '/venue/{venue_id}/offers-statistics';
-};
-
-export type getVenueByVenueIdOffersStatisticsErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getVenueByVenueIdOffersStatisticsError = getVenueByVenueIdOffersStatisticsErrors[keyof getVenueByVenueIdOffersStatisticsErrors];
-
-export type getVenueByVenueIdOffersStatisticsResponses = {
-    /**
-     * OK
-     */
-    200: GetOffersStatsResponseModel;
-};
-
-export type getVenueByVenueIdOffersStatisticsResponse = getVenueByVenueIdOffersStatisticsResponses[keyof getVenueByVenueIdOffersStatisticsResponses];
 
 export type getVenuesEducationalStatusesData = {
     body?: never;
