@@ -8,6 +8,7 @@ from flask_login import login_required
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
+import pcapi.utils.rest as rest_utils
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import repository as offers_repository
 from pcapi.models import api_errors
@@ -18,7 +19,6 @@ from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.repository import transaction
-from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
@@ -111,7 +111,8 @@ def bulk_create_event_stocks(
         db.session.query(offers_models.Offer).options(sa_orm.joinedload(offers_models.Offer.priceCategories)),
         body.offer_id,
     )
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_venue_is_opened(offer.venue)
 
     # Step 1 : Filter out existing stocks
     stocks_to_create = _filter_out_stock_duplicates(body.stocks, offer.id)
@@ -162,7 +163,8 @@ def bulk_update_event_stocks(
         db.session.query(offers_models.Offer).options(sa_orm.joinedload(offers_models.Offer.priceCategories)),
         body.offer_id,
     )
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_venue_is_opened(offer.venue)
 
     # Step 1 : Filter out duplicated stocks
     stocks_to_edit = _filter_out_stock_duplicates(body.stocks, offer.id)

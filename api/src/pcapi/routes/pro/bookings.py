@@ -9,6 +9,7 @@ from flask_login import login_required
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
+import pcapi.utils.rest as rest_utils
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import constants as bookings_constants
 from pcapi.core.bookings import exceptions as bookings_exceptions
@@ -336,6 +337,7 @@ def get_booking_by_token(token: str) -> serialization_bookings.GetBookingRespons
 def patch_booking_use_by_token(token: str) -> None:
     booking = _get_booking_by_token_or_404(token)
     check_user_can_validate_bookings_v2(current_user, booking.offererId)
+    rest_utils.check_venue_is_opened(booking.venue)
     bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.OFFERER)
 
 
@@ -361,6 +363,7 @@ def patch_booking_use_by_token(token: str) -> None:
 def patch_booking_keep_by_token(token: str) -> None:
     booking = _get_booking_by_token_or_404(token)
     check_user_can_validate_bookings_v2(current_user, booking.offererId)
+    rest_utils.check_venue_is_opened(booking.venue)
     try:
         bookings_api.mark_as_unused(booking)
     except bookings_exceptions.BookingIsAlreadyCancelled:
