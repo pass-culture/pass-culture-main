@@ -1,6 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
-import { type ReactNode, useState } from 'react'
+import { useId, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
@@ -13,8 +12,9 @@ import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
+import fullSmsIcon from '@/icons/full-sms.svg'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import {
   IconRadioGroup,
   type IconRadioGroupValues,
@@ -31,12 +31,10 @@ export interface UserReviewDialogFormValues {
 }
 
 interface UserReviewDialogProps {
-  dialogTrigger: ReactNode
   isAdminSpace?: boolean
 }
 
 export const UserReviewDialog = ({
-  dialogTrigger,
   isAdminSpace = false,
 }: Readonly<UserReviewDialogProps>) => {
   const location = useLocation()
@@ -47,7 +45,9 @@ export const UserReviewDialog = ({
       : state.user.selectedPartnerVenue?.managingOfferer?.id
   )
 
+  const [isOpen, setIsOpen] = useState<boolean>(false)
   const [displayConfirmation, setDisplayConfirmation] = useState<boolean>(false)
+  const formId = useId()
 
   const initialValues: UserReviewDialogFormValues = {
     userSatisfaction: 'Correcte',
@@ -57,6 +57,12 @@ export const UserReviewDialog = ({
     defaultValues: initialValues,
     resolver: yupResolver(validationSchema),
   })
+
+  const handleClose = () => {
+    setIsOpen(false)
+    setDisplayConfirmation(false)
+    form.reset()
+  }
 
   const onSubmitReview = async (formValues: UserReviewDialogFormValues) => {
     try {
@@ -115,89 +121,100 @@ export const UserReviewDialog = ({
   const textareaError = form.formState.errors.userComment?.message
 
   return (
-    <DialogBuilder
-      onOpenChange={(open) => {
-        if (!open) {
-          setDisplayConfirmation(false)
-          form.reset()
+    <>
+      <Button
+        icon={fullSmsIcon}
+        label="Donner mon avis"
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
+        onClick={() => setIsOpen(true)}
+      />
+      <DetailedModal
+        isOpen={isOpen}
+        onClose={handleClose}
+        title={displayConfirmation ? 'Merci !' : 'Votre avis compte !'}
+        primaryAction={
+          displayConfirmation ? (
+            <Button label="Fermer" onClick={handleClose} />
+          ) : (
+            <Button type="submit" form={formId} label="Envoyer" />
+          )
         }
-      }}
-      title={displayConfirmation ? undefined : 'Votre avis compte !'}
-      trigger={dialogTrigger}
-      variant={displayConfirmation ? 'default' : 'drawer'}
-    >
-      <div className={styles.dialog}>
-        {!displayConfirmation && (
-          <FormProvider {...form}>
-            <form
-              className={styles['dialog-form']}
-              onSubmit={form.handleSubmit((values) => onSubmitReview(values))}
-            >
-              <div>
-                <ScrollToFirstHookFormErrorAfterSubmit />
-                <IconRadioGroup
-                  name="userSatisfaction"
-                  error={iconGroupError}
-                  legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
-                  group={group}
-                  required
-                  requiredIndicator="explicit"
-                  value={form.watch('userSatisfaction')}
-                  onChange={(e) => form.setValue('userSatisfaction', e)}
+        secondaryAction={
+          !displayConfirmation ? (
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              onClick={handleClose}
+              label="Annuler"
+            />
+          ) : undefined
+        }
+        isFooterFixed
+      >
+        {isOpen && (
+          <div className={styles.dialog}>
+            {!displayConfirmation && (
+              <FormProvider {...form}>
+                <form
+                  id={formId}
+                  className={styles['dialog-form']}
+                  onSubmit={form.handleSubmit((values) =>
+                    onSubmitReview(values)
+                  )}
+                >
+                  <div>
+                    <ScrollToFirstHookFormErrorAfterSubmit />
+                    <IconRadioGroup
+                      name="userSatisfaction"
+                      error={iconGroupError}
+                      legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
+                      group={group}
+                      required
+                      requiredIndicator="explicit"
+                      value={form.watch('userSatisfaction')}
+                      onChange={(e) => form.setValue('userSatisfaction', e)}
+                    />
+                    <div className={styles['text-area-container']}>
+                      <TextArea
+                        name="userComment"
+                        value={form.watch('userComment')}
+                        onChange={(e) =>
+                          form.setValue('userComment', e.target.value)
+                        }
+                        label={
+                          <p>
+                            Pourriez-vous préciser ? Nous lisons tous les
+                            commentaires. <span aria-hidden="true">🙂</span>
+                          </p>
+                        }
+                        maxLength={500}
+                        initialRows={7}
+                        requiredIndicator="explicit"
+                        required
+                        error={textareaError}
+                      />
+                    </div>
+                  </div>
+                </form>
+              </FormProvider>
+            )}
+
+            {displayConfirmation && (
+              <div className={styles['confirmation-dialog']}>
+                <SvgIcon
+                  src={strokeValidIcon}
+                  alt=""
+                  className={styles['confirmation-dialog-icon']}
                 />
-                <div className={styles['text-area-container']}>
-                  <TextArea
-                    name="userComment"
-                    value={form.watch('userComment')}
-                    onChange={(e) =>
-                      form.setValue('userComment', e.target.value)
-                    }
-                    label={
-                      <>
-                        Pourriez-vous préciser ? Nous lisons tous les
-                        commentaires. <span aria-hidden="true">🙂</span>
-                      </>
-                    }
-                    maxLength={500}
-                    requiredIndicator="explicit"
-                    required
-                    error={textareaError}
-                  />
+                <div className={styles['confirmation-dialog-title']}>
+                  Merci beaucoup de votre participation !
                 </div>
               </div>
-
-              <DialogBuilder.Footer>
-                <div className={styles['dialog-buttons']}>
-                  <Dialog.Close asChild>
-                    <Button
-                      variant={ButtonVariant.SECONDARY}
-                      color={ButtonColor.NEUTRAL}
-                      label="Annuler"
-                    />
-                  </Dialog.Close>
-                  <Button type="submit" label="Envoyer" />
-                </div>
-              </DialogBuilder.Footer>
-            </form>
-          </FormProvider>
-        )}
-
-        {displayConfirmation && (
-          <div className={styles['confirmation-dialog']}>
-            <SvgIcon
-              src={strokeValidIcon}
-              alt=""
-              className={styles['confirmation-dialog-icon']}
-            />
-            <div className={styles['confirmation-dialog-title']}>
-              Merci beaucoup de votre participation !
-            </div>
-            <Dialog.Close asChild>
-              <Button label="Fermer" />
-            </Dialog.Close>
+            )}
           </div>
         )}
-      </div>
-    </DialogBuilder>
+      </DetailedModal>
+    </>
   )
 }
