@@ -68,8 +68,6 @@ class GetOffererTest:
         expected_serialized_offerer = {
             "allowedOnAdage": offerer.allowedOnAdage,
             "canDisplayHighlights": False,
-            "hasActiveOffer": False,
-            "hasAvailablePricingPoints": True,
             "hasBankAccountWithPendingCorrections": False,
             "hasNonFreeOffer": False,
             "hasPartnerPage": False,

@@ -3160,14 +3160,6 @@ export type GetOffererResponseModel = {
      */
     canDisplayHighlights: boolean;
     /**
-     * Hasactiveoffer
-     */
-    hasActiveOffer: boolean;
-    /**
-     * Hasavailablepricingpoints
-     */
-    hasAvailablePricingPoints: boolean;
-    /**
      * Hasbankaccountwithpendingcorrections
      */
     hasBankAccountWithPendingCorrections: boolean;

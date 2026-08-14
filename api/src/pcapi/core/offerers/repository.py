@@ -624,23 +624,6 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
         .exists()
     )
 
-    has_active_offers_subquery = (
-        sa.select(1)
-        .select_from(offers_models.Stock)
-        .join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
-        .join(
-            offers_models.Offer,
-            sa.and_(
-                offers_models.Stock.offerId == offers_models.Offer.id,
-                offers_models.Stock.isSoftDeleted.is_(False),
-                offers_models.Offer.isActive,
-                offers_models.Offer.venueId == models.Venue.id,
-            ),
-        )
-        .correlate(models.Offerer)
-        .exists()
-    )
-
     has_pending_bank_account_subquery = (
         sa.select(1)
         .select_from(finance_models.BankAccount)
@@ -709,7 +692,6 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
             sa.or_(has_non_free_offers_subquery, has_non_free_collective_offers_subquery).label("hasNonFreeOffer"),
             has_valid_bank_account_subquery.label("hasValidBankAccount"),
             has_pending_bank_account_subquery.label("hasPendingBankAccount"),
-            has_active_offers_subquery.label("hasActiveOffer"),
             has_bank_account_with_pending_corrections_subquery.label("hasBankAccountWithPendingCorrections"),
             _build_offerer_is_onboarded_expression().label("isOnboarded"),
             has_partner_page.label("hasPartnerPage"),
