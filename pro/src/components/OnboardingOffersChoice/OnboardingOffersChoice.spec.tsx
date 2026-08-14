@@ -48,7 +48,7 @@ describe('OnboardingOffersChoice Component', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('link', {
+      screen.getByRole('button', {
         name: 'Commencer la création d’offre sur l’application mobile',
       })
     ).toHaveTextContent('Créer une offre individuelle')

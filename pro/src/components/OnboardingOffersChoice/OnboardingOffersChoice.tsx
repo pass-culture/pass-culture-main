@@ -56,12 +56,18 @@ export const OnboardingOffersChoice = ({
           </Card.Content>
           <Card.Footer>
             <Button
-              as="router-link"
               variant={ButtonVariant.PRIMARY}
-              to="/onboarding/individuel"
               aria-label="Commencer la création d’offre sur l’application mobile"
               fullWidth
               label="Créer une offre individuelle"
+              onClick={() => {
+                // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API is only available on firefox as of 2025-06-24
+                document.cookie = `${COOKIES.DID_SKIP_ONBOARDING}=true; max-age=0; path=/;`
+
+                setTimeout(() => {
+                  navigate('/onboarding/individuel')
+                })
+              }}
             />
           </Card.Footer>
         </Card>
