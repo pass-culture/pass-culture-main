@@ -29,7 +29,7 @@ export const UserAnonymization = (): JSX.Element | null => {
     <>
       <Button
         variant={ButtonVariant.TERTIARY}
-        color={ButtonColor.NEUTRAL}
+        color={ButtonColor.DANGER}
         icon={fullTrashIcon}
         onClick={() => setIsDialogOpen(true)}
         label="Supprimer mon compte"
