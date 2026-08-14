@@ -3,10 +3,11 @@ import logging
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.core.educational import exceptions as collective_exceptions
-from pcapi.core.educational.api import booking as educational_api_booking
-from pcapi.core.offerers import api as offerers_api
-from pcapi.core.offerers import exceptions as offerers_exceptions
+import pcapi.core.educational.api.booking as educational_api_booking
+import pcapi.core.educational.exceptions as collective_exceptions
+import pcapi.core.offerers.exceptions as offerers_exceptions
+import pcapi.core.offerers.repository as offerers_repository
+import pcapi.utils.rest as rest_utils
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.apis import private_api
@@ -30,10 +31,11 @@ logger = logging.getLogger(__name__)
 @atomic()
 def cancel_collective_offer_booking(offer_id: int) -> None:
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
+        venue = offerers_repository.get_venue_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, venue.managingOfferer.id)
+    rest_utils.check_venue_is_opened(venue)
 
     try:
         educational_api_booking.cancel_collective_offer_booking(

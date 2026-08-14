@@ -95,6 +95,7 @@ def create_venue_provider(
     venue = _get_venue_or_404(venue_id)
     provider = _get_provider_or_404(body.provider_id)
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest.check_venue_is_opened(venue)
 
     if not provider.isActive or not provider.enabledForPro:
         raise ResourceNotFoundError()
@@ -160,8 +161,8 @@ def update_venue_provider(
         venue_provider = providers_repository.get_venue_provider_by_id(venue_provider_id)
     except orm_exc.NoResultFound:
         raise resource_not_found_error()
-
     rest.check_user_has_access_to_offerer(current_user, venue_provider.venue.managingOffererId)
+    rest.check_venue_is_opened(venue_provider.venue)
 
     updated = api.update_venue_provider(venue_provider, body, current_user)
     return venue_provider_serialize.VenueProviderResponse.model_validate(updated)
@@ -176,7 +177,7 @@ def delete_venue_provider(venue_provider_id: int) -> None:
         venue_provider = providers_repository.get_venue_provider_by_id(venue_provider_id)
     except orm_exc.NoResultFound:
         raise resource_not_found_error()
-
     rest.check_user_has_access_to_offerer(current_user, venue_provider.venue.managingOffererId)
+    rest.check_venue_is_opened(venue_provider.venue)
 
     api.delete_venue_provider(venue_provider, author=current_user)
