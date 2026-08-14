@@ -1,110 +1,55 @@
-import string
 from base64 import b64encode
-from dataclasses import dataclass
-from datetime import datetime
-from random import choices
 from time import time
 from unittest import mock
 
 import jwt
 import pytest
 from flask import current_app
-from google.cloud.secretmanager_v1.types import resources as google_types
 
 from pcapi import settings
+from pcapi.connectors import google_secret_manager
 from pcapi.utils.jwt import ALGORITHM_HS_256
 from pcapi.utils.jwt.backends.secret_manager import REDIS_KEY
 from pcapi.utils.jwt.backends.secret_manager import JwtSecretManagerBackend
 
 
-@dataclass
-class _ListSecretVersions:
-    versions: list
-    next_page_token: str = ""
-
-    def __iter__(self):
-        for version in self.versions:
-            yield version
-
-
-@dataclass
-class _Version:
-    state: google_types.SecretVersion.State
-    name: str
-    create_time: datetime
-
-
-@dataclass
-class _Payload:
-    data: bytes
-
-
-@dataclass
-class _Secret:
-    payload: _Payload
-
-
-NEXT_PAGE_TOKEN = "".join(choices(string.ascii_uppercase + string.digits, k=25))
-VERSIONS = [
-    _Version(
-        state=google_types.SecretVersion.State.ENABLED,
-        name=settings.JWT_KEY_SECRET_NAME + "/4",
-        create_time=datetime(2026, 12, 1),
-    ),
-    _Version(
-        state=google_types.SecretVersion.State.DISABLED,
-        name=settings.JWT_KEY_SECRET_NAME + "/3",
-        create_time=datetime(2026, 11, 1),
-    ),
-    _Version(
-        state=google_types.SecretVersion.State.DESTROYED,
-        name=settings.JWT_KEY_SECRET_NAME + "/2",
-        create_time=datetime(2026, 10, 1),
-    ),
-    _Version(
-        state=google_types.SecretVersion.State.ENABLED,
-        name=settings.JWT_KEY_SECRET_NAME + "/1",
-        create_time=datetime(2026, 9, 1),
-    ),
-]
 SECRETS = {
-    "1": _Secret(payload=_Payload(data=b"secret-with-id-one")),
-    "3": _Secret(payload=_Payload(data=b"secret-with-id-three")),
-    "4": _Secret(payload=_Payload(data=b"secret-with-id-four")),
+    "1": "secret-with-id-one",
+    "3": "secret-with-id-three",
+    "4": "secret-with-id-four",
 }
 
 
-def _list_secret_versions(request):
-    if request.page_token:
-        if request.page_token != NEXT_PAGE_TOKEN:
-            assert False, "invalid next page token recieved"
-        return _ListSecretVersions(versions=VERSIONS[2:])
-    return _ListSecretVersions(versions=VERSIONS[:2], next_page_token=NEXT_PAGE_TOKEN)
+def _get_last_secret_versions(secret_name, limit):
+    for key, value in SECRETS.items():
+        yield google_secret_manager.Secret(
+            name=f"{secret_name}/{key}",
+            creation_timestamp=int(key),
+            value=value,
+        )
 
 
 @pytest.fixture
 def secret_manager():
-    SecretManagerServiceClientMock = mock.MagicMock()
-    SecretManagerServiceClientMock.list_secret_versions.side_effect = _list_secret_versions
-    SecretManagerServiceClientMock.access_secret_version.side_effect = lambda request: SECRETS[request.name[-1]]
+    secret_manager_backend = mock.MagicMock()
+    secret_manager_backend.get_last_secret_versions = _get_last_secret_versions
+
     with mock.patch(
-        "pcapi.utils.jwt.backends.secret_manager.secretmanager.SecretManagerServiceClient",
-        return_value=SecretManagerServiceClientMock,
+        "pcapi.utils.jwt.backends.secret_manager.SecretManagerBackend",
+        return_value=secret_manager_backend,
     ):
         yield
-
-    assert SecretManagerServiceClientMock.list_secret_versions.call_count == 2
-    assert SecretManagerServiceClientMock.access_secret_version.call_count == 2
 
 
 class InitializationTest:
     def test_nominal(self, secret_manager):
         backend = JwtSecretManagerBackend()
-        assert backend._current_key.kid == "1796083200"
+        assert backend._current_key.kid == "4"
         assert backend._current_key.key == "secret-with-id-four"
         assert backend._key_by_kid == {
-            "1796083200": "secret-with-id-four",
-            "1788220800": "secret-with-id-one",
+            "4": "secret-with-id-four",
+            "3": "secret-with-id-three",
+            "1": "secret-with-id-one",
         }
 
     @pytest.mark.settings(JWT_SECRET_KEY="")
@@ -122,8 +67,8 @@ class InitializationTest:
         current_app.redis_client.hset(REDIS_KEY, mapping=redis_mapping)
 
         with mock.patch(
-            "pcapi.utils.jwt.backends.secret_manager.secretmanager.SecretManagerServiceClient",
-            side_effect=Exception,
+            "pcapi.utils.jwt.backends.secret_manager.SecretManagerBackend.get_last_secret_versions",
+            side_effect=google_secret_manager.SecretManagerException,
         ):
             backend = JwtSecretManagerBackend()
 
@@ -133,8 +78,8 @@ class InitializationTest:
 
     def test_no_secret_manager_no_redis(self, clear_redis):
         with mock.patch(
-            "pcapi.utils.jwt.backends.secret_manager.secretmanager.SecretManagerServiceClient",
-            side_effect=Exception,
+            "pcapi.utils.jwt.backends.secret_manager.SecretManagerBackend.get_last_secret_versions",
+            side_effect=google_secret_manager.SecretManagerException,
         ):
             with pytest.raises(ValueError):
                 JwtSecretManagerBackend()
@@ -147,7 +92,7 @@ class EncodeTest:
         token = JwtSecretManagerBackend().encode(payload)
 
         assert jwt.decode(token, "secret-with-id-four", algorithms=[ALGORITHM_HS_256]) == payload
-        assert token.split(".")[0] == b64encode(b'{"alg":"HS256","kid":"1796083200","typ":"JWT"}').decode().strip("=")
+        assert token.split(".")[0] == b64encode(b'{"alg":"HS256","kid":"4","typ":"JWT"}').decode().strip("=")
 
     def test_missing_fields(self, secret_manager):
         payload = {"data": "plouf"}
@@ -175,7 +120,7 @@ class DecodeTest:
         payload = {
             "token": "value",
         }
-        token = jwt.encode(payload, "secret-with-id-four", headers={"kid": "1796083200"})
+        token = jwt.encode(payload, "secret-with-id-four", headers={"kid": "4"})
 
         decoded = JwtSecretManagerBackend().decode(jwt_token=token)
 
@@ -185,7 +130,7 @@ class DecodeTest:
         payload = {
             "token": "value",
         }
-        token = jwt.encode(payload, "secret-with-id-one", headers={"kid": "1788220800"})
+        token = jwt.encode(payload, "secret-with-id-one", headers={"kid": "1"})
 
         decoded = JwtSecretManagerBackend().decode(jwt_token=token)
 
@@ -204,7 +149,7 @@ class DecodeTest:
         payload = {
             "token": "value",
         }
-        token = jwt.encode(payload, "secret-with-id-four", headers={"kid": "1788220800"})
+        token = jwt.encode(payload, "secret-with-id-four", headers={"kid": "1"})
 
         with pytest.raises(jwt.exceptions.InvalidTokenError):
             JwtSecretManagerBackend().decode(jwt_token=token)
@@ -242,6 +187,3 @@ class DecodeTest:
         decoded = JwtSecretManagerBackend().decode(jwt_token=token, key=custom_key)
 
         assert decoded == payload
-
-
-# TODO test on redis fallback
