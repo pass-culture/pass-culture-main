@@ -205,6 +205,9 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   </FormLayout.Row>
                   <FormLayout.Row>
                     <fieldset>
+                      <legend className={styles['visually-hidden']}>
+                        Horaires d’ouverture
+                      </legend>
                       <div className={styles['opening-hours']}>
                         <OpeningHours />
                       </div>

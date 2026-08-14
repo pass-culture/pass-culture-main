@@ -1,6 +1,7 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .dialog {
   flex-grow: 1;
@@ -22,4 +23,8 @@
 .opening-hours {
   margin: var(--size-spacing-l) 0;
   max-width: rem.torem(484px);
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

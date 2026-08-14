@@ -142,6 +142,9 @@ export const ComplementaryInfosDrawer = ({
               <FormLayout.SubSection title="Horaires d’ouverture">
                 <FormLayout.Row className={styles['opening-hours']}>
                   <fieldset>
+                    <legend className={styles['visually-hidden']}>
+                      Horaires d’ouverture
+                    </legend>
                     <div>
                       <OpeningHours />
                     </div>

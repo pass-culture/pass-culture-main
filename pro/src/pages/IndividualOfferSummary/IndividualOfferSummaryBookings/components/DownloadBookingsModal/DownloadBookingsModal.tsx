@@ -151,15 +151,20 @@ export const DownloadBookingsModal = ({
     <form onSubmit={form.handleSubmit(onSubmit)} className={style['container']}>
       <fieldset className={style['date-select-section']}>
         {numberOfDates === 1 ? (
-          <h2 className={style['one-booking-date-section']}>
-            Date de votre évènement :{' '}
-            {formatDateTime(
-              new Date(
-                priceCategoryAndScheduleCountByDate[0].eventDate
-              ).toISOString(),
-              FORMAT_DD_MM_YYYY
-            )}
-          </h2>
+          <>
+            <legend className={style['visually-hidden']}>
+              Date de votre évènement
+            </legend>
+            <h2 className={style['one-booking-date-section']}>
+              Date de votre évènement :{' '}
+              {formatDateTime(
+                new Date(
+                  priceCategoryAndScheduleCountByDate[0].eventDate
+                ).toISOString(),
+                FORMAT_DD_MM_YYYY
+              )}
+            </h2>
+          </>
         ) : (
           <>
             <legend>

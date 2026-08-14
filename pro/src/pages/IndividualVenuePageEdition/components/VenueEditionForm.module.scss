@@ -1,3 +1,5 @@
+@use "styles/mixins/_a11y.scss" as a11y;
+
 .opening-hours-subsubsection {
   margin-top: var(--size-spacing-xxl);
 
@@ -20,4 +22,8 @@
   &--first {
     margin-top: var(--size-spacing-l);
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
