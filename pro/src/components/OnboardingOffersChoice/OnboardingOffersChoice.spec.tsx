@@ -5,6 +5,7 @@ import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
+import { COOKIES } from '@/commons/utils/localStorageManager'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OnboardingOffersChoice } from './OnboardingOffersChoice'
@@ -16,12 +17,12 @@ vi.mock('react-router', async () => ({
   useNavigate: () => mockNavigate,
 }))
 
-describe('OnboardingOffersChoice Component', () => {
-  beforeEach(() => {
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-    }))
-    renderWithProviders(<OnboardingOffersChoice />, {
+const renderOnboardingOffersChoice = (
+  hideSkipOnboardingLink: boolean = false
+) =>
+  renderWithProviders(
+    <OnboardingOffersChoice hideSkipOnboardingLink={hideSkipOnboardingLink} />,
+    {
       storeOverrides: {
         user: {
           offererNames: null,
@@ -30,16 +31,24 @@ describe('OnboardingOffersChoice Component', () => {
           },
         },
       },
-    })
+    }
+  )
+
+describe('OnboardingOffersChoice Component', () => {
+  beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
   })
 
   it('should pass axe accessibility tests', async () => {
-    const { container } = renderWithProviders(<OnboardingOffersChoice />)
+    const { container } = renderOnboardingOffersChoice()
 
     expect(await axe(container)).toHaveNoViolations()
   })
 
   it('renders the first card with correct title, description, and button', () => {
+    renderOnboardingOffersChoice()
     expect(
       screen.getByRole('heading', {
         level: 3,
@@ -55,6 +64,7 @@ describe('OnboardingOffersChoice Component', () => {
   })
 
   it('renders the second card with correct title, description, and button', () => {
+    renderOnboardingOffersChoice()
     expect(
       screen.getByRole('heading', {
         name: /Sur ADAGE à destination des enseignants/,
@@ -69,6 +79,7 @@ describe('OnboardingOffersChoice Component', () => {
   })
 
   it('displays the onboarding collective modal when the second button is clicked', async () => {
+    renderOnboardingOffersChoice()
     await userEvent.click(
       screen.getByRole('button', {
         name: 'Commencer la création d’offre sur ADAGE',
@@ -82,6 +93,7 @@ describe('OnboardingOffersChoice Component', () => {
 
   describe('trackers', () => {
     it('should track choosing collective offers', async () => {
+      renderOnboardingOffersChoice()
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Commencer la création d’offre sur ADAGE',
@@ -97,9 +109,40 @@ describe('OnboardingOffersChoice Component', () => {
   })
 
   it('should handle skip link', async () => {
+    renderOnboardingOffersChoice()
     await userEvent.click(
       screen.getByRole('button', { name: 'Je le ferai plus tard' })
     )
     expect(mockNavigate).toHaveBeenCalledWith('/accueil')
+  })
+
+  it('should set the skip-onboarding cookie when clicking "Je le ferai plus tard"', async () => {
+    renderOnboardingOffersChoice()
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Je le ferai plus tard' })
+    )
+
+    expect(document.cookie).toContain(`${COOKIES.DID_SKIP_ONBOARDING}=true`)
+  })
+
+  it('should navigate to the individual onboarding page when clicking "Créer une offre individuelle"', async () => {
+    renderOnboardingOffersChoice()
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Commencer la création d’offre sur l’application mobile',
+      })
+    )
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/onboarding/individuel')
+    })
+  })
+
+  it('should not render the skip link when hideSkipOnboardingLink is true', () => {
+    const { queryByRole } = renderOnboardingOffersChoice(true)
+
+    expect(
+      queryByRole('button', { name: 'Je le ferai plus tard' })
+    ).not.toBeInTheDocument()
   })
 })
