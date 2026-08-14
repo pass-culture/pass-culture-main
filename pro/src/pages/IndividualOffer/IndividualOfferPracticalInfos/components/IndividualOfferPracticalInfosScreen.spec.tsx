@@ -126,7 +126,7 @@ describe('IndividualOfferPracticalInfosScreen', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: 'Les changements vont s’appliquer à l’ensemble des réservations en cours associées',
+        name: /Les changements vont impacter l’ensemble des réservations en cours associées/i,
       })
     ).toBeInTheDocument()
   })
@@ -159,7 +159,7 @@ describe('IndividualOfferPracticalInfosScreen', () => {
     )
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Je confirme le changement' })
+      screen.getByRole('button', { name: 'Prévenir les jeunes' })
     )
 
     await waitFor(() => {

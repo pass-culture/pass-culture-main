@@ -158,6 +158,7 @@ export const IndividualOfferLocationScreen = ({
           setIsUpdateWarningDialogOpen(false)
           updateWarningDialogDeferredCallRef.current?.(null)
         }}
+        message="Vous avez modifié l’adresse."
         onConfirm={(shouldSendMail) =>
           updateWarningDialogDeferredCallRef.current?.(shouldSendMail)
         }

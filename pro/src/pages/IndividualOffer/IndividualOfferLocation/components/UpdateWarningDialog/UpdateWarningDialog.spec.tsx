@@ -6,38 +6,35 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { UpdateWarningDialog } from './UpdateWarningDialog'
 
 describe('<UpdateWarningDialog />', () => {
-  const setup = () => {
+  const setup = (message?: string) => {
     const onCancel = vi.fn()
     const onConfirm = vi.fn()
     renderWithProviders(
-      <UpdateWarningDialog isOpen onCancel={onCancel} onConfirm={onConfirm} />
+      <UpdateWarningDialog
+        isOpen
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+        message={message}
+      />
     )
     return { onCancel, onConfirm }
   }
 
-  it('renders dialog with expected static texts and checkbox checked by default', () => {
-    setup()
+  it('renders dialog with expected static texts', () => {
+    const message = 'Vous avez modifié l’adresse.'
+    setup(message)
 
     expect(
       screen.getByRole('heading', {
-        name: /Les changements vont s’appliquer à l’ensemble des réservations en cours associées/i,
+        name: /Les changements vont impacter l’ensemble des réservations en cours associées/i,
       })
     ).toBeInTheDocument()
 
-    expect(
-      screen.getByText(/Vous avez modifié la localisation\./i)
-    ).toBeInTheDocument()
+    expect(screen.getByText(message)).toBeInTheDocument()
 
     expect(
-      screen.getByText(
-        /Pour conserver les données des réservations actuelles, créez une nouvelle offre avec vos modifications/i
-      )
+      screen.getByText(/Souhaitez-vous prévenir les jeunes par mail ?/i)
     ).toBeInTheDocument()
-
-    const checkbox = screen.getByRole('checkbox', {
-      name: /Prévenir les jeunes par e-mail/i,
-    }) as HTMLInputElement
-    expect(checkbox.checked).toBe(true)
   })
 
   it('calls onCancel when clicking cancel button', async () => {
@@ -47,28 +44,22 @@ describe('<UpdateWarningDialog />', () => {
     expect(onCancel).toHaveBeenCalledTimes(1)
   })
 
-  it('calls onConfirm with true when checkbox left checked', async () => {
+  it('calls onConfirm with true when clicking warn button', async () => {
     const { onConfirm } = setup()
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Je confirme le changement' })
+      screen.getByRole('button', { name: 'Prévenir les jeunes' })
     )
     expect(onConfirm).toHaveBeenCalledWith(true)
   })
 
-  it('calls onConfirm with false after unchecking the mail checkbox', async () => {
+  it('calls onConfirm with false after clicking do not warn button', async () => {
     const { onConfirm } = setup()
 
-    const checkbox = screen.getByRole('checkbox', {
-      name: /Prévenir les jeunes par e-mail/i,
-    })
-    await userEvent.click(checkbox) // uncheck
-
-    expect((checkbox as HTMLInputElement).checked).toBe(false)
-
     await userEvent.click(
-      screen.getByRole('button', { name: 'Je confirme le changement' })
+      screen.getByRole('button', { name: 'Ne pas prévenir les jeunes' })
     )
+
     expect(onConfirm).toHaveBeenCalledWith(false)
   })
 })

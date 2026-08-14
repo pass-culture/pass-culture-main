@@ -18,6 +18,10 @@ export interface SimpleModalProps {
    */
   iconPath?: string
   /**
+   * Optional className applied to the icon.
+   */
+  iconClassName?: string
+  /**
    * The content to be displayed inside the dialog.
    */
   children?: React.ReactNode
@@ -42,6 +46,7 @@ export interface SimpleModalProps {
 export const SimpleModal = ({
   title,
   iconPath,
+  iconClassName,
   children,
   onClose,
   isOpen,
@@ -72,6 +77,7 @@ export const SimpleModal = ({
             <SvgIcon
               alt=""
               src={iconPath}
+              className={iconClassName}
               width="88"
               data-testid="modal-icon"
             />

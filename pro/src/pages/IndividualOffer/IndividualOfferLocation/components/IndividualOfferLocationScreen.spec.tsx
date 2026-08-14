@@ -274,16 +274,15 @@ describe('<IndividualOfferLocationScreen />', () => {
         it('and behave as expected', async () => {
           expect(
             await screen.findByText(
-              'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
+              /Les changements vont impacter l’ensemble des réservations en cours associées/i
             )
           ).toBeInTheDocument()
           expect(api.patchOffer).not.toHaveBeenCalled()
         })
 
-        // `shouldSendMail` checkbox is checked by default
-        it('and send shouldSendMail=true to API when checked', async () => {
+        it('and send shouldSendMail=true to API when warn button is clicked', async () => {
           await userEvent.click(
-            screen.getByRole('button', { name: 'Je confirme le changement' })
+            screen.getByRole('button', { name: 'Prévenir les jeunes' })
           )
 
           await waitFor(() => {
@@ -294,17 +293,9 @@ describe('<IndividualOfferLocationScreen />', () => {
           })
         })
 
-        // `shouldSendMail` checkbox is checked by default
-        it('and send shouldSendMail=false to API when checked', async () => {
-          // = uncheck since `shouldSendMail` checkbox is checked by default
+        it('and send shouldSendMail=false to API when do not warn button is clicked', async () => {
           await userEvent.click(
-            await screen.findByRole('checkbox', {
-              name: 'Prévenir les jeunes par e-mail',
-            })
-          )
-
-          await userEvent.click(
-            screen.getByRole('button', { name: 'Je confirme le changement' })
+            screen.getByRole('button', { name: 'Ne pas prévenir les jeunes' })
           )
 
           await waitFor(() => {
@@ -318,7 +309,7 @@ describe('<IndividualOfferLocationScreen />', () => {
         it('and close the dialog without saving when canceled', async () => {
           expect(
             await screen.findByText(
-              'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
+              /Les changements vont impacter l’ensemble des réservations en cours associées/i
             )
           ).toBeInTheDocument()
 
@@ -326,7 +317,7 @@ describe('<IndividualOfferLocationScreen />', () => {
 
           expect(
             screen.getByText(
-              'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
+              /Les changements vont impacter l’ensemble des réservations en cours associées/i
             )
           ).not.toBeVisible()
           expect(api.patchOffer).not.toHaveBeenCalled()

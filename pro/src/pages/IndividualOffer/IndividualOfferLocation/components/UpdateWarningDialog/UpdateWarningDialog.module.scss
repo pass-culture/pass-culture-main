@@ -1,6 +1,9 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.update-oa-icon {
+  color: var(--color-icon-brand-primary);
+}
+
 .update-oa-wrapper {
-  display: flex;
-  gap: var(--size-spacing-xxl);
-  flex-direction: column;
-  text-align: left;
+  text-align: center;
 }
