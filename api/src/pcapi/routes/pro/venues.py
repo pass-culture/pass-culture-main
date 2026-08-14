@@ -268,23 +268,6 @@ def get_venues_educational_statuses() -> venue_collective_serialize.VenuesEducat
     return venue_collective_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)
 
 
-@private_api.route("/venue/<int:venue_id>/offers-statistics", methods=["GET"])
-@atomic()
-@login_required
-@spectree_serialize(response_model=venue_serialize.GetOffersStatsResponseModel, api=blueprint.pro_private_schema)
-def get_offers_statistics(venue_id: int) -> venue_serialize.GetOffersStatsResponseModel:
-    venue = get_or_404(models.Venue, venue_id)
-    check_user_has_access_to_venues(current_user, [venue_id])
-
-    stats = offerers_api.get_offers_stats_by_venue(venue.id)
-    return venue_serialize.GetOffersStatsResponseModel(
-        published_public_offers=stats.published_public_offers,
-        published_educational_offers=stats.published_educational_offers,
-        pending_public_offers=stats.pending_public_offers,
-        pending_educational_offers=stats.pending_educational_offers,
-    )
-
-
 @private_api.route("/venues/<int:venue_id>/locations", methods=["GET"])
 @atomic()
 @login_required

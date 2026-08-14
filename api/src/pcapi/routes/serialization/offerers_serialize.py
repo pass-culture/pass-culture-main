@@ -368,13 +368,6 @@ class LinkVenueToBankAccountBodyModel(HttpBodyModel):
     venues_ids: set[int]
 
 
-class GetOffererV2StatsResponseModel(HttpBodyModel):
-    published_public_offers: int
-    published_educational_offers: int
-    pending_public_offers: int
-    pending_educational_offers: int
-
-
 class GetOffererAddressResponseModel(HttpBodyModel):
     id: int
     label: str | None
