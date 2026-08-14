@@ -1,21 +1,15 @@
 import base64
 import json
 import logging
-import typing
 from dataclasses import dataclass
 
 import jwt
-from google.api_core import exceptions as google_exceptions
-from google.cloud import secretmanager
-from google.cloud.secretmanager_v1.types import resources as google_types
 
 from pcapi import settings
+from pcapi.connectors.google_secret_manager import SecretManagerBackend
+from pcapi.connectors.google_secret_manager import SecretManagerException
 from pcapi.utils.jwt.backends.base import JwtBaseBackend
 from pcapi.utils.redis import get_redis_client
-
-
-if typing.TYPE_CHECKING:
-    from secretmanager_v1.services.secret_manager_service.client import SecretManagerServiceClient
 
 
 logger = logging.getLogger(__name__)
@@ -29,7 +23,6 @@ class CurrentKey:
 
 
 class JwtSecretManagerBackend(JwtBaseBackend):
-    _gcp_client_instance: "SecretManagerServiceClient"
     _current_key: CurrentKey
     _key_by_kid: dict[str, str]
 
@@ -40,34 +33,6 @@ class JwtSecretManagerBackend(JwtBaseBackend):
         if not settings.JWT_KEY_SECRET_NAME:
             raise ValueError("No secret name was provided in JWT_KEY_SECRET_NAME env variable")
         self.update_internal_dict()
-
-    @property
-    def _gcp_client(self) -> "SecretManagerServiceClient":
-        if not hasattr(self, "_gcp_client_instance"):
-            self._gcp_client_instance = secretmanager.SecretManagerServiceClient(transport="rest")
-        return self._gcp_client_instance
-
-    def _get_secret_version(self, name: str) -> str:
-        request = secretmanager.AccessSecretVersionRequest(name=name)
-        return self._gcp_client.access_secret_version(request=request).payload.data.decode()
-
-    def _get_all_secret_versions(self) -> typing.Generator[google_types.SecretVersion]:
-        token = None
-        while token != "":
-            try:
-                page = self._gcp_client.list_secret_versions(
-                    request=secretmanager.ListSecretVersionsRequest(
-                        parent=settings.JWT_KEY_SECRET_NAME,
-                        page_token=token,
-                    ),
-                )
-            except ValueError as exc:
-                raise ValueError("could not retrieve versions list from gcp") from exc
-
-            for version in page:
-                yield version
-
-            token = page.next_page_token
 
     def _update_current(self) -> None:
         # will break at the end of year 2286
@@ -104,23 +69,14 @@ class JwtSecretManagerBackend(JwtBaseBackend):
         return key
 
     def update_internal_dict(self) -> None:
-        # the key cannot be a bytes but dict[str, str] is not accepted as a dict[str | bytes, str]
-        # TODO: use a frozendict after update to python 3.16
+        # TODO: use a frozendict after update to python 3.15
         key_dict: dict[str, str] = {}
-        try:
-            for version in self._get_all_secret_versions():
-                if version.state != google_types.SecretVersion.State.ENABLED:
-                    # ignore DISABLED and DESTROYED versions
-                    continue
+        secret_manager_backend = SecretManagerBackend()
 
-                try:
-                    key = self._get_secret_version(name=version.name)
-                    kid = str(int(version.create_time.timestamp()))  # type: ignore [attr-defined]
-                    key_dict[kid] = key
-                except google_exceptions.BadRequest:
-                    # The secret has been DISABLED or DESTROYED since last call to self._get_all_secret_versions
-                    pass
-        except Exception:
+        try:
+            secret_generator = secret_manager_backend.get_last_secret_versions(settings.JWT_KEY_SECRET_NAME, limit=60)
+            key_dict = {str(s.creation_timestamp): s.value for s in secret_generator}
+        except SecretManagerException:
             # something went wrong falling back on redis
             logger.exception("Error while building jwt keyring")
             key_dict = get_redis_client().hgetall(REDIS_KEY)
