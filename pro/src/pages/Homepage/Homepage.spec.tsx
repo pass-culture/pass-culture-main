@@ -307,7 +307,7 @@ describe('Homepage', () => {
         })
       ).toBeVisible()
       expect(
-        screen.getByRole('link', {
+        screen.getByRole('button', {
           name: 'Commencer la création d’offre sur l’application mobile',
         })
       ).toBeVisible()
