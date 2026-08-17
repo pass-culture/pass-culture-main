@@ -3,6 +3,7 @@ import datetime
 import enum
 import re
 import typing
+from collections.abc import Iterable
 from functools import partial
 from operator import attrgetter
 from types import NotImplementedType
@@ -96,7 +97,7 @@ public_accounts_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 )
 
 
-def _get_credits_filter(credit_names: typing.Iterable[str]) -> sa.ColumnElement:
+def _get_credits_filter(credit_names: Iterable[str]) -> sa.ColumnElement:
     beneficiary_predicates = {
         search_forms.AccountSearchFilter.PASS_17_V3.name: sa.and_(
             finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
@@ -170,7 +171,7 @@ def _get_deposit_expiration_filter(operator: str) -> typing.Callable[[datetime.d
     return build_filter
 
 
-def _get_tags_filter(tag_ids: typing.Iterable[int]) -> sa.ColumnElement:
+def _get_tags_filter(tag_ids: Iterable[int]) -> sa.ColumnElement:
     return (
         sa.exists()
         .where(
@@ -185,8 +186,8 @@ def _get_tags_filter(tag_ids: typing.Iterable[int]) -> sa.ColumnElement:
 
 ADVANCED_SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
     "BIRTHDAY": {"field": "date", "column": users_models.User.birth_date},
-    "CREDITS": {
-        "field": "credits",
+    "CREDIT": {
+        "field": "credit",
         "custom_filters": {
             "IN": _get_credits_filter,
             "NOT_IN": lambda credit_names: sa.not_(_get_credits_filter(credit_names)),
@@ -208,13 +209,13 @@ ADVANCED_SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
         "custom_filters": {"NULLABLE": lambda is_suspended: users_models.User.isActive.is_(not is_suspended)},
         "special": lambda x: x == "true",
     },
-    "REGIONS": {
-        "field": "regions",
+    "REGION": {
+        "field": "region",
         "column": users_models.User.departementCode,
         "special": regions_utils.get_department_codes_for_regions,
     },
-    "TAGS": {
-        "field": "tags",
+    "TAG": {
+        "field": "tag",
         "custom_filters": {"IN": _get_tags_filter, "NOT_IN": lambda tag_ids: sa.not_(_get_tags_filter(tag_ids))},
     },
 }
@@ -764,16 +765,6 @@ def render_public_account_details(
         is_user_expired=is_user_expired,
         allowed_actions=allowed_actions,
         **kwargs,
-    )
-
-
-def _get_fraud_reviews_desc(
-    fraud_reviews: list[subscription_models.BeneficiaryFraudReview],
-) -> list[subscription_models.BeneficiaryFraudReview]:
-    return sorted(
-        fraud_reviews,
-        key=lambda r: r.dateReviewed,
-        reverse=True,
     )
 
 

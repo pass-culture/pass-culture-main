@@ -203,7 +203,7 @@ def user_ids_of_groups(users_by_group, group_names):
     return {str(user.id) for group_name in group_names for user in users_by_group[group_name]}
 
 
-class SearchPublicAccountsTest(GetEndpointHelper):
+class ListPublicAccountsTest(GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.list_public_accounts"
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
@@ -515,7 +515,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         users_factories.BeneficiaryGrant18Factory(deposit__type=finance_models.DepositType.GRANT_18)
         new_grant_18 = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_17_18)
 
-        query_args = advanced_filter_args("CREDITS", "IN", "credits", "PASS_18_V3")
+        query_args = advanced_filter_args("CREDIT", "IN", "credit", "PASS_18_V3")
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 303
@@ -534,7 +534,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         user_with_tag = users_factories.BeneficiaryGrant18Factory(tags=[tag])
         users_factories.BeneficiaryFactory()
 
-        query_args = advanced_filter_args("TAGS", "IN", "tags", tag_id)
+        query_args = advanced_filter_args("TAG", "IN", "tag", tag_id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 303
@@ -555,7 +555,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         users_factories.BeneficiaryGrant18Factory(tags=[tag3])  # user with tag3
         users_factories.BeneficiaryGrant18Factory(tags=[])  # user with no tags
 
-        query_args = advanced_filter_args("TAGS", "IN", "tags", [tag1.id, tag2.id])
+        query_args = advanced_filter_args("TAG", "IN", "tag", [tag1.id, tag2.id])
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -573,7 +573,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         users_factories.BeneficiaryGrant18Factory(tags=[tag3])  # user with tag3
         users_factories.BeneficiaryGrant18Factory(tags=[])  # user with no tags
 
-        query_args = advanced_filter_args("TAGS", "IN", "tags", tag1.id)
+        query_args = advanced_filter_args("TAG", "IN", "tag", tag1.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -589,7 +589,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         tag1, tag2 = users_factories.UserTagFactory.create_batch(2)
         users = users_factories.UserFactory.create_batch(60, tags=[tag1, tag2])
 
-        query_args = advanced_filter_args("TAGS", "IN", "tags", [tag1.id, tag2.id])
+        query_args = advanced_filter_args("TAG", "IN", "tag", [tag1.id, tag2.id])
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -605,7 +605,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         user4 = users_factories.BeneficiaryGrant18Factory(tags=[tag2], firstName="jean")
         users_factories.BeneficiaryGrant18Factory(tags=[], firstName="jean")  # user5
 
-        query_args = advanced_filter_args("TAGS", "IN", "tags", tag2.id)
+        query_args = advanced_filter_args("TAG", "IN", "tag", tag2.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="jean", **query_args))
             assert response.status_code == 200
@@ -633,7 +633,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
             "without_tag": users_factories.BeneficiaryGrant18Factory.create_batch(2, tags=[]),
         }
 
-        query_args = advanced_filter_args("TAGS", "NOT_IN", "tags", [tags[name].id for name in excluded_tags])
+        query_args = advanced_filter_args("TAG", "NOT_IN", "tag", [tags[name].id for name in excluded_tags])
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -763,7 +763,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
     def test_search_by_credit(self, authenticated_client, credit_key, expected_user):
         users = self._create_users_by_credit()
 
-        query_args = advanced_filter_args("CREDITS", "IN", "credits", credit_key)
+        query_args = advanced_filter_args("CREDIT", "IN", "credit", credit_key)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 303
@@ -785,7 +785,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
     def test_search_with_several_filters(self, authenticated_client):
         users = self._create_users_by_credit()
 
-        query_args = advanced_filter_args("CREDITS", "IN", "credits", ["PASS_17_V3", "PASS_18_V3"])
+        query_args = advanced_filter_args("CREDIT", "IN", "credit", ["PASS_17_V3", "PASS_18_V3"])
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -800,7 +800,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         # a user without any valid deposit does not have the excluded credits either, so they must be listed
         expected_names = ("old_underage_user", "old_beneficiary_user", "public_user", "suspended_user")
 
-        query_args = advanced_filter_args("CREDITS", "NOT_IN", "credits", ["PASS_17_V3", "PASS_18_V3"])
+        query_args = advanced_filter_args("CREDIT", "NOT_IN", "credit", ["PASS_17_V3", "PASS_18_V3"])
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -826,15 +826,6 @@ class SearchPublicAccountsTest(GetEndpointHelper):
             "suspended_user": users_factories.BeneficiaryFactory(isActive=False),
         }
 
-    def test_list_accounts_without_search(self, authenticated_client):
-        create_bunch_of_accounts()
-
-        with assert_num_queries(self.expected_num_queries_when_no_query):
-            response = authenticated_client.get(url_for(self.endpoint))
-            assert response.status_code == 200
-
-        assert len(html_parser.extract_cards_text(response.data)) == 0
-
     def test_list_accounts_by_short_query_with_filter(self, authenticated_client):
         tag = users_factories.UserTagFactory()
         tagged_users = [
@@ -843,7 +834,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         ]
         users_factories.BeneficiaryGrant18Factory(firstName="Victor", tags=[])
 
-        query_args = advanced_filter_args("TAGS", "IN", "tags", tag.id)
+        query_args = advanced_filter_args("TAG", "IN", "tag", tag.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="vi", **query_args))
             assert response.status_code == 200
@@ -978,7 +969,7 @@ class SearchPublicAccountsTest(GetEndpointHelper):
             "paris_users": users_factories.UserFactory.create_batch(2, departementCode="75", postalCode="75001"),
         }
 
-        query_args = advanced_filter_args("REGIONS", operator, "regions", "Bretagne")
+        query_args = advanced_filter_args("REGION", operator, "region", "Bretagne")
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -1023,11 +1014,11 @@ class SearchPublicAccountsTest(GetEndpointHelper):
         "search_field,operator,operand",
         [
             ("BIRTHDAY", "DATE_FROM", "date"),
-            ("CREDITS", "IN", "credits"),
+            ("CREDIT", "IN", "credit"),
             ("DEPOSIT_EXPIRATION_DATE", "DATE_TO", "date"),
             ("EMAIL_DOMAIN", "EQUALS", "string"),
-            ("REGIONS", "IN", "regions"),
-            ("TAGS", "IN", "tags"),
+            ("REGION", "IN", "region"),
+            ("TAG", "IN", "tag"),
         ],
     )
     def test_list_accounts_by_empty_field(self, authenticated_client, search_field, operator, operand):

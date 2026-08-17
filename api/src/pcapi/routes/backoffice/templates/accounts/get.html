@@ -4,6 +4,7 @@
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% from "components/dynamic/modal.html" import build_static_htmx_modal with context %}
 {% from "components/generic_modal.html" import build_simple_modal_form with context %}
+{% from "components/search/result_form.html" import build_result_page_form %}
 {% from "components/presentation/details/tabs.html" import build_details_tab with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content with context %}
@@ -13,26 +14,7 @@
 {% import "components/clipboard.html" as clipboard with context %}
 {% block before_title %}
   {% if search_form %}
-    <form action="{{ search_dst }}"
-          class="mb-3"
-          name="{{ search_dst | action_to_name }}"
-          method="get">
-      <div class="d-flex align-items-center">
-        <div class="input-group flex-grow-1">
-          {{ search_form.q }}
-          {% if search_form.q.errors %}
-            <div class="w-100 my-4">
-              {% for error in search_form.q.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
-            </div>
-          {% endif %}
-        </div>
-        <button type="submit"
-                class="btn py-2 px-3 btn-primary ms-2 text-nowrap">
-          Rechercher
-          <i class="bi bi-search ms-2"></i>
-        </button>
-      </div>
-    </form>
+    {{ build_result_page_form(search_form, search_dst) }}
   {% endif %}
 {% endblock %}
 {% block title %}{{ user.full_name }}{% endblock %}

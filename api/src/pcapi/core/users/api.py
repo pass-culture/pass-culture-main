@@ -337,9 +337,6 @@ def reset_password_with_token(new_password: str, encoded_reset_password_token: s
 
 
 def handle_create_account_with_existing_email(user: models.User) -> None:
-    if not user:
-        return
-
     token = create_reset_password_token(user)
     transactional_mails.send_email_already_exists_email(token)
 
@@ -948,10 +945,10 @@ def reset_recredit_amount_to_show(user: models.User) -> None:
 def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> tuple[sa_orm.Query, sa.ColumnElement]:
     filters: list[sa.ColumnElement | sa.BinaryExpression] = []
     name_term = None
-    search_score_col = models.User.id.label("search_score")
+    search_score_col = sa.null().label("search_score")
 
     if not search_term:
-        return accounts.order_by(search_score_col), search_score_col
+        return accounts, search_score_col
 
     term_filters: list[sa.ColumnElement] = []
 
@@ -1008,8 +1005,7 @@ def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> tuple[sa_
         search_score_col = sa.func.levenshtein(
             sa.func.lower(models.User.firstName + " " + models.User.lastName), name_term
         ).label("search_score")
-
-    accounts = accounts.order_by(search_score_col, models.User.id)
+        accounts = accounts.order_by(search_score_col)
 
     return accounts, search_score_col
 
@@ -1024,7 +1020,7 @@ def search_public_account_in_history_email(search_query: str) -> tuple[sa_orm.Qu
         raise ValueError(f"Unsupported email search on invalid email: {search_query}")
 
     accounts = get_public_account_base_query()
-    search_score_col = models.User.id.label("search_score")
+    search_score_col = sa.null().label("search_score")
 
     if not search_query:
         return accounts.filter(sa.false()), search_score_col
@@ -1044,7 +1040,6 @@ def search_public_account_in_history_email(search_query: str) -> tuple[sa_orm.Qu
             ),
         )
         .distinct()
-        .order_by(models.User.id)
     ), search_score_col
 
 

@@ -29,12 +29,12 @@ from pcapi.utils import string as string_utils
 
 class AdvancedFormFieldKeys(enum.Enum):
     BIRTHDAY = "Date de naissance"
-    CREDITS = "Crédits"
+    CREDIT = "Crédit"
     DEPOSIT_EXPIRATION_DATE = "Date d’expiration du crédit"
     EMAIL_DOMAIN = "Nom de domaine de l'email"
     IS_SUSPENDED = "Compte suspendu"
-    REGIONS = "Régions"
-    TAGS = "Tags"
+    REGION = "Région"
+    TAG = "Tag"
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
@@ -42,7 +42,7 @@ TAG_NAME_REGEX = r"^[^\s]+$"
 
 ADVANCED_FORM_FIELDS_CONFIG: dict[str, dict[str, typing.Any]] = {
     AdvancedFormFieldKeys.BIRTHDAY.name: {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
-    AdvancedFormFieldKeys.CREDITS.name: {"field": "credits", "operator": ["IN", "NOT_IN"]},
+    AdvancedFormFieldKeys.CREDIT.name: {"field": "credit", "operator": ["IN", "NOT_IN"]},
     AdvancedFormFieldKeys.DEPOSIT_EXPIRATION_DATE.name: {
         "field": "date",
         "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"],
@@ -52,8 +52,8 @@ ADVANCED_FORM_FIELDS_CONFIG: dict[str, dict[str, typing.Any]] = {
         "operator": ["EQUALS", "NOT_EQUALS"],
     },
     AdvancedFormFieldKeys.IS_SUSPENDED.name: {"field": "boolean", "operator": ["NULLABLE"]},
-    AdvancedFormFieldKeys.REGIONS.name: {"field": "regions", "operator": ["IN", "NOT_IN"]},
-    AdvancedFormFieldKeys.TAGS.name: {"field": "tags", "operator": ["IN", "NOT_IN"]},
+    AdvancedFormFieldKeys.REGION.name: {"field": "region", "operator": ["IN", "NOT_IN"]},
+    AdvancedFormFieldKeys.TAG.name: {"field": "tag", "operator": ["IN", "NOT_IN"]},
 }
 
 
@@ -109,11 +109,11 @@ class AccountsSearchSubForm(utils.PCForm):
             "display_configuration": ADVANCED_FORM_FIELDS_CONFIG,
             "all_available_fields": [
                 "boolean",
-                "credits",
+                "credit",
                 "date",
-                "regions",
+                "region",
                 "string",
-                "tags",
+                "tag",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -143,8 +143,8 @@ class AccountsSearchSubForm(utils.PCForm):
             wtforms.validators.Optional(strip_whitespace=True),
         ],
     )
-    credits = fields.PCSelectMultipleField(
-        "Crédits",
+    credit = fields.PCSelectMultipleField(
+        "Crédit",
         choices=utils.choices_from_enum(
             search_forms.AccountSearchFilter, exclude_opts=(search_forms.AccountSearchFilter.SUSPENDED,)
         ),
@@ -152,8 +152,8 @@ class AccountsSearchSubForm(utils.PCForm):
         search_inline=True,
     )
     date = fields.PCOptDateField()
-    regions = fields.PCSelectMultipleField(
-        "Régions",
+    region = fields.PCSelectMultipleField(
+        "Région",
         choices=geography_utils.get_regions_choices(),
         field_list_compatibility=True,
         search_inline=True,
@@ -164,8 +164,8 @@ class AccountsSearchSubForm(utils.PCForm):
             wtforms.validators.Length(max=4096, message="Doit contenir moins de %(max)d caractères"),
         ],
     )
-    tags = fields.PCSelectMultipleField(
-        "Tags",
+    tag = fields.PCSelectMultipleField(
+        "Tag",
         coerce=int,
         field_list_compatibility=True,
         search_inline=True,
@@ -173,7 +173,7 @@ class AccountsSearchSubForm(utils.PCForm):
 
     def __init__(self, *args: list, **kwargs: dict):
         super().__init__(*args, **kwargs)
-        self.tags.choices = _get_tags_choices()
+        self.tag.choices = _get_tags_choices()
 
 
 class GetAccountsListSearchForm(utils.PCForm):
