@@ -85,7 +85,7 @@
     "@axe-core/playwright": "4.12.1",
     "@biomejs/biome": "2.5.7",
     "@hey-api/openapi-ts": "0.99.0",
-    "@playwright/test": "1.62.0",
+    "@playwright/test": "1.62.1",
     "@storybook/addon-a11y": "10.5.5",
     "@storybook/addon-docs": "10.5.5",
     "@storybook/react-vite": "10.5.5",
