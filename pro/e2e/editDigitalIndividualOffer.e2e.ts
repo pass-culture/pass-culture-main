@@ -11,7 +11,7 @@ import {
 
 test.describe('Edit digital individual offers', () => {
   test.describe('Display and url modification', () => {
-    test('An edited offer should be displayed with 5 navigation links', async ({
+    test('An edited offer should be displayed with 6 navigation links', async ({
       page,
     }) => {
       const requestContext = await playwrightRequest.newContext({
@@ -23,17 +23,23 @@ test.describe('Edit digital individual offers', () => {
       await loginAndNavigate(
         page,
         userData.user.email,
-        '/offre/individuelle/1/recapitulatif/description'
+        '/offre/individuelle/1/visibilite'
       )
       await expect(
-        page.getByRole('heading', { level: 2, name: 'Description' })
+        page.getByRole('heading', {
+          level: 2,
+          name: 'Actions de mise en avant',
+        })
       ).toBeVisible()
       await expect(page.getByTestId('spinner')).toHaveCount(0)
 
       await checkAccessibility(page)
 
       await expect(
-        page.getByRole('link', { name: 'Lien actif Description' })
+        page.getByRole('link', { name: 'Lien actif Visibilité' })
+      ).toBeVisible()
+      await expect(
+        page.getByRole('link', { name: 'Description' })
       ).toBeVisible()
       await expect(
         page.getByRole('link', { name: 'Localisation' })
@@ -62,54 +68,34 @@ test.describe('Edit digital individual offers', () => {
 
       await loginAndNavigate(page, userData.user.email, '/offres')
 
-      // OFFER SUMMARY PAGE
+      // OFFER EXPOSURE PAGE
       const firstRow = page.locator('tbody').getByRole('row').first()
       await firstRow.getByRole('button', { name: 'Voir les actions' }).click()
       await page.getByRole('menuitem', { name: 'Voir l’offre' }).click()
-      await expect(page).toHaveURL(/\/recapitulatif/)
+      await expect(page).toHaveURL(/\/visibilite/)
 
       // DESCRIPTION EDITION
-      await page
-        .getByRole('link', { name: 'Modifier la description de l’offre' })
-        .click()
+      await page.getByRole('link', { name: 'Description' }).click()
+      await expect(page).toHaveURL(/\/edition\/description/)
+      await page.getByLabel(/Description/).fill('Une description modifiée')
       await page.getByText('Enregistrer les modifications').click()
-
       await expect(
-        page.getByRole('heading', { name: 'Description' })
+        page.getByText('Votre offre a bien été modifiée.')
       ).toBeVisible()
 
       // LOCATION EDITION
-      await page.getByText('Localisation').click()
-      await expect(page).toHaveURL(/\/localisation/)
-
-      await page
-        .getByRole('link', { name: 'Modifier la localisation de l’offre' })
-        .click()
+      await page.getByRole('link', { name: 'Localisation' }).click()
       await expect(page).toHaveURL(/\/edition\/localisation/)
 
       const randomUrl = 'http://myrandomurl.fr/'
       await page.getByLabel(/URL d’accès à l’offre/).fill(randomUrl)
       await page.getByText('Enregistrer les modifications').click()
-
-      await expect(page.getByText('http://myrandomurl.fr/')).toBeVisible()
-
-      // OFFERS LIST
-      await page.getByText('Retour à la liste des offres').click()
-      await expect(page).toHaveURL(/\/offres/)
-      await expect(page.getByTestId('spinner')).not.toBeVisible()
       await expect(
-        page.getByRole('heading', { name: 'Offres individuelles' })
+        page.getByText('Votre offre a bien été modifiée.')
       ).toBeVisible()
-
-      const firstRowAgain = page.locator('tbody').getByRole('row').first()
-      await firstRowAgain
-        .getByRole('button', { name: 'Voir les actions' })
-        .click()
-      await page.getByRole('menuitem', { name: 'Voir l’offre' }).click()
-      await expect(page).toHaveURL(/\/recapitulatif/)
-
-      await page.getByText('Informations pratiques').click()
-      await expect(page).toHaveURL(/\/informations_pratiques/)
+      await expect(page.getByLabel(/URL d’accès à l’offre/)).toHaveValue(
+        randomUrl
+      )
     })
   })
 
@@ -130,9 +116,7 @@ test.describe('Edit digital individual offers', () => {
         userData.user.email,
         '/offre/individuelle/2/edition/horaires'
       )
-      await expect(
-        page.getByRole('heading', { level: 1, name: 'Modifier l’offre' })
-      ).toBeVisible()
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
       await expect(page.getByTestId('spinner')).toHaveCount(0)
 
       const patchStockPromise = page.waitForResponse(
