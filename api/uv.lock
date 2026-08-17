@@ -1248,7 +1248,7 @@ wheels = [
 
 [[package]]
 name = "google-cloud-tasks"
-version = "2.23.0"
+version = "2.24.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "google-api-core", extra = ["grpc"] },
@@ -1258,9 +1258,9 @@ dependencies = [
     { name = "proto-plus" },
     { name = "protobuf" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8f/a2/adec373a05a569baf52d41b374994b5d3ed4a9dab52bb96ed3536bcbe334/google_cloud_tasks-2.23.0.tar.gz", hash = "sha256:a6da2c114a4db5a59593eba64987a4bf6973a0f48b1a31a3d4acffb6f4c7beb9", size = 352038, upload-time = "2026-06-22T23:22:33.928Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/b2/7cfe6f0108baaaf535a8e3ccb5876f79430c2eb85f6f433e43c763dbe326/google_cloud_tasks-2.24.0.tar.gz", hash = "sha256:aa4f8764e5b157cbab81af619cc4fd9f14ebece8b69e5394a657c328a8366228", size = 370764, upload-time = "2026-08-06T06:24:45.842Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b4/03/f7a0dde9b971940fec9441141ab1581624434546dc8dd42f18f5703a2899/google_cloud_tasks-2.23.0-py3-none-any.whl", hash = "sha256:2a3e35c22b37947f829d62c50276a6f47c9ac1a789ec8ba0b646f31131b3c894", size = 296564, upload-time = "2026-06-22T23:20:32.66Z" },
+    { url = "https://files.pythonhosted.org/packages/53/8e/dc52d38465cc227fd8f5358984b67cc55080ed24781b99f6f7ff9d2b5e1e/google_cloud_tasks-2.24.0-py3-none-any.whl", hash = "sha256:1c82007a252d47efb4006eae5a5a0d9f6d375f917ab1c5cd80ce4a6f0ea4690d", size = 310091, upload-time = "2026-08-06T06:23:39.897Z" },
 ]
 
 [[package]]
@@ -2115,7 +2115,7 @@ requires-dist = [
     { name = "google-cloud-iam", specifier = "==2.24.0" },
     { name = "google-cloud-secret-manager", specifier = ">=2.30.0" },
     { name = "google-cloud-storage", specifier = "==3.13.0" },
-    { name = "google-cloud-tasks", specifier = "==2.23.0" },
+    { name = "google-cloud-tasks", specifier = "==2.24.0" },
     { name = "googleapis-common-protos", specifier = "==1.75.0" },
     { name = "googlemaps", specifier = "==4.10.0" },
     { name = "gql", extras = ["requests"], specifier = "==4.0.0" },
