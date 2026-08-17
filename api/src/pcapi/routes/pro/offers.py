@@ -508,7 +508,7 @@ def patch_offer(
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    updates = body.dict(by_alias=True, exclude_unset=True)
+    updates = body.model_dump(by_alias=True, exclude_unset=True)
     if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
         if "ean" in body_extra_data:
             updates["ean"] = body_extra_data.pop("ean")

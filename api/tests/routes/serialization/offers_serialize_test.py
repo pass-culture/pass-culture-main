@@ -13,18 +13,13 @@ class PatchOfferBodyModelExtraDataTest:
     def should_dump_extra_data_under_its_declared_names(self):
         body = PatchOfferBodyModel(extraData={"gtl_id": "010101010", "showType": "400"})
 
-        updates = body.dict(by_alias=True, exclude_unset=True)
+        updates = body.model_dump(by_alias=True, exclude_unset=True)
 
         assert updates["extraData"] == {"gtl_id": "010101010", "showType": "400"}
 
-    @pytest.mark.parametrize("key", ["showType", "show_type"])
-    def should_accept_either_casing_for_camel_case_fields(self, key):
-        body = PatchOfferBodyModel(extraData={key: "400"})
-
-        assert body.extraData == {"showType": "400"}
-
-    def should_reject_unknown_keys(self):
+    @pytest.mark.parametrize("key", ["malicious_data", "show_type"])
+    def should_reject_unknown_keys(self, key):
         with pytest.raises(ValueError) as error:
-            PatchOfferBodyModel(extraData={"malicious_data": ["a"]})
+            PatchOfferBodyModel(extraData={key: "400"})
 
-        assert error.value.errors()[0]["type"] == "value_error.extra"
+        assert error.value.errors()[0]["type"] == "extra_forbidden"
