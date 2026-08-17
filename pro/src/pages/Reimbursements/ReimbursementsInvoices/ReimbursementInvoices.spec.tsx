@@ -167,9 +167,7 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
-      screen.queryByText(
-        'Aucun justificatif de remboursement trouvé pour votre recherche'
-      )
+      screen.queryByText('Aucun justificatif ne correspond à votre recherche')
     ).not.toBeInTheDocument()
     expect(screen.getByText('Remboursement')).toBeInTheDocument()
     expect(
@@ -195,14 +193,10 @@ describe('reimbursementsWithFilters', () => {
 
     // there was a bug were two blocks were displayed
     expect(
-      screen.queryByText(
-        'Aucun justificatif de remboursement trouvé pour votre recherche'
-      )
+      screen.queryByText('Aucun justificatif ne correspond à votre recherche')
     ).not.toBeInTheDocument()
     expect(
-      screen.getByText(
-        'Vous n’avez pas encore de justificatifs de remboursement disponibles'
-      )
+      screen.getByText('Aucun justificatif pour le moment')
     ).toBeInTheDocument()
   })
 

@@ -71,6 +71,7 @@ const renderReimbursementsInvoicesTable = (
       isLoading={false}
       onFilterReset={vi.fn()}
       hasInvoice={true}
+      hasBankAccount={true}
     />
   )
 }
@@ -184,6 +185,7 @@ describe('InvoiceTable', () => {
         isLoading={false}
         onFilterReset={vi.fn()}
         hasInvoice={true}
+        hasBankAccount={true}
       />
     )
 
@@ -198,6 +200,7 @@ describe('InvoiceTable', () => {
         isLoading={false}
         onFilterReset={vi.fn()}
         hasInvoice={true}
+        hasBankAccount={true}
         isCaledonian={true}
       />
     )
@@ -227,18 +230,50 @@ describe('InvoiceTable', () => {
         isLoading={false}
         onFilterReset={vi.fn()}
         hasInvoice={false}
+        hasBankAccount={true}
       />
     )
 
+    expect(screen.getByText('Aucun justificatif pour le moment')).toBeVisible()
     expect(
       screen.getByText(
-        'Vous n’avez pas encore de justificatifs de remboursement disponibles'
+        'Les justificatifs sont générés à partir de vos réservations validées. Ils apparaîtront ici automatiquement.'
       )
     ).toBeVisible()
+    const cta = screen.getByRole('link', {
+      name: /Comprendre le suivi des remboursements/,
+    })
+    expect(cta).toBeVisible()
+    expect(cta).toHaveAttribute(
+      'href',
+      'https://aide.passculture.app/hc/fr/articles/4411999149201--Acteurs-Culturels-Comment-effectuer-le-suivi-de-vos-remboursements'
+    )
+  })
+
+  it('should display empty state when hasBankAccount is false', () => {
+    renderWithProviders(
+      <InvoiceTable
+        data={[]}
+        isLoading={false}
+        onFilterReset={vi.fn()}
+        hasInvoice={false}
+        hasBankAccount={false}
+      />
+    )
+
+    expect(screen.getByText('Aucun compte bancaire rattaché')).toBeVisible()
     expect(
       screen.getByText(
-        'Lorsqu’ils auront été édités, vous pourrez les télécharger ici'
+        "Vos justificatifs ne pourront pas être traités tant qu'aucun compte bancaire n'est actif. Rattachez-en un pour débloquer vos remboursements."
       )
     ).toBeVisible()
+    const cta = screen.getByRole('link', {
+      name: /Rattacher un compte bancaire/,
+    })
+    expect(cta).toBeVisible()
+    expect(cta).toHaveAttribute(
+      'href',
+      '/administration/remboursements/informations-bancaires'
+    )
   })
 })

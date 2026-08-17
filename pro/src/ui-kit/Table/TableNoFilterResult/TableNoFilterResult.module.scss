@@ -1,21 +1,28 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .search-no-results {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: var(--size-spacing-xxl);
   text-align: center;
 
   &-icon {
     color: var(--color-icon-subtle);
-    margin: var(--size-spacing-xxxxl) 0 var(--size-spacing-s);
   }
 
-  &-title4 {
-    @include fonts.title4;
+  &-title {
+    @include fonts.title3;
 
-    margin-bottom: var(--size-spacing-l);
+    margin-top: var(--size-spacing-xl);
+    text-align: center;
   }
 
-  &-text {
-    color: var(--color-text-subtle);
-    margin-bottom: var(--size-spacing-s);
+  &-subtitle {
+    @include fonts.body;
+  }
+
+  &-cta {
+    margin-top: var(--size-spacing-xl);
   }
 }
