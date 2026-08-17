@@ -508,12 +508,8 @@ def patch_offer(
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    updates = body.model_dump(by_alias=True, exclude_unset=True)
-    if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
-        if "ean" in body_extra_data:
-            updates["ean"] = body_extra_data.pop("ean")
-        updates["extraData"] = body_extra_data
-    offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
+    _patch_offer(offer, body)
+
     db.session.flush()
     offer = offers_repository.get_offer_by_id(
         offer_id,
@@ -534,6 +530,55 @@ def patch_offer(
     )
 
     return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
+
+
+def _patch_offer(offer: models.Offer, body: offers_serialize.PatchOfferBodyModel) -> None:
+    updates = body.model_dump(by_alias=True, exclude_unset=True)
+
+    ean: str | None | offers_api.T_UNCHANGED = offers_api.UNCHANGED
+    extra_data: typing.Any = updates.get("extraData", offers_api.UNCHANGED)
+
+    if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
+        if "ean" in body_extra_data:
+            ean = body_extra_data.pop("ean")
+        extra_data = body_extra_data
+
+    offerer_address: offerers_models.OffererAddress | offers_api.T_UNCHANGED = offers_api.UNCHANGED
+
+    if body.location:
+        offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
+            address_body=body.location, venue=offer.venue
+        )
+
+    offers_api.update_offer_from_private_api(
+        offer,
+        # read off `body`, not `updates`, so that the links stay parsed models rather than dicts
+        artist_offer_links=body.artist_offer_links,
+        audio_disability_compliant=updates.get("audioDisabilityCompliant", offers_api.UNCHANGED),
+        booking_allowed_datetime=updates.get("bookingAllowedDatetime", offers_api.UNCHANGED),
+        booking_contact=updates.get("bookingContact", offers_api.UNCHANGED),
+        booking_email=updates.get("bookingEmail", offers_api.UNCHANGED),
+        description=updates.get("description", offers_api.UNCHANGED),
+        duration_minutes=updates.get("durationMinutes", offers_api.UNCHANGED),
+        ean=ean,
+        external_ticket_office_url=updates.get("externalTicketOfficeUrl", offers_api.UNCHANGED),
+        extra_data=extra_data,
+        has_cultural_outreach_claim=body.hasCulturalOutreachClaim,
+        is_duo=updates.get("isDuo", offers_api.UNCHANGED),
+        is_national=updates.get("isNational", offers_api.UNCHANGED),
+        mental_disability_compliant=updates.get("mentalDisabilityCompliant", offers_api.UNCHANGED),
+        motor_disability_compliant=updates.get("motorDisabilityCompliant", offers_api.UNCHANGED),
+        name=updates.get("name", offers_api.UNCHANGED),
+        offerer_address=offerer_address,
+        publication_datetime=updates.get("publicationDatetime", offers_api.UNCHANGED),
+        subcategory_id=updates.get("subcategoryId", offers_api.UNCHANGED),
+        url=updates.get("url", offers_api.UNCHANGED),
+        visual_disability_compliant=updates.get("visualDisabilityCompliant", offers_api.UNCHANGED),
+        withdrawal_delay=updates.get("withdrawalDelay", offers_api.UNCHANGED),
+        withdrawal_details=updates.get("withdrawalDetails", offers_api.UNCHANGED),
+        withdrawal_type=updates.get("withdrawalType", offers_api.UNCHANGED),
+        should_send_mail=bool(body.shouldSendMail),
+    )
 
 
 @private_api.route("/offers/<int:offer_id>/video", methods=["PUT"])
