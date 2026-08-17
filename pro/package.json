@@ -45,7 +45,7 @@
     "@algolia/autocomplete-plugin-query-suggestions": "1.19.9",
     "@algolia/autocomplete-plugin-recent-searches": "1.19.9",
     "@algolia/autocomplete-preset-algolia": "1.19.9",
-    "@firebase/analytics": "0.10.22",
+    "@firebase/analytics": "0.10.23",
     "@firebase/app": "0.16.0",
     "@firebase/remote-config": "0.9.1",
     "@hookform/resolvers": "5.7.1",
