@@ -17,7 +17,7 @@ updates:
     open-pull-requests-limit: 15
     pull-request-branch-name:
       max-length: 76
-      template: '{dependency}-{version}'
+      template: 'dependabot/{dependency}-{version}'
     cooldown:
       default-days: 7
       semver-major-days: 14
@@ -40,7 +40,7 @@ updates:
     open-pull-requests-limit: 10
     pull-request-branch-name:
       max-length: 76
-      template: '{dependency}-{version}'
+      template: 'dependabot/{dependency}-{version}'
     cooldown:
       default-days: 7
       semver-major-days: 14
@@ -57,7 +57,7 @@ updates:
     open-pull-requests-limit: 15
     pull-request-branch-name:
       max-length: 76
-      template: '{dependency}-{version}'
+      template: 'dependabot/{dependency}-{version}'
     cooldown:
       default-days: 7
       semver-major-days: 14
@@ -87,7 +87,7 @@ updates:
     open-pull-requests-limit: 10
     pull-request-branch-name:
       max-length: 76
-      template: '{dependency}-{version}'
+      template: 'dependabot/{dependency}-{version}'
     cooldown:
       # The property 'semver-major-days' is not supported for the package ecosystem 'github-actions'.
       default-days: 14
