@@ -5,20 +5,26 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  margin: rem.torem(56px) 0;
+  margin: var(--size-spacing-xxl);
+  text-align: center;
 
   &-icon {
+    margin-top: var(--size-spacing-xxl);
     color: var(--color-icon-subtle);
   }
-}
 
-.no-data-title {
-  @include fonts.title3;
+  &-title {
+    @include fonts.title3;
 
-  margin: var(--size-spacing-l) 0;
-  text-align: center;
-}
+    margin-top: var(--size-spacing-xl);
+    text-align: center;
+  }
 
-.no-data-subtitle {
-  @include fonts.body;
+  &-subtitle {
+    @include fonts.body;
+  }
+
+  &-cta {
+    margin-top: var(--size-spacing-xl);
+  }
 }

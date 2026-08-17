@@ -9,12 +9,59 @@ import {
 } from '@/commons/utils/convertEuroToPacificFranc'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
+import fullNextIcon from '@/icons/full-next.svg'
+import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { InvoiceActions } from './InvoiceActions'
 import { InvoiceDownloadActionsBar } from './InvoiceDownloadActionsBar'
 import styles from './InvoiceTable.module.scss'
+
+function getEmptyStateMessage(hasBankAccount: boolean) {
+  if (!hasBankAccount) {
+    return {
+      icon: strokeInstitutionIcon,
+      title: 'Aucun compte bancaire rattaché',
+      subtitle:
+        "Vos justificatifs ne pourront pas être traités tant qu'aucun compte bancaire n'est actif. Rattachez-en un pour débloquer vos remboursements.",
+      cta: (
+        <Button
+          as="router-link"
+          to="/administration/remboursements/informations-bancaires"
+          label="Rattacher un compte bancaire"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullNextIcon}
+          iconPosition={IconPositionEnum.RIGHT}
+        />
+      ),
+    }
+  }
+  return {
+    icon: strokeRepaymentIcon,
+    title: 'Aucun justificatif pour le moment',
+    subtitle:
+      'Les justificatifs sont générés à partir de vos réservations validées. Ils apparaîtront ici automatiquement.',
+    cta: (
+      <Button
+        as="a"
+        to="https://aide.passculture.app/hc/fr/articles/4411999149201--Acteurs-Culturels-Comment-effectuer-le-suivi-de-vos-remboursements"
+        opensInNewTab
+        label="Comprendre le suivi des remboursements"
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
+        iconPosition={IconPositionEnum.RIGHT}
+      />
+    ),
+  }
+}
 
 const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
   {
@@ -46,6 +93,8 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
   {
     id: 'amount',
     label: 'Montant',
+    sortable: true,
+    ordererField: 'amount',
     render: (invoice: ExtendedInvoiceResponseV2Model) => (
       <div
         className={cn({
@@ -76,6 +125,7 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
 type InvoiceTableProps = {
   data: InvoiceResponseV2Model[]
   hasInvoice: boolean
+  hasBankAccount: boolean
   isLoading: boolean
   isCaledonian?: boolean
   onFilterReset: () => void
@@ -89,6 +139,7 @@ type ExtendedInvoiceResponseV2Model = InvoiceResponseV2Model & {
 export const InvoiceTable = ({
   data,
   hasInvoice,
+  hasBankAccount,
   isLoading,
   isCaledonian,
   onFilterReset,
@@ -120,19 +171,14 @@ export const InvoiceTable = ({
         }}
         variant={TableVariant.COLLAPSE}
         noResult={{
-          message:
-            'Aucun justificatif de remboursement trouvé pour votre recherche',
+          message: 'Aucun justificatif ne correspond à votre recherche',
+          subtitle: 'Essayez de modifier vos critères de recherche.',
+          resetMessage: 'Réinitialiser le filtre',
           onFilterReset,
         }}
         noData={{
-          hasNoData: !hasInvoice,
-          message: {
-            icon: strokeRepaymentIcon,
-            title:
-              'Vous n’avez pas encore de justificatifs de remboursement disponibles',
-            subtitle:
-              'Lorsqu’ils auront été édités, vous pourrez les télécharger ici',
-          },
+          hasNoData: !hasInvoice || !hasBankAccount,
+          message: getEmptyStateMessage(hasBankAccount),
         }}
       />
       <InvoiceDownloadActionsBar checkedInvoices={checkedInvoices} />

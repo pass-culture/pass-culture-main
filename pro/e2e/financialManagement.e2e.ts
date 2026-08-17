@@ -69,11 +69,7 @@ test.describe('Financial Management - messages, links to external help page, rei
     await expect(page.getByTestId('spinner')).toHaveCount(0)
     await expect(page.getByTestId('invoice-title-row')).toHaveCount(0)
     await expect(page.getByTestId('invoice-item-row')).toHaveCount(0)
-    await expect(
-      page.getByText(
-        'Vous n’avez pas encore de justificatifs de remboursement disponibles'
-      )
-    ).toBeVisible()
+    await expect(page.getByText('Aucun compte bancaire rattaché')).toBeVisible()
 
     await checkAccessibility(page)
 

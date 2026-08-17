@@ -148,6 +148,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
         <InvoiceTable
           data={invoices}
           hasInvoice={hasInvoice}
+          hasBankAccount={bankAccounts.length > 0}
           isLoading={getInvoicesQuery.isLoading}
           isCaledonian={isCaledonian}
           onFilterReset={handleResetFilters}

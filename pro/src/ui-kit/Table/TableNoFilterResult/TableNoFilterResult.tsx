@@ -1,7 +1,7 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullRefresh from '@/icons/full-refresh.svg'
-import strokeSearchIcon from '@/icons/stroke-search.svg'
+import strokeSearchIcon from '@/icons/stroke-search-2.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './TableNoFilterResult.module.scss'
@@ -28,17 +28,19 @@ export const TableNoFilterResult = ({
           src={strokeSearchIcon}
           alt="Illustration de recherche"
           className={styles['search-no-results-icon']}
-          width="124"
+          width="80"
         />
-        <p className={styles['search-no-results-title4']}>{message}</p>
-        <p className={styles['search-no-results-text']}>{subtitle}</p>
-        <Button
-          variant={ButtonVariant.SECONDARY}
-          color={ButtonColor.BRAND}
-          icon={fullRefresh}
-          onClick={resetFilters}
-          label={resetMessage}
-        />
+        <p className={styles['search-no-results-title']}>{message}</p>
+        <p className={styles['search-no-results-subtitle']}>{subtitle}</p>
+        <div className={styles['search-no-results-cta']}>
+          <Button
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            icon={fullRefresh}
+            onClick={resetFilters}
+            label={resetMessage}
+          />
+        </div>
       </div>
     </td>
   </tr>

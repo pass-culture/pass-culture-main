@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { useMemo, useState } from 'react'
+import React, { type ReactNode, useMemo, useState } from 'react'
 
 import { SortingMode, useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -33,6 +33,7 @@ type EmptyStateProps = {
     icon: string
     title: string
     subtitle: string
+    cta?: ReactNode
   }
 }
 
