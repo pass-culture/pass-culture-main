@@ -666,6 +666,7 @@ class Returns200Test:
             "externalTicketOfficeUrl": "http://example.net",
             "mentalDisabilityCompliant": True,
             "location": {
+                "isVenueLocation": False,
                 "street": "1 rue de la paix",
                 "city": "Paris",
                 "postalCode": "75102",
@@ -719,11 +720,6 @@ class Returns200Test:
         data = {
             "location": {
                 "isVenueLocation": True,
-                "street": venue.offererAddress.address.street,
-                "city": venue.offererAddress.address.city,
-                "postalCode": venue.offererAddress.address.postalCode,
-                "latitude": venue.offererAddress.address.latitude,
-                "longitude": venue.offererAddress.address.longitude,
             },
         }
         offer_id = offer.id
@@ -778,6 +774,7 @@ class Returns200Test:
             "externalTicketOfficeUrl": "http://example.net",
             "mentalDisabilityCompliant": True,
             "location": {
+                "isVenueLocation": False,
                 "street": "3, Chemin de la Plage",
                 "city": "Poum, Tiabet",
                 "postalCode": "98826",
@@ -823,6 +820,7 @@ class Returns200Test:
             "externalTicketOfficeUrl": "http://example.net",
             "mentalDisabilityCompliant": True,
             "location": {
+                "isVenueLocation": False,
                 "street": "3, Chemin de la Plage",
                 "city": "Poum, Tiabet",
                 "postalCode": "98826",
@@ -1340,11 +1338,6 @@ class Returns200Test:
             "extraData": {"ean": "1234567890123", "author": "New author"},
             "location": {
                 "isVenueLocation": True,
-                "street": venue.offererAddress.address.street,
-                "city": venue.offererAddress.address.city,
-                "postalCode": venue.offererAddress.address.postalCode,
-                "latitude": venue.offererAddress.address.latitude,
-                "longitude": venue.offererAddress.address.longitude,
             },
         }
 
@@ -2032,8 +2025,8 @@ class Returns400Test:
                 "externalTicketOfficeUrl": "https:///not/domain",
             },
             expected_response_json={
-                "url": ['L\'URL doit terminer par une extension (ex. ".fr")'],
-                "externalTicketOfficeUrl": ['L\'URL doit terminer par une extension (ex. ".fr")'],
+                "url": ["Relative path are forbidden."],
+                "externalTicketOfficeUrl": ["Relative path are forbidden."],
             },
         )
 
@@ -2097,8 +2090,8 @@ class Returns400Test:
                 "externalTicketOfficeUrl": "https://missing",
             },
             expected_response_json={
-                "url": ['L\'URL doit terminer par une extension (ex. ".fr")'],
-                "externalTicketOfficeUrl": ['L\'URL doit terminer par une extension (ex. ".fr")'],
+                "url": ["Top level domains are forbidden."],
+                "externalTicketOfficeUrl": ["Top level domains are forbidden."],
             },
         )
 
@@ -2227,7 +2220,7 @@ class Returns400Test:
                 },
             },
             expected_response_json={
-                "extraData.maliciousData": ["Vous ne pouvez pas changer cette information"],
+                "extraData.malicious_data": ["Vous ne pouvez pas changer cette information"],
             },
         )
 
@@ -2257,7 +2250,7 @@ class Returns400Test:
             offer_data={"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
             patch_body={"extraData": 1312},
             expected_response_json={
-                "extraData.__root__": ["OfferExtraData expected dict not int"],
+                "extraData": ["Input should be a valid dictionary"],
             },
         )
 
@@ -2436,14 +2429,14 @@ class Returns400Test:
         self._assert_patch_is_rejected(
             client,
             patch_body={"bookingEmail": "not-an-email"},
-            expected_response_json={"bookingEmail": ["Le format d'email est incorrect."]},
+            expected_response_json={"bookingEmail": ["Saisissez un email valide"]},
         )
 
     def when_sending_an_invalid_booking_contact(self, client):
         self._assert_patch_is_rejected(
             client,
             patch_body={"bookingContact": "not-an-email"},
-            expected_response_json={"bookingContact": ["Le format d'email est incorrect."]},
+            expected_response_json={"bookingContact": ["Saisissez un email valide"]},
         )
 
     def when_sending_a_withdrawal_type_outside_of_the_enum(self, client):
@@ -2451,9 +2444,7 @@ class Returns400Test:
             client,
             patch_body={"withdrawalType": "by_carrier_pigeon"},
             expected_response_json={
-                "withdrawalType": [
-                    "value is not a valid enumeration member; permitted: 'by_email', 'in_app', 'no_ticket', 'on_site'"
-                ]
+                "withdrawalType": ["Input should be 'by_email', 'in_app', 'no_ticket' or 'on_site'"]
             },
         )
 

@@ -3,6 +3,7 @@ import decimal
 import ipaddress
 import typing
 from functools import partial
+from typing import Annotated
 from urllib import parse
 
 import flask
@@ -11,7 +12,6 @@ import pydantic.v1 as pydantic_v1
 import pytz
 from pydantic.v1 import validator
 from pydantic_core import PydanticCustomError
-from typing_extensions import Annotated
 
 import pcapi.connectors.entreprise.api as api_entreprise
 from pcapi.models.api_errors import ApiErrors
@@ -78,6 +78,9 @@ def before_handler(
         "datetime_type": "Format de date invalide",
         "decimal_max_places": "Saisissez un nombre avec au maximum {decimal_places} décimales",
         "decimal_max_digits": "Saisissez un nombre avec au maximum {max_digits} chiffres au total",
+        "extra_forbidden": "Vous ne pouvez pas changer cette information",
+        "url_parsing": 'L\'URL doit commencer par "http://" ou "https://"',
+        "url_scheme": 'L\'URL doit commencer par "http://" ou "https://"',
     }
 
     if pydantic_error and pydantic_error.errors():
@@ -139,7 +142,12 @@ def without_timezone(d: datetime.datetime) -> datetime.datetime:
     return datetime.datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, d.microsecond)
 
 
-def check_date_in_future(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
+def check_date_in_future(
+    value: datetime.datetime | NOW_LITERAL | None,
+    pydantic_version: typing.Literal["v1"] | typing.Literal["v2"],
+) -> datetime.datetime | None:
+    ErrorClass = PydanticError if pydantic_version == "v2" else ValueError
+
     if not value:
         return None
     if value == "now":
@@ -147,10 +155,10 @@ def check_date_in_future(value: datetime.datetime | NOW_LITERAL | None) -> datet
 
     assert isinstance(value, datetime.datetime)  # to make mypy happy
     if value.tzinfo is None:
-        raise ValueError("The datetime must be timezone-aware.")
+        raise ErrorClass("The datetime must be timezone-aware.")
     no_tz_value = as_utc_without_timezone(value)
     if no_tz_value < datetime.datetime.now(datetime.UTC).replace(tzinfo=None):
-        raise ValueError("The datetime must be in the future.")
+        raise ErrorClass("The datetime must be in the future.")
     return value
 
 
@@ -212,9 +220,9 @@ def check_url[T: (pydantic_v1.HttpUrl | pydantic_v2.HttpUrl | str | None)](
 def _check_datetime_in_future_and_format_to_utc_datetime(value: datetime.datetime) -> datetime.datetime:
     if value.tzinfo is None:
         raise PydanticError("The datetime must be timezone-aware.")
-    if value < datetime.datetime.now(datetime.timezone.utc):
+    if value < datetime.datetime.now(datetime.UTC):
         raise PydanticError("The datetime must be in the future.")
-    return value.astimezone(datetime.timezone.utc)
+    return value.astimezone(datetime.UTC)
 
 
 def validate_datetime(field_name: str, always: bool = False) -> classmethod:
@@ -239,7 +247,16 @@ future_tz_aware_datetime_to_utc_datetime = Annotated[
 
 
 def validate_timezoned_datetime(field_name: str, always: bool = False) -> classmethod:
-    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(check_date_in_future)
+    validation_function = partial(check_date_in_future, pydantic_version="v1")
+    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(validation_function)
+
+
+future_tz_aware_datetime_keep_tz = Annotated[
+    datetime.datetime, pydantic_v2.AfterValidator(partial(check_date_in_future, pydantic_version="v2"))
+]
+future_tz_aware_datetime_or_now_keep_tz = Annotated[
+    datetime.datetime | NOW_LITERAL, pydantic_v2.AfterValidator(partial(check_date_in_future, pydantic_version="v2"))
+]
 
 
 def validate_phone_number(phone_number: str) -> str:

@@ -1,6 +1,5 @@
 import datetime
 import decimal
-import json
 import logging
 import re
 import warnings
@@ -43,11 +42,6 @@ from pcapi.utils import date
 from pcapi.utils.string import is_canonical_integer
 from pcapi.utils.string import to_camelcase
 
-
-MAX_EXTRA_DATA_SIZE_BYTES = 64 * 1024
-
-# '<[^>]*>' to match <...> , 'on\w+\s*=' to match classic JS actions (onerror=, onload=...)
-HTML_INJECTION_REGEX = re.compile(r"<[^>]*>|on\w+\s*=", re.IGNORECASE)
 
 logger = logging.getLogger(__name__)
 
@@ -964,13 +958,3 @@ def check_artist_offer_links(
             raise api_errors.ApiErrors(
                 errors={"artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]}
             )
-
-
-def validate_extra_data_size(extra_data: models.OfferExtraData | None) -> None:
-    if len(json.dumps(extra_data).encode("utf-8")) > MAX_EXTRA_DATA_SIZE_BYTES:
-        raise ValueError("extraData field is too big (maximum 64 Ko).")
-
-
-def validate_extra_data_content(extra_data: models.OfferExtraData | None) -> None:
-    if HTML_INJECTION_REGEX.search(json.dumps(extra_data)):
-        raise ValueError("extraData field includes forbidden caracters or scripts")
