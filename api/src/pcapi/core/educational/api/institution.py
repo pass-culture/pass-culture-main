@@ -3,6 +3,8 @@ import enum
 import logging
 import os
 import typing
+import unicodedata
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
@@ -108,23 +110,22 @@ def get_import_deposit_data(path: str) -> dict[str, Decimal]:
     with open(path, "r", encoding="utf-8") as csv_file:
         csv_rows = csv.DictReader(csv_file, delimiter=";")
         headers = csv_rows.fieldnames
-        if not headers or ("UAICode" not in headers and "UAI" not in headers):
-            raise ValueError("UAICode or UAI missing in CSV headers")
+        if headers is None:
+            raise ValueError("CSV shoud have legible headers")
+        normalized_headers = [_normalize_import_file_header(header) for header in headers]
+        uai_header = _get_uai_header(normalized_headers)
+        amount_header = _get_amount_header(normalized_headers)
 
         data: dict[str, Decimal] = {}
         # sometimes we get 1 row per institution and sometimes 1 row per class.
         for row in csv_rows:
-            # try to get the UAI
-            uai_header = "UAI" if "UAI" in headers else "UAICode"
+            # get the UAI
             uai = row[uai_header].strip()
-            # try to get the amount
-            if "Crédits de dépenses" in headers or "depositAmount" in headers:
-                amount_header = "depositAmount" if "depositAmount" in headers else "Crédits de dépenses"
-                amount = Decimal(row[amount_header])
-            elif "montant par élève" in headers and "Effectif" in headers:
-                amount = Decimal(row["Effectif"]) * Decimal(row["montant par élève"])
+            # get the amount
+            if amount_header == "montant par eleve":
+                amount = Decimal(row["effectif"]) * Decimal(row[amount_header])
             else:
-                raise ValueError("No way to get the amount found")
+                amount = Decimal(row[amount_header])
 
             if uai in data:
                 data[uai] += amount
@@ -467,3 +468,34 @@ def get_playlist_max_distance(institution: models.EducationalInstitution) -> int
         return 60
 
     return models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60)
+
+
+def _normalize_import_file_header(header: str) -> str:
+    # get rid of accented characters
+    nkfd_form = unicodedata.normalize("NFKD", header)
+    return "".join([c for c in nkfd_form if not unicodedata.combining(c)]).lower()
+
+
+def _get_uai_header(headers: Sequence[str]) -> str:
+    accepted_uai_headers = ("uai", "uaicode", "code uai")
+    found_headers = list(set(headers).intersection(accepted_uai_headers))
+    if len(found_headers) != 1:
+        raise ValueError("No way to find UAI: CSV shoud have a column named 'UAI', 'UAICode', or 'Code UAI'")
+    return found_headers[0]
+
+
+def _get_amount_header(headers: Sequence[str]) -> str:
+    accepted_amount_headers = (
+        "montant total par etablissement en euros au titre de la periode 1",
+        "montant total par etablissement en euros au titre de la periode 2",
+        "credits de depenses",
+        "depositamount",
+        "montant par eleve",
+    )
+    found_headers = list(set(headers).intersection(accepted_amount_headers))
+    # sometimes we get total amount per institution and sometimes amount per student and number of students
+    if len(found_headers) != 1 or (found_headers[0] == "montant par eleve" and "effectif" not in headers):
+        raise ValueError(
+            "No way to find amount: CSV shoud have a column named 'Montant total par etablissement en euros au titre de la periode 1', 'Montant total par etablissement en euros au titre de la periode 2', 'Credit de depenses', 'depositAmout', or have both columns 'Effectif' and 'Montant par eleve'"
+        )
+    return found_headers[0]
