@@ -130,6 +130,7 @@ export const ImageDragAndDropUploader = ({
               })}
             />
           }
+          credit={draftCredit}
         />
       )}
       <div

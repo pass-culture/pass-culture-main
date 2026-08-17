@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 import type { VideoData } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -19,6 +21,7 @@ import styles from './MediaSection.module.scss'
 export interface MediaSectionProps {
   offerId: number
   imageUrl?: string | null
+  imageCredit?: string | null
   videoData?: VideoData
   isOnCreation?: boolean
 }
@@ -26,10 +29,12 @@ export interface MediaSectionProps {
 export const MediaSection = ({
   offerId,
   imageUrl,
+  imageCredit,
   videoData,
   isOnCreation = false,
 }: MediaSectionProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const imageCreditId = useId()
 
   const { videoDuration, videoTitle, videoThumbnailUrl, videoUrl } =
     videoData ?? {}
@@ -51,13 +56,23 @@ export const MediaSection = ({
       {!isOnCreation && (
         <SummarySubSection title="Ajoutez une image" shouldShowDivider={false}>
           {imageUrl ? (
-            <SafeImage
-              className={styles['image-preview']}
-              testId="image-preview"
-              alt="Prévisualisation de l’image"
-              src={imageUrl}
-              placeholder={<ImagePlaceholder />}
-            />
+            <figure>
+              <SafeImage
+                className={styles['image-preview']}
+                testId="image-preview"
+                alt="Prévisualisation de l’image"
+                src={imageUrl}
+                placeholder={<ImagePlaceholder />}
+                ariaDescribedBy={imageCredit ? imageCreditId : undefined}
+              />
+              {imageCredit ? (
+                <figcaption id={imageCreditId}>
+                  <p className={styles['image-credit-text']}>
+                    Crédit image : {imageCredit}
+                  </p>
+                </figcaption>
+              ) : null}
+            </figure>
           ) : (
             <span>{'Pas d’image'}</span>
           )}

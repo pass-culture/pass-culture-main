@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 import {
   AdageFrontRoles,
   type AuthenticatedResponse,
@@ -37,11 +39,12 @@ export function AdageOfferHeader({
   adageUser,
   isPreview,
   playlistId,
-}: AdageOfferHeaderProps) {
+}: Readonly<AdageOfferHeaderProps>) {
   const isOfferBookable = isCollectiveOfferBookable(offer)
   const isNewCollectivePriceEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
   )
+  const imageCreditId = useId()
 
   const venueAndOffererName = getOfferVenueAndOffererName(offer.venue)
 
@@ -56,12 +59,22 @@ export function AdageOfferHeader({
     <>
       <div className={styles['offer-header-image-container']}>
         {offer.imageUrl ? (
-          <img
-            alt=""
-            className={styles['offer-header-image']}
-            loading="lazy"
-            src={offer.imageUrl}
-          />
+          <figure>
+            <img
+              alt=""
+              className={styles['offer-header-image']}
+              loading="lazy"
+              src={offer.imageUrl}
+              aria-describedby={offer.imageCredit ? imageCreditId : undefined}
+            />
+            {offer.imageCredit ? (
+              <figcaption id={imageCreditId}>
+                <p className={styles['offer-header-image-credit-text']}>
+                  Crédit image : {offer.imageCredit}
+                </p>
+              </figcaption>
+            ) : null}
+          </figure>
         ) : (
           <div className={styles['offer-header-image-fallback']}>
             <SvgIcon src={strokeOfferIcon} alt="" width="80" />

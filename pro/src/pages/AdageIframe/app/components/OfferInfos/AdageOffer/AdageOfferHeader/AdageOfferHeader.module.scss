@@ -5,7 +5,6 @@
 .offer-header-image-container {
   width: rem.torem(176px);
   min-width: rem.torem(176px);
-  height: rem.torem(264px);
 }
 
 .offer-header-image,
@@ -17,6 +16,12 @@
 
 .offer-header-image {
   object-fit: cover;
+}
+
+.offer-header-image-credit-text {
+  @include fonts.body-accent-s;
+
+  color: var(--color-text-disabled);
 }
 
 .offer-header-image-fallback {

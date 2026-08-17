@@ -1,4 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .image-preview {
   margin-top: var(--size-spacing-xl);
@@ -6,6 +8,10 @@
   aspect-ratio: 2 / 3;
   border: 1px solid var(--color-border-subtle);
   box-shadow: var(--shadow-overlay);
+}
+
+.image-credit {
+  margin-top: var(--size-spacing-s);
 }
 
 .default-preview {
@@ -20,4 +26,10 @@
     width: rem.torem(60px);
     color: var(--color-icon-subtle);
   }
+}
+
+.image-credit-text {
+  @include fonts.body-accent-s;
+
+  color: var(--color-text-disabled);
 }

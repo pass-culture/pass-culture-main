@@ -1,5 +1,6 @@
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
+import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { MediaSection } from '@/pages/IndividualOfferSummary/components/MediaSection/MediaSection'
@@ -9,6 +10,7 @@ import { SummaryLayout } from '@/ui-kit/SummaryLayout/SummaryLayout'
 
 const IndividualOfferSummaryMedia = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
+  const image = getIndividualOfferImage(offer)
 
   if (offer === null) {
     return <Spinner />
@@ -20,7 +22,8 @@ const IndividualOfferSummaryMedia = (): JSX.Element | null => {
         <SummaryContent>
           <MediaSection
             offerId={offer.id}
-            imageUrl={offer.thumbUrl}
+            imageUrl={image?.url}
+            imageCredit={image?.credit}
             videoData={offer.videoData}
           />
         </SummaryContent>

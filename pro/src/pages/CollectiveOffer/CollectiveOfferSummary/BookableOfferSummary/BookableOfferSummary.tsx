@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { mutate } from 'swr'
 
@@ -65,6 +65,7 @@ export type BookableOfferSummaryProps = {
 }
 
 export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
+  const imageCreditId = useId()
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -204,11 +205,21 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
       <div className={styles['header-description']}>
         <div>
           {offer.imageUrl ? (
-            <img
-              alt={offer.name}
-              src={offer.imageUrl}
-              className={styles['image-preview']}
-            />
+            <figure className={styles['image-credit']}>
+              <img
+                alt={offer.name}
+                src={offer.imageUrl}
+                className={styles['image-preview']}
+                aria-describedby={offer.imageCredit ? imageCreditId : undefined}
+              />
+              {offer.imageCredit ? (
+                <figcaption id={imageCreditId}>
+                  <p className={styles['image-credit-text']}>
+                    Crédit image : {offer.imageCredit}
+                  </p>
+                </figcaption>
+              ) : null}
+            </figure>
           ) : (
             <div
               className={cn(styles['default-preview'], styles['image-preview'])}

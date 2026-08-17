@@ -33,7 +33,7 @@ def redactor_fixture():
 
 def expected_serialized_offer(offer, redactor, offer_venue=None):
     national_program = offer.nationalProgram
-    is_favorite = offer.id in {offer.id for offer in redactor.favoriteCollectiveOfferTemplates}
+    is_favorite = offer.id in {fav.id for fav in redactor.favoriteCollectiveOfferTemplates}
     venue_address = offer.venue.offererAddress.address
     coordinates = {
         "longitude": float(venue_address.longitude),
@@ -93,6 +93,7 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
         "educationalPriceDetail": offer.priceDetail,
         "domains": [{"id": domain.id, "name": domain.name} for domain in offer.domains],
         "imageUrl": offer.imageUrl,
+        "imageCredit": offer.imageCredit,
         "nationalProgram": {"id": national_program.id, "name": national_program.name} if national_program else None,
         "isFavorite": is_favorite,
         "dates": {
