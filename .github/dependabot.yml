@@ -99,3 +99,5 @@ updates:
     schedule:
       # Disable dependency graph for now
       interval: 'yearly'
+    cooldown:
+      default-days: 180
