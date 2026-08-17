@@ -71,7 +71,7 @@
     "react-avatar-editor": "15.1.0",
     "react-chartjs-2": "5.3.1",
     "react-dom": "19.2.8",
-    "react-dropzone": "19.3.0",
+    "react-dropzone": "20.0.0",
     "react-hook-form": "7.84.0",
     "react-instantsearch": "7.41.0",
     "react-redux": "9.3.0",
