@@ -638,6 +638,7 @@ def update_offer_from_private_api(
         artist_offer_links=artist_offer_links,
         ean=ean if ean is not UNCHANGED else None,
         extra_data=extra_data if extra_data is not UNCHANGED else None,
+        relation_updates=relation_updates,
         url_is_explicitly_removed=url is not UNCHANGED and url is None,
     )
 

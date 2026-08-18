@@ -77,6 +77,38 @@ EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
     "publicationDatetime",
 } | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 
+# The two sets below mirror the frontend read-only logic `getFormReadOnlyFields`
+READONLY_FIELDS_FOR_PRODUCT_BASED_OFFER = {
+    "artistOfferLinks",
+    "description",
+    "durationMinutes",
+    "ean",
+    "extraData",
+    "hasCulturalOutreachClaim",
+    "name",
+    "subcategoryId",
+}
+READONLY_FIELDS_FOR_SYNCHRONIZED_OFFER = {
+    "artistOfferLinks",
+    "bookingAllowedDatetime",
+    "bookingContact",
+    "bookingEmail",
+    "description",
+    "durationMinutes",
+    "ean",
+    "extraData",
+    "isDuo",
+    "isNational",
+    "name",
+    "offererAddress",
+    "publicationDatetime",
+    "subcategoryId",
+    "url",
+    "withdrawalDelay",
+    "withdrawalDetails",
+    "withdrawalType",
+}
+
 MAX_THUMBNAIL_SIZE = 10_000_000
 MIN_THUMBNAIL_WIDTH = 400
 MIN_THUMBNAIL_HEIGHT = 400
@@ -116,6 +148,31 @@ def check_update_only_allowed_fields_for_offer_from_provider(
     if rejected_fields:
         api_error = api_errors.ApiErrors()
         for field in rejected_fields:
+            api_error.add_error(field, "Vous ne pouvez pas modifier ce champ")
+
+        raise api_error
+
+
+def check_offer_fields_are_editable_from_private_api(offer: models.Offer, updated_fields: set[str]) -> None:
+    readonly_fields: set[str] = set()
+
+    if offer.productId is not None:
+        readonly_fields |= READONLY_FIELDS_FOR_PRODUCT_BASED_OFFER
+
+    if offer.lastProvider is not None:
+        synchronized_readonly_fields = set(READONLY_FIELDS_FOR_SYNCHRONIZED_OFFER)
+        # (tcoudray-pass, 10/02/26) to unblock the synchronization of EPNs, museums may edit
+        # the name and the description of their synchronized offers
+        if offer.venue.activity == offerers_models.Activity.MUSEUM:
+            synchronized_readonly_fields -= {"description", "name"}
+        if offer.isFromAllocine:
+            synchronized_readonly_fields -= {"withdrawalDetails"}
+        readonly_fields |= synchronized_readonly_fields
+
+    rejected_fields = updated_fields & readonly_fields
+    if rejected_fields:
+        api_error = api_errors.ApiErrors()
+        for field in sorted(rejected_fields):
             api_error.add_error(field, "Vous ne pouvez pas modifier ce champ")
 
         raise api_error
@@ -630,9 +687,11 @@ def check_offer_update_from_private_api(
     ean: str | None,
     # callers pass either the `OfferExtraData`as a TypedDict or a plain dict`
     extra_data: typing.Any,
+    relation_updates: set[str],
     url_is_explicitly_removed: bool,
 ) -> None:
     check_validation_status(offer)
+    check_offer_fields_are_editable_from_private_api(offer, set(updates) | relation_updates)
 
     subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
@@ -690,9 +749,6 @@ def check_offer_update_from_private_api(
 
     if "durationMinutes" in updates:
         check_duration_minutes(get_field(offer, updates, "durationMinutes"), True)
-
-    if offer.lastProvider is not None:
-        check_update_only_allowed_fields_for_offer_from_provider(set(updates), offer.lastProvider)
 
     # An offer is created in several steps, and its url and address may only be set at the very
     # end, so this coherence is meaningless until the offer has been finalized. The public API
