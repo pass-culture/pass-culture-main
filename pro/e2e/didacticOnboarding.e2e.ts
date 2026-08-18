@@ -61,7 +61,7 @@ test.describe('Didactic Onboarding feature', () => {
   }) => {
     await page.getByLabel('Commencer la création d’offre sur ADAGE').click()
     await expect(
-      page.getByRole('heading', { level: 1, name: 'Quelles sont les étapes ?' })
+      page.getByRole('heading', { level: 2, name: 'Déposer un dossier ADAGE' })
     ).toBeVisible()
 
     expect(
@@ -73,9 +73,11 @@ test.describe('Didactic Onboarding feature', () => {
       'href',
       'https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage'
     )
-    await page.getByRole('button', { name: /J’ai déposé un dossier/ }).click()
+    await page
+      .getByRole('button', { name: /Vérifier si j'ai déposé un dossier/ })
+      .click()
     await expect(
-      page.getByText('Aucun dossier n’a été déposé par votre structure.')
+      page.getByText('Aucun dossier n’a été déposé par votre structure')
     ).toBeVisible()
   })
 
@@ -84,7 +86,7 @@ test.describe('Didactic Onboarding feature', () => {
   }) => {
     await page.getByLabel('Commencer la création d’offre sur ADAGE').click()
     await expect(
-      page.getByRole('heading', { level: 1, name: 'Quelles sont les étapes ?' })
+      page.getByRole('heading', { level: 2, name: 'Déposer un dossier ADAGE' })
     ).toBeVisible()
 
     expect(
@@ -116,7 +118,9 @@ test.describe('Didactic Onboarding feature', () => {
 
     await Promise.all([
       page.waitForResponse(isSynchronizeOffererOnboardingResponse),
-      page.getByRole('button', { name: /J’ai déposé un dossier/ }).click(),
+      page
+        .getByRole('button', { name: /Vérifier si j'ai déposé un dossier/ })
+        .click(),
     ])
 
     await expect(page).toHaveURL(/\/accueil$/)

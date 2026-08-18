@@ -14,7 +14,6 @@ import {
 } from '@/design-system/Button/types'
 import fullNextIcon from '@/icons/full-next.svg'
 import { Card } from '@/ui-kit/Card/Card'
-import { Dialog } from '@/ui-kit/Dialog/Dialog'
 
 import collective from './assets/collective.jpg'
 import individuelle from './assets/individuelle.jpg'
@@ -88,28 +87,21 @@ export const OnboardingOffersChoice = ({
             </span>
           </Card.Content>
           <Card.Footer>
-            <Dialog
-              title=""
-              onCancel={() => setShowModal(false)}
-              hideIcon={true}
-              trigger={
-                <Button
-                  type="submit"
-                  aria-label="Commencer la création d’offre sur ADAGE"
-                  onClick={() => {
-                    logEvent(
-                      OnboardingDidacticEvents.HAS_CLICKED_START_COLLECTIVE_DIDACTIC_ONBOARDING
-                    )
-                    setShowModal(true)
-                  }}
-                  fullWidth
-                  label="Déposer un dossier ADAGE"
-                />
-              }
-              open={showModal}
-            >
-              <OnboardingCollectiveModal />
-            </Dialog>
+            <Button
+              aria-label="Commencer la création d’offre sur ADAGE"
+              onClick={() => {
+                logEvent(
+                  OnboardingDidacticEvents.HAS_CLICKED_START_COLLECTIVE_DIDACTIC_ONBOARDING
+                )
+                setShowModal(true)
+              }}
+              fullWidth
+              label="Déposer un dossier ADAGE"
+            />
+            <OnboardingCollectiveModal
+              isOpen={showModal}
+              onClose={() => setShowModal(false)}
+            />
           </Card.Footer>
         </Card>
       </div>

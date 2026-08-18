@@ -1,50 +1,40 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_a11y.scss" as a11y;
-@use "styles/mixins/_size.scss" as size;
-
-.onboarding-collective-modal {
-  max-width: rem.torem(910px);
-  padding: var(--size-spacing-l);
-}
-
-.onboarding-collective-title {
-  @include fonts.title1;
-
-  margin-bottom: var(--size-spacing-l);
-}
-
-.onboarding-collective-text {
-  @include fonts.body;
-
-  line-height: var(--line-height-m);
-  margin-bottom: var(--size-spacing-xxl);
-}
 
 .onboarding-collective-steps {
   display: grid;
   grid-template-columns: 1fr;
-  justify-items: center;
   gap: var(--size-spacing-l);
-  margin-bottom: rem.torem(46px);
-
-  @media (min-width: size.$tablet) {
-    grid-template-columns: repeat(2, rem.torem(177px));
-    justify-content: center;
-    gap: var(--size-spacing-xxl);
-  }
-
-  @media (min-width: size.$laptop) {
-    grid-template-columns: repeat(4, rem.torem(177px));
-    gap: var(--size-spacing-xxl);
-  }
+  margin-top: var(--size-spacing-l);
+  list-style: none;
+  padding: 0;
+  counter-reset: step-counter;
 }
 
 .onboarding-collective-step {
-  max-width: rem.torem(177px);
+  display: flex;
+  align-items: center;
+  gap: var(--size-spacing-m);
+  counter-increment: step-counter;
+
+  &::before {
+    content: counter(step-counter);
+
+    @include fonts.body-accent-xs;
+
+    flex-shrink: 0;
+    width: rem.torem(32px);
+    height: rem.torem(32px);
+    border-radius: rem.torem(32px);
+    background-color: var(--color-background-info);
+    color: var(--color-text-brand-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
   &-icon {
-    width: rem.torem(116px);
+    width: rem.torem(96px);
     aspect-ratio: 1/1;
   }
 
@@ -55,14 +45,11 @@
   }
 }
 
-.onboarding-collective-actions {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--size-spacing-xl);
+.divider {
+  border: none;
+  border-top: 1px solid var(--color-border-subtle);
 }
 
-.error-message {
-  margin-top: var(--size-spacing-xl);
-  color: var(--color-text-error);
+.error-banner {
+  margin-top: var(--size-spacing-l);
 }

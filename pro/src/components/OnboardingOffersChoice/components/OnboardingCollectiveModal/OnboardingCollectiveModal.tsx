@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -9,9 +8,10 @@ import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constant
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setSelectedPartnerVenueById } from '@/commons/store/user/dispatchers/setSelectedPartnerVenueById'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import fullNextIcon from '@/icons/full-next.svg'
 
 import acceptationIcon from './assets/acceptation.svg'
@@ -21,15 +21,20 @@ import fileSubmissionIcon from './assets/depot_dossier.svg'
 import styles from './OnboardingCollectiveModal.module.scss'
 
 interface OnboardingCollectiveModalProps {
-  className?: string
+  isOpen: boolean
+  onClose: () => void
 }
 
 export const OnboardingCollectiveModal = ({
-  className,
+  isOpen,
+  onClose,
 }: OnboardingCollectiveModalProps): JSX.Element => {
-  const [errorMessage, setErrorMessage] = useState<null | string>(null)
+  const [notOnboardedError, setNotOnboardedError] = useState(false)
+  const [genericError, setGenericError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const selectedPartnerVenue = useAppSelector(
+    (state) => state.user.selectedPartnerVenue
+  )
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
   const dispatch = useAppDispatch()
@@ -39,8 +44,15 @@ export const OnboardingCollectiveModal = ({
       OnboardingDidacticEvents.HAS_CLICKED_ALREADY_SUBMITTED_COLLECTIVE_CASE_DIDACTIC_ONBOARDING
     )
     try {
-      setErrorMessage(null)
+      setNotOnboardedError(false)
+      setGenericError(null)
       setIsLoading(true)
+
+      if (!selectedPartnerVenue) {
+        setIsLoading(false)
+        setGenericError('Un problème est survenu, veuillez réessayer.')
+        return
+      }
 
       await api.synchronizeOffererOnboarding({
         path: {
@@ -63,45 +75,22 @@ export const OnboardingCollectiveModal = ({
 
       // In any other case, it's an error
       setIsLoading(false)
-      setErrorMessage('Aucun dossier n’a été déposé par votre structure.')
+      setNotOnboardedError(true)
     } catch {
       setIsLoading(false)
-      setErrorMessage('Un problème est survenu, veuillez réessayer.')
+      setGenericError('Un problème est survenu, veuillez réessayer.')
     }
   }
 
   return (
-    <div
-      className={cn(styles['onboarding-collective-modal'], className)}
-      data-testid="onboarding-collective-modal"
-    >
-      <h1 className={styles['onboarding-collective-title']}>
-        Quelles sont les étapes ?
-      </h1>
-      <p className={styles['onboarding-collective-text']}>
-        Pour continuer, vous devez compléter un dossier qui sera examiné par les
-        services d’État pour vérifier votre éligibilité au dispositif pass
-        Culture.
-      </p>
-      <div className={styles['onboarding-collective-steps']}>
-        <ModalStep
-          icon={fileSubmissionIcon}
-          text="Dépôt du dossier de présentation de votre structure"
-        />
-        <ModalStep
-          icon={acceptationIcon}
-          text="Étude et validation du dossier en commission de votre territoire"
-        />
-        <ModalStep
-          icon={offerCreationIcon}
-          text="Création de vos offres sur le pass Culture Pro"
-        />
-        <ModalStep
-          icon={calendarIcon}
-          text="Réservation de vos offres par les enseignants sur ADAGE"
-        />
-      </div>
-      <div className={styles['onboarding-collective-actions']}>
+    <DetailedModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Déposer un dossier ADAGE"
+      description="Pour continuer, vous devez compléter un dossier qui sera examiné par
+          les services d'État pour vérifier votre éligibilité au dispositif pass
+          Culture."
+      primaryAction={
         <Button
           as="a"
           opensInNewTab
@@ -114,34 +103,70 @@ export const OnboardingCollectiveModal = ({
           }
           to="https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage"
           label="Déposer un dossier"
+          disabled={isLoading}
+          fullWidth
         />
+      }
+      secondaryAction={
         <Button
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           icon={fullNextIcon}
           onClick={confirmAdageSubmission}
-          disabled={isLoading}
-          label={
-            isLoading ? 'Vérification en cours …' : 'J’ai déposé un dossier'
-          }
+          isLoading={isLoading}
+          label="Vérifier si j'ai déposé un dossier"
         />
+      }
+      isFooterFixed
+    >
+      <div data-testid="onboarding-collective-modal">
+        <hr className={styles['divider']} />
+        {notOnboardedError && (
+          <div className={styles['error-banner']}>
+            <Banner
+              variant={BannerVariants.ERROR}
+              title="Aucun dossier n’a été déposé par votre structure"
+              description="Pour créer des offres à destination des enseignants et des établissements scolaires, veuillez déposer un dossier."
+            />
+          </div>
+        )}
+        {genericError && (
+          <div className={styles['error-banner']}>
+            <Banner variant={BannerVariants.ERROR} title={genericError} />
+          </div>
+        )}
+        <ol className={styles['onboarding-collective-steps']}>
+          <ModalStep
+            icon={fileSubmissionIcon}
+            text="Dépôt du dossier de présentation de votre structure"
+          />
+          <ModalStep
+            icon={acceptationIcon}
+            text="Étude et validation du dossier en commission de votre territoire"
+          />
+          <ModalStep
+            icon={offerCreationIcon}
+            text="Création de vos offres sur le pass Culture Pro"
+          />
+          <ModalStep
+            icon={calendarIcon}
+            text="Réservation de vos offres par les enseignants sur ADAGE"
+          />
+        </ol>
       </div>
-      {errorMessage && (
-        <div className={styles['error-message']}>{errorMessage}</div>
-      )}
-    </div>
+    </DetailedModal>
   )
 }
 
-function ModalStep({ icon, text }: { icon: string; text: string }) {
+function ModalStep({ icon, text }: Readonly<{ icon: string; text: string }>) {
   return (
-    <div className={styles['onboarding-collective-step']}>
+    <li className={styles['onboarding-collective-step']}>
       <img
         src={icon}
         alt=""
         className={styles['onboarding-collective-step-icon']}
       />
       <p className={styles['onboarding-collective-step-text']}>{text}</p>
-    </div>
+    </li>
   )
 }

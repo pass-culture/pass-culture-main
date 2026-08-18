@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
@@ -40,25 +39,28 @@ vi.mock('@/apiClient/api', () => ({
 const renderOnboardingCollectiveModal = (
   options?: RenderWithProvidersOptions
 ) => {
-  return renderWithProviders(<OnboardingCollectiveModal />, {
-    storeOverrides: {
-      user: {
-        currentUser: sharedCurrentUserFactory(),
-        offererNames: [
-          getOffererNameFactory({ id: SELECTED_OFFERER_ID, validated: true }),
-        ],
-        selectedAdminOfferer: null,
-        selectedPartnerVenue: makeGetVenueResponseModel({
-          id: SELECTED_VENUE_ID,
-          managingOffererId: SELECTED_OFFERER_ID,
-        }),
-        venues: [],
-        venuesWithPendingValidation: [],
+  return renderWithProviders(
+    <OnboardingCollectiveModal isOpen onClose={vi.fn()} />,
+    {
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          offererNames: [
+            getOffererNameFactory({ id: SELECTED_OFFERER_ID, validated: true }),
+          ],
+          selectedAdminOfferer: null,
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: SELECTED_VENUE_ID,
+            managingOffererId: SELECTED_OFFERER_ID,
+          }),
+          venues: [],
+          venuesWithPendingValidation: [],
+        },
       },
-    },
-    user: sharedCurrentUserFactory(),
-    ...options,
-  })
+      user: sharedCurrentUserFactory(),
+      ...options,
+    }
+  )
 }
 
 const mockLogEvent = vi.fn()
@@ -91,7 +93,7 @@ describe('<OnboardingCollectiveModal />', () => {
     renderOnboardingCollectiveModal()
 
     expect(
-      await screen.findByRole('heading', { name: /Quelles sont les étapes ?/ })
+      await screen.findByText('Déposer un dossier ADAGE')
     ).toBeInTheDocument()
 
     expect(
@@ -99,7 +101,9 @@ describe('<OnboardingCollectiveModal />', () => {
     ).toBeInTheDocument()
 
     expect(
-      await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
+      await screen.findByRole('button', {
+        name: /Vérifier si j'ai déposé un dossier/,
+      })
     ).toBeInTheDocument()
   })
 
@@ -110,11 +114,13 @@ describe('<OnboardingCollectiveModal />', () => {
   })
 
   describe('API calls', () => {
-    it('should trigger the synchronization endpoint when clicking on "J’ai déposé un dossier"', async () => {
+    it('should trigger the synchronization endpoint when clicking on "Vérifier si j’ai déposé un dossier"', async () => {
       renderOnboardingCollectiveModal()
 
       await userEvent.click(
-        await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
+        await screen.findByRole('button', {
+          name: /Vérifier si j'ai déposé un dossier/,
+        })
       )
 
       expect(api.synchronizeOffererOnboarding).toHaveBeenCalledExactlyOnceWith({
@@ -123,8 +129,6 @@ describe('<OnboardingCollectiveModal />', () => {
     })
 
     it('should redirect to the user default path if the venue refresh reports the offerer as onboarded', async () => {
-      const mockNavigate = vi.fn()
-      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       vi.spyOn(getUserDefaultPathModule, 'getUserDefaultPath').mockReturnValue(
         '/accueil'
       )
@@ -139,22 +143,31 @@ describe('<OnboardingCollectiveModal />', () => {
       renderOnboardingCollectiveModal()
 
       await userEvent.click(
-        await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
+        await screen.findByRole('button', {
+          name: /Vérifier si j'ai déposé un dossier/,
+        })
       )
 
-      expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/accueil')
+      expect(api.synchronizeOffererOnboarding).toHaveBeenCalledOnce()
+      expect(api.getVenue).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: { venue_id: SELECTED_VENUE_ID },
+        })
+      )
     })
 
     it('should show a specific error message if the venue refresh still reports the offerer as not onboarded', async () => {
       renderOnboardingCollectiveModal()
 
       await userEvent.click(
-        await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
+        await screen.findByRole('button', {
+          name: /Vérifier si j'ai déposé un dossier/,
+        })
       )
 
       expect(
         await screen.findByText(
-          'Aucun dossier n’a été déposé par votre structure.'
+          'Aucun dossier n’a été déposé par votre structure'
         )
       ).toBeInTheDocument()
     })
@@ -165,7 +178,34 @@ describe('<OnboardingCollectiveModal />', () => {
       renderOnboardingCollectiveModal()
 
       await userEvent.click(
-        await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
+        await screen.findByRole('button', {
+          name: /Vérifier si j'ai déposé un dossier/,
+        })
+      )
+
+      expect(
+        await screen.findByText('Un problème est survenu, veuillez réessayer.')
+      ).toBeInTheDocument()
+    })
+
+    it('should show a generic error message if no partner venue is selected', async () => {
+      renderOnboardingCollectiveModal({
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            offererNames: [],
+            selectedAdminOfferer: null,
+            selectedPartnerVenue: null,
+            venues: [],
+            venuesWithPendingValidation: [],
+          },
+        },
+      })
+
+      await userEvent.click(
+        await screen.findByRole('button', {
+          name: /Vérifier si j'ai déposé un dossier/,
+        })
       )
 
       expect(
@@ -191,7 +231,9 @@ describe('<OnboardingCollectiveModal />', () => {
       renderOnboardingCollectiveModal()
 
       await userEvent.click(
-        await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
+        await screen.findByRole('button', {
+          name: /Vérifier si j'ai déposé un dossier/,
+        })
       )
 
       expect(mockLogEvent).toHaveBeenCalledWith(
