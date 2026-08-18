@@ -24,6 +24,34 @@ Texte
 <summary> ⏳ Critère 11.2 - RGAA - Chaque étiquette associée à un champ de formulaire est-elle pertinente ?</summary>
 
 **RAWeb/RGAA** : [Critère 11.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-2)
+**Ticket** : [PC-42957](https://passculture.atlassian.net/browse/PC-42957)  
+**PR** : [#23908](https://github.com/pass-culture/pass-culture-main/pull/23908)
+
+**Problème** 😱  
+P05 → Création offre réservable (5 étapes et confirmation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Au moins une étiquette de champ de formulaire n'est pas pertinente :
+
+- Le curseur de zoom de l’éditeur d’image est correctement implémenté via un <input type="range">, mais l’information restituée ne permet pas de comprendre clairement le niveau de zoom appliqué (valeur brute sans mise en contexte utilisateur).
+
+
+**Correction** 💡  
+
+- Fournir une restitution plus explicite de la valeur du zoom, aussi bien visuelle que pour les technologies d’assistance (par exemple en pourcentage : 100 %, 105 %, etc.).
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 11.2 - RGAA - Chaque étiquette associée à un champ de formulaire est-elle pertinente ?</summary>
+
+**RAWeb/RGAA** : [Critère 11.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-2)
 **Ticket** : [PC-42862](https://passculture.atlassian.net/browse/PC-42862)  
 **PR** : [#23860](https://github.com/pass-culture/pass-culture-main/pull/23860)
 

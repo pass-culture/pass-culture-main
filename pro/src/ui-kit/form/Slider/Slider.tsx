@@ -40,10 +40,6 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
    * @default false
    */
   displayValue?: boolean
-  /**
-   * The handleChange function's event is typed as React.ChangeEvent<HTMLInputElement>
-   */
-  onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
 }
 
 /**
@@ -77,6 +73,7 @@ export const Slider = ({
   ...props
 }: SliderProps): JSX.Element => {
   const labelId = useId()
+  const inputId = props.id ?? labelId
   const min = props.min || DEFAULT_SLIDER_MIN_VALUE
   const max = props.max || DEFAULT_SLIDER_MAX_VALUE
 
@@ -85,7 +82,7 @@ export const Slider = ({
       {(label || displayValue) && (
         <div className={styles['slider-header']}>
           <label
-            htmlFor={labelId}
+            htmlFor={inputId}
             className={hideLabel ? styles['visually-hidden'] : ''}
           >
             {label}
@@ -100,7 +97,7 @@ export const Slider = ({
       <input
         data-testid="slider"
         type="range"
-        id={labelId}
+        id={inputId}
         className={styles.slider}
         min={min}
         max={max}

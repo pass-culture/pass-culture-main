@@ -64,10 +64,12 @@ export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
     ref
   ) => {
     const imageDisableDescriptionId = useId()
+    const zoomSliderId = useId()
     const [position, setPosition] = useState<Position>(initialPosition)
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
     const [scale, setScale] = useState<number>(initialScale)
+    const zoomPercentage = Math.round(scale * 100)
 
     useEffect(() => {
       const handleResize = () => {
@@ -116,6 +118,9 @@ export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
     const debouncedOnSearch = useDebouncedCallback(() => onChangeDone?.(), 100)
 
     const isScaleDisabled = maxScale <= 1
+    // Force a minimum zoom level of 2x when zoom is available (prevents the user from zooming too little)
+    // If zoom enabled AND maxScale < 2, use 2; otherwise use maxScale (e.g., 1.5 → 2, 3 → 3)
+    const effectiveMaxScale = !isScaleDisabled && maxScale < 2 ? 2 : maxScale
 
     const drawCropBorder = () => {
       const canvas = document.querySelector('canvas')
@@ -173,16 +178,17 @@ export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
             ] as unknown as number
           }
         />
-        <label className={style['image-editor-label']} htmlFor="scale">
-          Zoom
+        <label className={style['image-editor-label']} htmlFor={zoomSliderId}>
+          Zoom : {zoomPercentage} %
         </label>
         <div className={style['image-editor-scale']}>
           <span className={style['image-editor-scale-label']}>min</span>
           <div className={style['image-editor-scale-input']}>
             <Slider
+              id={zoomSliderId}
               name="scale"
               step={0.01}
-              max={!isScaleDisabled ? maxScale.toFixed(2) : 1}
+              max={!isScaleDisabled ? effectiveMaxScale.toFixed(2) : 1}
               min={1}
               displayMinMaxValues={false}
               value={scale}
@@ -192,6 +198,7 @@ export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
               }}
               disabled={isScaleDisabled}
               aria-describedby={imageDisableDescriptionId}
+              aria-valuetext={`Zoom ${zoomPercentage} %`}
               label="Niveau de zoom de l'image"
               hideLabel
             />
