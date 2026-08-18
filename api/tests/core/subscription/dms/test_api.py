@@ -2429,3 +2429,18 @@ class HasInactivityDelayExpiredTest:
         )
 
         assert not dms_subscription_api._has_inactivity_delay_expired(no_message_application)
+
+    @time_machine.travel("2022-04-27")
+    def test_has_inactivity_delay_expired_with_user_fields_modified_after_message(self):
+        no_message_application = fixtures.make_parsed_graphql_application(
+            application_number=1,
+            state="en_construction",
+            last_modification_date="2022-01-01T00:00:00+02:00",
+            last_user_fields_modification_date="2022-02-01T00:00:00+03:00",
+            messages=[
+                {"createdAt": "2022-01-01T00:00:00+02:00", "email": "instructor@example.com"},
+                {"createdAt": "2020-04-06T00:00:00+02:00", "email": "instructor@example.com"},
+            ],
+        )
+
+        assert not dms_subscription_api._has_inactivity_delay_expired(no_message_application)

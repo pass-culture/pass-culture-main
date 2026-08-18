@@ -974,6 +974,10 @@ def _has_inactivity_delay_expired(dms_application: dms_models.DmsApplicationResp
 
     most_recent_message = max(dms_application.messages, key=lambda message: message.created_at)
 
+    # Do not close application if user has modified fields after instructor message, even if the user did not reply
+    if dms_application.latest_user_fields_modification_datetime > most_recent_message.created_at:
+        return False
+
     return most_recent_message.created_at <= date_with_delay and not _is_message_from_applicant(
         dms_application, most_recent_message
     )
