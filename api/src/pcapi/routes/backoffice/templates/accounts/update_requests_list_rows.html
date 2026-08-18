@@ -102,16 +102,10 @@
     </td>
     <td>{{ update_request.dateLastStatusUpdate | format_date_time }}</td>
     <td>
-      {% if update_request.dateLastUserMessage %}
+      {% if update_request.dateLastUserMessage and (not update_request.dateLastInstructorMessage or update_request.dateLastUserMessage > update_request.dateLastInstructorMessage) %}
         <span class="fw-bold">Demandeur :</span>
         <br />
         {{ update_request.dateLastUserMessage | format_date_time }}
-        <br />
-      {% endif %}
-      {% if update_request.dateLastInstructorMessage %}
-        <span class="fw-bold">Instructeur :</span>
-        <br />
-        {{ update_request.dateLastInstructorMessage | format_date_time }}
         <br />
       {% endif %}
     </td>
