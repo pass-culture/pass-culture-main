@@ -119,7 +119,7 @@ class GraphqlResponseTest:
         assert result.state == dms_models.GraphQLApplicationStates.accepted
 
     @patch.object(dms_api.DMSGraphQLClient, "execute_query")
-    def test_update_annotations(self, execute_query):
+    def test_update_text_annotation(self, execute_query):
         execute_query.return_value = {
             "dossierModifierAnnotationText": {"annotation": {"id": "XXXXXXXXX"}, "errors": None}
         }
@@ -129,6 +129,39 @@ class GraphqlResponseTest:
         )
 
         assert client.execute_query.call_count == 1
+        assert client.execute_query.call_args.args == (dms_api.UPDATE_TEXT_ANNOTATION_QUERY_NAME,)
+        assert client.execute_query.call_args.kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": "dossier_id",
+                    "instructeurId": "instructeur_id",
+                    "annotationId": "error_annotation_id",
+                    "value": "Il y a une grosse erreur ici",
+                }
+            }
+        }
+        # ,
+
+    @patch.object(dms_api.DMSGraphQLClient, "execute_query")
+    def test_update_dropdown_annotation(self, execute_query):
+        execute_query.return_value = {
+            "dossierModifierAnnotationText": {"annotation": {"id": "XXXXXXXXX"}, "errors": None}
+        }
+        client = dms_api.DMSGraphQLClient()
+        client.update_dropdown_annotation("dossier_id", "instructeur_id", "annotation_id", "En attente")
+
+        assert client.execute_query.call_count == 1
+        assert client.execute_query.call_args.args == (dms_api.UPDATE_DROPDOWN_ANNOTATION_QUERY_NAME,)
+        assert client.execute_query.call_args.kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": "dossier_id",
+                    "instructeurId": "instructeur_id",
+                    "annotationId": "annotation_id",
+                    "value": "En attente",
+                }
+            }
+        }
 
     @patch.object(
         dms_api.DMSGraphQLClient,
@@ -156,6 +189,36 @@ class GraphqlResponseTest:
 
         execute_query.assert_called_once_with(
             "add_label", variables={"input": {"dossierId": "RG9zc2llci0yMjA2MDYyMw==", "labelId": "TGFiZWwtMzE5NjAw"}}
+        )
+
+    @patch.object(
+        dms_api.DMSGraphQLClient,
+        "execute_query",
+        return_value={"dossierSupprimerLabel": {"errors": None, "label": {"id": "TGFiZWwtMzE5NjAw", "name": "Urgent"}}},
+    )
+    def test_remove_label_from_application(self, execute_query):
+        client = dms_api.DMSGraphQLClient()
+        client.remove_label_from_application("RG9zc2llci0yMjA2MDYyMw==", "TGFiZWwtMzE5NjAw")
+
+        execute_query.assert_called_once_with(
+            "remove_label",
+            variables={"input": {"dossierId": "RG9zc2llci0yMjA2MDYyMw==", "labelId": "TGFiZWwtMzE5NjAw"}},
+        )
+
+    @patch.object(
+        dms_api.DMSGraphQLClient,
+        "execute_query",
+        return_value={
+            "dossierSupprimerLabel": {"errors": [{"message": "Ce label n’est pas associé au dossier"}], "label": None}
+        },
+    )
+    def test_remove_label_from_application_not_set(self, execute_query):
+        client = dms_api.DMSGraphQLClient()
+        client.remove_label_from_application("RG9zc2llci0yMjA2MDYyMw==", "TGFiZWwtMzE5NjAw")
+
+        execute_query.assert_called_once_with(
+            "remove_label",
+            variables={"input": {"dossierId": "RG9zc2llci0yMjA2MDYyMw==", "labelId": "TGFiZWwtMzE5NjAw"}},
         )
 
     @time_machine.travel("2020-01-01")

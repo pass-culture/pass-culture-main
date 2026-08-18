@@ -2,7 +2,9 @@ import datetime
 import enum
 import hashlib
 import logging
+import urllib.parse
 
+import flask
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 from dateutil.relativedelta import relativedelta
@@ -10,6 +12,7 @@ from dateutil.relativedelta import relativedelta
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.utils.email as email_utils
 from pcapi import settings
+from pcapi.connectors.beneficiaries import ubble
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
@@ -25,6 +28,7 @@ from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.dms import fraud_check_api as fraud_dms_api
 from pcapi.core.subscription.dms import messages
 from pcapi.core.subscription.dms import schemas as dms_schemas
+from pcapi.core.subscription.ubble.schemas import UbbleIdentificationStatus
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
@@ -63,18 +67,26 @@ Tu trouveras toutes les informations dans notre FAQ pour t'accompagner dans cett
 """
 
 
-class ApplicationLabel(enum.Enum):
-    URGENT = "Urgent"
-
-
-APPLICATION_LABEL_TO_SETTINGS_LABEL_ID: dict[int, dict[ApplicationLabel, str | None]] = {
-    settings.DMS_ENROLLMENT_PROCEDURE_ID_FR: {
-        ApplicationLabel.URGENT: settings.DMS_ENROLLMENT_FR_LABEL_ID_URGENT,
-    },
-    settings.DMS_ENROLLMENT_PROCEDURE_ID_ET: {
-        ApplicationLabel.URGENT: settings.DMS_ENROLLMENT_ET_LABEL_ID_URGENT,
-    },
+UBBLE_STATUS_TEXT = {
+    # V2 only - same French strings as in Ubble dashboard - MUST be consistent with the list in DN procedure settings
+    UbbleIdentificationStatus.PENDING: "En attente",
+    UbbleIdentificationStatus.CAPTURE_IN_PROGRESS: "Capture en cours",
+    UbbleIdentificationStatus.CHECKS_IN_PROGRESS: "Vérification en cours",
+    UbbleIdentificationStatus.APPROVED: "Approuvée",
+    UbbleIdentificationStatus.DECLINED: "Déclinée",
+    UbbleIdentificationStatus.RETRY_REQUIRED: "Capture redemandée",
+    UbbleIdentificationStatus.INCONCLUSIVE: "Non concluant",
+    UbbleIdentificationStatus.REFUSED: "Refusée",
 }
+
+
+class ApplicationLabel(enum.Enum):
+    FORCE_UBBLE = "Forcer Ubble"  # set by instructor for backend
+    URGENT = "Urgent"  # set by backend for instructor
+
+
+def get_dn_label_id(procedure_number: int | str, label: ApplicationLabel) -> str | None:
+    return settings.DEMARCHE_NUMERIQUE_LABEL_IDS.get(str(procedure_number), {}).get(label.name)
 
 
 def try_dms_orphan_adoption(user: users_models.User) -> None:
@@ -135,6 +147,7 @@ def _process_dms_application(
     fraud_check: subscription_models.BeneficiaryFraudCheck,
     state: dms_models.GraphQLApplicationStates,
     user: users_models.User,
+    force_ubble: bool = False,
 ) -> None:
     birth_date_error = _compute_birth_date_error_details(fraud_check, application_content)
 
@@ -146,6 +159,7 @@ def _process_dms_application(
             application_scalar_id,
             birth_date_error,
             is_application_updatable=True,
+            force_ubble=force_ubble,
         )
 
     elif state == dms_models.GraphQLApplicationStates.on_going:
@@ -156,6 +170,7 @@ def _process_dms_application(
             application_scalar_id,
             birth_date_error,
             is_application_updatable=False,
+            force_ubble=force_ubble,
         )
 
     elif state == dms_models.GraphQLApplicationStates.accepted:
@@ -205,6 +220,9 @@ def handle_dms_application(
         if _process_instructor_annotation(application_content, application_scalar_id):
             state = dms_models.GraphQLApplicationStates(application_content.state)
 
+    # Used by instructors to force sending ID check link even if application has an error
+    force_ubble = any(label.name == ApplicationLabel.FORCE_UBBLE.value for label in dms_application.labels)
+
     user = find_user_by_email(user_email)
     if not user:
         logger.info("[DMS] User not found for application", extra=log_extra_data)
@@ -216,6 +234,8 @@ def handle_dms_application(
             application_scalar_id,
             latest_modification_datetime=dms_application.latest_modification_datetime,
         )
+        if force_ubble:
+            create_ubble_identification(application_scalar_id, application_content, is_forced=True)
         return None
 
     fraud_check = fraud_dms_api.get_fraud_check(user, application_number)
@@ -238,6 +258,8 @@ def handle_dms_application(
     else:
         if _is_fraud_check_up_to_date(fraud_check, application_content):
             logger.info("[DMS] FraudCheck already up to date", extra=log_extra_data)
+            if force_ubble:
+                create_ubble_identification(application_scalar_id, application_content, is_forced=True)
             return fraud_check
 
         if fraud_check.status == subscription_models.FraudCheckStatus.OK:
@@ -246,7 +268,7 @@ def handle_dms_application(
 
         _update_fraud_check_with_new_content(fraud_check, application_content)
 
-    _process_dms_application(application_content, application_scalar_id, fraud_check, state, user)
+    _process_dms_application(application_content, application_scalar_id, fraud_check, state, user, force_ubble)
 
     return fraud_check
 
@@ -342,6 +364,7 @@ def _process_in_progress_application(
     birth_date_error: dms_schemas.DmsFieldErrorDetails | None,
     *,
     is_application_updatable: bool,
+    force_ubble: bool,
 ) -> None:
     if not application_content.field_errors and birth_date_error is None:
         fraud_check.status = fraud_check_status
@@ -375,6 +398,9 @@ def _process_in_progress_application(
     _update_fraud_check_with_field_errors(
         fraud_check, errors, fraud_check_status=fraud_check_status, reason_codes=reason_codes
     )
+
+    if not errors or force_ubble:
+        create_ubble_identification(application_scalar_id, application_content, is_forced=force_ubble)
 
 
 def _update_fraud_check_with_field_errors(
@@ -657,7 +683,7 @@ def _process_check_birth_date(
 
 
 def _add_application_label(procedure_number: int, application_scalar_id: str, label: ApplicationLabel) -> None:
-    label_id = APPLICATION_LABEL_TO_SETTINGS_LABEL_ID.get(procedure_number, {}).get(label)
+    label_id = get_dn_label_id(procedure_number, label)
     if not label_id:
         raise ValueError("Configuration error: unknown label")
 
@@ -1041,3 +1067,84 @@ def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationRespo
     age_at_generalisation = users_utils.get_age_at_date(applicant_birth_date, datetime.datetime(2021, 5, 21))
 
     return age_at_generalisation >= 19 and applicant_department not in PRE_GENERALISATION_DEPARTMENTS
+
+
+def create_ubble_identification(
+    application_scalar_id: str, application_content: dms_schemas.DMSContent, *, is_forced: bool = False
+) -> None:
+    if not FeatureToggle.ENABLE_UBBLE_ID_CHECK_ON_DN_APPLICATION.is_active():
+        return
+
+    if not is_forced and (
+        not application_content.registration_datetime
+        or application_content.registration_datetime < settings.DEMARCHE_NUMERIQUE_CREATE_UBBLE_MIN_DATETIME
+    ):
+        return
+
+    if not application_content.ubble_identification_id_annotation:
+        return  # procedure not configured with this annotation
+
+    if application_content.ubble_identification_id_annotation.text:
+        return  # Ubble link already sent
+
+    webhook_url = urllib.parse.urljoin(
+        settings.API_URL,
+        flask.url_for(
+            "Public API.ubble_webhook_for_demarche_numerique",
+            procedure_number=application_content.procedure_number,
+            application_number=application_content.application_number,
+            _external=False,
+        ),
+    )
+
+    ubble_content = ubble.create_and_start_identity_verification(
+        application_content.get_first_name(), application_content.get_last_name(), settings.WEBAPP_V2_URL, webhook_url
+    )
+
+    client = dms_connector_api.DMSGraphQLClient()
+    client.update_text_annotation(
+        application_scalar_id,
+        settings.DMS_INSTRUCTOR_ID,
+        application_content.ubble_identification_id_annotation.id,
+        ubble_content.identification_id,
+    )
+    if application_content.ubble_status_annotation:
+        client.update_dropdown_annotation(
+            application_scalar_id,
+            settings.DMS_INSTRUCTOR_ID,
+            application_content.ubble_status_annotation.id,
+            UBBLE_STATUS_TEXT.get(ubble_content.status, ubble_content.status.value),
+        )
+    client.send_user_message(
+        application_scalar_id,
+        settings.DMS_INSTRUCTOR_ID,
+        dms_internal_mailing.build_dn_ubble_identification_message(ubble_content.identification_url),
+    )
+
+    if label_id := get_dn_label_id(application_content.procedure_number, ApplicationLabel.FORCE_UBBLE):
+        client.remove_label_from_application(application_scalar_id, label_id)
+
+
+def on_ubble_identification_update(
+    procedure_number: int, application_number: int, ubble_identification_id: str, status: UbbleIdentificationStatus
+) -> None:
+    client = dms_connector_api.DMSGraphQLClient()
+    dn_application = client.get_single_application_details(application_number)
+    application_content = dms_serializer.parse_beneficiary_information_graphql(dn_application)
+
+    if application_content.procedure_number != procedure_number:
+        raise ValueError("Procedure number does not match")
+
+    if not application_content.ubble_identification_id_annotation:
+        raise ValueError("Ubble ID annotation field is missing in application")
+
+    if application_content.ubble_identification_id_annotation.text != ubble_identification_id:
+        raise ValueError("Ubble ID does not match")
+
+    if application_content.ubble_status_annotation:
+        client.update_dropdown_annotation(
+            dn_application.id,
+            settings.DMS_INSTRUCTOR_ID,
+            application_content.ubble_status_annotation.id,
+            UBBLE_STATUS_TEXT.get(status, status.value),
+        )

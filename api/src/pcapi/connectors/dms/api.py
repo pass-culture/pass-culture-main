@@ -33,11 +33,13 @@ MAKE_REFUSED_MUTATION_NAME = "make_refused"
 MARK_WITHOUT_CONTINUATION_MUTATION_NAME = "mark_without_continuation"
 SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
+UPDATE_DROPDOWN_ANNOTATION_QUERY_NAME = "update_dropdown_annotation"
 GET_EAC_APPLICATIONS_STATE_SIRET = "eac/get_applications_state_siret"
 GET_BANK_INFO_APPLICATIONS_QUERY_NAME = "pro/get_bank_info_applications"
 GET_INSTRUCTORS_QUERY_NAME = "get_instructors"
 GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME = "beneficiaries/get_account_update_applications"
-ADD_LABEL = "add_label"
+ADD_LABEL_QUERY_NAME = "add_label"
+REMOVE_LABEL_QUERY_NAME = "remove_label"
 
 
 class DmsStats(BaseModel):
@@ -316,6 +318,17 @@ class DMSGraphQLClient:
         }
         return self.execute_query(UPDATE_TEXT_ANNOTATION_QUERY_NAME, variables=variables)
 
+    def update_dropdown_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: str) -> dict:
+        variables = {
+            "input": {
+                "dossierId": dossier_id,
+                "instructeurId": instructeur_id,
+                "annotationId": annotation_id,
+                "value": value,
+            }
+        }
+        return self.execute_query(UPDATE_DROPDOWN_ANNOTATION_QUERY_NAME, variables=variables)
+
     def add_label_to_application(self, application_techid: str, label_techid: str) -> None:
         params: dict[str, str] = {
             "dossierId": application_techid,
@@ -323,7 +336,7 @@ class DMSGraphQLClient:
         }
 
         try:
-            response = self.execute_query(ADD_LABEL, variables={"input": params})
+            response = self.execute_query(ADD_LABEL_QUERY_NAME, variables={"input": params})
         except gql_exceptions.TransportQueryError as exc:
             raise exceptions.DmsGraphQLApiError(exc.errors)
         except requests_exception.RequestException as exc:
@@ -347,6 +360,42 @@ class DMSGraphQLClient:
                 return
             logger.warning(
                 "[DMS] Error while adding label to application: %s",
+                errors,
+                extra={"application_techid": application_techid, "label_techid": label_techid},
+            )
+            raise exceptions.DmsGraphQLApiError(errors)
+
+    def remove_label_from_application(self, application_techid: str, label_techid: str) -> None:
+        params: dict[str, str] = {
+            "dossierId": application_techid,
+            "labelId": label_techid,
+        }
+
+        try:
+            response = self.execute_query(REMOVE_LABEL_QUERY_NAME, variables={"input": params})
+        except gql_exceptions.TransportQueryError as exc:
+            raise exceptions.DmsGraphQLApiError(exc.errors)
+        except requests_exception.RequestException as exc:
+            # DS unavailability does not need to be notified as an error in Sentry
+            logger.warning(
+                "[DMS] Connection error when removing label from application",
+                extra={"application_techid": application_techid, "label_techid": label_techid},
+            )
+            raise exceptions.DmsGraphQLAPIConnectError(str(exc))
+        except Exception as exc:
+            logger.warning(
+                "[DMS] Unexpected error while removing label from application",
+                extra={"application_techid": application_techid, "label_techid": label_techid, "exc": exc},
+            )
+            raise exceptions.DmsGraphQLApiException()
+
+        data = response["dossierSupprimerLabel"]
+        errors = data["errors"]
+        if errors:
+            if len(errors) == 1 and errors[0]["message"] == "Ce label n’est pas associé au dossier":
+                return
+            logger.warning(
+                "[DMS] Error while removing label from application: %s",
                 errors,
                 extra={"application_techid": application_techid, "label_techid": label_techid},
             )

@@ -13,6 +13,7 @@ from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
 from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.subscription.ubble import tasks as ubble_tasks
+from pcapi.core.subscription.ubble.schemas import UbbleIdentificationStatus
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import public_api
 from pcapi.routes.external import authentication
@@ -141,5 +142,31 @@ def ubble_webhook_store_id_pictures(
         raise ApiErrors({"err": str(err)}, status_code=404)
     except IncompatibleFraudCheckStatus as err:
         raise ApiErrors({"err": str(err)}, status_code=422)
+
+    return ubble_serializers.WebhookDummyReponse()
+
+
+@public_api.route("/webhooks/ubble/sync-dn/<int:procedure_number>/<int:application_number>", methods=["POST"])
+@authentication.require_ubble_v2_signature
+@spectree_serialize(
+    on_success_status=200,
+    response_model=ubble_serializers.WebhookDummyReponse,
+)
+@atomic()
+def ubble_webhook_for_demarche_numerique(
+    procedure_number: int, application_number: int, body: ubble_serializers.WebhookBodyV2
+) -> ubble_serializers.WebhookDummyReponse:
+    extra = {"procedure_number": procedure_number, "application_number": application_number, "body": body}
+    logger.info("Received Ubble update for DN identity check", extra=extra)
+
+    try:
+        status = UbbleIdentificationStatus(body.data.status)
+        with dms_utils.lock_ds_application(application_number):
+            dms_subscription_api.on_ubble_identification_update(
+                procedure_number, application_number, body.data.identity_verification_id, status
+            )
+    except ValueError as exc:
+        # avoid returning an error code to Ubble
+        logger.error("Ubble update for DN: %s", str(exc), extra=extra)
 
     return ubble_serializers.WebhookDummyReponse()
