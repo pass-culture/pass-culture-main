@@ -2,17 +2,20 @@
 @use "styles/mixins/_size.scss" as size;
 
 .filters {
-  margin-top: rem.torem(30px);
-  margin-bottom: rem.torem(36px);
+  margin: var(--size-spacing-xxl) 0;
 }
 
 .selectors {
   flex-grow: 1;
-  justify-content: space-between;
+  justify-content: flex-start;
+
+  & > * {
+    flex: 1;
+  }
 }
 
 .reset-filters {
-  margin-top: rem.torem(30px);
+  margin: var(--size-spacing-xxl) 0;
 }
 
 .button-group {

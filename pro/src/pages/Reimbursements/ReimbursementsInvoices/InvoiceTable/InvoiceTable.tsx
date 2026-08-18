@@ -73,7 +73,7 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
   },
   {
     id: 'documentType',
-    label: 'Type de document',
+    label: 'Type de justificatif',
     sortable: true,
     ordererField: 'amount',
     render: (invoice) =>
@@ -173,7 +173,7 @@ export const InvoiceTable = ({
         noResult={{
           message: 'Aucun justificatif ne correspond à votre recherche',
           subtitle: 'Essayez de modifier vos critères de recherche.',
-          resetMessage: 'Réinitialiser le filtre',
+          resetMessage: 'Réinitialiser les filtres',
           onFilterReset,
         }}
         noData={{
