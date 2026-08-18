@@ -7,7 +7,7 @@
           <i class="bi bi-search display-3"></i>
         </p>
         <p class="text-center">{{ caller() }}</p>
-        <div class="w-100 my-4 ">
+        <div class="w-100 my-4">
           {% for form_field in form %}
             {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
           {% endfor %}
@@ -15,7 +15,7 @@
         <form action="{{ dst }}"
               name="{{ dst | action_to_name }}"
               method="get">
-          <div class="row col-12 mx-0 translate-middle-x position-relative start-50 ">
+          <div class="row col-12 mx-0 translate-middle-x position-relative start-50">
             <div class="input-group mb-3">
               {% set full_row_fields = [] %}
               {% set hidden_fields = [] %}

@@ -7,16 +7,14 @@
           name="{{ field.name }}"
           data-original-name="{{ field.name }}"
           size="2">
-    {% for value, label, selected, _ in field.iter_choices() %}
-      <option value="{{ value }}"
-              {{ "selected" if selected else "" }}>
-        {{ label }}
-      </option>
-    {% endfor %}
-  </select>
-  <label class="pc-select-label label-element-form"
-         data-original-name="{{ field.name }}"
-         for="{{ select_field_id }}">{{ field.label.text }}</label>
+  {% for value, label, selected, _ in field.iter_choices() %}
+    <option value="{{ value }}"
+            {{ "selected" if selected else "" }}>{{ label }}</option>
+  {% endfor %}
+</select>
+<label class="pc-select-label label-element-form"
+       data-original-name="{{ field.name }}"
+       for="{{ select_field_id }}">{{ field.label.text }}</label>
 </div>
 {% if field.field_list_compatibility %}
   <!-- (Almost) duplicated html for field list field widget -->
@@ -27,14 +25,12 @@
             class="form-select pc-select-field value-element-form pc-no-update {%+ if field.use_highlight_js_module %}pc-highlight-js-module{% endif %}"
             data-original-name="{{ field.name }}"
             size="2">
-      {% for value, label, selected, _ in field.iter_choices() %}
-        <option value="{{ value }}"
-                {{ "selected" if selected else "" }}>
-          {{ label }}
-        </option>
-      {% endfor %}
-    </select>
-    <label class="pc-select-label label-element-form pc-no-update"
-           data-original-name="{{ field.name }}">{{ field.label.text }}</label>
-  </div>
+    {% for value, label, selected, _ in field.iter_choices() %}
+      <option value="{{ value }}"
+              {{ "selected" if selected else "" }}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <label class="pc-select-label label-element-form pc-no-update"
+         data-original-name="{{ field.name }}">{{ field.label.text }}</label>
+</div>
 {% endif %}
