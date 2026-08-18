@@ -1,0 +1,11 @@
+mutation dossierSupprimerLabel($input: DossierSupprimerLabelInput!) {
+  dossierSupprimerLabel(input: $input) {
+    errors {
+      message
+    }
+    label {
+      id
+      name
+    }
+  }
+}

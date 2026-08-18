@@ -87,6 +87,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_SPECIAL_EVENTS_SYNC = "Activer la synchronisation des réponses aux opérations spéciales"
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
+    ENABLE_UBBLE_ID_CHECK_ON_DN_APPLICATION = (
+        "Active la création automatique de dossier Ubble sur les dossiers Démarche Numérique de demande de crédit"
+    )
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
     ENABLE_VIRUSTOTAL = "Active la vérification des liens externes par VirusTotal"
     GENERATE_CASHFLOWS_BY_CRON = (
@@ -196,6 +199,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_MOVIE_FESTIVAL_RATE,
     FeatureToggle.ENABLE_OFFERS_AUTO_CLEANUP,
+    FeatureToggle.ENABLE_UBBLE_ID_CHECK_ON_DN_APPLICATION,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_VIRUSTOTAL,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
