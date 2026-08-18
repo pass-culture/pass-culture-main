@@ -471,6 +471,35 @@ class Returns200Test(PatchProductEndpointHelper):
         db.session.refresh(product)
         assert product.extraData == {"musicType": "501", "musicSubType": "-1", "gtl_id": "02000000"}
 
+    def test_should_update_the_category_related_fields_of_a_subcategory_that_requires_an_ean(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        product = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.LIVRE_AUDIO_PHYSIQUE.id,
+            ean="9782070100002",
+            extraData={"author": "Marguerite Duras"},
+        )
+
+        response = self.make_request(
+            plain_api_key,
+            json_body={
+                "offerId": product.id,
+                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE", "author": "Marguerite Yourcenar"},
+            },
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["categoryRelatedFields"] == {
+            "category": "LIVRE_AUDIO_PHYSIQUE",
+            "author": "Marguerite Yourcenar",
+            "ean": "9782070100002",
+        }
+
+        db.session.refresh(product)
+        assert product.extraData["author"] == "Marguerite Yourcenar"
+        assert product.ean == "9782070100002"
+
     def test_should_ignore_the_ean_sent_in_the_category_related_fields(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = self.setup_base_resource(
@@ -1388,6 +1417,7 @@ class Returns200Test(PatchProductEndpointHelper):
         num_queries += 1  # selectinload the stocks
         num_queries += 1  # selectinload the mediations
         num_queries += 1  # selectinload the price categories
+        num_queries += 1  # retrieve the venue provider
         num_queries += 1  # update the offer
 
         with testing.assert_num_queries(num_queries):
@@ -1784,25 +1814,21 @@ class Returns400Test(PatchProductEndpointHelper):
             ]
         }
 
-    def test_should_raise_400_when_sending_category_related_fields_on_a_subcategory_that_requires_an_ean(
-        self,
-    ):
+    def test_should_raise_400_when_the_offer_has_no_ean_on_a_subcategory_that_requires_one(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = self.setup_base_resource(
             venue=venue_provider.venue,
             provider=venue_provider.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            ean="9782070100002",
-            extraData=None,
+            subcategoryId=subcategories.LIVRE_AUDIO_PHYSIQUE.id,
+            ean=None,
+            extraData={"author": "Marguerite Duras"},
         )
-        # the offer does have an ean: it is the request that cannot carry one
-        assert product.ean == "9782070100002"
 
         response = self.make_request(
             plain_api_key,
             json_body={
                 "offerId": product.id,
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "9782070100002"},
+                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE", "author": "Marguerite Yourcenar"},
             },
         )
 

@@ -545,9 +545,9 @@ def update_offer_from_public_api(
     url: str | None | T_UNCHANGED = UNCHANGED,
     visual_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
     withdrawal_details: str | None | T_UNCHANGED = UNCHANGED,
-    ean: str | None = None,
     venue: offerers_models.Venue | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
+    venue_provider: providers_models.VenueProvider,
 ) -> models.Offer:
     fields: dict[str, typing.Any] = {
         "audioDisabilityCompliant": audio_disability_compliant,
@@ -570,15 +570,14 @@ def update_offer_from_public_api(
         "withdrawalDetails": withdrawal_details,
     }
     fields = {key: value for key, value in fields.items() if value is not UNCHANGED}
+    if venue:
+        fields["venue"] = venue
+    if offerer_address:
+        fields["offererAddress"] = offerer_address
 
-    validation.check_offer_update_from_public_api(offer, fields, ean=ean)
+    validation.check_offer_update_from_public_api(offer, fields, venue_provider=venue_provider)
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
-
-    if venue and offer.venue != venue:
-        updates["venue"] = venue
-    if offerer_address and offer.offererAddress != offerer_address:
-        updates["offererAddress"] = offerer_address
 
     if not updates:
         return offer
@@ -607,11 +606,6 @@ def update_offer_from_public_api(
     except (KeyError, AttributeError):
         pass
 
-    if offer.lastProvider is not None:
-        validation.check_update_only_allowed_fields_for_offer_from_provider(updates_set, offer.lastProvider)
-    if offer.is_soft_deleted():
-        raise pc_object.DeletedRecordException()
-
     changes = {}
     for key, value in updates.items():
         if key == "extraData" and offer.product:
@@ -619,16 +613,6 @@ def update_offer_from_public_api(
         changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
         setattr(offer, key, value)
 
-    with db.session.no_autoflush:
-        # the creation process is splitted into several steps. URL and
-        # address might be set only in the end. Therefore, this
-        # validation is meaningless until the offer has been finalized.
-        if offer.status != models.OfferStatus.DRAFT:
-            validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
-            validation.check_url_and_offererAddress_are_not_both_set(offer.url, offer.offererAddress)
-
-    if offer.isFromAllocine:
-        offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
     db.session.add(offer)
 
     # This log is used for analytics purposes.

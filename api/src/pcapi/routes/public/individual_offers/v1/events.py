@@ -19,6 +19,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
+from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import tasks as providers_tasks
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -268,12 +269,11 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
         raise api_errors.ResourceNotFoundError({"event_id": ["The event offer could not be found"]})
 
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
-    if venue:
-        authorization.get_venue_provider_or_raise_404(venue.id)
+    venue_provider = authorization.get_venue_provider_or_raise_404(venue.id if venue else offer.venueId)
 
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
-    return _edit_event(offer, body, venue=venue, offerer_address=offerer_address)
+    return _edit_event(offer, body, venue=venue, offerer_address=offerer_address, venue_provider=venue_provider)
 
 
 def _edit_event(
@@ -282,6 +282,7 @@ def _edit_event(
     *,
     venue: offerers_models.Venue | None,
     offerer_address: offerers_models.OffererAddress | None,
+    venue_provider: providers_models.VenueProvider,
 ) -> events_serializers.EventOfferResponse:
     try:
         updates = body.dict(by_alias=True, exclude_unset=True)
@@ -317,9 +318,9 @@ def _edit_event(
             publication_datetime=publication_datetime,
             url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
             withdrawal_details=updates.get("itemCollectionDetails", offers_api.UNCHANGED),
-            ean=offer.ean,
             venue=venue,
             offerer_address=offerer_address,
+            venue_provider=venue_provider,
         )
 
         if body.image:

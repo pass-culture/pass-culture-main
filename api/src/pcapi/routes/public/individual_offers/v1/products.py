@@ -17,6 +17,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import tasks as offers_tasks
 from pcapi.core.offers import validation as offers_validation
+from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
@@ -550,10 +551,9 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
-    if venue:
-        authorization.get_venue_provider_or_raise_404(venue.id)
+    venue_provider = authorization.get_venue_provider_or_raise_404(venue.id if venue else offer.venueId)
 
-    return _edit_product(offer, body, venue=venue, offerer_address=offerer_address)
+    return _edit_product(offer, body, venue=venue, offerer_address=offerer_address, venue_provider=venue_provider)
 
 
 def _edit_product(
@@ -562,6 +562,7 @@ def _edit_product(
     *,
     venue: offerers_models.Venue | None,
     offerer_address: offerers_models.OffererAddress | None,
+    venue_provider: providers_models.VenueProvider,
 ) -> serialization.ProductOfferResponse:
     updates = body.dict(by_alias=True, exclude_unset=True)
     accessibility = updates.get("accessibility", {})
@@ -598,6 +599,7 @@ def _edit_product(
         withdrawal_details=updates.get("itemCollectionDetails", offers_api.UNCHANGED),
         venue=venue,
         offerer_address=offerer_address,
+        venue_provider=venue_provider,
     )
     db.session.flush()
 

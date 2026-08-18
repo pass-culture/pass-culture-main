@@ -372,7 +372,7 @@ class Returns200Test(PatchEventEndpointHelper):
         db.session.refresh(event)
         assert getattr(event, column) == new_value
 
-    def test_should_update_item_collection_details_on_an_in_app_ticketed_event(self):
+    def test_should_update_the_booking_contact_on_an_in_app_ticketed_event(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = self.setup_base_resource(
             venue=venue_provider.venue,
@@ -385,14 +385,37 @@ class Returns200Test(PatchEventEndpointHelper):
         response = self.make_request(
             plain_api_key,
             {"event_id": event.id},
-            json_body={"itemCollectionDetails": "À retirer au guichet du théâtre"},
+            json_body={"bookingContact": "nouveau@theatre.fr"},
         )
 
         assert response.status_code == 200, response.json
-        assert response.json["itemCollectionDetails"] == "À retirer au guichet du théâtre"
+        assert response.json["bookingContact"] == "nouveau@theatre.fr"
 
         db.session.refresh(event)
-        assert event.withdrawalDetails == "À retirer au guichet du théâtre"
+        assert event.bookingContact == "nouveau@theatre.fr"
+
+    def test_should_update_the_booking_contact_when_the_ticketing_is_set_on_the_venue(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
+        providers_factories.VenueProviderExternalUrlsFactory(venueProvider=venue_provider)
+        event = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.CONCERT.id,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        )
+        assert not venue_provider.provider.hasTicketingService
+        assert venue_provider.hasTicketingService
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"bookingContact": "nouveau@theatre.fr"},
+        )
+
+        assert response.status_code == 200, response.json
+
+        db.session.refresh(event)
+        assert event.bookingContact == "nouveau@theatre.fr"
 
     # --- `categoryRelatedFields`
 
@@ -1348,6 +1371,7 @@ class Returns200Test(PatchEventEndpointHelper):
         num_queries += 1  # selectinload the price categories
         num_queries += 1  # selectinload the mediations
         num_queries += 1  # selectinload the stocks
+        num_queries += 1  # retrieve the venue provider
         num_queries += 1  # lazy-load `provider.offererProvider`, for `hasOffererProvider`
         num_queries += 1  # update the offer
 
@@ -1914,7 +1938,7 @@ class Returns400Test(PatchEventEndpointHelper):
             "offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]
         }
 
-    def test_should_raise_400_because_the_provider_does_not_support_the_ticketing_interface(self):
+    def test_should_raise_400_because_neither_the_provider_nor_the_venue_supports_the_ticketing_interface(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
         event = self.setup_base_resource(
             venue=venue_provider.venue,
@@ -1923,11 +1947,12 @@ class Returns400Test(PatchEventEndpointHelper):
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
         )
         assert not venue_provider.provider.hasTicketingService
+        assert not venue_provider.hasTicketingService
 
         response = self.make_request(
             plain_api_key,
             {"event_id": event.id},
-            json_body={"itemCollectionDetails": "À retirer au guichet du théâtre"},
+            json_body={"bookingContact": "nouveau@theatre.fr"},
         )
 
         assert response.status_code == 400

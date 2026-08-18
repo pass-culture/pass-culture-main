@@ -625,12 +625,19 @@ def check_booking_limit_datetime(
     return [beginning, booking_limit_datetime]
 
 
-def check_offer_update_from_public_api(offer: models.Offer, fields: dict[str, typing.Any], *, ean: str | None) -> None:
+def check_offer_update_from_public_api(
+    offer: models.Offer,
+    fields: dict[str, typing.Any],
+    venue_provider: providers_models.VenueProvider,
+) -> None:
     check_validation_status(offer)
 
     updates = {key for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:
         return
+
+    if offer.lastProvider is not None:
+        check_update_only_allowed_fields_for_offer_from_provider(updates, offer.lastProvider)
 
     # the public API cannot change the subcategory of an offer
     subcategory_id = offer.subcategoryId
@@ -656,7 +663,7 @@ def check_offer_update_from_public_api(offer: models.Offer, fields: dict[str, ty
             offer.venue,
             False,
             offer=offer,
-            ean=ean,
+            ean=offer.ean,
         )
 
     if "isDuo" in updates:
@@ -682,14 +689,15 @@ def check_offer_update_from_public_api(offer: models.Offer, fields: dict[str, ty
             subcategory_id=subcategory_id,
             booking_contact=get_field(offer, fields, "bookingContact"),
             provider=offer.lastProvider,
+            venue_provider=venue_provider,
         )
-
-    # The offer URL must not be removed if the offer has an online subcategory.
-    if offer.url and "url" in fields and fields["url"] is None:
-        check_url_is_coherent_with_subcategory(subcategory, None)
 
     if "durationMinutes" in updates:
         check_duration_minutes(get_field(offer, fields, "durationMinutes"), False)
+
+    resulting_url = get_field(offer, fields, "url")
+    check_url_is_coherent_with_subcategory(subcategory, resulting_url)
+    check_url_and_offererAddress_are_not_both_set(resulting_url, get_field(offer, fields, "offererAddress"))
 
 
 def format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> models.OfferExtraData | None:
