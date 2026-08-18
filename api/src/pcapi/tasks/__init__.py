@@ -5,5 +5,4 @@ def install_handlers(app: Flask) -> None:
     import pcapi.core.external.beamer.tasks
     import pcapi.core.providers.tasks
 
-    from . import batch_tasks
     from . import brevo_tasks
