@@ -61,6 +61,31 @@ class GetInvoicesQueryTest:
         )
         assert list(invoices) == [invoice_within]
 
+    def test_filter_on_amount_gte(self):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account = factories.BankAccountFactory(offerer=offerer)
+        _invoice_negative = factories.InvoiceFactory(bankAccount=bank_account, amount=-400)
+        invoice_400 = factories.InvoiceFactory(bankAccount=bank_account, amount=400)
+        invoice_1 = factories.InvoiceFactory(bankAccount=bank_account, amount=1)
+
+        invoices = repository.get_paid_invoices_query(pro, amount_gte=1)
+        assert len(list(invoices)) == 2
+        assert invoice_1 in list(invoices)
+        assert invoice_400 in list(invoices)
+
+    def test_filter_on_amount_gt(self):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account = factories.BankAccountFactory(offerer=offerer)
+        invoice_negative = factories.InvoiceFactory(bankAccount=bank_account, amount=-400)
+        _invoice_positive = factories.InvoiceFactory(bankAccount=bank_account, amount=400)
+
+        invoices = repository.get_paid_invoices_query(pro, amount_lt=0)
+        assert list(invoices) == [invoice_negative]
+
     def test_filter_on_bank_account(self):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()

@@ -19,6 +19,8 @@ class InvoiceListV2QueryModel(HttpQueryParamsModel):
     period_ending_date: datetime.date | None = None
     bank_account_id: int | None = None
     offerer_id: int | None = None
+    amount_positive_only: bool | None = None
+    amount_negative_only: bool | None = None
 
 
 class HasInvoiceQueryModel(HttpQueryParamsModel):

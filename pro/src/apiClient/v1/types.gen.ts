@@ -3809,6 +3809,14 @@ export type InviteMemberQueryModel = {
  */
 export type InvoiceListV2QueryModel = {
     /**
+     * Amountnegativeonly
+     */
+    amountNegativeOnly?: boolean | null;
+    /**
+     * Amountpositiveonly
+     */
+    amountPositiveOnly?: boolean | null;
+    /**
      * Bankaccountid
      */
     bankAccountId?: number | null;
@@ -10956,6 +10964,14 @@ export type getV2FinanceInvoicesData = {
          * Offererid
          */
         offererId?: number | null;
+        /**
+         * Amountpositiveonly
+         */
+        amountPositiveOnly?: boolean | null;
+        /**
+         * Amountnegativeonly
+         */
+        amountNegativeOnly?: boolean | null;
     };
     url: '/v2/finance/invoices';
 };
