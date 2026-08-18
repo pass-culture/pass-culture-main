@@ -1,3 +1,4 @@
+from pcapi import settings
 from pcapi.core.subscription.dms import schemas as dms_schemas
 
 
@@ -9,12 +10,12 @@ FIELD_ERROR_LABELS = {
     dms_schemas.DmsFieldErrorKeyEnum.postal_code: "ton code postal",
 }
 
-DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
+DMS_ERROR_MESSAGE_USER_NOT_FOUND = f"""Bonjour,
 
                 Nous avons bien reçu ton dossier. Cependant, nous avons remarqué que tu n’avais pas créé de compte sur l’application pass Culture avec l’adresse email que tu utilises sur le site Démarche Numérique.
 
                 Pour cela, il te faut :
-                - Télécharger l’application sur ton smartphone ou y accéder en suivant le lien suivant : passculture.app
+                - Télécharger l’application sur ton smartphone ou y accéder en suivant le lien suivant : <a href="{settings.WEBAPP_V2_URL}">{settings.WEBAPP_V2_URL}</a>
                 - Créer un compte en indiquant la même adresse email que celle que tu utilises sur Démarche Numérique.
                 - Cliquer sur le lien de validation reçu par mail.
 
@@ -72,6 +73,20 @@ def build_dms_error_message_user_not_eligible(formatted_birth_date: str) -> str:
         f"S’il s’agit d’une erreur, tu peux modifier ton dossier.\n"
         "\n"
         'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarche Numérique ?</a>'
+        "\n"
+        "Bonne journée,\n"
+        "\n"
+        "L’équipe du pass Culture"
+    )
+
+
+def build_dn_ubble_identification_message(ubble_identification_url: str) -> str:
+    return (
+        f"Bonjour,\n"
+        "\n"
+        f'Afin de poursuivre ta demande, merci de bien vouloir te munir de ta pièce d’identité et utiliser ce lien pour t’authentifier depuis ton téléphone, en suivant les étapes indiquées : <a href="{ubble_identification_url}">{ubble_identification_url}</a>\n'
+        "\n"
+        "Une fois la vérification de ton document d'identité effectuée, nous pourrons procéder au traitement de la suite de ton dossier.\n"
         "\n"
         "Bonne journée,\n"
         "\n"

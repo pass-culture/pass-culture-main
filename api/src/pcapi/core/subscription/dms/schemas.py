@@ -74,6 +74,8 @@ class DMSContent(subscription_schemas.IdentityCheckContent):
     processed_datetime: datetime.datetime | None = None
     registration_datetime: datetime.datetime | None = None
     state: str | None = None
+    ubble_identification_id_annotation: DmsAnnotation | None = None  # example: idv_01kysqes3rz0qdjs7q0txy5a0x
+    ubble_status_annotation: DmsAnnotation | None = None
 
     model_config = pydantic.ConfigDict(validate_by_name=True)
 
