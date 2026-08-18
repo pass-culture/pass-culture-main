@@ -97,7 +97,7 @@ describe('reimbursementsWithFilters', () => {
     }))
   })
 
-  it('shoud render a table with invoices', async () => {
+  it('should render a table with invoices', async () => {
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
 
@@ -107,7 +107,6 @@ describe('reimbursementsWithFilters', () => {
 
     expect(api.getInvoicesV2).toHaveBeenNthCalledWith(1, {
       query: {
-        bankAccountId: undefined,
         offererId: 1,
         periodBeginningDate: '2020-11-15',
         periodEndingDate: '2020-12-15',
@@ -169,7 +168,9 @@ describe('reimbursementsWithFilters', () => {
     expect(
       screen.queryByText('Aucun justificatif ne correspond à votre recherche')
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Remboursement')).toBeInTheDocument()
+    expect(
+      screen.getByRole('cell', { name: 'Remboursement' })
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('checkbox', {
         name: 'Sélectionner la ligne du 02/11/2022',
@@ -191,7 +192,6 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    // there was a bug were two blocks were displayed
     expect(
       screen.queryByText('Aucun justificatif ne correspond à votre recherche')
     ).not.toBeInTheDocument()
@@ -212,14 +212,6 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display invoice banner', async () => {
-    vi.spyOn(
-      api,
-      'getOffererBankAccountsAndAttachedVenues'
-    ).mockResolvedValueOnce({
-      id: 1,
-      bankAccounts: BASE_BANK_ACCOUNTS,
-      managedVenues: [],
-    })
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -228,25 +220,14 @@ describe('reimbursementsWithFilters', () => {
         /Nous remboursons en un virement toutes les réservations validées entre le 1ᵉʳ et le 15 du mois/
       )
     ).toBeInTheDocument()
-
-    expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
-    expect(screen.getByText('Tous les comptes bancaires')).toBeInTheDocument()
   })
 
-  it('should not disable filter if has invoices', async () => {
-    vi.spyOn(
-      api,
-      'getOffererBankAccountsAndAttachedVenues'
-    ).mockResolvedValueOnce({
-      id: 1,
-      bankAccounts: BASE_BANK_ACCOUNTS,
-      managedVenues: [],
-    })
+  it('should not disable filters', async () => {
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(screen.getByLabelText('Compte bancaire')).toBeEnabled()
+    expect(screen.getByLabelText('Type de justificatif')).toBeEnabled()
     expect(screen.getByLabelText('Début de la période')).toBeEnabled()
     expect(screen.getByLabelText('Fin de la période')).toBeEnabled()
   })
@@ -417,38 +398,6 @@ describe('reimbursementsWithFilters', () => {
     )
   })
 
-  it('should not display Bank account when only one linked', async () => {
-    vi.spyOn(
-      api,
-      'getOffererBankAccountsAndAttachedVenues'
-    ).mockResolvedValueOnce({
-      id: 1,
-      bankAccounts: [defaultBankAccount],
-      managedVenues: [],
-    })
-    renderReimbursementsInvoices()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    expect(screen.queryByLabelText('Compte bancaire')).not.toBeInTheDocument()
-  })
-
-  it('should display Bank account filter when several ', async () => {
-    vi.spyOn(
-      api,
-      'getOffererBankAccountsAndAttachedVenues'
-    ).mockResolvedValueOnce({
-      id: 1,
-      bankAccounts: BASE_BANK_ACCOUNTS,
-      managedVenues: [],
-    })
-    renderReimbursementsInvoices()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
-  })
-
   it('should display error snackbar when getOffererBankAccountsAndAttachedVenues fails', async () => {
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockRejectedValue(
       new Error('Server error')
@@ -471,26 +420,18 @@ describe('reimbursementsWithFilters', () => {
     )
   })
 
-  it('should call api with requested filters', async () => {
+  it('should call api with requested date filters', async () => {
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
-    vi.spyOn(
-      api,
-      'getOffererBankAccountsAndAttachedVenues'
-    ).mockResolvedValueOnce({
-      id: 1,
-      bankAccounts: BASE_BANK_ACCOUNTS,
-      managedVenues: [],
-    })
 
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    await userEvent.selectOptions(
-      screen.getByLabelText('Compte bancaire'),
-      BASE_BANK_ACCOUNTS[0].id.toString()
-    )
+    const searchButton = screen.getByRole('button', {
+      name: 'Lancer la recherche',
+    })
+    expect(searchButton).toBeDisabled()
 
     const beginPeriod = screen.getByLabelText('Début de la période')
     await userEvent.clear(beginPeriod)
@@ -500,7 +441,8 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.clear(endPeriod)
     await userEvent.type(endPeriod, '2020-11-19')
 
-    await userEvent.click(screen.getByText('Lancer la recherche'))
+    expect(searchButton).toBeEnabled()
+    await userEvent.click(searchButton)
 
     await waitFor(() => {
       expect(api.getInvoicesV2).toHaveBeenCalledTimes(2)
@@ -508,19 +450,52 @@ describe('reimbursementsWithFilters', () => {
 
     expect(api.getInvoicesV2).toHaveBeenLastCalledWith({
       query: {
-        bankAccountId: 1,
         offererId: 1,
         periodBeginningDate: '2020-11-17',
         periodEndingDate: '2020-11-19',
       },
     })
 
-    await userEvent.click(screen.getByText('Réinitialiser les filtres'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
+    )
 
-    expect(screen.getByLabelText('Compte bancaire')).toHaveValue('all')
-    expect(screen.getByLabelText('Début de la période')).toHaveValue(
+    expect(await screen.findByLabelText('Début de la période')).toHaveValue(
       '2020-11-15'
     )
     expect(screen.getByLabelText('Fin de la période')).toHaveValue('2020-12-15')
+  })
+
+  it('should filter by amount type', async () => {
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    // gitleaks:allow
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Type de justificatif'),
+      'POSITIVE_AMOUNT'
+    )
+
+    const searchButton = screen.getByRole('button', {
+      name: 'Lancer la recherche',
+    })
+    await userEvent.click(searchButton)
+
+    await waitFor(() => {
+      expect(api.getInvoicesV2).toHaveBeenCalledTimes(2)
+    })
+
+    expect(api.getInvoicesV2).toHaveBeenLastCalledWith({
+      query: {
+        offererId: 1,
+        periodBeginningDate: '2020-11-15',
+        periodEndingDate: '2020-12-15',
+        amountPositiveOnly: true,
+      },
+    })
   })
 })

@@ -1,13 +1,17 @@
-
 title = "pass Culture gitleaks configuration"
 
 [extend]
 useDefault = true
 
-[allowlist]
+[[allowlists]]
 description = "ignore lines containing gitleaks:ignore"
 regexTarget = "line"
-regexes = '''gitleaks:ignore'''
+regexes = ['''gitleaks:ignore''']
+
+[[allowlists]]
+description = "False positive regarding the method name ‘getInvoicesV2’"
+regexTarget = "line"
+regexes = ['''getInvoicesV2''']
 
 [[rules]]
 id = "discord-bot-token"
