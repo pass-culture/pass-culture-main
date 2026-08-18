@@ -273,7 +273,11 @@ class CegidFinanceBackend(BaseFinanceBackend):
         ):
             # If the invoice is already pushed, we might be in a retry due to a timeout from the first PUT query
             # We thus get the id necessary for the POST
-            logger.warning("Invoice '%s' already pushed", invoice_payload.reference)
+            logger.warning(
+                "Invoice '%s' already pushed",
+                invoice_payload.reference,
+                extra={"invoice_id": invoice_payload.invoice_id},
+            )
             response_json = self.get_invoice(invoice_payload.reference)
 
         elif response.status_code != 200:
@@ -284,12 +288,21 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
         if response_json.get("Status", {}).get("value") == "Balanced":
             # Set invoice to Open in Cegid
-            logger.info("Set %s invoice to Open", invoice_payload.reference)
+            logger.info(
+                "Set %s invoice to Open", invoice_payload.reference, extra={"invoice_id": invoice_payload.invoice_id}
+            )
             set_open_url = f"{self._base_url}/{self._interface}/Bill/ReleaseBill"
             set_open_response = self._request("POST", set_open_url, json={"Entity": {"id": response_json["id"]}})
 
             if set_open_response.status_code // 100 != 2:
                 raise exceptions.FinanceBackendBadRequest(set_open_response, "Error in setting invoice to Open")
+        else:
+            # Debug: try to understand why it sometimes does not push everything
+            logger.warning(
+                "Invoice %s is not set to Open",
+                invoice_payload.reference,
+                extra={"invoice_id": invoice_payload.invoice_id, "data": response_json},
+            )
 
         return response_json
 
