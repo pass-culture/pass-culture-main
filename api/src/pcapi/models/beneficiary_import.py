@@ -61,5 +61,5 @@ class BeneficiaryImport(PcObject, Model):
 
     def get_detailed_source(self) -> str:
         if self.source == BeneficiaryImportSources.demarches_simplifiees.value:
-            return f"démarches simplifiées dossier [{self.applicationId}]"
+            return f"Démarche Numérique dossier [{self.applicationId}]"
         return f"dossier {self.source} [{self.applicationId}]"
