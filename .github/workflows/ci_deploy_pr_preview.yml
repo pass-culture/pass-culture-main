@@ -16,7 +16,7 @@ on:
           - industrial
           - tiny
       sandbox-args:
-        description: "Arguments passed to the sandbox command"
+        description: "Arguments for sandbox(). Warning: `--step-to-skip` can make the k8s job fail with a non-obvious error"
         required: false
         default: ""
         type: string
