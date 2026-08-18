@@ -29,12 +29,19 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
     # `get_paid_invoices_query` expects the upper bound to be *exclusive*.
     if query.period_ending_date:
         query.period_ending_date += datetime.timedelta(days=1)
+    amount_params = {}
+    # See the comment about amounts in src/pcapi/core/finance/models.py:3
+    if query.amount_positive_only:
+        amount_params["amount_lt"] = 0
+    if query.amount_negative_only:
+        amount_params["amount_gte"] = 0
     invoices = finance_repository.get_paid_invoices_query(
         current_user,
         bank_account_id=query.bank_account_id,
         date_from=query.period_beginning_date,
         date_until=query.period_ending_date,
         offerer_id=query.offerer_id,
+        **amount_params,
     )
     invoices = invoices.options(
         sa_orm.joinedload(finance_models.Invoice.cashflows).joinedload(finance_models.Cashflow.batch)

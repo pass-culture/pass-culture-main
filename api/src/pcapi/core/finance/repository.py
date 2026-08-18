@@ -600,6 +600,8 @@ def get_paid_invoices_query(
     offerer_id: int | None = None,
     date_from: datetime.date | None = None,
     date_until: datetime.date | None = None,
+    amount_lt: int | None = None,
+    amount_gte: int | None = None,
 ) -> sa_orm.Query:
     """Return invoices for the requested offerer.
 
@@ -642,6 +644,11 @@ def get_paid_invoices_query(
     if date_until:
         datetime_until = convert_to_datetime(date_until)
         invoices = invoices.filter(models.Invoice.date < datetime_until)
+
+    if amount_lt is not None:
+        invoices = invoices.filter(models.Invoice.amount < amount_lt)
+    if amount_gte is not None:
+        invoices = invoices.filter(models.Invoice.amount >= amount_gte)
 
     return invoices
 

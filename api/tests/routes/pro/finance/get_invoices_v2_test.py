@@ -148,6 +148,62 @@ class GetInvoicesTest:
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice_within.reference
 
+    def test_get_invoices_positive_amount(self, client):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        invoice_positive = finance_factories.InvoiceFactory(
+            bankAccount=bank_account,
+            # For the pro user, the amount is the opposite of the db amount
+            # See the comment about amounts in src/pcapi/core/finance/models.py:3
+            amount=-100,
+        )
+        _invoice_negative = finance_factories.InvoiceFactory(
+            bankAccount=bank_account,
+            amount=100,
+        )
+
+        client = client.with_session_auth(pro.email)
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select invoice
+        params = {"amountPositiveOnly": True}
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
+
+        invoices = response.json
+        assert len(invoices) == 1
+        assert invoices[0]["reference"] == invoice_positive.reference
+
+    def test_get_invoices_negative_amount(self, client):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        _invoice_positive = finance_factories.InvoiceFactory(
+            bankAccount=bank_account,
+            # For the pro user, the amount is the opposite of the db amount
+            # See the comment about amounts in src/pcapi/core/finance/models.py:3
+            amount=-100,
+        )
+        invoice_negative = finance_factories.InvoiceFactory(
+            bankAccount=bank_account,
+            amount=100,
+        )
+
+        client = client.with_session_auth(pro.email)
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select invoice
+        params = {"amountNegativeOnly": True}
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
+
+        invoices = response.json
+        assert len(invoices) == 1
+        assert invoices[0]["reference"] == invoice_negative.reference
+
     def test_get_invoices_unauthorized_bank_account(self, client):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
