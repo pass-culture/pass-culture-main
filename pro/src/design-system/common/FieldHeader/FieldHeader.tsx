@@ -19,7 +19,7 @@ export function FieldHeader({
   requiredIndicator,
   description,
   descriptionId,
-}: FieldHeaderProps) {
+}: Readonly<FieldHeaderProps>) {
   return (
     <div
       className={classNames(styles['field-header'], {
@@ -42,7 +42,7 @@ export function FieldHeader({
         )}
       </div>
       {required && requiredIndicator === 'explicit' && (
-        <div className={styles['field-header-right']}>Obligatoire</div>
+        <p className={styles['field-header-right']}>Obligatoire</p>
       )}
     </div>
   )

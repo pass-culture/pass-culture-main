@@ -20,17 +20,17 @@ export const CollectiveOfferInstitutionSection = ({
     institution?: EducationalInstitutionResponseModel | null
   ) => {
     if (!institution) {
-      return <div>Tous les établissements</div>
+      return 'Tous les établissements'
     }
 
     return (
-      <div>
+      <>
         {institution.institutionType} {institution.name}
         <br />
         {institution.postalCode} {institution.city}
         <br />
         UAI : {institution.institutionId}
-      </div>
+      </>
     )
   }
 
@@ -38,16 +38,14 @@ export const CollectiveOfferInstitutionSection = ({
     {
       title: 'Établissement scolaire auquel vous adressez votre offre',
       text: getInstitutionDescription(institution),
+      stacked: true,
     },
   ]
   if (teacher) {
     descriptions.push({
       title: 'Enseignant avec qui vous avez construit cette offre',
-      text: (
-        <div>
-          {teacher.firstName} {teacher.lastName}
-        </div>
-      ),
+      text: `${teacher.firstName} ${teacher.lastName}`,
+      stacked: true,
     })
   }
 

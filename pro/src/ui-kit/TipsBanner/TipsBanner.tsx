@@ -31,12 +31,12 @@ export const TipsBanner = ({
   id,
 }: TipsBannerProps): JSX.Element => {
   return (
-    <div className={cn(className, styles['tips-banner'])} id={id}>
+    <div className={cn(className, styles['tips-banner'])} id={id} role="note">
       <div className={styles['tips-banner-text']}>
-        <div className={styles['tips-banner-header']}>
+        <p className={styles['tips-banner-header']}>
           <SvgIcon src={fullBulbIcon} className={styles['tips-banner-icon']} />À
           savoir
-        </div>
+        </p>
         <div className={styles['tips-banner-content']}>{children}</div>
       </div>
       {decorativeImage && (

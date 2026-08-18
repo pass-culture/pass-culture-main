@@ -26,7 +26,7 @@ export const OfferStatusBanner = ({ status }: OfferStatusBannerProps) => {
               iconAlt: 'Nouvelle fenêtre',
             },
           ]}
-          description="Votre offre ne respecte pas les Conditions Générales d’Utilisation du pass. Un email contenant les conditions d’éligibilité d’une offre a été envoyé à l’adresse email attachée à votre compte."
+          description="Votre offre ne respecte pas les Conditions Générales d'Utilisation du pass. Un email contenant les conditions d'éligibilité d'une offre a été envoyé à l'adresse email attachée à votre compte."
         />
       </div>
     )

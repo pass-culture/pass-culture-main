@@ -18,16 +18,22 @@
 .details-label {
   @include fonts.body-accent-xs;
 
+  margin: 0;
   margin-bottom: var(--size-spacing-s);
   display: block;
 }
 
 .details-item {
   display: block;
+  margin: 0;
 
   &::first-letter {
     text-transform: uppercase;
   }
+}
+
+.details-item-text {
+  margin: 0;
 }
 
 .details-list {

@@ -3,12 +3,14 @@ import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 export const MarkdownInfoBox = ({ id }: { id?: string }) => {
   return (
     <TipsBanner id={id}>
-      Vous pouvez modifier la mise en forme de votre texte.
-      <br />
-      Utilisez des doubles astérisques pour mettre en <strong>gras</strong> :
-      **exemple** et des tirets bas pour l’<em>italique</em> : _exemple_
-      <br />
-      Vous pourrez vérifier l’affichage à l’étape "Aperçu".
+      <p>
+        Vous pouvez modifier la mise en forme de votre texte.
+        <br />
+        Utilisez des doubles astérisques pour mettre en <strong>gras</strong> :
+        **exemple** et des tirets bas pour l’<em>italique</em> : _exemple_
+        <br />
+        Vous pourrez vérifier l’affichage à l’étape "Aperçu".
+      </p>
     </TipsBanner>
   )
 }

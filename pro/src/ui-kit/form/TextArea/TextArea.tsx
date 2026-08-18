@@ -196,13 +196,13 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             )}
           </label>
           {description && (
-            <span
+            <p
               id={descriptionId}
               data-testid={`description-${name}`}
               className={styles['description']}
             >
               {description}
-            </span>
+            </p>
           )}
         </div>
         <div className={styles['wrapper']}>

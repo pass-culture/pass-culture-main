@@ -95,13 +95,13 @@ export function AdageOfferPartnerPanel({
           <Banner
             title="Distance importante"
             description={
-              <>
+              <p>
                 Ce partenaire est situé{' '}
                 {(venue.city || venue.postalCode) &&
-                  `à ${venue.city ?? ''} ${venue.postalCode ?? ''},`}
+                  `à ${venue.city ?? ''} ${venue.postalCode ?? ''},`}{' '}
                 {`à ${isPreview ? 'X km' : distanceText} de votre établissement scolaire`}
                 .
-              </>
+              </p>
             }
           />
         )}

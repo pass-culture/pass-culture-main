@@ -17,6 +17,10 @@
   &:last-child {
     margin-bottom: 0;
   }
+
+  &-content > * {
+    margin: 0;
+  }
 }
 
 .icon {

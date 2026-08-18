@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useId } from 'react'
 
 import {
@@ -102,44 +103,55 @@ export function AdageOfferHeader({
             </div>
           )}
         </div>
-        <div className={styles['offer-header-details-structure']}>
+        <p className={styles['offer-header-details-structure']}>
           Proposée par {venueAndOffererName}
-        </div>
+        </p>
         {isOfferBookable && offer.educationalInstitution && (
           <div className={styles['offer-header-details-institution']}>
-            Adressée à{' '}
-            <span className={styles['offer-header-details-institution-name']}>
+            <p className={styles['offer-header-details-institution-text']}>
+              Adressée à{' '}
+            </p>
+            <p
+              className={cn(
+                styles['offer-header-details-institution-text'],
+                styles['offer-header-details-institution-name']
+              )}
+            >
               {getBookableOfferInstitutionAndTeacherName(offer)}
-            </span>
+            </p>
           </div>
         )}
         <ul className={styles['offer-header-details-infos']}>
           <li className={styles['offer-header-details-info']}>
             <SvgIcon src={strokeLocationIcon} alt="" width="16" />
-            <span>{location}</span>
+            <p className={styles['offer-header-details-info-text']}>
+              {location}
+            </p>
           </li>
 
           <li className={styles['offer-header-details-info']}>
             <SvgIcon src={strokeCalendarIcon} alt="" width="16" />
-            <span>
+            <p className={styles['offer-header-details-info-text']}>
               {isOfferBookable
                 ? getFormattedDatesForBookableOffer(offer)
                 : getFormattedDatesForTemplateOffer(offer)}
-            </span>
+            </p>
           </li>
 
           {isOfferBookable && (
             <li className={styles['offer-header-details-info']}>
               <SvgIcon src={strokeEuroIcon} alt="" width="16" />
-              <span>
+              <p className={styles['offer-header-details-info-text']}>
                 {getBookableOfferStockPrice(offer, isNewCollectivePriceEnabled)}
-              </span>
+              </p>
             </li>
           )}
 
           <li className={styles['offer-header-details-info']}>
             <SvgIcon src={strokeUserIcon} alt="" width="16" />
-            <span>{studentLevels}</span>
+            <p className={styles['offer-header-details-info-text']}>
+              {studentLevels}
+            </p>
           </li>
         </ul>
       </div>

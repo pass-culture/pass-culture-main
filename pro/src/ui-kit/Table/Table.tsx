@@ -32,7 +32,7 @@ type EmptyStateProps = {
   message: {
     icon: string
     title: string
-    subtitle: string
+    subtitle?: string
     cta?: ReactNode
   }
 }

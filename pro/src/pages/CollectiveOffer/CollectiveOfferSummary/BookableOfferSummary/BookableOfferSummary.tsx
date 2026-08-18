@@ -234,44 +234,54 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
         </div>
         <div className={styles['header-description-info']}>
           <dl className={styles['detail-list']}>
-            <DetailItem>n°{offer.id}</DetailItem>
+            <DetailItem>
+              <p>n°{offer.id}</p>
+            </DetailItem>
             <DetailItem alt={offer.venue.publicName} src={strokeHomeIcon}>
-              Proposé par {offer.venue.publicName}
+              <p>Proposé par {offer.venue.publicName}</p>
             </DetailItem>
             <DetailItem alt={'Date de l’offre'} src={strokeCalendarIcon}>
-              {formatDateRangeWithTime()}
+              <p>{formatDateRangeWithTime()}</p>
             </DetailItem>
             <DetailItem
               alt="Établissement scolaire où se déroule l’offre"
               src={strokeTeacherIcon}
             >
-              {offer.institution?.institutionType && offer.institution.name
-                ? `${offer.institution.institutionType} ${offer.institution.name} ${postalCode}`
-                : DEFAULT_RECAP_VALUE}
+              <p>
+                {offer.institution?.institutionType && offer.institution.name
+                  ? `${offer.institution.institutionType} ${offer.institution.name} ${postalCode}`
+                  : DEFAULT_RECAP_VALUE}
+              </p>
             </DetailItem>
             <DetailItem alt="Nombre de participants" src={strokeUserIcon}>
-              {numberOfParticipants
-                ? `${numberOfParticipants} ${pluralizeFr(numberOfParticipants, 'participant', 'participants')}`
-                : DEFAULT_RECAP_VALUE}
+              <p>
+                {numberOfParticipants
+                  ? `${numberOfParticipants} ${pluralizeFr(numberOfParticipants, 'participant', 'participants')}`
+                  : DEFAULT_RECAP_VALUE}
+              </p>
             </DetailItem>
             <DetailItem alt="Prix de l’offre" src={strokeEuroIcon}>
-              {offer.collectiveStock?.price ||
-              offer.collectiveStock?.price === 0
-                ? `${offer.collectiveStock.price} ${pluralizeFr(offer.collectiveStock.price, 'euro', 'euros')}`
-                : DEFAULT_RECAP_VALUE}
+              <p>
+                {offer.collectiveStock?.price ||
+                offer.collectiveStock?.price === 0
+                  ? `${offer.collectiveStock.price} ${pluralizeFr(offer.collectiveStock.price, 'euro', 'euros')}`
+                  : DEFAULT_RECAP_VALUE}
+              </p>
             </DetailItem>
             <DetailItem alt="Adresse de l’offre" src={strokeLocationIcon}>
-              {location}
+              <p>{location}</p>
             </DetailItem>
             <DetailItem alt="Date limite de réservation" src={strokeClockIcon}>
-              Date limite de réservation :{' '}
-              {offer.collectiveStock?.bookingLimitDatetime
-                ? formatDateTime(
-                    offer.collectiveStock.bookingLimitDatetime,
-                    FORMAT_DD_MM_YYYY,
-                    offer.venue.departementCode
-                  )
-                : DEFAULT_RECAP_VALUE}
+              <p>Date limite de réservation : </p>
+              <p>
+                {offer.collectiveStock?.bookingLimitDatetime
+                  ? formatDateTime(
+                      offer.collectiveStock.bookingLimitDatetime,
+                      FORMAT_DD_MM_YYYY,
+                      offer.venue.departementCode
+                    )
+                  : DEFAULT_RECAP_VALUE}
+              </p>
             </DetailItem>
           </dl>
           <div className={styles['header-actions']}>

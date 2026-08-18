@@ -77,6 +77,12 @@
 
   .description {
     @include fonts.body-s;
+
+    margin: 0;
+
+    &-paragraph {
+      @include fonts.body-s;
+    }
   }
 
   &-large,

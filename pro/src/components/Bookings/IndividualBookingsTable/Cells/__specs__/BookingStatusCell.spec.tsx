@@ -43,7 +43,7 @@ describe('IndividualBookingsStatusCell', () => {
 
     renderIndividualBookingStatusCell(props)
 
-    const title = screen.getByText('validée', { selector: 'span' })
+    const title = screen.getByText('validée', { selector: 'p' })
     expect(title).toBeInTheDocument()
   })
 })

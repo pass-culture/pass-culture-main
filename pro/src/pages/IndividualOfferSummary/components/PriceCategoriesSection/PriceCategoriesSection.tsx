@@ -51,12 +51,12 @@ export const PriceCategoriesSection = ({
       shouldShowDivider={shouldShowDivider}
     >
       {offer.priceCategories?.map((priceCategory) => (
-        <div key={priceCategory.id} className={styles['price-category']}>
+        <p key={priceCategory.id} className={styles['price-category']}>
           {isCaledonian
             ? formatPacificFranc(convertEuroToPacificFranc(priceCategory.price))
             : formatPrice(priceCategory.price)}{' '}
           - {priceCategory.label}
-        </div>
+        </p>
       ))}
       {canBeDuo && (
         <SummaryDescriptionList

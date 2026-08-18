@@ -128,11 +128,13 @@ export const FormParticipants = ({
       <FormLayout.Row
         sideComponent={
           <TipsBanner>
-            {isMarseilleEnabled
-              ? `Dans le cadre du plan Marseille en Grand et du Conseil national de la refondation dans son volet éducation "Notre école, faisons-la ensemble", les écoles primaires innovantes du territoire marseillais bénéficient d’un budget pour financer des projets d’EAC avec leurs élèves.`
-              : `Le pass Culture à destination du public scolaire s’adresse aux
+            <p>
+              {isMarseilleEnabled
+                ? `Dans le cadre du plan Marseille en Grand et du Conseil national de la refondation dans son volet éducation "Notre école, faisons-la ensemble", les écoles primaires innovantes du territoire marseillais bénéficient d’un budget pour financer des projets d’EAC avec leurs élèves.`
+                : `Le pass Culture à destination du public scolaire s’adresse aux
             élèves de la sixième à la terminale des établissements publics et
             privés sous contrat.`}
+            </p>
           </TipsBanner>
         }
       >

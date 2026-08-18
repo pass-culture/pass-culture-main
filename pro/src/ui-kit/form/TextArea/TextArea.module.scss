@@ -42,8 +42,8 @@
   @include fonts.body-xs;
 
   display: block;
+  margin: 0 0 var(--size-spacing-s) 0;
   color: var(--color-text-subtle);
-  margin-bottom: var(--size-spacing-s);
 }
 
 .field-header-right {

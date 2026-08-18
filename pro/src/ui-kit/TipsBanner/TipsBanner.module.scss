@@ -35,7 +35,7 @@
     height: rem.torem(20px);
   }
 
-  &-content {
+  &-content > * {
     @include fonts.body-xs;
   }
 

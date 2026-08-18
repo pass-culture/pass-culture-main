@@ -109,6 +109,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                 descriptions={[
                   {
                     title: 'Etablissement scolaire',
+                    isBlock: true,
                     text: (
                       <div>
                         {`${informations.institution.institutionType} ${informations.institution.name}`.trim()}

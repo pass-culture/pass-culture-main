@@ -123,6 +123,8 @@ export const CollectiveOfferStockSection = ({
       ? [
           {
             title: 'Type de frais annexe',
+            isBlock: true,
+            stacked: true,
             text: (
               <ul className={styles['additional-fees-list']}>
                 {stock?.collectiveAdditionalFees?.map(

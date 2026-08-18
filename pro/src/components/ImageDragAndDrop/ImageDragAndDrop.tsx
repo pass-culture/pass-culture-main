@@ -199,7 +199,7 @@ export const ImageDragAndDrop = forwardRef(
               'Déposez votre image ici'
             ) : (
               <>
-                <span>Glissez et déposez votre image</span>
+                <p>Glissez et déposez votre image</p>
                 <span>
                   {' ou '}
                   <label

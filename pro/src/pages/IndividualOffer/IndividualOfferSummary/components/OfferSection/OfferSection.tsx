@@ -142,6 +142,7 @@ export const OfferSection = ({
       : []),
     {
       title: 'Description',
+      stacked: true,
       text: !offerData.description ? (
         EMPTY_TEXT
       ) : (

@@ -16,7 +16,7 @@ export const NonAttachedBanner = () => {
           type: 'link',
         },
       ]}
-      description="Un email vous sera envoyé lors de la validation de votre rattachement. Vous aurez alors accès à l’ensemble des fonctionnalités du pass Culture Pro."
+      description="Un email vous sera envoyé lors de la validation de votre rattachement. Vous aurez alors accès à l'ensemble des fonctionnalités du pass Culture Pro."
     />
   )
 }
