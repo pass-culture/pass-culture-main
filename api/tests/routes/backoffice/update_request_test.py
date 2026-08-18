@@ -120,7 +120,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[0]["Dossier"] == str(unknown_user_request.dsApplicationId)
         assert rows[0]["État"] == "En construction"
         assert rows[0]["Date de dernière MàJ"] == format_date_time(unknown_user_request.dateLastStatusUpdate)
-        assert rows[0]["Date des derniers messages"] == ""
+        assert rows[0]["Dernier message reçu"] == ""
         assert (
             rows[0]["Demandeur"]
             == f"Martin Connu né(e) le {unknown_user_request.birthDate.strftime('%d/%m/%Y')} ({unknown_user_request.applicant_age} ans) martinconnu@example.com"
@@ -133,7 +133,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[1]["État"] == "En instruction"
         assert rows[1]["Date de dernière MàJ"] == format_date_time(first_name_update_request.dateLastStatusUpdate)
         assert (
-            rows[1]["Date des derniers messages"]
+            rows[1]["Dernier message reçu"]
             == f"Demandeur : {format_date_time(first_name_update_request.dateLastUserMessage)}"
         )
         assert (
@@ -152,10 +152,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[2]["Date de dernière MàJ"] == format_date_time(
             last_name_and_email_update_request.dateLastStatusUpdate
         )
-        assert (
-            rows[2]["Date des derniers messages"]
-            == f"Instructeur : {format_date_time(last_name_and_email_update_request.dateLastInstructorMessage)}"
-        )
+        assert rows[2]["Dernier message reçu"] == ""
         assert (
             rows[2]["Demandeur"]
             == f"Juliette Montaigu né(e) le {last_name_and_email_update_request.birthDate.strftime('%d/%m/%Y')} ({last_name_and_email_update_request.applicant_age} ans) juju.montaigu@example.com"
@@ -174,8 +171,8 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[3]["État"] == "En instruction"
         assert rows[3]["Date de dernière MàJ"] == format_date_time(phone_number_request.dateLastStatusUpdate)
         assert (
-            rows[3]["Date des derniers messages"]
-            == f"Demandeur : {format_date_time(phone_number_request.dateLastUserMessage)} Instructeur : {format_date_time(phone_number_request.dateLastInstructorMessage)}"
+            rows[3]["Dernier message reçu"]
+            == f"Demandeur : {format_date_time(phone_number_request.dateLastUserMessage)}"
         )
         assert (
             rows[3]["Demandeur"]
@@ -191,7 +188,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[4]["Dossier"] == str(accepted_user_request.dsApplicationId)
         assert rows[4]["État"] == "Accepté"
         assert rows[4]["Date de dernière MàJ"] == format_date_time(accepted_user_request.dateLastStatusUpdate)
-        assert rows[4]["Date des derniers messages"] == ""
+        assert rows[4]["Dernier message reçu"] == ""
         assert (
             rows[4]["Demandeur"]
             == f"Jeune Nouveau-Nom né(e) le {accepted_user_request.birthDate.strftime('%d/%m/%Y')} ({accepted_user_request.applicant_age} ans) {accepted_user_request.email}"
@@ -1333,7 +1330,9 @@ class AskForCorrectionTest(PostEndpointHelper):
     @pytest.mark.parametrize("correction_reason", ("unreadable-photo", "missing-file", "refused-file"))
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
     def test_ask_for_correction(self, mock_send_user_message, legit_user, authenticated_client, correction_reason):
-        update_request = users_factories.UserAccountUpdateRequestFactory(dsApplicationId=2126838)
+        update_request = users_factories.UserAccountUpdateRequestFactory(
+            dsApplicationId=2126838, dateLastUserMessage=None
+        )
 
         mock_send_user_message.return_value = {
             "dossierEnvoyerMessage": {
