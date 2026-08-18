@@ -52,6 +52,14 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useLocation: vi.fn(() => defaultUseLocationValue),
+  }
+})
+
 describe('AdageOffer', () => {
   it('should display the offer information sections', () => {
     renderAdageOffer({ offer: defaultCollectiveTemplateOffer })
@@ -84,7 +92,7 @@ describe('AdageOffer', () => {
   })
 
   it('should call tracker when coming from search page', () => {
-    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+    vi.mocked(router.useLocation).mockReturnValueOnce({
       ...defaultUseLocationValue,
       state: { queryId: 123 },
     })
@@ -101,7 +109,7 @@ describe('AdageOffer', () => {
   })
 
   it('should call tracker with source when coming from a shareLink', () => {
-    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+    vi.mocked(router.useLocation).mockReturnValueOnce({
       ...defaultUseLocationValue,
       search: '?source=shareLink',
     })
@@ -118,7 +126,7 @@ describe('AdageOffer', () => {
   })
 
   it('should call tracker with playlistId when coming from a discovery', () => {
-    vi.spyOn(router, 'useLocation').mockReturnValueOnce(defaultUseLocationValue)
+    vi.mocked(router.useLocation).mockReturnValueOnce(defaultUseLocationValue)
 
     renderAdageOffer({
       offer: defaultCollectiveOffer,

@@ -45,6 +45,22 @@ vi.mock('../components/OfferEducationalStock/OfferEducationalStock', () => ({
   OfferEducationalStock: vi.fn(),
 }))
 
+const defaultUseLocationValue = {
+  state: { offer: '', queryId: '' },
+  hash: '',
+  key: '',
+  pathname: '/accueil',
+  search: '',
+}
+
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useLocation: vi.fn(() => defaultUseLocationValue),
+  }
+})
+
 const renderCollectiveStockEdition = (
   path: string,
   props: CollectiveOfferFromParamsProps,
