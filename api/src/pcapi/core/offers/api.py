@@ -581,8 +581,6 @@ def update_offer_from_private_api(
     withdrawal_type: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
     should_send_mail: bool = False,
 ) -> models.Offer:
-    validation.check_validation_status(offer)
-
     # an explicit `null` disables double bookings rather than clearing the field
     if is_duo is not UNCHANGED:
         is_duo = bool(is_duo)
@@ -618,13 +616,37 @@ def update_offer_from_private_api(
     fields = {key: value for key, value in fields.items() if value is not UNCHANGED}
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
-    updates_set = set(updates)
 
-    subcategory_id_to_check = updates.get("subcategoryId", offer.subcategoryId)
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id_to_check]
+    # The two relation fields cannot take part in the diff above so they are compared here
+    is_claimed = offer.culturalOutreach is not None and offer.culturalOutreach.claimedDatetime is not None
+    relation_updates: set[str] = set()
 
-    if artist_offer_links is not None:
-        validation.check_artist_offer_links(artist_offer_links, subcategory)
+    if artist_offer_links is not None and artist_api.artist_offer_links_differ(artist_offer_links, offer):
+        relation_updates.add("artistOfferLinks")
+
+    if has_cultural_outreach_claim is not None and has_cultural_outreach_claim != is_claimed:
+        relation_updates.add("hasCulturalOutreachClaim")
+
+    updates_set = set(updates) | relation_updates
+
+    if not updates_set:
+        return offer
+
+    validation.check_offer_update_from_private_api(
+        offer,
+        updates,
+        artist_offer_links=artist_offer_links,
+        ean=ean if ean is not UNCHANGED else None,
+        extra_data=extra_data if extra_data is not UNCHANGED else None,
+        url_is_explicitly_removed=url is not UNCHANGED and url is None,
+    )
+
+    if "bookingAllowedDatetime" in updates:
+        new_booking_allowed_datetime = get_field(offer, updates, "bookingAllowedDatetime")
+        if not new_booking_allowed_datetime or (new_booking_allowed_datetime <= datetime.datetime.now(datetime.UTC)):
+            reminders_notifications.notify_users_offer_is_bookable(offer)
+
+    if artist_offer_links is not None and "artistOfferLinks" in relation_updates:
         created_links, deleted_links = artist_api.upsert_artist_offer_links(artist_offer_links, offer)
         db.session.expire(offer, ["artistOfferLinks"])
 
@@ -647,47 +669,13 @@ def update_offer_from_private_api(
                 )
             )
 
-    if has_cultural_outreach_claim is not None:
+    if "hasCulturalOutreachClaim" in relation_updates:
         outreach = offer.culturalOutreach
-        is_currently_claimed = outreach is not None and outreach.claimedDatetime is not None
-        if has_cultural_outreach_claim != is_currently_claimed:
-            if outreach is None:
-                cultural_outreach_api.create_cultural_outreach_claim(offer)
-            else:
-                claim_datetime = get_naive_utc_now() if has_cultural_outreach_claim else None
-                cultural_outreach_api.update_cultural_outreach_claim(claim_datetime, offer)
-
-    if not updates:
-        return offer
-
-    if "bookingAllowedDatetime" in updates:
-        new_booking_allowed_datetime = get_field(offer, updates, "bookingAllowedDatetime")
-        if not new_booking_allowed_datetime or (new_booking_allowed_datetime <= datetime.datetime.now(datetime.UTC)):
-            reminders_notifications.notify_users_offer_is_bookable(offer)
-
-    validation.check_offer_update_from_private_api(
-        offer,
-        updates,
-        ean=ean if ean is not UNCHANGED else None,
-        extra_data=extra_data if extra_data is not UNCHANGED else None,
-        url_is_explicitly_removed=url is not UNCHANGED and url is None,
-    )
-
-    try:
-        updates["ean"] = updates["extraData"].pop("ean")
-
-        # TODO(jbaudet - 11/2025): remove this whole try/except in a
-        # couple of weeks, after checking that this warning never
-        # appears.
-        # Caller should use body.ean instead of body.extra_data["ean"]
-        # This seems to be ok today, but... lets wait a little bit before
-        # doing anything stupid.
-        logger.warning(
-            "update_offer_from_private_api: extracting EAN from extraData (use body.ean instead)",
-            extra={"offer": offer.id, "ean": updates["ean"]},
-        )
-    except (KeyError, AttributeError):
-        pass
+        if outreach is None:
+            cultural_outreach_api.create_cultural_outreach_claim(offer)
+        else:
+            claim_datetime = get_naive_utc_now() if has_cultural_outreach_claim else None
+            cultural_outreach_api.update_cultural_outreach_claim(claim_datetime, offer)
 
     changes = {}
     for key, value in updates.items():
@@ -697,16 +685,6 @@ def update_offer_from_private_api(
         changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
         setattr(offer, key, value)
 
-    with db.session.no_autoflush:
-        # the creation process is splitted into several steps. URL and
-        # address might be set only in the end. Therefore, this
-        # validation is meaningless until the offer has been finalized.
-        if offer.status != models.OfferStatus.DRAFT:
-            validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
-            validation.check_url_and_offererAddress_are_not_both_set(offer.url, offer.offererAddress)
-
-    if offer.isFromAllocine:
-        offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
     db.session.add(offer)
 
     # This log is used for analytics purposes.

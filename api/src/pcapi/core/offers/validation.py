@@ -35,7 +35,6 @@ from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.models import pc_object
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import artist_serialize
@@ -624,13 +623,22 @@ def check_offer_update_from_private_api(
     offer: models.Offer,
     updates: dict[str, typing.Any],
     *,
+    artist_offer_links: typing.Sequence[
+        artist_serialize.ArtistOfferLinkBodyModel | artist_serialize.ArtistOfferLinkBodyModelV2
+    ]
+    | None,
     ean: str | None,
     # callers pass either the `OfferExtraData`as a TypedDict or a plain dict`
     extra_data: typing.Any,
     url_is_explicitly_removed: bool,
 ) -> None:
+    check_validation_status(offer)
+
     subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+
+    if artist_offer_links is not None:
+        check_artist_offer_links(artist_offer_links, subcategory)
 
     if updates.keys() & {
         "audioDisabilityCompliant",
@@ -657,11 +665,6 @@ def check_offer_update_from_private_api(
 
     if "isDuo" in updates:
         check_is_duo_compliance(get_field(offer, updates, "isDuo"), subcategory)
-
-    if "idAtProvider" in updates:
-        id_at_provider = get_field(offer, updates, "idAtProvider")
-        check_can_input_id_at_provider(offer.lastProvider, id_at_provider)
-        check_can_input_id_at_provider_for_this_venue(offer.venueId, id_at_provider, offer.id)
 
     if "name" in updates:
         name = get_field(offer, updates, "name")
@@ -690,8 +693,14 @@ def check_offer_update_from_private_api(
 
     if offer.lastProvider is not None:
         check_update_only_allowed_fields_for_offer_from_provider(set(updates), offer.lastProvider)
-    if offer.is_soft_deleted():
-        raise pc_object.DeletedRecordException()
+
+    # An offer is created in several steps, and its url and address may only be set at the very
+    # end, so this coherence is meaningless until the offer has been finalized. The public API
+    # has no such exemption because it refuses draft offers outright.
+    if offer.status != OfferStatus.DRAFT:
+        resulting_url = get_field(offer, updates, "url")
+        check_url_is_coherent_with_subcategory(subcategory, resulting_url)
+        check_url_and_offererAddress_are_not_both_set(resulting_url, get_field(offer, updates, "offererAddress"))
 
 
 def format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> models.OfferExtraData | None:
