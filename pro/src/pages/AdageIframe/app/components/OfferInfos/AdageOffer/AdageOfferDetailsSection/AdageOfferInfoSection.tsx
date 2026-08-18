@@ -57,10 +57,6 @@ export const AdageOfferInfoSection = ({
 
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
-  const educationalPriceDetail = isOfferBookable
-    ? offer.stock.educationalPriceDetail
-    : offer.educationalPriceDetail
-
   return (
     <>
       {offer.location ? (
@@ -156,11 +152,13 @@ export const AdageOfferInfoSection = ({
               )}
             </div>
           ) : (
-            <p className={styles['offer-section-group-item-description-text']}>
-              {isOfferBookable
-                ? getBookableOfferStockPrice(offer)
-                : educationalPriceDetail}
-            </p>
+            isOfferBookable && (
+              <p
+                className={styles['offer-section-group-item-description-text']}
+              >
+                {getBookableOfferStockPrice(offer)}
+              </p>
+            )
           )}
           {!isNewCollectivePriceEnabled && (
             <p className={styles['offer-section-group-item-description-text']}>
