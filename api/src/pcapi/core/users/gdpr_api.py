@@ -869,10 +869,10 @@ def _extract_gdpr_beneficiary_validation(
     user: models.User,
 ) -> list[schemas.GdprBeneficiaryValidation]:
     check_types = {
-        subscription_models.FraudCheckType.DMS.name: "Démarches simplifiées",
+        subscription_models.FraudCheckType.DMS.name: "Démarche Numérique",
         subscription_models.FraudCheckType.EDUCONNECT.name: "ÉduConnect",
         subscription_models.FraudCheckType.HONOR_STATEMENT.name: "Attestation sur l'honneur",
-        subscription_models.FraudCheckType.INTERNAL_REVIEW.name: "Revue Interne",
+        subscription_models.FraudCheckType.INTERNAL_REVIEW.name: "Revue interne",
         subscription_models.FraudCheckType.JOUVE.name: "Jouve",
         subscription_models.FraudCheckType.PHONE_VALIDATION.name: "Validation par téléphone",
         subscription_models.FraudCheckType.PROFILE_COMPLETION.name: "Complétion du profil",

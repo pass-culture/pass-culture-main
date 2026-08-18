@@ -1753,7 +1753,7 @@ def generate_minimal_beneficiary():
     deposit = finance_models.Deposit(
         user=user,
         amount=Decimal("300.00"),
-        source="démarches simplifiées dossier [1234567]",
+        source="Démarche Numérique dossier [1234567]",
         dateCreated=now,
         version=1,
         type=finance_models.DepositType.GRANT_18,
@@ -1961,7 +1961,7 @@ class ExtractBeneficiaryDataTest(StorageFolderManager):
                         "dateCreated": "2024-01-01T00:00:00",
                         "eligibilityType": "Pass 18",
                         "status": "Succès",
-                        "type": "Démarches simplifiées",
+                        "type": "Démarche Numérique",
                         "updatedAt": "2024-01-02T00:00:00",
                     }
                 ],

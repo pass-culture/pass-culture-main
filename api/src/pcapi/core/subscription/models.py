@@ -246,7 +246,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
 
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:
-            return f"démarches simplifiées dossier [{self.thirdPartyId}]"
+            return f"Démarche Numérique dossier [{self.thirdPartyId}]"
         return f"dossier {self.type} [{self.thirdPartyId}]"
 
     def get_min_date_between_creation_and_registration(self) -> datetime.datetime:

@@ -79,7 +79,7 @@
         <div class="purple-background">
             <p>
                 <i>
-                    Dans le cadre de l’utilisation des services du pass Culture nous sommes susceptibles de collecter les données personnelles de nos utilisateurs, par exemple, pour assurer la gestion des réservations, adresser des bulletins d’actualité, lutter contre la fraude ou répondre à des demandes d’information. Le présent document te permet de prendre connaissance des données qui te concernent et qui sont utilisées pour le bon fonctionnement de nos services.
+                    Dans le cadre de l’utilisation des services du pass Culture, nous sommes susceptibles de collecter les données personnelles de nos utilisateurs, par exemple, pour assurer la gestion des réservations, adresser des bulletins d’actualité, lutter contre la fraude ou répondre à des demandes d’information. Le présent document te permet de prendre connaissance des données qui te concernent et qui sont utilisées pour le bon fonctionnement de nos services.
                 </i>
             </p>
             <p>
@@ -90,8 +90,8 @@
         </div>
         <h3>Données de l’utilisateur</h3>
         <table class="borderless">
-            {% if container.internal.user.firstName %}<tr><td>Nom</td><td>{{container.internal.user.firstName}}</td></tr>{% endif %}
-            {% if container.internal.user.lastName %}<tr><td>Prénom</td><td>{{container.internal.user.lastName}}</td></tr>{% endif %}
+            {% if container.internal.user.firstName %}<tr><td>Prénom</td><td>{{container.internal.user.firstName}}</td></tr>{% endif %}
+            {% if container.internal.user.lastName %}<tr><td>Nom</td><td>{{container.internal.user.lastName}}</td></tr>{% endif %}
             {% if container.internal.user.marriedName %}<tr><td>Nom de mariage</td><td>{{container.internal.user.marriedName}}</td></tr> {% endif %}
             <tr><td>Adresse de messagerie</td><td>{{container.internal.user.email}}</td></tr>
             {% if container.internal.user.address %}<tr><td>Adresse</td><td>{{container.internal.user.address}}</td></tr>{% endif %}
@@ -108,7 +108,7 @@
 
         <h3>Informations marketing</h3>
         <table class="borderless">
-            <tr><td>Accepte la récéption de mails</td><td>{% if container.internal.marketing.marketingEmails%}oui{%else%}non{%endif%}</td></tr>
+            <tr><td>Accepte la réception de mails</td><td>{% if container.internal.marketing.marketingEmails%}oui{%else%}non{%endif%}</td></tr>
             <tr><td>Accepte les notifications mobiles</td><td>{% if container.internal.marketing.marketingNotifications%}oui{%else%}non{%endif%}</td></tr>
         </table>
 
