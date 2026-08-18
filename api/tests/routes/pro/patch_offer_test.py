@@ -564,7 +564,6 @@ class Returns200Test:
         )
 
         data = {
-            "name": "New name",
             "externalTicketOfficeUrl": "http://example.net",
             "extraData": {
                 "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
@@ -597,7 +596,7 @@ class Returns200Test:
         assert response.json["id"] == offer.id
 
         updated_offer = db.session.get(Offer, offer.id)
-        assert updated_offer.name == "New name"
+        assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.extraData == {
             "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
             "eidr": "10.5240/ADBD-3CAA-43A0-7BF0-86E2-K",
@@ -1292,101 +1291,6 @@ class Returns200Test:
         assert updated_offer.url is None
         assert updated_offer.offererAddress is None
 
-    def test_patch_editable_field_of_an_offer_from_public_api_provider(self, client):
-        provider = providers_factories.PublicApiProviderFactory()
-        providers_factories.OffererProviderFactory(provider=provider)
-        venue = offerers_factories.VenueFactory()
-        offer = offers_factories.EventOfferFactory(
-            lastProviderId=provider.id,
-            venue=venue,
-            name="Old name",
-            description="Old description",
-            bookingEmail="old@example.com",
-            bookingContact="old-contact@example.com",
-            audioDisabilityCompliant=False,
-            mentalDisabilityCompliant=False,
-            motorDisabilityCompliant=False,
-            visualDisabilityCompliant=False,
-            externalTicketOfficeUrl="http://old.com",
-            isDuo=False,
-            durationMinutes=60,
-            publicationDatetime=datetime.datetime(2026, 8, 15, 12, 0, tzinfo=datetime.timezone.utc),
-            bookingAllowedDatetime=datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc),
-            extraData={"old": "data"},
-            idAtProvider="old-id",
-            offererAddress=None,
-        )
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        new_publication_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=3)
-        new_booking_allowed_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=2)
-
-        data = {
-            "name": "New name",
-            "description": "New description",
-            "bookingEmail": "new@example.com",
-            "bookingContact": "new-contact@example.com",
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": True,
-            "visualDisabilityCompliant": True,
-            "externalTicketOfficeUrl": "http://new.com",
-            "isDuo": True,
-            "durationMinutes": 90,
-            "publicationDatetime": format_into_utc_date(new_publication_datetime),
-            "bookingAllowedDatetime": format_into_utc_date(new_booking_allowed_datetime),
-            "extraData": {"ean": "1234567890123", "author": "New author"},
-            "location": {
-                "isVenueLocation": True,
-            },
-        }
-
-        response = client.with_session_auth("user@example.com").patch(
-            self.endpoint.format(offer_id=offer.id), json=data
-        )
-
-        assert response.status_code == 200, response.json
-        updated_offer = db.session.get(Offer, offer.id)
-        assert updated_offer.name == "New name"
-        assert updated_offer.description == "New description"
-        assert updated_offer.bookingEmail == "new@example.com"
-        assert updated_offer.bookingContact == "new-contact@example.com"
-        assert updated_offer.audioDisabilityCompliant is True
-        assert updated_offer.mentalDisabilityCompliant is True
-        assert updated_offer.motorDisabilityCompliant is True
-        assert updated_offer.visualDisabilityCompliant is True
-        assert updated_offer.externalTicketOfficeUrl == "http://new.com"
-        assert updated_offer.isDuo is True
-        assert updated_offer.durationMinutes == 90
-        assert updated_offer.publicationDatetime == new_publication_datetime
-        assert updated_offer.bookingAllowedDatetime == new_booking_allowed_datetime
-        assert updated_offer.extraData == {"author": "New author"}
-        assert updated_offer.ean == "1234567890123"
-        assert updated_offer.offererAddress.address == venue.offererAddress.address
-
-    def test_patch_allocine_offer_keeps_track_of_updated_fields(self, client):
-        venue = offerers_factories.VenueFactory()
-        allocine_provider = providers_factories.AllocineProviderFactory()
-        offer = offers_factories.OfferFactory(
-            venue=venue,
-            lastProvider=allocine_provider,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            name="Film",
-            isDuo=False,
-        )
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=venue.managingOfferer)
-
-        response = client.with_session_auth("user@example.com").patch(
-            self.endpoint.format(offer_id=offer.id), json={"name": "Un autre nom", "isDuo": True}
-        )
-
-        assert response.status_code == 200, response.json
-
-        updated_offer = db.session.get(Offer, offer.id)
-        assert updated_offer.name == "Un autre nom"
-        assert updated_offer.isDuo is True
-        assert set(updated_offer.fieldsUpdated) == {"name", "isDuo"}
-
     def test_patch_offer_withdrawing_a_cultural_outreach_claim_that_does_not_exist_is_a_noop(self, client):
         # `update_cultural_outreach_claim` is only called when the offer
         # already has a cultural outreach, so nothing happens here.
@@ -1838,24 +1742,6 @@ class Returns200Test:
         assert db.session.get(Offer, offer.id).bookingContact == "new@conta.ct"
         assert len(mails_testing.outbox) == 2
 
-    def test_patch_withdrawal_details_of_an_in_app_offer_from_a_provider_with_a_ticketing_service(self, client):
-        # `in_app` is only allowed when the offer provider supports ticketing
-        provider = providers_factories.PublicApiProviderFactory()
-        providers_factories.OffererProviderFactory(provider=provider)
-        offer = offers_factories.EventOfferFactory(
-            lastProvider=provider,
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-            bookingContact="booking@conta.ct",
-        )
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        response = client.with_session_auth("user@example.com").patch(
-            self.endpoint.format(offer_id=offer.id), json={"withdrawalDetails": "Billet dans l'application"}
-        )
-
-        assert response.status_code == 200, response.json
-        assert db.session.get(Offer, offer.id).withdrawalDetails == "Billet dans l'application"
-
     def test_patch_offer_response_contains_video_highlight_and_cultural_outreach_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(
@@ -1940,25 +1826,67 @@ class Returns200Test:
         assert updated_offer.publicationDatetime == publication_datetime
         assert updated_offer.validation == OfferValidationStatus.DRAFT
 
-    def test_should_not_fail_when_updating_duration_or_description_of_an_offer_with_a_product_but_not_update_them(
-        self, client, venue, auth_client
-    ):
-        product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            ean="1111111111111",
-            name="New name",
-            description="description",
-            durationMinutes=60,
+    def test_patch_the_editable_fields_of_a_synchronized_offer(self, client):
+        provider = providers_factories.PublicApiProviderFactory()
+        providers_factories.OffererProviderFactory(provider=provider)
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.PERFORMANCE_HALL
         )
-        offer = offers_factories.OfferFactory(venue=venue, product=product, extraData={})
-
-        response = auth_client.patch(
-            self.endpoint.format(offer_id=offer.id), json={"description": "tototo", "durationMinutes": 120}
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProvider=provider,
+            audioDisabilityCompliant=False,
+            externalTicketOfficeUrl="http://old.com",
         )
 
-        assert response.status_code == 200
-        assert db.session.get(Offer, offer.id).description == "description"
-        assert db.session.get(Offer, offer.id).durationMinutes == 60
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id),
+            json={"audioDisabilityCompliant": True, "externalTicketOfficeUrl": "http://new.com"},
+        )
+
+        assert response.status_code == 200, response.json
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.audioDisabilityCompliant is True
+        assert updated_offer.externalTicketOfficeUrl == "http://new.com"
+
+    def test_patch_a_read_only_field_with_its_current_value(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.PERFORMANCE_HALL
+        )
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProvider=providers_factories.ProviderFactory(),
+            name="Un nom",
+        )
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"name": "Un nom"}
+        )
+
+        assert response.status_code == 200, response.json
+
+    def test_patch_the_name_of_a_synchronized_offer_in_a_museum(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.MUSEUM
+        )
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProvider=providers_factories.ProviderFactory(),
+            name="Un nom",
+        )
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"name": "Un autre nom"}
+        )
+
+        assert response.status_code == 200, response.json
+        assert db.session.get(Offer, offer.id).name == "Un autre nom"
 
 
 class Returns400Test:
@@ -2703,7 +2631,7 @@ class Returns400Test:
         )
 
         assert response.status_code == 400
-        assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
+        assert response.json == {"ean": ["Vous ne pouvez pas modifier ce champ"]}
 
     def should_fail_when_updating_a_non_ean_extra_data_of_an_offer_with_a_product(self, client, venue, auth_client):
         # no extraData of an offer with a product can be changed, not only its EAN
@@ -2720,7 +2648,7 @@ class Returns400Test:
         )
 
         assert response.status_code == 400
-        assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
+        assert response.json == {"extraData": ["Vous ne pouvez pas modifier ce champ"]}
         assert db.session.get(Offer, offer.id).extraData == {}
 
     def when_only_the_venue_provider_has_a_ticketing_service(self, client, venue, auth_client):
@@ -2792,6 +2720,41 @@ class Returns400Test:
         assert response.status_code == 400
         assert "bookingEmail" in response.json
         assert "Vous ne pouvez pas modifier ce champ" in response.json["bookingEmail"][0]
+
+    def when_updating_a_read_only_field_of_a_synchronized_offer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.PERFORMANCE_HALL
+        )
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProvider=providers_factories.ProviderFactory(),
+            name="Un nom",
+            isDuo=False,
+        )
+
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json={"name": "Un autre nom", "isDuo": True}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "isDuo": ["Vous ne pouvez pas modifier ce champ"],
+            "name": ["Vous ne pouvez pas modifier ce champ"],
+        }
+        assert db.session.get(Offer, offer.id).name == "Un nom"
+
+    def when_updating_a_read_only_field_of_a_product_based_offer(self, client, venue, auth_client):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        offer = offers_factories.OfferFactory(venue=venue, product=product)
+
+        response = auth_client.patch(
+            self.endpoint.format(offer_id=offer.id), json={"description": "Une autre description."}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"description": ["Vous ne pouvez pas modifier ce champ"]}
 
 
 class Returns401Test:

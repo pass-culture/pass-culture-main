@@ -2,6 +2,7 @@ import datetime
 import pathlib
 import types
 from decimal import Decimal
+from unittest import mock
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -11,6 +12,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import validation
@@ -1282,3 +1284,413 @@ class CheckArtistOfferLinksTest:
         assert exc.value.errors == {
             "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
         }
+
+
+class CheckOfferUpdateFromPrivateApiTest:
+    SUBCATEGORY = subcategories.ESCAPE_GAME
+
+    def build_offer(self, **overrides):
+        """approved, provider-less, physical offer that passes every check."""
+        defaults = {
+            # offline only, no conditional field, `can_be_duo`
+            "subcategoryId": self.SUBCATEGORY.id,
+            "validation": OfferValidationStatus.APPROVED,
+            "lastProvider": None,
+            "name": "Les Quatre Cents Coups",
+            "url": None,
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": False,
+            "isDuo": False,
+            "idAtProvider": None,
+            "durationMinutes": 99,
+            "bookingContact": "contact@example.com",
+            "withdrawalDetails": "À retirer à la caisse",
+        }
+        # `overrides` always wins, including when it passes `None`
+        return offers_factories.OfferFactory(**{**defaults, **overrides})
+
+    def check(self, offer, updates=None, **overrides):
+        kwargs = {
+            "artist_offer_links": None,
+            "ean": None,
+            "extra_data": None,
+            "relation_updates": set(),
+            "url_is_explicitly_removed": False,
+        }
+        return validation.check_offer_update_from_private_api(offer, updates or {}, **{**kwargs, **overrides})
+
+    # --- Offer validation status
+
+    @mock.patch("pcapi.core.offers.validation.check_validation_status")
+    def test_should_delegate_the_status_check(self, check_validation_status):
+        offer = self.build_offer()
+
+        self.check(offer)
+
+        check_validation_status.assert_called_once_with(offer)
+
+    def test_should_accept_a_draft_offer(self):
+        offer = self.build_offer(validation=OfferValidationStatus.DRAFT)
+
+        self.check(offer, {"name": "Jules et Jim"})
+
+    # --- Fields locked by the offer
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_fields_are_editable_from_private_api")
+    def test_should_check_the_read_only_fields_against_the_columns_and_the_relations(self, check_editable_fields):
+        offer = self.build_offer()
+
+        self.check(
+            offer,
+            {"name": "Jules et Jim", "durationMinutes": 120},
+            relation_updates={"artistOfferLinks"},
+        )
+
+        check_editable_fields.assert_called_once_with(offer, {"name", "durationMinutes", "artistOfferLinks"})
+
+    # --- `artistOfferLinks`
+
+    @mock.patch("pcapi.core.offers.validation.check_artist_offer_links")
+    def test_should_check_the_artist_links_against_the_resulting_subcategory(self, check_artist_offer_links):
+        offer = self.build_offer(validation=OfferValidationStatus.DRAFT)
+        links = [
+            artist_serialize.ArtistOfferLinkBodyModelV2(
+                artist_id="artist-id",
+                artist_type=artist_models.ArtistType.AUTHOR,
+                artist_name="François Truffaut",
+            )
+        ]
+
+        self.check(offer, {"subcategoryId": subcategories.LIVRE_PAPIER.id}, artist_offer_links=links)
+
+        check_artist_offer_links.assert_called_once_with(links, subcategories.LIVRE_PAPIER)
+
+    @mock.patch("pcapi.core.offers.validation.check_artist_offer_links")
+    def test_should_not_check_the_artist_links_when_they_are_not_sent(self, check_artist_offer_links):
+        offer = self.build_offer()
+
+        self.check(offer, {"name": "Jules et Jim"})
+
+        check_artist_offer_links.assert_not_called()
+
+    # --- `accessibility`
+
+    @pytest.mark.parametrize(
+        "changed_field,expected_key",
+        [
+            ("audioDisabilityCompliant", "audio_disability_compliant"),
+            ("mentalDisabilityCompliant", "mental_disability_compliant"),
+            ("motorDisabilityCompliant", "motor_disability_compliant"),
+            ("visualDisabilityCompliant", "visual_disability_compliant"),
+        ],
+    )
+    @mock.patch("pcapi.core.offers.validation.check_accessibility_compliance")
+    def test_should_check_accessibility_when_any_of_its_four_fields_changes(
+        self, check_accessibility_compliance, changed_field, expected_key
+    ):
+        offer = self.build_offer()
+        new_value = not getattr(offer, changed_field)
+
+        self.check(offer, {changed_field: new_value})
+
+        expected = {
+            "audio_disability_compliant": offer.audioDisabilityCompliant,
+            "mental_disability_compliant": offer.mentalDisabilityCompliant,
+            "motor_disability_compliant": offer.motorDisabilityCompliant,
+            "visual_disability_compliant": offer.visualDisabilityCompliant,
+        }
+        expected[expected_key] = new_value
+        check_accessibility_compliance.assert_called_once_with(**expected)
+
+    @mock.patch("pcapi.core.offers.validation.check_accessibility_compliance")
+    def test_should_not_check_accessibility_when_none_of_its_fields_changes(self, check_accessibility_compliance):
+        offer = self.build_offer()
+
+        self.check(offer, {"name": "Jules et Jim"})
+
+        check_accessibility_compliance.assert_not_called()
+
+    # --- `extraData`
+
+    @mock.patch("pcapi.core.offers.validation.format_extra_data")
+    @mock.patch("pcapi.core.offers.validation.check_offer_extra_data")
+    def test_should_check_extra_data_against_the_ean_it_is_given(self, check_offer_extra_data, format_extra_data):
+        offer = self.build_offer()
+        new_extra_data = {"author": "François Truffaut"}
+
+        self.check(offer, {"extraData": new_extra_data}, extra_data=new_extra_data, ean="9782070100002")
+
+        format_extra_data.assert_called_once_with(self.SUBCATEGORY.id, new_extra_data)
+        check_offer_extra_data.assert_called_once_with(
+            self.SUBCATEGORY.id,
+            format_extra_data.return_value,
+            offer.venue,
+            # `is_from_private_api`
+            True,
+            offer=offer,
+            ean="9782070100002",
+        )
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_extra_data")
+    def test_should_check_extra_data_when_only_the_ean_changes(self, check_offer_extra_data):
+        offer = self.build_offer()
+
+        self.check(offer, {"ean": "9782070100002"}, ean="9782070100002")
+
+        check_offer_extra_data.assert_called_once()
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_extra_data")
+    def test_should_pass_an_empty_dict_when_the_extra_data_is_cleared(self, check_offer_extra_data):
+        # `format_extra_data` answers `None` on a null input, and the check expects a dict
+        offer = self.build_offer()
+
+        self.check(offer, {"extraData": None}, extra_data=None)
+
+        assert check_offer_extra_data.call_args.args[1] == {}
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_extra_data")
+    def test_should_not_check_extra_data_when_it_does_not_change(self, check_offer_extra_data):
+        offer = self.build_offer()
+
+        self.check(offer, {"name": "Jules et Jim"})
+
+        check_offer_extra_data.assert_not_called()
+
+    # --- `isDuo`
+
+    @mock.patch("pcapi.core.offers.validation.check_is_duo_compliance")
+    def test_should_check_duo_compliance_against_the_offer_subcategory(self, check_is_duo_compliance):
+        offer = self.build_offer()
+
+        self.check(offer, {"isDuo": True})
+
+        check_is_duo_compliance.assert_called_once_with(True, self.SUBCATEGORY)
+
+    # --- `name`
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_name_does_not_contain_ean")
+    def test_should_check_the_name_does_not_contain_an_ean(self, check_offer_name_does_not_contain_ean):
+        offer = self.build_offer()
+
+        self.check(offer, {"name": "Jules et Jim"})
+
+        check_offer_name_does_not_contain_ean.assert_called_once_with("Jules et Jim")
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_name_does_not_contain_ean")
+    def test_should_refuse_a_null_name(self, check_offer_name_does_not_contain_ean):
+        offer = self.build_offer()
+
+        with pytest.raises(exceptions.OfferException) as error:
+            self.check(offer, {"name": None})
+
+        assert error.value.errors == {"name": ["cannot be null"]}
+        check_offer_name_does_not_contain_ean.assert_not_called()
+
+    # --- Withdrawal
+
+    @pytest.mark.parametrize(
+        "changed_field", ["withdrawalType", "withdrawalDelay", "withdrawalDetails", "bookingContact"]
+    )
+    @mock.patch("pcapi.core.offers.validation.check_offer_withdrawal")
+    def test_should_check_withdrawal_whenever_any_of_its_four_fields_changes(
+        self, check_offer_withdrawal, changed_field
+    ):
+        offer = self.build_offer()
+
+        self.check(offer, {changed_field: "nouvelle valeur"})
+
+        check_offer_withdrawal.assert_called_once()
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_withdrawal")
+    def test_should_check_withdrawal_against_the_requested_type_and_delay(self, check_offer_withdrawal):
+        offer = self.build_offer(withdrawalType=WithdrawalTypeEnum.NO_TICKET, withdrawalDelay=None)
+
+        self.check(offer, {"withdrawalType": WithdrawalTypeEnum.ON_SITE, "withdrawalDelay": 3600})
+
+        check_offer_withdrawal.assert_called_once_with(
+            withdrawal_type=WithdrawalTypeEnum.ON_SITE,
+            withdrawal_delay=3600,
+            subcategory_id=self.SUBCATEGORY.id,
+            booking_contact=offer.bookingContact,
+            provider=offer.lastProvider,
+        )
+
+    # --- `subcategoryId`
+
+    def test_should_accept_a_subcategory_change_on_a_draft_offer(self):
+        offer = self.build_offer(validation=OfferValidationStatus.DRAFT)
+
+        self.check(offer, {"subcategoryId": subcategories.LIVRE_PAPIER.id})
+
+    def test_should_refuse_a_subcategory_change_on_a_published_offer(self):
+        offer = self.build_offer()
+
+        with pytest.raises(exceptions.UnallowedUpdate):
+            self.check(offer, {"subcategoryId": subcategories.LIVRE_PAPIER.id})
+
+    # --- `durationMinutes`
+
+    @mock.patch("pcapi.core.offers.validation.check_duration_minutes")
+    def test_should_tell_the_duration_check_it_comes_from_the_private_api(self, check_duration_minutes):
+        offer = self.build_offer()
+
+        self.check(offer, {"durationMinutes": 1440})
+
+        # the second parameter is `is_from_private_api`
+        check_duration_minutes.assert_called_once_with(1440, True)
+
+    # --- Location coherence
+
+    @mock.patch("pcapi.core.offers.validation.check_url_is_coherent_with_subcategory")
+    @mock.patch("pcapi.core.offers.validation.check_url_and_offererAddress_are_not_both_set")
+    def test_should_check_location_coherence_on_the_resulting_values(
+        self, check_url_and_offererAddress_are_not_both_set, check_url_is_coherent_with_subcategory
+    ):
+        offer = self.build_offer()
+        new_offerer_address = offerers_factories.OfferLocationFactory()
+
+        self.check(offer, {"url": "https://escape.example.com", "offererAddress": new_offerer_address})
+
+        check_url_is_coherent_with_subcategory.assert_called_once_with(self.SUBCATEGORY, "https://escape.example.com")
+        check_url_and_offererAddress_are_not_both_set.assert_called_once_with(
+            "https://escape.example.com", new_offerer_address
+        )
+
+    @mock.patch("pcapi.core.offers.validation.check_url_is_coherent_with_subcategory")
+    @mock.patch("pcapi.core.offers.validation.check_url_and_offererAddress_are_not_both_set")
+    def test_should_skip_location_coherence_on_a_draft_offer(
+        self, check_url_and_offererAddress_are_not_both_set, check_url_is_coherent_with_subcategory
+    ):
+        offer = self.build_offer(validation=OfferValidationStatus.DRAFT)
+
+        self.check(offer, {"name": "Jules et Jim"})
+
+        check_url_is_coherent_with_subcategory.assert_not_called()
+        check_url_and_offererAddress_are_not_both_set.assert_not_called()
+
+    @mock.patch("pcapi.core.offers.validation.check_url_is_coherent_with_subcategory")
+    def test_should_check_the_subcategory_still_holds_when_the_url_is_removed(
+        self, check_url_is_coherent_with_subcategory
+    ):
+        # the offer keeps its address so that the coherence block at the end of the function,
+        # which is not mocked here, has nothing to say about the resulting state
+        offer = self.build_offer(
+            subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            url="https://livre.example.com",
+        )
+
+        self.check(offer, {"url": None}, url_is_explicitly_removed=True)
+
+        assert mock.call(subcategories.LIVRE_NUMERIQUE, None) in check_url_is_coherent_with_subcategory.call_args_list
+
+    @mock.patch("pcapi.core.offers.validation.check_url_is_coherent_with_subcategory")
+    def test_should_not_check_the_url_removal_when_the_offer_has_no_url(
+        self,
+        check_url_is_coherent_with_subcategory,
+    ):
+        offer = self.build_offer(url=None)
+
+        self.check(offer, {"name": "Jules et Jim"}, url_is_explicitly_removed=True)
+
+        check_url_is_coherent_with_subcategory.assert_called_once_with(self.SUBCATEGORY, None)
+
+
+class CheckOfferFieldsAreEditableFromPrivateApiTest:
+    def build_venue(self, activity=offerers_models.Activity.PERFORMANCE_HALL):
+        return offerers_factories.VenueFactory(activity=activity)
+
+    def build_offer(self, **overrides):
+        return offers_factories.OfferFactory(**overrides)
+
+    def build_synchronized_offer(self, venue=None, provider=None, **overrides):
+        return self.build_offer(
+            venue=venue or self.build_venue(),
+            lastProvider=provider or providers_factories.ProviderFactory(),
+            **overrides,
+        )
+
+    def assert_rejects(self, offer, field):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_offer_fields_are_editable_from_private_api(offer, {field})
+
+        assert error.value.errors == {field: ["Vous ne pouvez pas modifier ce champ"]}
+
+    # --- A plain offer locks nothing
+
+    def test_should_accept_every_field_on_a_manual_offer(self):
+        offer = self.build_offer()
+
+        validation.check_offer_fields_are_editable_from_private_api(
+            offer,
+            validation.READONLY_FIELDS_FOR_PRODUCT_BASED_OFFER | validation.READONLY_FIELDS_FOR_SYNCHRONIZED_OFFER,
+        )
+
+    # --- Synchronized offers
+
+    @pytest.mark.parametrize("field", sorted(validation.READONLY_FIELDS_FOR_SYNCHRONIZED_OFFER))
+    def test_should_reject_every_read_only_field_of_a_synchronized_offer(self, field):
+        offer = self.build_synchronized_offer()
+
+        self.assert_rejects(offer, field)
+
+    def test_should_accept_the_cultural_outreach_claim_on_a_synchronized_offer(self):
+        offer = self.build_synchronized_offer()
+
+        validation.check_offer_fields_are_editable_from_private_api(offer, {"hasCulturalOutreachClaim"})
+
+    def test_should_list_every_rejected_field_at_once(self):
+        offer = self.build_synchronized_offer()
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_offer_fields_are_editable_from_private_api(
+                offer, {"name", "isDuo", "audioDisabilityCompliant"}
+            )
+
+        assert error.value.errors == {
+            "isDuo": ["Vous ne pouvez pas modifier ce champ"],
+            "name": ["Vous ne pouvez pas modifier ce champ"],
+        }
+
+    # --- The museum exception
+
+    @pytest.mark.parametrize("field", ["description", "name"])
+    def test_should_accept_the_name_and_description_of_a_synchronized_offer_in_a_museum(self, field):
+        offer = self.build_synchronized_offer(venue=self.build_venue(activity=offerers_models.Activity.MUSEUM))
+
+        validation.check_offer_fields_are_editable_from_private_api(offer, {field})
+
+    # --- The Allociné exception
+
+    def test_should_accept_the_withdrawal_details_of_an_allocine_offer(self):
+        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+        offer = self.build_synchronized_offer(provider=provider)
+        assert offer.isFromAllocine
+
+        validation.check_offer_fields_are_editable_from_private_api(offer, {"withdrawalDetails"})
+
+    # --- Product-based offers
+
+    @pytest.mark.parametrize("field", sorted(validation.READONLY_FIELDS_FOR_PRODUCT_BASED_OFFER))
+    def test_should_reject_every_read_only_field_of_a_product_based_offer(self, field):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        offer = self.build_offer(product=product)
+
+        self.assert_rejects(offer, field)
+
+    # --- Product-based and synchronized
+
+    def test_should_reject_the_union_on_a_product_based_synchronized_offer(self):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        offer = self.build_synchronized_offer(product=product)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_offer_fields_are_editable_from_private_api(
+                offer,
+                validation.READONLY_FIELDS_FOR_PRODUCT_BASED_OFFER | validation.READONLY_FIELDS_FOR_SYNCHRONIZED_OFFER,
+            )
+
+        assert set(error.value.errors) == (
+            validation.READONLY_FIELDS_FOR_PRODUCT_BASED_OFFER | validation.READONLY_FIELDS_FOR_SYNCHRONIZED_OFFER
+        )
