@@ -53,7 +53,6 @@ from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.core.educational.api import dms as dms_api
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
-from pcapi.core.finance import api as finance_api
 from pcapi.core.geography import constants as geography_constants
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
@@ -3506,11 +3505,12 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
     if venue.is_closed:
         return
 
+    if venue_has_incoming_reimbursements(venue):
+        raise exceptions.VenueHasIncomingReimbursements()
+
     venue.state = models.VenueState.CLOSING
     nullify_venue_emails(venue, author)
     history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
-
-    finance_api.unlink_venue_bank_accounts(venue)
 
     payload = tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
     on_commit(
@@ -3611,13 +3611,13 @@ def deactivate_venue_offers(venue: models.Venue) -> None:
         logger.info(log_msg, extra=log_extra)
 
 
-def venue_has_ongoing_bookings(venue: models.Venue) -> bool:
+def venue_has_incoming_reimbursements(venue: models.Venue) -> bool:
     return db.session.query(
         db.session.query(bookings_models.Booking)
         .filter_by(venueId=venue.id)
         .filter(
-            bookings_models.Booking.status.not_in(
-                [bookings_models.BookingStatus.REIMBURSED, bookings_models.BookingStatus.CANCELLED]
+            bookings_models.Booking.status.in_(
+                [bookings_models.BookingStatus.PENDING_REIMBURSEMENT, bookings_models.BookingStatus.USED]
             )
         )
         .exists()

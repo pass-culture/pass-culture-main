@@ -217,6 +217,20 @@ class FinalizeClosingVenueTaskTest:
 
         assert venue.state == offerers_models.VenueState.CLOSED
 
+    def test_bank_accounts_have_been_unlinked(self):
+        bank_account_link = offerers_factories.VenueBankAccountLinkFactory()
+        venue = bank_account_link.venue
+        assert venue.current_bank_account_link
+
+        author = users_factories.BaseUserFactory()
+
+        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+
+        db.session.refresh(venue)
+        assert not venue.current_bank_account_link
+        assert venue.state == offerers_models.VenueState.CLOSED
+
     def create_synced_offers_with_bookings(self, venue):
         boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)
         now = datetime.datetime.now(datetime.UTC)

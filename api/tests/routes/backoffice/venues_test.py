@@ -3368,6 +3368,26 @@ class CloseVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.managingOfferer.validationStatus == validation_status
 
+    def test_close_venue_is_not_allowed_if_has_incoming_reimbursements(self, authenticated_client):
+        venue = offerers_factories.VenueBankAccountLinkFactory().venue
+        bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={"comment": "test"},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"Impossible de procéder à la fermeture du partenaire culturel {venue.name}: des réservations sont encore en cours ou non-remboursées"
+        )
+
+        db.session.refresh(venue)
+        assert not venue.is_closed
+
     def test_close_venue_returns_404_if_venue_is_not_found(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client, venue_id=1)
 

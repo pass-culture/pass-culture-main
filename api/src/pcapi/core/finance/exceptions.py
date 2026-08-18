@@ -148,3 +148,7 @@ class FinanceBackendInconsistentDistantData(FinanceBackendException):
 
 class FinanceBackendInvoiceAlreadyExists(FinanceBackendException):
     pass
+
+
+class OngoingBookingsException(Exception):
+    pass

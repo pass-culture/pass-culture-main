@@ -3,6 +3,7 @@ import logging
 import sqlalchemy.orm as sa_orm
 from pydantic import BaseModel as BaseModelV2
 
+import pcapi.core.finance.api as finance_api
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
@@ -110,6 +111,9 @@ def finalize_closing_venue_task(payload: FinalizeClosingVenuePayload) -> None:
         db.session.flush()
 
         logger.info("closing venue: pivots deleted", extra={"venue_id": venue.id})
+
+        finance_api.unlink_venue_bank_accounts(venue)
+        logger.info("closing venue: bank accounts unlinked", extra={"venue_id": venue.id})
 
         venue.state = offerers_models.VenueState.CLOSED
         db.session.flush()
