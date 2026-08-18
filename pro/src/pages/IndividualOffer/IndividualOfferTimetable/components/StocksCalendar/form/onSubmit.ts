@@ -55,6 +55,15 @@ export const onSubmit = async (
 
   // Upsert stocks if there are stocks to upsert
   if (serializedStocksToAdd.length > 0) {
+    const MAX_STOCKS = 2500
+
+    if (serializedStocksToAdd.length > MAX_STOCKS) {
+      snackBar.error(
+        `Impossible d'ajouter plus de ${MAX_STOCKS} lignes de dates à un évènement.`
+      )
+      return
+    }
+
     try {
       const data = await mutate(
         stockQueryKeys,
