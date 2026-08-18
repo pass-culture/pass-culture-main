@@ -45,8 +45,9 @@ jobs:
 
   dependabot-auto-merge:
     name: Dependabot
-    needs: test-changes
+    needs: [compute-changes, test-changes]
     if: |
+      needs.compute-changes.outputs.pro-changed == 'true' || needs.compute-changes.outputs.api-documentation-changed == 'true' &&
       github.event.pull_request.user.login == 'dependabot[bot]' &&
       always() &&
       !cancelled() &&
