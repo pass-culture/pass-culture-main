@@ -1,4 +1,5 @@
 import type { GetOffererResponseModel } from '@/apiClient/v1'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -9,6 +10,7 @@ import {
   STEP_ID_BANK_INFORMATIONS,
   STEP_ID_INCOMES,
   STEP_ID_INVOICES,
+  STEP_ID_SETTLEMENTS,
   STEP_NAMES,
 } from './constants'
 import styles from './ReimbursementsTabs.module.scss'
@@ -20,6 +22,9 @@ type ReimbursementsTabsProps = {
 export const ReimbursementsTabs = ({
   selectedOfferer,
 }: ReimbursementsTabsProps) => {
+  const isNewSettlementsActivated = useActiveFeature(
+    'WIP_ENABLE_FINANCE_SETTLEMENTS'
+  )
   const activeStep = useActiveStep(STEP_NAMES)
   const hasWarning =
     (selectedOfferer &&
@@ -57,6 +62,14 @@ export const ReimbursementsTabs = ({
         url: '/administration/remboursements/revenus',
       },
     ]
+
+    if (isNewSettlementsActivated) {
+      steps.unshift({
+        id: STEP_ID_SETTLEMENTS,
+        label: 'Virements',
+        url: '/administration/remboursements/virements',
+      })
+    }
 
     return steps
   }
