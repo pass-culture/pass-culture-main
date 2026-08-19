@@ -14,21 +14,15 @@ import { EditoCard } from './EditoCard'
 const mockLogEvent = vi.fn()
 
 vi.mock('../HighlightHome/ModalHighlight/ModalHighlight', () => ({
-  ModalHighlight: ({ trigger, open, onOpenChange }: any) => (
-    <>
-      <button
-        type="button"
-        disabled={trigger.props.disabled}
-        onClick={() => {
-          trigger.props.onClick?.()
-          onOpenChange(true)
-        }}
-      >
-        {trigger.props.label}
-      </button>
-      {open && <h1>Qu’est-ce qu’un temps fort sur le pass Culture ?</h1>}
-    </>
-  ),
+  ModalHighlight: ({ isOpen, onClose }: any) =>
+    isOpen ? (
+      <>
+        <h1>Qu’est-ce qu’un temps fort sur le pass Culture ?</h1>
+        <button type="button" onClick={onClose}>
+          Fermer
+        </button>
+      </>
+    ) : null,
 }))
 
 const defaultProps = {
@@ -143,7 +137,7 @@ describe('EditoCard', () => {
   describe('headline offer card', () => {
     it('should have a link to offer page', () => {
       renderWithProviders(
-        <EditoCard {...defaultProps} canDisplayHighlights={true} />
+        <EditoCard {...defaultProps} canDisplayHighlights={false} />
       )
       const links = screen.getAllByRole('link', { name: 'Choisir une offre' })
       expect(links[0]).toHaveAttribute('href', '/offres')
@@ -186,6 +180,41 @@ describe('EditoCard', () => {
           action: 'discover',
         }
       )
+    })
+
+    it('should not display the modal by default', () => {
+      renderWithProviders(
+        <EditoCard {...defaultProps} canDisplayHighlights={true} />
+      )
+
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Qu’est-ce qu’un temps fort sur le pass Culture ?',
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should close the modal when onClose is called', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(
+        <EditoCard {...defaultProps} canDisplayHighlights={true} />
+      )
+
+      await user.click(screen.getByText('Parcourir les temps forts'))
+      expect(
+        screen.getByRole('heading', {
+          name: 'Qu’est-ce qu’un temps fort sur le pass Culture ?',
+        })
+      ).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Fermer' }))
+
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Qu’est-ce qu’un temps fort sur le pass Culture ?',
+        })
+      ).not.toBeInTheDocument()
     })
   })
 

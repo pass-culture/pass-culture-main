@@ -26,13 +26,16 @@ describe('ModalHighlight', () => {
       },
     ])
 
-    const { container } = renderWithProviders(<ModalHighlight open />, {
-      storeOverrides: {
-        user: {
-          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
+    const { container } = renderWithProviders(
+      <ModalHighlight isOpen onClose={vi.fn()} />,
+      {
+        storeOverrides: {
+          user: {
+            selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
+          },
         },
-      },
-    })
+      }
+    )
 
     expect(
       await screen.findByRole('heading', {
@@ -70,7 +73,7 @@ describe('ModalHighlight', () => {
       },
     ])
 
-    renderWithProviders(<ModalHighlight open />, {
+    renderWithProviders(<ModalHighlight isOpen onClose={vi.fn()} />, {
       storeOverrides: {
         user: {
           selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
@@ -106,5 +109,22 @@ describe('ModalHighlight', () => {
         action: 'goToOffersList',
       }
     )
+  })
+
+  it('should call onClose when clicking "Fermer"', async () => {
+    vi.spyOn(api, 'getHighlights').mockResolvedValue([])
+    const onClose = vi.fn()
+
+    renderWithProviders(<ModalHighlight isOpen onClose={onClose} />, {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
+        },
+      },
+    })
+
+    await userEvent.click(screen.getByText('Fermer'))
+
+    expect(onClose).toHaveBeenCalledOnce()
   })
 })
