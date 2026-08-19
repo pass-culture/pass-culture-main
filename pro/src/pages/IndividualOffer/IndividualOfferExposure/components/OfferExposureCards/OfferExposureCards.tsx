@@ -1,3 +1,5 @@
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -51,6 +53,8 @@ export type OfferExposureCardsProps = {
 export const OfferExposureCards = ({
   offer,
 }: Readonly<OfferExposureCardsProps>) => {
+  const { logEvent } = useAnalytics()
+
   const { data: exposure } = useSWR(
     [GET_OFFER_EXPOSURE_QUERY_KEY, offer.id],
     () => api.getOfferExposure({ path: { offer_id: offer.id } })
@@ -111,6 +115,11 @@ export const OfferExposureCards = ({
                   step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
                   mode: OFFER_WIZARD_MODE.EDITION,
                 })}`}
+                onClick={() => {
+                  logEvent(Events.CLICKED_EXPOSURE_SHOW_RESERVATIONS, {
+                    offerId: offer.id,
+                  })
+                }}
                 label="Voir les réservations"
                 variant={ButtonVariant.TERTIARY}
                 icon={fullArrowRightIcon}
