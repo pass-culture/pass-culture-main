@@ -90,9 +90,11 @@ describe('SnackBarContainer', () => {
       id: '123',
     } satisfies Omit<ISnackBarItem, 'createdAt'>
 
-    const { container } = renderSnackBarContainer([snackBar], true)
+    renderSnackBarContainer([snackBar], true)
 
-    expect(container.firstChild).toHaveClass('with-sticky-action-bar')
+    expect(
+      screen.getByTestId('global-snack-bar-success-0').parentElement
+    ).toHaveClass('with-sticky-action-bar')
   })
 
   it('should not apply sticky bar class when isStickyBarOpen is false', () => {
@@ -102,9 +104,11 @@ describe('SnackBarContainer', () => {
       id: '123',
     } satisfies Omit<ISnackBarItem, 'createdAt'>
 
-    const { container } = renderSnackBarContainer([snackBar], false)
+    renderSnackBarContainer([snackBar], false)
 
-    expect(container.firstChild).not.toHaveClass('with-sticky-action-bar')
+    expect(
+      screen.getByTestId('global-snack-bar-success-0').parentElement
+    ).not.toHaveClass('with-sticky-action-bar')
   })
 
   it('should display multiple snackbars', () => {
