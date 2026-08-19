@@ -1,5 +1,4 @@
 import logging
-import typing
 
 import sqlalchemy.orm as sa_orm
 from flask_login import current_user
@@ -9,16 +8,13 @@ import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.repository as finance_repository
-import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.api as offers_api
-import pcapi.core.offers.models as offers_models
 from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
-from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import resource_not_found_error
 from pcapi.models.utils import get_or_404
@@ -226,37 +222,6 @@ def link_venue_to_bank_account(
         )
 
 
-def get_offers_with_headlines_and_mediations(
-    ids: typing.Collection[int],
-) -> typing.Collection[offers_models.Offer]:
-    return (
-        db.session.query(offers_models.Offer)
-        .filter(offers_models.Offer.id.in_(ids))
-        .options(
-            sa_orm.selectinload(offers_models.Offer.mediations),
-            sa_orm.joinedload(offers_models.Offer.product).selectinload(offers_models.Product.productMediations),
-            sa_orm.selectinload(offers_models.Offer.headlineOffers),
-        )
-        .distinct()
-        .all()
-    )
-
-
-def _map_top_offers_to_existing_offers(
-    top_offers: typing.Collection[offerers_api.OfferViewsModel],
-) -> dict[offerers_api.OfferViewsModel, offers_models.Offer]:
-    offers = get_offers_with_headlines_and_mediations([int(o.offer_id) for o in top_offers])
-    offers_mapping = {offer.id: offer for offer in offers}
-
-    top_offers_to_offers_mapping = {top_offer: offers_mapping.get(int(top_offer.offer_id)) for top_offer in top_offers}
-
-    return {top_offer: offer for top_offer, offer in top_offers_to_offers_mapping.items() if offer is not None}
-
-
-def _is_headline_offer(offer: offers_models.Offer) -> bool:
-    return len([ho for ho in offer.headlineOffers if ho.isActive]) > 0
-
-
 @private_api.route("/venues/<int:venue_id>/offers-statistics", methods=["GET"])
 @atomic()
 @login_required
@@ -273,7 +238,7 @@ def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsRes
 
     # top offers come from ClickHouse but need extra data from Postgres
     # offers for serialization.
-    offers_mapping = _map_top_offers_to_existing_offers(stats.top_offers)
+    offers_mapping = api.map_top_offers_to_existing_offers(stats.top_offers)
 
     # filter top offer without a known offer, just in case.
     # -> a missing offer is very (very) unlikely but it can happen
@@ -290,7 +255,7 @@ def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsRes
                     numberOfViews=top_offer.views,
                     offerName=offers_mapping[top_offer].name,
                     image=offers_api.build_offer_image(offers_mapping[top_offer]),
-                    isHeadlineOffer=_is_headline_offer(offers_mapping[top_offer]),
+                    isHeadlineOffer=offers_api.is_headline_offer(offers_mapping[top_offer]),
                 )
                 for top_offer in top_offers
             ],
