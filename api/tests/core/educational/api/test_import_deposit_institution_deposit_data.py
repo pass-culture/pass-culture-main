@@ -209,7 +209,7 @@ class ImportDepositInstitutionDataTest:
         new_uai = "0470009E"
         factories.EducationalInstitutionFactory(institutionId=uai)
 
-        content = f"""uai;credits de depenses
+        content = f"""Code UAI;Crédits de dépenses
         {uai};1250
         {new_uai};1500"""
 
