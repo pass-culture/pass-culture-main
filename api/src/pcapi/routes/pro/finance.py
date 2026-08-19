@@ -20,6 +20,56 @@ from pcapi.utils.transaction_manager import atomic
 from . import blueprint
 
 
+@private_api.route("/v2/finance/has-settlement", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(response_model=finance_serialize.HasSettlementResponseModel, api=blueprint.pro_private_schema)
+def has_settlement(query: finance_serialize.HasSettlementQueryModel) -> finance_serialize.HasSettlementResponseModel:
+    rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
+    # TODO(mdesquilbet, 19/08/2026): NOT YET IMPLEMENTED
+    # question : should we merge it with has_invoice endpoint in some way ?
+    return finance_serialize.HasSettlementResponseModel(has_settlement=True)
+
+
+@private_api.route("/v2/finance/settlements", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(response_model=finance_serialize.SettlementListResponseModel, api=blueprint.pro_private_schema)
+def get_settlements() -> finance_serialize.SettlementListResponseModel:
+    # TODO(mdesquilbet, 19/08/2026): NOT YET IMPLEMENTED
+    return finance_serialize.SettlementListResponseModel(
+        [
+            finance_serialize.SettlementResponseModel(
+                id=1,
+                label="VIR00001",
+                date=datetime.date.today(),
+                amount=1000,
+                bankAccount="Compte bancaire 1",
+                status=finance_models.SettlementStatus.ISSUED,
+                invoiceCount=2,
+            ),
+            finance_serialize.SettlementResponseModel(
+                id=2,
+                label="VIR00002",
+                date=datetime.date.today(),
+                amount=400,
+                bankAccount="Compte bancaire 2",
+                status=finance_models.SettlementStatus.EXECUTED,
+                invoiceCount=3,
+            ),
+            finance_serialize.SettlementResponseModel(
+                id=3,
+                label="VIR00003",
+                date=datetime.date.today(),
+                amount=1200,
+                bankAccount="Compte bancaire 1",
+                status=finance_models.SettlementStatus.REJECTED,
+                invoiceCount=1,
+            ),
+        ]
+    )
+
+
 @private_api.route("/v2/finance/invoices", methods=["GET"])
 @atomic()
 @login_required

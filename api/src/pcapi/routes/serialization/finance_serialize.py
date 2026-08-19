@@ -27,6 +27,10 @@ class HasInvoiceQueryModel(HttpQueryParamsModel):
     offerer_id: int
 
 
+class HasSettlementQueryModel(HttpQueryParamsModel):
+    offerer_id: int
+
+
 class GetCombinedInvoicesQueryModel(HttpQueryParamsModel):
     invoice_references: list[str]
 
@@ -58,6 +62,20 @@ class InvoiceResponseV2Model(HttpBodyModel):
 
 class InvoiceListV2ResponseModel(RootModel):
     root: list[InvoiceResponseV2Model]
+
+
+class SettlementResponseModel(HttpBodyModel):
+    id: int
+    label: str
+    date: datetime.date
+    amount: float
+    bankAccount: str
+    status: finance_models.SettlementStatus
+    invoiceCount: int
+
+
+class SettlementListResponseModel(RootModel):
+    root: list[SettlementResponseModel]
 
 
 class LinkedVenue(HttpBodyModel):
@@ -96,3 +114,7 @@ class BankAccountResponseModel(HttpBodyModel):
 
 class HasInvoiceResponseModel(HttpBodyModel):
     has_invoice: bool
+
+
+class HasSettlementResponseModel(HttpBodyModel):
+    has_settlement: bool
