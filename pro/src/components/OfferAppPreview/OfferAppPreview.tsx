@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { truncateAtWord } from '@/commons/utils/string'
@@ -15,16 +17,29 @@ export const OfferAppPreview = ({
   offer,
 }: OfferAppPreviewProps): JSX.Element => {
   const image = getIndividualOfferImage(offer)
+  const imageCreditId = useId()
 
   return (
     <div className={style['offer-preview-container']}>
       <div className={style['offer-img-container']}>
         {image ? (
-          <img
-            className={style['offer-img']}
-            src={image.url}
-            alt="Illustration de l’offre"
-          />
+          <figure>
+            <img
+              className={style['offer-img']}
+              src={image.url}
+              alt="Illustration de l’offre"
+              aria-describedby={
+                offer.activeMediation?.credit ? imageCreditId : undefined
+              }
+            />
+            {offer.activeMediation?.credit ? (
+              <figcaption id={imageCreditId}>
+                <p className={style['image-credit-text']}>
+                  Crédit image : {offer.activeMediation?.credit}
+                </p>
+              </figcaption>
+            ) : null}
+          </figure>
         ) : (
           <p>Pas d’image</p>
         )}

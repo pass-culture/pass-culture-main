@@ -83,6 +83,7 @@ class GetFavoriteOfferTest:
                     ],
                     "interventionArea": ["2A", "2B"],
                     "imageUrl": None,
+                    "imageCredit": None,
                     "nationalProgram": None,
                     "dates": {
                         "start": format_into_utc_date(collective_offer_template.start),

@@ -24,6 +24,12 @@
   }
 }
 
+.image-credit-text {
+  @include fonts.body-accent-s;
+
+  color: var(--color-text-disabled);
+}
+
 .header-description {
   display: flex;
   border: rem.torem(1px) solid var(--color-border-subtle);
@@ -75,6 +81,12 @@
   border-radius: var(--size-border-radius-m);
   box-shadow: var(--shadow-overlay);
   margin-right: var(--size-spacing-xl);
+}
+
+.image-credit {
+  margin-top: var(--size-spacing-s);
+  margin-right: var(--size-spacing-xl);
+  color: var(--color-text-subtle);
 }
 
 .default-preview {

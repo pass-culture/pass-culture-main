@@ -134,6 +134,7 @@ class CollectiveOfferTest:
             },
             "interventionArea": ["93", "94", "95"],
             "imageUrl": None,
+            "imageCredit": None,
             "teacher": {
                 "email": offer.teacher.email,
                 "firstName": offer.teacher.firstName,

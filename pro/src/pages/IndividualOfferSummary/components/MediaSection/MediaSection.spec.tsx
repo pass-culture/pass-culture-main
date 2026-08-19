@@ -22,6 +22,7 @@ const renderMediaSection = (props: Partial<MediaSectionProps> = {}) => {
 const MOCK_DATA = {
   offerId: 0,
   imageUrl: 'http://localhost/storage/thumbs/mediations/ABAC',
+  imageCredit: 'Photo de Camille Doe',
   videoUrl: 'https://www.youtube.com/watch?v=0R5PZxOgoz8',
 }
 
@@ -30,6 +31,7 @@ const LABELS = {
   editLink: 'Modifier l’image et la vidéo de l’offre',
   imageSubSectionTitle: 'Ajoutez une image',
   imageSubSectionImageAlt: 'Prévisualisation de l’image',
+  imageCredit: `Crédit image : ${MOCK_DATA.imageCredit}`,
   imageFallbackText: 'Pas d’image',
   videoSubSectionTitle: 'Ajoutez une vidéo',
 }
@@ -61,6 +63,13 @@ describe('MediaSection', () => {
       })
       expect(image).toBeInTheDocument()
       expect(image).toHaveAttribute('src', MOCK_DATA.imageUrl)
+      expect(screen.getByText(LABELS.imageCredit)).toBeInTheDocument()
+    })
+
+    it('should not render an image credit when no credit is provided', () => {
+      renderMediaSection({ imageCredit: '' })
+
+      expect(screen.queryByText(/Crédit image\s*:/)).not.toBeInTheDocument()
     })
 
     it('should not render any image subsection when asked (shouldImageBeHidden)', () => {

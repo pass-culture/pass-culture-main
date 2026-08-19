@@ -66,6 +66,26 @@ describe('AdageOfferHeader', () => {
     expect(screen.getByRole('presentation')).toHaveAttribute('src', 'test_url')
   })
 
+  it('should show the image credit and associate it to the image', () => {
+    renderAdageOfferHeader({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        imageUrl: 'test_url',
+        imageCredit: 'Agence photo',
+      },
+      adageUser: defaultAdageUser,
+    })
+
+    const image = screen.getByRole('presentation')
+    const imageCredit = screen.getByText('Crédit image : Agence photo')
+
+    expect(imageCredit).toBeInTheDocument()
+    expect(image).toHaveAttribute(
+      'aria-describedby',
+      imageCredit.parentElement?.id
+    )
+  })
+
   it('should not show an image if the offer has no image', () => {
     renderAdageOfferHeader({
       offer: { ...defaultCollectiveTemplateOffer, imageUrl: undefined },

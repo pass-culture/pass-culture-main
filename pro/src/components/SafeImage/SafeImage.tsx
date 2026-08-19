@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 
 import { usePrevious } from '@/commons/hooks/usePrevious'
+
+import styles from '../SafeImage/ImagePlaceholder/ImagePlaceholder.module.scss'
 
 type SafeImageProps = {
   src: string
@@ -8,6 +10,8 @@ type SafeImageProps = {
   placeholder: React.ReactNode
   className?: string
   testId?: string
+  ariaDescribedBy?: string
+  credit?: string
 }
 
 export function SafeImage({
@@ -16,9 +20,12 @@ export function SafeImage({
   className,
   testId,
   placeholder,
-}: SafeImageProps) {
+  ariaDescribedBy,
+  credit,
+}: Readonly<SafeImageProps>) {
   // https://gtmetrix.com/avoid-empty-src-or-href.html
   const sanitizedSrc = src.trim() || undefined
+  const imageCreditId = useId()
 
   const [error, setError] = useState(false)
   const previousSanitizedSrc = usePrevious(sanitizedSrc)
@@ -34,12 +41,20 @@ export function SafeImage({
   }
 
   return (
-    <img
-      className={className}
-      src={sanitizedSrc}
-      alt={alt}
-      onError={() => setError(true)}
-      data-testid={testId}
-    />
+    <figure>
+      <img
+        className={className}
+        src={sanitizedSrc}
+        alt={alt}
+        aria-describedby={[ariaDescribedBy, imageCreditId].join(' ')}
+        onError={() => setError(true)}
+        data-testid={testId}
+      />
+      {credit ? (
+        <figcaption id={imageCreditId}>
+          <p className={styles['image-credit-text']}>Crédit image : {credit}</p>
+        </figcaption>
+      ) : null}
+    </figure>
   )
 }

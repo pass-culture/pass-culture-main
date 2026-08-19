@@ -181,6 +181,7 @@ class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComp
     domains: typing.Sequence[OfferDomain]
     interventionArea: list[str]
     imageUrl: str | None
+    imageCredit: str | None
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[EacFormat]
     isTemplate: bool
@@ -220,6 +221,7 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             educationalInstitution=offer.institution,  # type: ignore [arg-type]
             interventionArea=offer.interventionArea,
             imageUrl=offer.imageUrl,
+            imageCredit=offer.imageCredit,
             teacher=offer.teacher,  # type: ignore [arg-type]
             nationalProgram=offer.nationalProgram,  # type: ignore [arg-type]
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
@@ -268,6 +270,7 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
             domains=offer.domains,  # type: ignore [arg-type]
             interventionArea=offer.interventionArea,
             imageUrl=offer.imageUrl,
+            imageCredit=offer.imageCredit,
             nationalProgram=offer.nationalProgram,  # type: ignore [arg-type]
             isFavorite=is_favorite,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,

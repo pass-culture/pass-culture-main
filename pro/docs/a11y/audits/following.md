@@ -49,6 +49,38 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 15.3 - RAWeb - Le contenu généré par chaque transformation des contenus est-il conforme aux règles d’accessibilité numérique ?</summary>
+
+**RAWeb/RGAA** : [Critère 15.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-15-3)
+**Ticket** : [PC-42867](https://passculture.atlassian.net/browse/PC-42867)  
+**PR** : [#23910](https://github.com/pass-culture/pass-culture-main/pull/23910)
+
+**Problème** 😱  
+P05 → Création offre réservable (5 étapes et confirmation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Les informations d'accessibilité définies depuis l'outil d'édition ne sont pas conservées lors de la génération du contenu final : 
+
+- Lorsqu’un contributeur renseigne un crédit photo lors de l’ajout d’une image, cette information est affichée sur la page de consultation de l’offre, mais elle n’est pas associée sémantiquement à l’image correspondante.
+
+- L’image et son crédit photo sont ainsi traités comme deux éléments indépendants par les technologies d’assistance. 
+
+**Correction** 💡  
+- Associer structurellement les informations complémentaires liées à une image à celle-ci dans le contenu généré.
+
+- Utiliser une structure adaptée permettant aux technologies d’assistance d’identifier l’image et sa légende comme un ensemble unique (par exemple une structure de type <figure> associée à un <figcaption>).
+
+- S’assurer que les informations renseignées dans l’outil d’édition sont conservées et correctement restituées dans le contenu publié.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 11.2 - RGAA - Chaque étiquette associée à un champ de formulaire est-elle pertinente ?</summary>
 
 **RAWeb/RGAA** : [Critère 11.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-2)

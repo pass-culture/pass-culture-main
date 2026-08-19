@@ -20,7 +20,7 @@
   flex-direction: column;
   height: rem.torem(385px);
   justify-content: center;
-  margin-bottom: rem.torem(18px);
+  margin-bottom: var(--size-spacing-xl);
 
   .offer-img {
     border-radius: var(--size-border-radius-s);
@@ -28,6 +28,14 @@
     width: 100%;
     object-fit: cover;
   }
+}
+
+.image-credit-text {
+  @include fonts.body-accent-xs;
+
+  color: var(--color-text-disabled);
+  text-align: right;
+  margin-right: var(--size-spacing-s);
 }
 
 .offer-data-container {
