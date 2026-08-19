@@ -467,7 +467,7 @@ def _get_and_sort_users(user_ids_with_search_scores_query: sa_orm.Query) -> list
                 users_models.UserTag.id, users_models.UserTag.name, users_models.UserTag.label
             )
         )
-        .order_by(user_ids_subquery.c.search_score, user_ids_subquery.c.id)
+        .order_by(user_ids_subquery.c.search_score)
         .all()
     )
 

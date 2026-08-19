@@ -41,7 +41,7 @@ TAG_NAME_REGEX = r"^[^\s]+$"
 
 
 ADVANCED_FORM_FIELDS_CONFIG: dict[str, dict[str, typing.Any]] = {
-    AdvancedFormFieldKeys.BIRTHDAY.name: {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
+    AdvancedFormFieldKeys.BIRTHDAY.name: {"field": "date", "operator": ["DATE_EQUALS", "DATE_FROM", "DATE_TO"]},
     AdvancedFormFieldKeys.CREDIT.name: {"field": "credit", "operator": ["IN", "NOT_IN"]},
     AdvancedFormFieldKeys.DEPOSIT_EXPIRATION_DATE.name: {
         "field": "date",
