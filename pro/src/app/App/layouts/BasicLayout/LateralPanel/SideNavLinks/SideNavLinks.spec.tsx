@@ -45,6 +45,22 @@ vi.mock('./components/HelpDropdownNavItem', () => ({
   ),
 }))
 
+const defaultUseLocationValue = {
+  state: { offer: '', queryId: '' },
+  hash: '',
+  key: '',
+  pathname: '/accueil',
+  search: '',
+}
+
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useLocation: vi.fn(() => defaultUseLocationValue),
+  }
+})
+
 const navItems: NavItem[] = [
   { key: '1', group: 'main', type: 'section', title: 'Main 1' },
   { key: '2', group: 'main', type: 'section', title: 'Main 2' },

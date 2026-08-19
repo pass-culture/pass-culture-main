@@ -25,6 +25,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import * as useOfferWizardModeHook from '@/commons/hooks/useOfferWizardMode'
 import {
   categoryFactory,
   getIndividualOfferFactory,
@@ -51,6 +52,16 @@ vi.mock('@/apiClient/api', () => ({
     patchOffer: vi.fn(),
   },
 }))
+
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useNavigate: vi.fn(),
+    useParams: vi.fn(),
+    useLocation: vi.fn(),
+  }
+})
 
 vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
@@ -239,8 +250,14 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-
-    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+    vi.mocked(router.useNavigate).mockReturnValue(mockNavigate)
+    vi.mocked(router.useLocation).mockReturnValue({
+      pathname: '/offre/creation/description',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default',
+    })
     vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
 
     contextValue = individualOfferContextValuesFactory({
@@ -858,6 +875,12 @@ describe('<IndividualOfferDescriptionScreen />', () => {
   })
 
   describe('on edition', () => {
+    beforeEach(() => {
+      vi.spyOn(useOfferWizardModeHook, 'useOfferWizardMode').mockReturnValue(
+        OFFER_WIZARD_MODE.EDITION
+      )
+    })
+
     it('should not render EAN search', () => {
       const context = individualOfferContextValuesFactory({
         categories: MOCK_DATA.categories,
@@ -916,7 +939,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     })
 
     it('should show a success snackbar and not navigate when WIP_OFFER_EXPOSURE is enabled', async () => {
-      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       vi.spyOn(api, 'patchOffer').mockResolvedValue(
         getIndividualOfferFactory({ id: 12 })
       )
@@ -1084,6 +1106,12 @@ describe('<IndividualOfferDescriptionScreen />', () => {
   })
 
   describe('onboarding', () => {
+    beforeEach(() => {
+      vi.spyOn(useOfferWizardModeHook, 'useOfferWizardMode').mockReturnValue(
+        OFFER_WIZARD_MODE.CREATION
+      )
+    })
+
     it('should display with the lateral bar', async () => {
       renderDetailsScreen({ contextValue })
       await userEvent.click(screen.getByText('Retour'))
@@ -1093,6 +1121,13 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     })
 
     it('should redirect to the offer creation type screen', async () => {
+      vi.mocked(router.useLocation).mockReturnValue({
+        pathname: '/onboarding/offre/individuelle/creation/description',
+        search: '',
+        hash: '',
+        state: null,
+        key: 'default',
+      })
       renderDetailsScreen({
         contextValue,
         mode: OFFER_WIZARD_MODE.CREATION,

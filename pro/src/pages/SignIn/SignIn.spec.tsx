@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
@@ -44,6 +45,14 @@ vi.mock('@/commons/utils/windowMatchMedia', () => ({
 vi.mock('@/app/AppRouter/utils/getUserDefaultPath', () => ({
   getUserDefaultPath: vi.fn(() => '/accueil'),
 }))
+
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useNavigate: vi.fn(),
+  }
+})
 
 const mockLogEvent = vi.fn()
 
@@ -227,9 +236,7 @@ describe('SignIn', () => {
 
   it('should navigate to user default path on successful login with API_SIRENE_AVAILABLE', async () => {
     const mockNavigate = vi.fn()
-    vi.spyOn(await import('react-router'), 'useNavigate').mockReturnValue(
-      mockNavigate
-    )
+    vi.mocked(router.useNavigate).mockReturnValue(mockNavigate)
     const mockThunk: any = () => {
       const promise = Promise.resolve() as any
       promise.unwrap = () => Promise.resolve()

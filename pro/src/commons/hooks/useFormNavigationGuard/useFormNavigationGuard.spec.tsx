@@ -9,6 +9,7 @@ import {
 import userEvent, { type UserEvent } from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
+import * as router from 'react-router'
 import {
   createRoutesStub,
   Link,
@@ -124,6 +125,15 @@ const renderNavigationGuardedFakeForm = (initialProps: {
     }
   )
 }
+
+vi.mock('react-router', async () => {
+  const actual =
+    await vi.importActual<typeof import('react-router')>('react-router')
+  return {
+    ...actual,
+    useBlocker: vi.fn((condition) => actual.useBlocker(condition)),
+  }
+})
 
 describe('useFormNavigationGuard', () => {
   const onSubmitMock = vi.fn()
@@ -528,7 +538,7 @@ describe('useFormNavigationGuard', () => {
       }
 
       const useBlockerSpy = vi
-        .spyOn(await import('react-router'), 'useBlocker')
+        .mocked(router.useBlocker)
         .mockReturnValue(blocker as never)
 
       onSubmitMock.mockResolvedValueOnce(true)

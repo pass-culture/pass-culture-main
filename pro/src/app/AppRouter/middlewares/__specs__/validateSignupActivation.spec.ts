@@ -45,13 +45,13 @@ const setupStore = () => {
 const createMockLoaderArgs = (
   token?: string,
   searchParams: string = ''
-): LoaderFunctionArgs<{ token: string }> =>
+): LoaderFunctionArgs =>
   ({
     request: new Request(
       `http://localhost/inscription/compte/confirmation${searchParams}`
     ),
     params: token ? { token } : {},
-  }) as unknown as LoaderFunctionArgs<{ token: string }>
+  }) as unknown as LoaderFunctionArgs
 
 describe('validateSignupActivation', () => {
   beforeEach(() => {

@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { noop } from 'commons/utils/noop'
+import * as router from 'react-router'
 import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -31,6 +32,14 @@ const renderSimulatorSiret = () => {
   )
 }
 
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useNavigate: vi.fn(),
+  }
+})
+
 describe('<SimulatorSiret />', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderSimulatorSiret()
@@ -40,9 +49,7 @@ describe('<SimulatorSiret />', () => {
 
   it('should save the siret on submit', async () => {
     const mockNavigate = vi.fn()
-    vi.spyOn(await import('react-router'), 'useNavigate').mockReturnValue(
-      mockNavigate
-    )
+    vi.mocked(router.useNavigate).mockReturnValue(mockNavigate)
     renderSimulatorSiret()
 
     await userEvent.type(

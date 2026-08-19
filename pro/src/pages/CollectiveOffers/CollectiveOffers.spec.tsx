@@ -72,12 +72,10 @@ const offersRecap: CollectiveOfferResponseModel[] = [
   collectiveOfferFactory({ stock }),
 ]
 
-vi.mock('@/apiClient/api', () => {
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
   return {
-    api: {
-      getCollectiveOffers: vi.fn(),
-      getVenueAddresses: vi.fn(),
-    },
+    ...actual,
   }
 })
 

@@ -60,10 +60,8 @@ const validateToken = (token: string): Promise<void> => {
   return call
 }
 
-export const validateSignupActivation = async (
-  args: LoaderFunctionArgs<{ token: string }>
-) => {
-  const { token } = args.params
+export const validateSignupActivation = async (args: LoaderFunctionArgs) => {
+  const { token } = args.params as { token: string }
   if (!token) {
     throw redirect(getUserDefaultPath())
   }
