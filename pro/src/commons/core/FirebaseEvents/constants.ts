@@ -59,6 +59,7 @@ export enum Events {
   CLICKED_INDIVIDUAL_OFFER_MODIFICATION = 'hasClickedSaveOfferModifications',
   CLICKED_COLLECTIVE_OFFER_MODIFICATION = 'hasClickedSaveCollectiveOfferModifications',
   CLICKED_COLLECTIVE_TEMPLATE_OFFER_MODIFICATION = 'hasClickedSaveCollectiveTemplateOfferModifications',
+  CLICKED_EXPOSURE_SHOW_RESERVATIONS = 'hasClickedExposureShowReservations',
 }
 
 export enum VenueEvents {

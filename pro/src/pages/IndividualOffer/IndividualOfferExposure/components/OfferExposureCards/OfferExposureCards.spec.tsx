@@ -1,4 +1,7 @@
 import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import * as useAnalytics from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 
 import { api } from '@/apiClient/api'
 import { ExposureEventType } from '@/apiClient/v1'
@@ -29,7 +32,7 @@ const renderOfferExposureCards = ({
   bookingsCount?: number
   dateCreated?: string
 } = {}) => {
-  const offer = getIndividualOfferFactory({ bookingsCount, dateCreated })
+  const offer = getIndividualOfferFactory({ id: 1, bookingsCount, dateCreated })
 
   return renderWithProviders(<OfferExposureCards offer={offer} />)
 }
@@ -145,5 +148,35 @@ describe('OfferExposureCards', () => {
     expect(
       screen.queryByText('3 consultations depuis votre mise à la une')
     ).not.toBeInTheDocument()
+  })
+
+  it('should track reservations link click', async () => {
+    const mockLogEvent = vi.fn()
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+    vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
+      getOfferExposureFactory({
+        events: [
+          {
+            type: ExposureEventType.HEADLINE,
+            name: null,
+            startDate: daysFromNowToIso(-53),
+            endDate: daysFromNowToIso(-39),
+            viewsOnPeriod: 3,
+          },
+        ],
+      })
+    )
+
+    renderOfferExposureCards()
+
+    await userEvent.click(
+      screen.getByRole('link', { name: 'Voir les réservations' })
+    )
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_EXPOSURE_SHOW_RESERVATIONS,
+      { offerId: 1 }
+    )
   })
 })
