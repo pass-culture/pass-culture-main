@@ -14,6 +14,7 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offerers.utils import is_venue_address
+from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offers_validation
@@ -116,7 +117,7 @@ class PatchOfferBodyModel(HttpBodyModel):
     hasCulturalOutreachClaim: bool | None = None
     description: str | None = None
     isNational: bool | None = None
-    name: str | None = None
+    name: str | None = pydantic_v2.Field(default=None, max_length=offers_constants.MAX_OFFER_NAME_LENGTH)
     extraData: OfferExtraDataV2 | None = None
     externalTicketOfficeUrl: ValidHttpUrlStr | None = None
     url: ValidHttpUrlStr | None = None
@@ -133,13 +134,6 @@ class PatchOfferBodyModel(HttpBodyModel):
     mental_disability_compliant: bool | None = None
     motor_disability_compliant: bool | None = None
     visual_disability_compliant: bool | None = None
-
-    @pydantic_v2.field_validator("name", mode="before")
-    @classmethod
-    def validate_name(cls, name: typing.Any) -> typing.Any:
-        if name:
-            offers_validation.check_offer_name_length_is_valid(name)
-        return name
 
     @pydantic_v2.field_validator("subcategory_id", mode="before")
     @classmethod

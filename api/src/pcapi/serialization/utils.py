@@ -142,12 +142,7 @@ def without_timezone(d: datetime.datetime) -> datetime.datetime:
     return datetime.datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, d.microsecond)
 
 
-def check_date_in_future(
-    value: datetime.datetime | NOW_LITERAL | None,
-    pydantic_version: typing.Literal["v1"] | typing.Literal["v2"],
-) -> datetime.datetime | None:
-    ErrorClass = PydanticError if pydantic_version == "v2" else ValueError
-
+def check_date_in_future_v1(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
     if not value:
         return None
     if value == "now":
@@ -155,29 +150,53 @@ def check_date_in_future(
 
     assert isinstance(value, datetime.datetime)  # to make mypy happy
     if value.tzinfo is None:
-        raise ErrorClass("The datetime must be timezone-aware.")
+        raise ValueError("The datetime must be timezone-aware.")
     no_tz_value = as_utc_without_timezone(value)
     if no_tz_value < datetime.datetime.now(datetime.UTC).replace(tzinfo=None):
-        raise ErrorClass("The datetime must be in the future.")
+        raise ValueError("The datetime must be in the future.")
     return value
 
 
-def check_date_in_future_and_remove_timezone(
-    value: datetime.datetime | NOW_LITERAL | None,
-    pydantic_version: typing.Literal["v1"] | typing.Literal["v2"],
-) -> datetime.datetime:
-    ErrorClass = PydanticError if pydantic_version == "v2" else ValueError
+def check_date_in_future_v2(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
+    if not value:
+        return None
+    if value == "now":
+        return datetime.datetime.now(datetime.UTC)
 
+    assert isinstance(value, datetime.datetime)  # to make mypy happy
+    if value.tzinfo is None:
+        raise PydanticError("The datetime must be timezone-aware.")
+    no_tz_value = as_utc_without_timezone(value)
+    if no_tz_value < datetime.datetime.now(datetime.UTC).replace(tzinfo=None):
+        raise PydanticError("The datetime must be in the future.")
+    return value
+
+
+def check_date_in_future_and_remove_timezone_v1(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime:
     if value == "now":
         return date_utils.get_naive_utc_now()
 
     assert isinstance(value, datetime.datetime)  # to make mypy happy
 
     if value.tzinfo is None:
-        raise ErrorClass("The datetime must be timezone-aware.")
+        raise ValueError("The datetime must be timezone-aware.")
     no_tz_value = as_utc_without_timezone(value)
     if no_tz_value < date_utils.get_naive_utc_now():
-        raise ErrorClass("The datetime must be in the future.")
+        raise ValueError("The datetime must be in the future.")
+    return no_tz_value
+
+
+def check_date_in_future_and_remove_timezone_v2(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime:
+    if value == "now":
+        return date_utils.get_naive_utc_now()
+
+    assert isinstance(value, datetime.datetime)  # to make mypy happy
+
+    if value.tzinfo is None:
+        raise PydanticError("The datetime must be timezone-aware.")
+    no_tz_value = as_utc_without_timezone(value)
+    if no_tz_value < date_utils.get_naive_utc_now():
+        raise PydanticError("The datetime must be in the future.")
     return no_tz_value
 
 
@@ -230,13 +249,13 @@ def validate_datetime(field_name: str, always: bool = False) -> classmethod:
     def _check_if_not_none(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
         if not value:
             return None
-        return check_date_in_future_and_remove_timezone(value, "v1")
+        return check_date_in_future_and_remove_timezone_v1(value)
 
     return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(_check_if_not_none)
 
 
 def _validate_datetime(value: datetime.datetime) -> datetime.datetime:
-    return check_date_in_future_and_remove_timezone(value, pydantic_version="v2")
+    return check_date_in_future_and_remove_timezone_v2(value)
 
 
 future_tz_aware_datetime = Annotated[datetime.datetime, pydantic_v2.AfterValidator(_validate_datetime)]
@@ -247,15 +266,12 @@ future_tz_aware_datetime_to_utc_datetime = Annotated[
 
 
 def validate_timezoned_datetime(field_name: str, always: bool = False) -> classmethod:
-    validation_function = partial(check_date_in_future, pydantic_version="v1")
-    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(validation_function)
+    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(check_date_in_future_v1)
 
 
-future_tz_aware_datetime_keep_tz = Annotated[
-    datetime.datetime, pydantic_v2.AfterValidator(partial(check_date_in_future, pydantic_version="v2"))
-]
+future_tz_aware_datetime_keep_tz = Annotated[datetime.datetime, pydantic_v2.AfterValidator(check_date_in_future_v2)]
 future_tz_aware_datetime_or_now_keep_tz = Annotated[
-    datetime.datetime | NOW_LITERAL, pydantic_v2.AfterValidator(partial(check_date_in_future, pydantic_version="v2"))
+    datetime.datetime | NOW_LITERAL, pydantic_v2.AfterValidator(check_date_in_future_v2)
 ]
 
 

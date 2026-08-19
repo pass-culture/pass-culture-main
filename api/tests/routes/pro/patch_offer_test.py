@@ -2108,7 +2108,9 @@ class Returns400Test:
             patch_body={
                 "name": "Le nom d'une histoire qui est quand même sacrément longue, ce qui est pratique si on lit trop vite, mais ce qui est dommage si on n'a qu'un seul oeil, parce qu'on lit deux fois plus lentement, c'est bien connu"
             },
-            expected_response_json={"name": ["Le titre de l’offre doit faire au maximum 90 caractères."]},
+            expected_response_json={
+                "name": ["Cette chaîne de caractères doit avoir une taille maximum de 90 caractères"]
+            },
         )
 
     def when_sending_datetimes_without_a_timezone(self, client):
