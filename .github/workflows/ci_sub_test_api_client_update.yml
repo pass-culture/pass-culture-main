@@ -29,7 +29,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       postgres:
-        image: postgis/postgis:15-3.4-alpine
+        image: postgis/postgis:18-3.6-alpine
         ports:
           - 5432:5432
         options: >-
