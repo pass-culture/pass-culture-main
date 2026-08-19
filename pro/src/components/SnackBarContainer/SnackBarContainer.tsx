@@ -1,4 +1,6 @@
 import cn from 'classnames'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -25,6 +27,12 @@ export const SnackBarContainer = (): JSX.Element => {
   const snackBars = useAppSelector(listSelector)
   const dispatch = useAppDispatch()
   const isStickyBarOpen = useAppSelector(isStickyBarOpenSelector)
+  const [portalTarget, setPortalTarget] = useState<Element>(() => document.body)
+
+  useEffect(() => {
+    setPortalTarget(document.querySelector('dialog[open]') ?? document.body)
+  }, [snackBars.length])
+
   const sortedSnackBars = snackBars
     .slice()
     .sort(
@@ -32,7 +40,7 @@ export const SnackBarContainer = (): JSX.Element => {
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     )
 
-  return (
+  return createPortal(
     <div
       className={cn(
         styles['snack-bar-container'],
@@ -48,6 +56,7 @@ export const SnackBarContainer = (): JSX.Element => {
           testId={`global-snack-bar-${snackBar.variant}-${index}`}
         />
       ))}
-    </div>
+    </div>,
+    portalTarget
   )
 }

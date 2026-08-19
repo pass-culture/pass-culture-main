@@ -23,7 +23,9 @@
     display: grid;
 
     &-button {
-      justify-self: center;
+      > * {
+        width: 100%;
+      }
     }
   }
 }

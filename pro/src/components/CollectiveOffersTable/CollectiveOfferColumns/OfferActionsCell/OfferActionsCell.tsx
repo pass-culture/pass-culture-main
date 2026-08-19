@@ -388,7 +388,6 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
           offerId={offer.id}
           open={isShareLinkDrawerOpen}
           onOpenChange={setIsShareLinkDrawerOpen}
-          refToFocusOnClose={dropdownTriggerRef}
         />
       )}
       <DuplicateOfferDialog
