@@ -1,22 +1,20 @@
 <%# scss.yes %>
-import cn from 'classnames'
-
 import styles from './<% name %>.module.scss'
 
 <%/ scss.yes %>
 type <% name %>Props = {
-  className?: string
+  foo?: string
 }
 
-export const <% name %> = ({ className }: <% name %>Props): JSX.Element => {
+export const <% name %> = ({ foo }: Readonly<<% name %>Props>): JSX.Element => {
   return (
     <%# scss.yes %>
-    <div className={cn(styles[`<%# toKebabCase %><% name %><%/ toKebabCase %>`], className)}>
+    <div className={styles['<%# toKebabCase %><% name %><%/ toKebabCase %>']}>
     <%/ scss.yes %>
     <%# scss.no %>
-    <div className={className}>
+    <div>
     <%/ scss.no %>
-      <h1><% name %></h1>
+      <h1><% name %> {foo ?? ''}</h1>
     </div>
   )
 }
