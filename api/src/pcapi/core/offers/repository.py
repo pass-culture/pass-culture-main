@@ -325,6 +325,22 @@ def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> sa_orm.Q
     return query
 
 
+def get_offers_with_headlines_and_mediations(
+    ids: typing.Collection[int],
+) -> typing.Collection[models.Offer]:
+    return (
+        db.session.query(models.Offer)
+        .filter(models.Offer.id.in_(ids))
+        .options(
+            sa_orm.selectinload(models.Offer.mediations),
+            sa_orm.joinedload(models.Offer.product).selectinload(models.Product.productMediations),
+            sa_orm.selectinload(models.Offer.headlineOffers),
+        )
+        .distinct()
+        .all()
+    )
+
+
 def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
     return (
         db.session.query(models.Offer)

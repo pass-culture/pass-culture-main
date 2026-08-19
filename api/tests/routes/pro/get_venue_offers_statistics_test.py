@@ -6,9 +6,9 @@ import pytest
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.testing import assert_num_queries
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
-from pcapi.routes.pro import offerers as routes
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -62,7 +62,7 @@ def assert_top_offers_equal(json_data, mocked_stats):
 # appropriate module once this whole two venue statistics routes mess
 # has been taken care of.
 class GetVenueOfferStatisticsTest:
-    @patch("pcapi.routes.pro.offerers.get_offers_with_headlines_and_mediations")
+    @patch("pcapi.core.offers.repository.get_offers_with_headlines_and_mediations")
     @patch("pcapi.core.offerers.api.get_venue_offers_statistics")
     def test_venue_with_some_fake_stats_serializes_them(self, mock_venue_stats, mock_get_offers, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -121,9 +121,6 @@ class GetVenueOfferStatisticsTest:
 
 
 class GetOffersWithHeadlinesAndMediationsTest:
-    def test_get_no_offers_if_empty_list_of_ids(self):
-        assert not routes.get_offers_with_headlines_and_mediations([])
-
     def test_get_offers_with_their_mediations_and_headline_offers(self):
         offer_with_mediation_and_headline = offers_factories.OfferFactory()
         # builds both headline offer and mediation
@@ -142,7 +139,7 @@ class GetOffersWithHeadlinesAndMediationsTest:
         # fetch offers' products' mediations
         # fetch offers' headline offers information
         with assert_num_queries(4):
-            res = routes.get_offers_with_headlines_and_mediations(offer_ids)
+            res = offers_repository.get_offers_with_headlines_and_mediations(offer_ids)
             assert {o.id for o in res} == offer_ids
             assert len(res) == len(offers)
 
