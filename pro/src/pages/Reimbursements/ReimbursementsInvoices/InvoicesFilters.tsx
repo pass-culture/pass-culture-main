@@ -59,11 +59,20 @@ function computeFilterState(
     urlAmounts !== AMOUNT_FILTER.ALL_AMOUNTS ||
     urlPeriodBeginningDate !== DEFAULT_INVOICES_FILTERS.periodBeginningDate ||
     urlPeriodEndingDate !== DEFAULT_INVOICES_FILTERS.periodEndingDate
-  const hasDirtyFilters =
-    amount !== urlAmounts ||
-    periodBeginningDate !== urlPeriodBeginningDate ||
-    periodEndingDate !== urlPeriodEndingDate
-  return { hasCustomFilters, hasDirtyFilters }
+  const errors = {
+    beginningDate: !periodBeginningDate
+      ? 'La date de début est obligatoire'
+      : '',
+    endingDate: !periodEndingDate ? 'La date de fin est obligatoire' : '',
+  }
+  const canRelaunchSearch =
+    !errors.beginningDate &&
+    !errors.endingDate &&
+    (amount !== urlAmounts ||
+      periodBeginningDate !== urlPeriodBeginningDate ||
+      periodEndingDate !== urlPeriodEndingDate)
+
+  return { hasCustomFilters, canRelaunchSearch, errors }
 }
 
 export const InvoicesFilters = ({
@@ -83,7 +92,7 @@ export const InvoicesFilters = ({
       DEFAULT_INVOICES_FILTERS.periodEndingDate
   )
 
-  const { hasCustomFilters, hasDirtyFilters } = computeFilterState(
+  const { hasCustomFilters, canRelaunchSearch, errors } = computeFilterState(
     searchParams,
     amount,
     periodBeginningDate,
@@ -123,6 +132,7 @@ export const InvoicesFilters = ({
             maxDateEnding={getToday()}
             periodBeginningDate={periodBeginningDate}
             periodEndingDate={periodEndingDate}
+            errors={errors}
           />
           <div className="emptyFilter">
             {/* TODO(mdesquilbet, 19/08/2026): Remove this empty slot when the type filter will be added */}
@@ -145,7 +155,7 @@ export const InvoicesFilters = ({
         <div className={styles['button-group-separator']} />
         <div className={styles['button-group-button']}>
           <Button
-            disabled={!hasDirtyFilters}
+            disabled={!canRelaunchSearch}
             onClick={onSearch}
             label="Lancer la recherche"
           />

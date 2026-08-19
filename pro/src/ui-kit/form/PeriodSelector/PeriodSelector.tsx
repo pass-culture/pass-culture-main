@@ -15,6 +15,10 @@ interface PeriodSelectorProps {
   minDateBeginning?: Date
   periodBeginningDate: string
   periodEndingDate: string
+  errors?: {
+    endingDate?: string
+    beginningDate?: string
+  }
 }
 
 export const PeriodSelector = ({
@@ -27,6 +31,7 @@ export const PeriodSelector = ({
   minDateBeginning,
   periodBeginningDate,
   periodEndingDate,
+  errors = { endingDate: '', beginningDate: '' },
 }: PeriodSelectorProps) => {
   const ariaId = useId()
 
@@ -57,7 +62,12 @@ export const PeriodSelector = ({
             onChange={(event) => onBeginningDateChange(event.target.value)}
             value={periodBeginningDate}
             id={`field-date-begin-${ariaId}`}
+            hasError={Boolean(errors.beginningDate)}
+            aria-invalid={Boolean(errors.beginningDate)}
           />
+          {errors.beginningDate && (
+            <p className={styles['field-date-error']}>{errors.beginningDate}</p>
+          )}
         </div>
 
         <div>
@@ -77,7 +87,12 @@ export const PeriodSelector = ({
             onChange={(event) => onEndingDateChange(event.target.value)}
             value={periodEndingDate}
             id={`field-date-end-${ariaId}`}
+            hasError={Boolean(errors.endingDate)}
+            aria-invalid={Boolean(errors.endingDate)}
           />
+          {errors.endingDate && (
+            <p className={styles['field-date-error']}>{errors.endingDate}</p>
+          )}
         </div>
       </div>
     </fieldset>

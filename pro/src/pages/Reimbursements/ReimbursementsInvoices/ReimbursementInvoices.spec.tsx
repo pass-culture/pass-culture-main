@@ -233,6 +233,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should let perform actions on invoices', async () => {
+    const user = userEvent.setup()
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValueOnce([
       {
         reference: 'J123456789',
@@ -263,13 +264,11 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
-    await userEvent.click(
-      screen.getByText('Télécharger le justificatif (.pdf)')
-    )
+    await user.click(screen.getByRole('button', { name: 'Télécharger' }))
+    await user.click(screen.getByText('Télécharger le justificatif (.pdf)'))
 
-    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
-    await userEvent.click(
+    await user.click(screen.getByRole('button', { name: 'Télécharger' }))
+    await user.click(
       screen.getByText('Télécharger le détail des réservations (.csv)')
     )
     expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith({
@@ -300,6 +299,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should let download several invoices at same time', async () => {
+    const user = userEvent.setup()
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getCombinedInvoices').mockResolvedValue({})
@@ -307,13 +307,11 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('checkbox', { name: 'Sélectionner toutes les lignes' })
     )
 
-    await userEvent.click(
-      screen.getByText('Télécharger les justificatifs (.pdf)')
-    )
+    await user.click(screen.getByText('Télécharger les justificatifs (.pdf)'))
 
     expect(api.getCombinedInvoices).toHaveBeenCalledTimes(1)
     expect(api.getCombinedInvoices).toHaveBeenNthCalledWith(1, {
@@ -334,6 +332,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it(`should block download several invoices at same time for more than ${MAX_ITEMS_DOWNLOAD} invoices`, async () => {
+    const user = userEvent.setup()
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(
       new Array(MAX_ITEMS_DOWNLOAD + 1).fill(null).map((_, i) => ({
@@ -351,18 +350,17 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('checkbox', { name: 'Sélectionner toutes les lignes' })
     )
 
-    await userEvent.click(
-      screen.getByText('Télécharger les justificatifs (.pdf)')
-    )
+    await user.click(screen.getByText('Télécharger les justificatifs (.pdf)'))
 
     expect(api.getCombinedInvoices).not.toHaveBeenCalled()
   })
 
   it('should let download several reimbursment csv at same time', async () => {
+    const user = userEvent.setup()
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
@@ -371,11 +369,11 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('checkbox', { name: 'Sélectionner toutes les lignes' })
     )
 
-    await userEvent.click(
+    await user.click(
       screen.getByText('Télécharger le détail des réservations (.csv)')
     )
 
@@ -421,6 +419,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should call api with requested date filters', async () => {
+    const user = userEvent.setup()
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
 
@@ -434,15 +433,15 @@ describe('reimbursementsWithFilters', () => {
     expect(searchButton).toBeDisabled()
 
     const beginPeriod = screen.getByLabelText('Début de la période')
-    await userEvent.clear(beginPeriod)
-    await userEvent.type(beginPeriod, '2020-11-17')
+    await user.clear(beginPeriod)
+    await user.type(beginPeriod, '2020-11-17')
 
     const endPeriod = screen.getByLabelText('Fin de la période')
-    await userEvent.clear(endPeriod)
-    await userEvent.type(endPeriod, '2020-11-19')
+    await user.clear(endPeriod)
+    await user.type(endPeriod, '2020-11-19')
 
     expect(searchButton).toBeEnabled()
-    await userEvent.click(searchButton)
+    await user.click(searchButton)
 
     await waitFor(() => {
       expect(api.getInvoicesV2).toHaveBeenCalledTimes(2)
@@ -456,7 +455,7 @@ describe('reimbursementsWithFilters', () => {
       },
     })
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', { name: 'Réinitialiser les filtres' })
     )
 
@@ -467,6 +466,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should filter by amount type', async () => {
+    const user = userEvent.setup()
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     // gitleaks:allow
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
@@ -475,7 +475,7 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    await userEvent.selectOptions(
+    await user.selectOptions(
       screen.getByLabelText('Type de justificatif'),
       'POSITIVE_AMOUNT'
     )
@@ -483,7 +483,7 @@ describe('reimbursementsWithFilters', () => {
     const searchButton = screen.getByRole('button', {
       name: 'Lancer la recherche',
     })
-    await userEvent.click(searchButton)
+    await user.click(searchButton)
 
     await waitFor(() => {
       expect(api.getInvoicesV2).toHaveBeenCalledTimes(2)
@@ -497,5 +497,49 @@ describe('reimbursementsWithFilters', () => {
         amountPositiveOnly: true,
       },
     })
+  })
+
+  it('should display error message and disable search button when beginning date is empty', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const beginPeriod = screen.getByLabelText('Début de la période')
+    await user.clear(beginPeriod)
+
+    expect(
+      screen.getByText('La date de début est obligatoire')
+    ).toBeInTheDocument()
+
+    const searchButton = screen.getByRole('button', {
+      name: 'Lancer la recherche',
+    })
+    expect(searchButton).toBeDisabled()
+  })
+
+  it('should display error message and disable search button when ending date is empty', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const endPeriod = screen.getByLabelText('Fin de la période')
+    await user.clear(endPeriod)
+
+    expect(
+      screen.getByText('La date de fin est obligatoire')
+    ).toBeInTheDocument()
+
+    const searchButton = screen.getByRole('button', {
+      name: 'Lancer la recherche',
+    })
+    expect(searchButton).toBeDisabled()
   })
 })

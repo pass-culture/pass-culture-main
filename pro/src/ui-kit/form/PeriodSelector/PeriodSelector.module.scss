@@ -26,6 +26,11 @@
   width: rem.torem(145px);
 }
 
+.field-date-error {
+  max-width: rem.torem(145px);
+  color: var(--color-text-error);
+}
+
 .visually-hidden {
   @include a11y.visually-hidden;
 }
