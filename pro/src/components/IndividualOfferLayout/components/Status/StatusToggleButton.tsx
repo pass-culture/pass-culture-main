@@ -77,20 +77,20 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
         title={`Attention, vous allez publier une offre programmée pour le ${publicationDate} à ${publicationTime}.`}
         isOpen={isPublicationConfirmationModalOpen}
         onClose={() => setIsPublicationConfirmationModalOpen(false)}
-        actionButtons={
-          <>
-            <Button
-              onClick={() => setIsPublicationConfirmationModalOpen(false)}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button
-              onClick={toggleOfferActiveStatus}
-              label="Confirmer la publication"
-            />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={() => setIsPublicationConfirmationModalOpen(false)}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button
+            onClick={toggleOfferActiveStatus}
+            label="Confirmer la publication"
+            key="confirm"
+          />,
+        ]}
       >
         <p>Êtes-vous sûr de vouloir continuer ?</p>
       </SimpleModal>

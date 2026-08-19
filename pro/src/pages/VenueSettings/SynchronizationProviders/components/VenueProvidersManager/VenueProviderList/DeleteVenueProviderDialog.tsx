@@ -26,22 +26,22 @@ export const DeleteVenueProviderDialog = ({
         title="Voulez-vous supprimer la synchronisation de vos offres ?"
         isOpen={isDialogOpen}
         onClose={onCancel}
-        actionButtons={
-          <>
-            <Button
-              onClick={onCancel}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button
-              onClick={onConfirm}
-              isLoading={isLoading}
-              disabled={isLoading}
-              label="Supprimer la synchronisation"
-            />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={onCancel}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button
+            onClick={onConfirm}
+            isLoading={isLoading}
+            disabled={isLoading}
+            label="Supprimer la synchronisation"
+            key="confirm"
+          />,
+        ]}
       >
         <div className={style['explanation']}>
           En supprimant la synchronisation de vos offres :

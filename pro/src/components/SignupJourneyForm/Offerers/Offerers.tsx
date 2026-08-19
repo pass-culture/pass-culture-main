@@ -289,17 +289,20 @@ export const Offerers = (): JSX.Element => {
         title="Rejoindre cet espace ?"
         isOpen={showLinkDialog}
         onClose={cancelLinkUserToOfferer}
-        actionButtons={
-          <>
-            <Button
-              onClick={cancelLinkUserToOfferer}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button onClick={doLinkAccount} label="Rejoindre cet espace" />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={cancelLinkUserToOfferer}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button
+            onClick={doLinkAccount}
+            label="Rejoindre cet espace"
+            key="confirm"
+          />,
+        ]}
       >
         Votre demande sera transmise à nos équipes, qui valideront votre
         rattachement par email.

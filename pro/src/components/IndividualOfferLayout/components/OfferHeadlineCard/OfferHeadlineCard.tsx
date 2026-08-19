@@ -144,22 +144,22 @@ export const OfferHeadlineCard = ({
         isOpen={isConfirmDialogReplaceHeadlineOfferOpen}
         title="Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre."
         onClose={() => setIsConfirmDialogReplaceHeadlineOfferOpen(false)}
-        actionButtons={
-          <>
-            <Button
-              onClick={() => setIsConfirmDialogReplaceHeadlineOfferOpen(false)}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button
-              onClick={onConfirmReplaceHeadlineOffer}
-              variant={ButtonVariant.PRIMARY}
-              color={ButtonColor.BRAND}
-              label="Confirmer"
-            />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={() => setIsConfirmDialogReplaceHeadlineOfferOpen(false)}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button
+            onClick={onConfirmReplaceHeadlineOffer}
+            variant={ButtonVariant.PRIMARY}
+            color={ButtonColor.BRAND}
+            label="Confirmer"
+            key="confirm"
+          />,
+        ]}
       />
 
       <HeadlineOfferImageDialogs

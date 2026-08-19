@@ -1,5 +1,9 @@
 import { useId } from 'react'
 
+import {
+  TABLET_MEDIA_QUERY,
+  useMediaQuery,
+} from '@/commons/hooks/useMediaQuery'
 import fullCloseIcon from '@/icons/full-close.svg'
 import { BaseDialog } from '@/ui-kit/BaseDialog/BaseDialog'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -36,7 +40,7 @@ export interface SimpleModalProps {
   /**
    * Action buttons to be displayed at the bottom of the dialog. The dialog must not have more than 3 buttons.
    */
-  actionButtons?: React.ReactNode
+  actionButtons?: React.ReactNode[]
   /**
    * Identifier of the description element for screen readers (aria-describedby).
    */
@@ -61,6 +65,11 @@ export const SimpleModal = ({
   refToFocusOnClose,
 }: Readonly<SimpleModalProps>) => {
   const dialogTitleId = useId()
+  const isSmallScreen = useMediaQuery(TABLET_MEDIA_QUERY)
+  const orderedButtons =
+    isSmallScreen && actionButtons
+      ? [...actionButtons].reverse()
+      : actionButtons
 
   return (
     <BaseDialog
@@ -96,7 +105,7 @@ export const SimpleModal = ({
             </h1>
             {children && <div>{children}</div>}
           </div>
-          <div className={styles['action-buttons']}>{actionButtons}</div>
+          <div className={styles['action-buttons']}>{orderedButtons}</div>
         </div>
       </div>
     </BaseDialog>

@@ -23,28 +23,28 @@ export const ComplementaryInfosDialog = ({
         onOpenChange(false)
         onCancel()
       }}
-      actionButtons={
-        <>
-          <Button
-            onClick={() => {
-              onOpenChange(false)
-              onCancel()
-            }}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.BRAND}
-            label={'Compléter plus tard'}
-          />
-          <Button
-            onClick={() => {
-              onOpenChange(false)
-              openNextDialog(true)
-            }}
-            variant={ButtonVariant.PRIMARY}
-            color={ButtonColor.BRAND}
-            label={'Compléter maintenant'}
-          />
-        </>
-      }
+      actionButtons={[
+        <Button
+          onClick={() => {
+            onOpenChange(false)
+            onCancel()
+          }}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.BRAND}
+          label={'Compléter plus tard'}
+          key="cancel"
+        />,
+        <Button
+          onClick={() => {
+            onOpenChange(false)
+            openNextDialog(true)
+          }}
+          variant={ButtonVariant.PRIMARY}
+          color={ButtonColor.BRAND}
+          label={'Compléter maintenant'}
+          key="confirm"
+        />,
+      ]}
     >
       Pour confirmer l'accueil du public, quelques précisions sont nécessaires.
       Vous pouvez les saisir directement dans le volet latéral.

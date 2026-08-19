@@ -32,33 +32,32 @@ export const AddBankInformationsDialog = ({
       iconPath={strokeLinkIcon}
       isOpen={isDialogOpen}
       onClose={closeDialog}
-      actionButtons={
-        <>
+      actionButtons={[
+        <Button
+          onClick={closeDialog}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler"
+          key="cancel"
+        />,
+        <span className={styles['continue-button']} key="continue">
           <Button
-            onClick={closeDialog}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label="Annuler"
+            as="a"
+            to={
+              selectedAdminOfferer.isCaledonian
+                ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
+                : DS_BANK_ACCOUNT_PROCEDURE_ID
+            }
+            opensInNewTab={true}
+            variant={ButtonVariant.PRIMARY}
+            onClick={() => {
+              logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS)
+            }}
+            icon={fullLinkIcon}
+            label="Continuer sur demarche.numerique.gouv.fr"
           />
-          <span className={styles['continue-button']}>
-            <Button
-              as="a"
-              to={
-                selectedAdminOfferer.isCaledonian
-                  ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
-                  : DS_BANK_ACCOUNT_PROCEDURE_ID
-              }
-              opensInNewTab={true}
-              variant={ButtonVariant.PRIMARY}
-              onClick={() => {
-                logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS)
-              }}
-              icon={fullLinkIcon}
-              label="Continuer sur demarche.numerique.gouv.fr"
-            />
-          </span>
-        </>
-      }
+        </span>,
+      ]}
     >
       Démarche Numérique est une plateforme sécurisée de démarches
       administratives en ligne qui permet de déposer votre dossier de compte

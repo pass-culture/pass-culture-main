@@ -33,17 +33,16 @@ export const ButtonInvalidateToken = ({
         title="Voulez-vous vraiment invalider cette contremarque ?"
         isOpen={isDialogOpen}
         onClose={closeDialog}
-        actionButtons={
-          <>
-            <Button
-              onClick={closeDialog}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button onClick={handleOnConfirm} label="Continuer" />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={closeDialog}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button onClick={handleOnConfirm} label="Continuer" key="confirm" />,
+        ]}
       >
         <p>
           Cette contremarque a déjà été validée. Si vous l'invalidez, la

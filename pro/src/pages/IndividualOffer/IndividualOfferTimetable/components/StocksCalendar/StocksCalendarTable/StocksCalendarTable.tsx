@@ -295,29 +295,29 @@ export function StocksCalendarTable({
         title="Vous êtes sur le point d'annuler toutes les réservations en cours pour cette date"
         isOpen={Boolean(stockBeingDeleted)}
         onClose={() => setStockBeingDeleted(null)}
-        actionButtons={
-          <>
-            <Button
-              onClick={() => {
-                setStockBeingDeleted(null)
-              }}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label={'Annuler'}
-            />
-            <Button
-              onClick={() => {
-                if (stockBeingDeleted) {
-                  onDeleteStocks([stockBeingDeleted.id])
-                }
-                setStockBeingDeleted(null)
-              }}
-              variant={ButtonVariant.PRIMARY}
-              color={ButtonColor.DANGER}
-              label={'Confirmer la suppression'}
-            />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={() => {
+              setStockBeingDeleted(null)
+            }}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label={'Annuler'}
+            key="cancel"
+          />,
+          <Button
+            onClick={() => {
+              if (stockBeingDeleted) {
+                onDeleteStocks([stockBeingDeleted.id])
+              }
+              setStockBeingDeleted(null)
+            }}
+            variant={ButtonVariant.PRIMARY}
+            color={ButtonColor.DANGER}
+            label={'Confirmer la suppression'}
+            key="confirm"
+          />,
+        ]}
       >
         {stockBeingDeleted?.bookingsQuantity &&
         stockBeingDeleted.bookingsQuantity > 0 ? (

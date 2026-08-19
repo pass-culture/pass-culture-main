@@ -87,16 +87,15 @@ export const StocksProviderForm = ({
         iconPath={strokeConnectIcon}
         isOpen={isConfirmDialogOpened}
         onClose={handleCloseConfirmDialog}
-        actionButtons={
-          <>
-            <Button
-              onClick={handleCloseConfirmDialog}
-              variant={ButtonVariant.SECONDARY}
-              label="Annuler"
-            />
-            <Button onClick={handleFormSubmit} label="Continuer" />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={handleCloseConfirmDialog}
+            variant={ButtonVariant.SECONDARY}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button onClick={handleFormSubmit} label="Continuer" key="confirm" />,
+        ]}
       >
         <p>
           En sélectionnant un logiciel, vous l’autorisez à créer des offres

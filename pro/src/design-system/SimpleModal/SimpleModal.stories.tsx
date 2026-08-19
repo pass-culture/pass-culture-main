@@ -42,12 +42,12 @@ type Story = StoryObj<typeof SimpleModal>
 
 export const Default: Story = {
   render: () => <SimpleModalWithOpenButton title={"Titre très très très loong"} isOpen={true} iconPath={fullNextIcon} onClose={() => {}} actionButtons={
-  <>
-    <Button label="Annuler" variant={ButtonVariant.TERTIARY} color={ButtonColor.NEUTRAL} icon={fullClearIcon}/>
-    <Button label="Annuler" variant={ButtonVariant.SECONDARY}/>
-    <Button label="Confirmer" variant={ButtonVariant.PRIMARY}/>
-  </>
-  }>
+        [
+          <Button label="Annuler" variant={ButtonVariant.TERTIARY} color={ButtonColor.NEUTRAL} icon={fullClearIcon} key="cancel-tertiary" />,
+          <Button label="Annuler" variant={ButtonVariant.SECONDARY} key="cancel-secondary" />,
+          <Button label="Confirmer" variant={ButtonVariant.PRIMARY} key="confirm" />,
+        ]
+      }>
     <p style={{ textAlign: 'center' }}>Description de 2 à 3 lignes max Description de 2 à 3 lignes max Description de 2 à 3 lignes max</p>
   </SimpleModalWithOpenButton>,
 }

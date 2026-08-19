@@ -17,22 +17,22 @@ export const PriceCategoryRemovalConfirmationModal = ({
       title="Voulez-vous supprimer ce tarif ?"
       isOpen
       onClose={onCancel}
-      actionButtons={
-        <>
-          <Button
-            onClick={onCancel}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label={'Annuler'}
-          />
-          <Button
-            onClick={onConfirm}
-            variant={ButtonVariant.PRIMARY}
-            color={ButtonColor.DANGER}
-            label={'Confirmer la suppression'}
-          />
-        </>
-      }
+      actionButtons={[
+        <Button
+          onClick={onCancel}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label={'Annuler'}
+          key="cancel"
+        />,
+        <Button
+          onClick={onConfirm}
+          variant={ButtonVariant.PRIMARY}
+          color={ButtonColor.DANGER}
+          label={'Confirmer la suppression'}
+          key="confirm"
+        />,
+      ]}
     >
       En supprimant ce tarif vous allez aussi supprimer l'ensemble des dates qui
       lui sont associées.

@@ -25,6 +25,11 @@ import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 
 import { useFormNavigationGuard } from './useFormNavigationGuard'
 
+vi.mock('@/commons/hooks/useMediaQuery', () => ({
+  useMediaQuery: vi.fn(() => false),
+  TABLET_MEDIA_QUERY: '(max-width: 37.5rem)',
+}))
+
 const EXPECTATIONS = {
   DIALOG_TITLE: 'Des modifications ont été apportées à cette page',
 }

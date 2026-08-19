@@ -23,21 +23,21 @@ export const CancelCollectiveBookingModal = ({
       title={modalTitle}
       isOpen={isDialogOpen}
       onClose={onDismiss}
-      actionButtons={
-        <>
-          <Button
-            onClick={onDismiss}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label="Annuler"
-          />
-          <Button
-            onClick={onValidate}
-            color={ButtonColor.DANGER}
-            label="Annuler la réservation"
-          />
-        </>
-      }
+      actionButtons={[
+        <Button
+          onClick={onDismiss}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler"
+          key="cancel"
+        />,
+        <Button
+          onClick={onValidate}
+          color={ButtonColor.DANGER}
+          label="Annuler la réservation"
+          key="confirm"
+        />,
+      ]}
     >
       Cette action est irréversible.
     </SimpleModal>
