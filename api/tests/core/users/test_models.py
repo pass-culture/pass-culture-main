@@ -309,6 +309,35 @@ class UserTest:
 
         assert user.has_changed_email is False
 
+    @pytest.mark.parametrize(
+        "date_of_birth,validated_birth_date,expected_birth_date",
+        [
+            (None, None, None),
+            (datetime(2001, 1, 1), None, date(2001, 1, 1)),
+            (datetime(2001, 1, 1), date(2002, 2, 2), date(2002, 2, 2)),
+        ],
+    )
+    def test_get_birth_date(self, date_of_birth, validated_birth_date, expected_birth_date):
+        uncommited_user = user_models.User(dateOfBirth=date_of_birth, validatedBirthDate=validated_birth_date)
+        assert uncommited_user.birth_date == expected_birth_date
+
+    def test_get_birth_date_with_neither_date_of_birth_nor_validated_birth_date(self):
+        users_factories.UserFactory(dateOfBirth=None, validatedBirthDate=None)
+        user_query = db.session.query(user_models.User).filter(user_models.User.birth_date == None)
+        assert user_query.count() == 1
+
+    def test_get_birth_date_with_only_date_of_birth(self):
+        users_factories.UserFactory(dateOfBirth=date(2001, 1, 1), validatedBirthDate=None)
+        user_query = db.session.query(user_models.User).filter(user_models.User.birth_date == date(2001, 1, 1))
+        assert user_query.count() == 1
+
+    def test_get_birth_date_with_validated_birth_date(self):
+        users_factories.UserFactory(dateOfBirth=date(2001, 1, 1), validatedBirthDate=date(2002, 2, 2))
+        user_query = db.session.query(user_models.User).filter(user_models.User.birth_date == date(2001, 1, 1))
+        assert user_query.count() == 0
+        user_query = db.session.query(user_models.User).filter(user_models.User.birth_date == date(2002, 2, 2))
+        assert user_query.count() == 1
+
 
 @pytest.mark.usefixtures("db_session")
 class HasAccessTest:

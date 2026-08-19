@@ -6,7 +6,7 @@
       <h1>Base de données produits</h1>
     </div>
     <div class="container-fluid">
-      {% if search_form %}{{ build_result_page_form(search_form, search_dst, col_width=10) }}{% endif %}
+      {% if search_form %}{{ build_result_page_form(search_form, search_dst) }}{% endif %}
       {% block product_main_content %}
         {% call build_base_search() %}
           Retrouve un produit par EAN, Visa, ID Allociné

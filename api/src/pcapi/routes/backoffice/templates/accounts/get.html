@@ -4,7 +4,7 @@
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% from "components/dynamic/modal.html" import build_static_htmx_modal with context %}
 {% from "components/generic_modal.html" import build_simple_modal_form with context %}
-{% from "components/search/result_form.html" import build_result_page_form with context %}
+{% from "components/search/result_form.html" import build_result_page_form %}
 {% from "components/presentation/details/tabs.html" import build_details_tab with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content with context %}
@@ -13,7 +13,9 @@
 {% from "components/description.html" import description_detail_vertical with context %}
 {% import "components/clipboard.html" as clipboard with context %}
 {% block before_title %}
-  {% if search_form %}{{ build_result_page_form(search_form, search_dst, col_width=12) }}{% endif %}
+  {% if search_form %}
+    {{ build_result_page_form(search_form, search_dst) }}
+  {% endif %}
 {% endblock %}
 {% block title %}{{ user.full_name }}{% endblock %}
 {% block header_extra %}

@@ -3,6 +3,7 @@ import datetime
 import enum
 import re
 import typing
+from collections.abc import Iterable
 from functools import partial
 from operator import attrgetter
 from types import NotImplementedType
@@ -63,8 +64,11 @@ from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import advanced_search
+from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.routes.backoffice.utils import user_actions
@@ -73,6 +77,7 @@ from pcapi.routes.backoffice.utils.extra_funcs import no_cache
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils import regions as regions_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
@@ -90,6 +95,130 @@ public_accounts_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     url_prefix="/public-accounts",
     permission=perm_models.Permissions.READ_PUBLIC_ACCOUNT,
 )
+
+
+def _get_credits_filter(credit_names: Iterable[str]) -> sa.ColumnElement:
+    beneficiary_predicates = {
+        search_forms.AccountSearchFilter.PASS_17_V3.name: sa.and_(
+            finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
+            users_models.User.has_underage_beneficiary_role,
+            users_models.User.isActive.is_(True),
+        ),
+        search_forms.AccountSearchFilter.PASS_18_V3.name: sa.and_(
+            finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
+            users_models.User.has_beneficiary_role,
+            users_models.User.isActive.is_(True),
+        ),
+        search_forms.AccountSearchFilter.PASS_15_17.name: sa.and_(
+            finance_models.Deposit.type != finance_models.DepositType.GRANT_17_18,
+            users_models.User.has_underage_beneficiary_role,
+            users_models.User.isActive.is_(True),
+        ),
+        search_forms.AccountSearchFilter.PASS_18.name: sa.and_(
+            finance_models.Deposit.type != finance_models.DepositType.GRANT_17_18,
+            users_models.User.has_beneficiary_role,
+            users_models.User.isActive.is_(True),
+        ),
+    }
+
+    filters: list[sa.ColumnElement] = []
+    # Non-beneficiary filter
+    if search_forms.AccountSearchFilter.PUBLIC.name in credit_names:
+        filters.append(
+            sa.and_(
+                sa.not_(users_models.User.is_beneficiary),
+                users_models.User.isActive.is_(True),
+            )
+        )
+
+    selected_beneficiary_predicates = [
+        beneficiary_predicates[name] for name in beneficiary_predicates if name in credit_names
+    ]
+    if selected_beneficiary_predicates:
+        filters.append(
+            sa.exists()
+            .where(
+                sa.and_(
+                    finance_models.Deposit.userId == users_models.User.id,
+                    finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
+                    sa.or_(*selected_beneficiary_predicates),
+                )
+            )
+            .correlate(users_models.User)
+        )
+
+    if not filters:
+        return sa.true()
+
+    return sa.or_(*filters)
+
+
+def _get_deposit_expiration_filter(operator: str) -> typing.Callable[[datetime.date], sa.ColumnElement]:
+    def build_filter(expiration_date: datetime.date) -> sa.ColumnElement:
+        return (
+            sa.exists()
+            .where(
+                sa.and_(
+                    finance_models.Deposit.userId == users_models.User.id,
+                    advanced_search.OPERATOR_DICT[operator]["function"](
+                        finance_models.Deposit.expirationDate, expiration_date
+                    ),
+                )
+            )
+            .correlate(users_models.User)
+        )
+
+    return build_filter
+
+
+def _get_tags_filter(tag_ids: Iterable[int]) -> sa.ColumnElement:
+    return (
+        sa.exists()
+        .where(
+            sa.and_(
+                users_models.UserTagMapping.userId == users_models.User.id,
+                users_models.UserTagMapping.tagId.in_(tag_ids),
+            )
+        )
+        .correlate(users_models.User)
+    )
+
+
+ADVANCED_SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
+    "BIRTHDAY": {"field": "date", "column": users_models.User.birth_date},
+    "CREDIT": {
+        "field": "credit",
+        "custom_filters": {
+            "IN": _get_credits_filter,
+            "NOT_IN": lambda credit_names: sa.not_(_get_credits_filter(credit_names)),
+        },
+    },
+    "DEPOSIT_EXPIRATION_DATE": {
+        "field": "date",
+        "custom_filters": {
+            operator: _get_deposit_expiration_filter(operator) for operator in ("DATE_FROM", "DATE_TO", "DATE_EQUALS")
+        },
+    },
+    "EMAIL_DOMAIN": {
+        "field": "string",
+        "column": sa.func.email_domain(users_models.User.email),
+        "special": lambda value: value.strip().lower(),
+    },
+    "IS_SUSPENDED": {
+        "field": "boolean",
+        "custom_filters": {"NULLABLE": lambda is_suspended: users_models.User.isActive.is_(not is_suspended)},
+        "special": lambda x: x == "true",
+    },
+    "REGION": {
+        "field": "region",
+        "column": users_models.User.departementCode,
+        "special": regions_utils.get_department_codes_for_regions,
+    },
+    "TAG": {
+        "field": "tag",
+        "custom_filters": {"IN": _get_tags_filter, "NOT_IN": lambda tag_ids: sa.not_(_get_tags_filter(tag_ids))},
+    },
+}
 
 
 class AccountDetailsActionType(enum.StrEnum):
@@ -308,88 +437,88 @@ def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> N
             flash("L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans", "success")
 
 
+def _get_user_ids_with_search_scores_query(
+    advanced_form: account_forms.GetAccountsListSearchForm, base_query: sa_orm.Query, search_score_col: sa.ColumnElement
+) -> sa_orm.Query:
+    query, _, _, warnings = advanced_search.generate_search_query(
+        query=base_query,
+        search_parameters=advanced_form.search.data,
+        fields_definition=ADVANCED_SEARCH_FIELDS_DEFINITION,
+        joins_definition={},
+        subqueries_definition={},
+    )
+    for warning in warnings:
+        flash(warning, "warning")
+
+    # +1 to check if there are more results than requested
+    return query.with_entities(users_models.User.id, search_score_col).limit(advanced_form.limit.data + 1)
+
+
+def _get_and_sort_users(user_ids_with_search_scores_query: sa_orm.Query) -> list[users_models.User]:
+    user_ids_subquery = user_ids_with_search_scores_query.subquery()
+
+    query = db.session.query(users_models.User).join(user_ids_subquery, users_models.User.id == user_ids_subquery.c.id)
+    query = _load_suspension_info(query)
+    query = _load_current_deposit_data(query, join_needed=True)
+
+    return (
+        query.options(
+            sa_orm.joinedload(users_models.User.tags).load_only(
+                users_models.UserTag.id, users_models.UserTag.name, users_models.UserTag.label
+            )
+        )
+        .order_by(user_ids_subquery.c.search_score)
+        .all()
+    )
+
+
+def _search_users(advanced_form: account_forms.GetAccountsListSearchForm) -> list[users_models.User]:
+    """Search users by their current email, then, only when nothing matched, by their former ones.
+
+    Looking into the email history upfront would slow down every single search for a rare use case.
+    """
+    q = advanced_form.q.data or ""
+    base_query, search_score_col = users_api.search_public_account(q)
+    users = _get_and_sort_users(
+        _get_user_ids_with_search_scores_query(advanced_form, base_query, search_score_col),
+    )
+    if users or not email_utils.is_valid_email(email_utils.sanitize_email(q)):
+        return users
+
+    base_query, search_score_col = users_api.search_public_account_in_history_email(q)
+    return _get_and_sort_users(
+        _get_user_ids_with_search_scores_query(advanced_form, base_query, search_score_col),
+    )
+
+
 @public_accounts_blueprint.route("/search", methods=["GET"])
-def search_public_accounts() -> response_utils.BackofficeResponse:
-    """
-    Renders two search pages: first the one with the search form, then
-    the one of the results.
-    """
-    if not request.args:
-        return render_search_template()
+def list_public_accounts() -> response_utils.BackofficeResponse:
+    advanced_form = account_forms.GetAccountsListSearchForm(formdata=request_utils.get_query_params())
+    if not advanced_form.validate():
+        mark_transaction_as_invalid()
+        return render_template(
+            "accounts/list.html",
+            advanced_form=advanced_form,
+            search_dst=url_for(".list_public_accounts"),
+        ), 400
 
-    form = account_forms.AccountSearchForm(request.args)
-    form.tag.choices = [(tag.id, str(tag)) for tag in get_user_tags()]
-    if not form.validate():
-        flash(response_utils.build_form_error_msg(form), "warning")
-        return render_search_template(form), 400
-
-    users_query = users_api.search_public_account(form.q.data)
-    users_query = search_utils.apply_filter_on_beneficiary_status(users_query, form.filter.data)
-    users_query = users_api.apply_filter_on_beneficiary_tag(users_query, form.tag.data)
-    users_query = _load_suspension_info(users_query)
-    users_query = _load_current_deposit_data(users_query, join_needed=False)
-    paginated_rows = search_utils.paginate(
-        query=users_query,
-        page=form.page.data,
-        per_page=form.per_page.data,
-    )
-
-    # Do NOT call users.count() after search_public_account, this would make one more request on all users every time
-    # (so it would select count twice: in users.count() and in users.paginate)
-    if (
-        paginated_rows.total == 0
-        and form.q.data
-        and email_utils.is_valid_email(email_utils.sanitize_email(form.q.data))
-    ):
-        users_query = users_api.search_public_account_in_history_email(form.q.data)
-        users_query = users_api.apply_filter_on_beneficiary_tag(users_query, form.tag.data)
-        users_query = _load_suspension_info(users_query)
-        users_query = _load_current_deposit_data(users_query)
-        paginated_rows = search_utils.paginate(
-            users_query,
-            page=form.page.data,
-            per_page=form.per_page.data,
+    if advanced_form.is_empty():
+        return render_template(
+            "accounts/list.html",
+            advanced_form=advanced_form,
+            search_dst=url_for(".list_public_accounts"),
         )
 
-    if paginated_rows.total == 1:
-        return redirect(
-            url_for(
-                ".get_public_account",
-                user_id=paginated_rows.items[0].id,
-                q=form.q.data,
-                filter=form.filter.data,
-                tag=form.tag.data,
-                search_rank=1,
-                total_items=1,
-            ),
-            code=303,
-        )
-
-    next_page = partial(url_for, ".search_public_accounts", **form.raw_data)
-    next_pages_urls = search_utils.pagination_links(next_page, form.page.data, paginated_rows.pages)
-
-    form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
+    rows = search_utils.limit_rows(_search_users(advanced_form), advanced_form.limit.data)
+    if len(rows) == 1:
+        return redirect(_get_public_account_link(rows[0].id, advanced_form, search_rank=1, total_items=1), 303)
 
     return render_template(
-        "accounts/search_result.html",
-        search_form=form,
-        search_dst=url_for(".search_public_accounts"),
-        next_pages_urls=next_pages_urls,
-        get_link_to_detail=get_public_account_link,
-        rows=paginated_rows,
-    )
-
-
-def render_search_template(form: account_forms.AccountSearchForm | None = None) -> str:
-    if not form:
-        form = account_forms.AccountSearchForm()
-        form.tag.choices = [(tag.id, str(tag)) for tag in get_user_tags()]
-
-    return render_template(
-        "accounts/search.html",
-        title="Recherche grand public",
-        dst=url_for(".search_public_accounts"),
-        form=form,
+        "accounts/list.html",
+        advanced_form=advanced_form,
+        search_dst=url_for(".list_public_accounts"),
+        get_link_to_detail=_get_public_account_link,
+        rows=rows,
     )
 
 
@@ -416,10 +545,6 @@ def _convert_check_item_to_fraud_action_dict(id_check_item: serialization.IdChec
         "errorCode": id_check_item.reasonCodes,
         "technicalDetails": id_check_item.technicalDetails,
     }
-
-
-def get_user_tags() -> list[users_models.UserTag]:
-    return db.session.query(users_models.UserTag).order_by(users_models.UserTag.label, users_models.UserTag.name).all()
 
 
 def _apply_bookings_joined_loads(query: OptionableType) -> OptionableType:
@@ -574,18 +699,15 @@ def render_public_account_details(
             },
         )
 
-    search_form = account_forms.AccountSearchForm()  # values taken from request
     if AccountDetailsActionType.TAG in allowed_actions:
-        tag_account_form = account_forms.TagAccountForm(tags=user.tags)
         kwargs.update(
             {
-                "tag_public_account_form": tag_account_form,
+                "tag_public_account_form": account_forms.TagAccountForm(tags=user.tags),
                 "tag_public_account_dst": url_for(".tag_public_account", user_id=user.id),
             },
         )
-        search_form.tag.choices = list(tag_account_form.tags.iter_choices())
-    else:
-        search_form.tag.choices = [(tag.id, str(tag)) for tag in get_user_tags()]
+
+    search_form = account_forms.GetAccountDetailsSearchForm(formdata=request_utils.get_query_params())
 
     if AccountDetailsActionType.EXTEND_DEPOSIT in allowed_actions:
         assert user.deposit  # helps mypy
@@ -624,7 +746,7 @@ def render_public_account_details(
     return render_template(
         "accounts/get.html",
         search_form=search_form,
-        search_dst=url_for(".search_public_accounts"),
+        search_dst=url_for(".list_public_accounts"),
         user=user,
         tunnel=tunnel,
         fraud_actions_desc=fraud_actions_desc,
@@ -643,16 +765,6 @@ def render_public_account_details(
         is_user_expired=is_user_expired,
         allowed_actions=allowed_actions,
         **kwargs,
-    )
-
-
-def _get_fraud_reviews_desc(
-    fraud_reviews: list[subscription_models.BeneficiaryFraudReview],
-) -> list[subscription_models.BeneficiaryFraudReview]:
-    return sorted(
-        fraud_reviews,
-        key=lambda r: r.dateReviewed,
-        reverse=True,
     )
 
 
@@ -1727,7 +1839,7 @@ def update_public_account(user_id: int) -> response_utils.BackofficeResponse:
     else:
         flash("Les informations ont été mises à jour", "success")
 
-    return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+    return redirect(_get_public_account_link(user_id, active_tab="history"), code=303)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/resend-validation-email", methods=["POST"])
@@ -1745,7 +1857,7 @@ def resend_validation_email(user_id: int) -> response_utils.BackofficeResponse:
         users_api.request_email_confirmation(user)
         flash("L'email de validation a été envoyé", "success")
 
-    return redirect(get_public_account_link(user_id), code=303)
+    return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
 
 @public_accounts_blueprint.route("/<int:user_id>/review", methods=["POST"])
@@ -1804,7 +1916,7 @@ def review_public_account(user_id: int) -> response_utils.BackofficeResponse:
     else:
         flash("Validation réussie", "success")
 
-    return redirect(get_public_account_link(user_id), code=303)
+    return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
 
 def _fetch_user_for_bonus(user_id: int) -> users_models.User:
@@ -1878,12 +1990,14 @@ def request_qf_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
     if not users_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
         # This should not happen because form should not be displayed, except if the credit is granted in the meantime
         flash("Ce compte n'est pas éligible à une bonification QF", "warning")
-        return redirect(get_public_account_link(user_id), code=303)
+
+        return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
     form = account_forms.QFBonusCreditRequestForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(get_public_account_link(user_id), code=303)
+
+        return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
     fraud_check = bonus_fraud_api.create_qf_bonus_credit_fraud_check(
         user,
@@ -1908,7 +2022,7 @@ def request_qf_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
             "warning",
         )
 
-    return redirect(get_public_account_link(user_id), code=303)
+    return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
 
 @public_accounts_blueprint.route("/<int:user_id>/disability-bonus", methods=["GET"])
@@ -1972,12 +2086,14 @@ def request_disability_bonus_credit(user_id: int) -> response_utils.BackofficeRe
     if not users_api.get_user_is_eligible_for_disability_bonification(user, is_from_backoffice=True):
         # This should not happen because form should not be displayed, except if the credit is granted in the meantime
         flash("Ce compte n'est pas éligible à une bonification AAH/AEEH", "warning")
-        return redirect(get_public_account_link(user_id), code=303)
+
+        return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
     form = account_forms.DisabilityBonusCreditRequestForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(get_public_account_link(user_id), code=303)
+
+        return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
     aah_fraud_check, aeeh_fraud_check = bonus_fraud_api.create_disability_bonus_credit_fraud_checks(
         user,
@@ -2000,7 +2116,7 @@ def request_disability_bonus_credit(user_id: int) -> response_utils.BackofficeRe
             "warning",
         )
 
-    return redirect(get_public_account_link(user_id), code=303)
+    return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
 
 @public_accounts_blueprint.route("/<int:user_id>/extend-deposit", methods=["POST"])
@@ -2018,7 +2134,7 @@ def extend_deposit_validity(user_id: int) -> response_utils.BackofficeResponse:
     form = account_forms.ExtendCreditForm(user.deposit)
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(get_public_account_link(user_id), code=303)
+        return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
     users_api.extend_deposit_validity(user, form.expiration_date.data, author=current_user)
 
@@ -2028,7 +2144,7 @@ def extend_deposit_validity(user_id: int) -> response_utils.BackofficeResponse:
         ),
         "success",
     )
-    return redirect(get_public_account_link(user_id), code=303)
+    return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
 
 @public_accounts_blueprint.route("/<int:user_id>/comment", methods=["POST"])
@@ -2051,15 +2167,16 @@ def comment_public_account(user_id: int) -> response_utils.BackofficeResponse:
         users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
         flash("Le commentaire a été enregistré", "success")
 
-    return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+    return redirect(_get_public_account_link(user_id, active_tab="history"), code=303)
 
 
-def get_public_account_link(
-    user_id: int, form: account_forms.AccountSearchForm | None = None, **kwargs: typing.Any
+def _get_public_account_link(
+    user_id: int, form: account_forms.GetAccountsListSearchForm | None = None, **kwargs: typing.Any
 ) -> str:
-    if form and form.q.data:
+    if form and not form.is_empty():
         kwargs["q"] = form.q.data
-    return url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id, **kwargs)
+
+    return url_for(".get_public_account", user_id=user_id, **kwargs)
 
 
 def _get_user_fraud_check_eligibility_types(user: users_models.User) -> list[users_models.EligibilityType]:
@@ -2303,7 +2420,7 @@ def disconnect_public_account(user_id: int) -> response_utils.BackofficeResponse
     if not form.validate():
         mark_transaction_as_invalid()
         flash("Le formulaire n'est pas valide", "warning")
-        return redirect(get_public_account_link(user_id), code=303)
+        return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
     count = sessions.disconnect_native_user_sessions(user_id)
     count += sessions.disconnect_user_session(user_id)
@@ -2322,7 +2439,7 @@ def disconnect_public_account(user_id: int) -> response_utils.BackofficeResponse
     else:
         flash("Aucune session n'a été trouvée pour être déconnectée", "warning")
 
-    return redirect(get_public_account_link(user_id), code=303)
+    return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
 
 @public_accounts_blueprint.route("/<int:user_id>/clear-email", methods=["POST"])
@@ -2342,7 +2459,8 @@ def clear_email(user_id: int) -> response_utils.BackofficeResponse:
     email_update.clear_email_by_admin(user)
 
     flash(Markup("L'adresse email <strong>{email}</strong> a été libérée.").format(email=original_email), "success")
-    return redirect(get_public_account_link(user_id), code=303)
+
+    return request_utils.safe_redirect_back(request, default_url=_get_public_account_link(user_id))
 
 
 @public_accounts_blueprint.route("/<int:user_id>/invalidate-password", methods=["POST"])
@@ -2353,13 +2471,13 @@ def invalidate_public_account_password(user_id: int) -> response_utils.Backoffic
         raise NotFound()
     if not (user.is_beneficiary or user.roles == []):
         flash("Seul le mot de passe d'un compte bénéficiaire ou grand public peut être invalidé", "warning")
-        return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+        return redirect(_get_public_account_link(user_id, active_tab="history"), code=303)
 
     users_api.update_user_password(user, random_password())
 
     history_api.add_action(history_models.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user)
     flash("Le mot de passe du compte a bien été invalidé", "success")
-    return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+    return redirect(_get_public_account_link(user_id, active_tab="history"), code=303)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/send-reset-password-email", methods=["POST"])
@@ -2370,12 +2488,12 @@ def send_public_account_reset_password_email(user_id: int) -> response_utils.Bac
         raise NotFound()
     if not (user.is_beneficiary or user.roles == []):
         flash("La fonctionnalité n'est disponible que pour un compte bénéficiaire ou grand public", "warning")
-        return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+        return redirect(_get_public_account_link(user_id, active_tab="history"), code=303)
 
     users_api.request_password_reset(user)
 
     flash("L'envoi du mail de changement de mot de passe a été initié", "success")
-    return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+    return redirect(_get_public_account_link(user_id, active_tab="history"), code=303)
 
 
 def _render_individual_bookings(bookings_ids: list[int] | None = None) -> response_utils.BackofficeResponse:

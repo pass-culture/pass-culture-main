@@ -337,6 +337,9 @@ class User(PcObject, Model, DeactivableMixin):
         sa.Index("ix_user_email_domain_and_id", sa.func.email_domain(email), "id"),
         sa.Index("ix_user_lower_email", sa.func.lower(email)),
         sa.Index("ix_user_validatedBirthDate", validatedBirthDate),
+        # /!\ Don't forget to mirror this functional index in `User.birth_date` SQL expression if you change it.
+        # Spelled as SQL to match `pg_get_indexdef()` so that `alembic check` sees it ISO with the database index.
+        sa.Index("ix_user_birth_date", sa.text('COALESCE("validatedBirthDate", "dateOfBirth"::date)')),
         sa.Index("ix_user_departementCode", departementCode, postgresql_where=departementCode.is_not(None)),
     )
 
@@ -481,12 +484,9 @@ class User(PcObject, Model, DeactivableMixin):
 
     @birth_date.inplace.expression
     @classmethod
-    def _birth_date_expression(cls) -> Case:
-        return sa.case(
-            (cls.validatedBirthDate.is_not(None), cls.validatedBirthDate),
-            (cls.dateOfBirth.is_not(None), sa.cast(cls.dateOfBirth, sa.Date)),
-            else_=None,
-        )
+    def _birth_date_expression(cls) -> sa.ColumnElement[date | None]:
+        # /!\ Don't forget to mirror this expression in `ix_user_birth_date` index if you change it.
+        return sa.func.coalesce(cls.validatedBirthDate, sa.cast(cls.dateOfBirth, sa.Date))
 
     @property
     def deposit(self) -> "Deposit | None":

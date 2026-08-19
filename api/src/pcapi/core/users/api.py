@@ -52,6 +52,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils import string as string_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.redis import get_redis_client
@@ -336,9 +337,6 @@ def reset_password_with_token(new_password: str, encoded_reset_password_token: s
 
 
 def handle_create_account_with_existing_email(user: models.User) -> None:
-    if not user:
-        return
-
     token = create_reset_password_token(user)
     transactional_mails.send_email_already_exists_email(token)
 
@@ -944,12 +942,13 @@ def reset_recredit_amount_to_show(user: models.User) -> None:
     db.session.commit()
 
 
-def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Query:
+def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> tuple[sa_orm.Query, sa.ColumnElement]:
     filters: list[sa.ColumnElement | sa.BinaryExpression] = []
     name_term = None
+    search_score_col = sa.null().label("search_score")
 
     if not search_term:
-        return accounts
+        return accounts, search_score_col
 
     term_filters: list[sa.ColumnElement] = []
 
@@ -965,7 +964,7 @@ def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Qu
     split_terms = [email_utils.sanitize_email(term) for term in re.split(r"[,;\s]+", search_term) if term]
 
     # numeric (single id or multiple ids)
-    if all(term.isnumeric() for term in split_terms):
+    if all(string_utils.is_numeric(term) for term in split_terms):
         term_filters.append(models.User.id.in_([int(term) for term in split_terms]))
 
     # email
@@ -1003,33 +1002,28 @@ def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Qu
 
     if name_term:
         name_term = name_term.lower()
-        accounts = accounts.order_by(
-            sa.func.levenshtein(sa.func.lower(models.User.firstName + " " + models.User.lastName), name_term)
-        )
+        search_score_col = sa.func.levenshtein(
+            sa.func.lower(models.User.firstName + " " + models.User.lastName), name_term
+        ).label("search_score")
+        accounts = accounts.order_by(search_score_col)
 
-    accounts = accounts.order_by(models.User.id)
-
-    return accounts
-
-
-def search_public_account(search_query: str) -> sa_orm.Query:
-    public_accounts = get_public_account_base_query()
-    public_accounts = public_accounts.options(
-        sa_orm.joinedload(models.User.tags).load_only(models.UserTag.id, models.UserTag.name, models.UserTag.label),
-    )
-
-    return _filter_user_accounts(public_accounts, search_query)
+    return accounts, search_score_col
 
 
-def search_public_account_in_history_email(search_query: str) -> sa_orm.Query:
+def search_public_account(search_query: str) -> tuple[sa_orm.Query, sa.ColumnElement]:
+    return _filter_user_accounts(get_public_account_base_query(), search_query)
+
+
+def search_public_account_in_history_email(search_query: str) -> tuple[sa_orm.Query, sa.ColumnElement]:
     sanitized_term = email_utils.sanitize_email(search_query)
     if not email_utils.is_valid_email(sanitized_term):
         raise ValueError(f"Unsupported email search on invalid email: {search_query}")
 
     accounts = get_public_account_base_query()
+    search_score_col = sa.null().label("search_score")
 
     if not search_query:
-        return accounts.filter(sa.false())
+        return accounts.filter(sa.false()), search_score_col
 
     # including old emails: look for validated email updates inside user_email_history
     return (
@@ -1045,8 +1039,8 @@ def search_public_account_in_history_email(search_query: str) -> sa_orm.Query:
                 }
             ),
         )
-        .order_by(models.User.id)
-    )
+        .distinct()
+    ), search_score_col
 
 
 def get_public_account_base_query() -> sa_orm.Query:
@@ -1087,8 +1081,9 @@ def search_pro_account(search_query: str, *_: typing.Any) -> sa_orm.Query:
             ),
         )
     )
+    filtered_pro_accounts_query, _search_score_col = _filter_user_accounts(pro_accounts, search_query)
 
-    return _filter_user_accounts(pro_accounts, search_query).options(
+    return filtered_pro_accounts_query.options(
         sa_orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),
         sa_orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),
         sa_orm.joinedload(models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
@@ -1116,7 +1111,9 @@ def search_backoffice_accounts(search_query: str) -> sa_orm.Query:
     if not search_query:
         return bo_accounts
 
-    return _filter_user_accounts(bo_accounts, search_query)
+    filtered_bo_accounts_query, _ = _filter_user_accounts(bo_accounts, search_query)
+
+    return filtered_bo_accounts_query
 
 
 def validate_pro_user_email(user: models.User, author_user: models.User | None = None) -> None:
