@@ -7,13 +7,15 @@ import { PeriodSelector } from './PeriodSelector'
 describe('PeriodSelector', () => {
   const mockOnBeginningDateChange = vi.fn()
   const mockOnEndingDateChange = vi.fn()
-  const renderPeriodSelector = () => {
+
+  const renderPeriodSelector = (props = {}) => {
     return render(
       <PeriodSelector
         onBeginningDateChange={mockOnBeginningDateChange}
         onEndingDateChange={mockOnEndingDateChange}
         periodBeginningDate=""
         periodEndingDate=""
+        {...props}
       />
     )
   }
@@ -24,7 +26,7 @@ describe('PeriodSelector', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should call on onBeginningDateChange and onEndingDateChange', async () => {
+  it('should call onBeginningDateChange and onEndingDateChange', async () => {
     renderPeriodSelector()
 
     await userEvent.type(
@@ -39,5 +41,23 @@ describe('PeriodSelector', () => {
 
     expect(mockOnBeginningDateChange).toHaveBeenCalledWith('2020-10-20')
     expect(mockOnEndingDateChange).toHaveBeenCalledWith('2020-12-24')
+  })
+
+  it('should render error messages and set aria-invalid when errors are provided', () => {
+    renderPeriodSelector({
+      errors: {
+        beginningDate: 'La date de début est obligatoire',
+        endingDate: 'La date de fin est obligatoire',
+      },
+    })
+
+    const beginInput = screen.getByLabelText('Début de la période')
+    const endInput = screen.getByLabelText('Fin de la période')
+
+    expect(beginInput).toHaveAttribute('aria-invalid', 'true')
+    expect(endInput).toHaveAttribute('aria-invalid', 'true')
+
+    expect(screen.getByText('La date de début est obligatoire')).toBeVisible()
+    expect(screen.getByText('La date de fin est obligatoire')).toBeVisible()
   })
 })
