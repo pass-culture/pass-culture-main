@@ -18,6 +18,35 @@ Texte
 </details>
 
 <br>
+<details>
+
+<summary> ⏳ Critère 8.9 - RGAA - Dans chaque page web, les balises ne doivent pas être utilisées uniquement à des fins de présentation ?</summary>
+
+**RAWeb/RGAA** : [Critère 8.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-8-9)
+**Ticket** : [PC-42989](https://passculture.atlassian.net/browse/PC-42989)  
+**PR** : [#23954](https://github.com/pass-culture/pass-culture-main/pull/23954)
+
+**Problème** 😱  
+P05 → Création offre réservable (5 étapes et confirmation)
+
+Au moins une balise est utilisée uniquement pour créer des effets de présentation.
+
+- Les textes d'encadrés "À savoir" sont uniquement structurés avec des <div>.
+
+- Les textes dans les différents bloc à l'étape "Récapitulatif" (ex : "Votre offre est accessible aux publics en situation de handicap :") et à l'étape "Aperçu"
+
+- Les textes "Votre offre est désormais visible et réservable par les enseignants et chefs d’établissements de l’établissement scolaire : LYCEE MILITAIRE NATIONAL" (étape confirmation de publication)
+
+**Correction** 💡  
+
+Remplacer les balises <div> et <span> par des <p> ou entourez le texte avec des balises <p>.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
 
 <details>
 

@@ -60,6 +60,7 @@ export const CollectiveOfferTypeSection = ({
             { title: 'Titre de l’offre', text: offer.name },
             {
               title: 'Description',
+              stacked: true,
               text: !offer.description ? (
                 DEFAULT_RECAP_VALUE
               ) : (

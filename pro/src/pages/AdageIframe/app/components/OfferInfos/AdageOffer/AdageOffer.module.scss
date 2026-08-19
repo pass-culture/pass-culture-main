@@ -67,6 +67,10 @@
     overflow-wrap: anywhere;
 
     &-item {
+      &-text {
+        margin: 0;
+      }
+
       &-subtitle {
         @include fonts.body-accent-xs;
 
@@ -77,6 +81,10 @@
       &-description {
         white-space: pre-line;
         line-height: rem.torem(24px);
+
+        &-text {
+          margin: 0;
+        }
       }
     }
 

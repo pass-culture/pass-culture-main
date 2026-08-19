@@ -99,15 +99,23 @@ export const Banner = ({
               [styles['content-body-large']]: size === 'large',
             })}
           >
-            <span
+            <p
               className={cx(styles['title'], {
                 [styles['title-large']]: size === 'large',
               })}
             >
               {title}
-            </span>
+            </p>
             {description && (
-              <span className={styles.description}>{description}</span>
+              <div className={styles.description}>
+                {typeof description === 'string' ? (
+                  <p className={styles['description-paragraph']}>
+                    {description}
+                  </p>
+                ) : (
+                  description
+                )}
+              </div>
             )}
             {actions.length > 0 && (
               <ul className={styles['actions-list']}>

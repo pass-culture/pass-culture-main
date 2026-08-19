@@ -62,7 +62,7 @@ export const CollectiveOfferLocationSection = ({
   )
 
   const descriptions: Description[] = [
-    { text: getLocationInformation({ offer }) },
+    { text: getLocationInformation({ offer }), isBlock: true },
   ]
 
   return (

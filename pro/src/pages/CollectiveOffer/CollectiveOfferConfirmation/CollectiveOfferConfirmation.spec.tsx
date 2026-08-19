@@ -118,10 +118,7 @@ describe('CollectiveOfferConfirmation', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        'visible et réservable par les enseignants et chefs d’établissements',
-        {
-          exact: false,
-        }
+        /visible et réservable par les enseignants et chefs d['’]établissements/i
       )
     ).toBeInTheDocument()
   })

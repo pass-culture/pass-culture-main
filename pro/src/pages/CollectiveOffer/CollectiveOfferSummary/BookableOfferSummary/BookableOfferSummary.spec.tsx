@@ -105,13 +105,18 @@ describe('BookableOfferSummary', () => {
         expectedText: '55 participants',
       },
       { description: 'the price', expectedText: '1000 euros' },
-      {
-        description: 'the booking limit date',
-        expectedText: 'Date limite de réservation : 31/12/2023',
-      },
     ])('should render $description', ({ expectedText }) => {
       renderBookableOfferSummary(props)
       expect(screen.getByText(expectedText)).toBeInTheDocument()
+    })
+
+    it('should render the booking limit label and date', () => {
+      renderBookableOfferSummary(props)
+
+      expect(
+        screen.getByText('Date limite de réservation :')
+      ).toBeInTheDocument()
+      expect(screen.getByText('31/12/2023')).toBeInTheDocument()
     })
   })
 
@@ -125,6 +130,7 @@ describe('BookableOfferSummary', () => {
         }),
       }),
     }
+
     renderBookableOfferSummary(testProps)
     expect(screen.getByText('Proposé par Venue 1')).toBeInTheDocument()
   })
@@ -137,7 +143,7 @@ describe('BookableOfferSummary', () => {
     }
 
     renderBookableOfferSummary(testProps)
-    expect(screen.getAllByText('-')).toHaveLength(4)
+    expect(screen.getAllByText('-')).toHaveLength(5)
   })
 
   it('should render "0 euro" price when offer is free', () => {

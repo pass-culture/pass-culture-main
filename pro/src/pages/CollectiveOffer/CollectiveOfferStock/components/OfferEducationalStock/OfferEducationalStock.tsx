@@ -176,7 +176,12 @@ export const OfferEducationalStock = ({
                     iconAlt: 'Nouvelle fenêtre',
                   },
                 ]}
-                description="Ces informations peuvent être modifiées jusqu'à validation de la réservation par le chef d'établissement."
+                description={
+                  <p>
+                    Ces informations peuvent être modifiées jusqu'à validation
+                    de la réservation par le chef d'établissement.
+                  </p>
+                }
               />
             </div>
             <FormLayout.Section title="Indiquez le prix et la date de votre offre">

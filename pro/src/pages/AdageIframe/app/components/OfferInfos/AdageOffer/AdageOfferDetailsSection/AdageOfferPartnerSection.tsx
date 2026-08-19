@@ -8,7 +8,7 @@ export type AdageOfferPartnerSectionProps = {
 
 export function AdageOfferPartnerSection({
   offer,
-}: AdageOfferPartnerSectionProps) {
+}: Readonly<AdageOfferPartnerSectionProps>) {
   return (
     <>
       {offer.contactPhone && (
@@ -16,13 +16,17 @@ export function AdageOfferPartnerSection({
           <h3 className={styles['offer-section-group-item-subtitle']}>
             Téléphone
           </h3>
-          {offer.contactPhone}
+          <p className={styles['offer-section-group-item-text']}>
+            {offer.contactPhone}
+          </p>
         </div>
       )}
 
       <div className={styles['offer-section-group-item']}>
         <h3 className={styles['offer-section-group-item-subtitle']}>E-mail</h3>
-        {offer.contactEmail}
+        <p className={styles['offer-section-group-item-text']}>
+          {offer.contactEmail}
+        </p>
       </div>
     </>
   )

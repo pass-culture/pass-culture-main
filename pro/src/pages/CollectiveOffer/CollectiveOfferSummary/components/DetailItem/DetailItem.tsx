@@ -15,6 +15,6 @@ export const DetailItem = ({ children, src, alt }: DetailItemProps) => (
         <SvgIcon className={styles['icon']} alt={alt} src={src} />
       </dt>
     )}
-    <dd>{children}</dd>
+    <dd className={styles['definition-item-content']}>{children}</dd>
   </div>
 )

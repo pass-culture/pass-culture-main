@@ -18,6 +18,7 @@
   }
 
   &-info {
+    margin: 0;
     margin-top: var(--size-spacing-xl);
     background-color: var(--color-background-info);
     border-radius: var(--size-border-radius-m);
@@ -31,6 +32,7 @@
     &-date {
       @include fonts.body-accent-xs;
 
+      margin: 0;
       margin-bottom: var(--size-spacing-s);
 
       &-emphasis {

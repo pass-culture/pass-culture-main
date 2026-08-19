@@ -20,10 +20,12 @@ export const OfferPublicationForm = ({ maxDate }: { maxDate: string }) => {
           <FormLayout.Row
             sideComponent={
               <TipsBanner>
-                Dans le cas où votre offre est en instruction par l’équipe
-                Conformité, sa validation peut prendre jusqu’à 72h. <br />
-                Après validation elle sera automatiquement publiée ou programmée
-                comme vous l’avez choisi.
+                <p>
+                  Dans le cas où votre offre est en instruction par l’équipe
+                  Conformité, sa validation peut prendre jusqu’à 72h. <br />
+                  Après validation elle sera automatiquement publiée ou
+                  programmée comme vous l’avez choisi.
+                </p>
               </TipsBanner>
             }
           >

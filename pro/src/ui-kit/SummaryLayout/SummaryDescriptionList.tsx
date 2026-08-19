@@ -6,6 +6,8 @@ import style from './SummaryLayout.module.scss'
 export interface Description {
   text: string | number | React.ReactNode
   title?: string
+  isBlock?: boolean
+  stacked?: boolean
 }
 
 interface SummaryDescriptionListProps {
@@ -14,12 +16,23 @@ interface SummaryDescriptionListProps {
   listDataTestId?: string
 }
 
-const DescriptionTextContent = ({ text, title }: Description) => (
+type DescriptionTextContentProps = Pick<
+  Description,
+  'text' | 'title' | 'isBlock'
+>
+
+const DescriptionTextContent = ({
+  text,
+  title,
+  isBlock = false,
+}: DescriptionTextContentProps) => (
   <>
-    {title && (
-      <span className={style['summary-layout-row-title']}>{title} : </span>
+    {title && <p className={style['summary-layout-row-title']}>{title} : </p>}
+    {isBlock ? (
+      <div className={style['summary-layout-row-description']}>{text}</div>
+    ) : (
+      <p className={style['summary-layout-row-description']}>{text}</p>
     )}
-    <span className={style['summary-layout-row-description']}>{text}</span>
   </>
 )
 
@@ -33,10 +46,14 @@ export const SummaryDescriptionList = ({
   }
 
   if (descriptions.length === 1) {
-    const { text, title } = descriptions[0]
+    const { text, title, isBlock, stacked } = descriptions[0]
     return (
-      <div className={cn(style['summary-layout-row'], className)}>
-        <DescriptionTextContent text={text} title={title} />
+      <div
+        className={cn(style['summary-layout-row'], className, {
+          [style['summary-layout-row-stacked']]: stacked,
+        })}
+      >
+        <DescriptionTextContent text={text} title={title} isBlock={isBlock} />
       </div>
     )
   }
@@ -49,13 +66,15 @@ export const SummaryDescriptionList = ({
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dl#accessibility
   return (
     <ul data-testid={listDataTestId}>
-      {descriptions.map(({ text, title }, index) => (
+      {descriptions.map(({ text, title, isBlock, stacked }, index) => (
         <li
           // biome-ignore lint/suspicious/noArrayIndexKey: Can't use anything else
           key={`${index + 1}`}
-          className={cn(style['summary-layout-row'], className)}
+          className={cn(style['summary-layout-row'], className, {
+            [style['summary-layout-row-stacked']]: stacked,
+          })}
         >
-          <DescriptionTextContent text={text} title={title} />
+          <DescriptionTextContent text={text} title={title} isBlock={isBlock} />
         </li>
       ))}
     </ul>

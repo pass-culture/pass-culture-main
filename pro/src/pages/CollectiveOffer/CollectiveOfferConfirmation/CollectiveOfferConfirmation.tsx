@@ -38,17 +38,22 @@ const activeOffer = (
   title: 'Votre offre a été publiée sur ADAGE',
   description: (
     <>
-      Votre offre est désormais visible et réservable par les enseignants et
-      chefs d’établissements{' '}
       {getInstitutionDisplayName(offer) ? (
         <>
-          de l’établissement scolaire :{' '}
-          <span className={styles['institution-name']}>
+          <p>
+            Votre offre est désormais visible et réservable par les enseignants
+            et chefs d'établissements de l'établissement scolaire :
+          </p>
+          <p className={styles['institution-name']}>
             {getInstitutionDisplayName(offer)}
-          </span>
+          </p>
         </>
       ) : (
-        'des établissement scolaires qui sont dans la ou les zones de mobilité sélectionnées.'
+        <p>
+          Votre offre est désormais visible et réservable par les enseignants et
+          chefs d'établissements des établissements scolaires qui sont dans la
+          ou les zones de mobilité sélectionnées.
+        </p>
       )}
     </>
   ),
@@ -92,11 +97,11 @@ const pendingOffer = {
 const showcaseOffer = () => ({
   title: 'Votre offre a été publiée sur ADAGE',
   description: (
-    <>
+    <p>
       Votre offre est visible uniquement par les enseignants et chefs
       d’établissement de l’Éducation Nationale qui peuvent désormais prendre
       contact avec vous pour co-construire une offre adaptée à leurs classes.
-    </>
+    </p>
   ),
   icon: (
     <SvgIcon
@@ -116,14 +121,14 @@ const showcaseOfferWithShareLink = (
   title: 'Créer une offre',
   description: (
     <>
-      <div className={styles['confirmation-title']}>
+      <p className={styles['confirmation-title']}>
         Votre offre a été publiée sur ADAGE
-      </div>
+      </p>
       <div className={styles['confirmation-description']}>
-        <span>
+        <p>
           Aidez les enseignants à retrouver votre offre plus facilement sur
           ADAGE
-        </span>
+        </p>
         <ShareTemplateOfferLink offerId={offer.id} />
       </div>
     </>
@@ -174,7 +179,7 @@ const CollectiveOfferConfirmation = ({
       <div className={styles['confirmation-wrapper']}>
         <div className={styles['confirmation']}>
           {confirmationData.icon}
-          <div>{confirmationData.description}</div>
+          {confirmationData.description}
           <div className={styles['confirmation-actions']}>
             <Button
               as="router-link"

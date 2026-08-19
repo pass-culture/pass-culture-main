@@ -53,6 +53,14 @@
 
 .offer-header-details-institution {
   margin-top: var(--size-spacing-s);
+  display: flex;
+  align-items: baseline;
+  gap: var(--size-spacing-xs);
+  flex-wrap: wrap;
+
+  &-text {
+    margin: 0;
+  }
 
   &-name {
     @include fonts.body-accent;
@@ -70,6 +78,10 @@
   display: flex;
   align-items: center;
   gap: var(--size-spacing-s);
+
+  &-text {
+    margin: 0;
+  }
 }
 
 .offer-header-actions {

@@ -31,34 +31,32 @@ export const ExternalAccessibility = ({
         >
           <ul className={styles['details']}>
             <li>
-              <span className={styles['details-label']}>Stationnement</span>
-              <span className={styles['details-item']}>
+              <p className={styles['details-label']}>Stationnement</p>
+              <p className={styles['details-item']}>
                 {externalAccessibilityData.motorDisability?.parking ??
                   'Non renseigné'}
-              </span>
+              </p>
             </li>
             <li>
-              <span className={styles['details-label']}>Accès exterieur</span>
-              <span className={styles['details-item']}>
+              <p className={styles['details-label']}>Accès exterieur</p>
+              <p className={styles['details-item']}>
                 {externalAccessibilityData.motorDisability?.exterior ??
                   'Non renseigné'}
-              </span>
+              </p>
             </li>
             <li>
-              <span className={styles['details-label']}>
-                Entrée du bâtiment
-              </span>
-              <span className={styles['details-item']}>
+              <p className={styles['details-label']}>Entrée du bâtiment</p>
+              <p className={styles['details-item']}>
                 {externalAccessibilityData.motorDisability?.entrance ??
                   'Non renseigné'}
-              </span>
+              </p>
             </li>
             <li>
-              <span className={styles['details-label']}>Sanitaire</span>
-              <span className={styles['details-item']}>
+              <p className={styles['details-label']}>Sanitaire</p>
+              <p className={styles['details-item']}>
                 {externalAccessibilityData.motorDisability?.facilities ??
                   'Non renseigné'}
-              </span>
+              </p>
             </li>
           </ul>
         </ExternalAccessibilityCollapse>
@@ -71,11 +69,11 @@ export const ExternalAccessibility = ({
         >
           <div className={styles['details']}>
             <div>
-              <span className={styles['details-label']}>Personnel</span>
-              <span className={styles['details-item']}>
+              <p className={styles['details-label']}>Personnel</p>
+              <p className={styles['details-item']}>
                 {externalAccessibilityData.mentalDisability?.trainedPersonnel ??
                   'Non renseigné'}
-              </span>
+              </p>
             </div>
           </div>
         </ExternalAccessibilityCollapse>
@@ -88,10 +86,10 @@ export const ExternalAccessibility = ({
         >
           <div className={styles['details']}>
             <div>
-              <span className={styles['details-label']}>
+              <p className={styles['details-label']}>
                 Équipement sourd & malentendant
-              </span>
-              <span className={styles['details-item']}>
+              </p>
+              <div className={styles['details-item']}>
                 {externalAccessibilityData.audioDisability?.deafAndHardOfHearing
                   ?.length ? (
                   <ul className={styles['details-list']}>
@@ -102,9 +100,9 @@ export const ExternalAccessibility = ({
                     )}
                   </ul>
                 ) : (
-                  'Non renseigné'
+                  <p className={styles['details-item-text']}>Non renseigné</p>
                 )}
-              </span>
+              </div>
             </div>
           </div>
         </ExternalAccessibilityCollapse>
@@ -117,8 +115,8 @@ export const ExternalAccessibility = ({
         >
           <ul className={styles['details']}>
             <li>
-              <span className={styles['details-label']}>Audiodescription</span>
-              <span className={styles['details-item']}>
+              <p className={styles['details-label']}>Audiodescription</p>
+              <div className={styles['details-item']}>
                 {externalAccessibilityData.visualDisability?.audioDescription
                   ?.length ? (
                   <ul className={styles['details-list']}>
@@ -129,16 +127,16 @@ export const ExternalAccessibility = ({
                     )}
                   </ul>
                 ) : (
-                  'Non renseigné'
+                  <p className={styles['details-item-text']}>Non renseigné</p>
                 )}
-              </span>
+              </div>
             </li>
             <li>
-              <span className={styles['details-label']}>Balise sonore</span>
-              <span className={styles['details-item']}>
+              <p className={styles['details-label']}>Balise sonore</p>
+              <p className={styles['details-item']}>
                 {externalAccessibilityData.visualDisability?.soundBeacon ??
                   'Non renseigné'}
-              </span>
+              </p>
             </li>
           </ul>
         </ExternalAccessibilityCollapse>

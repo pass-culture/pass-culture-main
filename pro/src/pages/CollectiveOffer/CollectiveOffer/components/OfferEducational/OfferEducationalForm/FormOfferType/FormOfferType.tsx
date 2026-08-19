@@ -170,9 +170,12 @@ export const FormOfferType = ({
           <FormLayout.Row
             sideComponent={
               <TipsBanner>
-                Un dispositif national est un type de programme d’éducation
-                artistique et culturelle auquel sont rattachées certaines
-                offres. Si c’est le cas de cette offre, merci de le renseigner.
+                <p>
+                  Un dispositif national est un type de programme d’éducation
+                  artistique et culturelle auquel sont rattachées certaines
+                  offres. Si c’est le cas de cette offre, merci de le
+                  renseigner.
+                </p>
               </TipsBanner>
             }
           >
@@ -210,11 +213,11 @@ export const FormOfferType = ({
             <div className={styles['description-info-boxes']}>
               {isTemplate && (
                 <TipsBanner>
-                  <span className={styles['description-info-spacing']}>
+                  <p className={styles['description-info-spacing']}>
                     Vous avez du mal a rédiger votre offre ? Nous vous proposons
                     des exemples d’offres vitrines réalisées par d’autres
                     acteurs culturels.
-                  </span>
+                  </p>
                   <Button
                     as="a"
                     variant={ButtonVariant.TERTIARY}

@@ -28,23 +28,23 @@ export const ImageConstraintCheck = ({
 
   if (!hasInput) {
     return (
-      <span className={styles['image-drag-and-drop-description-neutral']}>
+      <p className={styles['image-drag-and-drop-description-neutral']}>
         {imageConstraint}
-      </span>
+      </p>
     )
   }
 
   return hasError ? (
-    <span className={styles['image-drag-and-drop-description-error']}>
+    <div className={styles['image-drag-and-drop-description-error']}>
       <SvgIcon src={fullClearIcon} width="16" />
       <span className={styles['visually-hidden']}>{errorMessage}</span>
-      {imageConstraint}
-    </span>
+      <p>{imageConstraint}</p>
+    </div>
   ) : (
-    <span className={styles['image-drag-and-drop-description-validate']}>
+    <div className={styles['image-drag-and-drop-description-validate']}>
       <SvgIcon src={fullValidateIcon} width="16" />
       <span className={styles['visually-hidden']}>Valide : </span>
-      {imageConstraint}
-    </span>
+      <p>{imageConstraint}</p>
+    </div>
   )
 }

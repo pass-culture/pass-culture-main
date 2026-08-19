@@ -81,8 +81,10 @@ const Notifications = () => {
               </FormLayout.Row>
               <FormLayout.Row>
                 <TipsBanner id={notificationId}>
-                  Cette adresse s’applique par défaut à toutes vos offres, vous
-                  pouvez la modifier à l’échelle de chaque offre.
+                  <p>
+                    Cette adresse s’applique par défaut à toutes vos offres,
+                    vous pouvez la modifier à l’échelle de chaque offre.
+                  </p>
                 </TipsBanner>
               </FormLayout.Row>
             </FormLayout.Section>

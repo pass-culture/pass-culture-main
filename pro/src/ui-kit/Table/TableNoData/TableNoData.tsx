@@ -8,7 +8,7 @@ interface TableNoDataProps {
   noData: {
     icon: string
     title: string
-    subtitle: string
+    subtitle?: string
     cta?: ReactNode
   }
 }
@@ -25,7 +25,7 @@ export const TableNoData = ({
         className={styles['no-data-icon']}
       />
       <p className={styles['no-data-title']}>{title}</p>
-      <p className={styles['no-data-subtitle']}>{subtitle}</p>
+      {subtitle && <p className={styles['no-data-subtitle']}>{subtitle}</p>}
       <div className={styles['no-data-cta']}>{cta}</div>
     </div>
   )

@@ -96,9 +96,13 @@ export function AdageOfferPublicSection({
           <h3 className={styles['offer-section-group-item-subtitle']}>
             Nombre de participants
           </h3>
-          <p>{offer.stock.numberOfTickets} élèves</p>
+          <p className={styles['offer-section-group-item-text']}>
+            {offer.stock.numberOfTickets} élèves
+          </p>
           {!!offer.stock.numberOfTeachers && (
-            <p>{offer.stock.numberOfTeachers} accompagnateurs</p>
+            <p className={styles['offer-section-group-item-text']}>
+              {offer.stock.numberOfTeachers} accompagnateurs
+            </p>
           )}
         </div>
       )}

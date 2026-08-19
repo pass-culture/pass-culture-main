@@ -37,13 +37,8 @@ export function getLocation(
   }
 
   const addressLabel = location.location?.label
-  return (
-    <div>
-      {addressLabel ? `${addressLabel} - ` : ''}
-      {location.location?.street}, {location.location?.postalCode},{' '}
-      {location.location?.city}
-    </div>
-  )
+  const labelPrefix = addressLabel ? `${addressLabel} - ` : ''
+  return `${labelPrefix}${location.location?.street}, ${location.location?.postalCode}, ${location.location?.city}`
 }
 
 function formatAmount(amount: number): string {
@@ -69,7 +64,9 @@ export const AdageOfferInfoSection = ({
           <h3 className={styles['offer-section-group-item-subtitle']}>
             Localisation de l’offre
           </h3>
-          {getLocation(offer.location)}
+          <p className={styles['offer-section-group-item-description-text']}>
+            {getLocation(offer.location)}
+          </p>
         </div>
       ) : null}
 
@@ -79,7 +76,9 @@ export const AdageOfferInfoSection = ({
             <h3 className={styles['offer-section-group-item-subtitle']}>
               Commentaire
             </h3>
-            {offer.location.locationComment}
+            <p className={styles['offer-section-group-item-text']}>
+              {offer.location.locationComment}
+            </p>
           </div>
         )}
 
@@ -90,9 +89,11 @@ export const AdageOfferInfoSection = ({
             ? 'Date'
             : 'Dates'}
         </h3>
-        {isOfferBookable
-          ? getFormattedDatesForBookableOffer(offer)
-          : getFormattedDatesForTemplateOffer(offer)}
+        <p className={styles['offer-section-group-item-text']}>
+          {isOfferBookable
+            ? getFormattedDatesForBookableOffer(offer)
+            : getFormattedDatesForTemplateOffer(offer)}
+        </p>
       </div>
 
       {!isOfferBookable &&
@@ -102,21 +103,9 @@ export const AdageOfferInfoSection = ({
             <h3 className={styles['offer-section-group-item-subtitle']}>
               Départements de mobilité
             </h3>
-            {getInterventionAreaLabelsToDisplay(interventionArea).map(
-              (area, i) => (
-                <span key={area}>
-                  {i > 0 ? (
-                    <span className={styles['offer-section-group-list-pipe']}>
-                      {' '}
-                      |{' '}
-                    </span>
-                  ) : (
-                    ''
-                  )}
-                  {area}
-                </span>
-              )
-            )}
+            <p className={styles['offer-section-group-item-text']}>
+              {getInterventionAreaLabelsToDisplay(interventionArea).join(' | ')}
+            </p>
           </div>
         )}
 
@@ -127,16 +116,30 @@ export const AdageOfferInfoSection = ({
           </h3>
           {isOfferBookable && isNewCollectivePriceEnabled ? (
             <div className={styles['price-details']}>
-              <p>Prix total TTC : {formatAmount(offer.stock.price)}</p>
+              <p
+                className={styles['offer-section-group-item-description-text']}
+              >
+                Prix total TTC : {formatAmount(offer.stock.price)}
+              </p>
               {offer.stock.collectiveAdditionalFees?.length > 0 && (
                 <>
                   {offer.stock.servicePrice != null && (
-                    <p>
+                    <p
+                      className={
+                        styles['offer-section-group-item-description-text']
+                      }
+                    >
                       Dont le tarif de la prestation :{' '}
                       {formatAmount(offer.stock.servicePrice)}
                     </p>
                   )}
-                  <p>Dont les frais annexes :</p>
+                  <p
+                    className={
+                      styles['offer-section-group-item-description-text']
+                    }
+                  >
+                    Dont les frais annexes :
+                  </p>
                   <ul className={styles['additional-fees-list']}>
                     {offer.stock.collectiveAdditionalFees.map((fee) => (
                       <li key={`${fee.type}-${fee.amount}`}>
@@ -149,12 +152,21 @@ export const AdageOfferInfoSection = ({
               )}
             </div>
           ) : (
-            isOfferBookable && <p>{getBookableOfferStockPrice(offer)}</p>
+            isOfferBookable && (
+              <p
+                className={styles['offer-section-group-item-description-text']}
+              >
+                {getBookableOfferStockPrice(offer)}
+              </p>
+            )
           )}
-          {!isNewCollectivePriceEnabled &&
-            (isOfferBookable
-              ? offer.stock.educationalPriceDetail
-              : offer.educationalPriceDetail)}
+          {!isNewCollectivePriceEnabled && (
+            <p className={styles['offer-section-group-item-description-text']}>
+              {isOfferBookable
+                ? offer.stock.educationalPriceDetail
+                : offer.educationalPriceDetail}
+            </p>
+          )}
         </div>
       )}
 
@@ -165,7 +177,9 @@ export const AdageOfferInfoSection = ({
             <h3 className={styles['offer-section-group-item-subtitle']}>
               Informations pratiques
             </h3>
-            <p>{offer.additionalDetails}</p>
+            <p className={styles['offer-section-group-item-description-text']}>
+              {offer.additionalDetails}
+            </p>
           </div>
         )}
     </>

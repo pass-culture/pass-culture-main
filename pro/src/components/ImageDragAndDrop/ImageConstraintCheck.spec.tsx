@@ -37,9 +37,9 @@ describe('ImageConstraintCheck', () => {
     expect(errorMessageElement).toBeInTheDocument()
     expect(screen.getByText('10MB')).toBeInTheDocument()
 
-    // Ensure the error message is wrapped in a span with the error class
-    const errorSpan = screen.getByText('Size :').closest('span')
-    expect(errorSpan).toHaveClass(
+    // Ensure the error message is wrapped in a container with the error class
+    const errorContainer = screen.getByText('Size :').closest('div')
+    expect(errorContainer).toHaveClass(
       styles['image-drag-and-drop-description-error']
     )
 
@@ -83,8 +83,8 @@ describe('ImageConstraintCheck', () => {
       />
     )
 
-    const validateSpan = screen.getByText('Format :').closest('span')
-    expect(validateSpan).toHaveClass(
+    const validateContainer = screen.getByText('Format :').closest('div')
+    expect(validateContainer).toHaveClass(
       styles['image-drag-and-drop-description-validate']
     )
 
@@ -102,7 +102,7 @@ describe('ImageConstraintCheck', () => {
       />
     )
 
-    const neutralSpan = screen.getByText('Format :').closest('span')
+    const neutralSpan = screen.getByText('Format :').closest('p')
     expect(neutralSpan).toHaveClass(
       styles['image-drag-and-drop-description-neutral']
     )

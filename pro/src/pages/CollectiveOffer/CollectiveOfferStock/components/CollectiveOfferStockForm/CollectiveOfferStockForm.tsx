@@ -231,7 +231,12 @@ export const CollectiveOfferStockForm = ({
                   iconAlt: 'Nouvelle fenêtre',
                 },
               ]}
-              description="Ces informations peuvent être modifiées jusqu'à validation de la réservation par le chef d'établissement."
+              description={
+                <p>
+                  Ces informations peuvent être modifiées jusqu'à validation de
+                  la réservation par le chef d'établissement.
+                </p>
+              }
             />
           </div>
           <FormLayout.Section

@@ -32,8 +32,12 @@ export const ShareTemplateOfferLink = ({
         <Banner
           title="Connexion à ADAGE obligatoire"
           variant={BannerVariants.DEFAULT}
-          description="Veillez à préciser aux enseignants de se connecter à ADAGE avant
-            d’ouvrir ce lien de partage sans quoi ils n’y auront pas accès."
+          description={
+            <p>
+              Veillez à préciser aux enseignants de se connecter à ADAGE avant
+              d’ouvrir ce lien de partage sans quoi ils n’y auront pas accès.
+            </p>
+          }
         />
       </div>
     </div>

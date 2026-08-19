@@ -28,7 +28,7 @@ export function AdageOfferInstitutionPanel({
   isPreview = false,
   setInstitutionOfferCount,
   institutionOfferCount,
-}: AdageOfferInstitutionPanelProps) {
+}: Readonly<AdageOfferInstitutionPanelProps>) {
   return (
     <div className={styles['institution-panel']}>
       <div className={styles['institution-panel-header']}>
@@ -37,12 +37,12 @@ export function AdageOfferInstitutionPanel({
           Offre adressée à :
         </h2>
       </div>
-      <div className={styles['institution-panel-info']}>
+      <p className={styles['institution-panel-info']}>
         {getBookableOfferInstitutionAndTeacherName(offer)}
-      </div>
+      </p>
       <div className={styles['institution-panel-prebooking']}>
         {offer.stock.bookingLimitDatetime && adageUser?.canPrebook && (
-          <div className={styles['institution-panel-prebooking-date']}>
+          <p className={styles['institution-panel-prebooking-date']}>
             À préréserver{' '}
             <span
               className={styles['institution-panel-prebooking-date-emphasis']}
@@ -55,7 +55,7 @@ export function AdageOfferInstitutionPanel({
                 }
               )}
             </span>
-          </div>
+          </p>
         )}
         <PrebookingButton
           canPrebookOffers={

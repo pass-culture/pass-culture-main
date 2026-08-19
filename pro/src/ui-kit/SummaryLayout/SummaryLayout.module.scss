@@ -59,20 +59,32 @@
   }
 
   &-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--size-spacing-xs);
     margin-bottom: var(--size-spacing-s);
     max-width: 100%;
 
     &-title {
       flex-shrink: 0;
+      margin: 0;
     }
 
     &-description {
       overflow-wrap: anywhere;
       line-height: rem.torem(24px);
+      min-width: 0;
+      margin: 0;
     }
 
     &:last-child {
       margin-bottom: 0 !important;
+    }
+
+    &-stacked {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
     }
   }
 }

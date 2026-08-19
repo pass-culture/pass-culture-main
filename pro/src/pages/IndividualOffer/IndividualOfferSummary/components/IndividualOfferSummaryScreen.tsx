@@ -200,7 +200,12 @@ export const IndividualOfferSummaryScreen = ({
         <div className={styles['offer-preview-banners']}>
           <Banner
             title="Vous y êtes presque !"
-            description="Vérifiez les informations ci-dessous avant de publier votre offre."
+            description={
+              <p>
+                Vérifiez les informations ci-dessous avant de publier votre
+                offre.
+              </p>
+            }
           />
 
           <OfferPublicationForm maxDate={nextBookingLimitDatetime} />

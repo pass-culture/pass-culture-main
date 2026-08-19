@@ -89,7 +89,6 @@ export const IndividualBookingsTable = ({
           message: {
             icon: strokeNoBookingIcon,
             title: 'Vous n’avez aucune réservation pour le moment',
-            subtitle: '',
           },
         }}
         pagination={{

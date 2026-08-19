@@ -75,7 +75,9 @@ export function AdageOfferDetailsSection({
               ))}
             </ul>
           ) : (
-            formats[0]
+            <p className={styles['offer-section-group-item-text']}>
+              {formats[0]}
+            </p>
           )}
         </div>
       )}
@@ -85,14 +87,16 @@ export function AdageOfferDetailsSection({
           <h3 className={styles['offer-section-group-item-subtitle']}>
             Dispositif national
           </h3>
-          {offer.nationalProgram.name}
+          <p className={styles['offer-section-group-item-text']}>
+            {offer.nationalProgram.name}
+          </p>
         </div>
       )}
 
       {duration && (
         <div className={styles['offer-section-group-item']}>
           <h3 className={styles['offer-section-group-item-subtitle']}>Durée</h3>
-          {duration}
+          <p className={styles['offer-section-group-item-text']}>{duration}</p>
         </div>
       )}
 
