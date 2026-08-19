@@ -21,6 +21,15 @@ export const reimbursementsRouteGroup: CustomRouteGroup = {
         title: 'Gestion financière - justificatifs',
       },
     },
+    {
+      // TODO(mdesquilbet, 19/08/2026): handle the fact that it is index under the FF
+      path: 'virements',
+      lazy: () => import('@/pages/Reimbursements/Settlements/Settlements'),
+      handle: {
+        title: 'Virements',
+      },
+      featureName: 'WIP_ENABLE_FINANCE_SETTLEMENTS',
+    },
     // We keep a redirection here in case this link is still used in mail
     {
       path: 'justificatifs',
