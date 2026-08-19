@@ -115,6 +115,9 @@ const BeginningTimesForm = (): JSX.Element => {
 
   return (
     <fieldset>
+      <legend className={styles['visually-hidden']}>
+        Horaires pour l’ensemble de ces dates
+      </legend>
       <div className={styles['section']}>
         <h2 className={styles['legend']}>
           Horaires pour l’ensemble de ces dates
@@ -182,6 +185,9 @@ const PriceCategoriesForm = ({
 }): JSX.Element => {
   return (
     <fieldset>
+      <legend className={styles['visually-hidden']}>
+        Places et tarifs par horaire
+      </legend>
       <div className={styles['section']}>
         <h2 className={styles['legend']}>Places et tarifs par horaire</h2>
         <QuantityPerPriceCategory priceCategoryOptions={priceCategoryOptions} />
@@ -258,6 +264,9 @@ export const RecurrenceForm = ({
             />
           </div>
           <fieldset>
+            <legend className={styles['visually-hidden']}>
+              Choix des dates de l'évènement
+            </legend>
             <div className={styles['section']}>
               {recurrenceType === RecurrenceType.WEEKLY && (
                 <>
@@ -361,6 +370,9 @@ export const RecurrenceForm = ({
           <BeginningTimesForm />
           <PriceCategoriesForm priceCategoryOptions={priceCategoryOptions} />
           <fieldset>
+            <legend className={styles['visually-hidden']}>
+              Date limite de réservation
+            </legend>
             <div className={styles['section']}>
               <h2 className={styles['legend']}>Date limite de réservation</h2>
 

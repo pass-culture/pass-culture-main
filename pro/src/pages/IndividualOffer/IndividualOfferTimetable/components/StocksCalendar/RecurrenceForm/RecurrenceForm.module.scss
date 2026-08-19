@@ -3,6 +3,7 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .radio-group-title {
   @include fonts.title2;
@@ -107,4 +108,8 @@
       }
     }
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

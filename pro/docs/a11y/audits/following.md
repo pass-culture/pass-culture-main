@@ -21,6 +21,34 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 11.6 - RGAA - Dans chaque formulaire, chaque regroupement de champs de formulaire a-t-il une légende ?</summary>
+
+**RAWeb/RGAA** : [Critère 11.6](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-6)
+**Ticket** : [PC-42863](https://passculture.atlassian.net/browse/PC-42863)  
+**PR** : [#23896](https://github.com/pass-culture/pass-culture-main/pull/23896)
+
+**Problème** 😱  
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Au moins un regroupement de champs ne possède pas de légende :
+
+- Le regroupement des champs pour "Horaires pour l’ensemble de ces dates" et "Places et tarifs par horaire" (fenêtre "Définir le calendrier" à l'étape "Horaires et stocks")
+
+- Même chose pour les champs affichés quand l'événement est prévu toutes les semaines
+
+**Correction** 💡  
+
+- Utilisation de l'élément <legend> pour donner un titre aux regroupements créés avec <fieldset>.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 11.2 - RGAA - Chaque étiquette associée à un champ de formulaire est-elle pertinente ?</summary>
 
 **RAWeb/RGAA** : [Critère 11.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-2)
