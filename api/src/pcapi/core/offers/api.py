@@ -32,8 +32,6 @@ import pcapi.core.highlights.models as highlights_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
-import pcapi.core.offers.exceptions as offers_exceptions
-import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
@@ -87,8 +85,8 @@ from pcapi.utils.transaction_manager import on_commit
 
 from . import exceptions
 from . import models
-from . import repository as offers_repository
-from . import schemas as offers_schemas
+from . import repository
+from . import schemas
 from . import validation
 
 
@@ -183,7 +181,7 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
 
 
 def create_offer(
-    body: offers_schemas.CreateOffer,
+    body: schemas.CreateOffer,
     *,
     venue: offerers_models.Venue,
     offerer_address: offerers_models.OffererAddress | None = None,
@@ -320,7 +318,7 @@ def get_or_create_offerer_address_from_address_body(
 
 def update_offer(
     offer: models.Offer,
-    body: offers_schemas.UpdateOffer,
+    body: schemas.UpdateOffer,
     venue: offerers_models.Venue | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
     is_from_private_api: bool = False,
@@ -473,7 +471,7 @@ def update_offer(
         validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
 
     if "subcategoryId" in updates and offer.status != models.OfferStatus.DRAFT:
-        raise offers_exceptions.UnallowedUpdate("subcategoryId")
+        raise exceptions.UnallowedUpdate("subcategoryId")
 
     if "durationMinutes" in updates:
         duration_minutes = get_field(offer, updates, "durationMinutes", aliases=aliases)
@@ -632,8 +630,8 @@ def batch_update_offers(
 def reindex_recently_published_offers() -> None:
     end = get_naive_utc_now()
     start = end - datetime.timedelta(hours=1)
-    offer_query = offers_repository.get_offers_by_publication_datetime(start=start, end=end)
-    offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(offer_query)
+    offer_query = repository.get_offers_by_publication_datetime(start=start, end=end)
+    offer_query = repository.exclude_offers_from_inactive_venue_provider(offer_query)
 
     ids_to_reindex = []
     for (offer_id,) in offer_query.with_entities(offers_models.Offer.id).yield_per(1000):
@@ -643,15 +641,13 @@ def reindex_recently_published_offers() -> None:
 
 
 def send_future_offer_reminders(booking_allowed_datetime: datetime.datetime | None = None) -> None:
-    offers_query = offers_repository.get_offers_by_booking_allowed_datetime(
-        booking_allowed_datetime=booking_allowed_datetime
-    )
+    offers_query = repository.get_offers_by_booking_allowed_datetime(booking_allowed_datetime=booking_allowed_datetime)
     for offer in offers_query:
         reminders_notifications.notify_users_offer_is_bookable(offer=offer)
 
 
 def set_upper_timespan_of_inactive_headline_offers() -> None:
-    inactive_headline_offers = offers_repository.get_inactive_headline_offers()
+    inactive_headline_offers = repository.get_inactive_headline_offers()
     for headline_offer in inactive_headline_offers:
         headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, date_utils.get_naive_utc_now())
         logger.info(
@@ -672,7 +668,7 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
 
 
 def upsert_headline_offer(offer: models.Offer) -> models.HeadlineOffer:
-    headline_offer = offers_repository.get_current_headline_offer(offer.venueId)
+    headline_offer = repository.get_current_headline_offer(offer.venueId)
     if headline_offer and headline_offer.offerId != offer.id:
         remove_headline_offer(headline_offer)
         logger.info(
@@ -689,7 +685,7 @@ def upsert_headline_offer(offer: models.Offer) -> models.HeadlineOffer:
 
 
 def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
-    offers_validation.check_offer_is_eligible_to_be_headline(offer)
+    validation.check_offer_is_eligible_to_be_headline(offer)
     try:
         headline_offer = models.HeadlineOffer(
             offer=offer, venue=offer.venue, timespan=(date_utils.get_naive_utc_now(),)
@@ -728,6 +724,10 @@ def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
             reason=IndexationReason.OFFER_REINDEXATION,
         ),
     )
+
+
+def is_headline_offer(offer: offers_models.Offer) -> bool:
+    return len([ho for ho in offer.headlineOffers if ho.isActive]) > 0
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
@@ -962,7 +962,7 @@ def edit_stock(
     return stock, "beginningDatetime" in modifications
 
 
-def upsert_offer_thing_stocks(offer: models.Offer, inputs: list[offers_schemas.ThingStockUpsertInput]) -> None:
+def upsert_offer_thing_stocks(offer: models.Offer, inputs: list[schemas.ThingStockUpsertInput]) -> None:
     """
     Update all non-event stocks of an offer.
 
@@ -1115,7 +1115,7 @@ def publish_offer(
 
 
 def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | None) -> None:
-    venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer.venueId)
+    venue_already_has_validated_offer = repository.venue_already_has_validated_offer(offer.venueId)
 
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)
 
@@ -1631,7 +1631,7 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
     page = 0
     limit = settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE
     while True:
-        offer_ids = offers_repository.get_expired_offer_ids(start_time, end_time, offset=page * limit, limit=limit)
+        offer_ids = repository.get_expired_offer_ids(start_time, end_time, offset=page * limit, limit=limit)
         if not offer_ids:
             break
 
@@ -1657,7 +1657,7 @@ def create_or_update_product_mediations(product: models.Product, images: Titeliv
         requests.ExternalAPIException,
         PIL.UnidentifiedImageError,
         OSError,
-        offers_exceptions.ImageValidationError,
+        exceptions.ImageValidationError,
     ) as err:
         logger.error(
             "Error downloading Titelive image for product %s",
@@ -2243,7 +2243,7 @@ def upsert_movie_product_from_provider(
     if len(movie.title) > 140:
         movie.title = movie.title[0:139] + "…"
 
-    products = offers_repository.get_movie_products_matching_allocine_id_or_film_visa(movie.allocine_id, movie.visa)
+    products = repository.get_movie_products_matching_allocine_id_or_film_visa(movie.allocine_id, movie.visa)
 
     # Case 1: Creation of a new a product
     if not products:
@@ -2295,7 +2295,7 @@ def upsert_movie_product_from_provider(
                     },
                 },
             )
-            product = offers_repository.merge_products(product_with_allocine_id, product_with_visa)
+            product = repository.merge_products(product_with_allocine_id, product_with_visa)
             if _is_allocine(provider.id) or provider.id == product.lastProviderId:
                 _update_movie_product(product, movie, provider.id)
         else:
@@ -2513,7 +2513,7 @@ def delete_unbookable_unbooked_old_offers(
         # 10% of offers by run at most, no need to run for days
         max_id = min_id + (max_offer_id // 10)
 
-    query = offers_repository.get_unbookable_unbooked_old_offer_ids(min_id, max_id, batch_size=query_batch_size)
+    query = repository.get_unbookable_unbooked_old_offer_ids(min_id, max_id, batch_size=query_batch_size)
     for idx, chunk in enumerate(get_chunks(query, chunk_size=filter_batch_size)):
         inner_start = time.time()
 
@@ -2746,7 +2746,7 @@ def upsert_highlight_requests(
 
 def replace_offer_price_categories(
     offer: models.Offer,
-    synced_price_category_inputs: list[offers_schemas.PriceCategoryInput],
+    synced_price_category_inputs: list[schemas.PriceCategoryInput],
 ) -> models.Offer:
     """
     Replace all price categories of an offer.

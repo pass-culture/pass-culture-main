@@ -325,55 +325,20 @@ def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> sa_orm.Q
     return query
 
 
-def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
-    offer_data_by_id = {item["offerId"]: item for item in top_offers}
-    offers = (
+def get_offers_with_headlines_and_mediations(
+    ids: typing.Collection[int],
+) -> typing.Collection[models.Offer]:
+    return (
         db.session.query(models.Offer)
+        .filter(models.Offer.id.in_(ids))
         .options(
-            sa_orm.joinedload(models.Offer.mediations).load_only(
-                models.Mediation.id,
-                models.Mediation.isActive,
-                models.Mediation.dateCreated,
-                models.Mediation.thumbCount,
-                models.Mediation.credit,
-            )
+            sa_orm.selectinload(models.Offer.mediations),
+            sa_orm.joinedload(models.Offer.product).selectinload(models.Product.productMediations),
+            sa_orm.selectinload(models.Offer.headlineOffers),
         )
-        .options(sa_orm.joinedload(models.Offer.headlineOffers))
-        .options(
-            sa_orm.joinedload(models.Offer.stocks).load_only(
-                models.Stock.quantity,
-                models.Stock.isSoftDeleted,
-                models.Stock.beginningDatetime,
-                models.Stock.dnBookedQuantity,
-                models.Stock.bookingLimitDatetime,
-            )
-        )
-        .options(
-            sa_orm.joinedload(models.Offer.product)
-            .load_only(
-                models.Product.id,
-                models.Product.thumbCount,
-            )
-            .joinedload(models.Product.productMediations)
-        )
-        .filter(models.Offer.id.in_(offer_data_by_id.keys()))
-        .order_by(models.Offer.id)
+        .distinct()
+        .all()
     )
-    merged_data_list = []
-    for offer in offers:
-        if offer.id in offer_data_by_id:
-            merged_data = {
-                **{
-                    "offerName": offer.name,
-                    "image": offer.image,
-                    "isHeadlineOffer": offer.is_headline_offer,
-                },
-                **offer_data_by_id[offer.id],
-            }
-            merged_data_list.append(merged_data)
-
-    sorted_data_list = sorted(merged_data_list, key=lambda x: x["numberOfViews"], reverse=True)
-    return sorted_data_list
 
 
 def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:

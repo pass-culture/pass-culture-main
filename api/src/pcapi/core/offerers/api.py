@@ -26,6 +26,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offers.models as offers_models
+import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.models as providers_models
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
@@ -2164,6 +2165,17 @@ def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
         total_views_last_30_days=views_count[0].total if len(views_count) > 0 else 0,
         top_offers=[OfferViewsModel(offer_id=row.id, views=row.views, rank=row.rank) for row in top_offers],
     )
+
+
+def map_top_offers_to_existing_offers(
+    top_offers: typing.Collection[OfferViewsModel],
+) -> dict[OfferViewsModel, offers_models.Offer]:
+    offers = offers_repository.get_offers_with_headlines_and_mediations([int(o.offer_id) for o in top_offers])
+    offers_mapping = {offer.id: offer for offer in offers}
+
+    top_offers_to_offers_mapping = {top_offer: offers_mapping.get(int(top_offer.offer_id)) for top_offer in top_offers}
+
+    return {top_offer: offer for top_offer, offer in top_offers_to_offers_mapping.items() if offer is not None}
 
 
 def count_offerers_by_validation_status() -> dict[str, int]:
