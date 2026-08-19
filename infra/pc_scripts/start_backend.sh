@@ -39,12 +39,12 @@ function start_backend {
 
 function drop_data {
     concat_command
-    RUN="$RUN sudo rm -rf '$ROOT_PATH/api/static/object_store_data' && docker compose -f '$ROOT_PATH/docker-compose-backend.yml' down --volumes"
+    RUN="$RUN rm -rf '$ROOT_PATH/api/static/object_store_data' && docker compose -f '$ROOT_PATH/docker-compose-backend.yml' down --volumes"
 }
 
 function rebuild_backend {
     RUN='docker compose -f "$ROOT_PATH"/docker-compose-backend.yml build --no-cache --build-arg=\"uid=$UID\";
-    sudo rm -rf $ROOT_PATH/api/static/object_store_data;
+    rm -rf $ROOT_PATH/api/static/object_store_data;
     docker compose -f "$ROOT_PATH"/docker-compose-backend.yml down --volumes'
 }
 

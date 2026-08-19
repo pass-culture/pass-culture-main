@@ -1,9 +1,10 @@
 services:
   postgres:
-    image: postgis/postgis:15-3.4-alpine
+    platform: linux/amd64
+    image: postgis/postgis:18-3.6-alpine
     container_name: pc-postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     env_file:
       - env_file
     networks:
@@ -13,10 +14,11 @@ services:
     command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
 
   postgres-test:
-    image: postgis/postgis:15-3.4-alpine
+    platform: linux/amd64
+    image: postgis/postgis:18-3.6-alpine
     container_name: pc-postgres-pytest
     volumes:
-      - postgres_data_test:/var/lib/postgresql-test/data
+      - postgres_data_test:/var/lib/postgresql-test
     environment:
       - POSTGRES_DB=pass_culture
       - POSTGRES_USER=pytest

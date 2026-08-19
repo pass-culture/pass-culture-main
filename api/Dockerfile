@@ -146,14 +146,14 @@ COPY --chown=pcapi:pcapi tests/ /usr/src/app/tests/
 
 FROM image-dependencies AS pcapi-console
 
-RUN apt-get update && apt-get install --no-install-recommends -y curl less gnupg2 && \
-  curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/pgsql.gpg && \
-  echo "deb [signed-by=/etc/apt/trusted.gpg.d/pgsql.gpg] http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && \
-  echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
-  apt-get update && \
-  apt-get --no-install-recommends -y install postgresql-client libgdal-dev postgresql-client-15 google-cloud-sdk && \
+RUN apt-get update && apt-get install --no-install-recommends -y \
+  curl \
+  less \
+  gnupg2 \
+  postgresql-client \
+  libgdal-dev \
+  postgresql-client \
+  google-cloud-sdk &&  \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER pcapi
