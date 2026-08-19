@@ -42,32 +42,33 @@ export const EditoCard = ({
   )
 
   const highlightOfferCard = (
-    <EditoCardItem
-      image={highlightOffer}
-      title="Valoriser vos évènements sur le pass Culture !"
-      subtitle="Valorisez vos évènements en les associant à un temps fort du pass Culture ! Un temps fort permet de valoriser vos offres autour d'une thématique."
-      footer={
-        <ModalHighlight
-          open={isModalOpen}
-          onOpenChange={setIsModalOpen}
-          trigger={
-            <Button
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              disabled={isReadOnly}
-              size={ButtonSize.SMALL}
-              fullWidth
-              onClick={() =>
-                logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-                  action: 'discover',
-                })
-              }
-              label="Parcourir les temps forts"
-            />
-          }
-        />
-      }
-    />
+    <>
+      <EditoCardItem
+        image={highlightOffer}
+        title="Valoriser vos évènements sur le pass Culture !"
+        subtitle="Valorisez vos évènements en les associant à un temps fort du pass Culture ! Un temps fort permet de valoriser vos offres autour d'une thématique."
+        footer={
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            disabled={isReadOnly}
+            size={ButtonSize.SMALL}
+            fullWidth
+            onClick={() => {
+              logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
+                action: 'discover',
+              })
+              setIsModalOpen(true)
+            }}
+            label="Parcourir les temps forts"
+          />
+        }
+      />
+      <ModalHighlight
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   )
 
   const culturalSurveyCard = (

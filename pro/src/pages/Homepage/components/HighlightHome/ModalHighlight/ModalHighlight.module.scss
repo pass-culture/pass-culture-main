@@ -26,15 +26,14 @@
 
 .links-container {
   margin-top: var(--size-spacing-xxl);
-  margin-bottom: var(--size-spacing-xxl);
   display: flex;
   justify-content: center;
   gap: var(--size-spacing-xxl);
-}
 
-.actions-container {
-  display: flex;
-  gap: var(--size-spacing-m);
+  @media (max-width: size.$tablet) {
+    flex-direction: column;
+    gap: var(--size-spacing-l);
+  }
 }
 
 .card {

@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import type { ReactNode } from 'react'
 import useSWR from 'swr'
 
@@ -10,31 +9,53 @@ import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/Highligh
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { Tag } from '@/design-system/Tag/Tag'
 import { AccessibleDate } from '@/ui-kit/AccessibleDate/AccessibleDate'
-import {
-  DialogBuilder,
-  type DialogBuilderProps,
-} from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './ModalHighlight.module.scss'
 
-interface ModalHighlight extends Omit<DialogBuilderProps, 'children'> {}
+interface ModalHighlightProps {
+  isOpen: boolean
+  onClose: () => void
+}
 
 export const ModalHighlight = ({
-  ...dialogBuilderProps
-}: ModalHighlight): JSX.Element | null => {
+  isOpen,
+  onClose,
+}: ModalHighlightProps): JSX.Element | null => {
   const { logEvent } = useAnalytics()
   const { data, isLoading } = useSWR([GET_HIGHLIGHTS_QUERY_KEY], () =>
     api.getHighlights()
   )
 
   return (
-    <DialogBuilder
-      {...dialogBuilderProps}
+    <DetailedModal
+      isOpen={isOpen}
+      onClose={onClose}
       title="Qu’est-ce qu’un temps fort sur le pass Culture ?"
-      variant="drawer"
+      primaryAction={
+        <Button
+          as="router-link"
+          to="/offres"
+          variant={ButtonVariant.PRIMARY}
+          onClick={() =>
+            logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
+              action: 'goToOffersList',
+            })
+          }
+          label="Accéder à mes offres"
+        />
+      }
+      secondaryAction={
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          onClick={onClose}
+          label="Fermer"
+        />
+      }
     >
       <div>
         <p>
@@ -90,58 +111,36 @@ export const ModalHighlight = ({
             </ul>
           </>
         )}
-      </div>
-      <div className={styles['links-container']}>
-        <Button
-          as="a"
-          to="https://aide.passculture.app/hc/fr/articles/20587966046748--Acteurs-Culturels-Comment-et-pourquoi-proposer-des-offres-dans-le-cadre-des-temps-forts-et-zooms-th%C3%A9matiques"
-          opensInNewTab
-          onClick={() =>
-            logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-              action: 'seeMoreInfo',
-            })
-          }
-          label="En savoir plus sur les temps forts"
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-        />
-        <Button
-          as="a"
-          to="https://passcultureapp.notion.site/1cfad4e0ff9880288df4c80eebfe3ca0?v=1cfad4e0ff9880f3bbfd000c6f5023f3"
-          opensInNewTab
-          onClick={() =>
-            logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-              action: 'seeCalendar',
-            })
-          }
-          label="Voir tout le calendrier"
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-        />
-      </div>
-      <DialogBuilder.Footer>
-        <div className={styles['actions-container']}>
-          <Dialog.Close asChild>
-            <Button
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Fermer"
-            />
-          </Dialog.Close>
+        <div className={styles['links-container']}>
           <Button
-            as="router-link"
-            to="/offres"
-            variant={ButtonVariant.PRIMARY}
+            as="a"
+            to="https://aide.passculture.app/hc/fr/articles/20587966046748--Acteurs-Culturels-Comment-et-pourquoi-proposer-des-offres-dans-le-cadre-des-temps-forts-et-zooms-th%C3%A9matiques"
+            opensInNewTab
             onClick={() =>
               logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-                action: 'goToOffersList',
+                action: 'seeMoreInfo',
               })
             }
-            label="Accéder à mes offres"
+            label="En savoir plus sur les temps forts"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+          />
+          <Button
+            as="a"
+            to="https://passcultureapp.notion.site/1cfad4e0ff9880288df4c80eebfe3ca0?v=1cfad4e0ff9880f3bbfd000c6f5023f3"
+            opensInNewTab
+            onClick={() =>
+              logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
+                action: 'seeCalendar',
+              })
+            }
+            label="Voir tout le calendrier"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
           />
         </div>
-      </DialogBuilder.Footer>
-    </DialogBuilder>
+      </div>
+    </DetailedModal>
   )
 }
 
