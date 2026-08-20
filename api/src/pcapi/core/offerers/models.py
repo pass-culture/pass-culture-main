@@ -510,8 +510,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         sa.Boolean, nullable=False, server_default=expression.false(), default=False
     )
 
-    _has_partner_page: sa_orm.Mapped[bool] = sa_orm.query_expression()
-
     activity: sa_orm.Mapped[Activity] = sa_orm.mapped_column(db_utils.MagicEnum(Activity), nullable=False, index=True)
 
     state: sa_orm.Mapped[VenueState | None] = sa_orm.mapped_column(
@@ -882,44 +880,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     @property
     def has_headline_offer(self) -> bool:
         return any(headline_offer.isActive for headline_offer in self.headlineOffers)
-
-    @hybrid_property
-    def has_partner_page(self) -> bool:
-        import pcapi.core.offers.models as offers_models
-
-        return db.session.query(
-            sa.select(1)
-            .select_from(offers_models.Offer)
-            .join(Venue, offers_models.Offer.venueId == Venue.id)
-            .join(Offerer, Offerer.id == Venue.managingOffererId)
-            .where(
-                Offerer.isActive.is_(True),
-                sa.not_(Offerer.isClosed),
-                Venue.isPermanent.is_(True),
-                Venue.id == self.id,
-            )
-            .exists()
-        ).scalar()
-
-    @has_partner_page.inplace.expression
-    @classmethod
-    def _has_partner_page_expression(cls) -> Exists:
-        import pcapi.core.offers.models as offers_models
-
-        AliasedVenue = sa_orm.aliased(Venue)
-        return (
-            sa.select(1)
-            .select_from(offers_models.Offer)
-            .join(AliasedVenue, offers_models.Offer.venueId == AliasedVenue.id)
-            .join(Offerer, Offerer.id == AliasedVenue.managingOffererId)
-            .where(
-                Offerer.isActive.is_(True),
-                sa.not_(Offerer.isClosed),
-                AliasedVenue.isPermanent.is_(True),
-                AliasedVenue.id == cls.id,
-            )
-            .exists()
-        )
 
     @property
     def can_display_highlights(self) -> bool:
