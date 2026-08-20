@@ -814,6 +814,28 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
 
+    def test_error_if_venue_is_closed(self, client):
+        offer = factories.CollectiveOfferFactory(venue__state=offerers_models.VenueState.CLOSED)
+        factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer=offer,
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {
+            "name": "New name",
+            "mentalDisabilityCompliant": True,
+            "description": "Ma super description",
+            "contactEmail": "toto@example.com",
+            "bookingEmails": ["pifpouf@testmail.com", "bimbam@testmail.com"],
+            "students": ["Collège - 4e"],
+            "interventionArea": ["01", "2A"],
+            "formats": [EacFormat.CONCERT.value],
+        }
+        client = client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 403
+
 
 class Returns404Test:
     def when_user_is_not_attached_to_offerer(self, client):

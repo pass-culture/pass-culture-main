@@ -6,6 +6,7 @@ import pcapi.core.offers.models as offer_models
 import pcapi.core.users.factories as users_factories
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as booking_factory
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
@@ -102,6 +103,22 @@ class Returns401Test:
 
         # Then
         assert response.status_code == 401
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns403Test:
+    def test_error_if_venue_is_closed(self, client):
+        # Given
+        offer = offers_factories.OfferFactory(venue__state=offerers_models.VenueState.CLOSED)
+        user = users_factories.UserFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+
+        booking = booking_factory.BookingFactory(stock__offer=offer)
+        data = {"ids_to_delete": [booking.stockId]}
+
+        response = client.with_session_auth(user.email).post(f"/offers/{offer.id}/stocks/delete", json=data)
+
+        assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")
