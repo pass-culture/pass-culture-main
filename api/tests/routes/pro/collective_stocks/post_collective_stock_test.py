@@ -9,6 +9,7 @@ from pcapi.core.educational import factories
 from pcapi.core.educational.models import CollectiveAdditionalFeeType
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
@@ -611,3 +612,19 @@ class Return400Test:
 
         assert response.status_code == 400
         assert response.json == error
+
+
+class Returns403Test:
+    @time_machine.travel("2020-11-17 15:00:00")
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
+    def test_error_if_venue_is_closed(self, client):
+        _create_educational_year()
+        offer = factories.DraftCollectiveOfferFactory(
+            additionalDetails=None, venue__state=offerers_models.VenueState.CLOSED
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
+        response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
+
+        assert response.status_code == 403

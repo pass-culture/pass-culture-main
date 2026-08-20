@@ -6,6 +6,7 @@ from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 
 
@@ -186,6 +187,23 @@ class Returns403Test:
 
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id}
+        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+
+        assert response.status_code == 403
+
+    def test_error_if_venue_is_closed(self, client) -> None:
+        institution1 = factories.EducationalInstitutionFactory()
+        institution2 = factories.EducationalInstitutionFactory()
+
+        offer = factories.create_collective_offer_by_status(
+            status=models.CollectiveOfferDisplayedStatus.DRAFT,
+            venue__state=offerers_models.VenueState.CLOSED,
+            institution=institution1,
+        )
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+
+        client = client.with_session_auth("pro@example.com")
+        data = {"educationalInstitutionId": institution2.id}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
         assert response.status_code == 403
