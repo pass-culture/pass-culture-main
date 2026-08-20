@@ -10,8 +10,8 @@ export const IndividualVenuePage = () => {
 
   const shouldDisplayAccessToPageWarning =
     selectedPartnerVenue.isPermanent &&
-    selectedPartnerVenue.hasOffers &&
-    !selectedPartnerVenue.hasActiveIndividualOffer
+    (!selectedPartnerVenue.hasOffers ||
+      !selectedPartnerVenue.hasActiveIndividualOffer)
 
   return (
     <>
@@ -21,6 +21,14 @@ export const IndividualVenuePage = () => {
             title="Page invisible"
             description="Publiez une offre pour rendre votre page accessible aux jeunes dans l'application."
             variant={BannerVariants.WARNING}
+            actions={[
+              {
+                label: 'Créer une offre',
+                isExternal: true,
+                href: '/offre/individuelle/creation/description',
+                type: 'link',
+              },
+            ]}
           />
         </div>
       )}
