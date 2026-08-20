@@ -15,7 +15,6 @@ from pcapi.core import testing
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
-from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -682,40 +681,6 @@ class GetOffererTest:
         assert response.json["isValidated"] is True
         assert response.json["hasPartnerPage"] is False
         assert response.json["managedVenues"][0]["hasPartnerPage"] is False
-
-    @pytest.mark.parametrize(
-        "validation_status,active_offerer,permanent_venue,at_least_one_offer,has_partner_page",
-        [
-            (ValidationStatus.VALIDATED, False, True, True, False),
-            (ValidationStatus.VALIDATED, True, False, True, False),
-            (ValidationStatus.VALIDATED, True, True, False, False),
-            (ValidationStatus.VALIDATED, True, True, True, True),
-            (ValidationStatus.CLOSED, True, True, True, False),
-        ],
-    )
-    def test_offerer_has_partner_page(
-        self,
-        client,
-        validation_status,
-        active_offerer,
-        permanent_venue,
-        at_least_one_offer,
-        has_partner_page,
-    ):
-        offerer = offerers_factories.OffererFactory(validationStatus=validation_status, isActive=active_offerer)
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
-        if at_least_one_offer:
-            offers_factories.OfferFactory(venue=venue)
-
-        offerer_id = offerer.id
-        client = client.with_session_auth(user_offerer.user.email)
-        with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
-            assert response.status_code == 200
-
-        assert response.json["hasPartnerPage"] is has_partner_page
 
     def test_offerer_is_caledonian(self, client):
         offerer = offerers_factories.CaledonianOffererFactory()

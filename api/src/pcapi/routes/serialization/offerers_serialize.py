@@ -34,7 +34,6 @@ class GetOffererVenueResponseModel(HttpBodyModel):
     activity: offerers_models.DisplayableActivity | None
     withdrawal_details: str | None
     last_collective_dms_application: venue_collective_serialize.DMSApplicationForEAC | None
-    has_partner_page: bool
     has_venue_providers: bool
     is_permanent: bool
     banner_url: str | None
@@ -59,7 +58,6 @@ class GetOffererVenueResponseModel(HttpBodyModel):
             else None,
             has_adage_id=bool(venue.adageId),
             has_created_offer=venue.id in ids_of_venues_with_offers,
-            has_partner_page=venue._has_partner_page,
             has_venue_providers=bool(venue.venueProviders),
             id=venue.id,
             is_permanent=venue.isPermanent,
@@ -86,7 +84,6 @@ class GetOffererResponseModel(HttpBodyModel):
     allowed_on_adage: bool
     has_bank_account_with_pending_corrections: bool
     is_onboarded: bool
-    has_partner_page: bool
     is_caledonian: bool
     can_display_highlights: bool
 
@@ -104,7 +101,6 @@ class GetOffererResponseModel(HttpBodyModel):
             can_display_highlights=row.canDisplayHighlights,
             has_bank_account_with_pending_corrections=row.hasBankAccountWithPendingCorrections,
             has_non_free_offer=row.hasNonFreeOffer,
-            has_partner_page=row.hasPartnerPage,
             has_pending_bank_account=row.hasPendingBankAccount,
             has_valid_bank_account=row.hasValidBankAccount,
             id=offerer.id,

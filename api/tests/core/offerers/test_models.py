@@ -649,47 +649,6 @@ class VenueIsCaledonianTest:
         assert not venue.is_caledonian
 
 
-class VenueHasPartnerPageTest:
-    @pytest.mark.parametrize(
-        "active_offerer,permanent_venue,at_least_one_offer,has_partner_page",
-        [
-            (False, True, True, False),
-            (True, False, True, False),
-            (True, True, False, False),
-            (True, True, True, True),
-        ],
-    )
-    def test_has_partner_page(self, active_offerer, permanent_venue, at_least_one_offer, has_partner_page):
-        offerer = factories.OffererFactory(isActive=active_offerer)
-        venue = factories.VenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
-        if at_least_one_offer:
-            offers_factories.OfferFactory(venue=venue)
-        assert venue.has_partner_page is has_partner_page
-
-    def test_has_partner_page_isolation(self):
-        offerer_1 = factories.OffererFactory(isActive=True)
-        offerer_2 = factories.OffererFactory(isActive=True)
-        partner_page_venue = factories.VenueFactory(managingOfferer=offerer_2, isPermanent=True)
-        venue = factories.VenueFactory(managingOfferer=offerer_1, isPermanent=False)
-        offers_factories.OfferFactory(venue=partner_page_venue)
-
-        assert venue.has_partner_page is False
-        assert partner_page_venue.has_partner_page is True
-        assert db.session.query(models.Venue).filter(models.Venue.has_partner_page == False).all() == [venue]
-        assert db.session.query(models.Venue).filter(models.Venue.has_partner_page == True).all() == [
-            partner_page_venue
-        ]
-
-    def test_closed_offerer_has_no_partner_page(self):
-        offerer = factories.ClosedOffererFactory()
-        venue = factories.VenueFactory(managingOfferer=offerer, isPermanent=True)
-        offers_factories.OfferFactory(venue=venue)
-
-        assert venue.has_partner_page is False
-        assert db.session.query(models.Venue).filter(models.Venue.has_partner_page == False).all() == [venue]
-        assert db.session.query(models.Venue).filter(models.Venue.has_partner_page == True).count() == 0
-
-
 class VenueOffererAddressTest:
     def test_venue_relationship_offerer_address(self):
         venue = factories.VenueFactory()
