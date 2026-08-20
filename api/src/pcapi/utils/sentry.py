@@ -220,7 +220,7 @@ def init_sentry_sdk() -> None:
             RedisIntegration(),
             SqlalchemyIntegration(),
         ],
-        release=read_version_from_file(),
+        release=read_version_from_file(),  # must not include carriage return
         environment=settings.ENV,
         traces_sample_rate=None if settings.SENTRY_FINE_SAMPLING else settings.SENTRY_DEFAULT_TRACES_SAMPLE_RATE,
         before_send=before_send,
