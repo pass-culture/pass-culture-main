@@ -1,0 +1,1 @@
+import{t as e}from"./iframe-Dbbh-G24.js";e();
