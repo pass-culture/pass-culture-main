@@ -31,7 +31,6 @@ class Returns200Test:
     num_queries += 1  # select accessibility_provider
     num_queries += 1  # select offer
     num_queries += 1  # venue.hasActiveIndividualOffer
-    num_queries += 1  # venue.hasPartnerPage
     num_queries += 1  # venue.canDisplayHighlights
     num_queries += 1  # venue.hasNonDraftOffers
     num_queries += 1  # get_offerer_is_onboarded
@@ -245,7 +244,6 @@ class Returns200Test:
             "isOnboarded": True,
             "isValidated": True,
             "allowedOnAdage": True,
-            "hasPartnerPage": True,
             "hasNonDraftOffers": True,
             "volunteeringUrl": "https://www.jeveuxaider.gouv.fr/organisations/structure-name",
             "state": None,

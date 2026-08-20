@@ -83,7 +83,6 @@ export const makeGetVenueResponseModel = <
     hasAdageId: false,
     hasOffers: false,
     hasNonFreeOffers: false,
-    hasPartnerPage: false,
     isCaledonian: false,
     isOnboarded: false,
     isOpenToPublic: false,

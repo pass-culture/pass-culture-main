@@ -69,7 +69,6 @@ class GetOffererTest:
             "canDisplayHighlights": False,
             "hasBankAccountWithPendingCorrections": False,
             "hasNonFreeOffer": False,
-            "hasPartnerPage": False,
             "hasPendingBankAccount": False,
             "hasValidBankAccount": False,
             "id": offerer.id,
@@ -103,7 +102,6 @@ class GetOffererTest:
                     "isPermanent": venue.isPermanent,
                     "hasAdageId": bool(venue.adageId),
                     "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
-                    "hasPartnerPage": False,
                     "hasVenueProviders": False,
                     "name": venue.name,
                     "publicName": venue.publicName,
@@ -679,8 +677,6 @@ class GetOffererTest:
         # closed => similar to validated then suspended
         assert response.json["isActive"] is False
         assert response.json["isValidated"] is True
-        assert response.json["hasPartnerPage"] is False
-        assert response.json["managedVenues"][0]["hasPartnerPage"] is False
 
     def test_offerer_is_caledonian(self, client):
         offerer = offerers_factories.CaledonianOffererFactory()
