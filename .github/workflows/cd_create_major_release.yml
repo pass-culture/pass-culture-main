@@ -36,6 +36,8 @@ jobs:
     outputs:
       release-number: ${{ steps.version.outputs.release-number }}
       sha: ${{ steps.rc_commit.outputs.sha }}
+      subject: ${{ steps.rc_commit.outputs.subject }}
+      relative_date: ${{ steps.rc_commit.outputs.relative_date }}
       latest-tag: ${{ steps.version.outputs.latest-tag }}
     steps:
       - name: Checkout repository
@@ -57,7 +59,7 @@ jobs:
           release_number="$((major + 1))"
           echo "release-number=$release_number" >> "$GITHUB_OUTPUT"
 
-      - name: Get commit hash from RC tag
+      - name: Get commit hash info from RC tag
         id: rc_commit
         run: |
           rc_tag="$(git tag -l "rc" | tail -n 1)"
@@ -67,14 +69,24 @@ jobs:
           fi
           commit_hash="$(git rev-list -n 1 "$rc_tag")"
           echo "sha=$commit_hash" >> "$GITHUB_OUTPUT"
+          
+          relative_date="$(git show -s --format=%cr $sha)"
+          echo "relative_date=$relative_date" >> "$GITHUB_OUTPUT"
+
+          subject="$(git show -s --format=%s $sha)"
+          echo "subject=$subject" >> "$GITHUB_OUTPUT"
+
 
   notify-workflow-start:
     needs: compute-major-version-variables
     name: Notify major release creation has started
     uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
+      sha: ${{ needs.compute-major-version-variables.outputs.sha }}
+      subject: ${{ needs.compute-major-version-variables.outputs.subject }}
+      relative_date: ${{ needs.compute-major-version-variables.outputs.relative_date }}
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      message: ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|création de la release>  `v${{ needs.compute-major-version-variables.outputs.release-number }}` est lancée"
+      message: ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|création de la release>  `v${{ needs.compute-major-version-variables.outputs.release-number }}` est lancée à partir du commit <${{ github.server_url }}/${{ github.repository }}/{{sha}}|subject> — {{relative_date}}"
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
@@ -124,9 +136,12 @@ jobs:
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/slack_update_message_workflow.yml
     with:
+      sha: ${{ needs.compute-major-version-variables.outputs.sha }}
+      subject: ${{ needs.compute-major-version-variables.outputs.subject }}
+      relative_date: ${{ needs.compute-major-version-variables.outputs.relative_date }}
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message-ts: ${{ needs.notify-workflow-start.outputs.message-ts }}
-      message: ":github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|release> `v${{ needs.compute-major-version-variables.outputs.release-number }}` a été créé avec succès"
+      message: ":github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|release> `v${{ needs.compute-major-version-variables.outputs.release-number }}` a été créé avec succès à partir du commit <${{ github.server_url }}/${{ github.repository }}/{{sha}}|subject> — {{relative_date}}"
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
@@ -141,9 +156,12 @@ jobs:
     if: always() && (failure() || cancelled())
     uses: ./.github/workflows/slack_update_message_workflow.yml
     with:
+      sha: ${{ needs.compute-major-version-variables.outputs.sha }}
+      subject: ${{ needs.compute-major-version-variables.outputs.subject }}
+      relative_date: ${{ needs.compute-major-version-variables.outputs.relative_date }}
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message-ts: ${{ needs.notify-workflow-start.outputs.message-ts }}
-      message: ":github-failure: La création de la <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|release> `v${{ needs.compute-major-version-variables.outputs.release-number }}` a échoué cc <!subteam^${{vars.SLACK_SHERIF_BACK_ID}}> <!subteam^${{vars.SLACK_SHERIF_INFRA_ID}}>"
+      message: ":github-failure: La création de la <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|release> `v${{ needs.compute-major-version-variables.outputs.release-number }}` a échoué à partir du commit <${{ github.server_url }}/${{ github.repository }}/{{sha}}|subject> — {{relative_date}} cc <!subteam^${{vars.SLACK_SHERIF_BACK_ID}}> <!subteam^${{vars.SLACK_SHERIF_INFRA_ID}}>"
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
