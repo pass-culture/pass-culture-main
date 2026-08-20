@@ -871,6 +871,27 @@ class Returns400Test:
 
 
 @pytest.mark.usefixtures("db_session")
+class Returns403Test:
+    @pytest.mark.parametrize("endpoint", ["/offers", "/v2/offers"])
+    def test_error_if_venue_is_closed(self, client, endpoint):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        data = {
+            "name": "Les lièvres pas malins",
+            "venueId": venue.id,
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+        }
+        response = client.with_session_auth("user@example.com").post(endpoint, json=data)
+
+        assert response.status_code == 403
+
+
+@pytest.mark.usefixtures("db_session")
 class Returns404Test:
     def test_when_user_is_not_attached_to_offerer(self, client):
         users_factories.ProFactory(email="user@example.com")
