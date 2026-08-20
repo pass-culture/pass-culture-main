@@ -658,20 +658,6 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
         .exists()
     )
 
-    has_partner_page = (
-        sa.select(1)
-        .select_from(offers_models.Offer)
-        .join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
-        .where(
-            models.Offerer.isActive.is_(True),
-            sa.not_(models.Offerer.isClosed),
-            models.Venue.isPermanent.is_(True),
-            models.Offerer.id == models.Venue.managingOffererId,
-        )
-        .correlate(models.Offerer)
-        .exists()
-    )
-
     can_display_highlights = (
         sa.select(1)
         .select_from(offers_models.Offer)
@@ -694,7 +680,6 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
             has_pending_bank_account_subquery.label("hasPendingBankAccount"),
             has_bank_account_with_pending_corrections_subquery.label("hasBankAccountWithPendingCorrections"),
             _build_offerer_is_onboarded_expression().label("isOnboarded"),
-            has_partner_page.label("hasPartnerPage"),
             can_display_highlights.label("canDisplayHighlights"),
         )
         .filter(models.Offerer.id == offerer_id)
@@ -707,9 +692,7 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
                 models.Offerer.isActive,
                 models.Offerer.allowedOnAdage,
             ),
-            sa_orm.selectinload(models.Offerer.managedVenues)
-            .with_expression(models.Venue._has_partner_page, models.Venue.has_partner_page)
-            .options(
+            sa_orm.selectinload(models.Offerer.managedVenues).options(
                 sa_orm.selectinload(offerers_models.Venue.collectiveDmsApplications),
                 sa_orm.selectinload(offerers_models.Venue.venueProviders),
                 sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),

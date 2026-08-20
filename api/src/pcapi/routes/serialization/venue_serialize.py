@@ -119,7 +119,6 @@ class GetVenueResponseModel(HttpBodyModel):
     allowedOnAdage: bool
     bankAccountStatus: venue_finance_serialize.SimplifiedBankAccountStatus | None
     has_non_free_offers: bool
-    has_partner_page: bool
     can_display_highlights: bool
     has_non_draft_offers: bool
     volunteeringUrl: HttpUrlStr | None
@@ -213,7 +212,6 @@ class GetVenueResponseModel(HttpBodyModel):
             allowedOnAdage=venue.managingOfferer.allowedOnAdage,
             bankAccountStatus=venue_finance_serialize.parse_venue_bank_account_status(venue),
             has_non_free_offers=has_non_free_offers,
-            has_partner_page=venue.has_partner_page,
             can_display_highlights=venue.can_display_highlights,
             has_non_draft_offers=venue.has_non_draft_offers,
             volunteeringUrl=venue.volunteeringUrl,
