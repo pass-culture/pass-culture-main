@@ -739,13 +739,16 @@ class CustomReimbursementRule(PcObject, ReimbursementRule, Model):
 
     __table_args__ = (
         # A rule relates to an offer, a venue, or an offerer, never more than one.
-        sa.CheckConstraint('num_nonnulls("offerId", "venueId", "offererId") = 1'),
+        sa.CheckConstraint(
+            'num_nonnulls("offerId", "venueId", "offererId") = 1',
+            name="offer_or_venue_or_offerer_check",
+        ),
         # A rule has an amount or a rate, never both.
-        sa.CheckConstraint("num_nonnulls(amount, rate) = 1"),
+        sa.CheckConstraint("num_nonnulls(amount, rate) = 1", name="amount_or_rate_check"),
         # A timespan must have a lower bound. Upper bound is optional.
         # Overlapping rules are rejected by `validation._check_reimbursement_rule_conflicts()`.
-        sa.CheckConstraint("lower(timespan) IS NOT NULL"),
-        sa.CheckConstraint("rate IS NULL OR (rate BETWEEN 0 AND 1)"),
+        sa.CheckConstraint("lower(timespan) IS NOT NULL", name="custom_reimbursement_rule_timespan_check"),
+        sa.CheckConstraint("rate IS NULL OR (rate BETWEEN 0 AND 1)", name="rate_range_check"),
     )
 
     @property
@@ -1110,14 +1113,7 @@ class Payment(PcObject, Model):
     recipientName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
     recipientSiren: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(9), nullable=False)
     iban: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(27), nullable=True)
-    bic: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
-        sa.String(11),
-        sa.CheckConstraint(
-            "(iban IS NULL AND bic IS NULL) OR (iban IS NOT NULL AND bic IS NOT NULL)",
-            name="check_iban_and_bic_xor_not_iban_and_not_bic",
-        ),
-        nullable=True,
-    )
+    bic: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(11), nullable=True)
     comment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     author: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(27), nullable=False)
     transactionEndToEndId: sa_orm.Mapped[UUID | None] = sa_orm.mapped_column(sa_psql.UUID(as_uuid=True), nullable=True)
@@ -1146,6 +1142,10 @@ class Payment(PcObject, Model):
             )
             """,
             name="reimbursement_constraint_check",
+        ),
+        sa.CheckConstraint(
+            "(iban IS NULL AND bic IS NULL) OR (iban IS NOT NULL AND bic IS NOT NULL)",
+            name="check_iban_and_bic_xor_not_iban_and_not_bic",
         ),
     )
 
