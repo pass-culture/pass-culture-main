@@ -1,3 +1,9 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+$min-width: rem.torem(640px);
+$max-width: rem.torem(1440px);
+$max-width-percentage: 60%;
+
 .layout {
   margin: unset;
   display: flex;
@@ -6,4 +12,10 @@
 
 .content {
   flex: 1;
+}
+
+.content-wrapper {
+  max-width: clamp($min-width, $max-width-percentage, $max-width);
+  margin-left: auto;
+  margin-right: auto;
 }

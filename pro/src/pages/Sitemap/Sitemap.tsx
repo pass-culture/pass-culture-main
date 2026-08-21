@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router'
 
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -172,19 +173,22 @@ export const Sitemap = () => {
   }
 
   return (
-    <BasicLayout mainHeading="Plan du site" isFullPage={true}>
-      <Button
-        onClick={() => navigate(-1)}
-        color={ButtonColor.NEUTRAL}
-        variant={ButtonVariant.TERTIARY}
-        icon={fullBackIcon}
-        iconPosition={IconPositionEnum.LEFT}
-        label="Retour"
-      />
-      <ul className={styles['sitemap-list']} data-testid="sitemap">
-        {renderSitemapItems(sitemapLinks)}
-      </ul>
-    </BasicLayout>
+    <FullLayout>
+      <div className={styles['content-wrapper']}>
+        <MainHeading mainHeading="Plan du site" />
+        <Button
+          onClick={() => navigate(-1)}
+          color={ButtonColor.NEUTRAL}
+          variant={ButtonVariant.TERTIARY}
+          icon={fullBackIcon}
+          iconPosition={IconPositionEnum.LEFT}
+          label="Retour"
+        />
+        <ul className={styles['sitemap-list']} data-testid="sitemap">
+          {renderSitemapItems(sitemapLinks)}
+        </ul>
+      </div>
+    </FullLayout>
   )
 }
 

@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router'
 
-import { FullPageLayout } from '@/app/App/layouts/funnels/FullPageLayout/FullPageLayout'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 
@@ -26,9 +26,9 @@ export const Signup = () => {
 
   if (isSignupSimulationEnabled) {
     return (
-      <FullPageLayout>
+      <FullLayout>
         {isProAccountCreationEnabled ? <Outlet /> : <SignupUnavailable />}
-      </FullPageLayout>
+      </FullLayout>
     )
   }
 
