@@ -31,6 +31,11 @@ export interface BaseDialogProps {
    * override that target (e.g. a dropdown trigger instead of a menu item).
    */
   refToFocusOnClose?: React.RefObject<HTMLElement | null>
+  /**
+   * When true, marks this dialog as an eligible target for the snackbar portal.
+   * Only set on DetailedModal — not on SimpleModal / navigation guard dialogs.
+   */
+  isSnackBarPortalTarget?: boolean
 }
 
 /**
@@ -48,6 +53,7 @@ export const BaseDialog = ({
   ariaDescribedBy,
   children,
   refToFocusOnClose,
+  isSnackBarPortalTarget = false,
 }: BaseDialogProps): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null)
 
@@ -104,6 +110,7 @@ export const BaseDialog = ({
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
       className={styles['base-dialog']}
+      data-snackbar-portal={isSnackBarPortalTarget ? '' : undefined}
     >
       {children}
     </dialog>

@@ -30,7 +30,10 @@ export const SnackBarContainer = (): JSX.Element => {
   const [portalTarget, setPortalTarget] = useState<Element>(() => document.body)
 
   useEffect(() => {
-    setPortalTarget(document.querySelector('dialog[open]') ?? document.body)
+    setPortalTarget(
+      document.querySelector('dialog[data-snackbar-portal][open]') ??
+        document.body
+    )
   }, [snackBars.length])
 
   const sortedSnackBars = snackBars
