@@ -10,8 +10,8 @@ export const IndividualVenuePageEdition = () => {
 
   const shouldDisplayAccessToPageWarning =
     selectedPartnerVenue.isPermanent &&
-    selectedPartnerVenue.hasOffers &&
-    !selectedPartnerVenue.hasActiveIndividualOffer
+    (!selectedPartnerVenue.hasOffers ||
+      !selectedPartnerVenue.hasAtLeastOneBookableOffer)
 
   return (
     <>

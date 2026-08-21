@@ -20,7 +20,6 @@ const renderSitemap = (options: RenderWithProvidersOptions = {}) => {
           id: 123,
           name: 'Test Venue',
           allowedOnAdage: true,
-          hasPartnerPage: true,
         },
       },
       nav: {

@@ -202,7 +202,7 @@ describe('IndividualVenuePageEdition', () => {
       ...defaultGetVenue,
       isPermanent: true,
       hasOffers: true,
-      hasActiveIndividualOffer: false,
+      hasAtLeastOneBookableOffer: false,
     }
 
     renderForm(venue)

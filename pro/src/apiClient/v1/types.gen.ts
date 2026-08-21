@@ -3168,10 +3168,6 @@ export type GetOffererResponseModel = {
      */
     hasNonFreeOffer: boolean;
     /**
-     * Haspartnerpage
-     */
-    hasPartnerPage: boolean;
-    /**
      * Haspendingbankaccount
      */
     hasPendingBankAccount: boolean;
@@ -3239,10 +3235,6 @@ export type GetOffererVenueResponseModel = {
      * Hascreatedoffer
      */
     hasCreatedOffer: boolean;
-    /**
-     * Haspartnerpage
-     */
-    hasPartnerPage: boolean;
     /**
      * Hasvenueproviders
      */
@@ -3567,6 +3559,10 @@ export type GetVenueResponseModel = {
      */
     hasAdageId: boolean;
     /**
+     * Hasatleastonebookableoffer
+     */
+    hasAtLeastOneBookableOffer: boolean;
+    /**
      * Hasnondraftoffers
      */
     hasNonDraftOffers: boolean;
@@ -3578,10 +3574,6 @@ export type GetVenueResponseModel = {
      * Hasoffers
      */
     hasOffers: boolean;
-    /**
-     * Haspartnerpage
-     */
-    hasPartnerPage: boolean;
     /**
      * Id
      */
