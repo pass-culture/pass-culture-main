@@ -1140,12 +1140,26 @@ def get_collective_offer_request_by_id(request_id: int) -> models.CollectiveOffe
         raise exceptions.CollectiveOfferRequestNotFound()
 
 
+# todo: check if it's still used
 def get_offerer_ids_from_collective_offers_template_ids(offers_ids: list[int]) -> set[int]:
-    query = db.session.query(offerers_models.Offerer.id)
-    query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-    query = query.join(models.CollectiveOfferTemplate, offerers_models.Venue.collectiveOfferTemplates)
-    query = query.filter(models.CollectiveOfferTemplate.id.in_(offers_ids))
+    query = (
+        db.session.query(offerers_models.Offerer.id)
+        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+        .join(models.CollectiveOfferTemplate, offerers_models.Venue.collectiveOfferTemplates)
+        .filter(models.CollectiveOfferTemplate.id.in_(offers_ids))
+    )
     return {result[0] for result in query.all()}
+
+
+def get_offerer_and_venue_ids_from_collective_offers_template_ids(offers_ids: list[int]) -> tuple[set[int], set[int]]:
+    results = (
+        db.session.query(offerers_models.Venue.id, offerers_models.Offerer.id)
+        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+        .join(models.CollectiveOfferTemplate, offerers_models.Venue.collectiveOfferTemplates)
+        .filter(models.CollectiveOfferTemplate.id.in_(offers_ids))
+        .tuples()
+    )
+    return typing.cast(tuple[set[int], set[int]], tuple(set(i) for i in zip(*results)))
 
 
 def get_collective_offer_template_by_id(offer_id: int) -> models.CollectiveOfferTemplate:
@@ -1312,10 +1326,12 @@ def get_query_for_collective_offers_template_by_ids_for_user(
 ) -> sa_orm.Query[models.CollectiveOfferTemplate]:
     query = db.session.query(models.CollectiveOfferTemplate)
     if not user.has_admin_role:
-        query = query.join(offerers_models.Venue, models.CollectiveOfferTemplate.venue)
-        query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-        query = query.join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
-        query = query.filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
+        query = (
+            query.join(offerers_models.Venue, models.CollectiveOfferTemplate.venue)
+            .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+            .join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
+            .filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
+        )
     query = query.filter(models.CollectiveOfferTemplate.id.in_(ids))
     return query
 

@@ -210,6 +210,7 @@ def upsert_offer_stocks(
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
 
     stock_inputs: list[offers_schemas.ThingStockUpsertInput] = []
     for stock in body.stocks:
@@ -239,8 +240,9 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
-
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
+
     stocks_to_delete = [stock for stock in offer.stocks if stock.id in body.ids_to_delete]
     offers_api.batch_delete_stocks(stocks_to_delete, current_user.real_user.id, current_user.is_impersonated)
 
@@ -264,6 +266,8 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
+
     try:
         stocks_stats = offers_api.get_stocks_stats(offer_id=offer_id)
     except exceptions.OfferHasNoStock:
@@ -324,6 +328,7 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
         )
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest.check_venue_is_opened(venue)
 
     ean_code = body.extra_data.get("ean", None) if body.extra_data is not None else None
     product = (
@@ -383,6 +388,7 @@ def post_offer(
         )
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest.check_venue_is_opened(venue)
 
     fields = body.dict(by_alias=True)
     fields.pop("venueId")
@@ -410,11 +416,11 @@ def patch_publish_offer(
     body: offers_serialize.PatchOfferPublishBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     try:
-        offerer = offerers_repository.get_by_offer_id(body.id)
+        venue = offerers_repository.get_venue_by_offer_id(body.id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise api_errors.resource_not_found_error()
-
-    rest.check_user_has_access_to_offerer(current_user, offerer.id)
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOfferer.id)
+    rest.check_venue_is_opened(venue)
 
     offer = offers_repository.get_offer_and_extradata(body.id)
     if offer is None:
@@ -441,8 +447,8 @@ def patch_publish_offer(
 )
 @atomic()
 def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
+    # TODO: not sure what to do here
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
-
     if body.is_active:
         query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
 
@@ -460,6 +466,7 @@ def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBody
 def patch_all_offers_active_status(
     body: offers_serialize.PatchAllOffersActiveStatusBodyModel,
 ) -> offers_serialize.PatchAllOffersActiveStatusResponseModel:
+    # TODO: not sure what to do here
     filters = {
         "user_id": current_user.id,
         "offerer_id": body.offerer_id,
@@ -505,8 +512,8 @@ def patch_offer(
         )
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
-
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
 
     updates = body.dict(by_alias=True, exclude_unset=True)
     if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
@@ -548,8 +555,8 @@ def update_offer_video(offer_id: int, body: offers_serialize.UpdateOfferVideoBod
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["meta_data", "venue"])
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
-
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
 
     video_url = str(body.video_url) if body.video_url else None
 
@@ -594,6 +601,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
 
     if "thumb" not in request.files:
         raise validation.exceptions.MissingImage()
@@ -620,8 +628,8 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
 @atomic()
 def delete_thumbnail(offer_id: int) -> None:
     offer = get_or_404(models.Offer, offer_id)
-
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
     offers_api.delete_mediations([offer_id])
 
 
@@ -683,6 +691,7 @@ def replace_offer_price_categories(
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
 
     price_category_inputs: list[offers_schemas.PriceCategoryInput] = []
     for price_category in body.price_categories:
@@ -820,6 +829,7 @@ def post_highlight_request_offer(
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
     validation.check_offer_can_ask_for_highlight_request(offer)
 
     try:
@@ -888,8 +898,8 @@ def create_offer_pro_advice(
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
-
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
 
     user = current_user._get_current_object()
     pro_advice = pro_advice_api.create_pro_advice(offer, body.content, body.author, user.id)
@@ -910,8 +920,8 @@ def update_offer_pro_advice(
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
-
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
 
     user = current_user._get_current_object()
     pro_advice = pro_advice_api.update_pro_advice(offer, body.content, body.author, user.id)
@@ -930,8 +940,8 @@ def delete_offer_pro_advice(offer_id: int) -> None:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
     except exceptions.OfferNotFound:
         raise api_errors.resource_not_found_error()
-
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_venue_is_opened(offer.venue)
 
     user = current_user._get_current_object()
     pro_advice_api.delete_pro_advice(offer, user.id)

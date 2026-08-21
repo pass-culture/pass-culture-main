@@ -7,6 +7,7 @@ import pcapi.core.highlights.factories as highlights_factories
 import pcapi.core.highlights.models as highlights_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils import db as db_utils
 
@@ -240,3 +241,20 @@ class Returns400Test:
         assert response.json["global"] == [
             "La sous catégorie de l'offre ne lui permet pas de participer à un temps fort"
         ]
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns403Test:
+    def test_error_if_venue_is_closed(self, client, caplog):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, state=offerers_models.VenueState.CLOSED
+        )
+        offer = offers_factories.EventOfferFactory(venue=venue)
+
+        highlight = highlights_factories.HighlightFactory()
+
+        client = client.with_session_auth(user_offerer.user.email)
+        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
+
+        assert response.status_code == 403

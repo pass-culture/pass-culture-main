@@ -347,6 +347,7 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_venue_and_validated_x
     )
 
 
+# TODO: ensure it is still used
 def get_by_offer_id(offer_id: int) -> models.Offerer:
     offerer = (
         db.session.query(models.Offerer)
@@ -360,6 +361,20 @@ def get_by_offer_id(offer_id: int) -> models.Offerer:
     return offerer
 
 
+def get_venue_by_offer_id(offer_id: int) -> models.Venue:
+    venue = (
+        db.session.query(models.Venue)
+        .join(models.Venue.offers)
+        .filter_by(id=offer_id)
+        .options(sa_orm.joinedload(models.Venue.managingOfferer))
+        .one_or_none()
+    )
+    if not venue:
+        raise exceptions.CannotFindOffererForOfferId()
+    return venue
+
+
+# TODO: ensure it is still used
 def get_by_collective_offer_id(collective_offer_id: int) -> models.Offerer:
     offerer = (
         db.session.query(models.Offerer)
@@ -373,6 +388,20 @@ def get_by_collective_offer_id(collective_offer_id: int) -> models.Offerer:
     return offerer
 
 
+def get_venue_by_collective_offer_id(collective_offer_id: int) -> models.Venue:
+    venue = (
+        db.session.query(models.Venue)
+        .join(models.Venue.collectiveOffers)
+        .filter(educational_models.CollectiveOffer.id == collective_offer_id)
+        .options(sa_orm.joinedload(models.Venue.managingOfferer))
+        .one_or_none()
+    )
+    if not venue:
+        raise exceptions.CannotFindOffererForOfferId()
+    return venue
+
+
+# TODO: ensure it is still used
 def get_by_collective_offer_template_id(collective_offer_id: int) -> models.Offerer:
     offerer = (
         db.session.query(models.Offerer)
@@ -386,6 +415,19 @@ def get_by_collective_offer_template_id(collective_offer_id: int) -> models.Offe
     return offerer
 
 
+def get_venue_by_collective_offer_template_id(collective_offer_id: int) -> models.Venue:
+    venue = (
+        db.session.query(models.Venue)
+        .join(models.Venue.collectiveOfferTemplates)
+        .filter(educational_models.CollectiveOfferTemplate.id == collective_offer_id)
+        .one_or_none()
+    )
+    if not venue:
+        raise exceptions.CannotFindOffererForOfferId()
+    return venue
+
+
+# TODO: ensure it is still used
 def get_by_collective_stock_id(collective_stock_id: int) -> models.Offerer:
     offerer = (
         db.session.query(models.Offerer)
@@ -398,6 +440,20 @@ def get_by_collective_stock_id(collective_stock_id: int) -> models.Offerer:
     if not offerer:
         raise exceptions.CannotFindOffererForOfferId()
     return offerer
+
+
+def get_venue_by_collective_stock_id(collective_stock_id: int) -> models.Venue:
+    venue = (
+        db.session.query(models.Venue)
+        .join(models.Venue.collectiveOffers)
+        .join(educational_models.CollectiveOffer.collectiveStock)
+        .filter(educational_models.CollectiveStock.id == collective_stock_id)
+        .options(sa_orm.joinedload(models.Venue.managingOfferer))
+        .one_or_none()
+    )
+    if not venue:
+        raise exceptions.CannotFindOffererForOfferId()
+    return venue
 
 
 def find_new_offerer_user_email(offerer_id: int) -> str:
