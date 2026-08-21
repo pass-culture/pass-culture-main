@@ -70,6 +70,8 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.routes.serialization import address_serialize
+from pcapi.routes.serialization import artist_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
@@ -303,10 +305,18 @@ def create_offer(
 
 
 def get_or_create_offerer_address_from_address_body(
-    address_body: offerers_schemas.LocationModel | offerers_schemas.LocationOnlyOnVenueModel,
+    address_body: (
+        offerers_schemas.LocationModel
+        | offerers_schemas.LocationOnlyOnVenueModel
+        | address_serialize.LocationBodyModelV2
+        | address_serialize.LocationOnlyOnVenueBodyModelV2
+    ),
     venue: offerers_models.Venue,
 ) -> offerers_models.OffererAddress:
-    if isinstance(address_body, offerers_schemas.LocationOnlyOnVenueModel):
+    if isinstance(
+        address_body,
+        (offerers_schemas.LocationOnlyOnVenueModel, address_serialize.LocationOnlyOnVenueBodyModelV2),
+    ):
         # Use the same address as the venue, but offer must not be linked to a VENUE_LOCATION
         return offerers_api.get_or_create_offer_location(
             offerer_id=venue.managingOffererId,
@@ -502,6 +512,180 @@ def update_offer(
 
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
+    db.session.add(offer)
+
+    # This log is used for analytics purposes.
+    # If you need to make a 'breaking change' of this log, please contact the data team.
+    # Otherwise, you will break some dashboards
+    on_commit(
+        partial(
+            logger.info,
+            "Offer has been updated",
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "product_id": offer.productId,
+                "changes": {**changes},
+            },
+            technical_message_id="offer.updated",
+        )
+    )
+
+    withdrawal_fields = {"bookingContact", "withdrawalDelay", "withdrawalDetails", "withdrawalType"}
+    withdrawal_updated = updates_set & withdrawal_fields
+    oa_updated = "offererAddress" in updates
+    if should_send_mail and (withdrawal_updated or oa_updated):
+        transactional_mails.send_email_for_each_ongoing_booking(offer)
+
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            reason=IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": updates_set},
+        )
+    )
+
+    return offer
+
+
+def update_offer_from_private_api(
+    offer: models.Offer,
+    *,
+    artist_offer_links: typing.Sequence[
+        artist_serialize.ArtistOfferLinkBodyModel | artist_serialize.ArtistOfferLinkBodyModelV2
+    ]
+    | None = None,
+    audio_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    booking_allowed_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    booking_contact: str | None | T_UNCHANGED = UNCHANGED,
+    booking_email: str | None | T_UNCHANGED = UNCHANGED,
+    description: str | None | T_UNCHANGED = UNCHANGED,
+    duration_minutes: int | None | T_UNCHANGED = UNCHANGED,
+    ean: str | None | T_UNCHANGED = UNCHANGED,
+    external_ticket_office_url: str | None | T_UNCHANGED = UNCHANGED,
+    extra_data: models.OfferExtraData | dict[str, typing.Any] | None | T_UNCHANGED = UNCHANGED,
+    has_cultural_outreach_claim: bool | None = None,
+    is_duo: bool | None | T_UNCHANGED = UNCHANGED,
+    is_national: bool | None | T_UNCHANGED = UNCHANGED,
+    mental_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    motor_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    name: str | None | T_UNCHANGED = UNCHANGED,
+    offerer_address: offerers_models.OffererAddress | None | T_UNCHANGED = UNCHANGED,
+    publication_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    subcategory_id: str | None | T_UNCHANGED = UNCHANGED,
+    url: str | None | T_UNCHANGED = UNCHANGED,
+    visual_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    withdrawal_delay: int | None | T_UNCHANGED = UNCHANGED,
+    withdrawal_details: str | None | T_UNCHANGED = UNCHANGED,
+    withdrawal_type: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
+    should_send_mail: bool = False,
+) -> models.Offer:
+    # an explicit `null` disables double bookings rather than clearing the field
+    if is_duo is not UNCHANGED:
+        is_duo = bool(is_duo)
+
+    # an offer carrying a url is national
+    if is_national is not UNCHANGED:
+        is_national = True if (url is not UNCHANGED and url) else bool(is_national)
+
+    fields: dict[str, typing.Any] = {
+        "audioDisabilityCompliant": audio_disability_compliant,
+        "bookingAllowedDatetime": booking_allowed_datetime,
+        "bookingContact": booking_contact,
+        "bookingEmail": booking_email,
+        "description": description,
+        "durationMinutes": duration_minutes,
+        "ean": ean,
+        "externalTicketOfficeUrl": external_ticket_office_url,
+        "extraData": extra_data,
+        "isDuo": is_duo,
+        "isNational": is_national,
+        "mentalDisabilityCompliant": mental_disability_compliant,
+        "motorDisabilityCompliant": motor_disability_compliant,
+        "name": name,
+        "offererAddress": offerer_address,
+        "publicationDatetime": publication_datetime,
+        "subcategoryId": subcategory_id,
+        "url": url,
+        "visualDisabilityCompliant": visual_disability_compliant,
+        "withdrawalDelay": withdrawal_delay,
+        "withdrawalDetails": withdrawal_details,
+        "withdrawalType": withdrawal_type,
+    }
+    fields = {key: value for key, value in fields.items() if value is not UNCHANGED}
+
+    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
+
+    # The two relation fields cannot take part in the diff above so they are compared here
+    is_claimed = offer.culturalOutreach is not None and offer.culturalOutreach.claimedDatetime is not None
+    relation_updates: set[str] = set()
+
+    if artist_offer_links is not None and artist_api.artist_offer_links_differ(artist_offer_links, offer):
+        relation_updates.add("artistOfferLinks")
+
+    if has_cultural_outreach_claim is not None and has_cultural_outreach_claim != is_claimed:
+        relation_updates.add("hasCulturalOutreachClaim")
+
+    updates_set = set(updates) | relation_updates
+
+    if not updates_set:
+        return offer
+
+    validation.check_offer_update_from_private_api(
+        offer,
+        updates,
+        artist_offer_links=artist_offer_links,
+        ean=ean if ean is not UNCHANGED else None,
+        extra_data=extra_data if extra_data is not UNCHANGED else None,
+        relation_updates=relation_updates,
+        url_is_explicitly_removed=url is not UNCHANGED and url is None,
+    )
+
+    if "bookingAllowedDatetime" in updates:
+        new_booking_allowed_datetime = get_field(offer, updates, "bookingAllowedDatetime")
+        if not new_booking_allowed_datetime or (new_booking_allowed_datetime <= datetime.datetime.now(datetime.UTC)):
+            reminders_notifications.notify_users_offer_is_bookable(offer)
+
+    if artist_offer_links is not None and "artistOfferLinks" in relation_updates:
+        created_links, deleted_links = artist_api.upsert_artist_offer_links(artist_offer_links, offer)
+        db.session.expire(offer, ["artistOfferLinks"])
+
+        if deleted_links:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Artist offer links have been deleted",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "links": [str(k) for k in deleted_links]},
+                    technical_message_id="offer.artistOfferLinks.deleted",
+                )
+            )
+        if created_links:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Artist offer links have been created",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "links": [str(k) for k in created_links]},
+                    technical_message_id="offer.artistOfferLinks.created",
+                )
+            )
+
+    if "hasCulturalOutreachClaim" in relation_updates:
+        outreach = offer.culturalOutreach
+        if outreach is None:
+            cultural_outreach_api.create_cultural_outreach_claim(offer)
+        else:
+            claim_datetime = get_naive_utc_now() if has_cultural_outreach_claim else None
+            cultural_outreach_api.update_cultural_outreach_claim(claim_datetime, offer)
+
+    changes = {}
+    for key, value in updates.items():
+        if key == "extraData":
+            if offer.product:
+                continue
+        changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
+        setattr(offer, key, value)
+
     db.session.add(offer)
 
     # This log is used for analytics purposes.

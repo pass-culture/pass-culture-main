@@ -7,6 +7,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.artist import exceptions as artist_exceptions
 from pcapi.core.artist import models as artist_models
 from pcapi.core.artist.api import ArtistOfferLinkKey
+from pcapi.core.artist.api import artist_offer_links_differ
 from pcapi.core.artist.api import create_artist_offer_link
 from pcapi.core.artist.api import get_artist_image_url
 from pcapi.core.artist.api import upsert_artist_offer_links
@@ -228,3 +229,61 @@ class UpsertArtistOfferLinksTest:
         upsert_artist_offer_links(incoming_links, offer)
         mock_create_artist_offer_link.assert_called()
         len(mock_create_artist_offer_link.call_args_list) == 2
+
+
+class ArtistOfferLinksDifferTest:
+    def build_link(self, artist, artist_type=artist_models.ArtistType.PERFORMER):
+        return artist_serialize.ArtistOfferLinkBodyModelV2(
+            artist_id=artist.id, artist_type=artist_type, artist_name=artist.name
+        )
+
+    def test_should_be_false_when_the_offer_has_no_link_and_none_is_sent(self):
+        offer = offers_factories.OfferFactory()
+
+        assert artist_offer_links_differ([], offer) is False
+
+    def test_should_be_true_when_a_link_is_added(self):
+        offer = offers_factories.OfferFactory()
+        artist = artist_factories.ArtistFactory()
+
+        assert artist_offer_links_differ([self.build_link(artist)], offer) is True
+
+    def test_should_be_true_when_a_link_is_removed(self):
+        artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory()
+        artist_factories.ArtistOfferLinkFactory(artist_id=artist.id, offer_id=offer.id)
+
+        assert artist_offer_links_differ([], offer) is True
+
+    def test_should_be_false_when_the_offer_links_are_resent_unchanged(self):
+        artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory()
+        artist_factories.ArtistOfferLinkFactory(
+            artist_id=artist.id, offer_id=offer.id, artist_type=artist_models.ArtistType.PERFORMER
+        )
+
+        assert artist_offer_links_differ([self.build_link(artist)], offer) is False
+
+    def test_should_ignore_the_order_of_the_links(self):
+        first_artist = artist_factories.ArtistFactory()
+        second_artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory()
+        for artist in (first_artist, second_artist):
+            artist_factories.ArtistOfferLinkFactory(
+                artist_id=artist.id, offer_id=offer.id, artist_type=artist_models.ArtistType.PERFORMER
+            )
+
+        links = [self.build_link(second_artist), self.build_link(first_artist)]
+
+        assert artist_offer_links_differ(links, offer) is False
+
+    def test_should_be_true_when_only_the_artist_type_changes(self):
+        artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory()
+        artist_factories.ArtistOfferLinkFactory(
+            artist_id=artist.id, offer_id=offer.id, artist_type=artist_models.ArtistType.PERFORMER
+        )
+
+        links = [self.build_link(artist, artist_type=artist_models.ArtistType.AUTHOR)]
+
+        assert artist_offer_links_differ(links, offer) is True

@@ -2347,6 +2347,275 @@ class UpdateOfferTest:
         mocked_create_claim.assert_called_once_with(offer)
 
 
+@pytest.mark.usefixtures("db_session")
+class UpdateOfferFromPrivateApiTest:
+    FROZEN_NOW = datetime(2026, 8, 18, 12, 0, tzinfo=timezone.utc)
+
+    def build_offer(self, **overrides):
+        """approved, provider-less, physical offer that passes every check."""
+        defaults = {
+            # offline only, no conditional field, `can_be_duo`
+            "subcategoryId": subcategories.ESCAPE_GAME.id,
+            "name": "Les Quatre Cents Coups",
+            "bookingEmail": "old@example.com",
+            "isDuo": False,
+        }
+        # `overrides` always win, including when they pass `None`
+        return factories.OfferFactory(**{**defaults, **overrides})
+
+    def build_artist_offer_link(self, artist_id="artist-id", artist_name="François Truffaut"):
+        return artist_serialize.ArtistOfferLinkBodyModelV2(
+            artist_id=artist_id,
+            artist_type=artist_models.ArtistType.AUTHOR,
+            artist_name=artist_name,
+        )
+
+    # --- Delegated validation
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_update_from_private_api")
+    def test_should_delegate_the_validation(self, check_offer_update):
+        offer = self.build_offer()
+
+        api.update_offer_from_private_api(offer, name="Jules et Jim", booking_email="new@example.com")
+
+        check_offer_update.assert_called_once_with(
+            offer,
+            {"bookingEmail": "new@example.com", "name": "Jules et Jim"},
+            artist_offer_links=None,
+            ean=None,
+            extra_data=None,
+            relation_updates=set(),
+            url_is_explicitly_removed=False,
+        )
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_update_from_private_api")
+    def test_should_tell_the_validation_when_the_url_is_explicitly_removed(self, check_offer_update):
+        offer = self.build_offer(subcategoryId=subcategories.LIVRE_NUMERIQUE.id, url="https://livre.example.com")
+
+        api.update_offer_from_private_api(offer, url=None)
+
+        assert check_offer_update.call_args.kwargs["url_is_explicitly_removed"] is True
+
+    # --- Writing
+
+    def test_should_write_the_fields_that_change(self):
+        offer = self.build_offer()
+
+        api.update_offer_from_private_api(offer, name="Jules et Jim", booking_email="new@example.com")
+        db.session.flush()
+
+        assert offer.name == "Jules et Jim"
+        assert offer.bookingEmail == "new@example.com"
+
+    def test_should_write_a_field_explicitly_set_to_none(self):
+        offer = self.build_offer(withdrawalDetails="À retirer à la caisse")
+
+        api.update_offer_from_private_api(offer, withdrawal_details=None)
+        db.session.flush()
+
+        assert offer.withdrawalDetails is None
+
+    @pytest.mark.parametrize("is_duo,expected", [(False, False), (None, False)])
+    def test_should_coerce_is_duo_to_a_boolean(self, is_duo, expected):
+        # an explicit `null` disables double bookings
+        offer = self.build_offer(isDuo=True)
+
+        api.update_offer_from_private_api(offer, is_duo=is_duo)
+        db.session.flush()
+
+        assert offer.isDuo is expected
+
+    def test_should_force_is_national_when_a_url_is_sent_in_the_same_request(self):
+        offer = self.build_offer(subcategoryId=subcategories.LIVRE_NUMERIQUE.id, offererAddress=None, isNational=False)
+
+        api.update_offer_from_private_api(offer, url="https://livre.example.com", is_national=False)
+        db.session.flush()
+
+        assert offer.isNational is True
+
+    def test_should_not_force_is_national_when_the_url_is_not_in_the_same_request(self):
+        offer = self.build_offer(
+            subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            offererAddress=None,
+            url="https://livre.example.com",
+            isNational=True,
+        )
+
+        api.update_offer_from_private_api(offer, is_national=False)
+        db.session.flush()
+
+        assert offer.isNational is False
+
+    def test_should_move_the_offer_to_another_offerer_address(self):
+        offer = self.build_offer()
+        other_offerer_address = offerers_factories.OfferLocationFactory(venue=offer.venue)
+
+        api.update_offer_from_private_api(offer, offerer_address=other_offerer_address)
+        db.session.flush()
+
+        assert offer.offererAddressId == other_offerer_address.id
+
+    # --- Nothing to update
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    @mock.patch("pcapi.core.offers.validation.check_offer_update_from_private_api")
+    def test_should_return_early_when_no_field_changes(self, check_offer_update, mocked_async_index_offer_ids, caplog):
+        offer = self.build_offer()
+        date_updated = offer.dateUpdated
+
+        with caplog.at_level(logging.INFO):
+            api.update_offer_from_private_api(offer, name=offer.name)
+        db.session.flush()
+
+        assert offer.dateUpdated == date_updated
+        check_offer_update.assert_not_called()
+        mocked_async_index_offer_ids.assert_not_called()
+        update_logs = [
+            record for record in caplog.records if getattr(record, "technical_message_id", None) == "offer.updated"
+        ]
+        assert not update_logs
+
+    # --- Relation fields
+
+    @pytest.mark.parametrize("artist_offer_links", [None, []], ids=["not sent", "cleared on an offer with no link"])
+    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links")
+    def test_should_not_upsert_artist_offer_links_when_they_do_not_change(
+        self, mocked_upsert_artist_offer_links, artist_offer_links
+    ):
+        offer = self.build_offer()
+
+        api.update_offer_from_private_api(offer, name="Jules et Jim", artist_offer_links=artist_offer_links)
+
+        mocked_upsert_artist_offer_links.assert_not_called()
+
+    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links")
+    def test_should_upsert_artist_offer_links_when_they_change(self, mocked_upsert_artist_offer_links):
+        mocked_upsert_artist_offer_links.return_value = ([], [])
+        offer = self.build_offer(subcategoryId=subcategories.SEANCE_CINE.id)
+        links = [self.build_artist_offer_link()]
+
+        api.update_offer_from_private_api(offer, artist_offer_links=links)
+
+        mocked_upsert_artist_offer_links.assert_called_once_with(links, offer)
+
+    @mock.patch("pcapi.core.cultural_outreach.api.create_cultural_outreach_claim")
+    def test_should_create_a_cultural_outreach_claim(self, mocked_create_claim):
+        offer = self.build_offer()
+
+        api.update_offer_from_private_api(offer, has_cultural_outreach_claim=True)
+
+        mocked_create_claim.assert_called_once_with(offer)
+
+    @mock.patch("pcapi.core.cultural_outreach.api.update_cultural_outreach_claim")
+    def test_should_withdraw_a_cultural_outreach_claim(self, mocked_update_claim):
+        offer = self.build_offer()
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        api.update_offer_from_private_api(offer, has_cultural_outreach_claim=False)
+
+        mocked_update_claim.assert_called_once_with(None, offer)
+
+    @mock.patch("pcapi.core.cultural_outreach.api.create_cultural_outreach_claim")
+    @mock.patch("pcapi.core.cultural_outreach.api.update_cultural_outreach_claim")
+    def test_should_ignore_a_cultural_outreach_claim_that_matches_the_offer(
+        self, mocked_update_claim, mocked_create_claim
+    ):
+        offer = self.build_offer()
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        api.update_offer_from_private_api(offer, name="Jules et Jim", has_cultural_outreach_claim=True)
+
+        mocked_create_claim.assert_not_called()
+        mocked_update_claim.assert_not_called()
+
+    # --- `bookingAllowedDatetime`
+
+    @pytest.mark.parametrize(
+        "booking_allowed_datetime",
+        [None, FROZEN_NOW - timedelta(days=1)],
+        ids=["cleared", "in the past"],
+    )
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
+    def test_should_notify_users_when_bookings_open_immediately(self, notify_users, booking_allowed_datetime):
+        offer = self.build_offer(bookingAllowedDatetime=self.FROZEN_NOW + timedelta(days=1))
+
+        api.update_offer_from_private_api(offer, booking_allowed_datetime=booking_allowed_datetime)
+
+        notify_users.assert_called_once_with(offer)
+
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
+    def test_should_not_notify_users_when_bookings_open_later(self, notify_users):
+        offer = self.build_offer()
+
+        api.update_offer_from_private_api(offer, booking_allowed_datetime=self.FROZEN_NOW + timedelta(days=1))
+
+        notify_users.assert_not_called()
+
+    # --- Analytics log
+
+    def test_should_log_the_changes(self, caplog):
+        offer = self.build_offer()
+
+        with caplog.at_level(logging.INFO):
+            api.update_offer_from_private_api(offer, name="Jules et Jim", booking_email="new@example.com")
+
+        [update_log] = [
+            record for record in caplog.records if getattr(record, "technical_message_id", None) == "offer.updated"
+        ]
+        assert update_log.extra["changes"] == {
+            "name": {"oldValue": "Les Quatre Cents Coups", "newValue": "Jules et Jim"},
+            "bookingEmail": {"oldValue": "old@example.com", "newValue": "new@example.com"},
+        }
+
+    # --- Side effects
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_reindex_the_offer(self, mocked_async_index_offer_ids):
+        offer = self.build_offer()
+
+        api.update_offer_from_private_api(offer, name="Jules et Jim", booking_email="new@example.com")
+
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": {"name", "bookingEmail"}},
+        )
+
+    @pytest.mark.parametrize(
+        "kwargs",
+        [
+            {"withdrawal_details": "À retirer à la caisse"},
+            {"booking_contact": "contact@example.com"},
+        ],
+        ids=["withdrawalDetails", "bookingContact"],
+    )
+    @mock.patch("pcapi.core.mails.transactional.send_email_for_each_ongoing_booking")
+    def test_should_send_the_withdrawal_emails_when_asked_to(self, mocked_send_email, kwargs):
+        offer = self.build_offer()
+
+        api.update_offer_from_private_api(offer, should_send_mail=True, **kwargs)
+
+        mocked_send_email.assert_called_once_with(offer)
+
+    @mock.patch("pcapi.core.mails.transactional.send_email_for_each_ongoing_booking")
+    def test_should_not_send_the_withdrawal_emails_when_no_withdrawal_field_changes(self, mocked_send_email):
+        offer = self.build_offer()
+
+        api.update_offer_from_private_api(offer, should_send_mail=True, name="Jules et Jim")
+
+        mocked_send_email.assert_not_called()
+
+    @mock.patch("pcapi.core.mails.transactional.send_email_for_each_ongoing_booking")
+    def test_should_not_send_the_withdrawal_emails_unless_asked_to(self, mocked_send_email):
+        offer = self.build_offer()
+
+        api.update_offer_from_private_api(offer, withdrawal_details="À retirer à la caisse")
+
+        mocked_send_email.assert_not_called()
+
+
 now_datetime_with_tz = datetime.now(timezone.utc)
 now_datetime_without_tz = now_datetime_with_tz.replace(tzinfo=None)
 

@@ -1,4 +1,5 @@
 import logging
+import typing
 from dataclasses import dataclass
 
 import sqlalchemy as sa
@@ -73,7 +74,9 @@ def create_artist_offer_link(offer_id: int, artist_offer_link: ArtistOfferLinkKe
 
 
 def get_artist_offer_link_key(
-    link: models.ArtistOfferLink | artist_serialize.ArtistOfferLinkBodyModel,
+    link: models.ArtistOfferLink
+    | artist_serialize.ArtistOfferLinkBodyModel
+    | artist_serialize.ArtistOfferLinkBodyModelV2,
 ) -> ArtistOfferLinkKey:
     custom_name = link.artist_name if link.artist_id is None else None
     return ArtistOfferLinkKey(
@@ -83,8 +86,22 @@ def get_artist_offer_link_key(
     )
 
 
+def artist_offer_links_differ(
+    artist_offer_links: typing.Sequence[
+        artist_serialize.ArtistOfferLinkBodyModel | artist_serialize.ArtistOfferLinkBodyModelV2
+    ],
+    offer: models.Offer,
+) -> bool:
+    current_links_keys = {get_artist_offer_link_key(link) for link in offer.artistOfferLinks}
+    incoming_links_keys = {get_artist_offer_link_key(link) for link in artist_offer_links}
+    return current_links_keys != incoming_links_keys
+
+
 def upsert_artist_offer_links(
-    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModel], offer: models.Offer
+    artist_offer_links: typing.Sequence[
+        artist_serialize.ArtistOfferLinkBodyModel | artist_serialize.ArtistOfferLinkBodyModelV2
+    ],
+    offer: models.Offer,
 ) -> tuple:
     """
     Update artist offer links for a specific offer based on a new list of artist offer links.
