@@ -38,6 +38,7 @@ class TokenType(enum.Enum):
     DISCORD_OAUTH = "discord_oauth"
     PASSWORDLESS_LOGIN = "passwordless_login"
     CONNECT_AS = "connect_as"
+    NATIVE_AUTH_SESSION = "native_auth_session"
 
 
 T = typing.TypeVar("T", bound="AbstractToken")
