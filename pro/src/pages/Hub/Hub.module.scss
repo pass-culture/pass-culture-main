@@ -22,8 +22,8 @@
   max-height: calc(
     100vh -
       (
-        size.$action-bar-sticky-height + size.$footer-height +
-          size.$action-bar-sticky-height
+        size.$top-menu-height + size.$footer-height +
+        (size.$full-layout-content-padding * 2)
       )
   );
   max-width: size.$main-content-width;

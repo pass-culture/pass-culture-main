@@ -11,5 +11,5 @@
 .content {
   background-color: var(--color-background-default);
   flex-grow: 1;
-  padding: var(--size-spacing-xxl);
+  padding: size.$full-layout-content-padding;
 }
