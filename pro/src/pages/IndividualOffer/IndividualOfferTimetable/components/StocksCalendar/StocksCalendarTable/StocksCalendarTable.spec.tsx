@@ -23,6 +23,29 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+vi.mock('./StocksCalendarTableEditStock/StocksCalendarTableEditStock', () => ({
+  StocksCalendarTableEditStock: ({ stock, onUpdateStock }: any) => (
+    <div>
+      <button
+        onClick={() => {
+          onUpdateStock({
+            id: stock.id,
+            beginningDatetime: addSeconds(
+              new Date(stock.beginningDatetime),
+              3600
+            ).toISOString(),
+            bookingLimitDatetime: stock.bookingLimitDatetime ?? null,
+            priceCategoryId: stock.priceCategoryId ?? 1,
+            quantity: stock.quantity ?? null,
+          })
+        }}
+      >
+        mock-update-time
+      </button>
+    </div>
+  ),
+}))
+
 const defaultSelectedPartnerVenue = makeGetVenueResponseModel({ id: 1 })
 
 function renderStocksCalendarTable(
@@ -227,7 +250,9 @@ describe('StocksCalendarTable', () => {
       screen.getByRole('button', { name: 'Modifier la date' })
     )
 
-    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Fermer la fenêtre modale' })
+    )
 
     expect(
       screen.queryByRole('heading', { name: 'Modifier la date' })
@@ -258,6 +283,7 @@ describe('StocksCalendarTable', () => {
       stocks: [
         getOfferStockFactory({
           beginningDatetime: addSeconds(new Date(), 1).toISOString(),
+          bookingsQuantity: 1,
         }),
       ],
       mode: OFFER_WIZARD_MODE.EDITION,
@@ -273,6 +299,7 @@ describe('StocksCalendarTable', () => {
       stocks: [
         getOfferStockFactory({
           beginningDatetime: addSeconds(new Date(), 1).toISOString(),
+          bookingsQuantity: 1,
         }),
       ],
       mode: OFFER_WIZARD_MODE.EDITION,
@@ -284,7 +311,7 @@ describe('StocksCalendarTable', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: "Vous êtes sur le point d'annuler toutes les réservations en cours pour cette date",
+        name: 'Supprimer la date et annuler les réservations existantes ?',
       })
     ).toBeInTheDocument()
   })
@@ -308,9 +335,104 @@ describe('StocksCalendarTable', () => {
       screen.getByText((_content, element) => {
         return (
           element?.textContent ===
-          'En effectuant cette action, les réservations en cours et validées seront automatiquement annulées. L’ensemble des bénéficiaires concernés sera automatiquement averti par email.'
+          'Cette action entrainera automatiquement l’annulation des réservations en cours et validées pour cette date. L’ensemble des bénéficiaires concernés sera averti par email.'
         )
       })
     ).toBeInTheDocument()
+  })
+
+  it('should delete directly without modal when deleting a stock without bookings', async () => {
+    const onDeleteStocks = vi.fn()
+
+    renderStocksCalendarTable({
+      onDeleteStocks,
+      stocks: [
+        getOfferStockFactory({
+          id: 1,
+          beginningDatetime: addSeconds(new Date(), 1).toISOString(),
+          bookingsQuantity: 0,
+        }),
+      ],
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Supprimer la date' })
+    )
+
+    expect(onDeleteStocks).toHaveBeenCalledWith([1])
+    expect(
+      screen.queryByRole('heading', {
+        name: 'Supprimer la date et annuler les réservations existantes ?',
+      })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should open an edition warning modal and update only after confirmation when stock has bookings', async () => {
+    const onUpdateStock = vi.fn().mockResolvedValue(undefined)
+
+    renderStocksCalendarTable({
+      onUpdateStock,
+      stocks: [
+        getOfferStockFactory({
+          id: 1,
+          beginningDatetime: addDays(new Date(), 2).toISOString(),
+          bookingsQuantity: 2,
+        }),
+      ],
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Modifier la date' })
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'mock-update-time' })
+    )
+
+    expect(onUpdateStock).not.toHaveBeenCalled()
+    expect(
+      screen.getByRole('heading', {
+        name: "Modifier l'horaire des réservations existantes ?",
+      })
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Confirmer la modification' })
+    )
+
+    expect(onUpdateStock).toHaveBeenCalledTimes(1)
+  })
+
+  it('should update directly without warning modal when stock has no bookings', async () => {
+    const onUpdateStock = vi.fn().mockResolvedValue(undefined)
+
+    renderStocksCalendarTable({
+      onUpdateStock,
+      stocks: [
+        getOfferStockFactory({
+          id: 1,
+          beginningDatetime: addDays(new Date(), 2).toISOString(),
+          bookingsQuantity: 0,
+        }),
+      ],
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Modifier la date' })
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'mock-update-time' })
+    )
+
+    expect(onUpdateStock).toHaveBeenCalledTimes(1)
+    expect(
+      screen.queryByRole('heading', {
+        name: "Modifier l'horaire des réservations existantes ?",
+      })
+    ).not.toBeInTheDocument()
   })
 })
