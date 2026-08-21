@@ -143,6 +143,27 @@ def create_pro_user_with_bookings() -> dict:
         "tokenCanceled": booking_canceled.token,
         "tokenReimbursed": booking_reimbursed.token,
         "tokenOther": booking_other_x.token,
+        "eventOfferId": stock_event.offerId,
+        "eventStockId": stock_event.id,
+    }
+
+
+def create_pro_user_with_deletable_event_stock_with_bookings() -> dict:
+    pro_user = users_factories.ProFactory.create()
+    offerer = offerers_factories.OffererFactory.create()
+    offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
+    venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+
+    stock_event = offers_factories.EventStockFactory.create(offer__venue=venue)
+    booking_confirmed = bookings_factories.BookingFactory.create(
+        token="E2EDEL", stock=stock_event, status=bookings_models.BookingStatus.CONFIRMED
+    )
+
+    return {
+        "user": get_pro_user_helper(pro_user),
+        "tokenConfirmed": booking_confirmed.token,
+        "eventOfferId": stock_event.offerId,
+        "eventStockId": stock_event.id,
     }
 
 

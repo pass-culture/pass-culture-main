@@ -80,6 +80,17 @@ export interface DeskBookingsData {
   tokenCanceled: string
   tokenReimbursed: string
   tokenOther: string
+  eventOfferId?: number
+  eventStockId?: number
+}
+
+export interface DeletableEventStockWithBookingsData {
+  user: {
+    email: string
+  }
+  tokenConfirmed: string
+  eventOfferId: number
+  eventStockId: number
 }
 
 export interface ProUserWithFinancialDataAnd3Venues {
@@ -97,6 +108,16 @@ export async function createProUserWithBookings(
     request,
     'GET',
     `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_bookings`
+  )
+}
+
+export async function createProUserWithDeletableEventStockWithBookings(
+  request: APIRequestContext
+): Promise<DeletableEventStockWithBookingsData> {
+  return await sandboxCall<DeletableEventStockWithBookingsData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_deletable_event_stock_with_bookings`
   )
 }
 
