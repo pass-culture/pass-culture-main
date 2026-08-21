@@ -977,6 +977,33 @@ class ListPublicAccountsTest(GetEndpointHelper):
         cards_text = html_parser.extract_cards_text(response.data)
         assert {user_id_from_card(card_text) for card_text in cards_text} == user_ids_of_groups(users, expected_groups)
 
+    @pytest.mark.parametrize(
+        "operator,expected_groups",
+        [
+            ("IN", ["agen_users", "paris_users"]),
+            ("NOT_IN", ["toulouse_users", "homonym_users"]),
+        ],
+    )
+    def test_list_accounts_by_cities(self, authenticated_client, operator, expected_groups):
+        users = {
+            "agen_users": [users_factories.UserFactory(city="Agen", departementCode="47")],
+            "paris_users": [
+                users_factories.UserFactory(city="Paris", departementCode="75"),
+                users_factories.UserFactory(city="PARIS", departementCode="75"),
+            ],
+            "toulouse_users": [users_factories.UserFactory(city="Toulouse", departementCode="31")],
+            "homonym_users": [users_factories.UserFactory(city="Paris", departementCode="31")],
+            "no_city_users": [users_factories.UserFactory(city=None, departementCode="75")],
+        }
+
+        query_args = advanced_filter_args("CITY", operator, "city", ["47001_Agen", "75056_Paris"])
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert {user_id_from_card(card_text) for card_text in cards_text} == user_ids_of_groups(users, expected_groups)
+
     def test_list_accounts_by_multiple_filters(self, authenticated_client):
         matching_user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime(2006, 5, 12),

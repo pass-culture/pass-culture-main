@@ -340,7 +340,12 @@ class User(PcObject, Model, DeactivableMixin):
         # /!\ Don't forget to mirror this functional index in `User.birth_date` SQL expression if you change it.
         # Spelled as SQL to match `pg_get_indexdef()` so that `alembic check` sees it ISO with the database index.
         sa.Index("ix_user_birth_date", sa.text('COALESCE("validatedBirthDate", "dateOfBirth"::date)')),
-        sa.Index("ix_user_departementCode", departementCode, postgresql_where=departementCode.is_not(None)),
+        sa.Index(
+            "ix_user_departementCode_and_city",
+            departementCode,
+            sa.func.lower(city),
+            postgresql_where=departementCode.is_not(None),
+        ),
     )
 
     def __init__(self, **kwargs: typing.Any) -> None:
