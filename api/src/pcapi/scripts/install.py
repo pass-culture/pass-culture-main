@@ -30,6 +30,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.backoffice_users.add_permissions_to_staging_specific_roles",
         "pcapi.scripts.beneficiary.import_test_users",
         "pcapi.scripts.check_pre_migrations",
+        "pcapi.scripts.check_data_contracts",
         "pcapi.scripts.full_index_offers",
         "pcapi.scripts.install_data",
         "pcapi.scripts.generate_public_api_openapi_json",
