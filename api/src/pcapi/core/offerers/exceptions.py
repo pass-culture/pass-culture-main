@@ -161,3 +161,7 @@ class InviteAgainImpossibleException(ClientError):
 class UserAlreadyAttachedToOffererException(ClientError):
     def __init__(self) -> None:
         super().__init__("UserAlreadyAttachedToOffererException", "Ce collaborateur est déjà membre de votre structure")
+
+
+class VenueHasIncomingReimbursements(OffererException):
+    pass
