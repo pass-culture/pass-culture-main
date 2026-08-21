@@ -5,12 +5,6 @@
   flex-direction: column;
   gap: var(--size-spacing-s);
   width: 100%;
+  margin-top: var(--size-spacing-xxl);
   margin-bottom: var(--size-spacing-xxl);
-}
-
-.page-content {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 32px;
 }

@@ -2,7 +2,8 @@ import { type ChangeEvent, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
-import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setSelectedPartnerVenueById } from '@/commons/store/user/dispatchers/setSelectedPartnerVenueById'
@@ -10,7 +11,6 @@ import { ensureVenues } from '@/commons/store/user/selectors'
 import { normalizeStrForSearch } from '@/commons/utils/normalizeStrForSearch'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
-import { Footer } from '@/components/Footer/Footer'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
@@ -91,74 +91,73 @@ export const Hub = () => {
   }
 
   return (
-    <FunnelLayout
-      mainHeading="À quelle structure souhaitez-vous accéder ?"
-      withFlexContent
-    >
-      {venues.length > 4 && (
-        <SearchInput
-          label="Rechercher une structure"
-          onChange={filterVenues}
-          value={query}
-          name="searchQuery"
-        />
-      )}
+    <FullLayout headerPropsOverride={{ hideAdminButton: false }}>
+      <div className={styles['content-flex']}>
+        <MainHeading mainHeading="À quelle structure souhaitez-vous accéder ?" />
 
-      {/* Hidden helper text for screen readers */}
-      {
-        <div
-          className={styles['sr-only']}
-          role="status"
-          aria-atomic="true"
-          aria-live="polite"
-        >
-          {!!query &&
-            `${filteredVenues.length} ${pluralizeFr(filteredVenues.length, 'structure trouvée', 'structures trouvées')}.`}
-        </div>
-      }
-      {venues.length > 0 && filteredVenues.length === 0 && (
-        <div>Aucune structure ne correspond à votre recherche "{query}".</div>
-      )}
-      <div className={styles['venue-list']}>
-        {filteredVenues.map((venue) => (
-          <div key={venue.id}>
-            <button
-              aria-labelledby={`venue-${venue.id}-name`}
-              className={styles['venue-item-button']}
-              onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
-              type="button"
-            >
-              {withVenueHelpers(venue).isClosed && (
-                <div className={styles['venue-item-state']}>
-                  <Tag variant={TagVariant.ERROR} label="Structure fermée" />
-                </div>
-              )}
-              <span
-                className={styles['venue-item-name']}
-                id={`venue-${venue.id}-name`}
-              >
-                {venue.publicName}
-              </span>
-              <span className={styles['venue-location']}>
-                {withVenueHelpers(venue).fullAddressAsString}
-              </span>
-            </button>
+        {venues.length > 4 && (
+          <SearchInput
+            label="Rechercher une structure"
+            onChange={filterVenues}
+            value={query}
+            name="searchQuery"
+          />
+        )}
+
+        {/* Hidden helper text for screen readers */}
+        {
+          <div
+            className={styles['sr-only']}
+            role="status"
+            aria-atomic="true"
+            aria-live="polite"
+          >
+            {!!query &&
+              `${filteredVenues.length} ${pluralizeFr(filteredVenues.length, 'structure trouvée', 'structures trouvées')}.`}
           </div>
-        ))}
-      </div>
+        }
+        {venues.length > 0 && filteredVenues.length === 0 && (
+          <div>Aucune structure ne correspond à votre recherche "{query}".</div>
+        )}
+        <div className={styles['venue-list']}>
+          {filteredVenues.map((venue) => (
+            <div key={venue.id}>
+              <button
+                aria-labelledby={`venue-${venue.id}-name`}
+                className={styles['venue-item-button']}
+                onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
+                type="button"
+              >
+                {withVenueHelpers(venue).isClosed && (
+                  <div className={styles['venue-item-state']}>
+                    <Tag variant={TagVariant.ERROR} label="Structure fermée" />
+                  </div>
+                )}
+                <span
+                  className={styles['venue-item-name']}
+                  id={`venue-${venue.id}-name`}
+                >
+                  {venue.publicName}
+                </span>
+                <span className={styles['venue-location']}>
+                  {withVenueHelpers(venue).fullAddressAsString}
+                </span>
+              </button>
+            </div>
+          ))}
+        </div>
 
-      <div className={styles['venue-actions']}>
-        <Button
-          as="router-link"
-          icon={fullMoreIcon}
-          to="/inscription/structure/recherche"
-          variant={ButtonVariant.SECONDARY}
-          label="Ajouter une structure"
-        />
+        <div className={styles['venue-actions']}>
+          <Button
+            as="router-link"
+            icon={fullMoreIcon}
+            to="/inscription/structure/recherche"
+            variant={ButtonVariant.SECONDARY}
+            label="Ajouter une structure"
+          />
+        </div>
       </div>
-
-      <Footer layout={'basic'} />
-    </FunnelLayout>
+    </FullLayout>
   )
 }
 

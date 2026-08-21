@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 
-import { FullPageLayout } from '@/app/App/layouts/funnels/FullPageLayout/FullPageLayout'
-import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import {
   SignupJourneyContextProvider,
   useSignupJourneyContext,
@@ -41,33 +41,25 @@ export const SignupJourneyRoutes = () => {
     }
   }, [offerer?.siren, offerer?.siret, location.pathname, navigate, setOfferer])
 
-  if (isSignupSimulationEnabled) {
-    return (
-      <FullPageLayout>
-        <SignupJourneyContextProvider>
-          <Outlet />
-        </SignupJourneyContextProvider>
-      </FullPageLayout>
-    )
-  }
-
-  // TODO: (jclery, 2026-04-29): Remove this with WIP_PRE_SIGNUP_SIMULATION once the feature is enabled
   return (
-    <FunnelLayout
-      mainHeading={
-        location.pathname.includes('/inscription/structure/rattachement')
-          ? null
-          : 'Votre structure'
-      }
-      hideAdminButton
-    >
+    <FullLayout>
       <SignupJourneyContextProvider>
-        <div className={styles['content-with-stepper']}>
-          <SignupJourneyStepper />
+        {isSignupSimulationEnabled ? (
           <Outlet />
-        </div>
+        ) : (
+          // TODO: (jclery, 2026-04-29): Remove all of this with WIP_PRE_SIGNUP_SIMULATION once the feature is enabled
+          <div className={styles['content-with-stepper']}>
+            {location.pathname.includes(
+              '/inscription/structure/rattachement'
+            ) ? null : (
+              <MainHeading mainHeading="Votre structure" />
+            )}
+            <SignupJourneyStepper />
+            <Outlet />
+          </div>
+        )}
       </SignupJourneyContextProvider>
-    </FunnelLayout>
+    </FullLayout>
   )
 }
 

@@ -1,12 +1,12 @@
 import { Outlet } from 'react-router'
 
-import { FullPageLayout } from '@/app/App/layouts/funnels/FullPageLayout/FullPageLayout'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 
 export const WelcomeCarousel = (): JSX.Element => {
   return (
-    <FullPageLayout>
+    <FullLayout>
       <Outlet />
-    </FullPageLayout>
+    </FullLayout>
   )
 }
 
