@@ -207,6 +207,16 @@ jobs:
                 status_code=1
               exit $status_code
             '
+      - name: "Check datacontracts"
+        run: |
+          docker run \
+            --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
+            --entrypoint bash \
+            ${{ steps.load-docker-image.outputs.image-name }} \
+            -c '
+              flask check_data_contracts -u https://raw.githubusercontent.com/pass-culture/data-gcp/refs/heads/master/backend_imported_tables.txt
+            '
 
   restore-test-durations:
     name: Restore pytest durations
