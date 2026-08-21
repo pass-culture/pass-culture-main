@@ -6,7 +6,6 @@ import typing
 from urllib.parse import urlencode
 
 import wtforms
-from flask import flash
 from flask_wtf import FlaskForm
 
 from pcapi import settings
@@ -16,6 +15,7 @@ from pcapi.core.educational.utils import format_collective_offer_displayed_statu
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
+from pcapi.routes.backoffice.forms import advanced_search as advanced_search_forms
 from pcapi.routes.backoffice.forms import constants
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
@@ -47,8 +47,6 @@ class CollectiveOffersSearchAttributes(enum.Enum):
     TOP_ACTEUR = "Top Acteur"
     VALIDATED_OFFERER = "Entité juridique validée"
 
-
-operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
     "CREATION_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
@@ -235,11 +233,15 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         return string
 
 
-class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):
+class GetCollectiveOfferAdvancedSearchForm(advanced_search_forms.AdvancedSearchForm, forms.GetOffersBaseFields):
     class Meta:
         csrf = False
 
     method = "GET"
+
+    form_field_configuration = form_field_configuration
+    search_attributes = CollectiveOffersSearchAttributes
+
     search = fields.PCFieldListField(
         fields.PCFormField(CollectiveOfferAdvancedSearchSubForm),
         label="recherches",
@@ -247,28 +249,8 @@ class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):
     )
 
     def is_empty(self) -> bool:
-        empty = GetCollectiveOfferAdvancedSearchForm.is_search_empty(self.search.data)
+        empty = self.is_search_empty()
         return empty and super().is_empty()
-
-    @staticmethod
-    def is_sub_search_empty(sub_search: dict[str, typing.Any]) -> bool:
-        field_name = sub_search.get("search_field")
-        operator = sub_search.get("operator")
-        if field_name:
-            field_attribute_name = form_field_configuration.get(field_name, {}).get("field", "")
-            field_data = sub_search.get(field_attribute_name)  # type: ignore[call-overload]
-            if field_data not in (None, []):
-                return False
-            if operator in operator_no_require_value:
-                return False
-        return True
-
-    @staticmethod
-    def is_search_empty(search_data: list[dict[str, typing.Any]]) -> bool:
-        for sub_search in search_data:
-            if not GetCollectiveOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
-                return False
-        return True
 
     def get_sort_link_with_search_data(self, endpoint: str) -> str:
         search_data = {}
@@ -283,32 +265,6 @@ class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):
         base_url = self.get_sort_link(endpoint)
 
         return f"{base_url}&{encoded_search_data}" if encoded_search_data else f"{base_url}"
-
-    def validate(self, extra_validators: dict | None = None) -> bool:
-        errors = []
-
-        for sub_search in self.search.data:
-            if search_field := sub_search.get("search_field"):
-                if GetCollectiveOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
-                    try:
-                        errors.append(f"Le filtre « {CollectiveOffersSearchAttributes[search_field].value} » est vide.")
-                    except KeyError:
-                        errors.append(f"Le filtre {search_field} est invalide.")
-                else:
-                    operator = sub_search.get("operator")
-                    if operator not in form_field_configuration.get(search_field, {}).get("operator", []):
-                        try:
-                            errors.append(
-                                f"L'opérateur « {advanced_search.AdvancedSearchOperators[operator].value} » n'est pas supporté par le filtre {CollectiveOffersSearchAttributes[search_field].value}."
-                            )
-                        except KeyError:
-                            errors.append(f"L'opérateur {operator} n'est pas supporté par le filtre {search_field}.")
-
-        if errors:
-            flash("\n".join(errors), "warning")
-            return False
-
-        return super().validate(extra_validators)
 
 
 class GetCollectiveOfferTemplatesListForm(forms.GetOffersBaseFields):
