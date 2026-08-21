@@ -5,11 +5,11 @@ from functools import partial
 from urllib.parse import urlencode
 
 import wtforms
-from flask import flash
 from flask import url_for
 from flask_wtf import FlaskForm
 
 from pcapi.core.artist import models as artist_models
+from pcapi.routes.backoffice.forms import advanced_search as advanced_search_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
 from pcapi.routes.backoffice.utils import advanced_search
@@ -22,8 +22,6 @@ class ArtistAdvancedSearchAttributes(enum.Enum):
     CREATION_DATE = "Date de création"
     PRODUCT_NAME = "Nom du produit associé"
 
-
-operator_no_require_value = ["NOT_EXIST"]
 
 artist_form_field_configuration = {
     "ID": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
@@ -118,7 +116,7 @@ class ArtistAdvancedSearchSubForm(forms_utils.PCForm):
     )
 
 
-class BaseArtistAdvancedSearchForm(GetArtistsBaseFields):
+class BaseArtistAdvancedSearchForm(advanced_search_forms.AdvancedSearchForm, GetArtistsBaseFields):
     class Meta:
         csrf = False
 
@@ -129,26 +127,6 @@ class BaseArtistAdvancedSearchForm(GetArtistsBaseFields):
         label="recherches",
         min_entries=1,
     )
-
-    @classmethod
-    def is_sub_search_empty(cls, sub_search: dict[str, typing.Any]) -> bool:
-        field_name = sub_search.get("search_field")
-        operator = sub_search.get("operator")
-        if field_name:
-            field_attribute_name = cls.form_field_configuration.get(field_name, {}).get("field", "")
-            field_data = sub_search.get(field_attribute_name)
-            if field_data not in (None, []):
-                return False
-            if operator in operator_no_require_value:
-                return False
-        return True
-
-    @classmethod
-    def is_search_empty(cls, search_data: list[dict[str, typing.Any]]) -> bool:
-        for sub_search in search_data:
-            if not cls.is_sub_search_empty(sub_search):
-                return False
-        return True
 
     def get_sort_link_with_search_data(self, endpoint: str) -> str:
         search_data = {}
@@ -164,38 +142,13 @@ class BaseArtistAdvancedSearchForm(GetArtistsBaseFields):
 
         return f"{base_url}&{encoded_search_data}" if encoded_search_data else f"{base_url}"
 
-    def validate(self, extra_validators: dict | None = None) -> bool:
-        errors = []
-
-        for sub_search in self.search.data:
-            if search_field := sub_search.get("search_field"):
-                if type(self).is_sub_search_empty(sub_search):
-                    try:
-                        errors.append(f"Le filtre « {ArtistAdvancedSearchAttributes[search_field].value} » est vide.")
-                    except KeyError:
-                        errors.append(f"Le filtre {search_field} est invalide.")
-                else:
-                    operator = sub_search.get("operator")
-                    if operator not in self.form_field_configuration.get(search_field, {}).get("operator", []):
-                        try:
-                            errors.append(
-                                f"L'opérateur « {advanced_search.AdvancedSearchOperators[operator].value} » n'est pas supporté par le filtre {ArtistAdvancedSearchAttributes[search_field].value}."
-                            )
-                        except KeyError:
-                            errors.append(f"L'opérateur {operator} n'est pas supporté par le filtre {search_field}.")
-
-        if errors:
-            flash("\n".join(errors), "warning")
-            return False
-
-        return super().validate(extra_validators)
-
 
 class GetArtistAdvancedSearchForm(BaseArtistAdvancedSearchForm):
     form_field_configuration = artist_form_field_configuration
+    search_attributes = ArtistAdvancedSearchAttributes
 
     def is_empty(self) -> bool:
-        return GetArtistAdvancedSearchForm.is_search_empty(self.search.data) and super().is_empty()
+        return self.is_search_empty() and super().is_empty()
 
 
 class ArtistEditForm(FlaskForm):
