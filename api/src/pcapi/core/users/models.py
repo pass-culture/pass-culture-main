@@ -344,6 +344,7 @@ class User(PcObject, Model, DeactivableMixin):
         sa.Index(
             "ix_user_city_and_departementCode",
             sa.func.lower(city),
+            departementCode,
             postgresql_where=sa.and_(city.is_not(None), departementCode.is_not(None)),
         ),
     )
