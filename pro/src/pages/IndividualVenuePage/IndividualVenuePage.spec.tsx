@@ -36,7 +36,7 @@ describe('IndividualVenuePage', () => {
     renderIndividualVenuePage({
       isPermanent: true,
       hasOffers: true,
-      hasActiveIndividualOffer: false,
+      hasAtLeastOneBookableOffer: false,
     })
 
     expect(screen.getByText('Page invisible')).toBeVisible()
@@ -47,7 +47,7 @@ describe('IndividualVenuePage', () => {
     renderIndividualVenuePage({
       isPermanent: true,
       hasOffers: true,
-      hasActiveIndividualOffer: true,
+      hasAtLeastOneBookableOffer: true,
     })
 
     expect(screen.queryByText('Page invisible')).not.toBeInTheDocument()
