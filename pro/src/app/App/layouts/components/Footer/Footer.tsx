@@ -1,9 +1,7 @@
-import classNames from 'classnames'
 import { createPortal } from 'react-dom'
 
 import { orejimeRef } from '@/app/App/analytics/orejime'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentUser } from '@/commons/store/user/selectors'
+import { useSkipLinksContext } from '@/components/SkipLinks/SkipLinksContext'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -12,35 +10,23 @@ import {
 } from '@/design-system/Button/types'
 import fullNextIcon from '@/icons/full-next.svg'
 
-import { useSkipLinksContext } from '../SkipLinks/SkipLinksContext'
 import styles from './Footer.module.scss'
 
 type FooterProps = {
-  layout?:
-    | 'basic'
-    | 'sticky-basic'
-    | 'onboarding'
-    | 'sticky-onboarding'
-    | 'logged-out'
-    | 'sign-up'
+  isUnauthenticated?: boolean
 }
 
-/**
- * @deprecated This component is deprecated and may be removed in a future release.
- * Use the Footer component in `/layouts/components/Footer` instead.
- */
-
-export const Footer = ({ layout }: FooterProps) => {
-  const currentUser = useAppSelector(selectCurrentUser)
+export const Footer = ({
+  isUnauthenticated = false,
+}: Readonly<FooterProps>): JSX.Element => {
   const { footerContainer } = useSkipLinksContext()
+
+  const isAuthenticated = isUnauthenticated === false
 
   return (
     // biome-ignore lint/correctness/useUniqueElementIds: Footer is used once per page. There cannot be id duplications.
     <footer
-      className={classNames(
-        styles['footer'],
-        styles[`footer-layout-${layout}`]
-      )}
+      className={styles['footer']}
       data-testid="app-footer"
       id="pied-de-page"
       tabIndex={-1}
@@ -101,7 +87,7 @@ export const Footer = ({ layout }: FooterProps) => {
             label="Déclaration d’écoconception"
           />
         </li>
-        {currentUser && (
+        {isAuthenticated && (
           <li className={styles['footer-list-item']}>
             <Button
               as="router-link"

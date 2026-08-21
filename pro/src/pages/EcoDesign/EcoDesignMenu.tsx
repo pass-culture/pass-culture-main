@@ -25,35 +25,33 @@ export const EcoDesignMenu = () => {
 
   return (
     <EcoDesignLayout mainHeading="Déclaration d'écoconception de l'espace partenaire">
-      <div className={styles['page-content']}>
+      <Button
+        onClick={() => backToDefault()}
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
+        icon={fullBackIcon}
+        iconPosition={IconPositionEnum.LEFT}
+        label="Retour"
+      />
+      <div className={styles['pages-buttons-container']}>
         <Button
-          onClick={() => backToDefault()}
-          variant={ButtonVariant.TERTIARY}
+          as="router-link"
+          to="/ecoconception/politique"
+          variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
-          icon={fullBackIcon}
-          iconPosition={IconPositionEnum.LEFT}
-          label="Retour"
+          icon={strokeRigthIcon}
+          iconPosition={IconPositionEnum.RIGHT}
+          label="Politique d'écoconception au pass Culture"
         />
-        <div className={styles['pages-buttons-container']}>
-          <Button
-            as="router-link"
-            to="/ecoconception/politique"
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            icon={strokeRigthIcon}
-            iconPosition={IconPositionEnum.RIGHT}
-            label="Politique d'écoconception au pass Culture"
-          />
-          <Button
-            as="router-link"
-            to="/ecoconception/declaration"
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            icon={strokeRigthIcon}
-            iconPosition={IconPositionEnum.RIGHT}
-            label="Déclaration RGESN"
-          />
-        </div>
+        <Button
+          as="router-link"
+          to="/ecoconception/declaration"
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          icon={strokeRigthIcon}
+          iconPosition={IconPositionEnum.RIGHT}
+          label="Déclaration RGESN"
+        />
       </div>
     </EcoDesignLayout>
   )

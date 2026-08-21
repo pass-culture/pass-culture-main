@@ -4,8 +4,10 @@
 .content-with-stepper {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(60px);
+  gap: var(--size-spacing-xxxl);
   max-width: calc(#{size.$signup-content-width} - (var(--size-spacing-xl) * 2));
   width: 100%;
   min-height: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
