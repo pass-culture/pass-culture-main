@@ -32,26 +32,26 @@ export const ToggleVenueProviderStatusDialog = ({
         }
         isOpen={isDialogOpen}
         onClose={onCancel}
-        actionButtons={
-          <>
-            <Button
-              onClick={onCancel}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button
-              onClick={onConfirm}
-              isLoading={isLoading}
-              disabled={isLoading}
-              label={
-                isActive
-                  ? 'Mettre en pause la synchronisation'
-                  : 'Réactiver la synchronisation'
-              }
-            />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={onCancel}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button
+            onClick={onConfirm}
+            isLoading={isLoading}
+            disabled={isLoading}
+            label={
+              isActive
+                ? 'Mettre en pause la synchronisation'
+                : 'Réactiver la synchronisation'
+            }
+            key="confirm"
+          />,
+        ]}
       >
         {isActive ? (
           <div className={style['explanation']}>

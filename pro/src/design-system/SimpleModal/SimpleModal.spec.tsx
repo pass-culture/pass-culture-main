@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { createRef } from 'react'
 import { axe } from 'vitest-axe'
 
+import * as useMediaQuery from '@/commons/hooks/useMediaQuery'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import fullLinkIcon from '@/icons/full-link.svg'
 
@@ -20,12 +21,10 @@ const props: SimpleModalProps = {
   isOpen: true,
   onClose: vi.fn(),
   children: <p>Modal content.</p>,
-  actionButtons: (
-    <>
-      <Button label="Annuler" variant={ButtonVariant.SECONDARY} />
-      <Button label="Confirmer" variant={ButtonVariant.PRIMARY} />
-    </>
-  ),
+  actionButtons: [
+    <Button label="Annuler" variant={ButtonVariant.SECONDARY} key="cancel" />,
+    <Button label="Confirmer" variant={ButtonVariant.PRIMARY} key="confirm" />,
+  ],
 }
 
 describe('SimpleModal', () => {
@@ -93,5 +92,20 @@ describe('SimpleModal', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Outside' })).toHaveFocus()
+  })
+
+  it('should reverse action buttons order on mobile', () => {
+    vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValueOnce(true)
+
+    const { container } = renderModalSimple(props)
+    const actionButtons = container.querySelector('[class*="action-buttons"]')
+
+    expect(actionButtons).not.toBeNull()
+
+    const labels = Array.from(
+      actionButtons?.querySelectorAll('button') ?? []
+    ).map((button) => button.textContent?.trim())
+
+    expect(labels).toEqual(['Confirmer', 'Annuler'])
   })
 })

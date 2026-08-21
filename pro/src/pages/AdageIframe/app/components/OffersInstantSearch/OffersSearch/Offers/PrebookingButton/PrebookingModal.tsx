@@ -22,21 +22,21 @@ export const PrebookingModal = ({
       title="Êtes-vous sûr de vouloir préréserver ?"
       isOpen={isDialogOpen}
       onClose={closeModal}
-      actionButtons={
-        <>
-          <Button
-            onClick={closeModal}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label="Fermer"
-          />
-          <Button
-            onClick={preBookCurrentStock}
-            disabled={isPreview}
-            label="Préréserver"
-          />
-        </>
-      }
+      actionButtons={[
+        <Button
+          onClick={closeModal}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Fermer"
+          key="cancel"
+        />,
+        <Button
+          onClick={preBookCurrentStock}
+          disabled={isPreview}
+          label="Préréserver"
+          key="confirm"
+        />,
+      ]}
     >
       <p>
         Si oui, une fois votre préréservation confirmée :

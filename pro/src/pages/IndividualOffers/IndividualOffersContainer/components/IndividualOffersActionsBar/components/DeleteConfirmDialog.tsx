@@ -23,17 +23,20 @@ export const DeleteConfirmDialog = ({
       title={`Vous avez sélectionné ${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre', 'offres')} brouillon`}
       isOpen={isDialogOpen}
       onClose={onCancel}
-      actionButtons={
-        <>
-          <Button
-            onClick={onCancel}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label="Annuler"
-          />
-          <Button onClick={onConfirm} label="Supprimer ces brouillons" />
-        </>
-      }
+      actionButtons={[
+        <Button
+          onClick={onCancel}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler"
+          key="cancel"
+        />,
+        <Button
+          onClick={onConfirm}
+          label="Supprimer ces brouillons"
+          key="confirm"
+        />,
+      ]}
     >
       <p>
         Êtes-vous sûr de vouloir{' '}

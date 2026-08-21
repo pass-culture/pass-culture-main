@@ -330,20 +330,20 @@ export const IndividualActionsCells = ({
         title={`Voulez-vous supprimer le brouillon : "${offer.name}" ?`}
         isOpen={isConfirmDialogDeleteDraftOpen}
         onClose={closeDeleteDraftDialog}
-        actionButtons={
-          <>
-            <Button
-              onClick={closeDeleteDraftDialog}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button
-              onClick={onConfirmDeleteDraftOffer}
-              label="Supprimer ce brouillon"
-            />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={closeDeleteDraftDialog}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button
+            onClick={onConfirmDeleteDraftOffer}
+            label="Supprimer ce brouillon"
+            key="confirm"
+          />,
+        ]}
         refToFocusOnClose={dropdownTriggerRef}
       />
       <SimpleModal
@@ -354,17 +354,20 @@ export const IndividualActionsCells = ({
         refToFocusOnClose={
           isNewProAdviceAccess ? headlineButtonTriggerRef : dropdownTriggerRef
         }
-        actionButtons={
-          <>
-            <Button
-              onClick={closeReplaceHeadlineOfferDialog}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button onClick={onConfirmReplaceHeadlineOffer} label="Confirmer" />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={closeReplaceHeadlineOfferDialog}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button
+            onClick={onConfirmReplaceHeadlineOffer}
+            label="Confirmer"
+            key="confirm"
+          />,
+        ]}
       />
       <HeadlineOfferImageDialogs
         offerId={offer.id}

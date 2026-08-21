@@ -69,23 +69,21 @@ export const ArchiveConfirmationModal = <T extends Offer>({
       }
       isOpen={isDialogOpen}
       onClose={onDismiss}
-      actionButtons={
-        <>
-          <Button
-            onClick={onDismiss}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label="Annuler"
-          />
-          <Button
-            onClick={onConfirmArchive}
-            color={ButtonColor.DANGER}
-            label={
-              hasMultipleOffers ? 'Archiver les offres' : 'Archiver l’offre'
-            }
-          />
-        </>
-      }
+      actionButtons={[
+        <Button
+          key="cancel"
+          onClick={onDismiss}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler"
+        />,
+        <Button
+          key="confirm"
+          onClick={onConfirmArchive}
+          color={ButtonColor.DANGER}
+          label={hasMultipleOffers ? 'Archiver les offres' : 'Archiver l’offre'}
+        />,
+      ]}
     >
       <p>Une offre archivée ne peut pas être désarchivée.</p>
       <strong>Cette action est irréversible.</strong>

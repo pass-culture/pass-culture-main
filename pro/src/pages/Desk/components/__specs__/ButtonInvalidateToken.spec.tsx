@@ -3,6 +3,11 @@ import userEvent from '@testing-library/user-event'
 
 import { ButtonInvalidateToken } from '../ButtonInvalidateToken'
 
+vi.mock('@/commons/hooks/useMediaQuery', () => ({
+  useMediaQuery: vi.fn(() => false),
+  TABLET_MEDIA_QUERY: '(max-width: 37.5rem)',
+}))
+
 const setup = () => {
   const onConfirm = vi.fn()
 

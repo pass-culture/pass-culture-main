@@ -59,23 +59,23 @@ export const RedirectToBankAccountDialog = ({
       onClose={cancel}
       title="Félicitations, vous avez créé votre offre !"
       iconPath={strokePartyIcon}
-      actionButtons={
-        <>
-          <Button
-            onClick={cancel}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label={'Plus tard'}
-          />
-          <Button
-            variant={ButtonVariant.PRIMARY}
-            color={ButtonColor.BRAND}
-            onClick={confirm}
-            label={'Ajouter un compte bancaire'}
-            aria-label="Vous allez être redirigé vers la page d'administration de vos informations bancaires"
-          />
-        </>
-      }
+      actionButtons={[
+        <Button
+          onClick={cancel}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label={'Plus tard'}
+          key="cancel"
+        />,
+        <Button
+          variant={ButtonVariant.PRIMARY}
+          color={ButtonColor.BRAND}
+          onClick={confirm}
+          label={'Ajouter un compte bancaire'}
+          aria-label="Vous allez être redirigé vers la page d'administration de vos informations bancaires"
+          key="confirm"
+        />,
+      ]}
     >
       <p>Vous pouvez dès à présent ajouter un compte bancaire.</p>
       <p>

@@ -26,29 +26,30 @@ export const UpdateWarningDialog = ({
       onClose={onCancel}
       iconPath={strokeWarningIcon}
       iconClassName={styles['update-oa-icon']}
-      actionButtons={
-        <>
-          <Button
-            onClick={onCancel}
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            icon={fullClearIcon}
-            label={'Annuler'}
-          />
-          <Button
-            onClick={() => onConfirm(false)}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label={'Ne pas prévenir les jeunes'}
-          />
-          <Button
-            onClick={() => onConfirm(true)}
-            variant={ButtonVariant.PRIMARY}
-            color={ButtonColor.BRAND}
-            label={'Prévenir les jeunes'}
-          />
-        </>
-      }
+      actionButtons={[
+        <Button
+          onClick={onCancel}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullClearIcon}
+          label={'Annuler'}
+          key="cancel"
+        />,
+        <Button
+          onClick={() => onConfirm(false)}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label={'Ne pas prévenir les jeunes'}
+          key="no-notify"
+        />,
+        <Button
+          onClick={() => onConfirm(true)}
+          variant={ButtonVariant.PRIMARY}
+          color={ButtonColor.BRAND}
+          label={'Prévenir les jeunes'}
+          key="notify"
+        />,
+      ]}
     >
       <div className={styles['update-oa-wrapper']}>
         <p>

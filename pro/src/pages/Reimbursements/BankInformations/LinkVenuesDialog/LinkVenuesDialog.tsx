@@ -234,46 +234,46 @@ export const LinkVenuesDialog = ({
         title="Les informations non sauvegardées ne seront pas prises en compte"
         isOpen={showDiscardDialog}
         onClose={() => setShowDiscardDialog(false)}
-        actionButtons={
-          <>
-            <Button
-              onClick={() => setShowDiscardDialog(false)}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button
-              onClick={() => {
-                setShowDiscardDialog(false)
-                closeDialog()
-              }}
-              label="Quitter sans enregistrer"
-            />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={() => setShowDiscardDialog(false)}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button
+            onClick={() => {
+              setShowDiscardDialog(false)
+              closeDialog()
+            }}
+            label="Quitter sans enregistrer"
+            key="confirm"
+          />,
+        ]}
       />
       <SimpleModal
         iconPath={strokeWarningIcon}
         title="Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire"
         isOpen={showUnlinkDialog}
         onClose={() => setShowUnlinkDialog(false)}
-        actionButtons={
-          <>
-            <Button
-              onClick={() => setShowUnlinkDialog(false)}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Retour"
-            />
-            <Button
-              onClick={() => {
-                setShowUnlinkDialog(false)
-                submitVenuesIds(methods.getValues('venuesIds'), true)
-              }}
-              label="Confirmer"
-            />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={() => setShowUnlinkDialog(false)}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Retour"
+            key="cancel"
+          />,
+          <Button
+            onClick={() => {
+              setShowUnlinkDialog(false)
+              submitVenuesIds(methods.getValues('venuesIds'), true)
+            }}
+            label="Confirmer"
+            key="confirm"
+          />,
+        ]}
       />
     </>
   )

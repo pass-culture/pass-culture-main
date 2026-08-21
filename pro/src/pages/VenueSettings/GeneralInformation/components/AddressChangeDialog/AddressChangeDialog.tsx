@@ -17,14 +17,15 @@ export const AddressChangeDialog = ({
       modifie pas automatiquement la localisation de vos offres existantes"
       isOpen={open}
       onClose={() => onOpenChange(false)}
-      actionButtons={
+      actionButtons={[
         <Button
           onClick={() => onOpenChange(false)}
+          key="confirm"
           variant={ButtonVariant.PRIMARY}
           color={ButtonColor.BRAND}
           label={"J'ai compris"}
-        />
-      }
+        />,
+      ]}
     >
       Pour mettre à jour leur localisation, vous devrez les modifier une par
       une.

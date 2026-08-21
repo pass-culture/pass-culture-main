@@ -118,25 +118,25 @@ export const HeadlineOfferImageDialogs = ({
         isOpen={isFirstDialogOpen}
         onClose={() => setIsFirstDialogOpen(false)}
         refToFocusOnClose={refToFocusOnClose}
-        actionButtons={
-          <>
-            <Button
-              onClick={() => setIsFirstDialogOpen(false)}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button
-              onClick={() => {
-                setIsFirstDialogOpen(false)
-                setIsImageUploaderOpen(true)
-              }}
-              variant={ButtonVariant.PRIMARY}
-              color={ButtonColor.BRAND}
-              label="Ajouter une image"
-            />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={() => setIsFirstDialogOpen(false)}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button
+            onClick={() => {
+              setIsFirstDialogOpen(false)
+              setIsImageUploaderOpen(true)
+            }}
+            variant={ButtonVariant.PRIMARY}
+            color={ButtonColor.BRAND}
+            label="Ajouter une image"
+            key="confirm"
+          />,
+        ]}
       />
       <ModalImageUpsertOrEdit
         mode={UploaderModeEnum.OFFER}

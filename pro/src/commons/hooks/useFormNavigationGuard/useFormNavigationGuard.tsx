@@ -152,21 +152,21 @@ export const useFormNavigationGuard = <
       onClose={close}
       isOpen={blocker.state !== 'unblocked'}
       title="Des modifications ont été apportées à cette page"
-      actionButtons={
-        <>
-          <Button
-            isLoading={isSubmitting}
-            label="Ignorer les modifications"
-            onClick={leaveWithoutSubmitting}
-            variant={ButtonVariant.SECONDARY}
-          />
-          <Button
-            isLoading={isSubmitting}
-            label="Enregistrer et quitter"
-            onClick={navigationGuardedSubmitHandler}
-          />
-        </>
-      }
+      actionButtons={[
+        <Button
+          isLoading={isSubmitting}
+          label="Ignorer les modifications"
+          onClick={leaveWithoutSubmitting}
+          variant={ButtonVariant.SECONDARY}
+          key="cancel"
+        />,
+        <Button
+          isLoading={isSubmitting}
+          label="Enregistrer et quitter"
+          onClick={navigationGuardedSubmitHandler}
+          key="confirm"
+        />,
+      ]}
     >
       <p>
         Vous avez des modifications non enregistrées. Voulez-vous les

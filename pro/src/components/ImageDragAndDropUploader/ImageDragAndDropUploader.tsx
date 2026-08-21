@@ -205,21 +205,21 @@ export const ImageDragAndDropUploader = ({
         iconPath={strokeWarningIcon}
         isOpen={isDeleteImageOpen}
         onClose={() => setIsDeleteImageOpen(false)}
-        actionButtons={
-          <>
-            <Button
-              onClick={() => setIsDeleteImageOpen(false)}
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              label="Annuler"
-            />
-            <Button
-              onClick={onImageDeleteHandler}
-              color={ButtonColor.DANGER}
-              label="Supprimer l'image"
-            />
-          </>
-        }
+        actionButtons={[
+          <Button
+            onClick={() => setIsDeleteImageOpen(false)}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+            key="cancel"
+          />,
+          <Button
+            onClick={onImageDeleteHandler}
+            color={ButtonColor.DANGER}
+            label="Supprimer l'image"
+            key="confirm"
+          />,
+        ]}
       >
         <p>
           Sans image d'illustration, cette offre ne pourra plus être mise à la

@@ -23,20 +23,20 @@ export const DuplicateOfferDialog = ({
       title="Créer une offre réservable pour un établissement scolaire"
       isOpen={isDialogOpen}
       onClose={onCancel}
-      actionButtons={
-        <>
-          <Button
-            onClick={onCancel}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label="Annuler"
-          />
-          <Button
-            onClick={() => onConfirm(isCheckboxChecked)}
-            label="Créer une offre réservable"
-          />
-        </>
-      }
+      actionButtons={[
+        <Button
+          onClick={onCancel}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler"
+          key="cancel"
+        />,
+        <Button
+          onClick={() => onConfirm(isCheckboxChecked)}
+          label="Créer une offre réservable"
+          key="confirm"
+        />,
+      ]}
     >
       <p className={styles['duplicate-offer-dialog-text']}>
         Les informations que vous avez renseignées dans l'offre vitrine seront

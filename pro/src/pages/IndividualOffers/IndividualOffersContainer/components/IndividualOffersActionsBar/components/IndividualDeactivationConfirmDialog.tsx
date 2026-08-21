@@ -35,30 +35,30 @@ export const IndividualDeactivationConfirmDialog = ({
         })
         onCancel(false)
       }}
-      actionButtons={
-        <>
-          <Button
-            onClick={() => {
-              logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
-                has_selected_all_offers: areAllOffersSelected,
-              })
-              onCancel(false)
-            }}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            label="Annuler"
-          />
-          <Button
-            onClick={() => {
-              logEvent(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
-                has_selected_all_offers: areAllOffersSelected,
-              })
-              onConfirm()
-            }}
-            label="Mettre en pause"
-          />
-        </>
-      }
+      actionButtons={[
+        <Button
+          onClick={() => {
+            logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
+              has_selected_all_offers: areAllOffersSelected,
+            })
+            onCancel(false)
+          }}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler"
+          key="cancel"
+        />,
+        <Button
+          onClick={() => {
+            logEvent(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
+              has_selected_all_offers: areAllOffersSelected,
+            })
+            onConfirm()
+          }}
+          label="Mettre en pause"
+          key="confirm"
+        />,
+      ]}
     >
       <p>
         {nbSelectedOffers === 1
