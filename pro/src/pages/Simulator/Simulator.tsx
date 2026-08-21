@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router'
 
-import { FullPageLayout } from '@/app/App/layouts/funnels/FullPageLayout/FullPageLayout'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { SimulatorContextProvider } from '@/pages/Simulator/SimulatorContext'
 
 import styles from './Simulator.module.scss'
@@ -18,7 +18,7 @@ export const Simulator = (): JSX.Element => {
       'Préparation de l’inscription - Étape 4 sur 4',
   }
   return (
-    <FullPageLayout>
+    <FullLayout>
       <div className={styles['simulator-container']}>
         <div className={styles['step-title']}>
           {stepTitles[location.pathname]}
@@ -27,7 +27,7 @@ export const Simulator = (): JSX.Element => {
           <Outlet />
         </SimulatorContextProvider>
       </div>
-    </FullPageLayout>
+    </FullLayout>
   )
 }
 

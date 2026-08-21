@@ -14,6 +14,23 @@
   justify-content: center;
 }
 
+.content-flex {
+  background-color: var(--color-background-default);
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--size-spacing-xxl);
+  max-height: calc(
+    100vh -
+      (
+        size.$action-bar-sticky-height + size.$footer-height +
+          size.$action-bar-sticky-height
+      )
+  );
+  max-width: size.$main-content-width;
+  margin: 0 auto;
+  overflow-y: auto;
+}
+
 .venue-list {
   align-content: start;
   display: grid;

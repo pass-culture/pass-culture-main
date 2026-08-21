@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: Header is used once per page. There cannot be id duplications. */
+
 import cn from 'classnames'
 import { type ForwardedRef, forwardRef } from 'react'
 import { NavLink } from 'react-router'
@@ -19,6 +20,7 @@ import {
 } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullBurgerIcon from '@/icons/full-burger.svg'
+import fullHelpIcon from '@/icons/full-help.svg'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -26,7 +28,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
 import styles from './Header.module.scss'
 
-interface HeaderProps {
+export interface HeaderProps {
   isLateralPanelOpen?: boolean
   onToggleLateralPanel?: (state: boolean) => void
   focusCloseButton?: () => void
@@ -35,7 +37,12 @@ interface HeaderProps {
   disableHomeLink?: boolean
   isUnauthenticated?: boolean
   isAdminArea?: boolean
+  forceShowHelpCenter?: boolean
 }
+
+type LabelType = Required<
+  Pick<ButtonProps, 'label'> | Pick<ButtonProps, 'aria-label'>
+>
 
 export const Header = forwardRef(
   (
@@ -48,6 +55,7 @@ export const Header = forwardRef(
       disableHomeLink = false,
       isUnauthenticated = false,
       isAdminArea = false,
+      forceShowHelpCenter = false,
     }: Readonly<HeaderProps>,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
@@ -62,14 +70,13 @@ export const Header = forwardRef(
       : 'Espace administration'
 
     // In mobile mode, we don't use a button label, BUT we must have an aria-label in backup for assistive technologies
-    const adminButtonLabelProps: Pick<ButtonProps, 'label' | 'aria-label'> =
-      isTablet
-        ? {
-            'aria-label': adminButtonLabel,
-          }
-        : {
-            label: adminButtonLabel,
-          }
+    const adminButtonLabelProps: LabelType = isTablet
+      ? { 'aria-label': adminButtonLabel }
+      : { label: adminButtonLabel }
+
+    const helpButtonLabelProps: LabelType = isTablet
+      ? { 'aria-label': 'Centre d’aide' }
+      : { label: 'Centre d’aide' }
 
     return (
       <header className={styles['top-menu']}>
@@ -120,6 +127,18 @@ export const Header = forwardRef(
             )}
           </div>
           <div className={styles['top-right-menu']}>
+            {(isUnauthenticated || forceShowHelpCenter) && (
+              <Button
+                as="a"
+                to="https://aide.passculture.app/hc/fr"
+                opensInNewTab={!isTablet}
+                icon={isTablet ? fullHelpIcon : undefined}
+                color={ButtonColor.NEUTRAL}
+                variant={ButtonVariant.SECONDARY}
+                size={ButtonSize.SMALL}
+                {...helpButtonLabelProps}
+              />
+            )}
             {!isUnauthenticated && (
               <>
                 {!hideAdminButton && (
@@ -145,17 +164,6 @@ export const Header = forwardRef(
                 )}
                 <HeaderDropdown />
               </>
-            )}
-            {isUnauthenticated && (
-              <Button
-                as="a"
-                to="https://aide.passculture.app/hc/fr"
-                opensInNewTab
-                color={ButtonColor.NEUTRAL}
-                variant={ButtonVariant.SECONDARY}
-                label="Besoin d’aide ?"
-                size={ButtonSize.SMALL}
-              />
             )}
           </div>
         </div>
