@@ -51,19 +51,42 @@ def _get_backend() -> "BaseBackend":
     return backend_class()
 
 
-def search_city(name: str | None = None, *, insee_code: str | None = None, limit: int = 20) -> list[GeoCity]:
+def search_city(
+    name: str | None = None,
+    *,
+    department_code: str | None = None,
+    insee_code: str | None = None,
+    postal_code: str | None = None,
+    limit: int = 20,
+) -> list[GeoCity]:
     if not name and not insee_code:
         return []
-    return _get_backend().search_city(name, insee_code, limit)
+    return _get_backend().search_city(name, insee_code, limit, department_code=department_code, postal_code=postal_code)
 
 
 class BaseBackend:
-    def search_city(self, name: str | None, insee_code: str | None, limit: int) -> list[GeoCity]:
+    def search_city(
+        self,
+        name: str | None,
+        insee_code: str | None,
+        limit: int,
+        *,
+        department_code: str | None,
+        postal_code: str | None,
+    ) -> list[GeoCity]:
         raise NotImplementedError()
 
 
 class TestingBackend(BaseBackend):
-    def search_city(self, name: str | None, insee_code: str | None, limit: int) -> list[GeoCity]:
+    def search_city(
+        self,
+        name: str | None,
+        insee_code: str | None,
+        limit: int,
+        *,
+        department_code: str | None,
+        postal_code: str | None,
+    ) -> list[GeoCity]:
         return [
             GeoCity(
                 name="Ville" if name is None else f"{name}ville",
@@ -119,7 +142,15 @@ class GeoApiBackend(BaseBackend):
 
         return json.loads(str(cached_data))
 
-    def search_city(self, name: str | None, insee_code: str | None, limit: int) -> list[GeoCity]:
+    def search_city(
+        self,
+        name: str | None,
+        insee_code: str | None,
+        limit: int,
+        *,
+        department_code: str | None,
+        postal_code: str | None,
+    ) -> list[GeoCity]:
         params = {
             "boost": "population",
             "limit": limit,
@@ -128,6 +159,10 @@ class GeoApiBackend(BaseBackend):
             params["nom"] = name.strip()
         if insee_code:
             params["code"] = insee_code
+        if department_code:
+            params["codeDepartement"] = department_code
+        if postal_code:
+            params["codePostal"] = postal_code
 
         data = self._cached_search("communes", params)
         return [GeoCity(name=result["nom"], insee_code=result["code"]) for result in data]

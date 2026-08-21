@@ -255,7 +255,7 @@ class ConfirmAssociationForm(FlaskForm):
 
 
 class MergeArtistForm(FlaskForm):
-    target_artist_id = fields.PCArtistTomSelectField(
+    target_artist_id = fields.PCStringTomSelectField(
         "Artiste Cible",
         multiple=False,
         choices=[],
@@ -269,7 +269,7 @@ class MergeArtistForm(FlaskForm):
         super().__init__(*args, **kwargs)
         self.source_artist_id = source_artist_id
 
-    def validate_target_artist_id(self, field: fields.PCArtistTomSelectField) -> None:
+    def validate_target_artist_id(self, field: fields.PCStringTomSelectField) -> None:
         if field.data == self.source_artist_id:
             raise wtforms.validators.ValidationError("Un artiste ne peut pas être fusionné avec lui-même.")
 

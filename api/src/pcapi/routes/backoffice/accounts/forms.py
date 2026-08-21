@@ -1,6 +1,7 @@
 import datetime
 import enum
 import json
+import re
 import typing
 
 import sqlalchemy.orm as sa_orm
@@ -29,6 +30,7 @@ from pcapi.utils import string as string_utils
 
 class AdvancedFormFieldKeys(enum.Enum):
     BIRTHDAY = "Date de naissance"
+    CITY = "Ville"
     CREDIT = "Crédit"
     DEPOSIT_EXPIRATION_DATE = "Date d’expiration du crédit"
     EMAIL_DOMAIN = "Nom de domaine de l'email"
@@ -42,6 +44,7 @@ TAG_NAME_REGEX = r"^[^\s]+$"
 
 ADVANCED_FORM_FIELDS_CONFIG: dict[str, dict[str, typing.Any]] = {
     AdvancedFormFieldKeys.BIRTHDAY.name: {"field": "date", "operator": ["DATE_EQUALS", "DATE_FROM", "DATE_TO"]},
+    AdvancedFormFieldKeys.CITY.name: {"field": "city", "operator": ["IN"]},
     AdvancedFormFieldKeys.CREDIT.name: {"field": "credit", "operator": ["IN", "NOT_IN"]},
     AdvancedFormFieldKeys.DEPOSIT_EXPIRATION_DATE.name: {
         "field": "date",
@@ -99,6 +102,12 @@ class GetAccountDetailsSearchForm(utils.PCForm):
         return not self.q.data
 
 
+def _city_validator(_form: wtforms.Form, field: wtforms.Field) -> None:
+    for value in field.data or []:
+        if not re.fullmatch(r"[0-9][0-9AB][0-9]{3}_(2[AB]|[0-9]{2,3})_.+", value):
+            raise wtforms.ValidationError("Doit être au format code INSEE_département_ville.")
+
+
 class AccountsSearchSubForm(utils.PCForm):
     class Meta:
         csrf = False
@@ -109,6 +118,7 @@ class AccountsSearchSubForm(utils.PCForm):
             "display_configuration": ADVANCED_FORM_FIELDS_CONFIG,
             "all_available_fields": [
                 "boolean",
+                "city",
                 "credit",
                 "date",
                 "region",
@@ -143,6 +153,16 @@ class AccountsSearchSubForm(utils.PCForm):
             wtforms.validators.Optional(strip_whitespace=True),
         ],
     )
+    city = fields.PCStringTomSelectField(
+        "Ville",
+        choices=[],
+        field_list_compatibility=True,
+        multiple=True,
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_account_cities",
+        search_inline=True,
+        validators=[_city_validator],
+    )
     credit = fields.PCSelectMultipleField(
         "Crédit",
         choices=utils.choices_from_enum(
@@ -174,6 +194,7 @@ class AccountsSearchSubForm(utils.PCForm):
     def __init__(self, *args: list, **kwargs: dict):
         super().__init__(*args, **kwargs)
         self.tag.choices = _get_tags_choices()
+        autocomplete.prefill_account_cities_choice(self.city)
 
 
 class GetAccountsListSearchForm(utils.PCForm):
