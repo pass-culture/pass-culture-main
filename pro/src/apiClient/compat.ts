@@ -1,5 +1,13 @@
 type OnCancel = (handler: () => void) => void
 
+export function normalizeApiPath(url: string): string {
+  try {
+    return new URL(url).pathname.replace(/\/\d+/g, '/{id}')
+  } catch {
+    return url
+  }
+}
+
 export type ApiRequestOptions = {
   readonly method:
     | 'GET'
@@ -33,6 +41,7 @@ export class ApiError extends Error {
   public readonly url: string
   public readonly status: number
   public readonly statusText: string
+  public readonly requestLabel: string
   // biome-ignore lint/suspicious/noExplicitAny: matches original openapi-typescript-codegen signature
   public readonly body: Record<string, any>
   public readonly originalError: unknown
@@ -42,30 +51,36 @@ export class ApiError extends Error {
     url: string,
     status: number,
     statusText: string,
-    originalError: unknown
+    originalError: unknown,
+    requestLabel?: string
   )
   constructor(
     urlOrRequest: string | ApiRequestOptions,
     statusOrResponse: number | ApiResult,
     statusTextOrMessage: string,
-    originalError?: unknown
+    originalError?: unknown,
+    requestLabel?: string
   ) {
     if (typeof urlOrRequest === 'string') {
-      super(`${statusOrResponse} ${statusTextOrMessage}`)
+      // `requestLabel` is preferred over `statusText`, which is always empty over HTTP/2
+      super(`${statusOrResponse} ${requestLabel || statusTextOrMessage}`)
       this.url = urlOrRequest
       this.status = statusOrResponse as number
       this.statusText = statusTextOrMessage
+      this.requestLabel = requestLabel || normalizeApiPath(urlOrRequest)
       this.body =
         typeof originalError === 'object' && originalError !== null
           ? originalError
           : {}
       this.originalError = originalError
     } else {
+      const request = urlOrRequest
       const response = statusOrResponse as ApiResult
       super(statusTextOrMessage)
       this.url = response.url
       this.status = response.status
       this.statusText = response.statusText
+      this.requestLabel = `${request.method} ${normalizeApiPath(response.url)}`
       this.body =
         typeof response.body === 'object' && response.body !== null
           ? response.body
