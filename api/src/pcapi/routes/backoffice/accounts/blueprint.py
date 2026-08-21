@@ -108,18 +108,14 @@ def _resolve_city_options(city_options: Iterable[str]) -> tuple[tuple[str, str],
 
 
 def _get_cities_filter(department_codes_and_cities: Iterable[tuple[str, str]]) -> sa.ColumnElement:
-    return sa.and_(
-        users_models.User.city.is_not(None),
-        users_models.User.departementCode.is_not(None),
-        sa.or_(
-            *(
-                sa.and_(
-                    sa.func.lower(users_models.User.city) == city.lower(),
-                    users_models.User.departementCode == department_code,
-                )
-                for department_code, city in department_codes_and_cities
+    return sa.or_(
+        *(
+            sa.and_(
+                sa.func.lower(users_models.User.city) == city.lower(),
+                users_models.User.departementCode == department_code,
             )
-        ),
+            for department_code, city in department_codes_and_cities
+        )
     )
 
 
