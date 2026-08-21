@@ -342,10 +342,10 @@ class User(PcObject, Model, DeactivableMixin):
         sa.Index("ix_user_birth_date", sa.text('COALESCE("validatedBirthDate", "dateOfBirth"::date)')),
         sa.Index("ix_user_departementCode", departementCode, postgresql_where=departementCode.is_not(None)),
         sa.Index(
-            "ix_user_city_and_departementCode",
-            sa.func.lower(city),
+            "ix_user_departementCode_and_city",
             departementCode,
-            postgresql_where=sa.and_(city.is_not(None), departementCode.is_not(None)),
+            sa.func.lower(city),
+            postgresql_where=departementCode.is_not(None),
         ),
     )
 

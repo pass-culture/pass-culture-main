@@ -520,7 +520,12 @@ class AutocompleteAccountCitiesTest(AutocompleteTestBase):
         [
             ("", None, [], set()),
             (" ", None, [], set()),
-            ("31000", None, [], set()),
+            (
+                "31000",
+                {"name": None, "department_code": None, "postal_code": "31000"},
+                [api_geo.GeoCity(insee_code="31555", name="Toulouse")],
+                {"Toulouse (31)"},
+            ),
             (
                 "Toulouse",
                 {"name": "Toulouse", "department_code": None, "postal_code": None},
@@ -578,4 +583,4 @@ class AutocompleteAccountCitiesTest(AutocompleteTestBase):
                 response = authenticated_client.get(url_for(self.endpoint, q="Paris"))
                 assert response.status_code == 200
 
-        assert response.json["items"] == [{"id": "75056_75_Paris", "text": "Paris (75)"}]
+        assert response.json["items"] == [{"id": "75056_Paris", "text": "Paris (75)"}]

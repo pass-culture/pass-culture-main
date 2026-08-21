@@ -1,4 +1,4 @@
-"""Add add_ix_user_city_and_departement_code index to user"""
+"""Add ix_user_departementCode_and_city index on user"""
 
 import sqlalchemy as sa
 from alembic import op
@@ -19,11 +19,11 @@ def upgrade() -> None:
     with op.get_context().autocommit_block():
         op.execute("SET SESSION statement_timeout='300s'")
         op.create_index(
-            "ix_user_city_and_departementCode",
+            "ix_user_departementCode_and_city",
             "user",
-            [sa.literal_column("lower(city)"), "departementCode"],
+            ["departementCode", sa.literal_column("lower(city)")],
             unique=False,
-            postgresql_where=sa.text('city IS NOT NULL AND "departementCode" IS NOT NULL'),
+            postgresql_where=sa.text('"departementCode" IS NOT NULL'),
             postgresql_concurrently=True,
             if_not_exists=True,
         )
@@ -38,7 +38,7 @@ def downgrade() -> None:
     with op.get_context().autocommit_block():
         op.execute("SET SESSION statement_timeout='300s'")
         op.drop_index(
-            "ix_user_city_and_departementCode",
+            "ix_user_departementCode_and_city",
             table_name="user",
             postgresql_concurrently=True,
             if_exists=True,

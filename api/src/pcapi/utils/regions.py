@@ -1,3 +1,4 @@
+import re
 import typing
 
 from pcapi.utils.clean_accents import clean_accents
@@ -9,6 +10,8 @@ MAYOTTE_DEPARTMENT_CODE = "976"
 NEW_CALEDONIA_DEPARTMENT_CODE = "988"
 SAINT_PIERRE_ET_MIQUELON_DEPARTMENT_CODE = "975"
 WALLIS_AND_FUTUNA_DEPARTMENT_CODE = "986"
+DEPARTMENT_CODE_PATTERN = re.compile(r"2A|2B|[0-9]{2,3}")
+
 
 REGION_DEPARTMENT_CODES: dict[str, tuple[str, ...]] = {
     "Auvergne-Rhône-Alpes": ("01", "03", "07", "15", "26", "38", "42", "43", "63", "69", "73", "74"),
