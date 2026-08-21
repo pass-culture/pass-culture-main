@@ -35,6 +35,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offerers.schemas as offerers_schemas
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.reactions.factories as reactions_factories
@@ -2347,6 +2348,229 @@ class UpdateOfferTest:
         mocked_create_claim.assert_called_once_with(offer)
 
 
+@pytest.mark.usefixtures("db_session")
+class UpdateOfferFromPublicApiTest:
+    FROZEN_NOW = datetime(2026, 8, 11, 12, 0, tzinfo=timezone.utc)
+
+    @pytest.fixture(name="venue_provider")
+    def venue_provider_fixture(self):
+        return providers_factories.VenueProviderFactory()
+
+    def build_offer(self, **overrides):
+        """approved, provider-less, physical offer that passes every check."""
+        defaults = {
+            "subcategoryId": subcategories.ESCAPE_GAME.id,
+            "name": "Les Quatre Cents Coups",
+            "bookingEmail": "old@example.com",
+            "isDuo": False,
+        }
+        # `overrides` always win including when it passes `None`
+        return factories.OfferFactory(**{**defaults, **overrides})
+
+    # --- Delegated validation
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_update_from_public_api")
+    def test_should_delegate_the_validation(self, check_offer_update, venue_provider):
+        offer = self.build_offer()
+
+        api.update_offer_from_public_api(
+            offer, name="Jules et Jim", booking_email="new@example.com", venue_provider=venue_provider
+        )
+
+        check_offer_update.assert_called_once_with(
+            offer,
+            {"bookingEmail": "new@example.com", "name": "Jules et Jim"},
+            venue_provider=venue_provider,
+        )
+
+    # --- Writing
+
+    def test_should_write_the_fields_that_change(self, venue_provider):
+        offer = self.build_offer()
+
+        api.update_offer_from_public_api(
+            offer, name="Jules et Jim", booking_email="new@example.com", venue_provider=venue_provider
+        )
+        db.session.flush()
+
+        assert offer.name == "Jules et Jim"
+        assert offer.bookingEmail == "new@example.com"
+
+    def test_should_write_a_field_explicitly_set_to_none(self, venue_provider):
+        offer = self.build_offer(withdrawalDetails="À retirer à la caisse")
+
+        api.update_offer_from_public_api(offer, withdrawal_details=None, venue_provider=venue_provider)
+        db.session.flush()
+
+        assert offer.withdrawalDetails is None
+
+    @pytest.mark.parametrize("is_duo,expected", [(False, False), (None, False)])
+    def test_should_coerce_is_duo_to_a_boolean(self, venue_provider, is_duo, expected):
+        # `null` disables double bookings rather than clearing the column
+        offer = self.build_offer(isDuo=True)
+
+        api.update_offer_from_public_api(offer, is_duo=is_duo, venue_provider=venue_provider)
+        db.session.flush()
+
+        assert offer.isDuo is expected
+
+    def test_should_move_the_offer_to_another_venue(self, venue_provider):
+        offer = self.build_offer()
+        other_venue = offerers_factories.VenueFactory()
+
+        api.update_offer_from_public_api(offer, venue=other_venue, venue_provider=venue_provider)
+        db.session.flush()
+
+        assert offer.venueId == other_venue.id
+
+    def test_should_not_clear_venue_and_offerer_address(self, venue_provider):
+        offer = self.build_offer()
+        venue_id = offer.venueId
+
+        api.update_offer_from_public_api(
+            offer, venue=None, offerer_address=None, name="Jules et Jim", venue_provider=venue_provider
+        )
+        db.session.flush()
+
+        assert offer.venueId == venue_id
+        assert offer.offererAddress is not None
+
+    # --- Nothing to update
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_return_early_when_no_field_changes(self, mocked_async_index_offer_ids, venue_provider, caplog):
+        offer = self.build_offer()
+        date_updated = offer.dateUpdated
+
+        with caplog.at_level(logging.INFO):
+            api.update_offer_from_public_api(offer, name=offer.name, venue_provider=venue_provider)
+        db.session.flush()
+
+        assert offer.dateUpdated == date_updated
+        mocked_async_index_offer_ids.assert_not_called()
+        update_logs = [
+            record for record in caplog.records if getattr(record, "technical_message_id", None) == "offer.updated"
+        ]
+        assert not update_logs
+
+    # --- `bookingAllowedDatetime`
+
+    @pytest.mark.parametrize(
+        "booking_allowed_datetime",
+        [None, FROZEN_NOW - timedelta(days=1)],
+        ids=["cleared", "in the past"],
+    )
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
+    def test_should_notify_users_when_bookings_open_immediately(
+        self, notify_users, venue_provider, booking_allowed_datetime
+    ):
+        offer = self.build_offer(bookingAllowedDatetime=self.FROZEN_NOW.replace(tzinfo=None) + timedelta(days=1))
+
+        api.update_offer_from_public_api(
+            offer, booking_allowed_datetime=booking_allowed_datetime, venue_provider=venue_provider
+        )
+
+        notify_users.assert_called_once_with(offer)
+
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
+    def test_should_not_notify_users_when_bookings_open_later(self, notify_users, venue_provider):
+        offer = self.build_offer()
+
+        api.update_offer_from_public_api(
+            offer, booking_allowed_datetime=self.FROZEN_NOW + timedelta(days=1), venue_provider=venue_provider
+        )
+
+        notify_users.assert_not_called()
+
+    # --- EAN carried in `extraData`
+
+    def test_should_move_an_ean_found_in_extra_data_to_its_own_column(self, venue_provider):
+        offer = self.build_offer(subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"author": "Truffaut"})
+
+        api.update_offer_from_public_api(
+            offer, extra_data={"author": "Truffaut", "ean": "9782070100002"}, venue_provider=venue_provider
+        )
+        db.session.flush()
+
+        assert offer.ean == "9782070100002"
+        assert "ean" not in offer.extraData
+
+    # --- Analytics log
+
+    def test_should_log_the_changed_fields(self, venue_provider, caplog):
+        offer = self.build_offer()
+
+        with caplog.at_level(logging.INFO):
+            api.update_offer_from_public_api(
+                offer, name="Jules et Jim", booking_email="new@example.com", venue_provider=venue_provider
+            )
+
+        [update_log] = [
+            record for record in caplog.records if getattr(record, "technical_message_id", None) == "offer.updated"
+        ]
+        assert update_log.extra["changes"] == {
+            "name": {"oldValue": "Les Quatre Cents Coups", "newValue": "Jules et Jim"},
+            "bookingEmail": {"oldValue": "old@example.com", "newValue": "new@example.com"},
+        }
+
+    # --- Side effects
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_reindex_the_offer(self, mocked_async_index_offer_ids, venue_provider):
+        offer = self.build_offer()
+
+        api.update_offer_from_public_api(
+            offer, name="Jules et Jim", booking_email="new@example.com", venue_provider=venue_provider
+        )
+
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": {"name", "bookingEmail"}},
+        )
+
+
+@pytest.mark.usefixtures("db_session")
+class GetOrCreateOffererAddressFromAddressBodyTest:
+    @mock.patch("pcapi.core.offerers.api.get_or_create_offer_location")
+    def test_should_reuse_the_venue_address_when_the_offer_is_located_on_the_venue(self, get_or_create_offer_location):
+        venue = offerers_factories.VenueFactory()
+
+        offerer_address = api.get_or_create_offerer_address_from_address_body(
+            offerers_schemas.LocationOnlyOnVenueModel(), venue
+        )
+
+        # no label, so the offer is not tied to the venue location itself
+        get_or_create_offer_location.assert_called_once_with(
+            offerer_id=venue.managingOffererId,
+            venue_id=venue.id,
+            address_id=venue.offererAddress.addressId,
+            label=None,
+        )
+        assert offerer_address == get_or_create_offer_location.return_value
+
+    @mock.patch("pcapi.core.offerers.api.get_offer_location_from_address")
+    def test_should_build_a_location_from_the_address_when_one_is_sent(self, get_offer_location_from_address):
+        venue = offerers_factories.VenueFactory()
+        address_body = offerers_schemas.LocationModel(
+            street="1 rue de la Paix",
+            city="Paris",
+            postalCode="75002",
+            latitude=48.8691,
+            longitude=2.3316,
+            label="Salle Jean Vilar",
+        )
+
+        offerer_address = api.get_or_create_offerer_address_from_address_body(address_body, venue)
+
+        get_offer_location_from_address.assert_called_once_with(
+            venue.managingOffererId, address_body, venue_id=venue.id
+        )
+        assert offerer_address == get_offer_location_from_address.return_value
+
+
 now_datetime_with_tz = datetime.now(timezone.utc)
 now_datetime_without_tz = now_datetime_with_tz.replace(tzinfo=None)
 
@@ -4012,22 +4236,6 @@ class DeleteStocksTest:
         # This call should not have modified the stock deletion because another process should
         # have updated them already.
         assert all(not stock.isSoftDeleted for stock in stocks)
-
-
-class FormatExtraDataTest:
-    def test_format_extra_data(self):
-        extra_data = {
-            "musicType": "-1",  # applicable and filled
-            "musicSubType": "100",  # applicable and filled
-            "gtl_id": "19000000",  # applicable and filled in deserializer
-            "other": "value",  # not applicable field
-            "performer": "",  # applicable but empty
-        }
-        assert api._format_extra_data(subcategories.FESTIVAL_MUSIQUE.id, extra_data) == {
-            "musicType": "-1",
-            "musicSubType": "100",
-            "gtl_id": "19000000",
-        }
 
 
 @pytest.mark.usefixtures("db_session")

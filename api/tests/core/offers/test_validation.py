@@ -2,6 +2,7 @@ import datetime
 import pathlib
 import types
 from decimal import Decimal
+from unittest import mock
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -1282,3 +1283,523 @@ class CheckArtistOfferLinksTest:
         assert exc.value.errors == {
             "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
         }
+
+
+class CheckAccessibilityComplianceTest:
+    @pytest.mark.parametrize(
+        "missing_field",
+        [
+            "audio_disability_compliant",
+            "mental_disability_compliant",
+            "motor_disability_compliant",
+            "visual_disability_compliant",
+        ],
+    )
+    def test_should_raise_when_any_single_field_is_none(self, missing_field):
+        fields = {
+            "audio_disability_compliant": True,
+            "mental_disability_compliant": True,
+            "motor_disability_compliant": True,
+            "visual_disability_compliant": True,
+        }
+        fields[missing_field] = None
+
+        with pytest.raises(exceptions.OfferException) as error:
+            validation.check_accessibility_compliance(**fields)
+
+        assert error.value.errors == {"global": ["L’accessibilité de l’offre doit être définie"]}
+
+
+class CheckIsDuoComplianceTest:
+    @pytest.mark.parametrize("is_duo", [False, None])
+    def test_should_accept_a_falsy_value_on_a_category_that_refuses_duo(self, is_duo):
+        assert not subcategories.ABO_BIBLIOTHEQUE.can_be_duo
+
+        validation.check_is_duo_compliance(is_duo, subcategories.ABO_BIBLIOTHEQUE)
+
+    def test_should_accept_duo_on_a_category_that_allows_it(self):
+        assert subcategories.SEANCE_CINE.can_be_duo
+
+        validation.check_is_duo_compliance(True, subcategories.SEANCE_CINE)
+
+    def test_should_raise_on_a_category_that_refuses_duo(self):
+        with pytest.raises(exceptions.OfferException) as error:
+            validation.check_is_duo_compliance(True, subcategories.ABO_BIBLIOTHEQUE)
+
+        assert error.value.errors == {"enableDoubleBookings": ["the category chosen does not allow double bookings"]}
+
+
+class CheckDurationMinutesTest:
+    @pytest.mark.parametrize("duration_minutes", [None, 0, 1439])
+    @pytest.mark.parametrize("is_from_private_api", [True, False])
+    def test_should_accept_a_duration_under_24_hours(self, duration_minutes, is_from_private_api):
+        validation.check_duration_minutes(duration_minutes, is_from_private_api)
+
+    def test_should_raise_in_french_for_the_private_api(self):
+        with pytest.raises(exceptions.OfferException) as error:
+            validation.check_duration_minutes(1440, True)
+
+        assert list(error.value.errors) == ["durationMinutes"]
+
+    def test_should_raise_in_english_for_the_public_api(self):
+        with pytest.raises(exceptions.OfferException) as error:
+            validation.check_duration_minutes(1440, False)
+
+        assert error.value.errors == {
+            "eventDuration": [
+                "The duration must be under 1440 minutes (24 hours). For events lasting 24 hours or more "
+                "(e.g., a 3-day festival pass), please leave this field empty."
+            ]
+        }
+
+
+class CheckUpdateOnlyAllowedFieldsForOfferFromProviderTest:
+    # accepted by an Allociné provider, refused by a plain one
+    ALLOCINE_ONLY = ["isDuo"]
+
+    # accepted by a public API provider, refused by the two others
+    PUBLIC_API_ONLY = [
+        "bookingAllowedDatetime",
+        "bookingContact",
+        "bookingEmail",
+        "durationMinutes",
+        "ean",
+        "extraData",
+        "idAtProvider",
+        "isActive",
+        "publicationDatetime",
+        "withdrawalDetails",
+    ]
+
+    def build_public_api_provider(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        providers_factories.OffererProviderFactory(provider=provider)
+        return provider
+
+    def test_should_accept_every_field_of_the_shared_set(self):
+        provider = providers_factories.ProviderFactory()
+
+        validation.check_update_only_allowed_fields_for_offer_from_provider(
+            set(validation.EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER), provider
+        )
+
+    def test_should_accept_every_field_of_the_allocine_set(self):
+        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+        assert provider.isAllocine
+
+        validation.check_update_only_allowed_fields_for_offer_from_provider(
+            set(validation.EDITABLE_FIELDS_FOR_ALLOCINE_OFFER), provider
+        )
+
+    def test_should_accept_every_field_of_the_public_api_set(self):
+        provider = self.build_public_api_provider()
+        assert provider.hasOffererProvider
+
+        validation.check_update_only_allowed_fields_for_offer_from_provider(
+            set(validation.EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER), provider
+        )
+
+    @pytest.mark.parametrize("field", ALLOCINE_ONLY)
+    def test_reject_an_allocine_field_only_for_another_provider(self, field):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_update_only_allowed_fields_for_offer_from_provider(
+                {field}, providers_factories.ProviderFactory()
+            )
+
+        assert error.value.errors == {field: ["Vous ne pouvez pas modifier ce champ"]}
+
+    @pytest.mark.parametrize("field", PUBLIC_API_ONLY)
+    def test_should_reject_a_public_api_field_only_for_another_provider(self, field):
+        allocine = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+        with pytest.raises(ApiErrors) as error:
+            validation.check_update_only_allowed_fields_for_offer_from_provider({field}, allocine)
+
+        assert error.value.errors == {field: ["Vous ne pouvez pas modifier ce champ"]}
+
+    @pytest.mark.parametrize("provider_kind", ["plain", "allocine", "public_api"])
+    def test_should_reject_a_field_outside_every_set(self, provider_kind):
+        provider = {
+            "plain": lambda: providers_factories.ProviderFactory(),
+            "allocine": lambda: providers_factories.AllocineProviderFactory(localClass="AllocineStocks"),
+            "public_api": self.build_public_api_provider,
+        }[provider_kind]()
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_update_only_allowed_fields_for_offer_from_provider({"isNational"}, provider)
+
+        assert error.value.errors == {"isNational": ["Vous ne pouvez pas modifier ce champ"]}
+
+
+class CheckUrlIsCoherentWithSubcategoryTest:
+    @pytest.mark.parametrize("url", [None, ""])
+    def test_should_accept_an_offline_only_subcategory_without_url(self, url):
+        assert subcategories.SEANCE_CINE.is_offline_only
+
+        validation.check_url_is_coherent_with_subcategory(subcategories.SEANCE_CINE, url)
+
+    def test_should_raise_when_an_offline_only_subcategory_has_a_url(self):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_url_is_coherent_with_subcategory(
+                subcategories.SEANCE_CINE, "https://cinema.example.com/en-ligne"
+            )
+
+        assert error.value.errors == {
+            "url": ['Une offre de sous-catégorie "Séance de cinéma" ne peut contenir un champ `url`']
+        }
+
+    def test_should_accept_an_online_only_subcategory_with_a_url(self):
+        assert subcategories.LIVESTREAM_MUSIQUE.is_online_only
+
+        validation.check_url_is_coherent_with_subcategory(
+            subcategories.LIVESTREAM_MUSIQUE, "https://concert.example.com/live"
+        )
+
+    @pytest.mark.parametrize("url", [None, ""])
+    def test_should_raise_when_an_online_only_subcategory_has_no_url(self, url):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_url_is_coherent_with_subcategory(subcategories.LIVESTREAM_MUSIQUE, url)
+
+        assert error.value.errors == {
+            "url": ['Une offre de catégorie "Livestream musical" doit contenir un champ `url`']
+        }
+
+    @pytest.mark.parametrize("url", [None, "https://jeu.example.com"])
+    def test_should_accept_both_ways_when_the_subcategory_is_neither(self, url):
+        subcategory = subcategories.JEU_SUPPORT_PHYSIQUE
+        assert not subcategory.is_offline_only and not subcategory.is_online_only
+
+        validation.check_url_is_coherent_with_subcategory(subcategory, url)
+
+
+class CheckUrlAndOffererAddressAreNotBothSetTest:
+    def test_should_accept_a_digital_offer(self):
+        validation.check_url_and_offererAddress_are_not_both_set("https://cinema.example.com/en-ligne", None)
+
+    def test_should_accept_a_physical_offer(self):
+        offerer_address = offerers_factories.OfferLocationFactory()
+
+        validation.check_url_and_offererAddress_are_not_both_set(None, offerer_address)
+
+    def test_should_raise_when_both_are_set(self):
+        offerer_address = offerers_factories.OfferLocationFactory()
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_url_and_offererAddress_are_not_both_set(
+                "https://cinema.example.com/en-ligne", offerer_address
+            )
+
+        assert error.value.errors == {"offererAddress": ["Une offre numérique ne peut pas avoir d'adresse"]}
+
+    @pytest.mark.parametrize("url", [None, ""])
+    def test_should_raise_when_neither_is_set(self, url):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_url_and_offererAddress_are_not_both_set(url, None)
+
+        assert error.value.errors == {"offererAddress": ["Une offre physique doit avoir une adresse"]}
+
+
+class FormatExtraDataTest:
+    def test_should_keep_only_the_filled_conditional_fields_of_the_subcategory(self):
+        extra_data = {
+            "musicType": "-1",  # applicable and filled
+            "musicSubType": "100",  # applicable and filled
+            "gtl_id": "19000000",  # applicable and filled in deserializer
+            "other": "value",  # not applicable field
+            "performer": "",  # applicable but empty
+        }
+
+        assert validation.format_extra_data(subcategories.FESTIVAL_MUSIQUE.id, extra_data) == {
+            "musicType": "-1",
+            "musicSubType": "100",
+            "gtl_id": "19000000",
+        }
+
+    def test_should_return_none_when_there_is_no_extra_data(self):
+        assert validation.format_extra_data(subcategories.FESTIVAL_MUSIQUE.id, None) is None
+
+
+class CheckOfferUpdateFromPublicApiTest:
+    SUBCATEGORY = subcategories.SEANCE_CINE
+
+    def build_offer(self, **overrides):
+        """approved, provider-less, physical offer that passes every check."""
+        defaults = {
+            "subcategoryId": self.SUBCATEGORY.id,
+            "validation": OfferValidationStatus.APPROVED,
+            "ean": "9782070100002",
+            "lastProvider": None,
+            "withdrawalType": None,
+            "withdrawalDelay": None,
+            "name": "Les Quatre Cents Coups",
+            "description": "Antoine Doinel, treize ans, fugue dans les rues de Paris.",
+            "url": None,
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": False,
+            "isDuo": False,
+            "idAtProvider": None,
+            "extraData": {"stageDirector": "François Truffaut"},
+            "durationMinutes": 99,
+            "bookingContact": "contact@example.com",
+            "withdrawalDetails": "À retirer à la caisse",
+        }
+        # `overrides` always wins, including when it passes `None`
+        return offers_factories.OfferFactory(**{**defaults, **overrides})
+
+    @pytest.fixture(name="venue_provider")
+    def venue_provider_fixture(self):
+        return providers_factories.VenueProviderFactory()
+
+    # --- Offer validation status
+
+    def test_should_accept_a_draft_offer(self, venue_provider):
+        offer = self.build_offer(validation=OfferValidationStatus.DRAFT)
+
+        validation.check_offer_update_from_public_api(offer, {"name": "Jules et Jim"}, venue_provider=venue_provider)
+
+    @mock.patch("pcapi.core.offers.validation.check_validation_status")
+    def test_should_delegate_the_status_check(self, check_validation_status, venue_provider):
+        offer = self.build_offer()
+
+        validation.check_offer_update_from_public_api(offer, {}, venue_provider=venue_provider)
+
+        check_validation_status.assert_called_once_with(offer)
+
+    # --- Nothing to update
+
+    @pytest.mark.parametrize(
+        "fields",
+        [
+            {},
+            {"name": "Les Quatre Cents Coups", "durationMinutes": 99},
+        ],
+        ids=["empty body", "values equal to the offer's"],
+    )
+    def test_should_return_early_when_no_field_changes(self, fields, venue_provider):
+        offer = self.build_offer(offererAddress=None)
+
+        validation.check_offer_update_from_public_api(offer, fields, venue_provider=venue_provider)
+
+    # --- `accessibility`
+
+    @pytest.mark.parametrize(
+        "changed_field,expected_key",
+        [
+            ("audioDisabilityCompliant", "audio_disability_compliant"),
+            ("mentalDisabilityCompliant", "mental_disability_compliant"),
+            ("motorDisabilityCompliant", "motor_disability_compliant"),
+            ("visualDisabilityCompliant", "visual_disability_compliant"),
+        ],
+    )
+    @mock.patch("pcapi.core.offers.validation.check_accessibility_compliance")
+    def test_should_check_accessibility_when_any_of_its_four_fields_changes(
+        self, check_accessibility_compliance, changed_field, expected_key, venue_provider
+    ):
+        offer = self.build_offer()
+        new_value = not getattr(offer, changed_field)
+
+        validation.check_offer_update_from_public_api(offer, {changed_field: new_value}, venue_provider=venue_provider)
+
+        expected = {
+            "audio_disability_compliant": offer.audioDisabilityCompliant,
+            "mental_disability_compliant": offer.mentalDisabilityCompliant,
+            "motor_disability_compliant": offer.motorDisabilityCompliant,
+            "visual_disability_compliant": offer.visualDisabilityCompliant,
+        }
+        expected[expected_key] = new_value
+        check_accessibility_compliance.assert_called_once_with(**expected)
+
+    @mock.patch("pcapi.core.offers.validation.check_accessibility_compliance")
+    def test_should_not_check_accessibility_when_none_of_its_fields_changes(
+        self, check_accessibility_compliance, venue_provider
+    ):
+        offer = self.build_offer()
+
+        validation.check_offer_update_from_public_api(
+            offer, {"description": "Une autre description."}, venue_provider=venue_provider
+        )
+
+        check_accessibility_compliance.assert_not_called()
+
+    # --- `extraData`
+
+    @mock.patch("pcapi.core.offers.validation.format_extra_data")
+    @mock.patch("pcapi.core.offers.validation.check_offer_extra_data")
+    def test_should_check_extra_data_against_the_offer_own_ean(
+        self, check_offer_extra_data, format_extra_data, venue_provider
+    ):
+        offer = self.build_offer()
+        new_extra_data = {"stageDirector": "Jean Renoir"}
+
+        validation.check_offer_update_from_public_api(
+            offer, {"extraData": new_extra_data}, venue_provider=venue_provider
+        )
+
+        format_extra_data.assert_called_once_with(self.SUBCATEGORY.id, new_extra_data)
+        check_offer_extra_data.assert_called_once_with(
+            self.SUBCATEGORY.id,
+            format_extra_data.return_value,
+            offer.venue,
+            False,
+            offer=offer,
+            ean=offer.ean,
+        )
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_extra_data")
+    def test_should_pass_an_empty_dict_when_the_extra_data_is_cleared(self, check_offer_extra_data, venue_provider):
+        # `format_extra_data` answers `None` on a null input, and the check expects a dict
+        offer = self.build_offer()
+
+        validation.check_offer_update_from_public_api(offer, {"extraData": None}, venue_provider=venue_provider)
+
+        assert check_offer_extra_data.call_args.args[1] == {}
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_extra_data")
+    def test_should_not_check_extra_data_when_it_does_not_change(self, check_offer_extra_data, venue_provider):
+        offer = self.build_offer()
+
+        validation.check_offer_update_from_public_api(
+            offer, {"extraData": offer.extraData}, venue_provider=venue_provider
+        )
+
+        check_offer_extra_data.assert_not_called()
+
+    # --- `isDuo`
+
+    @mock.patch("pcapi.core.offers.validation.check_is_duo_compliance")
+    def test_should_check_duo_compliance_against_the_offer_subcategory(self, check_is_duo_compliance, venue_provider):
+        offer = self.build_offer()
+
+        validation.check_offer_update_from_public_api(offer, {"isDuo": True}, venue_provider=venue_provider)
+
+        check_is_duo_compliance.assert_called_once_with(True, self.SUBCATEGORY)
+
+    # --- `idAtProvider`
+
+    @mock.patch("pcapi.core.offers.validation.check_can_input_id_at_provider")
+    @mock.patch("pcapi.core.offers.validation.check_can_input_id_at_provider_for_this_venue")
+    def test_should_check_the_id_at_provider_against_the_provider_and_the_venue(
+        self, check_can_input_id_at_provider_for_this_venue, check_can_input_id_at_provider, venue_provider
+    ):
+        offer = self.build_offer()
+
+        validation.check_offer_update_from_public_api(
+            offer, {"idAtProvider": "seance-du-soir"}, venue_provider=venue_provider
+        )
+
+        check_can_input_id_at_provider.assert_called_once_with(offer.lastProvider, "seance-du-soir")
+        check_can_input_id_at_provider_for_this_venue.assert_called_once_with(offer.venueId, "seance-du-soir", offer.id)
+
+    # --- `name`
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_name_does_not_contain_ean")
+    def test_should_check_the_name_does_not_contain_an_ean(self, check_offer_name_does_not_contain_ean, venue_provider):
+        offer = self.build_offer()
+
+        validation.check_offer_update_from_public_api(offer, {"name": "Jules et Jim"}, venue_provider=venue_provider)
+
+        check_offer_name_does_not_contain_ean.assert_called_once_with("Jules et Jim")
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_name_does_not_contain_ean")
+    def test_should_refuse_a_null_name(self, check_offer_name_does_not_contain_ean, venue_provider):
+        offer = self.build_offer()
+
+        with pytest.raises(exceptions.OfferException) as error:
+            validation.check_offer_update_from_public_api(offer, {"name": None}, venue_provider=venue_provider)
+
+        assert error.value.errors == {"name": ["cannot be null"]}
+        check_offer_name_does_not_contain_ean.assert_not_called()
+
+    # --- Withdrawal
+
+    @pytest.mark.parametrize("changed_field", ["withdrawalDetails", "bookingContact"])
+    @mock.patch("pcapi.core.offers.validation.check_offer_withdrawal")
+    def test_should_check_withdrawal_against_the_type_and_delay_stored_on_the_offer(
+        self, check_offer_withdrawal, changed_field, venue_provider
+    ):
+        offer = self.build_offer()
+        venue_provider = providers_factories.VenueProviderFactory()
+
+        validation.check_offer_update_from_public_api(
+            offer, {changed_field: "nouvelle valeur"}, venue_provider=venue_provider
+        )
+
+        expected_contact = "nouvelle valeur" if changed_field == "bookingContact" else offer.bookingContact
+        check_offer_withdrawal.assert_called_once_with(
+            withdrawal_type=offer.withdrawalType,
+            withdrawal_delay=offer.withdrawalDelay,
+            subcategory_id=self.SUBCATEGORY.id,
+            booking_contact=expected_contact,
+            provider=offer.lastProvider,
+            venue_provider=venue_provider,
+        )
+
+    # --- `durationMinutes`
+
+    @mock.patch("pcapi.core.offers.validation.check_duration_minutes")
+    def test_should_tell_the_duration_check_it_comes_from_the_public_api(self, check_duration_minutes, venue_provider):
+        offer = self.build_offer()
+
+        validation.check_offer_update_from_public_api(offer, {"durationMinutes": 1440}, venue_provider=venue_provider)
+
+        # the second parameter is `is_from_private_api`
+        check_duration_minutes.assert_called_once_with(1440, False)
+
+    # --- Fields locked by the provider
+
+    @mock.patch("pcapi.core.offers.validation.check_update_only_allowed_fields_for_offer_from_provider")
+    def test_should_check_the_whitelist_against_the_changed_fields(
+        self, check_update_only_allowed_fields, venue_provider
+    ):
+        provider = providers_factories.PublicApiProviderFactory()
+        offer = self.build_offer(lastProvider=provider)
+
+        validation.check_offer_update_from_public_api(
+            offer,
+            {"name": "Jules et Jim", "durationMinutes": 120, "description": "Deux amis."},
+            venue_provider=venue_provider,
+        )
+
+        check_update_only_allowed_fields.assert_called_once_with({"name", "durationMinutes", "description"}, provider)
+
+    @mock.patch("pcapi.core.offers.validation.check_update_only_allowed_fields_for_offer_from_provider")
+    def test_should_not_check_the_whitelist_for_an_offer_created_on_the_pro_interface(
+        self, check_update_only_allowed_fields, venue_provider
+    ):
+        offer = self.build_offer(lastProvider=None)
+
+        validation.check_offer_update_from_public_api(offer, {"name": "Jules et Jim"}, venue_provider=venue_provider)
+
+        check_update_only_allowed_fields.assert_not_called()
+
+    # --- Location coherence
+
+    @mock.patch("pcapi.core.offers.validation.check_url_is_coherent_with_subcategory")
+    @mock.patch("pcapi.core.offers.validation.check_url_and_offererAddress_are_not_both_set")
+    def test_should_always_check_location_coherence(
+        self, check_url_and_offererAddress_are_not_both_set, check_url_is_coherent_with_subcategory, venue_provider
+    ):
+        offer = self.build_offer()
+
+        validation.check_offer_update_from_public_api(
+            offer, {"description": "Une autre description."}, venue_provider=venue_provider
+        )
+
+        check_url_is_coherent_with_subcategory.assert_called_once_with(self.SUBCATEGORY, offer.url)
+        check_url_and_offererAddress_are_not_both_set.assert_called_once_with(offer.url, offer.offererAddress)
+
+    @mock.patch("pcapi.core.offers.validation.check_url_is_coherent_with_subcategory")
+    @mock.patch("pcapi.core.offers.validation.check_url_and_offererAddress_are_not_both_set")
+    def test_should_check_location_coherence_on_the_resulting_values(
+        self, check_url_and_offererAddress_are_not_both_set, check_url_is_coherent_with_subcategory, venue_provider
+    ):
+        offer = self.build_offer(url="https://cinema.example.com/en-ligne")
+        new_offerer_address = offerers_factories.OfferLocationFactory()
+
+        validation.check_offer_update_from_public_api(
+            offer, {"url": None, "offererAddress": new_offerer_address}, venue_provider=venue_provider
+        )
+
+        check_url_is_coherent_with_subcategory.assert_called_once_with(self.SUBCATEGORY, None)
+        check_url_and_offererAddress_are_not_both_set.assert_called_once_with(None, new_offerer_address)
