@@ -1,7 +1,6 @@
 import datetime
 import enum
 import json
-import re
 import typing
 
 import sqlalchemy.orm as sa_orm
@@ -44,7 +43,7 @@ TAG_NAME_REGEX = r"^[^\s]+$"
 
 ADVANCED_FORM_FIELDS_CONFIG: dict[str, dict[str, typing.Any]] = {
     AdvancedFormFieldKeys.BIRTHDAY.name: {"field": "date", "operator": ["DATE_EQUALS", "DATE_FROM", "DATE_TO"]},
-    AdvancedFormFieldKeys.CITY.name: {"field": "city", "operator": ["IN"]},
+    AdvancedFormFieldKeys.CITY.name: {"field": "city", "operator": ["IN", "NOT_IN"]},
     AdvancedFormFieldKeys.CREDIT.name: {"field": "credit", "operator": ["IN", "NOT_IN"]},
     AdvancedFormFieldKeys.DEPOSIT_EXPIRATION_DATE.name: {
         "field": "date",
@@ -104,8 +103,10 @@ class GetAccountDetailsSearchForm(utils.PCForm):
 
 def _city_validator(_form: wtforms.Form, field: wtforms.Field) -> None:
     for value in field.data or []:
-        if not re.fullmatch(r"[0-9][0-9AB][0-9]{3}_(2[AB]|[0-9]{2,3})_.+", value):
-            raise wtforms.ValidationError("Doit être au format code INSEE_département_ville.")
+        try:
+            autocomplete.parse_account_city_option(value)
+        except ValueError:
+            raise wtforms.ValidationError("Doit être au format code INSEE_ville.")
 
 
 class AccountsSearchSubForm(utils.PCForm):

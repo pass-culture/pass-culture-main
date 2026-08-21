@@ -53,6 +53,41 @@ def test_search_city_by_name(requests_mock):
 
 
 @pytest.mark.settings(GEO_API_BACKEND="pcapi.connectors.api_geo.GeoApiBackend")
+def test_search_city_by_postal_code(requests_mock):
+    requests_mock.get(
+        "https://geo.api.gouv.fr/communes?boost=population&limit=20&codePostal=47340",
+        json=[
+            {
+                "nom": "Laroque-Timbaut",
+                "code": "47138",
+                "codeDepartement": "47",
+                "siren": "214701385",
+                "codeEpci": "200023307",
+                "codeRegion": "75",
+                "codesPostaux": ["47340"],
+                "population": 1589,
+            },
+            {
+                "nom": "Hautefage-la-Tour",
+                "code": "47117",
+                "codeDepartement": "47",
+                "siren": "214701179",
+                "codeEpci": "200023307",
+                "codeRegion": "75",
+                "codesPostaux": ["47340"],
+                "population": 1029,
+            },
+        ],
+    )
+    results = api_geo.search_city(postal_code="47340")
+    assert requests_mock.called
+    assert results == [
+        api_geo.GeoCity(insee_code="47138", name="Laroque-Timbaut"),
+        api_geo.GeoCity(insee_code="47117", name="Hautefage-la-Tour"),
+    ]
+
+
+@pytest.mark.settings(GEO_API_BACKEND="pcapi.connectors.api_geo.GeoApiBackend")
 def test_search_city_by_name_with_department_and_postal_code(requests_mock):
     requests_mock.get(
         "https://geo.api.gouv.fr/communes?boost=population&limit=20&nom=Toulouse&codeDepartement=31&codePostal=31000",

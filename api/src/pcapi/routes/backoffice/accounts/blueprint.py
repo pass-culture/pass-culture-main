@@ -97,16 +97,6 @@ public_accounts_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 )
 
 
-def _resolve_city_options(city_options: Iterable[str]) -> tuple[tuple[str, str], ...]:
-    try:
-        return tuple(
-            (department_code, city)
-            for _insee_code, department_code, city in (option.split("_", 2) for option in city_options)
-        )
-    except ValueError:
-        raise advanced_search.AdvancedSearchWarning("Le filtre par ville est invalide")
-
-
 def _get_cities_filter(department_codes_and_cities: Iterable[tuple[str, str]]) -> sa.ColumnElement:
     return sa.or_(
         *(
@@ -210,8 +200,11 @@ ADVANCED_SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
     "BIRTHDAY": {"field": "date", "column": users_models.User.birth_date},
     "CITY": {
         "field": "city",
-        "special": _resolve_city_options,
-        "custom_filters": {"IN": _get_cities_filter},
+        "special": autocomplete.resolve_account_city_options,
+        "custom_filters": {
+            "IN": _get_cities_filter,
+            "NOT_IN": lambda department_codes_and_cities: sa.not_(_get_cities_filter(department_codes_and_cities)),
+        },
     },
     "CREDIT": {
         "field": "credit",

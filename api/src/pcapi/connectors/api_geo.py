@@ -59,7 +59,7 @@ def search_city(
     postal_code: str | None = None,
     limit: int = 20,
 ) -> list[GeoCity]:
-    if not name and not insee_code:
+    if not name and not insee_code and not postal_code:
         return []
     return _get_backend().search_city(name, insee_code, limit, department_code=department_code, postal_code=postal_code)
 

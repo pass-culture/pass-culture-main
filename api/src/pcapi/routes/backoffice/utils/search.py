@@ -30,6 +30,7 @@ class PaginatedQuery:
 
 PAGINATION_STEPS = 7
 PAGINATION_SIDE_STEPS = PAGINATION_STEPS // 2
+SEARCH_QUERY_SEPARATOR = re.compile(r"[,;\s]+")
 
 
 def pagination_links(partial_func: UrlForPartial, current_page: int, pages_total: int) -> list[tuple[int, str]]:
@@ -72,7 +73,7 @@ def paginate(query: sa_orm.Query, page: int = 1, per_page: int = 20) -> Paginate
 
 
 def split_terms(search_query: str) -> list[str]:
-    return re.split(r"[,;\s]+", search_query)
+    return re.split(SEARCH_QUERY_SEPARATOR, search_query)
 
 
 def apply_filter_on_beneficiary_status(query: sa_orm.Query, account_search_filters: list[str]) -> sa_orm.Query:
