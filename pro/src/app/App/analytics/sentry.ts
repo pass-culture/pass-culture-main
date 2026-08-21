@@ -8,6 +8,7 @@ import {
   useNavigationType,
 } from 'react-router'
 
+import { ApiError } from '@/apiClient/compat'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import {
@@ -57,6 +58,20 @@ export const initializeSentry = () => {
         hint.originalException === 'Timeout (u)'
       ) {
         return null
+      }
+      if (hint.originalException instanceof ApiError) {
+        const { body, requestLabel, status, url } = hint.originalException
+
+        // Serialises properties of an Api Error for better debug
+        event.contexts = {
+          ...event.contexts,
+          'API error': {
+            endpoint: requestLabel,
+            status,
+            url: removeTokenFromBackURL(url) ?? url,
+            body,
+          },
+        }
       }
       return event
     },
