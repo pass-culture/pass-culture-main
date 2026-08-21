@@ -91,6 +91,7 @@ export const DetailedModal = ({
       onClose={onClose}
       ariaLabelledBy={titleId}
       ariaDescribedBy={dialogAriaDescribedBy}
+      isSnackBarPortalTarget
     >
       <div
         className={cx(styles['detailed-modal'], {
