@@ -103,7 +103,7 @@ export function serializeDetailsPostData(
     '`formValues.accessibility` is undefined'
   )
 
-  // TODO (rchaffal) to remove once PatchOfferBodyModel is migrated to Pydantic V2
+  // TODO (rchaffal) to remove once PostOfferBodyModel is migrated to Pydantic V2
   // @ts-expect-error
   return trimStringsInObject({
     name: formValues.name,
@@ -137,8 +137,6 @@ export function serializeDetailsPatchData(
     (f) => !isReadOnly(f)
   )
 
-  // TODO (rchaffal) to remove once PatchOfferBodyModel is migrated to Pydantic V2
-  // @ts-expect-error
   return trimStringsInObject({
     ...(!isReadOnly('name') && { name: formValues.name }),
     ...(!isReadOnly('subcategoryId') && {

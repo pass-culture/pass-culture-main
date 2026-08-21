@@ -137,8 +137,6 @@ export const IndividualOfferPracticalInfosScreen = ({
 
       await mutate(
         [GET_OFFER_QUERY_KEY, offer.id],
-        // TODO (rchaffal) to remove once PatchOfferBodyModel is migrated to Pydantic V2
-        // @ts-expect-error
         api.patchOffer({ path: { offer_id: offer.id }, body: requestBody }),
         { revalidate: false }
       )

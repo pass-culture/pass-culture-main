@@ -82,6 +82,21 @@ export type ArtistOfferLinkBodyModel = {
 };
 
 /**
+ * ArtistOfferLinkBodyModelV2
+ */
+export type ArtistOfferLinkBodyModelV2 = {
+    /**
+     * Artistid
+     */
+    artistId: string | null;
+    /**
+     * Artistname
+     */
+    artistName: string;
+    artistType: ArtistType;
+};
+
+/**
  * ArtistOfferLinkResponseModel
  */
 export type ArtistOfferLinkResponseModel = {
@@ -4858,6 +4873,248 @@ export type OfferExtraData = {
 };
 
 /**
+ * OfferExtraDataV2
+ */
+export type OfferExtraDataV2 = {
+    /**
+     * Allocineid
+     */
+    allocineId?: number | null;
+    /**
+     * Artist
+     */
+    artist?: string | null;
+    /**
+     * Author
+     */
+    author?: string | null;
+    /**
+     * Backlink
+     */
+    backlink?: string | null;
+    /**
+     * Bookformat
+     */
+    bookFormat?: string | null;
+    /**
+     * Cast
+     */
+    cast?: Array<string> | null;
+    /**
+     * Certificate
+     */
+    certificate?: string | null;
+    /**
+     * Code Clil
+     */
+    code_clil?: string | null;
+    /**
+     * Collection
+     */
+    collection?: string | null;
+    /**
+     * Comic Series
+     */
+    comic_series?: string | null;
+    /**
+     * Comment
+     */
+    comment?: string | null;
+    /**
+     * Companies
+     */
+    companies?: Array<{
+        [key: string]: unknown;
+    }> | null;
+    /**
+     * Contenu Explicite
+     */
+    contenu_explicite?: string | null;
+    /**
+     * Countries
+     */
+    countries?: Array<string> | null;
+    /**
+     * Credits
+     */
+    credits?: Array<{
+        [key: string]: unknown;
+    }> | null;
+    /**
+     * Csr Id
+     */
+    csr_id?: string | null;
+    /**
+     * Date Parution
+     */
+    date_parution?: string | null;
+    /**
+     * Dewey
+     */
+    dewey?: string | null;
+    /**
+     * Diffusionversion
+     */
+    diffusionVersion?: string | null;
+    /**
+     * Dispo
+     */
+    dispo?: number | null;
+    /**
+     * Dispo Label
+     */
+    dispo_label?: string | null;
+    /**
+     * Distributeur
+     */
+    distributeur?: string | null;
+    /**
+     * Ean
+     */
+    ean?: string | null;
+    /**
+     * Editeur
+     */
+    editeur?: string | null;
+    /**
+     * Eidr
+     */
+    eidr?: string | null;
+    /**
+     * Genres
+     */
+    genres?: Array<string> | null;
+    /**
+     * Gtl Id
+     */
+    gtl_id?: string | null;
+    /**
+     * Langue
+     */
+    langue?: string | null;
+    /**
+     * Langueiso
+     */
+    langueiso?: string | null;
+    /**
+     * Musicsubtype
+     */
+    musicSubType?: string | null;
+    /**
+     * Musictype
+     */
+    musicType?: string | null;
+    /**
+     * Music Label
+     */
+    music_label?: string | null;
+    /**
+     * Nb Galettes
+     */
+    nb_galettes?: string | null;
+    /**
+     * Nb Pages
+     */
+    nb_pages?: string | null;
+    /**
+     * Num In Collection
+     */
+    num_in_collection?: string | null;
+    /**
+     * Originaltitle
+     */
+    originalTitle?: string | null;
+    /**
+     * Performer
+     */
+    performer?: string | null;
+    /**
+     * Posterurl
+     */
+    posterUrl?: string | null;
+    /**
+     * Prix Livre
+     */
+    prix_livre?: string | null;
+    /**
+     * Prix Musique
+     */
+    prix_musique?: string | null;
+    /**
+     * Productionyear
+     */
+    productionYear?: number | null;
+    /**
+     * Rayon
+     */
+    rayon?: string | null;
+    /**
+     * Releasedate
+     */
+    releaseDate?: string | null;
+    /**
+     * Releases
+     */
+    releases?: Array<{
+        [key: string]: unknown;
+    }> | null;
+    /**
+     * Runtime
+     */
+    runtime?: number | null;
+    /**
+     * Schoolbook
+     */
+    schoolbook?: boolean | null;
+    /**
+     * Showsubtype
+     */
+    showSubType?: string | null;
+    /**
+     * Showtype
+     */
+    showType?: string | null;
+    /**
+     * Speaker
+     */
+    speaker?: string | null;
+    /**
+     * Stagedirector
+     */
+    stageDirector?: string | null;
+    /**
+     * Synopsis
+     */
+    synopsis?: string | null;
+    /**
+     * Theater
+     */
+    theater?: {
+        [key: string]: unknown;
+    } | null;
+    /**
+     * Titelive Regroup
+     */
+    titelive_regroup?: string | null;
+    /**
+     * Title
+     */
+    title?: string | null;
+    /**
+     * Top
+     */
+    top?: string | null;
+    /**
+     * Type
+     */
+    type?: string | null;
+    /**
+     * Visa
+     */
+    visa?: string | null;
+};
+
+/**
  * OfferHomeResponseModel
  */
 export type OfferHomeResponseModel = {
@@ -5213,93 +5470,97 @@ export type PatchOfferBodyModel = {
     /**
      * Artistofferlinks
      */
-    artistOfferLinks?: Array<ArtistOfferLinkBodyModel>;
+    artistOfferLinks?: Array<ArtistOfferLinkBodyModelV2> | null;
     /**
      * Audiodisabilitycompliant
      */
-    audioDisabilityCompliant?: boolean;
+    audioDisabilityCompliant?: boolean | null;
     /**
      * Bookingalloweddatetime
      */
-    bookingAllowedDatetime?: string;
+    bookingAllowedDatetime?: string | null;
     /**
      * Bookingcontact
      */
-    bookingContact?: string;
+    bookingContact?: string | null;
     /**
      * Bookingemail
      */
-    bookingEmail?: string;
+    bookingEmail?: string | null;
     /**
      * Description
      */
-    description?: string;
+    description?: string | null;
     /**
      * Durationminutes
      */
-    durationMinutes?: number;
+    durationMinutes?: number | null;
     /**
      * Externalticketofficeurl
      */
-    externalTicketOfficeUrl?: string;
-    extraData?: OfferExtraData;
+    externalTicketOfficeUrl?: string | null;
+    extraData?: OfferExtraDataV2 | null;
     /**
      * Hasculturaloutreachclaim
      */
-    hasCulturalOutreachClaim?: boolean;
+    hasCulturalOutreachClaim?: boolean | null;
     /**
      * Isduo
      */
-    isDuo?: boolean;
+    isDuo?: boolean | null;
     /**
      * Isnational
      */
-    isNational?: boolean;
+    isNational?: boolean | null;
     /**
      * Location
      */
-    location?: LocationBodyModel | LocationOnlyOnVenueBodyModel;
+    location?: ({
+        isVenueLocation: false;
+    } & LocationBodyModelV2) | ({
+        isVenueLocation: true;
+    } & LocationOnlyOnVenueBodyModelV2) | null;
     /**
      * Mentaldisabilitycompliant
      */
-    mentalDisabilityCompliant?: boolean;
+    mentalDisabilityCompliant?: boolean | null;
     /**
      * Motordisabilitycompliant
      */
-    motorDisabilityCompliant?: boolean;
+    motorDisabilityCompliant?: boolean | null;
     /**
      * Name
      */
-    name?: string;
+    name?: string | null;
     /**
      * Publicationdatetime
      */
-    publicationDatetime?: string | 'now';
+    publicationDatetime?: string | 'now' | null;
     /**
      * Shouldsendmail
      */
-    shouldSendMail?: boolean;
+    shouldSendMail?: boolean | null;
     /**
      * Subcategoryid
      */
-    subcategoryId?: string;
+    subcategoryId?: string | null;
     /**
      * Url
      */
-    url?: string;
+    url?: string | null;
     /**
      * Visualdisabilitycompliant
      */
-    visualDisabilityCompliant?: boolean;
+    visualDisabilityCompliant?: boolean | null;
     /**
      * Withdrawaldelay
      */
-    withdrawalDelay?: number;
+    withdrawalDelay?: number | null;
     /**
      * Withdrawaldetails
      */
-    withdrawalDetails?: string;
-    withdrawalType?: WithdrawalTypeEnum;
+    withdrawalDetails?: string | null;
+    withdrawalType?: WithdrawalTypeEnum | null;
 };
 
 /**

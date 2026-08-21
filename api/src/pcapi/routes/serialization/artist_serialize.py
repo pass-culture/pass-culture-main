@@ -29,3 +29,9 @@ class ArtistOfferLinkBodyModel(ConfiguredBaseModel):
 
 
 class ArtistOfferLinkResponseModel(ArtistOfferLinkBodyModel): ...
+
+
+class ArtistOfferLinkBodyModelV2(HttpBodyModel):
+    artist_id: str | None
+    artist_type: artist_models.ArtistType
+    artist_name: str

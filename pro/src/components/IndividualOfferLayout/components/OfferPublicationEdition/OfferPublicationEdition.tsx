@@ -80,8 +80,6 @@ export function OfferPublicationEdition({
         [GET_OFFER_QUERY_KEY, offer.id],
         api.patchOffer({
           path: { offer_id: offer.id },
-          // TODO (tpommellet) to remove once PatchOfferBodyModel is migrated to Pydantic V2
-          // @ts-expect-error
           body: getPatchOfferPayloadFromFormValues(
             offer,
             selectedPartnerVenue,
