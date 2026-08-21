@@ -53,6 +53,33 @@ def test_search_city_by_name(requests_mock):
 
 
 @pytest.mark.settings(GEO_API_BACKEND="pcapi.connectors.api_geo.GeoApiBackend")
+def test_search_city_by_name_with_department_and_postal_code(requests_mock):
+    requests_mock.get(
+        "https://geo.api.gouv.fr/communes?boost=population&limit=20&nom=Toulouse&codeDepartement=31&codePostal=31000",
+        json=[
+            {
+                "nom": "Toulouse",
+                "code": "31555",
+                "codeDepartement": "31",
+                "siren": "213105554",
+                "codeEpci": "243100518",
+                "codeRegion": "76",
+                "codesPostaux": ["31000", "31100", "31200", "31300", "31400", "31500"],
+                "population": 498003,
+                "_score": 0.9,
+            },
+        ],
+    )
+    results = api_geo.search_city("Toulouse", department_code="31", postal_code="31000")
+    assert requests_mock.called
+    assert requests_mock.last_request.qs["codeDepartement"] == ["31"]
+    assert requests_mock.last_request.qs["codePostal"] == ["31000"]
+    assert results == [
+        api_geo.GeoCity(insee_code="31555", name="Toulouse"),
+    ]
+
+
+@pytest.mark.settings(GEO_API_BACKEND="pcapi.connectors.api_geo.GeoApiBackend")
 def test_search_city_empty_query(requests_mock):
     requests_mock.get(
         "https://geo.api.gouv.fr/communes?boost=population&limit=20&nom=",

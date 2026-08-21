@@ -576,7 +576,7 @@ class PCFormField(wtforms.FormField):
     widget = partial(widget, template="components/forms/form_field.html")
 
 
-class PCArtistTomSelectField(PCTomSelectField):
+class PCStringTomSelectField(PCTomSelectField):
     def pre_validate(self, form: wtforms.Form) -> None:
         super(wtforms.SelectMultipleField, self).pre_validate(form)
 

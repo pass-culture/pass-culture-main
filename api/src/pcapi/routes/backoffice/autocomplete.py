@@ -639,8 +639,15 @@ def _get_city_choice_label(result: api_geo.GeoCity) -> str:
 def prefill_cities_choice(autocomplete_field: fields.PCTomSelectField) -> None:
     if autocomplete_field.data:
         autocomplete_field.choices = []
-        for city_code in autocomplete_field.data:
-            if cities := api_geo.search_city(insee_code=city_code, limit=1):  # uses cache
+        for index, city_code in enumerate(autocomplete_field.data):
+            try:
+                cities = api_geo.search_city(insee_code=city_code, limit=1)  # uses cache
+            except api_geo.GeoException:
+                autocomplete_field.choices.extend(
+                    (city_code, f"Erreur API : {city_code}") for city_code in autocomplete_field.data[index:]
+                )
+                break
+            if cities:
                 autocomplete_field.choices.append((cities[0].insee_code, _get_city_choice_label(cities[0])))
             else:
                 autocomplete_field.choices.append((city_code, f"Code INSEE inconnu : {city_code}"))
@@ -659,3 +666,57 @@ def autocomplete_cities() -> AutocompleteResponse:
     return AutocompleteResponse(
         items=[AutocompleteStrIdItem(id=result.insee_code, text=_get_city_choice_label(result)) for result in results]
     )
+
+
+def _split_cities_search_query(search_query: str) -> dict[str, str | None]:
+    search_query_parts = [part for part in re.split(r"[,;\s]+", search_query) if part]
+    postal_code = next((part for part in search_query_parts if re.fullmatch(r"[0-9]{5}", part)), None)
+    department_code = next((part for part in search_query_parts if re.fullmatch(r"2[AB]|[0-9]{2,3}", part)), None)
+    city_parts = [part for part in search_query_parts if part is not postal_code and part is not department_code]
+    city = " ".join(city_parts) if city_parts else None
+
+    return {
+        "city": city,
+        "department_code": department_code,
+        "postal_code": postal_code,
+    }
+
+
+@blueprint.backoffice_web.route("/autocomplete/account_cities", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_account_cities() -> AutocompleteResponse:
+    search_query_parts = _split_cities_search_query(request.args.get("q", "").strip())
+    if not search_query_parts["city"]:
+        return AutocompleteResponse(items=[])
+
+    results = api_geo.search_city(
+        name=search_query_parts["city"],
+        department_code=search_query_parts["department_code"],
+        postal_code=search_query_parts["postal_code"],
+        limit=NUM_RESULTS,
+    )
+
+    return AutocompleteResponse(
+        items=[
+            AutocompleteStrIdItem(id=_get_account_city_choice_id(result), text=_get_city_choice_label(result))
+            for result in results
+        ]
+    )
+
+
+def _get_account_city_choice_id(result: api_geo.GeoCity) -> str:
+    department_code = regions_utils.get_department_code_from_city_code(result.insee_code)
+    return f"{result.insee_code}_{department_code}_{result.name}"
+
+
+def prefill_account_cities_choice(autocomplete_field: fields.PCTomSelectField) -> None:
+    if autocomplete_field.data:
+        autocomplete_field.choices = []
+        for value in autocomplete_field.data:
+            try:
+                _insee_code, department_code, city = value.split("_", 2)
+            except ValueError:
+                autocomplete_field.choices.append((value, f"Valeur invalide : {value}"))
+            else:
+                autocomplete_field.choices.append((value, f"{city} ({department_code})"))

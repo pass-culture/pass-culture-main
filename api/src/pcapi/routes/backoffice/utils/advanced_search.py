@@ -3,6 +3,7 @@ import enum
 import operator as op
 import typing
 from collections import defaultdict
+from collections.abc import Iterable
 
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
@@ -97,10 +98,16 @@ class AdvancedSearchOperators(enum.Enum):
     NOT_INTERSECTS = "ne contient pas\0"  # the \0 is here to force wtforms to display NO_CONTAINS and NOT_INTERSECTS
 
 
+class AdvancedSearchWarning(Exception):
+    """Raised when a warning should be displayed to the user."""
+
+    pass
+
+
 def generate_search_query(
     query: sa_orm.Query,
     *,
-    search_parameters: typing.Iterable[dict[str, typing.Any]],
+    search_parameters: Iterable[dict[str, typing.Any]],
     fields_definition: dict[str, dict[str, typing.Any]],
     joins_definition: dict[str, list[dict[str, typing.Any]]],
     subqueries_definition: dict[str, dict[str, typing.Any]],
@@ -142,7 +149,11 @@ def generate_search_query(
             subquery_joins[meta_field["subquery_join"]].append(search_data)
             continue
 
-        field_value = meta_field.get("special", lambda x: x)(search_data.get(meta_field["field"]))
+        try:
+            field_value = meta_field.get("special", lambda x: x)(search_data.get(meta_field["field"]))
+        except AdvancedSearchWarning as e:
+            warnings.add(str(e))
+            continue
 
         if custom_filter := meta_field.get("custom_filters", {}).get(operator):
             filters.append(custom_filter(field_value))
@@ -234,7 +245,7 @@ def _manage_subquery_joins(
 
 
 def generate_algolia_search_string(
-    search_parameters: typing.Iterable[dict[str, typing.Any]],
+    search_parameters: Iterable[dict[str, typing.Any]],
     fields_definition: dict[str, dict[str, typing.Any]],
 ) -> tuple[dict, set[str]]:
     filter_dict: dict[str, list[list[str] | str]] = {
@@ -272,7 +283,7 @@ def generate_algolia_search_string(
 
 
 def generate_llm_search_dict(
-    search_parameters: typing.Iterable[dict[str, typing.Any]],
+    search_parameters: Iterable[dict[str, typing.Any]],
     fields_definition: dict[str, dict[str, typing.Any]],
 ) -> tuple[list, set[str]]:
     filters = []
