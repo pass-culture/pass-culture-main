@@ -126,7 +126,7 @@ class VenueResponse(BaseModel):
 
 
 class VenueProAdviceQuery(HttpQueryParamsModel):
-    max_content_length: int | None = None
+    max_content_length: int | None = pydantic_v2.Field(default=None, gt=0)
     page: int = pydantic_v2.Field(default=1, gt=0)
     results_per_page: int = pydantic_v2.Field(default=20, gt=0)
 

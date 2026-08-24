@@ -350,6 +350,13 @@ class VenueProAdvicesTest:
 
         assert response.status_code == 400
 
+    def test_max_content_length_cannot_be_negative(self, client):
+        params = {"maxContentLength": -1}
+        with assert_num_queries(0):
+            response = client.get("/native/v1/venue/1/advices", params=params)
+
+        assert response.status_code == 400
+
     def test_does_not_return_unpublished_offer_advice(self, client):
         offer = offers_factories.OfferFactory(
             publicationDatetime=datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=1)

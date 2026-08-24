@@ -9631,6 +9631,7 @@
                     "maxContentLength": {
                         "anyOf": [
                             {
+                                "exclusiveMinimum": 0,
                                 "type": "integer"
                             },
                             {
@@ -13573,6 +13574,7 @@
                         "schema": {
                             "anyOf": [
                                 {
+                                    "exclusiveMinimum": 0,
                                     "type": "integer"
                                 },
                                 {
