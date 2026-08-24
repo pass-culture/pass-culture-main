@@ -338,3 +338,77 @@ Remplacer les balises `<div>` et `<span>` par des `<p>` ou entourez le texte ave
 Texte
 
 </details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 5.3 - RGAA - Pour chaque tableau de mise en forme, le contenu linéarisé reste-t-il compréhensible ?</summary>
+
+**RAWeb** : [Critère 5.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-3)
+**Ticket** : [PC-42847](https://passculture.atlassian.net/browse/PC-42847)  
+**PR** : [#23998](https://github.com/pass-culture/pass-culture-main/pull/23998)
+
+**Problème** 😱  
+Les informations ne se présentent pas dans un ordre logique de lecture pour au moins un tableau de présentation.
+- En version responsive, le tableau "Horaires et stocks" n'est plus un tableau de donnée
+
+**Correction** 💡  
+Pour le tableau, ajouter le role="presentation" sur la balise `<table>`.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 5.5 - RGAA - Pour chaque tableau de données ayant un titre, celui-ci est-il pertinent ?</summary>
+
+**RAWeb** : [Critère 5.5](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-5)
+**Ticket** : [PC-42847](https://passculture.atlassian.net/browse/PC-42847)  
+**PR** : [#23998](https://github.com/pass-culture/pass-culture-main/pull/23998)
+
+**Problème** 😱  
+Au moins un titre de tableau de données n'est pas pertinent.
+
+- ~~P06 → Création offre individuelle : Le titre du tableau de données à l'étape "Horaires et stocks"~~ Corrigé dans #23860
+- P09 → Les offres / P10 → Les réservations / P13 → Les offres réservables (collectif) : Le titre du tableau des offres / réservations est “Tableau de données”
+
+**Correction** 💡  
+Pour le tableau, ajoute un titre pertinent.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 5.8 - RGAA - Chaque tableau de mise en forme ne doit pas utiliser d'éléments propres aux tableaux de données ?</summary>
+
+**RAWeb** : [Critère 5.8](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-8)
+**Ticket** : [PC-42847](https://passculture.atlassian.net/browse/PC-42847)  
+**PR** : [#23998](https://github.com/pass-culture/pass-culture-main/pull/23998)
+
+**Problème** 😱  
+Au moins un tableau de mise en forme utilise des éléments propres aux tableaux de données.
+
+- Le tableau qui met en forme le contenu de l'étape "Horaires et stocks" en version responsive
+- Vérifier les autres tableaux en version responsive
+
+**Correction** 💡  
+Pour tous les tableaux de mise en forme :
+
+Supprimer les balises propres aux tableaux de données <caption>, <th>, <thead>, <tfoot>, <colgroup>.
+
+Supprimer les attributs scope, headers, axis, role="rowheader", role="columnheader".
+
+**Retours audit** 🔥  
+TBD
+
+</details>

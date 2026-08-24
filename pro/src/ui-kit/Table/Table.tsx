@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import { TABLET_MEDIA_QUERY, useMediaQuery } from 'commons/hooks/useMediaQuery'
 import React, { type ReactNode, useMemo, useState } from 'react'
 
 import { SortingMode, useColumnSorting } from '@/commons/hooks/useColumnSorting'
@@ -128,6 +129,8 @@ export function Table<
     ? controlledSelectedIds
     : uncontrolledSelectedIds
 
+  const tableRole = useMediaQuery(TABLET_MEDIA_QUERY) ? 'presentation' : 'table'
+
   const updateSelectedIds = (newSelectedIds: Set<string | number>) => {
     if (!isControlled) {
       setUncontrolledSelectedIds(newSelectedIds)
@@ -205,6 +208,7 @@ export function Table<
           [styles['table-separate']]: variant === TableVariant.SEPARATE,
           [styles['table-collapse']]: variant === TableVariant.COLLAPSE,
         })}
+        role={tableRole}
       >
         <caption className={styles['table-caption-no-display']}>
           {title}
