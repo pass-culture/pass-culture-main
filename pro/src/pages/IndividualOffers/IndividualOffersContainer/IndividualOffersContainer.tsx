@@ -190,6 +190,7 @@ export const IndividualOffersContainer = ({
         liveMessage={`Page ${currentPageNumber} sur ${pageCount}`}
       >
         <Table
+          title="Offres individuelles"
           columns={columns}
           data={currentPageOffersSubset}
           allData={offers}
