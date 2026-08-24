@@ -441,6 +441,7 @@ export const defaultGetVenueResponseModel: GetVenueResponseModel = {
     street: null,
   },
   hasActiveIndividualOffer: true,
+  hasAtLeastOneBookableOffer: true,
   isCaledonian: false,
   isValidated: true,
   allowedOnAdage: true,

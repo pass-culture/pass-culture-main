@@ -31,6 +31,7 @@ class Returns200Test:
     num_queries += 1  # select accessibility_provider
     num_queries += 1  # select offer
     num_queries += 1  # venue.hasActiveIndividualOffer
+    num_queries += 1  # venue.hasAtLeastOneBookableOffer
     num_queries += 1  # venue.canDisplayHighlights
     num_queries += 1  # venue.hasNonDraftOffers
     num_queries += 1  # get_offerer_is_onboarded
@@ -171,6 +172,7 @@ class Returns200Test:
             },
             "externalAccessibilityId": "accessibility-slug",
             "hasActiveIndividualOffer": True,
+            "hasAtLeastOneBookableOffer": True,
             "isPermanent": venue.isPermanent,
             "managingOfferer": {
                 "id": venue.managingOfferer.id,

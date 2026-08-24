@@ -3559,6 +3559,10 @@ export type GetVenueResponseModel = {
      */
     hasAdageId: boolean;
     /**
+     * Hasatleastonebookableoffer
+     */
+    hasAtLeastOneBookableOffer: boolean;
+    /**
      * Hasnondraftoffers
      */
     hasNonDraftOffers: boolean;
