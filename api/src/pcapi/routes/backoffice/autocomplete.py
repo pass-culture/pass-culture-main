@@ -239,7 +239,9 @@ def prefill_highlights_choices(autocomplete_field: fields.PCTomSelectField) -> N
         ]
 
 
-def _autocomplete_venues(only_with_siret: bool = False) -> AutocompleteResponse:
+def _autocomplete_venues(only_with_siret: bool = False, only_allowed_on_adage: bool = False) -> AutocompleteResponse:
+    query = _get_venues_base_query()
+
     query_string = request.args.get("q", "").strip()
 
     is_numeric_query = string_utils.is_numeric(query_string)
@@ -247,7 +249,7 @@ def _autocomplete_venues(only_with_siret: bool = False) -> AutocompleteResponse:
         return AutocompleteResponse(items=[])
 
     if is_numeric_query and len(query_string) == 1:
-        filters = offerers_models.Venue.id == int(query_string)
+        query = query.filter(offerers_models.Venue.id == int(query_string))
     else:
         or_filters: list[sa.ColumnElement[bool] | sa.BinaryExpression[bool]] = [
             sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(f"%{clean_accents(query_string)}%"),
@@ -261,11 +263,17 @@ def _autocomplete_venues(only_with_siret: bool = False) -> AutocompleteResponse:
                 offerers_models.Venue.siret.like(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}{query_string}%"),
             ]
 
-        filters = sa.or_(*or_filters)
-    if only_with_siret:
-        filters = sa.and_(filters, offerers_models.Venue.siret.is_not(None))
+        query = query.filter(sa.or_(*or_filters))
 
-    venues = _get_venues_base_query().filter(filters).limit(NUM_RESULTS)
+    if only_with_siret:
+        query = query.filter(offerers_models.Venue.siret.is_not(None))
+
+    if only_allowed_on_adage:
+        query = query.join(offerers_models.Venue.managingOfferer).filter(
+            offerers_models.Offerer.allowedOnAdage.is_(True)
+        )
+
+    venues = query.limit(NUM_RESULTS)
     return AutocompleteResponse(
         items=[AutocompleteItem(id=venue.id, text=_get_venue_choice_label(venue)) for venue in venues]
     )
@@ -283,6 +291,13 @@ def autocomplete_venues() -> AutocompleteResponse:
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_pricing_points() -> AutocompleteResponse:
     return _autocomplete_venues(only_with_siret=True)
+
+
+@blueprint.backoffice_web.route("/autocomplete/adage-venues", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_venues_allowed_on_adage() -> AutocompleteResponse:
+    return _autocomplete_venues(only_allowed_on_adage=True)
 
 
 @blueprint.backoffice_web.route("/autocomplete/providers", methods=["GET"])

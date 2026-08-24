@@ -26,6 +26,7 @@ from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import repository as finance_repository
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
@@ -1327,3 +1328,105 @@ def toggle_publish_collective_offers_template(
             log_extra={"changes": {"isActive"}},
         )
     )
+
+
+def move_collective_offer(collective_offer_id: int, destination_venue_id: int) -> None:
+    collective_offer = (
+        db.session.query(models.CollectiveOffer)
+        .filter_by(id=collective_offer_id)
+        .options(
+            sa_orm.joinedload(models.CollectiveOffer.offererAddress),
+            sa_orm.joinedload(models.CollectiveOffer.venue),
+        )
+        .one_or_none()
+    )
+
+    if not collective_offer:
+        raise exceptions.CollectiveOfferNotFound()
+
+    destination_venue = (
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=destination_venue_id)
+        .options(sa_orm.joinedload(offerers_models.Venue.managingOfferer))
+        .one()
+    )
+
+    if not destination_venue.managingOfferer.allowedOnAdage:
+        raise exceptions.OffererNotAllowedOnAdage()
+
+    source_venue = collective_offer.venue
+
+    extra = {
+        "collective_offer_id": collective_offer.id,
+        "offerer_id": source_venue.managingOffererId,
+        "venue_id": source_venue.id,
+        "new_offerer_id": destination_venue.managingOffererId,
+        "new_venue_id": destination_venue_id,
+    }
+    logging.info("Move collective offer", extra=extra)
+
+    collective_offer.venue = destination_venue
+    if collective_offer.offererAddress:
+        collective_offer.offererAddress = offerers_api.get_or_create_offer_location(
+            offerer_id=destination_venue.managingOffererId,
+            address_id=collective_offer.offererAddress.addressId,
+            venue_id=destination_venue_id,
+            label=collective_offer.offererAddress.label,
+        )
+    db.session.add(collective_offer)
+
+    collective_booking = (
+        db.session.query(models.CollectiveBooking)
+        .join(models.CollectiveBooking.collectiveStock)
+        .filter(
+            models.CollectiveBooking.venueId == source_venue.id,
+            models.CollectiveBooking.status != models.CollectiveBookingStatus.CANCELLED,
+            models.CollectiveStock.collectiveOfferId == collective_offer_id,
+        )
+        .one_or_none()
+    )
+
+    if collective_booking:
+        if finance_repository.has_reimbursement(collective_booking):
+            raise exceptions.BookingIsAlreadyRefunded()
+
+        logging.info(
+            "Move collective booking",
+            extra={"collective_booking_id": collective_booking.id, "status": collective_booking.status.value, **extra},
+        )
+
+        collective_booking.offererId = destination_venue.managingOffererId
+        collective_booking.venue = destination_venue
+        db.session.add(collective_booking)
+
+        if collective_booking.status == models.CollectiveBookingStatus.USED:
+            pricing = (
+                db.session.query(finance_models.Pricing)
+                .filter_by(collectiveBookingId=collective_booking.id)
+                .one_or_none()
+            )
+            if pricing:
+                db.session.query(finance_models.PricingLine).filter_by(pricingId=pricing.id).delete(
+                    synchronize_session=False
+                )
+                db.session.delete(pricing)
+
+            finance_event = (
+                db.session.query(finance_models.FinanceEvent)
+                .filter_by(collectiveBookingId=collective_booking.id)
+                .one_or_none()
+            )
+            if finance_event:
+                finance_event.venueId = destination_venue.id
+                finance_event.pricingPointId = destination_venue.current_pricing_point_id
+                finance_event.status = finance_models.FinanceEventStatus.READY
+                # pricingOrderingDate can be reset to NOW for collective offers because there is ordering to take into
+                # account for reimbursement rate on collective pricings.
+                finance_event.pricingOrderingDate = date_utils.get_naive_utc_now()
+                db.session.add(finance_event)
+
+    db.session.flush()
+
+    # Refresh pro attributes (contacts may now have or no longer have collective offers)
+    update_external_pro(source_venue.bookingEmail)
+    update_external_pro(destination_venue.bookingEmail)
