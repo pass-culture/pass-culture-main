@@ -97,6 +97,25 @@ public_accounts_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 )
 
 
+def _get_cities_filter(department_codes_and_cities: Iterable[tuple[str, str]]) -> sa.ColumnElement:
+    return sa.or_(
+        *(
+            sa.and_(
+                sa.func.lower(users_models.User.city) == city.lower(),
+                users_models.User.departementCode == department_code,
+            )
+            for department_code, city in department_codes_and_cities
+        )
+    )
+
+
+def _resolve_and_validate_account_city_options(city_options: Iterable[str]) -> tuple[tuple[str, str], ...]:
+    try:
+        return autocomplete.resolve_account_city_options(city_options)
+    except ValueError:
+        raise advanced_search.AdvancedSearchWarning("Le filtre par ville est invalide")
+
+
 def _get_credits_filter(credit_names: Iterable[str]) -> sa.ColumnElement:
     beneficiary_predicates = {
         search_forms.AccountSearchFilter.PASS_17_V3.name: sa.and_(
@@ -186,6 +205,14 @@ def _get_tags_filter(tag_ids: Iterable[int]) -> sa.ColumnElement:
 
 ADVANCED_SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
     "BIRTHDAY": {"field": "date", "column": users_models.User.birth_date},
+    "CITY": {
+        "field": "city",
+        "special": _resolve_and_validate_account_city_options,
+        "custom_filters": {
+            "IN": _get_cities_filter,
+            "NOT_IN": lambda department_codes_and_cities: sa.not_(_get_cities_filter(department_codes_and_cities)),
+        },
+    },
     "CREDIT": {
         "field": "credit",
         "custom_filters": {

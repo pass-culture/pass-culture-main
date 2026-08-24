@@ -1,4 +1,5 @@
 import re
+from collections.abc import Iterable
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -19,8 +20,10 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_datespan
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import postal_code as postal_code_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils
@@ -29,6 +32,12 @@ from pcapi.utils.clean_accents import clean_accents
 from . import blueprint
 from .forms import fields
 
+
+ACCOUNT_CITY_OPTION_PATTERN = re.compile(r"([0-9][0-9AB][0-9]{3})_(.+)")
+"""
+Format: [INSEE_CODE]_[CITY_NAME]
+Example: 2B033_Bastia
+"""
 
 NUM_RESULTS = 20
 
@@ -658,4 +667,89 @@ def autocomplete_cities() -> AutocompleteResponse:
     results = api_geo.search_city(name=query_string, limit=NUM_RESULTS)
     return AutocompleteResponse(
         items=[AutocompleteStrIdItem(id=result.insee_code, text=_get_city_choice_label(result)) for result in results]
+    )
+
+
+def _split_cities_search_query(search_query: str) -> dict[str, str | None]:
+    """Split a free-text city search into api_geo.search_city() parameters.
+
+    The user may refine a city name with a department and/or a postal code, in any order.
+
+    The input is processed in this order:
+    - A 5-digit token is the postal code.
+    - A 2-3 char token (incl. 2A/2B) is the department code.
+    - The rest is the city name.
+
+    Args:
+        search_query: "Toulouse", "Toulouse 31", "31000 Toulouse", "Ajaccio 2A", "Saint-Denis 974" or just "31000".
+
+    Returns:
+        A dict whose keys match api_geo.search_city() parameters.
+    """
+    search_query_parts = [part for part in re.split(search_utils.SEARCH_QUERY_SEPARATOR, search_query) if part]
+    postal_code = next(
+        (part for part in search_query_parts if re.fullmatch(postal_code_utils.POSTAL_CODE_PATTERN, part)), None
+    )
+    department_code = next(
+        (part for part in search_query_parts if re.fullmatch(regions_utils.DEPARTMENT_CODE_PATTERN, part)), None
+    )
+    city_parts = [part for part in search_query_parts if part is not postal_code and part is not department_code]
+    city = " ".join(city_parts) if city_parts else None
+
+    return {
+        "name": city,
+        "department_code": department_code,
+        "postal_code": postal_code,
+    }
+
+
+@blueprint.backoffice_web.route("/autocomplete/account_cities", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_account_cities() -> AutocompleteResponse:
+    search_query_parts = _split_cities_search_query(request.args.get("q", "").strip())
+    if not search_query_parts["name"] and not search_query_parts["postal_code"]:
+        return AutocompleteResponse(items=[])
+
+    results = api_geo.search_city(
+        **search_query_parts,
+        limit=NUM_RESULTS,
+    )
+
+    return AutocompleteResponse(
+        items=[
+            AutocompleteStrIdItem(id=f"{result.insee_code}_{result.name}", text=_get_city_choice_label(result))
+            for result in results
+        ]
+    )
+
+
+def parse_account_city_option(option: str) -> tuple[str, str]:
+    """
+    Returns:
+        (INSEE_CODE, CITY)
+    """
+    if match := re.fullmatch(ACCOUNT_CITY_OPTION_PATTERN, option):
+        return match.group(1), match.group(2)
+
+    raise ValueError(f"Invalid city option: {option}")
+
+
+def prefill_account_cities_choice(autocomplete_field: fields.PCTomSelectField) -> None:
+    if autocomplete_field.data:
+        autocomplete_field.choices = []
+        for value in autocomplete_field.data:
+            try:
+                (insee_code, city) = parse_account_city_option(value)
+                department_code = regions_utils.get_department_code_from_city_code(insee_code)
+            except ValueError:
+                autocomplete_field.choices.append((value, f"Valeur invalide : {value}"))
+            else:
+                autocomplete_field.choices.append((value, f"{city} ({department_code})"))
+
+
+def resolve_account_city_options(city_options: Iterable[str]) -> tuple[tuple[str, str], ...]:
+    return tuple(
+        (regions_utils.get_department_code_from_city_code(insee_code), city)
+        for insee_code, city in (parse_account_city_option(option) for option in city_options)
     )

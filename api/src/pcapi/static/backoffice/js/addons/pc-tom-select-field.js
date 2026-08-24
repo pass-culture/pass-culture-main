@@ -108,10 +108,12 @@ addonList.push(
         tomselectOptions,
         tomselectItems,
       } = $select.dataset
+      const searchField = 'tomselectDisableClientFilter' in $select.dataset ? [] : ['id', 'text']
+
       return {
         valueField: 'id',
         labelField: 'text',
-        searchField: ['id','text'],
+        searchField,
         load: (query, callback) => {
           const url = `${tomselectAutocompleteUrl}?q=${encodeURIComponent(query)}`;
           fetch(url)

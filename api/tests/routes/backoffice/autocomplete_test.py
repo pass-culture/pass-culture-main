@@ -18,6 +18,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.routes.backoffice import autocomplete
 from pcapi.utils import date as date_utils
 
 
@@ -32,7 +33,7 @@ class AutocompleteTestBase:
         self,
         authenticated_client,
         search_query: str,
-        expected_texts: list[str],
+        expected_texts: set[str],
         expected_num_queries: int = 0,
         expected_id_type=int,
     ):
@@ -378,6 +379,7 @@ class AutocompleteAddressesTest(AutocompleteTestBase):
                         score=0.5,
                         city="unused",
                         street="unused",
+                        type=None,
                     )
                 ],
                 {"2 rue de la Culture 01002 Là-Bas"},
@@ -395,6 +397,7 @@ class AutocompleteAddressesTest(AutocompleteTestBase):
                         score=0.5,
                         city="unused",
                         street="unused",
+                        type=None,
                     ),
                     api_adresse.AddressInfo(
                         id="01234_56789_00003",
@@ -406,6 +409,7 @@ class AutocompleteAddressesTest(AutocompleteTestBase):
                         score=0.5,
                         city="unused",
                         street="unused",
+                        type=None,
                     ),
                 ],
                 {"2 rue de la Culture 01002 Là-Bas", "2 rue de la Culture 01003 Là-Haut"},
@@ -423,6 +427,7 @@ class AutocompleteAddressesTest(AutocompleteTestBase):
                         score=0.5,
                         city="unused",
                         street="unused",
+                        type=None,
                     )
                 ],
                 set(),
@@ -504,3 +509,78 @@ class AutocompleteCitiesTest(AutocompleteTestBase):
                 expected_num_queries=self.expected_num_queries,
                 expected_id_type=str,
             )
+
+
+class AutocompleteAccountCitiesTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_account_cities"
+    expected_num_queries = 1  # only authenticated user
+
+    @pytest.mark.parametrize(
+        "search_query, expected_search_kwargs, search_city_response, expected_texts",
+        [
+            ("", None, [], set()),
+            (" ", None, [], set()),
+            (
+                "31000",
+                {"name": None, "department_code": None, "postal_code": "31000"},
+                [api_geo.GeoCity(insee_code="31555", name="Toulouse")],
+                {"Toulouse (31)"},
+            ),
+            (
+                "Toulouse",
+                {"name": "Toulouse", "department_code": None, "postal_code": None},
+                [api_geo.GeoCity(insee_code="31555", name="Toulouse")],
+                {"Toulouse (31)"},
+            ),
+            (
+                "Toulouse 31",
+                {"name": "Toulouse", "department_code": "31", "postal_code": None},
+                [api_geo.GeoCity(insee_code="31555", name="Toulouse")],
+                {"Toulouse (31)"},
+            ),
+            (
+                "31000, Toulouse",
+                {"name": "Toulouse", "department_code": None, "postal_code": "31000"},
+                [api_geo.GeoCity(insee_code="31555", name="Toulouse")],
+                {"Toulouse (31)"},
+            ),
+            (
+                "Ajaccio 2A",
+                {"name": "Ajaccio", "department_code": "2A", "postal_code": None},
+                [api_geo.GeoCity(insee_code="2A004", name="Ajaccio")],
+                {"Ajaccio (2A)"},
+            ),
+            (
+                "Saint-Denis 974",
+                {"name": "Saint-Denis", "department_code": "974", "postal_code": None},
+                [api_geo.GeoCity(insee_code="97411", name="Saint-Denis")],
+                {"Saint-Denis (974)"},
+            ),
+        ],
+    )
+    def test_autocomplete_account_cities(
+        self, authenticated_client, search_query, expected_search_kwargs, search_city_response, expected_texts
+    ):
+        with mock.patch("pcapi.connectors.api_geo.search_city", return_value=search_city_response) as mock_search_city:
+            self._test_autocomplete(
+                authenticated_client,
+                search_query,
+                expected_texts,
+                expected_num_queries=self.expected_num_queries,
+                expected_id_type=str,
+            )
+        if expected_search_kwargs is None:
+            mock_search_city.assert_not_called()
+        else:
+            mock_search_city.assert_called_once_with(limit=autocomplete.NUM_RESULTS, **expected_search_kwargs)
+
+    def test_autocomplete_account_cities_returns_composite_ids(self, authenticated_client):
+        with mock.patch(
+            "pcapi.connectors.api_geo.search_city",
+            return_value=[api_geo.GeoCity(insee_code="75056", name="Paris")],
+        ):
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url_for(self.endpoint, q="Paris"))
+                assert response.status_code == 200
+
+        assert response.json["items"] == [{"id": "75056_Paris", "text": "Paris (75)"}]

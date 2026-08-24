@@ -455,9 +455,18 @@ class PCSelectMultipleField(wtforms.SelectMultipleField):
 class PCTomSelectField(PCSelectMultipleField):
     widget = partial(widget, template="components/forms/tom_select_field.html")
 
-    def __init__(self, label: str, *, endpoint: str, multiple: bool = False, **kwargs: typing.Any):
+    def __init__(
+        self,
+        label: str,
+        *,
+        endpoint: str,
+        multiple: bool = False,
+        disable_client_filter: bool = False,
+        **kwargs: typing.Any,
+    ):
         super().__init__(label, **kwargs)
         self.tomselect_autocomplete_url = url_for(endpoint)
+        self.tomselect_disable_client_filter = disable_client_filter
         self.multiple = multiple
 
     @property
@@ -576,7 +585,7 @@ class PCFormField(wtforms.FormField):
     widget = partial(widget, template="components/forms/form_field.html")
 
 
-class PCArtistTomSelectField(PCTomSelectField):
+class PCStringTomSelectField(PCTomSelectField):
     def pre_validate(self, form: wtforms.Form) -> None:
         super(wtforms.SelectMultipleField, self).pre_validate(form)
 
