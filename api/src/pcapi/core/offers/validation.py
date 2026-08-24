@@ -40,6 +40,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import stock_serialize as serialization
 from pcapi.utils import date
+from pcapi.utils.custom_keys import get_field
 from pcapi.utils.string import is_canonical_integer
 from pcapi.utils.string import to_camelcase
 
@@ -616,6 +617,104 @@ def check_booking_limit_datetime(
     return [beginning, booking_limit_datetime]
 
 
+def check_offer_update(
+    offer: models.Offer,
+    fields: dict[str, typing.Any],
+    *,
+    mandatory_extra_data_fields: typing.Collection[str],
+    venue_provider: providers_models.VenueProvider | None = None,
+) -> None:
+    check_validation_status(offer)
+
+    updates = {key for key, value in fields.items() if getattr(offer, key) != value}
+    if not updates:
+        return
+
+    if offer.lastProvider is not None:
+        check_update_only_allowed_fields_for_offer_from_provider(updates, offer.lastProvider)
+
+    if "subcategoryId" in updates and offer.status != OfferStatus.DRAFT:
+        raise exceptions.UnallowedUpdate("subcategoryId")
+
+    subcategory_id = get_field(offer, fields, "subcategoryId")
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+
+    if updates & {
+        "audioDisabilityCompliant",
+        "mentalDisabilityCompliant",
+        "motorDisabilityCompliant",
+        "visualDisabilityCompliant",
+    }:
+        check_accessibility_compliance(
+            audio_disability_compliant=get_field(offer, fields, "audioDisabilityCompliant"),
+            mental_disability_compliant=get_field(offer, fields, "mentalDisabilityCompliant"),
+            motor_disability_compliant=get_field(offer, fields, "motorDisabilityCompliant"),
+            visual_disability_compliant=get_field(offer, fields, "visualDisabilityCompliant"),
+        )
+
+    if updates & {"extraData", "ean"}:
+        check_extra_data(
+            format_extra_data(subcategory_id, get_field(offer, fields, "extraData")) or {},
+            offer.venue,
+            mandatory_extra_data_fields,
+            offer=offer,
+            ean=get_field(offer, fields, "ean"),
+        )
+
+    if "isDuo" in updates:
+        check_is_duo_compliance(get_field(offer, fields, "isDuo"), subcategory)
+
+    if "idAtProvider" in updates:
+        id_at_provider = get_field(offer, fields, "idAtProvider")
+        check_can_input_id_at_provider(offer.lastProvider, id_at_provider)
+        check_can_input_id_at_provider_for_this_venue(offer.venueId, id_at_provider, offer.id)
+
+    if "name" in updates:
+        name = get_field(offer, fields, "name")
+        if name is None:
+            raise exceptions.OfferException({"name": ["cannot be null"]})
+        check_offer_name_does_not_contain_ean(name)
+
+    if updates & {"withdrawalType", "withdrawalDelay", "withdrawalDetails", "bookingContact"}:
+        check_offer_withdrawal(
+            withdrawal_type=get_field(offer, fields, "withdrawalType"),
+            withdrawal_delay=get_field(offer, fields, "withdrawalDelay"),
+            subcategory_id=subcategory_id,
+            booking_contact=get_field(offer, fields, "bookingContact"),
+            provider=offer.lastProvider,
+            venue_provider=venue_provider,
+        )
+
+    if "durationMinutes" in updates:
+        check_offer_duration(get_field(offer, fields, "durationMinutes"))
+
+    resulting_url = get_field(offer, fields, "url")
+
+    # the creation process is splitted into several steps. URL and
+    # address might be set only in the end. Therefore, this validation is
+    # meaningless until the offer has been finalized, apart from the URL
+    # of an online offer, which can never be removed.
+    if offer.status != OfferStatus.DRAFT:
+        check_url_is_coherent_with_subcategory(subcategory, resulting_url)
+        check_url_and_offererAddress_are_not_both_set(resulting_url, get_field(offer, fields, "offererAddress"))
+    elif offer.url and resulting_url is None:
+        check_url_is_coherent_with_subcategory(subcategory, None)
+
+
+def format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> models.OfferExtraData | None:
+    """Keep only the fields that are defined in the subcategory conditional fields"""
+    if extra_data is None:
+        return None
+
+    formatted_extra_data: models.OfferExtraData = {}
+
+    for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields:
+        if extra_data.get(field_name):
+            formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
+
+    return formatted_extra_data
+
+
 def check_offer_extra_data(
     subcategory_id: str,
     extra_data: models.OfferExtraData | None,
@@ -732,8 +831,6 @@ def check_offer_duration(duration_minutes: int | None) -> None:
 
 
 def check_duration_minutes(duration_minutes: int | None, is_from_private_api: bool) -> None:
-    # TODO: only used when an offer is created. Drop this flag once offer
-    # creation translates the error at route level, as edition does.
     if is_from_private_api:
         check_offer_duration(duration_minutes)
         return
