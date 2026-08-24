@@ -129,7 +129,8 @@ export function Table<
     ? controlledSelectedIds
     : uncontrolledSelectedIds
 
-  const tableRole = useMediaQuery(TABLET_MEDIA_QUERY) ? 'presentation' : 'table'
+  const isTabletOrSmaller = useMediaQuery(TABLET_MEDIA_QUERY)
+  const tableRole = isTabletOrSmaller ? 'presentation' : 'table'
 
   const updateSelectedIds = (newSelectedIds: Set<string | number>) => {
     if (!isControlled) {
@@ -210,75 +211,79 @@ export function Table<
         })}
         role={tableRole}
       >
-        <caption className={styles['table-caption-no-display']}>
-          {title}
-        </caption>
-        <thead>
-          <tr
-            className={classNames(styles['table-header'], {
-              [styles['table-header-sticky']]: isSticky,
-            })}
-          >
-            {selectable && (
-              <th scope="col" className={styles['table-header-th']}>
-                <div className={styles['table-select-all']}>
-                  <Tooltip
-                    content="Tout sélectionner"
-                    className={styles['table-select-all-tooltip']}
-                  >
-                    <Checkbox
-                      label={headerLabel}
-                      title={headerLabel}
-                      ariaLabel="Sélectionner toutes les lignes"
-                      checked={headerChecked}
-                      indeterminate={headerIndeterminate}
-                      onChange={toggleSelectAll}
-                      className={styles['table-checkbox-label']}
-                    />
-                  </Tooltip>
-                  <span className={styles['visually-hidden']}>
-                    Sélectionner toutes les lignes
-                  </span>
-                  <div>{selectedNumber}</div>
-                </div>
-              </th>
-            )}
-            {columns.map((col) => {
-              if (col.headerHidden) {
-                return null
-              }
-              const headerContent = col.header ?? col.label ?? ''
+        {!isTabletOrSmaller && sortedData.length > 0 && (
+          <>
+            <caption className={styles['table-caption-no-display']}>
+              {title}
+            </caption>
+            <thead>
+              <tr
+                className={classNames(styles['table-header'], {
+                  [styles['table-header-sticky']]: isSticky,
+                })}
+              >
+                {selectable && (
+                  <th scope="col" className={styles['table-header-th']}>
+                    <div className={styles['table-select-all']}>
+                      <Tooltip
+                        content="Tout sélectionner"
+                        className={styles['table-select-all-tooltip']}
+                      >
+                        <Checkbox
+                          label={headerLabel}
+                          title={headerLabel}
+                          ariaLabel="Sélectionner toutes les lignes"
+                          checked={headerChecked}
+                          indeterminate={headerIndeterminate}
+                          onChange={toggleSelectAll}
+                          className={styles['table-checkbox-label']}
+                        />
+                      </Tooltip>
+                      <span className={styles['visually-hidden']}>
+                        Sélectionner toutes les lignes
+                      </span>
+                      <div>{selectedNumber}</div>
+                    </div>
+                  </th>
+                )}
+                {columns.map((col) => {
+                  if (col.headerHidden) {
+                    return null
+                  }
+                  const headerContent = col.header ?? col.label ?? ''
 
-              return (
-                <th
-                  scope="col"
-                  id={col.id}
-                  colSpan={col.headerColSpan || 1}
-                  key={`col-${col.id}`}
-                  className={classNames(styles['table-header-th'], {
-                    [styles['table-header-sortable-th']]: col.sortable,
-                    [styles['table-header-center-th']]: col.centerHeader,
-                  })}
-                >
-                  {col.sortable ? (
-                    <SortColumn
-                      onClick={() => sortTableColumn(col.id)}
-                      sortingMode={
-                        currentSortingColumn === col.id
-                          ? currentSortingMode
-                          : SortingMode.NONE
-                      }
+                  return (
+                    <th
+                      scope="col"
+                      id={col.id}
+                      colSpan={col.headerColSpan || 1}
+                      key={`col-${col.id}`}
+                      className={classNames(styles['table-header-th'], {
+                        [styles['table-header-sortable-th']]: col.sortable,
+                        [styles['table-header-center-th']]: col.centerHeader,
+                      })}
                     >
-                      {headerContent}
-                    </SortColumn>
-                  ) : (
-                    headerContent
-                  )}
-                </th>
-              )
-            })}
-          </tr>
-        </thead>
+                      {col.sortable ? (
+                        <SortColumn
+                          onClick={() => sortTableColumn(col.id)}
+                          sortingMode={
+                            currentSortingColumn === col.id
+                              ? currentSortingMode
+                              : SortingMode.NONE
+                          }
+                        >
+                          {headerContent}
+                        </SortColumn>
+                      ) : (
+                        headerContent
+                      )}
+                    </th>
+                  )
+                })}
+              </tr>
+            </thead>
+          </>
+        )}
 
         <tbody>
           {isLoading &&
