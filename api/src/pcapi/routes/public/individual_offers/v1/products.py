@@ -549,8 +549,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
-    if venue:
-        authorization.get_venue_provider_or_raise_404(venue.id)
+    venue_provider = authorization.get_venue_provider_or_raise_404(venue.id if venue else offer.venueId)
 
     updates = body.dict(by_alias=True, exclude_unset=True)
     accessibility = updates.get("accessibility", {})
@@ -588,6 +587,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
         mandatory_extra_data_fields=utils.mandatory_extra_data_fields(offer.subcategoryId),
         venue=venue,
         offerer_address=offerer_address,
+        venue_provider=venue_provider,
     )
     db.session.flush()
 
