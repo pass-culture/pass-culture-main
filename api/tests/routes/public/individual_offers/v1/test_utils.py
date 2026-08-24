@@ -4,11 +4,14 @@ import pytest
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core import testing
+from pcapi.core.categories import subcategories
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import schemas as offerers_schemas
+from pcapi.models import api_errors
 from pcapi.routes.public.individual_offers.v1 import serialization
 from pcapi.routes.public.individual_offers.v1 import utils
+from pcapi.routes.public.individual_offers.v1.serializers import events as events_serializers
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -208,3 +211,24 @@ class GetVenueWithOffererAddressTest:
         with testing.assert_num_queries(1):
             fetched_venue = utils.get_venue_with_offerer_address(venue_id)
             assert fetched_venue.offererAddress.addressId
+
+
+class CheckOfferSubcategoryTest:
+    def test_should_accept_a_body_that_carries_no_category_related_fields(self):
+        body = events_serializers.EventOfferEdition(name="Jules et Jim")
+
+        utils.check_offer_subcategory(body, subcategories.SEANCE_CINE.id)
+
+    def test_should_accept_the_subcategory_the_offer_already_has(self):
+        body = events_serializers.EventOfferEdition(category_related_fields={"category": "SEANCE_CINE"})
+
+        utils.check_offer_subcategory(body, subcategories.SEANCE_CINE.id)
+
+    def test_should_refuse_another_subcategory_for_an_event(self):
+        body = events_serializers.EventOfferEdition(category_related_fields={"category": "SEANCE_CINE"})
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            utils.check_offer_subcategory(body, subcategories.CONCERT.id)
+
+        assert error.value.errors == {"categoryRelatedFields.category": ["The category cannot be changed"]}
+        assert error.value.status_code == 400
