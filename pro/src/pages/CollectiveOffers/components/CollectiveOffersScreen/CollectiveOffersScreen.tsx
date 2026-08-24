@@ -202,6 +202,7 @@ export const CollectiveOffersScreen = ({
         liveMessage={`Page ${page} sur ${pageCount}`}
       >
         <Table
+          title="Offres collectives"
           columns={columns}
           data={currentPageItems}
           allData={sortedOffers}

@@ -73,6 +73,7 @@ export const IndividualBookingsTable = ({
       liveMessage={`Page ${page} sur ${pageCount}`}
     >
       <Table
+        title="Réservations individuelles"
         columns={columns}
         data={currentPageItems}
         isLoading={isLoading}
