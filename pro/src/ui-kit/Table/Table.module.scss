@@ -81,7 +81,9 @@
       border-top-left-radius: var(--size-border-radius-m);
     }
 
-    &:last-child {
+    // Last child that is not for full row only
+    // @see https://stackoverflow.com/a/8300258
+    &:nth-last-child(1 of :not(.table-header-full-row)) {
       border-top-right-radius: var(--size-border-radius-m);
       padding-right: var(--size-spacing-l);
     }
@@ -94,6 +96,12 @@
 
   &-center-th {
     text-align: center;
+  }
+
+  &-full-row {
+    @include a11y.visually-hidden;
+
+    padding: 0;
   }
 }
 

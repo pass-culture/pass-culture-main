@@ -33,19 +33,21 @@ import { DownloadsMovedBanner } from '@/components/DownloadsMovedBanner/Download
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Banner } from '@/design-system/Banner/Banner'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
-import { Table, TableVariant } from '@/ui-kit/Table/Table'
+import { type FullRow, Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import styles from './CollectiveOffersScreen.module.scss'
 import { CollectiveOffersSearchFilters } from './CollectiveOffersSearchFilters/CollectiveOffersSearchFilters'
 
-const getCollectiveOfferFullRowContent = (
+const getCollectiveOfferFullRow = (
   offer: CollectiveOfferResponseModel
-): JSX.Element | null => {
+): FullRow | null => {
   const hasExpirationRow =
     isCollectiveOfferBookable(offer) &&
     canExpire(offer) &&
     !!offer.stock?.bookingLimitDatetime
-  return hasExpirationRow ? <ExpirationCell offer={offer} /> : null
+  return hasExpirationRow
+    ? { content: <ExpirationCell offer={offer} />, headerId: 'expiration' }
+    : null
 }
 
 export type CollectiveOffersScreenProps = {
@@ -238,7 +240,7 @@ export const CollectiveOffersScreen = ({
               scrollToContentWrapper()
             },
           }}
-          getFullRowContent={getCollectiveOfferFullRowContent}
+          getFullRow={getCollectiveOfferFullRow}
         />
       </AccessibleScrollContainer>
       <output>

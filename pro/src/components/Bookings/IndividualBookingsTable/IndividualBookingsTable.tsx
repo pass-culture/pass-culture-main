@@ -54,14 +54,13 @@ export const IndividualBookingsTable = ({
       return next
     })
 
-  const { columns, getFullRowContentIndividual } =
-    useBookingsTableColumnsByIndex({
-      bookings: bookingsWithIds,
-      bookingStatuses,
-      updateGlobalFilters: updateGlobalFilters,
-      expandedIds: expanded,
-      onToggle: toggle,
-    })
+  const { columns, getFullRowIndividual } = useBookingsTableColumnsByIndex({
+    bookings: bookingsWithIds,
+    bookingStatuses,
+    updateGlobalFilters: updateGlobalFilters,
+    expandedIds: expanded,
+    onToggle: toggle,
+  })
 
   const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
     selector: '#content-wrapper',
@@ -108,7 +107,7 @@ export const IndividualBookingsTable = ({
             }
           },
         }}
-        getFullRowContent={getFullRowContentIndividual}
+        getFullRow={getFullRowIndividual}
       />
     </AccessibleScrollContainer>
   )

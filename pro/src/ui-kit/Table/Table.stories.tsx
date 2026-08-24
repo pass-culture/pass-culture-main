@@ -308,9 +308,9 @@ export const WithFullRowAlwaysDisplayedDetail: Story = {
         {...args}
         variant={TableVariant.COLLAPSE}
         columns={columns}
-        getFullRowContent={(row) => {
+        getFullRow={(row) => {
           if (row.age > 30) {
-            return (
+            return {content: (
               <div
                 key={row.id}
                 style={{
@@ -322,7 +322,7 @@ export const WithFullRowAlwaysDisplayedDetail: Story = {
               >
                 {row.name}
               </div>
-            )
+            ), headerId: 'score'}
           }
           return null
         }}
@@ -362,8 +362,8 @@ export const WithFullRowDetail: Story = {
       <Table
         {...args}
         columns={columns}
-        getFullRowContent={(row) =>
-          row.id === expandedId ? (
+        getFullRow={(row) =>
+          row.id === expandedId ? {content: (
             <div style={{ padding: 16 }}>
               <h4 style={{ margin: 0 }}>{row.name}</h4>
               <p style={{ margin: '8px 0' }}>
@@ -374,7 +374,7 @@ export const WithFullRowDetail: Story = {
                 <strong>{row.status}</strong>
               </p>
             </div>
-          ) : null
+          ), headerId: 'name'}: null
         }
       />
     )

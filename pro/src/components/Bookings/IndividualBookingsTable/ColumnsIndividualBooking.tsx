@@ -94,27 +94,32 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
     },
   ]
 
-  const getFullRowContentIndividual = (row: BookingRow) => {
+  const getFullRowIndividual = (row: BookingRow) => {
     if (!expandedIds?.has(row.id)) {
       return null
     }
-    return (
-      <>
-        <div>
-          <span>Prix : </span>
-          <span>
-            {isCaledonian
-              ? formatPacificFranc(convertEuroToPacificFranc(row.bookingAmount))
-              : priceText(row.bookingAmount)}
-          </span>
-        </div>
-        <BookingStatusCellHistory
-          index={row.id}
-          bookingStatusHistory={row.bookingStatusHistory}
-        />
-      </>
-    )
+    return {
+      content: (
+        <>
+          <div>
+            <span>Prix : </span>
+            <span>
+              {isCaledonian
+                ? formatPacificFranc(
+                    convertEuroToPacificFranc(row.bookingAmount)
+                  )
+                : priceText(row.bookingAmount)}
+            </span>
+          </div>
+          <BookingStatusCellHistory
+            index={row.id}
+            bookingStatusHistory={row.bookingStatusHistory}
+          />
+        </>
+      ),
+      headerId: 'details',
+    }
   }
 
-  return { columns, getFullRowContentIndividual }
+  return { columns, getFullRowIndividual }
 }
