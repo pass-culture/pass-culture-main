@@ -83,7 +83,7 @@ function getEmptyStateMessage(hasBankAccount: boolean) {
 }
 
 const getSettlementDateLabel = (settlement: ExtendedSettlementResponseModel) =>
-  format(new Date(settlement.date), FORMAT_DD_MM_YYYY)
+  settlement.date ? format(new Date(settlement.date), FORMAT_DD_MM_YYYY) : '-'
 
 const columns: Column<ExtendedSettlementResponseModel>[] = [
   {
@@ -98,8 +98,7 @@ const columns: Column<ExtendedSettlementResponseModel>[] = [
     label: "Date d'émission",
     sortable: true,
     ordererField: 'date',
-    render: (settlement) =>
-      format(new Date(settlement.date), FORMAT_DD_MM_YYYY),
+    render: (settlement) => getSettlementDateLabel(settlement),
   },
   {
     id: 'bankAccount',
@@ -141,11 +140,11 @@ const columns: Column<ExtendedSettlementResponseModel>[] = [
     ),
   },
   {
-    id: 'invoiceCount',
+    id: 'invoicesCount',
     label: 'Nombre de justificatifs',
     sortable: true,
-    ordererField: 'invoiceCount',
-    render: (settlement) => settlement.invoiceCount,
+    ordererField: 'invoicesCount',
+    render: (settlement) => settlement.invoicesCount,
   },
   {
     id: 'actions',

@@ -20,53 +20,29 @@ from pcapi.utils.transaction_manager import atomic
 from . import blueprint
 
 
-@private_api.route("/v2/finance/has-settlement", methods=["GET"])
+@private_api.route("/finance/has-settlement", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(response_model=finance_serialize.HasSettlementResponseModel, api=blueprint.pro_private_schema)
 def has_settlement(query: finance_serialize.HasSettlementQueryModel) -> finance_serialize.HasSettlementResponseModel:
     rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
-    # TODO(mdesquilbet, 19/08/2026): NOT YET IMPLEMENTED
-    # question : should we merge it with has_invoice endpoint in some way ?
-    return finance_serialize.HasSettlementResponseModel(has_settlement=True)
+
+    offerer_has_settlement = finance_repository.has_settlement(offerer_id=query.offerer_id)
+
+    return finance_serialize.HasSettlementResponseModel(has_settlement=offerer_has_settlement)
 
 
-@private_api.route("/v2/finance/settlements", methods=["GET"])
+@private_api.route("/finance/settlements", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(response_model=finance_serialize.SettlementListResponseModel, api=blueprint.pro_private_schema)
-def get_settlements() -> finance_serialize.SettlementListResponseModel:
-    # TODO(mdesquilbet, 19/08/2026): NOT YET IMPLEMENTED
+def get_settlements(query: finance_serialize.SettlementListQueryModel) -> finance_serialize.SettlementListResponseModel:
+    rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
+
+    settlements_query = finance_repository.get_settlements_query(offerer_id=query.offerer_id)
+
     return finance_serialize.SettlementListResponseModel(
-        [
-            finance_serialize.SettlementResponseModel(
-                id=1,
-                label="VIR00001",
-                date=datetime.date.today(),
-                amount=1000,
-                bankAccount="Compte bancaire 1",
-                status=finance_models.SettlementStatus.ISSUED,
-                invoiceCount=2,
-            ),
-            finance_serialize.SettlementResponseModel(
-                id=2,
-                label="VIR00002",
-                date=datetime.date.today(),
-                amount=400,
-                bankAccount="Compte bancaire 2",
-                status=finance_models.SettlementStatus.EXECUTED,
-                invoiceCount=3,
-            ),
-            finance_serialize.SettlementResponseModel(
-                id=3,
-                label="VIR00003",
-                date=datetime.date.today(),
-                amount=1200,
-                bankAccount="Compte bancaire 1",
-                status=finance_models.SettlementStatus.REJECTED,
-                invoiceCount=1,
-            ),
-        ]
+        [finance_serialize.SettlementResponseModel.build(settlement) for settlement in settlements_query]
     )
 
 
@@ -79,19 +55,16 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
     # `get_paid_invoices_query` expects the upper bound to be *exclusive*.
     if query.period_ending_date:
         query.period_ending_date += datetime.timedelta(days=1)
-    amount_params = {}
-    # See the comment about amounts in src/pcapi/core/finance/models.py:3
-    if query.amount_positive_only:
-        amount_params["amount_lt"] = 0
-    if query.amount_negative_only:
-        amount_params["amount_gte"] = 0
+
     invoices = finance_repository.get_paid_invoices_query(
         current_user,
         bank_account_id=query.bank_account_id,
         date_from=query.period_beginning_date,
         date_until=query.period_ending_date,
         offerer_id=query.offerer_id,
-        **amount_params,
+        # see the comment about amounts in src/pcapi/core/finance/models.py docstring
+        amount_lower_than=0 if query.amount_positive_only else None,
+        amount_greater_than_equal=0 if query.amount_negative_only else None,
     )
     invoices = invoices.options(
         sa_orm.joinedload(finance_models.Invoice.cashflows).joinedload(finance_models.Cashflow.batch)

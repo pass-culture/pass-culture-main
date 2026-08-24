@@ -600,9 +600,9 @@ def get_paid_invoices_query(
     offerer_id: int | None = None,
     date_from: datetime.date | None = None,
     date_until: datetime.date | None = None,
-    amount_lt: int | None = None,
-    amount_gte: int | None = None,
-) -> sa_orm.Query:
+    amount_lower_than: int | None = None,
+    amount_greater_than_equal: int | None = None,
+) -> sa_orm.Query[models.Invoice]:
     """Return invoices for the requested offerer.
 
     If given, ``date_from`` is **inclusive**, ``date_until`` is
@@ -645,10 +645,10 @@ def get_paid_invoices_query(
         datetime_until = convert_to_datetime(date_until)
         invoices = invoices.filter(models.Invoice.date < datetime_until)
 
-    if amount_lt is not None:
-        invoices = invoices.filter(models.Invoice.amount < amount_lt)
-    if amount_gte is not None:
-        invoices = invoices.filter(models.Invoice.amount >= amount_gte)
+    if amount_lower_than is not None:
+        invoices = invoices.filter(models.Invoice.amount < amount_lower_than)
+    if amount_greater_than_equal is not None:
+        invoices = invoices.filter(models.Invoice.amount >= amount_greater_than_equal)
 
     return invoices
 
@@ -658,5 +658,39 @@ def has_invoice(offerer_id: int) -> bool:
         db.session.query(models.Invoice)
         .join(models.Invoice.bankAccount)
         .filter(models.BankAccount.offererId == offerer_id)
+        .exists()
+    ).scalar()
+
+
+def get_settlements_query(offerer_id: int) -> sa_orm.Query[models.Settlement]:
+    settlements_query = (
+        db.session.query(models.Settlement)
+        .join(models.Settlement.bankAccount)
+        .join(models.Settlement.batch)
+        .filter(
+            models.BankAccount.offererId == offerer_id,
+            models.Settlement.status != models.SettlementStatus.ISSUED,
+        )
+        .options(
+            sa_orm.contains_eager(models.Settlement.bankAccount).load_only(models.BankAccount.label),
+            sa_orm.contains_eager(models.Settlement.batch).load_only(
+                models.SettlementBatch.name, models.SettlementBatch.dateValidated
+            ),
+            sa_orm.selectinload(models.Settlement.invoices).load_only(models.Invoice.id),
+        )
+        .order_by(models.SettlementBatch.dateValidated.desc())
+    )
+
+    return settlements_query
+
+
+def has_settlement(offerer_id: int) -> bool:
+    return db.session.query(
+        db.session.query(models.Settlement)
+        .join(models.Settlement.bankAccount)
+        .filter(
+            models.BankAccount.offererId == offerer_id,
+            models.Settlement.status != models.SettlementStatus.ISSUED,
+        )
         .exists()
     ).scalar()
