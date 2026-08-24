@@ -412,3 +412,56 @@ Supprimer les attributs scope, headers, axis, role="rowheader", role="columnhead
 TBD
 
 </details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 5.8 - RGAA - Chaque tableau de mise en forme ne doit pas utiliser d'éléments propres aux tableaux de données ?</summary>
+
+**RAWeb** : [Critère 5.8](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-8)
+**Ticket** : [PC-42847](https://passculture.atlassian.net/browse/PC-42847)  
+**PR** : [#23998](https://github.com/pass-culture/pass-culture-main/pull/23998)
+
+**Problème** 😱  
+Au moins un tableau de mise en forme utilise des éléments propres aux tableaux de données.
+
+- Le tableau qui met en forme le contenu de l'étape "Horaires et stocks" en version responsive
+- Vérifier les autres tableaux en version responsive
+
+**Correction** 💡  
+Pour tous les tableaux de mise en forme :
+
+Supprimer les balises propres aux tableaux de données <caption>, <th>, <thead>, <tfoot>, <colgroup>.
+
+Supprimer les attributs scope, headers, axis, role="rowheader", role="columnheader".
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+<br>
+
+<details>
+
+<summary> ⏳ Critère 5.7 - RGAA - Pour chaque tableau de données, la technique appropriée permettant d'associer chaque cellule avec ses en-têtes est-elle utilisée ?</summary>
+
+**RAWeb** : [Critère 5.7](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-7)
+**Ticket** : [PC-42850](https://passculture.atlassian.net/browse/PC-42850)  
+**PR** : [#24000](https://github.com/pass-culture/pass-culture-main/pull/24000)
+
+**Problème** 😱  
+Les cellules de données ne sont pas correctement liées aux cellules d'en-tête pour au moins un tableau de données.
+
+- P10 → Les réservations : Après activation du composant « Détails », une cellule de données (<td colspan="6">) est ajoutée au tableau. Cette cellule contient des informations complémentaires associées à une ligne de données, mais elle s'étend sur l'ensemble des colonnes sans permettre d'identifier clairement les en-têtes auxquels ces informations se rapportent.
+
+- P13 → Les offres réservables (collectif) : Le tableau contient une cellule de données (<td colspan="8">) associée à plusieurs colonnes du tableau. Cette cellule contient des informations complémentaires liées à une ligne de données, mais sa structure ne permet pas d'établir clairement son association avec les différents en-têtes de colonnes.
+
+
+**Correction** 💡  
+Implémenter le tableau comme un tableau de données complexe en définissant explicitement les relations entre les cellules et leurs en-têtes.
+
+**Retours audit** 🔥  
+TBD
+
+</details>

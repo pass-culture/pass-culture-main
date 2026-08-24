@@ -77,5 +77,11 @@ export function getCollectiveOfferColumns({
     })
   }
 
+  columns.push({
+    id: 'expiration',
+    label: 'Expiration',
+    headerForFullRowOnly: true,
+  })
+
   return columns
 }

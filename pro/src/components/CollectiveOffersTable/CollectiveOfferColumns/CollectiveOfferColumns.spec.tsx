@@ -6,13 +6,14 @@ describe('getCollectiveOfferColumns', () => {
       isBookableTable: false,
       isReadOnly: false,
     })
-    expect(columns).toHaveLength(5)
+    expect(columns).toHaveLength(6)
     expect(columns.map((col) => col.id)).toEqual([
       'name',
       'dates',
       'location',
       'status',
       'actions',
+      'expiration',
     ])
   })
   it('should contain 7 columns when isBookableTable is true', () => {
@@ -20,7 +21,7 @@ describe('getCollectiveOfferColumns', () => {
       isBookableTable: true,
       isReadOnly: false,
     })
-    expect(columns).toHaveLength(7)
+    expect(columns).toHaveLength(8)
     expect(columns.map((col) => col.id)).toEqual([
       'name',
       'dates',
@@ -29,6 +30,7 @@ describe('getCollectiveOfferColumns', () => {
       'location',
       'status',
       'actions',
+      'expiration',
     ])
   })
   it('should omit the actions column when isReadOnly is true', () => {
@@ -36,7 +38,7 @@ describe('getCollectiveOfferColumns', () => {
       isBookableTable: true,
       isReadOnly: true,
     })
-    expect(columns).toHaveLength(6)
+    expect(columns).toHaveLength(7)
     expect(columns.map((col) => col.id)).not.toContain('actions')
   })
 })

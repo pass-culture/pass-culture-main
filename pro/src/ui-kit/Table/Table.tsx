@@ -48,8 +48,14 @@ export interface Column<T> {
   headerColSpan?: number
   bodyHidden?: boolean
   headerHidden?: boolean
+  headerForFullRowOnly?: boolean
   /** Visual header content (can be any React node, e.g., a component) */
   header?: React.ReactNode
+}
+
+export type FullRow = {
+  content: React.ReactNode
+  headerId: string
 }
 
 interface TableProps<T extends { id: string | number }> {
@@ -66,7 +72,7 @@ interface TableProps<T extends { id: string | number }> {
   selectedIds?: Set<string | number>
   onSelectionChange?: (rows: T[]) => void
   getRowSelectionDateTime?: (row: T) => string
-  getFullRowContent?: (row: T) => React.ReactNode | null
+  getFullRow?: (row: T) => FullRow | null
   isRowSelectable?: (row: T) => boolean
   noResult: NoResultProps
   noData: EmptyStateProps
@@ -111,7 +117,7 @@ export function Table<
   noData,
   onSelectionChange,
   getRowSelectionDateTime,
-  getFullRowContent,
+  getFullRow,
   isRowSelectable,
   pagination,
 }: Readonly<TableProps<T>>) {
@@ -261,6 +267,8 @@ export function Table<
                       className={classNames(styles['table-header-th'], {
                         [styles['table-header-sortable-th']]: col.sortable,
                         [styles['table-header-center-th']]: col.centerHeader,
+                        [styles['table-header-full-row']]:
+                          col.headerForFullRowOnly,
                       })}
                     >
                       {col.sortable ? (
@@ -312,7 +320,7 @@ export function Table<
 
           {sortedData.map((row) => {
             const isSelected = selectedIds.has(row.id)
-            const tableFullRowContent = getFullRowContent?.(row)
+            const tableFullRow = getFullRow?.(row)
             const rowDateTime = getRowSelectionDateTime?.(row)
             const hasDateTimeSelectionLabel = rowDateTime !== undefined
 
@@ -329,7 +337,7 @@ export function Table<
                 <tr
                   data-testid="table-row"
                   className={classNames({
-                    [styles['table-row']]: !tableFullRowContent,
+                    [styles['table-row']]: !tableFullRow?.content,
                   })}
                 >
                   {selectable && (
@@ -358,7 +366,7 @@ export function Table<
                   )}
 
                   {columns.map((col) => {
-                    if (col.bodyHidden) {
+                    if (col.bodyHidden || col.headerForFullRowOnly) {
                       return null
                     }
                     const value = col.render
@@ -375,17 +383,23 @@ export function Table<
                         })}
                         key={`col-${col.id}-${col.label}`}
                         data-label={col.label}
+                        headers={isTabletOrSmaller ? undefined : col.id}
                       >
                         {value}
                       </td>
                     )
                   })}
                 </tr>
-                {tableFullRowContent && (
+                {tableFullRow?.content && (
                   <tr className={classNames(styles['table-row'])}>
-                    <td colSpan={columns.length + (selectable ? 1 : 0)}>
+                    <td
+                      colSpan={columns.length + (selectable ? 1 : 0)}
+                      headers={
+                        isTabletOrSmaller ? undefined : tableFullRow.headerId
+                      }
+                    >
                       <div className={styles['table-fullrow-content']}>
-                        {tableFullRowContent}
+                        {tableFullRow?.content}
                       </div>
                     </td>
                   </tr>
