@@ -318,6 +318,227 @@ def get_or_create_offerer_address_from_address_body(
     return offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body, venue_id=venue.id)
 
 
+def old_update_offer(
+    offer: models.Offer,
+    body: offers_schemas.UpdateOffer,
+    venue: offerers_models.Venue | None = None,
+    offerer_address: offerers_models.OffererAddress | None = None,
+    is_from_private_api: bool = False,
+) -> models.Offer:
+    validation.check_validation_status(offer)
+
+    aliases = set(body.dict(by_alias=True))
+    fields = body.dict(by_alias=True, exclude_unset=True)
+    fields.pop("artistOfferLinks", None)
+    fields.pop("hasCulturalOutreachClaim", None)
+    artist_offer_links = body.artist_offer_links
+    has_cultural_outreach_claim = body.has_cultural_outreach_claim
+
+    # updated using the pro interface
+    if body.location:
+        offerer_address_from_body = get_or_create_offerer_address_from_address_body(
+            address_body=body.location, venue=offer.venue
+        )
+
+        if offerer_address_from_body is not None:
+            fields["offererAddress"] = offerer_address_from_body
+            fields.pop("location", None)
+
+    should_send_mail = fields.pop("shouldSendMail", False)
+
+    if venue:
+        fields["venue"] = venue
+
+    if offerer_address:
+        fields["offererAddress"] = offerer_address
+
+    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
+    updates_set = set(updates)
+
+    subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+
+    if artist_offer_links is not None:
+        validation.check_artist_offer_links(artist_offer_links, subcategory)
+        created_links, deleted_links = artist_api.upsert_artist_offer_links(artist_offer_links, offer)
+        db.session.expire(offer, ["artistOfferLinks"])
+
+        if deleted_links:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Artist offer links have been deleted",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "links": [str(k) for k in deleted_links]},
+                    technical_message_id="offer.artistOfferLinks.deleted",
+                )
+            )
+        if created_links:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Artist offer links have been created",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "links": [str(k) for k in created_links]},
+                    technical_message_id="offer.artistOfferLinks.created",
+                )
+            )
+
+    if has_cultural_outreach_claim is not None:
+        outreach = offer.culturalOutreach
+        is_currently_claimed = outreach is not None and outreach.claimedDatetime is not None
+        if has_cultural_outreach_claim != is_currently_claimed:
+            if outreach is None:
+                cultural_outreach_api.create_cultural_outreach_claim(offer)
+            else:
+                claim_datetime = get_naive_utc_now() if has_cultural_outreach_claim else None
+                cultural_outreach_api.update_cultural_outreach_claim(claim_datetime, offer)
+
+    if not updates:
+        return offer
+
+    if "bookingAllowedDatetime" in updates:
+        bookingAllowedDatetime = get_field(offer, updates, "bookingAllowedDatetime", aliases=aliases)
+        if not bookingAllowedDatetime or (bookingAllowedDatetime <= datetime.datetime.now(datetime.UTC)):
+            reminders_notifications.notify_users_offer_is_bookable(offer)
+
+    if (
+        "audioDisabilityCompliant" in updates
+        or "mentalDisabilityCompliant" in updates
+        or "motorDisabilityCompliant" in updates
+        or "visualDisabilityCompliant" in updates
+    ):
+        validation.check_accessibility_compliance(
+            audio_disability_compliant=get_field(offer, updates, "audioDisabilityCompliant", aliases=aliases),
+            mental_disability_compliant=get_field(offer, updates, "mentalDisabilityCompliant", aliases=aliases),
+            motor_disability_compliant=get_field(offer, updates, "motorDisabilityCompliant", aliases=aliases),
+            visual_disability_compliant=get_field(offer, updates, "visualDisabilityCompliant", aliases=aliases),
+        )
+
+    if "extraData" in updates or "ean" in updates:
+        formatted_extra_data = _format_extra_data(subcategory_id, body.extra_data) or {}
+        validation.check_offer_extra_data(
+            subcategory_id, formatted_extra_data, offer.venue, is_from_private_api, offer=offer, ean=body.ean
+        )
+
+    if "isDuo" in updates:
+        is_duo = get_field(offer, updates, "isDuo", aliases=aliases)
+        validation.check_is_duo_compliance(is_duo, subcategory)
+
+    if "idAtProvider" in updates:
+        id_at_provider = get_field(offer, updates, "idAtProvider", aliases=aliases)
+        validation.check_can_input_id_at_provider(offer.lastProvider, id_at_provider)
+        validation.check_can_input_id_at_provider_for_this_venue(offer.venueId, id_at_provider, offer.id)
+
+    if "name" in updates:
+        name = get_field(offer, updates, "name", aliases=aliases)
+        if name is None:
+            raise exceptions.OfferException({"name": ["cannot be null"]})
+        validation.check_offer_name_does_not_contain_ean(name)
+
+    if (
+        "withdrawalType" in updates
+        or "withdrawalDelay" in updates
+        or "withdrawalDetails" in updates
+        or "bookingContact" in updates
+    ):
+        booking_contact = get_field(offer, updates, "bookingContact", aliases=aliases)
+        withdrawal_delay = get_field(offer, updates, "withdrawalDelay", aliases=aliases)
+        withdrawal_type = get_field(offer, updates, "withdrawalType", aliases=aliases)
+        validation.check_offer_withdrawal(
+            withdrawal_type=withdrawal_type,
+            withdrawal_delay=withdrawal_delay,
+            subcategory_id=subcategory_id,
+            booking_contact=booking_contact,
+            provider=offer.lastProvider,
+        )
+
+    try:
+        updates["ean"] = updates["extraData"].pop("ean")
+
+        # TODO(jbaudet - 11/2025): remove this whole try/except in a
+        # couple of weeks, after checking that this warning never
+        # appears.
+        # Caller should use body.ean instead of body.extra_data["ean"]
+        # This seems to be ok today, but... lets wait a little bit before
+        # doing anything stupid.
+        logger.warning(
+            "update_offer: extracting EAN from extraData (use body.ean instead)",
+            extra={"offer": offer.id, "ean": updates["ean"]},
+        )
+    except (KeyError, AttributeError):
+        pass
+
+    # - The offer URL must not be removed if the offer has an online subcategory.
+    if offer.url and "url" in body.__fields_set__ and body.url is None:
+        offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+        validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
+
+    if "subcategoryId" in updates and offer.status != models.OfferStatus.DRAFT:
+        raise offers_exceptions.UnallowedUpdate("subcategoryId")
+
+    if "durationMinutes" in updates:
+        duration_minutes = get_field(offer, updates, "durationMinutes", aliases=aliases)
+        validation.check_duration_minutes(duration_minutes, is_from_private_api)
+
+    if offer.lastProvider is not None:
+        validation.check_update_only_allowed_fields_for_offer_from_provider(updates_set, offer.lastProvider)
+    if offer.is_soft_deleted():
+        raise pc_object.DeletedRecordException()
+
+    changes = {}
+    for key, value in updates.items():
+        if key == "extraData":
+            if offer.product:
+                continue
+        changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
+        setattr(offer, key, value)
+
+    with db.session.no_autoflush:
+        # the creation process is splitted into several steps. URL and
+        # address might be set only in the end. Therefore, this
+        # validation is meaningless until the offer has been finalized.
+        if offer.status != models.OfferStatus.DRAFT:
+            validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
+            validation.check_url_and_offererAddress_are_not_both_set(offer.url, offer.offererAddress)
+
+    if offer.isFromAllocine:
+        offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
+    db.session.add(offer)
+
+    # This log is used for analytics purposes.
+    # If you need to make a 'breaking change' of this log, please contact the data team.
+    # Otherwise, you will break some dashboards
+    on_commit(
+        partial(
+            logger.info,
+            "Offer has been updated",
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "product_id": offer.productId,
+                "changes": {**changes},
+            },
+            technical_message_id="offer.updated",
+        )
+    )
+
+    withdrawal_fields = {"bookingContact", "withdrawalDelay", "withdrawalDetails", "withdrawalType"}
+    withdrawal_updated = updates_set & withdrawal_fields
+    oa_updated = "offererAddress" in updates
+    if should_send_mail and (withdrawal_updated or oa_updated):
+        transactional_mails.send_email_for_each_ongoing_booking(offer)
+
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            reason=IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": updates_set},
+        )
+    )
+
+    return offer
+
+
 def update_offer(
     offer: models.Offer,
     body: offers_schemas.UpdateOffer,
