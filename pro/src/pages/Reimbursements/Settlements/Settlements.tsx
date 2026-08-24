@@ -2,7 +2,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
-  GET_HAS_INVOICE_QUERY_KEY,
+  GET_HAS_SETTLEMENT_QUERY_KEY,
   GET_SETTLEMENTS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -16,7 +16,7 @@ export const Settlements = (): JSX.Element => {
   const offererId = selectedAdminOfferer?.id
 
   const hasSettlementQuery = useSWR(
-    offererId ? [GET_HAS_INVOICE_QUERY_KEY, offererId] : null,
+    offererId ? [GET_HAS_SETTLEMENT_QUERY_KEY, offererId] : null,
     ([, offererId]) => api.hasSettlement({ query: { offererId: offererId } }),
     { fallbackData: { hasSettlement: false } }
   )
@@ -24,9 +24,11 @@ export const Settlements = (): JSX.Element => {
   const hasSettlement = Boolean(hasSettlementQuery.data?.hasSettlement)
 
   const { isLoading, data: settlements } = useSWR(
-    offererId ? [GET_SETTLEMENTS_QUERY_KEY, offererId] : null,
+    offererId && hasSettlement ? [GET_SETTLEMENTS_QUERY_KEY, offererId] : null,
     async () => {
-      const settlements = await api.getSettlements()
+      const settlements = await api.getSettlements({
+        query: { offererId: offererId },
+      })
       return settlements
     },
     {

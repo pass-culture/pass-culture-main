@@ -6186,6 +6186,16 @@ export type SaveNewOnboardingDataQueryModel = {
 };
 
 /**
+ * SettlementListQueryModel
+ */
+export type SettlementListQueryModel = {
+    /**
+     * Offererid
+     */
+    offererId: number;
+};
+
+/**
  * SettlementListResponseModel
  */
 export type SettlementListResponseModel = Array<SettlementResponseModel>;
@@ -6205,15 +6215,15 @@ export type SettlementResponseModel = {
     /**
      * Date
      */
-    date: string;
+    date: string | null;
     /**
      * Id
      */
     id: number;
     /**
-     * Invoicecount
+     * Invoicescount
      */
-    invoiceCount: number;
+    invoicesCount: number;
     /**
      * Label
      */
@@ -9038,6 +9048,74 @@ export type getFinanceCombinedInvoicesResponses = {
     200: unknown;
 };
 
+export type getFinanceHasSettlementData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Offererid
+         */
+        offererId: number;
+    };
+    url: '/finance/has-settlement';
+};
+
+export type getFinanceHasSettlementErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getFinanceHasSettlementError = getFinanceHasSettlementErrors[keyof getFinanceHasSettlementErrors];
+
+export type getFinanceHasSettlementResponses = {
+    /**
+     * OK
+     */
+    200: HasSettlementResponseModel;
+};
+
+export type getFinanceHasSettlementResponse = getFinanceHasSettlementResponses[keyof getFinanceHasSettlementResponses];
+
+export type getFinanceSettlementsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Offererid
+         */
+        offererId: number;
+    };
+    url: '/finance/settlements';
+};
+
+export type getFinanceSettlementsErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getFinanceSettlementsError = getFinanceSettlementsErrors[keyof getFinanceSettlementsErrors];
+
+export type getFinanceSettlementsResponses = {
+    /**
+     * OK
+     */
+    200: SettlementListResponseModel;
+};
+
+export type getFinanceSettlementsResponse = getFinanceSettlementsResponses[keyof getFinanceSettlementsResponses];
+
 export type getGetOfferVideoDataData = {
     body?: never;
     path?: never;
@@ -11269,40 +11347,6 @@ export type getV2FinanceHasInvoiceResponses = {
 
 export type getV2FinanceHasInvoiceResponse = getV2FinanceHasInvoiceResponses[keyof getV2FinanceHasInvoiceResponses];
 
-export type getV2FinanceHasSettlementData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Offererid
-         */
-        offererId: number;
-    };
-    url: '/v2/finance/has-settlement';
-};
-
-export type getV2FinanceHasSettlementErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getV2FinanceHasSettlementError = getV2FinanceHasSettlementErrors[keyof getV2FinanceHasSettlementErrors];
-
-export type getV2FinanceHasSettlementResponses = {
-    /**
-     * OK
-     */
-    200: HasSettlementResponseModel;
-};
-
-export type getV2FinanceHasSettlementResponse = getV2FinanceHasSettlementResponses[keyof getV2FinanceHasSettlementResponses];
-
 export type getV2FinanceInvoicesData = {
     body?: never;
     path?: never;
@@ -11356,35 +11400,6 @@ export type getV2FinanceInvoicesResponses = {
 };
 
 export type getV2FinanceInvoicesResponse = getV2FinanceInvoicesResponses[keyof getV2FinanceInvoicesResponses];
-
-export type getV2FinanceSettlementsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v2/finance/settlements';
-};
-
-export type getV2FinanceSettlementsErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getV2FinanceSettlementsError = getV2FinanceSettlementsErrors[keyof getV2FinanceSettlementsErrors];
-
-export type getV2FinanceSettlementsResponses = {
-    /**
-     * OK
-     */
-    200: SettlementListResponseModel;
-};
-
-export type getV2FinanceSettlementsResponse = getV2FinanceSettlementsResponses[keyof getV2FinanceSettlementsResponses];
 
 export type postV2OffersData = {
     body: PostOfferBodyModel;

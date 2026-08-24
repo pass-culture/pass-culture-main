@@ -23,7 +23,6 @@ from pcapi.utils import date as date_utils
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@pytest.mark.usefixtures("db_session")
 class CustomReimbursementRuleTest:
     @dataclasses.dataclass
     class DummyBooking:
@@ -193,7 +192,6 @@ class DepositSpecificCapsTest:
         assert specific_caps.PHYSICAL_CAP is None
 
 
-@pytest.mark.usefixtures("db_session")
 class DepositDigitalCapsV2Test:
     def test_should_have_50_euros_digital_cap(self):
         with time_machine.travel(pcapi_settings.DIGITAL_CAP_V2_DATETIME):
@@ -214,7 +212,6 @@ class DepositDigitalCapsV2Test:
         assert user.deposit.specific_caps.DIGITAL_CAP is None
 
 
-@pytest.mark.usefixtures("db_session")
 class BankAccountRulesTest:
     def test_we_cant_have_the_two_bank_account_with_same_dsapplicationid(self):
         factories.BankAccountFactory(dsApplicationId=42)
@@ -239,9 +236,24 @@ class BankAccountRulesTest:
             )
 
 
-@pytest.mark.usefixtures("db_session")
 class BookingFinanceIncidentTest:
     def test_no_partial_incident_on_collective_booking(self):
         with pytest.raises(sa_exc.IntegrityError) as err:
             factories.CollectiveBookingFinanceIncidentFactory(newTotalAmount=100)
         assert 'booking_finance_incident" violates check constraint "booking_finance_incident_check"' in str(err.value)
+
+
+class SettlementBatchTest:
+    @pytest.mark.parametrize(
+        "name,displayed_name",
+        (
+            ("VIR123", "VIR123"),
+            ("VIR123-1", "VIR123"),
+            ("VIR123.1", "VIR123"),
+            ("VIR123aaa//.1", "VIR123"),
+        ),
+    )
+    def test_get_displayed_name(self, name, displayed_name):
+        batch = factories.SettlementBatchFactory(name=name)
+
+        assert batch.get_displayed_name() == displayed_name

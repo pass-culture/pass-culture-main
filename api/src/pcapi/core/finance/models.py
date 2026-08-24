@@ -10,6 +10,7 @@ import dataclasses
 import datetime
 import decimal
 import enum
+import re
 import typing
 from uuid import UUID
 
@@ -1072,13 +1073,22 @@ class SettlementBatch(PcObject, Model):
     externalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True, unique=True)
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
-    settlements: sa_orm.Mapped[list["Cashflow"]] = sa_orm.relationship(
+    settlements: sa_orm.Mapped[list["Settlement"]] = sa_orm.relationship(
         "Settlement", foreign_keys="Settlement.batchId", back_populates="batch"
     )
     dateImported: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
-    dateValidated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    dateValidated: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+
+    def get_displayed_name(self) -> str:
+        # a settlement_batch name usually has the form "VIR123"
+        # sometimes there are additional caracters like "VIR123-1", in this case we want to display "VIR123" only
+        regex_match = re.match(r"(VIR[0-9]+)", self.name)
+        if regex_match:
+            return regex_match.group(0)
+
+        return self.name
 
 
 # "Payment", "PaymentStatus" and "PaymentMessage" are deprecated. They

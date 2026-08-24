@@ -36,7 +36,7 @@ class RecreditFactory(BaseFactory):
     recreditType = models.RecreditType.RECREDIT_16
 
 
-class BankAccountFactory(BaseFactory):
+class BankAccountFactory(BaseFactory[models.BankAccount]):
     class Meta:
         model = models.BankAccount
 

@@ -70,7 +70,7 @@ class GetInvoicesQueryTest:
         invoice_400 = factories.InvoiceFactory(bankAccount=bank_account, amount=400)
         invoice_1 = factories.InvoiceFactory(bankAccount=bank_account, amount=1)
 
-        invoices = repository.get_paid_invoices_query(pro, amount_gte=1)
+        invoices = repository.get_paid_invoices_query(pro, amount_greater_than_equal=1)
         assert len(list(invoices)) == 2
         assert invoice_1 in list(invoices)
         assert invoice_400 in list(invoices)
@@ -83,7 +83,7 @@ class GetInvoicesQueryTest:
         invoice_negative = factories.InvoiceFactory(bankAccount=bank_account, amount=-400)
         _invoice_positive = factories.InvoiceFactory(bankAccount=bank_account, amount=400)
 
-        invoices = repository.get_paid_invoices_query(pro, amount_lt=0)
+        invoices = repository.get_paid_invoices_query(pro, amount_lower_than=0)
         assert list(invoices) == [invoice_negative]
 
     def test_filter_on_bank_account(self):

@@ -1,10 +1,12 @@
 import datetime
 import logging
+import typing
 
 import pydantic as pydantic_v2
 from pydantic import RootModel
 
-import pcapi.core.finance.models as finance_models
+from pcapi.core.finance import models
+from pcapi.core.finance.utils import cents_to_full_unit
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
@@ -42,6 +44,10 @@ class GetCombinedInvoicesQueryModel(HttpQueryParamsModel):
         return v
 
 
+class SettlementListQueryModel(HttpQueryParamsModel):
+    offerer_id: int
+
+
 # Response Models
 class FinanceBankAccountResponseModel(HttpBodyModel):
     id: int
@@ -57,7 +63,7 @@ class InvoiceResponseV2Model(HttpBodyModel):
     date: datetime.date
     amount: float
     url: str
-    status: finance_models.InvoiceStatus
+    status: models.InvoiceStatus
 
 
 class InvoiceListV2ResponseModel(RootModel):
@@ -67,11 +73,23 @@ class InvoiceListV2ResponseModel(RootModel):
 class SettlementResponseModel(HttpBodyModel):
     id: int
     label: str
-    date: datetime.date
+    date: datetime.date | None
     amount: float
-    bankAccount: str
-    status: finance_models.SettlementStatus
-    invoiceCount: int
+    bank_account: str
+    status: models.SettlementStatus
+    invoices_count: int
+
+    @classmethod
+    def build(cls, settlement: models.Settlement) -> typing.Self:
+        return cls(
+            id=settlement.id,
+            label=settlement.batch.get_displayed_name(),
+            date=settlement.batch.dateValidated.date() if settlement.batch.dateValidated else None,
+            amount=float(cents_to_full_unit(settlement.amount)),
+            bank_account=settlement.bankAccount.label,
+            status=settlement.status,
+            invoices_count=len(settlement.invoices),
+        )
 
 
 class SettlementListResponseModel(RootModel):
@@ -102,7 +120,7 @@ class BankAccountResponseModel(HttpBodyModel):
     label: str
     iban: str = pydantic_v2.Field(alias="obfuscatedIban")
     ds_application_id: int | None
-    status: finance_models.BankAccountApplicationStatus
+    status: models.BankAccountApplicationStatus
     date_created: datetime.datetime
     linked_venues: list[LinkedVenue]
 

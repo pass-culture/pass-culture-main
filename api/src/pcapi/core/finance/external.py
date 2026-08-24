@@ -174,7 +174,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
         )
         return
 
-    settlements_by_bank_account_id: dict[str, list] = {}
+    settlements_by_bank_account_id: dict[str, list[finance_backend.SettlementPayload]] = {}
     external_bank_account_ids = set()
     invoice_references = set()
     for payload in settlement_payloads:
