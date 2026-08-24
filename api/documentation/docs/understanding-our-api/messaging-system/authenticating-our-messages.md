@@ -208,6 +208,7 @@ Here is how we compute the signature:
 ```python
 from cryptography.hazmat.primitives import serialization
 
+
 def generate_ed25519_signature(json_string: str) -> str:
     private_key = serialization.load_pem_private_key(PRIVATE_KEY.encode("utf-8"))
     return private_key.sign(json_string.encode("utf-8")).hex()
