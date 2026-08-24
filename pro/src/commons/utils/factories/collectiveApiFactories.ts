@@ -322,6 +322,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   hasAdageId: true,
   hasOffers: true,
   hasActiveIndividualOffer: true,
+  hasAtLeastOneBookableOffer: true,
   isOnboarded: false,
   isOpenToPublic: true,
   location: {

@@ -112,6 +112,7 @@ class GetVenueResponseModel(HttpBodyModel):
     hasOffers: bool
     location: address_serialize.LocationResponseModelV2
     hasActiveIndividualOffer: bool
+    hasAtLeastOneBookableOffer: bool
     is_caledonian: bool
     isOnboarded: bool
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
@@ -206,6 +207,7 @@ class GetVenueResponseModel(HttpBodyModel):
                 is_venue_location=True,
             ),
             hasActiveIndividualOffer=venue.hasActiveIndividualOffer,
+            hasAtLeastOneBookableOffer=venue.hasAtLeastOneBookableOffer,
             is_caledonian=venue.is_caledonian,
             openingHours=opening_hours,
             isValidated=venue.managingOfferer.isValidated,
