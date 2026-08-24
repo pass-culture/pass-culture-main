@@ -65,7 +65,7 @@ export const AdminSideNavLinks = () => {
         />
       </div>
 
-      <div className={styles['nav-links-header']}>Espace administration</div>
+      <p className={styles['nav-links-header']}>Espace administration</p>
 
       <SideNavLinks isAdminSpace navItems={navItems} />
     </nav>

@@ -294,3 +294,47 @@ Ajout de l'aria-label sur les liens du nouveau composant DS Stepper + un aria-cu
 TBD
 
 </details>
+
+
+<details>
+
+<summary> ⏳ Critère 8.9 - Dans chaque page web, les balises ne doivent pas être utilisées uniquement à des fins de présentation ?</summary>
+
+**RAWeb/RGAA** : [Critère 8.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-8-9)
+**Ticket** : [PC-42990](https://passculture.atlassian.net/browse/PC-42990)  
+**PR** : [#23997](https://github.com/pass-culture/pass-culture-main/pull/23997)
+
+**Problème** 😱  
+
+Au moins une balise est utilisée uniquement pour créer des effets de présentation.
+
+P07 → Informations bancaires 
+
+- Le texte "Espace administration".
+- Le texte "Démarche Numérique est une plateforme sécurisée de démarches administratives en ligne qui permet de déposer votre dossier de compte bancaire."
+
+P08 → Page d'accueil
+
+- ~~Les textes "Expire aujourd'hui", "Prévu le ...", "publiée", etc. du bloc "'Offres réservables".~~ => Corrigé dans #23954
+- ~~Le texte "Aucun compte bancaire configuré pour percevoir vos remboursements" du bloc "Remboursement"~~ => Corrigé dans #23954
+
+P09 → Les offres
+
+- Le texte "XX offres"
+
+- P10 → Les réservations
+
+- ~~Le texte "Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace administration accessible en haut à droite."~~ => Corrigé dans #23954
+
+P13 → Les offres réservables (collectif)
+
+- ~~Le texte "Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace administration accessible en haut à droite."~~ => Corrigé dans #23954
+
+
+**Correction** 💡  
+Remplacer les balises `<div>` et `<span>` par des `<p>` ou entourez le texte avec des balises `<p>`.
+
+**Retours audit** 🔥  
+Texte
+
+</details>

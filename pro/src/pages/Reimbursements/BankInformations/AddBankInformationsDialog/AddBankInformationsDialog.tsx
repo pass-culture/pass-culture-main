@@ -59,9 +59,11 @@ export const AddBankInformationsDialog = ({
         </span>,
       ]}
     >
-      Démarche Numérique est une plateforme sécurisée de démarches
-      administratives en ligne qui permet de déposer votre dossier de compte
-      bancaire.
+      <p>
+        Démarche Numérique est une plateforme sécurisée de démarches
+        administratives en ligne qui permet de déposer votre dossier de compte
+        bancaire.
+      </p>
     </SimpleModal>
   )
 }
