@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
-import { vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import {
   type GetIndividualOfferWithAddressResponseModel,
@@ -34,7 +34,6 @@ vi.mock(
   '@/components/IndividualOffer/StocksThing/ActivationCodeFormDialog/ActivationCodeFileChecker',
   () => ({
     checkAndParseUploadedFile: vi.fn(async () => ({
-      errorMessage: '',
       activationCodes: ['CODE1', 'CODE2', 'CODE3', 'CODE4'],
     })),
     fileReader: {},
@@ -119,13 +118,14 @@ const LABELS = {
     activationTooltip: "Ajouter des codes d'activation",
     addEntry: 'Ajouter un tarif',
     cancelEntryRemoval: 'Annuler',
-    closeModal: 'Fermer la fenêtre modale',
+    closeModal: 'Fermer la boite de dialogue',
     confirmEntryRemoval: 'Confirmer la suppression',
     removeEntry: 'Supprimer ce tarif',
     resetEntry: 'Réinitialiser les valeurs de ce tarif',
-    submitActivationCodes: 'Valider',
+    submitActivationCodes: 'Ajouter les codes de validation',
   },
   fields: {
+    activationCodesExpirationDate: 'Date de fin de validité *',
     price: /Prix/,
     label: /Intitulé du tarif/,
     stock: /Stock/,
@@ -355,7 +355,7 @@ describe('PriceTableForm', () => {
       screen.getByRole('button', { name: LABELS.buttons.activationTooltip })
     )
     expect(
-      screen.getByText('Ajouter des codes d’activation')
+      screen.getByText(/Ajouter des codes d’activation/)
     ).toBeInTheDocument()
 
     const fileInput = screen.getByLabelText(
@@ -373,6 +373,12 @@ describe('PriceTableForm', () => {
     const validerButton = screen.getByRole('button', {
       name: LABELS.buttons.submitActivationCodes,
     })
+
+    const activationCodesExpirationDate = screen.getByLabelText(
+      LABELS.fields.activationCodesExpirationDate
+    )
+    await userEvent.type(activationCodesExpirationDate, '2025-10-02')
+
     await userEvent.click(validerButton)
 
     const stockInput = (await screen.findByRole('spinbutton', {
@@ -396,14 +402,14 @@ describe('PriceTableForm', () => {
       screen.getByRole('button', { name: LABELS.buttons.activationTooltip })
     )
     expect(
-      screen.getByText('Ajouter des codes d’activation')
+      screen.getByText('Ajouter des codes d’activation 1/2')
     ).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('button', { name: LABELS.buttons.closeModal })
     )
     expect(
-      screen.queryByText('Ajouter des codes d’activation')
+      screen.queryByText(/Ajouter des codes d’activation/)
     ).not.toBeInTheDocument()
 
     const quantityInput = screen.getByRole('spinbutton', {
@@ -610,7 +616,7 @@ describe('PriceTableForm', () => {
     )
 
     const labelInputs = screen.getAllByLabelText(LABELS.fields.label)
-    expect(labelInputs.length).toBe(2)
+    expect(labelInputs).toHaveLength(2)
     expect(labelInputs[0]).not.toBeDisabled()
     expect(labelInputs[1]).not.toBeDisabled()
   })
@@ -640,7 +646,7 @@ describe('PriceTableForm', () => {
     renderPriceTableForm({ offer, defaultValues })
 
     const labelInputs = screen.getAllByLabelText(LABELS.fields.label)
-    expect(labelInputs.length).toBe(2)
+    expect(labelInputs).toHaveLength(2)
     expect(labelInputs[0]).toBeDisabled()
     expect(labelInputs[1]).toBeDisabled()
 

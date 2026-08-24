@@ -201,6 +201,9 @@ export const PriceTableForm = ({
 
       {fields.map((field, index) => {
         const entry = watch(`priceCategories.${index}`)
+        const hasActivationCodesExpirationDate = isDateValid(
+          entry.activationCodesExpirationDatetime
+        )
 
         return (
           <div key={field.id} className={styles['row']}>
@@ -254,6 +257,7 @@ export const PriceTableForm = ({
                 label="Date limite de réservation"
                 maxDate={computeEntryConstraints(entry).bookingLimitDatetimeMax}
                 minDate={computeEntryConstraints(entry).bookingLimitDatetimeMin}
+                required={hasActivationCodesExpirationDate}
                 onBlur={() => {
                   if (
                     defaultValues?.priceCategories?.[index]
@@ -271,7 +275,7 @@ export const PriceTableForm = ({
               />
             )}
 
-            {isDateValid(entry.activationCodesExpirationDatetime) && (
+            {hasActivationCodesExpirationDate && (
               <DatePicker
                 className={styles['input-activation-codes-expiration-datetime']}
                 disabled

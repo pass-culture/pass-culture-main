@@ -14,9 +14,11 @@ import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
-import { OfferHighlightForm } from './OfferHighlightForm'
+import {
+  OFFER_HIGHLIGHT_FORM_ID,
+  OfferHighlightForm,
+} from './OfferHighlightForm'
 
 const mockLogEvent = vi.fn()
 
@@ -67,7 +69,7 @@ function renderOfferHighlightForm({
   offerId,
   highlightRequests = [],
   onSuccess = () => {},
-  submitLabel,
+  submitLabel = 'Valider la sélection',
 }: {
   offerId: number
   highlightRequests?: Array<ShortHighlightResponseModel>
@@ -75,14 +77,16 @@ function renderOfferHighlightForm({
   submitLabel?: string
 }) {
   return renderWithProviders(
-    <DialogBuilder defaultOpen title="test">
+    <>
       <OfferHighlightForm
         offerId={offerId}
         onSuccess={onSuccess}
         highlightRequests={highlightRequests}
-        submitLabel={submitLabel}
       />
-    </DialogBuilder>,
+      <button type="submit" form={OFFER_HIGHLIGHT_FORM_ID}>
+        {submitLabel}
+      </button>
+    </>,
     {
       storeOverrides: {
         user: {
@@ -331,7 +335,7 @@ describe('OfferHighlightForm', () => {
     ).toBeInTheDocument()
   })
 
-  it('should disable the submit button during submission', async () => {
+  it('should submit the form during submission', async () => {
     postHighlightRequestOfferMock.mockReturnValue(
       new Promise(
         () => {}
@@ -349,7 +353,7 @@ describe('OfferHighlightForm', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(submitButton).toBeDisabled()
+      expect(postHighlightRequestOfferMock).toHaveBeenCalledTimes(1)
     })
   })
 })

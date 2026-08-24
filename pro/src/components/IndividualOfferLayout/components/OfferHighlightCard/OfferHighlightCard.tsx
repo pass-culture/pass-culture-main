@@ -17,7 +17,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import highlightImg from './assets/highlight-img.svg'
 import styles from './OfferHighlightCard.module.scss'
-import { OfferHighlightDialogBuilder } from './OfferHighlightDialogBuilder'
+import { OfferHighlightModal } from './OfferHighlightModal'
 
 export interface OfferHighlightCardProps {
   offerId: number
@@ -83,42 +83,40 @@ export const OfferHighlightCard = ({
           [styles['highlight-card-actions-edit']]: hasHighlights,
         })}
       >
-        <OfferHighlightDialogBuilder
+        <Button
+          variant={
+            hasHighlights ? ButtonVariant.TERTIARY : ButtonVariant.SECONDARY
+          }
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+          onClick={() => {
+            if (hasHighlights) {
+              logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
+                offerId,
+                action: 'edited',
+              })
+            } else {
+              logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
+                offerId,
+                action: 'started',
+              })
+            }
+            setIsOpen(true)
+          }}
+          icon={hasHighlights ? fullEditIcon : undefined}
+          label={hasHighlights ? 'Modifier' : 'Relier l’offre à un temps fort'}
+          fullWidth={!hasHighlights}
+          disabled={isReadOnly}
+        />
+
+        <OfferHighlightModal
           onOpenChange={setIsOpen}
           offerId={offerId}
           isOpen={isOpen}
           highlightRequests={highlightRequests}
           onSubmit={onSubmit}
           submitLabel={submitLabel}
-        >
-          <Button
-            variant={
-              hasHighlights ? ButtonVariant.TERTIARY : ButtonVariant.SECONDARY
-            }
-            color={ButtonColor.NEUTRAL}
-            size={ButtonSize.SMALL}
-            onClick={() => {
-              if (hasHighlights) {
-                logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-                  offerId,
-                  action: 'edited',
-                })
-              } else {
-                logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-                  offerId,
-                  action: 'started',
-                })
-              }
-              setIsOpen(true)
-            }}
-            icon={hasHighlights ? fullEditIcon : undefined}
-            label={
-              hasHighlights ? 'Modifier' : 'Relier l’offre à un temps fort'
-            }
-            fullWidth={!hasHighlights}
-            disabled={isReadOnly}
-          />
-        </OfferHighlightDialogBuilder>
+        />
       </div>
     </div>
   )

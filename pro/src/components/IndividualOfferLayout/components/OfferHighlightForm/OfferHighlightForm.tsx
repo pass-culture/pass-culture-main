@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import type { JSX } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import useSWR, { useSWRConfig } from 'swr'
@@ -14,27 +13,24 @@ import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './OfferHighlightForm.module.scss'
 import type { OfferHighlightFormValues } from './types'
 
+export const OFFER_HIGHLIGHT_FORM_ID = 'offer-highlight-form'
+
 interface OfferHighlightFormProps {
   offerId: number
   onSuccess: () => void
   highlightRequests: Array<ShortHighlightResponseModel>
-  submitLabel?: string
 }
 
 export function OfferHighlightForm({
   offerId,
   onSuccess,
   highlightRequests,
-  submitLabel,
 }: Readonly<OfferHighlightFormProps>): JSX.Element {
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
@@ -57,7 +53,7 @@ export function OfferHighlightForm({
   const {
     watch,
     setValue,
-    formState: { isDirty, isSubmitting },
+    formState: { isDirty },
   } = form
 
   const onSubmit = async (values: OfferHighlightFormValues) => {
@@ -105,6 +101,7 @@ export function OfferHighlightForm({
   return (
     <FormProvider {...form}>
       <form
+        id={OFFER_HIGHLIGHT_FORM_ID}
         onSubmit={form.handleSubmit(onSubmit)}
         className={styles['form']}
         noValidate
@@ -165,22 +162,6 @@ export function OfferHighlightForm({
             })}
           />
         </div>
-        <DialogBuilder.Footer>
-          <div className={styles['form-footer']}>
-            <Dialog.Close asChild>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                label="Annuler"
-              />
-            </Dialog.Close>
-            <Button
-              type="submit"
-              isLoading={isSubmitting}
-              label={submitLabel ?? 'Valider la sélection'}
-            />
-          </div>
-        </DialogBuilder.Footer>
       </form>
     </FormProvider>
   )

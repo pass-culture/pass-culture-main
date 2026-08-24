@@ -8,9 +8,11 @@ import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
-import { OfferRecommendationForm } from './OfferRecommendationForm'
+import {
+  OFFER_RECOMMENDATION_FORM_ID,
+  OfferRecommendationForm,
+} from './OfferRecommendationForm'
 
 const mockLogEvent = vi.fn()
 
@@ -36,7 +38,7 @@ function renderOfferRecommendationForm({
   offerId,
   proAdvice = null,
   onSuccess = () => {},
-  submitLabel,
+  submitLabel = 'Enregistrer la recommandation',
 }: {
   offerId: number
   proAdvice?: ProAdviceModel | null
@@ -44,14 +46,16 @@ function renderOfferRecommendationForm({
   submitLabel?: string
 }) {
   return renderWithProviders(
-    <DialogBuilder defaultOpen title="test">
+    <>
       <OfferRecommendationForm
         offerId={offerId}
         onSuccess={onSuccess}
         proAdvice={proAdvice}
-        submitLabel={submitLabel}
       />
-    </DialogBuilder>,
+      <button type="submit" form={OFFER_RECOMMENDATION_FORM_ID}>
+        {submitLabel}
+      </button>
+    </>,
     {
       storeOverrides: {
         user: {
@@ -63,15 +67,6 @@ function renderOfferRecommendationForm({
 }
 
 describe('OfferRecommendationForm', () => {
-  it('should display the subtitle', () => {
-    renderOfferRecommendationForm({ offerId: 1 })
-    expect(
-      screen.getByText(
-        /La recommandation écrite est un gage de réassurance pour les jeunes./i
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should call createOfferProAdvice when submitting a new recommendation', async () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,

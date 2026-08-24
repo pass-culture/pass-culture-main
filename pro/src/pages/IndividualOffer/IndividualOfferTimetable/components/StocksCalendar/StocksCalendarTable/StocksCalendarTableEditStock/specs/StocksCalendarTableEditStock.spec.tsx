@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
@@ -11,6 +10,7 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
+  EDIT_STOCK_FORM_ID,
   type EditStockFormValues,
   StocksCalendarTableEditStock,
   type StocksCalendarTableEditStockProps,
@@ -31,7 +31,7 @@ function renderStocksCalendarTableEditStock(
       },
     })
     return (
-      <Dialog.Root>
+      <>
         <FormProvider {...form}>
           <StocksCalendarTableEditStock
             departmentCode="56"
@@ -44,7 +44,10 @@ function renderStocksCalendarTableEditStock(
             {...props}
           />
         </FormProvider>
-      </Dialog.Root>
+        <button type="submit" form={EDIT_STOCK_FORM_ID}>
+          Valider
+        </button>
+      </>
     )
   }
   renderWithProviders(<StocksCalendarTableEditStockWrapper />)

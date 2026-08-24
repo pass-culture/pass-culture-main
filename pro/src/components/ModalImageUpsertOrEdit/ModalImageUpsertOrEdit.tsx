@@ -272,7 +272,6 @@ export const ModalImageUpsertOrEdit = ({
       isOpen={open}
       onClose={() => handleOpenChange(false)}
       title="Modifier une image"
-      isFooterFixed
       description={
         'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci.'
       }

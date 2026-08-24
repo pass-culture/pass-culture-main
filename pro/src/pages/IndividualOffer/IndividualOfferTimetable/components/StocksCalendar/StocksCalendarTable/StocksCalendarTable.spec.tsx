@@ -24,6 +24,7 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 vi.mock('./StocksCalendarTableEditStock/StocksCalendarTableEditStock', () => ({
+  EDIT_STOCK_FORM_ID: 'stocks-calendar-table-edit-stock-form',
   StocksCalendarTableEditStock: ({ stock, onUpdateStock }: any) => (
     <div>
       <button
@@ -251,7 +252,7 @@ describe('StocksCalendarTable', () => {
     )
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Fermer la fenêtre modale' })
+      screen.getByRole('button', { name: 'Fermer la boite de dialogue' })
     )
 
     expect(

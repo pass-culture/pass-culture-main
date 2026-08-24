@@ -54,9 +54,14 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
     .test((v) => (v ? isValid(new Date(v)) : true))
     .optional(),
 
-  bookingLimitDatetime: nonEmptyStringOrNull().test((v) =>
-    v ? isValid(new Date(v)) : true
-  ),
+  bookingLimitDatetime: nonEmptyStringOrNull()
+    .test((v) => (v ? isValid(new Date(v)) : true))
+    .when('activationCodesExpirationDatetime', {
+      is: Boolean,
+      then: (schema) =>
+        schema.required('Veuillez renseigner une date limite de réservation'),
+      otherwise: (schema) => schema.optional(),
+    }),
 
   hasActivationCode: yup.boolean().default(false).defined(),
 

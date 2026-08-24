@@ -25,10 +25,10 @@ import { pluralizeFr } from '@/commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonVariant } from '@/design-system/Button/types'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
 import { SynchronizedBanner } from '@/pages/IndividualOffer/components/SynchronizedBanner/SynchronizedBanner'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { onSubmit } from './form/onSubmit'
@@ -37,7 +37,10 @@ import type {
   StocksTableFilters,
   StocksTableSort,
 } from './form/types'
-import { RecurrenceForm } from './RecurrenceForm/RecurrenceForm'
+import {
+  RECURRENCE_FORM_ID,
+  RecurrenceForm,
+} from './RecurrenceForm/RecurrenceForm'
 import styles from './StocksCalendar.module.scss'
 import { StocksCalendarActionsBar } from './StocksCalendarActionsBar/StocksCalendarActionsBar'
 import { StocksCalendarCancelBanner } from './StocksCalendarCancelBanner/StocksCalendarCancelBanner'
@@ -207,7 +210,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
         <div className={styles['header']}>
           <h2 className={styles['title']}>{'Horaires et stocks'}</h2>
           {hasStocks && !isOfferSynchronized(offer) && (
-            <DialogBuilderButton
+            <RecurrenceModalButton
               triggerLabel="Ajouter une ou plusieurs dates"
               triggerVariant={ButtonVariant.SECONDARY}
               offer={offer}
@@ -238,7 +241,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
                   src={strokeAddCalendarIcon}
                 />
               </div>
-              <DialogBuilderButton
+              <RecurrenceModalButton
                 triggerLabel="Définir le calendrier"
                 triggerVariant={ButtonVariant.PRIMARY}
                 offer={offer}
@@ -321,7 +324,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   )
 }
 
-function DialogBuilderButton({
+function RecurrenceModalButton({
   triggerLabel,
   triggerVariant,
   isDialogOpen,
@@ -342,23 +345,34 @@ function DialogBuilderButton({
   const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   return (
-    <DialogBuilder
-      trigger={
-        <Button
-          variant={triggerVariant}
-          label={triggerLabel}
-          disabled={isVenueClosed}
-        />
-      }
-      open={isDialogOpen}
-      onOpenChange={setIsDialogOpen}
-      variant="drawer"
-      title={triggerLabel}
-    >
-      <RecurrenceForm
-        priceCategories={offer.priceCategories ?? []}
-        handleSubmit={handleSubmitRecurrenceFormDrawer}
+    <>
+      <Button
+        variant={triggerVariant}
+        label={triggerLabel}
+        onClick={() => setIsDialogOpen(true)}
+        disabled={isVenueClosed}
       />
-    </DialogBuilder>
+      <DetailedModal
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        title={triggerLabel}
+        primaryAction={
+          <Button type="submit" form={RECURRENCE_FORM_ID} label="Valider" />
+        }
+        secondaryAction={
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            onClick={() => setIsDialogOpen(false)}
+            label="Annuler"
+          />
+        }
+      >
+        <RecurrenceForm
+          priceCategories={offer.priceCategories ?? []}
+          handleSubmit={handleSubmitRecurrenceFormDrawer}
+        />
+      </DetailedModal>
+    </>
   )
 }

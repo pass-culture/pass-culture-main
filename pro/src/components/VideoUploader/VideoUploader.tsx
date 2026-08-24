@@ -38,20 +38,16 @@ export const VideoUploader = () => {
             videoThumbnailUrl={videoThumbnailUrl}
           />
           <div className={styles['action-wrapper']}>
-            <ModalVideo
-              onOpenChange={setIsOpen}
-              open={isOpen}
-              trigger={
-                <Button
-                  variant={ButtonVariant.SECONDARY}
-                  color={ButtonColor.NEUTRAL}
-                  size={ButtonSize.SMALL}
-                  icon={fullEditIcon}
-                  label="Modifier"
-                  disabled={isVenueClosed}
-                />
-              }
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
+              icon={fullEditIcon}
+              label="Modifier"
+              onClick={() => setIsOpen(true)}
+              disabled={isVenueClosed}
             />
+            <ModalVideo isOpen={isOpen} onClose={() => setIsOpen(false)} />
             <Button
               variant={ButtonVariant.SECONDARY}
               color={ButtonColor.NEUTRAL}
@@ -70,19 +66,15 @@ export const VideoUploader = () => {
           })}
         >
           <SvgIcon src={strokeVideoIcon} alt="" width="44" />
-          <ModalVideo
-            onOpenChange={setIsOpen}
-            open={isOpen}
-            trigger={
-              <Button
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                icon={fullMoreIcon}
-                label="Ajouter une URL Youtube"
-                disabled={isVenueClosed}
-              />
-            }
+          <Button
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            icon={fullMoreIcon}
+            label="Ajouter une URL Youtube"
+            onClick={() => setIsOpen(true)}
+            disabled={isVenueClosed}
           />
+          <ModalVideo isOpen={isOpen} onClose={() => setIsOpen(false)} />
           <p className={styles['video-uploader-text-subtle']}>
             Affichage de la prévisualisation ici
           </p>

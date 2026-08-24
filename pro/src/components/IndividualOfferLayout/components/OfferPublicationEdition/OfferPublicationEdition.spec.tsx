@@ -62,9 +62,7 @@ describe('OfferPublicationEdition', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
-    expect(
-      screen.queryByText('Publication et réservation')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Publication et réservation')).not.toBeVisible()
   })
 
   it('should patch the offer when submitting the form', async () => {

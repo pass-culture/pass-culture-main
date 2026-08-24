@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
 import {
   FormProvider,
   useFieldArray,
@@ -24,7 +23,6 @@ import fullClearIcon from '@/icons/full-clear.svg'
 import fullErrorIcon from '@/icons/full-error.svg'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { DayCheckbox } from '@/ui-kit/form/DayCheckbox/DayCheckbox'
 import { Select } from '@/ui-kit/form/Select/Select'
@@ -43,6 +41,8 @@ import {
 } from '../form/types'
 import { getValidationSchema } from '../form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
+
+export const RECURRENCE_FORM_ID = 'recurrence-form'
 
 export interface RecurrenceFormProps {
   priceCategories: PriceCategoryResponseModel[]
@@ -119,9 +119,9 @@ const BeginningTimesForm = (): JSX.Element => {
         Horaires pour l’ensemble de ces dates
       </legend>
       <div className={styles['section']}>
-        <h2 className={styles['legend']}>
-          Horaires pour l’ensemble de ces dates
-        </h2>
+        <h3 className={styles['legend']}>
+          Horaires pour l'ensemble de ces dates
+        </h3>
 
         <FormLayout.Row>
           <div className={styles['beginning-time-list']}>
@@ -189,7 +189,7 @@ const PriceCategoriesForm = ({
         Places et tarifs par horaire
       </legend>
       <div className={styles['section']}>
-        <h2 className={styles['legend']}>Places et tarifs par horaire</h2>
+        <h3 className={styles['legend']}>Places et tarifs par horaire</h3>
         <QuantityPerPriceCategory priceCategoryOptions={priceCategoryOptions} />
       </div>
     </fieldset>
@@ -232,6 +232,7 @@ export const RecurrenceForm = ({
   return (
     <FormProvider {...methods}>
       <form
+        id={RECURRENCE_FORM_ID}
         onSubmit={(e) => {
           e.stopPropagation()
           e.preventDefault()
@@ -245,9 +246,9 @@ export const RecurrenceForm = ({
           <div className={styles['recurrence-section']}>
             <RadioButtonGroup
               label={
-                <h2 className={styles['radio-group-title']}>
+                <h3 className={styles['radio-group-title']}>
                   Cet évènement aura lieu
-                </h2>
+                </h3>
               }
               display="horizontal"
               options={[
@@ -373,9 +374,8 @@ export const RecurrenceForm = ({
             <legend className={styles['visually-hidden']}>
               Date limite de réservation
             </legend>
-            <div className={styles['section']}>
-              <h2 className={styles['legend']}>Date limite de réservation</h2>
-
+            <div className={styles['section']} data-last-section>
+              <h3 className={styles['legend']}>Date limite de réservation</h3>
               <div className={styles['booking-date-limit-input']}>
                 <TextInput
                   label="Nombre de jours avant le début de l’évènement"
@@ -401,25 +401,6 @@ export const RecurrenceForm = ({
             </div>
           </fieldset>
         </div>
-
-        <DialogBuilder.Footer>
-          <div className={styles['action-buttons']}>
-            <Dialog.Close asChild>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                label="Annuler"
-              />
-            </Dialog.Close>
-
-            <Button
-              type="submit"
-              disabled={methods.formState.isSubmitting}
-              isLoading={methods.formState.isSubmitting}
-              label="Valider"
-            />
-          </div>
-        </DialogBuilder.Footer>
       </form>
     </FormProvider>
   )

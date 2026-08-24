@@ -19,11 +19,14 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import fullEditIcon from '@/icons/full-edit.svg'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import styles from './OfferPublicationEdition.module.scss'
-import { OfferPublicationEditionForm } from './OfferPublicationEditionForm/OfferPublicationEditionForm'
+import {
+  OFFER_PUBLICATION_EDITION_FORM_ID,
+  OfferPublicationEditionForm,
+} from './OfferPublicationEditionForm/OfferPublicationEditionForm'
 import type { EventPublicationEditionFormValues } from './OfferPublicationEditionForm/types'
 import { OfferPublicationEditionTags } from './OfferPublicationEditionTags/OfferPublicationEditionTags'
 
@@ -100,24 +103,40 @@ export function OfferPublicationEdition({
   return (
     <div className={styles['container']}>
       <OfferPublicationEditionTags offer={offer} />
-      <DialogBuilder
-        trigger={
+      <Button
+        variant={ButtonVariant.SECONDARY}
+        color={ButtonColor.NEUTRAL}
+        size={ButtonSize.SMALL}
+        icon={fullEditIcon}
+        label="Gérer la publication"
+        disabled={withVenueHelpers(selectedPartnerVenue).isClosed}
+        onClick={() => setIsDialogOpen(true)}
+      />
+      <DetailedModal
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        title="Publication et réservation"
+        primaryAction={
+          <Button
+            type="submit"
+            form={OFFER_PUBLICATION_EDITION_FORM_ID}
+            variant={ButtonVariant.PRIMARY}
+            label="Enregistrer"
+          />
+        }
+        secondaryAction={
           <Button
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
-            size={ButtonSize.SMALL}
-            icon={fullEditIcon}
-            label="Gérer la publication"
-            disabled={withVenueHelpers(selectedPartnerVenue).isClosed}
+            onClick={() => setIsDialogOpen(false)}
+            label="Annuler"
           />
         }
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        title="Publication et réservation"
-        variant="drawer"
       >
-        <OfferPublicationEditionForm offer={offer} onSubmit={onSubmit} />
-      </DialogBuilder>
+        {isDialogOpen && (
+          <OfferPublicationEditionForm offer={offer} onSubmit={onSubmit} />
+        )}
+      </DetailedModal>
     </div>
   )
 }

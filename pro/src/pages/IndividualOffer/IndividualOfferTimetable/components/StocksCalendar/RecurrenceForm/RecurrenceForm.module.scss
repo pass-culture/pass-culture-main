@@ -11,6 +11,10 @@
 
 .section {
   margin-bottom: var(--size-spacing-xxl);
+
+  &[data-last-section] {
+    margin-bottom: 0;
+  }
 }
 
 .legend {
@@ -20,11 +24,6 @@
   align-items: center;
   gap: rem.torem(10px);
   margin-bottom: var(--size-spacing-l);
-}
-
-.action-buttons {
-  display: flex;
-  gap: var(--size-spacing-l);
 }
 
 .day-inputs {

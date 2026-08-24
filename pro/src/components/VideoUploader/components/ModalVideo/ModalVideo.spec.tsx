@@ -15,7 +15,7 @@ const mockLogEvent = vi.fn()
 
 describe('ModalVideo', () => {
   it('should render an heading, a cancel button, a save button and a field', () => {
-    renderWithProviders(<ModalVideo open={true} />)
+    renderWithProviders(<ModalVideo isOpen={true} onClose={() => {}} />)
 
     waitFor(() => {
       expect(
@@ -42,7 +42,7 @@ describe('ModalVideo', () => {
         offerId={offer.id}
         initialVideoData={offer.videoData}
       >
-        <ModalVideo open={true} />
+        <ModalVideo isOpen={true} onClose={() => {}} />
       </VideoUploaderContextProvider>
     )
 
@@ -86,7 +86,7 @@ describe('ModalVideo', () => {
         offerId={offer.id}
         initialVideoData={offer.videoData}
       >
-        <ModalVideo open={true} />
+        <ModalVideo isOpen={true} onClose={() => {}} />
       </VideoUploaderContextProvider>
     )
 
@@ -123,7 +123,7 @@ describe('ModalVideo', () => {
         offerId={offer.id}
         initialVideoData={offer.videoData}
       >
-        <ModalVideo open={true} />
+        <ModalVideo isOpen={true} onClose={() => {}} />
       </VideoUploaderContextProvider>
     )
 

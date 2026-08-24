@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
@@ -9,7 +8,11 @@ import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { priceCategoryFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { RecurrenceForm, type RecurrenceFormProps } from './RecurrenceForm'
+import {
+  RECURRENCE_FORM_ID,
+  RecurrenceForm,
+  type RecurrenceFormProps,
+} from './RecurrenceForm'
 
 const mockSubmit = vi.fn()
 
@@ -20,12 +23,12 @@ const defaultProps: RecurrenceFormProps = {
 
 function renderRecurrenceForm(props: RecurrenceFormProps = defaultProps) {
   return renderWithProviders(
-    <Dialog.Root defaultOpen>
-      <Dialog.Content aria-describedby={undefined}>
-        <Dialog.Title>Title</Dialog.Title>
-        <RecurrenceForm {...props} />
-      </Dialog.Content>
-    </Dialog.Root>
+    <>
+      <RecurrenceForm {...props} />
+      <button type="submit" form={RECURRENCE_FORM_ID}>
+        Valider
+      </button>
+    </>
   )
 }
 
