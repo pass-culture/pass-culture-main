@@ -34,6 +34,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offerers.schemas as offerers_schemas
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.reactions.factories as reactions_factories
@@ -2519,6 +2520,45 @@ class UpdateOfferTest:
             reason=IndexationReason.OFFER_UPDATE,
             log_extra={"changes": {"name", "bookingEmail"}},
         )
+
+
+@pytest.mark.usefixtures("db_session")
+class GetOrCreateOffererAddressFromAddressBodyTest:
+    @mock.patch("pcapi.core.offerers.api.get_or_create_offer_location")
+    def test_should_reuse_the_venue_address_when_the_offer_is_located_on_the_venue(self, get_or_create_offer_location):
+        venue = offerers_factories.VenueFactory()
+
+        offerer_address = api.get_or_create_offerer_address_from_address_body(
+            offerers_schemas.LocationOnlyOnVenueModel(), venue
+        )
+
+        # no label, so the offer is not tied to the venue location itself
+        get_or_create_offer_location.assert_called_once_with(
+            offerer_id=venue.managingOffererId,
+            venue_id=venue.id,
+            address_id=venue.offererAddress.addressId,
+            label=None,
+        )
+        assert offerer_address == get_or_create_offer_location.return_value
+
+    @mock.patch("pcapi.core.offerers.api.get_offer_location_from_address")
+    def test_should_build_a_location_from_the_address_when_one_is_sent(self, get_offer_location_from_address):
+        venue = offerers_factories.VenueFactory()
+        address_body = offerers_schemas.LocationModel(
+            street="1 rue de la Paix",
+            city="Paris",
+            postalCode="75002",
+            latitude=48.8691,
+            longitude=2.3316,
+            label="Salle Jean Vilar",
+        )
+
+        offerer_address = api.get_or_create_offerer_address_from_address_body(address_body, venue)
+
+        get_offer_location_from_address.assert_called_once_with(
+            venue.managingOffererId, address_body, venue_id=venue.id
+        )
+        assert offerer_address == get_offer_location_from_address.return_value
 
 
 now_datetime_with_tz = datetime.now(UTC)
