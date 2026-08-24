@@ -109,6 +109,13 @@ def _get_cities_filter(department_codes_and_cities: Iterable[tuple[str, str]]) -
     )
 
 
+def _resolve_and_validate_account_city_options(city_options: Iterable[str]) -> tuple[tuple[str, str], ...]:
+    try:
+        return autocomplete.resolve_account_city_options(city_options)
+    except ValueError:
+        raise advanced_search.AdvancedSearchWarning("Le filtre par ville est invalide")
+
+
 def _get_credits_filter(credit_names: Iterable[str]) -> sa.ColumnElement:
     beneficiary_predicates = {
         search_forms.AccountSearchFilter.PASS_17_V3.name: sa.and_(
@@ -200,7 +207,7 @@ ADVANCED_SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
     "BIRTHDAY": {"field": "date", "column": users_models.User.birth_date},
     "CITY": {
         "field": "city",
-        "special": autocomplete.resolve_account_city_options,
+        "special": _resolve_and_validate_account_city_options,
         "custom_filters": {
             "IN": _get_cities_filter,
             "NOT_IN": lambda department_codes_and_cities: sa.not_(_get_cities_filter(department_codes_and_cities)),

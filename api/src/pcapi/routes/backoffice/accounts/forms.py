@@ -163,6 +163,9 @@ class AccountsSearchSubForm(utils.PCForm):
         endpoint="backoffice_web.autocomplete_account_cities",
         search_inline=True,
         validators=[_city_validator],
+        # Results are already filtered server-side. Since option labels don't contain the postal code,
+        # Tom Select's own client-side filtering hides valid matches when searching by postal code.
+        disable_client_filter=True,
     )
     credit = fields.PCSelectMultipleField(
         "Crédit",

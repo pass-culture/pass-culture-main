@@ -20,7 +20,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_datespan
-from pcapi.routes.backoffice.utils import advanced_search
 from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -34,7 +33,7 @@ from . import blueprint
 from .forms import fields
 
 
-ACCOUNT_CITY_OPTION_PATTERN = re.compile(r"[0-9][0-9AB][0-9]{3}_.+")
+ACCOUNT_CITY_OPTION_PATTERN = re.compile(r"([0-9][0-9AB][0-9]{3})_(.+)")
 """
 Format: [INSEE_CODE]_[CITY_NAME]
 Example: 2B033_Bastia
@@ -726,12 +725,14 @@ def autocomplete_account_cities() -> AutocompleteResponse:
 
 
 def parse_account_city_option(option: str) -> tuple[str, str]:
-    if not re.fullmatch(ACCOUNT_CITY_OPTION_PATTERN, option):
-        raise ValueError(f"Invalid city option: {option}")
+    """
+    Returns:
+        (INSEE_CODE, CITY)
+    """
+    if match := re.fullmatch(ACCOUNT_CITY_OPTION_PATTERN, option):
+        return match.group(1), match.group(2)
 
-    insee_code, city = option.split("_", 1)
-
-    return insee_code, city
+    raise ValueError(f"Invalid city option: {option}")
 
 
 def prefill_account_cities_choice(autocomplete_field: fields.PCTomSelectField) -> None:
@@ -739,7 +740,7 @@ def prefill_account_cities_choice(autocomplete_field: fields.PCTomSelectField) -
         autocomplete_field.choices = []
         for value in autocomplete_field.data:
             try:
-                insee_code, city = parse_account_city_option(value)
+                (insee_code, city) = parse_account_city_option(value)
                 department_code = regions_utils.get_department_code_from_city_code(insee_code)
             except ValueError:
                 autocomplete_field.choices.append((value, f"Valeur invalide : {value}"))
@@ -748,10 +749,7 @@ def prefill_account_cities_choice(autocomplete_field: fields.PCTomSelectField) -
 
 
 def resolve_account_city_options(city_options: Iterable[str]) -> tuple[tuple[str, str], ...]:
-    try:
-        return tuple(
-            (regions_utils.get_department_code_from_city_code(insee_code), city)
-            for insee_code, city in (parse_account_city_option(option) for option in city_options)
-        )
-    except ValueError:
-        raise advanced_search.AdvancedSearchWarning("Le filtre par ville est invalide")
+    return tuple(
+        (regions_utils.get_department_code_from_city_code(insee_code), city)
+        for insee_code, city in (parse_account_city_option(option) for option in city_options)
+    )
