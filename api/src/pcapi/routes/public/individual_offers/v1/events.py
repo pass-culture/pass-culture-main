@@ -309,6 +309,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
             publication_datetime=publication_datetime,
             url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
             withdrawal_details=updates.get("itemCollectionDetails", offers_api.UNCHANGED),
+            mandatory_extra_data_fields=utils.mandatory_extra_data_fields(offer.subcategoryId),
             venue=venue,
             offerer_address=offerer_address,
         )
@@ -319,7 +320,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
             utils.update_or_delete_video(body.video_url, offer, current_api_key.provider.id)
 
     except offers_exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
+        raise api_errors.ApiErrors(utils.translate_offer_errors(error.errors))
 
     return events_serializers.EventOfferResponse.build_event_offer(offer)
 
