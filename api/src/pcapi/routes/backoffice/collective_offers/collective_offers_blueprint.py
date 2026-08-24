@@ -20,6 +20,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.adage import client as adage_client
+from pcapi.core.educational.api import offer as educational_offer_api
 from pcapi.core.educational.serialization.collective_offer import serialize_collective_offer
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
@@ -294,6 +295,7 @@ class CollectiveOfferDetailsActionType(enum.StrEnum):
     CREATE_COMMERCIAL_GESTURE = enum.auto()
     CREATE_OVERPAYMENT = enum.auto()
     ADJUST_PRICE = enum.auto()
+    MOVE_OFFER = enum.auto()
 
 
 def _get_educational_year_subquery(
@@ -1011,9 +1013,11 @@ def _get_collective_offer_details_actions(collective_offer: educational_models.C
             and finance_validation.check_incident_collective_booking(collective_booking)
         ):
             allowed_actions.add_action(CollectiveOfferDetailsActionType.CREATE_OVERPAYMENT)
-    if access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT) and collective_stock:
-        if _is_collective_offer_price_editable(collective_offer):
+    if access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
+        if collective_stock and _is_collective_offer_price_editable(collective_offer):
             allowed_actions.add_action(CollectiveOfferDetailsActionType.ADJUST_PRICE)
+        if not collective_booking or not collective_booking.is_pending_reimbursement_or_reimbursed:
+            allowed_actions.add_action(CollectiveOfferDetailsActionType.MOVE_OFFER)
 
     return allowed_actions
 
@@ -1321,3 +1325,50 @@ def get_collective_offer_price_form(collective_offer_id: int) -> response_utils.
         ajax_submit=False,
         information=information,
     )
+
+
+@blueprint.route("/<int:collective_offer_id>/move", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_move_collective_offer_form(collective_offer_id: int) -> response_utils.BackofficeResponse:
+    information = Markup(
+        "Cette <strong>action expérimentale</strong> permet de déplacer l'offre collective et sa réservation vers n'importe quel autre "
+        "partenaire culturel pouvant proposer des offres collectives."
+        "<br/>À n'utiliser que si vous savez ce que vous faites !"
+    )
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        form=forms.MoveCollectiveOfferForm(),
+        dst=url_for("backoffice_web.collective_offer.move_collective_offer", collective_offer_id=collective_offer_id),
+        div_id="move-collective-offer",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Déplacer l'offre collective {collective_offer_id}",
+        button_text="Déplacer",
+        ajax_submit=False,
+        information=information,
+    )
+
+
+@blueprint.route("/<int:collective_offer_id>/move", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def move_collective_offer(collective_offer_id: int) -> response_utils.BackofficeResponse:
+    redirect_url = url_for(
+        "backoffice_web.collective_offer.get_collective_offer_details", collective_offer_id=collective_offer_id
+    )
+
+    form = forms.MoveCollectiveOfferForm()
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return request_utils.safe_redirect_back(request, redirect_url)
+
+    try:
+        educational_offer_api.move_collective_offer(collective_offer_id, int(form.venue.data[0]))
+    except educational_exceptions.CollectiveOfferNotFound:
+        raise NotFound()
+    except educational_exceptions.OffererNotAllowedOnAdage:
+        flash("L'entité juridique cible ne peut pas créer d'offre EAC", "warning")
+    except educational_exceptions.BookingIsAlreadyRefunded:
+        flash("La réservation de l'offre collective est déjà remboursée", "warning")
+    else:
+        flash("L'offre collective a été transférée vers le nouveau partenaire culturel", "success")
+
+    return request_utils.safe_redirect_back(request, redirect_url)

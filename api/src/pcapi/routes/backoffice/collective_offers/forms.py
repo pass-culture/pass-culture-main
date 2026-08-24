@@ -407,3 +407,13 @@ class RejectCollectiveOfferForm(FlaskForm):
 
 class BatchRejectCollectiveOfferForm(empty_forms.BatchForm, RejectCollectiveOfferForm):
     pass
+
+
+class MoveCollectiveOfferForm(FlaskForm):
+    venue = fields.PCTomSelectField(
+        "Partenaire culturel vers lequel transférer l'offre",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues_allowed_on_adage",
+    )
