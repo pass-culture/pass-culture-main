@@ -1732,7 +1732,7 @@ class UpdateOfferTest:
 
         body = offers_schemas.UpdateOffer(isDuo=True, bookingEmail="new@example.com")
         with caplog.at_level(logging.DEBUG):
-            offer = api.update_offer(offer, body)
+            offer = api.old_update_offer(offer, body)
         db.session.flush()
 
         assert offer.isDuo
@@ -1761,7 +1761,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
         body = offers_schemas.UpdateOffer(extraData={"author": "Asimov"})
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {
             "showType": ["Ce champ est obligatoire"],
@@ -1774,7 +1774,7 @@ class UpdateOfferTest:
         )
         body = offers_schemas.UpdateOffer(extraData=None)
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
         assert error.value.errors == {
             "showType": ["Ce champ est obligatoire"],
             "showSubType": ["Ce champ est obligatoire"],
@@ -1788,7 +1788,7 @@ class UpdateOfferTest:
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
         body = offers_schemas.UpdateOffer(name="New name", description="new Description")
-        offer = api.update_offer(offer, body)
+        offer = api.old_update_offer(offer, body)
         db.session.flush()
 
         assert offer.name == "New name"
@@ -1798,7 +1798,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(name="Old name", ean="1234567890124")
         body = offers_schemas.UpdateOffer(name="Luftballons 1234567890124")
         with pytest.raises(exceptions.OfferException) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {"name": ["Le titre d'une offre ne peut contenir l'EAN"]}
         assert db.session.query(models.Offer).one().name == "Old name"
@@ -1809,7 +1809,7 @@ class UpdateOfferTest:
             lastProvider=provider, name="Old name", subcategoryId=subcategories.SEANCE_CINE.id
         )
         body = offers_schemas.UpdateOffer(name="Old name", isDuo=True)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
@@ -1822,7 +1822,7 @@ class UpdateOfferTest:
         )
         body = offers_schemas.UpdateOffer(durationMinutes=120, isDuo=True)
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {"durationMinutes": ["Vous ne pouvez pas modifier ce champ"]}
         offer = db.session.query(models.Offer).one()
@@ -1838,7 +1838,7 @@ class UpdateOfferTest:
             ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(externalTicketOfficeUrl="https://example.com")
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
@@ -1861,7 +1861,7 @@ class UpdateOfferTest:
             motorDisabilityCompliant=True,
             mentalDisabilityCompliant=False,
         )
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
@@ -1893,7 +1893,7 @@ class UpdateOfferTest:
             motorDisabilityCompliant=True,
             mentalDisabilityCompliant=False,
         )
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
@@ -1917,7 +1917,7 @@ class UpdateOfferTest:
             audioDisabilityCompliant=False,
         )
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {
             "durationMinutes": ["Vous ne pouvez pas modifier ce champ"],
@@ -1936,7 +1936,7 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(name="Monologue")
 
         with pytest.raises(exceptions.OfferException) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -1954,7 +1954,7 @@ class UpdateOfferTest:
             ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.name == "Offer linked to a provider"
@@ -1970,7 +1970,7 @@ class UpdateOfferTest:
             ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(ean="1234567890125")
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.ean == "1234567890125"
@@ -1981,7 +1981,7 @@ class UpdateOfferTest:
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
         offer = factories.EventOfferFactory(lastProvider=provider, name="Offer linked to a provider", ean=None)
         body = offers_schemas.UpdateOffer(ean=None)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.ean == None
@@ -1994,7 +1994,7 @@ class UpdateOfferTest:
         )
         body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
         with pytest.raises(exceptions.OfferException) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors["idAtProvider"] == [
             "Une offre ne peut être créée ou éditée avec un idAtProvider si elle n'a pas de provider"
@@ -2023,7 +2023,7 @@ class UpdateOfferTest:
 
         body = offers_schemas.UpdateOffer(idAtProvider=id_at_provider)
         with pytest.raises(exceptions.OfferException) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
 
@@ -2044,10 +2044,10 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(name="New name", offererAddress=offerer_address)
         if hasUrl:
             with pytest.raises(api_errors.ApiErrors) as error:
-                api.update_offer(offer, body)
+                api.old_update_offer(offer, body)
                 assert error.value.errors["offerUrl"] == ["Une offre numérique ne peut pas avoir d'adresse"]
         else:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
             offer = db.session.query(models.Offer).one()
             assert offer.offererAddress == offerer_address
 
@@ -2061,7 +2061,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory()
         body = offers_schemas.UpdateOffer()
 
-        updated_offer = api.update_offer(offer, body, offerer_address=new_offerer_address)
+        updated_offer = api.old_update_offer(offer, body, offerer_address=new_offerer_address)
 
         db.session.commit()
         db.session.refresh(updated_offer)
@@ -2082,7 +2082,7 @@ class UpdateOfferTest:
         )
         body = offers_schemas.UpdateOffer()
 
-        updated_offer = api.update_offer(offer, body, venue=new_venue, offerer_address=new_offerer_address)
+        updated_offer = api.old_update_offer(offer, body, venue=new_venue, offerer_address=new_offerer_address)
 
         db.session.commit()
         db.session.refresh(updated_offer)
@@ -2107,7 +2107,7 @@ class UpdateOfferTest:
 
         body = offers_schemas.UpdateOffer(bookingAllowedDatetime=bookingAllowedDatetime)
 
-        updated_offer = api.update_offer(offer, body)
+        updated_offer = api.old_update_offer(offer, body)
         assert len(notify_users_offer_is_bookable_mock.mock_calls) == expected_calls_count
         assert updated_offer.bookingAllowedDatetime == bookingAllowedDatetime
 
@@ -2129,7 +2129,7 @@ class UpdateOfferTest:
             withdrawalType=models.WithdrawalTypeEnum.IN_APP,
         )
 
-        api.update_offer(draft_offer, body)
+        api.old_update_offer(draft_offer, body)
 
         mock_check_is_duo.assert_called_once()
         call_args = mock_check_is_duo.call_args
@@ -2148,7 +2148,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory()
         body = offers_schemas.UpdateOffer(name="Updated Name")
 
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mock_upsert_artist_offer_links.assert_not_called()
 
@@ -2165,7 +2165,7 @@ class UpdateOfferTest:
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
 
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mock_upsert_artist_offer_links.assert_called_once_with(
             [
@@ -2189,7 +2189,7 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
 
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {
             "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
@@ -2210,10 +2210,10 @@ class UpdateOfferTest:
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         with caplog.at_level(logging.INFO):
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         deletion_logs = [
             record for record in caplog.records if "Artist offer links have been deleted" in record.message
@@ -2244,10 +2244,10 @@ class UpdateOfferTest:
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         with caplog.at_level(logging.INFO):
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         creation_logs = [
             record for record in caplog.records if "Artist offer links have been created" in record.message
@@ -2270,7 +2270,7 @@ class UpdateOfferTest:
         cultural_outreach_factories.CulturalOutreachFactory(offer=offer)
 
         body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=True)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mocked_update_claim.assert_called_once_with(datetime(2026, 4, 21, 12, 0, 0), offer)
 
@@ -2281,7 +2281,7 @@ class UpdateOfferTest:
         cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
 
         body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=True)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mocked_update_claim.assert_not_called()
 
@@ -2291,7 +2291,7 @@ class UpdateOfferTest:
         cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
 
         body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=False)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mocked_update_claim.assert_called_once_with(None, offer)
 
@@ -2300,7 +2300,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id)
 
         body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=True)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mocked_create_claim.assert_called_once_with(offer)
 

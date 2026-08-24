@@ -513,7 +513,7 @@ def patch_offer(
         if "ean" in body_extra_data:
             updates["ean"] = body_extra_data.pop("ean")
         updates["extraData"] = body_extra_data
-    offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
+    offers_api.old_update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
     db.session.flush()
     offer = offers_repository.get_offer_by_id(
         offer_id,
