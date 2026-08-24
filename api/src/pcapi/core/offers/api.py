@@ -541,31 +541,59 @@ def old_update_offer(
 
 def update_offer(
     offer: models.Offer,
-    body: offers_schemas.UpdateOffer,
+    *,
+    audio_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    booking_allowed_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    booking_contact: str | None | T_UNCHANGED = UNCHANGED,
+    booking_email: str | None | T_UNCHANGED = UNCHANGED,
+    description: str | None | T_UNCHANGED = UNCHANGED,
+    duration_minutes: int | None | T_UNCHANGED = UNCHANGED,
+    ean: str | None | T_UNCHANGED = UNCHANGED,
+    external_ticket_office_url: str | None | T_UNCHANGED = UNCHANGED,
+    extra_data: models.OfferExtraData | dict[str, typing.Any] | None | T_UNCHANGED = UNCHANGED,
+    id_at_provider: str | None | T_UNCHANGED = UNCHANGED,
+    is_duo: bool | None | T_UNCHANGED = UNCHANGED,
+    mental_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    motor_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    name: str | None | T_UNCHANGED = UNCHANGED,
+    publication_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    subcategory_id: str | T_UNCHANGED = UNCHANGED,
+    url: str | None | T_UNCHANGED = UNCHANGED,
+    visual_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    withdrawal_delay: int | None | T_UNCHANGED = UNCHANGED,
+    withdrawal_details: str | None | T_UNCHANGED = UNCHANGED,
+    withdrawal_type: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
     venue: offerers_models.Venue | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
     is_from_private_api: bool = False,
 ) -> models.Offer:
     validation.check_validation_status(offer)
 
-    aliases = set(body.dict(by_alias=True))
-    fields = body.dict(by_alias=True, exclude_unset=True)
-    fields.pop("artistOfferLinks", None)
-    fields.pop("hasCulturalOutreachClaim", None)
-    artist_offer_links = body.artist_offer_links
-    has_cultural_outreach_claim = body.has_cultural_outreach_claim
-
-    # updated using the pro interface
-    if body.location:
-        offerer_address_from_body = get_or_create_offerer_address_from_address_body(
-            address_body=body.location, venue=offer.venue
-        )
-
-        if offerer_address_from_body is not None:
-            fields["offererAddress"] = offerer_address_from_body
-            fields.pop("location", None)
-
-    should_send_mail = fields.pop("shouldSendMail", False)
+    fields: dict[str, typing.Any] = {
+        "audioDisabilityCompliant": audio_disability_compliant,
+        "bookingAllowedDatetime": booking_allowed_datetime,
+        "bookingContact": booking_contact,
+        "bookingEmail": booking_email,
+        "description": description,
+        "durationMinutes": duration_minutes,
+        "ean": ean,
+        "externalTicketOfficeUrl": external_ticket_office_url,
+        "extraData": extra_data,
+        "idAtProvider": id_at_provider,
+        # an explicit `null` disables double bookings rather than clearing the field
+        "isDuo": bool(is_duo) if is_duo is not UNCHANGED else UNCHANGED,
+        "mentalDisabilityCompliant": mental_disability_compliant,
+        "motorDisabilityCompliant": motor_disability_compliant,
+        "name": name,
+        "publicationDatetime": publication_datetime,
+        "subcategoryId": subcategory_id,
+        "url": url,
+        "visualDisabilityCompliant": visual_disability_compliant,
+        "withdrawalDelay": withdrawal_delay,
+        "withdrawalDetails": withdrawal_details,
+        "withdrawalType": withdrawal_type,
+    }
+    fields = {key: value for key, value in fields.items() if value is not UNCHANGED}
 
     if venue:
         fields["venue"] = venue
@@ -576,48 +604,13 @@ def update_offer(
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     updates_set = set(updates)
 
-    subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
-
-    if artist_offer_links is not None:
-        validation.check_artist_offer_links(artist_offer_links, subcategory)
-        created_links, deleted_links = artist_api.upsert_artist_offer_links(artist_offer_links, offer)
-        db.session.expire(offer, ["artistOfferLinks"])
-
-        if deleted_links:
-            on_commit(
-                partial(
-                    logger.info,
-                    "Artist offer links have been deleted",
-                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "links": [str(k) for k in deleted_links]},
-                    technical_message_id="offer.artistOfferLinks.deleted",
-                )
-            )
-        if created_links:
-            on_commit(
-                partial(
-                    logger.info,
-                    "Artist offer links have been created",
-                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "links": [str(k) for k in created_links]},
-                    technical_message_id="offer.artistOfferLinks.created",
-                )
-            )
-
-    if has_cultural_outreach_claim is not None:
-        outreach = offer.culturalOutreach
-        is_currently_claimed = outreach is not None and outreach.claimedDatetime is not None
-        if has_cultural_outreach_claim != is_currently_claimed:
-            if outreach is None:
-                cultural_outreach_api.create_cultural_outreach_claim(offer)
-            else:
-                claim_datetime = get_naive_utc_now() if has_cultural_outreach_claim else None
-                cultural_outreach_api.update_cultural_outreach_claim(claim_datetime, offer)
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[updates.get("subcategoryId", offer.subcategoryId)]
 
     if not updates:
         return offer
 
     if "bookingAllowedDatetime" in updates:
-        bookingAllowedDatetime = get_field(offer, updates, "bookingAllowedDatetime", aliases=aliases)
+        bookingAllowedDatetime = get_field(offer, updates, "bookingAllowedDatetime")
         if not bookingAllowedDatetime or (bookingAllowedDatetime <= datetime.datetime.now(datetime.UTC)):
             reminders_notifications.notify_users_offer_is_bookable(offer)
 
@@ -628,32 +621,31 @@ def update_offer(
         or "visualDisabilityCompliant" in updates
     ):
         validation.check_accessibility_compliance(
-            audio_disability_compliant=get_field(offer, updates, "audioDisabilityCompliant", aliases=aliases),
-            mental_disability_compliant=get_field(offer, updates, "mentalDisabilityCompliant", aliases=aliases),
-            motor_disability_compliant=get_field(offer, updates, "motorDisabilityCompliant", aliases=aliases),
-            visual_disability_compliant=get_field(offer, updates, "visualDisabilityCompliant", aliases=aliases),
+            audio_disability_compliant=get_field(offer, updates, "audioDisabilityCompliant"),
+            mental_disability_compliant=get_field(offer, updates, "mentalDisabilityCompliant"),
+            motor_disability_compliant=get_field(offer, updates, "motorDisabilityCompliant"),
+            visual_disability_compliant=get_field(offer, updates, "visualDisabilityCompliant"),
         )
 
     if "extraData" in updates or "ean" in updates:
-        formatted_extra_data = _format_extra_data(subcategory_id, body.extra_data) or {}
+        formatted_extra_data = _format_extra_data(subcategory.id, fields.get("extraData")) or {}
         validation.check_offer_extra_data(
-            subcategory_id, formatted_extra_data, offer.venue, is_from_private_api, offer=offer, ean=body.ean
+            subcategory.id, formatted_extra_data, offer.venue, is_from_private_api, offer=offer, ean=fields.get("ean")
         )
 
     if "isDuo" in updates:
-        is_duo = get_field(offer, updates, "isDuo", aliases=aliases)
-        validation.check_is_duo_compliance(is_duo, subcategory)
+        validation.check_is_duo_compliance(get_field(offer, updates, "isDuo"), subcategory)
 
     if "idAtProvider" in updates:
-        id_at_provider = get_field(offer, updates, "idAtProvider", aliases=aliases)
-        validation.check_can_input_id_at_provider(offer.lastProvider, id_at_provider)
-        validation.check_can_input_id_at_provider_for_this_venue(offer.venueId, id_at_provider, offer.id)
+        updated_id_at_provider = get_field(offer, updates, "idAtProvider")
+        validation.check_can_input_id_at_provider(offer.lastProvider, updated_id_at_provider)
+        validation.check_can_input_id_at_provider_for_this_venue(offer.venueId, updated_id_at_provider, offer.id)
 
     if "name" in updates:
-        name = get_field(offer, updates, "name", aliases=aliases)
-        if name is None:
+        updated_name = get_field(offer, updates, "name")
+        if updated_name is None:
             raise exceptions.OfferException({"name": ["cannot be null"]})
-        validation.check_offer_name_does_not_contain_ean(name)
+        validation.check_offer_name_does_not_contain_ean(updated_name)
 
     if (
         "withdrawalType" in updates
@@ -661,14 +653,11 @@ def update_offer(
         or "withdrawalDetails" in updates
         or "bookingContact" in updates
     ):
-        booking_contact = get_field(offer, updates, "bookingContact", aliases=aliases)
-        withdrawal_delay = get_field(offer, updates, "withdrawalDelay", aliases=aliases)
-        withdrawal_type = get_field(offer, updates, "withdrawalType", aliases=aliases)
         validation.check_offer_withdrawal(
-            withdrawal_type=withdrawal_type,
-            withdrawal_delay=withdrawal_delay,
-            subcategory_id=subcategory_id,
-            booking_contact=booking_contact,
+            withdrawal_type=get_field(offer, updates, "withdrawalType"),
+            withdrawal_delay=get_field(offer, updates, "withdrawalDelay"),
+            subcategory_id=subcategory.id,
+            booking_contact=get_field(offer, updates, "bookingContact"),
             provider=offer.lastProvider,
         )
 
@@ -678,7 +667,7 @@ def update_offer(
         # TODO(jbaudet - 11/2025): remove this whole try/except in a
         # couple of weeks, after checking that this warning never
         # appears.
-        # Caller should use body.ean instead of body.extra_data["ean"]
+        # Caller should use the `ean` argument instead of extra_data["ean"]
         # This seems to be ok today, but... lets wait a little bit before
         # doing anything stupid.
         logger.warning(
@@ -689,7 +678,7 @@ def update_offer(
         pass
 
     # - The offer URL must not be removed if the offer has an online subcategory.
-    if offer.url and "url" in body.__fields_set__ and body.url is None:
+    if offer.url and "url" in fields and fields["url"] is None:
         offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
         validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
 
@@ -697,8 +686,7 @@ def update_offer(
         raise offers_exceptions.UnallowedUpdate("subcategoryId")
 
     if "durationMinutes" in updates:
-        duration_minutes = get_field(offer, updates, "durationMinutes", aliases=aliases)
-        validation.check_duration_minutes(duration_minutes, is_from_private_api)
+        validation.check_duration_minutes(get_field(offer, updates, "durationMinutes"), is_from_private_api)
 
     if offer.lastProvider is not None:
         validation.check_update_only_allowed_fields_for_offer_from_provider(updates_set, offer.lastProvider)
@@ -707,9 +695,8 @@ def update_offer(
 
     changes = {}
     for key, value in updates.items():
-        if key == "extraData":
-            if offer.product:
-                continue
+        if key == "extraData" and offer.product:
+            continue
         changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
         setattr(offer, key, value)
 
@@ -741,12 +728,6 @@ def update_offer(
             technical_message_id="offer.updated",
         )
     )
-
-    withdrawal_fields = {"bookingContact", "withdrawalDelay", "withdrawalDetails", "withdrawalType"}
-    withdrawal_updated = updates_set & withdrawal_fields
-    oa_updated = "offererAddress" in updates
-    if should_send_mail and (withdrawal_updated or oa_updated):
-        transactional_mails.send_email_for_each_ongoing_booking(offer)
 
     on_commit(
         partial(
