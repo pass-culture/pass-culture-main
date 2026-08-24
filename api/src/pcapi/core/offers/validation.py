@@ -2,6 +2,7 @@ import datetime
 import decimal
 import logging
 import re
+import typing
 import warnings
 from io import BytesIO
 
@@ -623,11 +624,6 @@ def check_offer_extra_data(
     offer: models.Offer | None = None,
     ean: str | None = None,
 ) -> None:
-    errors = api_errors.ApiErrors()
-
-    if extra_data is None:
-        extra_data = {}
-
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     mandatory_fields = [
         name
@@ -635,6 +631,21 @@ def check_offer_extra_data(
         if (is_from_private_api and conditional_field.is_required_in_internal_form)
         or (not is_from_private_api and conditional_field.is_required_in_external_form)
     ]
+    check_extra_data(extra_data, venue, mandatory_fields, offer=offer, ean=ean)
+
+
+def check_extra_data(
+    extra_data: models.OfferExtraData | None,
+    venue: offerers_models.Venue,
+    mandatory_fields: typing.Collection[str],
+    offer: models.Offer | None = None,
+    ean: str | None = None,
+) -> None:
+    errors = api_errors.ApiErrors()
+
+    if extra_data is None:
+        extra_data = {}
+
     for field in mandatory_fields:
         if field == "ean":
             if not ean:
@@ -705,24 +716,30 @@ def check_offer_name_does_not_contain_ean(offer_name: str) -> None:
         raise exceptions.OfferException({"name": ["Le titre d'une offre ne peut contenir l'EAN"]})
 
 
-def check_duration_minutes(duration_minutes: int | None, is_from_private_api: bool) -> None:
+DURATION_MINUTES_ERROR_MESSAGE = (
+    "La durée doit être inférieure à 24 heures. Pour les événements durant 24 heures ou plus "
+    "(par exemple, un pass festival de 3 jours), veuillez laisser ce champ vide."
+)
+EVENT_DURATION_ERROR_MESSAGE = (
+    "The duration must be under 1440 minutes (24 hours). For events lasting 24 hours or more "
+    "(e.g., a 3-day festival pass), please leave this field empty."
+)
+
+
+def check_offer_duration(duration_minutes: int | None) -> None:
     if duration_minutes and duration_minutes >= 24 * 60:
-        if is_from_private_api:
-            raise exceptions.OfferException(
-                {
-                    "durationMinutes": [
-                        "La durée doit être inférieure à 24 heures. Pour les événements durant 24 heures ou plus (par exemple, un pass festival de 3 jours), veuillez laisser ce champ vide."
-                    ]
-                }
-            )
-        else:
-            raise exceptions.OfferException(
-                {
-                    "eventDuration": [
-                        "The duration must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty."
-                    ]
-                }
-            )
+        raise exceptions.OfferException({"durationMinutes": [DURATION_MINUTES_ERROR_MESSAGE]})
+
+
+def check_duration_minutes(duration_minutes: int | None, is_from_private_api: bool) -> None:
+    # TODO: only used when an offer is created. Drop this flag once offer
+    # creation translates the error at route level, as edition does.
+    if is_from_private_api:
+        check_offer_duration(duration_minutes)
+        return
+
+    if duration_minutes and duration_minutes >= 24 * 60:
+        raise exceptions.OfferException({"eventDuration": [EVENT_DURATION_ERROR_MESSAGE]})
 
 
 def _check_offer_has_product(offer: models.Offer | None) -> None:
