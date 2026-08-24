@@ -178,10 +178,10 @@ export const IndividualOffersContainer = ({
             <h2 className={styles['offers-table-title-heading']}>
               Liste des offres
             </h2>
-            <div>
+            <p>
               {getOffersCountToDisplay(offers.length)}{' '}
               {pluralizeFr(offers.length, 'offre', 'offres')}
-            </div>
+            </p>
           </div>
         )}
       </output>
