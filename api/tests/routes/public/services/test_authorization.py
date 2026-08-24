@@ -9,23 +9,32 @@ from pcapi.routes.public.services import authorization
 
 @pytest.mark.usefixtures("db_session")
 class GetVenueProviderOrRaise404Test:
-    def should_raise_resource_not_found_error_when_no_venue_provider(self):
-        venue = offerers_factories.VenueFactory()
+    def setup_current_provider(self):
         provider = providers_factories.ProviderFactory()
-        api_key = offerers_factories.ApiKeyFactory(provider=provider)
-        g.current_api_key = api_key
+        g.current_api_key = offerers_factories.ApiKeyFactory(provider=provider)
+        return provider
+
+    def test_should_return_the_venue_provider_linking_the_venue_to_the_current_provider(self):
+        venue = offerers_factories.VenueFactory()
+        provider = self.setup_current_provider()
+        venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
+
+        assert authorization.get_venue_provider_or_raise_404(venue_id=venue.id) == venue_provider
+
+    def test_should_raise_a_404_when_the_venue_is_not_linked_to_the_current_provider(self):
+        venue = offerers_factories.VenueFactory()
+        self.setup_current_provider()
 
         with pytest.raises(api_errors.ResourceNotFoundError) as exc_info:
             authorization.get_venue_provider_or_raise_404(venue_id=venue.id)
 
         assert exc_info.value.errors == {"global": "Venue cannot be found"}
+        assert exc_info.value.status_code == 404
 
-    def should_raise_resource_not_found_error_when_venue_provider_is_not_active(self):
+    def test_should_raise_a_404_when_the_venue_provider_is_not_active(self):
         venue = offerers_factories.VenueFactory()
-        provider = providers_factories.ProviderFactory()
+        provider = self.setup_current_provider()
         providers_factories.VenueProviderFactory(venue=venue, provider=provider, isActive=False)
-        api_key = offerers_factories.ApiKeyFactory(provider=provider)
-        g.current_api_key = api_key
 
         with pytest.raises(api_errors.ResourceNotFoundError) as exc_info:
             authorization.get_venue_provider_or_raise_404(venue_id=venue.id)
