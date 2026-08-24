@@ -5,6 +5,11 @@ import { axe } from 'vitest-axe'
 
 import { type Column, Table, TableVariant } from './Table'
 
+vi.mock('@/commons/hooks/useMediaQuery', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useMediaQuery: vi.fn(),
+}))
+
 vi.mock('@/design-system/Pagination/Pagination', () => ({
   Pagination: ({
     currentPage,
