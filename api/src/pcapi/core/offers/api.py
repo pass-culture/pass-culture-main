@@ -563,9 +563,9 @@ def update_offer(
     withdrawal_delay: int | None | T_UNCHANGED = UNCHANGED,
     withdrawal_details: str | None | T_UNCHANGED = UNCHANGED,
     withdrawal_type: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
+    mandatory_extra_data_fields: typing.Collection[str],
     venue: offerers_models.Venue | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
-    is_from_private_api: bool = False,
 ) -> models.Offer:
     validation.check_validation_status(offer)
 
@@ -629,8 +629,12 @@ def update_offer(
 
     if "extraData" in updates or "ean" in updates:
         formatted_extra_data = _format_extra_data(subcategory.id, fields.get("extraData")) or {}
-        validation.check_offer_extra_data(
-            subcategory.id, formatted_extra_data, offer.venue, is_from_private_api, offer=offer, ean=fields.get("ean")
+        validation.check_extra_data(
+            formatted_extra_data,
+            offer.venue,
+            mandatory_extra_data_fields,
+            offer=offer,
+            ean=fields.get("ean"),
         )
 
     if "isDuo" in updates:
@@ -686,7 +690,7 @@ def update_offer(
         raise offers_exceptions.UnallowedUpdate("subcategoryId")
 
     if "durationMinutes" in updates:
-        validation.check_duration_minutes(get_field(offer, updates, "durationMinutes"), is_from_private_api)
+        validation.check_offer_duration(get_field(offer, updates, "durationMinutes"))
 
     if offer.lastProvider is not None:
         validation.check_update_only_allowed_fields_for_offer_from_provider(updates_set, offer.lastProvider)

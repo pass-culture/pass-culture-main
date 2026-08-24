@@ -1,6 +1,9 @@
+import typing
+
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
@@ -277,3 +280,30 @@ def extract_venue_and_offerer_address_from_location(
         )
 
     return venue, offerer_address
+
+
+def mandatory_extra_data_fields(subcategory_id: str) -> set[str]:
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+    return {
+        name
+        for name, conditional_field in subcategory.conditional_fields.items()
+        if conditional_field.is_required_in_external_form
+    }
+
+
+OFFER_ERRORS_TRANSLATIONS: dict[str, tuple[str, str]] = {
+    "durationMinutes": ("eventDuration", offers_validation.EVENT_DURATION_ERROR_MESSAGE),
+}
+
+
+def translate_offer_errors(errors: dict[str, typing.Any]) -> dict[str, typing.Any]:
+    """Reword the errors raised by `core` for the public API."""
+    translated = {}
+
+    for key, messages in errors.items():
+        if key in OFFER_ERRORS_TRANSLATIONS:
+            key, message = OFFER_ERRORS_TRANSLATIONS[key]
+            messages = [message]
+        translated[key] = messages
+
+    return translated
