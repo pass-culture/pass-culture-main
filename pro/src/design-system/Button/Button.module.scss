@@ -26,7 +26,7 @@
   color: #fff;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
-  width: fit-content;
+  width: var(--btn-width, fit-content);
 
   .btn-icon {
     flex-shrink: 0;

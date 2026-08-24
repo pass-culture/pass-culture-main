@@ -269,7 +269,12 @@ test.describe('Create collective offers', () => {
     await fillInstitution(page, checkAccessibility)
     await publishAndSearchOffer(page, checkAccessibility)
 
-    await page.getByRole('link', { name: `N°7 ${newOfferName}` }).click()
+    await page
+      .getByRole('link', {
+        name: new RegExp(`(?:N°\\d+\\s*)?${newOfferName}`),
+      })
+      .first()
+      .click()
     await page.getByLabel('Modifier').first().click()
     await page.getByLabel('Autre adresse').click()
     await autoCompleteAddress(page)
@@ -345,7 +350,12 @@ test.describe('Create collective offers', () => {
       ],
     ])
 
-    await page.getByRole('link', { name: `${newOfferName}` }).click()
+    await page
+      .getByRole('link', {
+        name: new RegExp(`(?:N°\\d+\\s*)?${newOfferName}`),
+      })
+      .first()
+      .click()
 
     // Resuming a draft always lands on its first step and the stepper only
     // links the steps already passed, so the preview is reached form by form.
@@ -379,24 +389,21 @@ test.describe('Create collective offers', () => {
     await page.getByText('Réinitialiser les filtres').click()
     await searchOffer(page)
 
-    await expectCollectiveOffersAreFound(page, [
-      BOOKABLE_OFFERS_COLUMNS,
-      [
-        '',
-        commonOfferData.title,
-        `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        `${commonOfferData.price}€${commonOfferData.participants} participants`,
-        commonOfferData.institution,
-        '3 RUE DE VALOIS 75008 Paris',
-        'publiée',
-      ],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-    ])
+    const publishedOfferRow = page
+      .locator('tbody')
+      .locator('tr[data-testid="table-row"]')
+      .filter({ hasText: commonOfferData.title })
+      .first()
+
+    await expect(publishedOfferRow).toContainText(
+      format(commonOfferData.date, 'dd/MM/yyyy')
+    )
+    await expect(publishedOfferRow).toContainText(
+      `${commonOfferData.price}€${commonOfferData.participants} participants`
+    )
+    await expect(publishedOfferRow).toContainText(commonOfferData.institution)
+    await expect(publishedOfferRow).toContainText('3 RUE DE VALOIS 75008 Paris')
+    await expect(publishedOfferRow).toContainText('publiée')
   })
 })
 

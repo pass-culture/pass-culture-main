@@ -25,17 +25,20 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
 import { getPriceCategoryName } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import type { StocksTableFilters } from '../form/types'
 import styles from './StocksCalendarTable.module.scss'
-import { StocksCalendarTableEditStock } from './StocksCalendarTableEditStock/StocksCalendarTableEditStock'
+import {
+  EDIT_STOCK_FORM_ID,
+  StocksCalendarTableEditStock,
+} from './StocksCalendarTableEditStock/StocksCalendarTableEditStock'
 
 export type StocksCalendarTableProps = {
   stocks: GetOfferStockResponseModel[]
@@ -350,24 +353,38 @@ export function StocksCalendarTable({
 
   return (
     <>
-      {/* The dialog must be outside of the table rows, otherwise radix created a dialog root for each line */}
-      <DialogBuilder
+      {/* The modal must be outside of the table rows, otherwise it creates a modal root for each line */}
+      <DetailedModal
         title="Modifier la date"
-        variant="drawer"
-        open={isEditStockDialogOpen}
-        onOpenChange={(isOpen) => {
+        isOpen={isEditStockDialogOpen}
+        onClose={() => {
           if (warningModalState) {
             return
           }
 
-          if (!isOpen) {
-            setTimeout(() => {
-              //  Re-focus the trigger of the dialog when it's closed
-              openedStockTriggerRef.current?.focus()
-            })
-          }
-          setIsEditStockDialogOpen(isOpen)
+          setTimeout(() => {
+            //  Re-focus the trigger of the dialog when it's closed
+            openedStockTriggerRef.current?.focus()
+          })
+          setIsEditStockDialogOpen(false)
         }}
+        primaryAction={
+          <Button type="submit" form={EDIT_STOCK_FORM_ID} label="Valider" />
+        }
+        secondaryAction={
+          <Button
+            type="button"
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            onClick={() => {
+              setTimeout(() => {
+                openedStockTriggerRef.current?.focus()
+              })
+              setIsEditStockDialogOpen(false)
+            }}
+            label="Annuler"
+          />
+        }
       >
         {stockOpenedInDialog && (
           <StocksCalendarTableEditStock
@@ -378,7 +395,7 @@ export function StocksCalendarTable({
             offer={offer}
           />
         )}
-      </DialogBuilder>
+      </DetailedModal>
       <Table
         columns={columns}
         title="Horaires, tarifs et stocks"

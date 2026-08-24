@@ -1,6 +1,6 @@
 import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { OfferRecommendationDialogBuilder } from 'components/IndividualOfferLayout/components/OfferRecommendationCard/OfferRecommendationDialogBuilder'
+import { OfferRecommendationModal } from 'components/IndividualOfferLayout/components/OfferRecommendationCard/OfferRecommendationModal'
 import { Button } from 'design-system/Button/Button'
 import {
   ButtonColor,
@@ -220,7 +220,7 @@ export const IndividualActionsCells = ({
               ref={headlineButtonTriggerRef}
             />
 
-            <OfferRecommendationDialogBuilder
+            <OfferRecommendationModal
               onOpenChange={() => {
                 if (shouldDisplayRecommendationAction) {
                   setIsProAdviceOpen(!isProAdviceOpen)
@@ -235,28 +235,28 @@ export const IndividualActionsCells = ({
               }}
               submitLabel={'Enregistrer la recommandation'}
               loadAdviceFromOffer={offer.hasProAdvice}
-            >
-              <Button
-                color={
-                  offer.hasProAdvice && shouldDisplayRecommendationAction
-                    ? ButtonColor.BRAND
-                    : ButtonColor.NEUTRAL
-                }
-                variant={ButtonVariant.SECONDARY}
-                size={ButtonSize.SMALL}
-                icon={
-                  offer.hasProAdvice && shouldDisplayRecommendationAction
-                    ? fullMessageIcon
-                    : strokeMessageIcon
-                }
-                onClick={onClickAddProAdvice}
-                tooltip={
-                  offer.hasProAdvice
-                    ? 'Modifier la recommandation'
-                    : 'Recommander'
-                }
-              />
-            </OfferRecommendationDialogBuilder>
+            />
+
+            <Button
+              color={
+                offer.hasProAdvice && shouldDisplayRecommendationAction
+                  ? ButtonColor.BRAND
+                  : ButtonColor.NEUTRAL
+              }
+              variant={ButtonVariant.SECONDARY}
+              size={ButtonSize.SMALL}
+              icon={
+                offer.hasProAdvice && shouldDisplayRecommendationAction
+                  ? fullMessageIcon
+                  : strokeMessageIcon
+              }
+              onClick={onClickAddProAdvice}
+              tooltip={
+                offer.hasProAdvice
+                  ? 'Modifier la recommandation'
+                  : 'Recommander'
+              }
+            />
           </>
         )}
         <Dropdown

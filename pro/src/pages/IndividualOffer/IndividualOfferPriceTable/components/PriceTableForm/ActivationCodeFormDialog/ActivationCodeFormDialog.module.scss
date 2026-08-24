@@ -3,64 +3,31 @@
 @use "styles/mixins/_size.scss" as size;
 
 .activation-codes-upload {
-  text-align: center;
-
-  @media (min-width: size.$tablet) {
-    width: rem.torem(540px);
+  .activation-codes-hidden-input {
+    display: none;
   }
 
   .activation-codes-errors {
     margin-top: var(--size-spacing-s);
     margin-bottom: var(--size-spacing-l);
-
-    .activation-codes-errors-p {
-      margin-bottom: var(--size-spacing-s);
-    }
   }
 
-  .activation-codes-upload-description {
-    margin-top: var(--size-spacing-l);
-    margin-bottom: var(--size-spacing-l);
-  }
-
-  .activation-codes-upload-button-caption {
-    @include fonts.body-accent-xs;
-
-    margin-top: var(--size-spacing-l);
-    color: var(--color-text-subtle);
-  }
-
-  .activation-codes-upload-separator {
-    border: rem.torem(1px) solid var(--color-border-subtle);
-    margin-bottom: var(--size-spacing-l);
-    margin-top: var(--size-spacing-xl);
-    width: 100%;
-  }
-
-  .activation-codes-upload-template-section {
+  .activation-codes-upload-banner {
     text-align: left;
     width: 100%;
   }
 
-  .activation-codes-upload-gabarit {
-    @include fonts.title4;
-
-    margin-bottom: var(--size-spacing-l);
+  .activation-codes-confirmation-intro {
+    margin: var(--size-spacing-l) 0;
+    padding-top: var(--size-spacing-l);
+    border-top: rem.torem(1px) solid var(--color-border-subtle);
   }
 
-  .activation-codes-form-description {
-    margin-bottom: var(--size-spacing-s);
-  }
-
-  .activation-codes-form-expiration-date {
-    margin: var(--size-spacing-l) auto;
-    max-width: rem.torem(250px);
-  }
-
-  .activation-codes-actions-button {
+  .activation-codes-form-dates {
+    margin: var(--size-spacing-l) 0;
     display: flex;
-    justify-content: space-between;
-    text-align: center;
-    margin-top: var(--size-spacing-l);
+    flex-direction: column;
+    gap: var(--size-spacing-m);
+    max-width: rem.torem(280px);
   }
 }

@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
 import { FormProvider, useForm } from 'react-hook-form'
 import useSWR from 'swr'
 
@@ -13,11 +12,11 @@ import { getPublicationHoursOptions } from '@/commons/utils/date'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { PublicationAndBookingFields } from '@/components/PublicationAndBookingFields/PublicationAndBookingFields'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { Toggle } from '@/ui-kit/form/Toggle/Toggle'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+
+export const OFFER_PUBLICATION_EDITION_FORM_ID =
+  'offer-publication-edition-form'
 
 import { getDefaultValuesFromOffer } from './getDefaultValuesFromOffer'
 import styles from './OfferPublicationEditionForm.module.scss'
@@ -72,6 +71,7 @@ export function OfferPublicationEditionForm({
   return (
     <FormProvider {...form}>
       <form
+        id={OFFER_PUBLICATION_EDITION_FORM_ID}
         onSubmit={form.handleSubmit(onSubmit)}
         className={styles['form']}
         noValidate
@@ -98,23 +98,6 @@ export function OfferPublicationEditionForm({
             maxDate={nextBookingLimitDatetime}
           />
         </div>
-
-        <DialogBuilder.Footer>
-          <div className={styles['actions']}>
-            <Dialog.Close asChild>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                label="Annuler"
-              />
-            </Dialog.Close>
-            <Button
-              variant={ButtonVariant.PRIMARY}
-              type="submit"
-              label="Enregistrer"
-            />
-          </div>
-        </DialogBuilder.Footer>
       </form>
     </FormProvider>
   )

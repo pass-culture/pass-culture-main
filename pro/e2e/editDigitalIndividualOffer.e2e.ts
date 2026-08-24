@@ -129,7 +129,7 @@ test.describe('Edit digital individual offers', () => {
       await page.getByLabel('Date *').nth(1).fill(newDate)
 
       // Save modifications
-      await page.getByText('Valider').click()
+      await page.getByRole('button', { name: 'Valider' }).click()
 
       await expect(
         page.getByRole('heading', {

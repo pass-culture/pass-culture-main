@@ -8,13 +8,4 @@
 
 .modal-video-content {
   flex-grow: 1;
-  margin-top: var(--size-spacing-xxl);
-}
-
-.modal-video-footer {
-  display: flex;
-  justify-content: flex-start;
-  padding-left: rem.torem(6px);
-  padding-right: var(--size-spacing-m);
-  gap: var(--size-spacing-xxl);
 }

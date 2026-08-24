@@ -14,7 +14,7 @@ export function HighlightDatespanTag({
   return (
     <>
       <AccessibleDate date={highlightDatespan[0]} />
-      au
+      {' au '}
       <AccessibleDate date={highlightDatespan[1]} />
     </>
   )

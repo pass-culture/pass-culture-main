@@ -22,17 +22,8 @@
   vertical-align: middle;
 }
 
-.subtitle {
-  @include fonts.body;
-}
-
 .form-delete {
   margin-bottom: var(--size-spacing-xxl);
-}
-
-.form-footer {
-  display: flex;
-  gap: var(--size-spacing-xl);
 }
 
 .form-subcontainer {
@@ -47,10 +38,6 @@
   flex-direction: column;
   height: 100%;
   gap: var(--size-spacing-xxl);
-}
-
-.form-footer-container {
-  flex: 0;
 }
 
 .recommandation-header {

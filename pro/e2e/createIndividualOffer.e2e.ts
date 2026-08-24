@@ -133,7 +133,9 @@ test.describe('Create individual offers new flow', () => {
       page.getByText('Enregistrer et continuer').click(),
     ])
 
-    await expect(page.getByText('Définir le calendrier')).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Définir le calendrier' })
+    ).toBeVisible()
     await page.getByRole('button', { name: 'Retour' }).click()
 
     await expect(page.getByLabel('Intitulé du tarif')).toHaveCount(4)

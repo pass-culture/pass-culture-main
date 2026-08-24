@@ -1,91 +1,68 @@
-import { type ChangeEvent, useState } from 'react'
+import type React from 'react'
 
 import { formatShortDateForInput, isDateValid } from '@/commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonVariant } from '@/design-system/Button/types'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 
 import styles from './ActivationCodeFormDialog.module.scss'
 
 interface AddActivationCodeConfirmationFormProps {
-  unsavedActivationCodes: string[] | undefined
-  clearActivationCodes: () => void
-  submitActivationCodes: (expirationDate: string | undefined) => void
+  onExpirationDateChange: (expirationDate: string | undefined) => void
   today: Date
   minExpirationDate: Date | null
   departmentCode: string
 }
 
 export const AddActivationCodeConfirmationForm = ({
-  unsavedActivationCodes,
-  clearActivationCodes,
-  submitActivationCodes,
+  onExpirationDateChange,
   today,
   minExpirationDate,
   departmentCode,
 }: AddActivationCodeConfirmationFormProps) => {
-  const [expirationDate, setExpirationDate] = useState<string | undefined>(
-    undefined
-  )
   const getMinimumExpirationDatetime = (date: Date) => {
     const result = new Date(date)
     result.setDate(result.getDate() + 7)
     return result
   }
-  const minDate = minExpirationDate === null ? today : minExpirationDate
+  const minDate = minExpirationDate ?? today
 
   return (
     <>
-      <p className={styles['activation-codes-form-description']}>
-        Vous êtes sur le point d’ajouter {unsavedActivationCodes?.length} codes
-        d’activation.
-      </p>
-      <p className={styles['activation-codes-form-description']}>
-        La quantité disponible pour cette offre sera mise à jour dans vos
-        stocks.
-      </p>
-      <p className={styles['activation-codes-form-description']}>
-        Veuillez ajouter une date de fin de validité. Cette date ne doit pas
-        être antérieure à la date limite de réservation.
-      </p>
-      <div className={styles['activation-codes-form-expiration-date']}>
+      <div className={styles['activation-codes-confirmation-intro']}>
+        <p>
+          Veuillez ajouter une date de fin de validité. Cette date ne doit pas
+          être antérieure à la date limite de réservation.
+        </p>
+      </div>
+
+      <div className={styles['activation-codes-form-dates']}>
         <DatePicker
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            if (isDateValid(event.target.value)) {
-              setExpirationDate(
-                formatShortDateForInput(
-                  getLocalDepartementDateTimeFromUtc(
-                    event.target.value,
-                    departmentCode
-                  )
-                )
-              )
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            if (!event.target.value || !isDateValid(event.target.value)) {
+              onExpirationDateChange(undefined)
+              return
             }
+
+            const normalizedDate = formatShortDateForInput(
+              getLocalDepartementDateTimeFromUtc(
+                event.target.value,
+                departmentCode
+              )
+            )
+            onExpirationDateChange(normalizedDate)
           }}
-          label={'Date limite de validité'}
+          label={'Date de fin de validité'}
           name="activationCodesExpirationDatetime"
           minDate={getMinimumExpirationDatetime(minDate)}
+          required
         />
       </div>
-      <div>
-        <p>
-          Vous ne pourrez modifier ni la quantité ni la date de validité après
-          import.
-        </p>
-        <p>Souhaitez-vous valider l’opération ?</p>
-      </div>
-      <div className={styles['activation-codes-actions-button']}>
-        <Button
-          onClick={clearActivationCodes}
-          variant={ButtonVariant.SECONDARY}
-          label="Retour"
-        />
-        <Button
-          onClick={() => submitActivationCodes(expirationDate)}
-          label="Valider"
-        />
-      </div>
+      <Banner
+        variant={BannerVariants.WARNING}
+        title="Cette opération est irréversible"
+        description="Après l’ajout de vos codes, vous ne pourrez modifier ni la quantité ni la date de validité de ceux-ci."
+      />
     </>
   )
 }

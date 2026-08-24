@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
 import { useId } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
@@ -11,16 +10,15 @@ import type {
 import { isOfferAllocineSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
 import styles from './StocksCalendarTableEditStock.module.scss'
+export const EDIT_STOCK_FORM_ID = 'edit-stock-form'
+
 import {
   getStockFormDefaultValues,
   serializeStockFormValuesForUpdate,
@@ -75,6 +73,7 @@ export function StocksCalendarTableEditStock({
     <FormProvider {...form}>
       <MandatoryInfo />
       <form
+        id={EDIT_STOCK_FORM_ID}
         className={styles['form']}
         onSubmit={form.handleSubmit(onSubmit)}
         noValidate
@@ -99,7 +98,7 @@ export function StocksCalendarTableEditStock({
               disabled={isAllocineSynchro}
             />
           </div>
-          <h2 className={styles['title']}>Places et tarifs</h2>
+          <h3 className={styles['title']}>Places et tarifs</h3>
           <div className={styles['row']}>
             <div className={styles['price-category-row']}>
               <QuantityInput
@@ -125,7 +124,7 @@ export function StocksCalendarTableEditStock({
             />
           </div>
           <div>
-            <h2 className={styles['title']}>Date limite de réservation</h2>
+            <h3 className={styles['title']}>Date limite de réservation</h3>
             <p className={styles['description']} id={descriptionId}>
               C’est la date à laquelle les jeunes ne pourront plus réserver
               votre offre
@@ -140,19 +139,6 @@ export function StocksCalendarTableEditStock({
             />
           </div>
         </div>
-        <DialogBuilder.Footer>
-          <div className={styles['footer']}>
-            <Dialog.Close asChild>
-              <Button
-                type="button"
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                label="Annuler"
-              />
-            </Dialog.Close>
-            <Button type="submit" label="Valider" />
-          </div>
-        </DialogBuilder.Footer>
       </form>
     </FormProvider>
   )

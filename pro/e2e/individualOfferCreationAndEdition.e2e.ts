@@ -82,7 +82,7 @@ test.describe('Individual Offer Creation and Edition', () => {
     await page.getByLabel('Date *').first().fill(newDate)
     await page.getByLabel('Date *').nth(1).fill(newDate)
 
-    await page.getByText('Valider').click()
+    await page.getByRole('button', { name: 'Valider' }).click()
 
     await expect(
       page.getByRole('heading', {

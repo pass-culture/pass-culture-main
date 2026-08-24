@@ -1,32 +1,77 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import type { EventDatesInfos } from '@/apiClient/v1'
+import { BookingExportType, type EventDatesInfos } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
+import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
+import { formatDateTime } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
 
 import { DownloadBookingsModal } from './DownloadBookingsModal'
 
 const MOCK_OFFER_ID = 1
 const mockLogEvent = vi.fn()
+const DOWNLOAD_BOOKINGS_FORM_ID = 'download-bookings-form'
 
 const render = (priceCategoryAndScheduleCountByDate: EventDatesInfos) => {
+  const downloadBookingsModalDescription =
+    priceCategoryAndScheduleCountByDate.length === 1
+      ? `Date de votre évènement : ${formatDateTime(
+          new Date(
+            priceCategoryAndScheduleCountByDate[0].eventDate
+          ).toISOString(),
+          FORMAT_DD_MM_YYYY
+        )}`
+      : 'Sélectionnez la date :'
+
   renderWithProviders(
-    <Dialog.Root defaultOpen>
-      <Dialog.Content aria-describedby={undefined}>
-        <Dialog.Title>Title</Dialog.Title>
-        <DownloadBookingsModal
-          offerId={MOCK_OFFER_ID}
-          priceCategoryAndScheduleCountByDate={
-            priceCategoryAndScheduleCountByDate
-          }
-          onCloseDialog={() => {}}
+    <DetailedModal
+      isOpen
+      onClose={() => {}}
+      title="Téléchargement de vos réservations"
+      description={downloadBookingsModalDescription}
+      primaryAction={
+        <Button
+          type="submit"
+          form={DOWNLOAD_BOOKINGS_FORM_ID}
+          data-export={BookingExportType.EXCEL}
+          label="Télécharger format Excel"
         />
-      </Dialog.Content>
-    </Dialog.Root>,
+      }
+      secondaryAction={
+        <Button
+          type="submit"
+          form={DOWNLOAD_BOOKINGS_FORM_ID}
+          data-export={BookingExportType.CSV}
+          label="Télécharger format CSV"
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+        />
+      }
+      tertiaryAction={
+        <Button
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          onClick={() => {}}
+          label="Annuler"
+        />
+      }
+      isFooterFixed
+    >
+      <DownloadBookingsModal
+        offerId={MOCK_OFFER_ID}
+        priceCategoryAndScheduleCountByDate={
+          priceCategoryAndScheduleCountByDate
+        }
+        formId={DOWNLOAD_BOOKINGS_FORM_ID}
+        onCloseDialog={() => {}}
+      />
+    </DetailedModal>,
     {
       storeOverrides: {
         user: {

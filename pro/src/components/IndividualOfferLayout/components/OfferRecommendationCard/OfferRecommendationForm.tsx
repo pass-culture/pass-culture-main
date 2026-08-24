@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
 import type { JSX } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useSWRConfig } from 'swr'
@@ -23,8 +22,9 @@ import {
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { CGU_LINK } from '@/pages/IndividualOffer/IndividualOfferPracticalInfos/components/IndividualOfferPracticalInfosForm/constants'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
+
+export const OFFER_RECOMMENDATION_FORM_ID = 'offer-recommendation-form'
 
 import phoneImg from './assets/phone.png'
 import styles from './OfferRecommendationForm.module.scss'
@@ -33,7 +33,6 @@ interface OfferRecommendationFormProps {
   offerId: number
   proAdvice: ProAdviceModel | null
   onSuccess: () => void
-  submitLabel?: string
 }
 
 interface OfferRecommendationFormValues {
@@ -57,7 +56,6 @@ export function OfferRecommendationForm({
   offerId,
   proAdvice,
   onSuccess,
-  submitLabel,
 }: Readonly<OfferRecommendationFormProps>): JSX.Element {
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
@@ -78,7 +76,7 @@ export function OfferRecommendationForm({
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = form
 
   const onSubmit = async (values: OfferRecommendationFormValues) => {
@@ -136,20 +134,21 @@ export function OfferRecommendationForm({
   return (
     <FormProvider {...form}>
       <form
+        id={OFFER_RECOMMENDATION_FORM_ID}
         onSubmit={handleSubmit(onSubmit)}
         className={styles['form']}
         noValidate
       >
         <div className={styles['form-subcontainer']}>
           <div className={styles['form-content-container']}>
-            <p className={styles['subtitle']}>
-              La recommandation écrite est un gage de réassurance pour les
-              jeunes. Celle-ci s’affiche sur votre offre et booste sa visibilité
-              sur l’application.
-            </p>
             <div className={styles['recommandation-header']}>
               <div>
-                <img src={phoneImg} alt="Affichage sur l’offre" />
+                <img
+                  width="200px"
+                  height="208px"
+                  src={phoneImg}
+                  alt="Affichage sur l’offre"
+                />
                 <span
                   aria-hidden={true}
                   className={styles['recommandation-header-image-caption']}
@@ -214,24 +213,6 @@ export function OfferRecommendationForm({
                 />
               </div>
             )}
-          </div>
-          <div className={styles['form-footer-container']}>
-            <DialogBuilder.Footer>
-              <div className={styles['form-footer']}>
-                <Dialog.Close asChild>
-                  <Button
-                    variant={ButtonVariant.SECONDARY}
-                    color={ButtonColor.NEUTRAL}
-                    label="Fermer"
-                  />
-                </Dialog.Close>
-                <Button
-                  type="submit"
-                  isLoading={isSubmitting}
-                  label={submitLabel ?? 'Enregistrer la recommandation'}
-                />
-              </div>
-            </DialogBuilder.Footer>
           </div>
         </div>
       </form>

@@ -187,7 +187,7 @@ test.describe('when I have no offers and no collective access', () => {
       .soft(
         page.getByRole('heading', {
           level: 2,
-          name: 'Diffusez votre première offre et pilotez ici votre activité !',
+          name: /Diffusez votre première offre et pilotez ici votre activité/i,
         })
       )
       .toBeVisible()
@@ -195,7 +195,7 @@ test.describe('when I have no offers and no collective access', () => {
     await expect
       .soft(
         page.getByRole('heading', {
-          name: 'Sur l’application mobile à destination des jeunes',
+          name: /Sur l’application mobile à destination des jeunes/i,
         })
       )
       .toBeVisible()
@@ -203,7 +203,7 @@ test.describe('when I have no offers and no collective access', () => {
     await expect
       .soft(
         page.getByRole('heading', {
-          name: 'Sur ADAGE à destination des enseignants',
+          name: /Sur ADAGE à destination des enseignants/i,
         })
       )
       .toBeVisible()

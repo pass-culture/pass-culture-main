@@ -8,12 +8,6 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--size-spacing-xxl);
-  margin-top: var(--size-spacing-l);
-}
-
-.one-booking-date-section {
-  @include fonts.title4;
 }
 
 .date-select-section {
@@ -25,22 +19,19 @@
   margin: 0;
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--size-spacing-s);
+.form-divider {
   width: 100%;
 }
 
 .bookings-date-count {
-  margin: var(--size-spacing-xxl) 0;
+  margin: var(--size-spacing-l) 0;
 
   @include fonts.body-accent-xs;
 }
 
 .date-select-table {
   width: 100%;
-  margin: var(--size-spacing-s) 0;
+  margin: var(--size-spacing-l) 0 var(--size-spacing-s);
   text-align: left;
   max-height: rem.torem(276px);
   overflow: scroll;
@@ -62,6 +53,6 @@
   }
 }
 
-.visually-hidden {
-  @include a11y.visually-hidden;
+.booking-type-section-multiple-dates {
+  margin-top: var(--size-spacing-xl);
 }

@@ -1,25 +1,25 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import { useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { useVideoUploaderContext } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/context/VideoUploaderContext/VideoUploaderContext'
 import { getUrlYoutubeError } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/getUrlYoutubeError'
-import {
-  DialogBuilder,
-  type DialogBuilderProps,
-} from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import youtubeLogo from './assets/youtube-logo.png'
 import styles from './ModalVideo.module.scss'
 
-interface ModalVideoProps extends Omit<DialogBuilderProps, 'children'> {}
+interface ModalVideoProps {
+  isOpen: boolean
+  onClose: () => void
+}
 
 export const ModalVideo = ({
-  ...dialogBuilderProps
+  isOpen,
+  onClose,
 }: ModalVideoProps): JSX.Element | null => {
   const [error, setError] = useState<string>()
   const { videoUrl, onVideoUpload, setVideoUrl, offerId } =
@@ -27,14 +27,38 @@ export const ModalVideo = ({
   const { logEvent } = useAnalytics()
 
   return (
-    <DialogBuilder
-      {...dialogBuilderProps}
-      title="Ajouter une vidéo"
-      imageTitle={<img alt={''} height="17px" src={youtubeLogo} />}
-      variant="drawer"
+    <DetailedModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Ajouter une vidéo`}
+      primaryAction={
+        <Button
+          onClick={async () => {
+            if (videoUrl && !getUrlYoutubeError(videoUrl)) {
+              await onVideoUpload({
+                onSuccess: () => {
+                  onClose()
+                },
+                onError: setError,
+              })
+            }
+          }}
+          label="Ajouter"
+        />
+      }
+      secondaryAction={
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          onClick={onClose}
+          label="Annuler"
+        />
+      }
+      isFooterFixed
     >
       <div className={styles['modal-video']}>
         <div className={styles['modal-video-content']}>
+          <img alt={''} width="70px" height="17px" src={youtubeLogo} />
           <TextInput
             name="videoUrl"
             label="Lien URL Youtube"
@@ -56,31 +80,7 @@ export const ModalVideo = ({
             }}
           />
         </div>
-        <DialogBuilder.Footer>
-          <div className={styles['modal-video-footer']}>
-            <Dialog.Close asChild>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                label="Annuler"
-              />
-            </Dialog.Close>
-            <Button
-              onClick={async () => {
-                if (videoUrl && !getUrlYoutubeError(videoUrl)) {
-                  await onVideoUpload({
-                    onSuccess: () => {
-                      dialogBuilderProps.onOpenChange?.(false)
-                    },
-                    onError: setError,
-                  })
-                }
-              }}
-              label="Ajouter"
-            />
-          </div>
-        </DialogBuilder.Footer>
       </div>
-    </DialogBuilder>
+    </DetailedModal>
   )
 }

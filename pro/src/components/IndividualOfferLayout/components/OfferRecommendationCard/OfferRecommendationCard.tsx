@@ -18,7 +18,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import recoImg from './assets/reco-img.svg'
 import styles from './OfferRecommendationCard.module.scss'
-import { OfferRecommendationDialogBuilder } from './OfferRecommendationDialogBuilder'
+import { OfferRecommendationModal } from './OfferRecommendationModal'
 
 interface OfferRecommendationCardProps {
   isReadOnly: boolean
@@ -77,42 +77,38 @@ export const OfferRecommendationCard = ({
         </p>
       )}
       <div>
-        <OfferRecommendationDialogBuilder
+        <Button
+          variant={
+            hasRecommendation ? ButtonVariant.TERTIARY : ButtonVariant.SECONDARY
+          }
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+          onClick={() => {
+            hasRecommendation
+              ? logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
+                  offerId,
+                  action: 'edited',
+                })
+              : logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
+                  offerId,
+                  action: 'started',
+                })
+            setIsOpen(true)
+          }}
+          icon={hasRecommendation ? fullEditIcon : undefined}
+          label={hasRecommendation ? 'Modifier' : 'Ajouter une recommandation'}
+          fullWidth={!hasRecommendation}
+          disabled={isReadOnly}
+        />
+
+        <OfferRecommendationModal
           onOpenChange={setIsOpen}
           offerId={offerId}
           isOpen={isOpen}
           proAdvice={proAdvice ?? null}
           onSubmit={onSubmit}
           submitLabel={submitLabel}
-        >
-          <Button
-            variant={
-              hasRecommendation
-                ? ButtonVariant.TERTIARY
-                : ButtonVariant.SECONDARY
-            }
-            color={ButtonColor.NEUTRAL}
-            size={ButtonSize.SMALL}
-            onClick={() => {
-              hasRecommendation
-                ? logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
-                    offerId,
-                    action: 'edited',
-                  })
-                : logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
-                    offerId,
-                    action: 'started',
-                  })
-              setIsOpen(true)
-            }}
-            icon={hasRecommendation ? fullEditIcon : undefined}
-            label={
-              hasRecommendation ? 'Modifier' : 'Ajouter une recommandation'
-            }
-            fullWidth={!hasRecommendation}
-            disabled={isReadOnly}
-          />
-        </OfferRecommendationDialogBuilder>
+        />
       </div>
     </div>
   )
