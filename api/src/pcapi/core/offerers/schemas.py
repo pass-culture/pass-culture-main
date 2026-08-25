@@ -42,6 +42,10 @@ class CoreLocationModelV2(BaseModelV2):
         return city
 
 
+class CoreLocationOnlyOnVenueModelV2(BaseModelV2):
+    isVenueLocation: typing.Literal[True] = True
+
+
 # Legacy (pydantic V1)
 class RequiredStrippedString(pydantic_v1.ConstrainedStr):
     strip_whitespace = True

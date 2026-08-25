@@ -3170,7 +3170,9 @@ def get_or_create_offer_location(
     return offerer_address
 
 
-def create_offerer_address_from_address_api(address: offerers_schemas.LocationModel) -> geography_models.Address:
+def create_offerer_address_from_address_api(
+    address: offerers_schemas.LocationModel | offerers_schemas.CoreLocationModelV2,
+) -> geography_models.Address:
     try:
         insee_code = (
             address.inseeCode
@@ -3193,17 +3195,17 @@ def create_offerer_address_from_address_api(address: offerers_schemas.LocationMo
 
 
 def get_offer_location_from_address(
-    offerer_id: int, address: offerers_schemas.LocationModel, venue_id: int
+    offerer_id: int,
+    address: offerers_schemas.LocationModel | offerers_schemas.CoreLocationModelV2,
+    venue_id: int,
 ) -> offerers_models.OffererAddress:
     assert offerer_id
-    if not address.label:
-        address.label = None
     address_from_api = create_offerer_address_from_address_api(address)
     return get_or_create_offer_location(
         offerer_id=offerer_id,
         venue_id=venue_id,
         address_id=address_from_api.id,
-        label=address.label,
+        label=address.label or None,
     )
 
 
