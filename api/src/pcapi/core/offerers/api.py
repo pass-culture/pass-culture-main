@@ -3505,7 +3505,7 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
     if venue.is_closed:
         return
 
-    venue.state = models.VenueState.CLOSING
+    venue.state = models.VenueState.CLOSED
     nullify_venue_emails(venue, author)
     history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
 

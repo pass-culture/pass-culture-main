@@ -183,28 +183,25 @@ describe('getCurrentUserPermissions', () => {
         })
 
         describe('when venue is closed', () => {
-          it.each([VenueState.CLOSED, VenueState.CLOSING])(
-            'should return isSelectedPartnerVenueActive as false when venue state is %s',
-            (venueState) => {
-              const userSliceState = makeUserSliceState({
-                currentUser: fakeCurrentUser,
-                selectedPartnerVenue: makeGetVenueResponseModel({
-                  id: fakeVenue.id,
-                  isOnboarded: true,
-                  state: venueState,
-                }),
-                venues: fakeVenues,
-                venuesWithPendingValidation: null,
-              })
+          it('should return isSelectedPartnerVenueActive as false when venue state is closed', () => {
+            const userSliceState = makeUserSliceState({
+              currentUser: fakeCurrentUser,
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: fakeVenue.id,
+                isOnboarded: true,
+                state: VenueState.CLOSED,
+              }),
+              venues: fakeVenues,
+              venuesWithPendingValidation: null,
+            })
 
-              const result = getCurrentUserPermissions(userSliceState)
+            const result = getCurrentUserPermissions(userSliceState)
 
-              expect(result).toMatchObject({
-                hasSelectedPartnerVenue: true,
-                isSelectedPartnerVenueActive: false,
-              })
-            }
-          )
+            expect(result).toMatchObject({
+              hasSelectedPartnerVenue: true,
+              isSelectedPartnerVenueActive: false,
+            })
+          })
         })
 
         describe('when venue is not onboarded but onboarding was skipped', () => {

@@ -45,4 +45,4 @@ def test_close_venue_closes_venue(mock_finalize_closing_venue, mock_index_venue,
     response = client.post(f"/venues/{venue.id}/close")
 
     assert response.status_code == 204
-    assert venue.state == offerers_models.VenueState.CLOSING
+    assert venue.state == offerers_models.VenueState.CLOSED

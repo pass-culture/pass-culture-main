@@ -16,7 +16,7 @@ describe('withVenueHelpers', () => {
     it('should be true when the venue is closing', () => {
       const venue = makeGetVenueResponseModel({
         id: 1,
-        state: VenueState.CLOSING,
+        state: VenueState.CLOSED,
       })
 
       expect(withVenueHelpers(venue).isClosed).toBe(true)

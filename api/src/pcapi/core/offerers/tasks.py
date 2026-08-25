@@ -110,8 +110,4 @@ def finalize_closing_venue_task(payload: FinalizeClosingVenuePayload) -> None:
         db.session.flush()
 
         logger.info("closing venue: pivots deleted", extra={"venue_id": venue.id})
-
-        venue.state = offerers_models.VenueState.CLOSED
-        db.session.flush()
-
         logger.info("closing venue: closed", extra={"venue_id": venue.id})

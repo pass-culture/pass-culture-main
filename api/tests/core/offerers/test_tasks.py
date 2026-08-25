@@ -8,7 +8,6 @@ from pcapi.connectors.entreprise.models import SirenInfo
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.users import factories as users_factories
@@ -192,17 +191,6 @@ class FinalizeClosingVenueTaskTest:
         assert all(booking.isCancelled for booking in venue.bookings)
         assert all(booking.isCancelled for booking in venue.collectiveBookings)
 
-    def test_venue_state_is_closed(self):
-        venue = offerers_factories.VenueFactory()
-        author = users_factories.BaseUserFactory()
-        self.create_synced_offers_with_bookings(venue)
-
-        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
-
-        db.session.refresh(venue)
-        assert venue.state == offerers_models.VenueState.CLOSED
-
     def test_pivots_have_been_deleted(self):
         venue = offerers_factories.VenueFactory()
         author = users_factories.BaseUserFactory()
@@ -214,8 +202,6 @@ class FinalizeClosingVenueTaskTest:
         db.session.refresh(venue)
         assert not venue.cinemaProviderPivot
         assert not venue.allocinePivot
-
-        assert venue.state == offerers_models.VenueState.CLOSED
 
     def create_synced_offers_with_bookings(self, venue):
         boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)

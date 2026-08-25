@@ -385,7 +385,7 @@ describe('getFormReadOnlyFields', () => {
     expect(
       getFormReadOnlyFields(getIndividualOfferFactory(), false, {
         ...defaultVenue,
-        state: VenueState.CLOSING,
+        state: VenueState.CLOSED,
       })
     ).toStrictEqual(expectedValues)
   })

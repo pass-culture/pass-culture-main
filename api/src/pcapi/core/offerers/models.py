@@ -305,7 +305,6 @@ class StructureSimulationInfos(typing.TypedDict):
 
 class VenueState(enum.Enum):
     CLOSED = "CLOSED"
-    CLOSING = "CLOSING"
 
 
 class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):
@@ -914,7 +913,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def is_closed(self) -> bool:
-        return self.state in (VenueState.CLOSING, VenueState.CLOSED)
+        return self.state == VenueState.CLOSED
 
 
 class GooglePlacesInfo(PcObject, Model):

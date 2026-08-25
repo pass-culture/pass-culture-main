@@ -33,9 +33,7 @@ export function withVenueHelpers(
     },
 
     get isClosed() {
-      return (
-        venue.state === VenueState.CLOSING || venue.state === VenueState.CLOSED
-      )
+      return venue.state === VenueState.CLOSED
     },
   }
 }

@@ -66,8 +66,7 @@ export function ManadgedVenueItem({
           onChange={(e) => handleVenueChange(e, venue.id)}
           hasError={hasError}
         />
-        {(venue.state === VenueState.CLOSED ||
-          venue.state === VenueState.CLOSING) && (
+        {venue.state === VenueState.CLOSED && (
           <Tag variant={TagVariant.ERROR} label="Structure fermée" />
         )}
       </div>
