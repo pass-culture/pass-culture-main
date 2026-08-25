@@ -59,7 +59,7 @@ jobs:
     if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
     outputs:
       description: "The pro (firebase) preview URL"
-      pro_url: ${{ steps.firebase-deploy.outputs.details_url }}
+      pro_url: ${{ steps.deploy.outputs.preview_url }}
     continue-on-error: ${{ inputs.continue_on_error }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -157,5 +157,5 @@ jobs:
             echo "### :rocket: Deploy PRO summary"
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
-            echo "| [pro] preview url                    |  ${{ steps.firebase-deploy.outputs.details_url }} |"
+            echo "| [pro] preview url                    |  ${{ steps.deploy.outputs.preview_url }} |"
           } >> "$GITHUB_STEP_SUMMARY"
