@@ -12,6 +12,7 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import validation as offers_validation
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
 from pcapi.routes.public import utils as public_utils
@@ -367,3 +368,26 @@ class UpdateOrDeleteVideoTest:
         utils.update_or_delete_video(None, meta_data.offer, provider_id=12)
 
         remove_video_data_from_offer_metadata.assert_not_called()
+
+
+class GetEditableFieldsTest:
+    def test_should_not_restrict_an_offer_without_provider(self):
+        assert utils.get_editable_fields(None) is None
+
+    def test_should_answer_the_shared_set_for_a_plain_provider(self):
+        provider = providers_factories.ProviderFactory()
+
+        assert utils.get_editable_fields(provider) == utils.EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
+
+    def test_should_answer_the_allocine_set_for_allocine(self):
+        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+        assert provider.isAllocine
+
+        assert utils.get_editable_fields(provider) == utils.EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
+
+    def test_should_answer_the_api_set_for_an_integrator(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        providers_factories.OffererProviderFactory(provider=provider)
+        assert provider.hasOffererProvider
+
+        assert utils.get_editable_fields(provider) == utils.EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER
