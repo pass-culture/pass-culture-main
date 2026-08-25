@@ -4120,6 +4120,7 @@ class CloseVenueTest:
     """
 
     def test_open_venue_becomes_closed(self):
+        # venue bank account link should not be changed
         venue = offerers_factories.VenueBankAccountLinkFactory(venue__state=None).venue
         author = users_factories.BaseUserFactory()
 
@@ -4129,8 +4130,7 @@ class CloseVenueTest:
         db.session.refresh(venue)
 
         assert not venue.contact
-
-        assert not venue.current_bank_account_link
+        assert venue.current_bank_account_link
         assert venue.state == offerers_models.VenueState.CLOSED
 
     def test_close_venue_adds_immediate_close_action_with_comment(self):
