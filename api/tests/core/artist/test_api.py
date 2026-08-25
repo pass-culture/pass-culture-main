@@ -1,3 +1,4 @@
+import logging
 from unittest import mock
 
 import pytest
@@ -7,9 +8,12 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.artist import exceptions as artist_exceptions
 from pcapi.core.artist import models as artist_models
 from pcapi.core.artist.api import ArtistOfferLinkKey
+from pcapi.core.artist.api import check_artist_offer_links
 from pcapi.core.artist.api import create_artist_offer_link
 from pcapi.core.artist.api import get_artist_image_url
 from pcapi.core.artist.api import upsert_artist_offer_links
+from pcapi.core.categories import subcategories
+from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.routes.serialization import artist_serialize
 
@@ -165,7 +169,7 @@ class CreateArtistOfferLinkTest:
 @pytest.mark.usefixtures("db_session")
 class UpsertArtistOfferLinksTest:
     def test_patch_offer_with_new_link(self):
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
         artist = artist_factories.ArtistFactory()
 
         incoming_links = [
@@ -185,7 +189,7 @@ class UpsertArtistOfferLinksTest:
 
     def test_patch_offer_without_link(self):
         artist = artist_factories.ArtistFactory()
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
         artist_factories.ArtistOfferLinkFactory(artist_id=artist.id, offer_id=offer.id)
 
         upsert_artist_offer_links([], offer)
@@ -195,7 +199,7 @@ class UpsertArtistOfferLinksTest:
 
     def test_patch_offer_with_existing_link(self):
         artist = artist_factories.ArtistFactory()
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
         existing_link = artist_factories.ArtistOfferLinkFactory(artist_id=artist.id, offer_id=offer.id)
         existing_link_id = existing_link.id
 
@@ -214,7 +218,7 @@ class UpsertArtistOfferLinksTest:
 
     @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
     def test_patch_offer_with_duplicate_link(self, mock_create_artist_offer_link):
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
         artist = artist_factories.ArtistFactory()
 
         incoming_links = [
@@ -228,3 +232,79 @@ class UpsertArtistOfferLinksTest:
         upsert_artist_offer_links(incoming_links, offer)
         mock_create_artist_offer_link.assert_called()
         len(mock_create_artist_offer_link.call_args_list) == 2
+
+
+@pytest.mark.usefixtures("db_session")
+class UpsertArtistOfferLinksValidationTest:
+    def _link(self, artist_type: artist_models.ArtistType) -> artist_serialize.ArtistOfferLinkBodyModel:
+        artist = artist_factories.ArtistFactory()
+        return artist_serialize.ArtistOfferLinkBodyModel(
+            artist_id=artist.id, artist_type=artist_type, artist_name=artist.name
+        )
+
+    def test_check_the_links_against_the_resulting_subcategory(self):
+        # a performer is refused by the subcategory of the offer, but allowed by the one it moves to
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+
+        upsert_artist_offer_links(
+            [self._link(artist_models.ArtistType.PERFORMER)],
+            offer,
+            subcategory_id=subcategories.CONCERT.id,
+        )
+
+        assert len(db.session.query(artist_models.ArtistOfferLink).all()) == 1
+
+    def test_refuse_the_links_the_subcategory_does_not_allow(self):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            upsert_artist_offer_links([self._link(artist_models.ArtistType.PERFORMER)], offer)
+
+        assert error.value.errors == {
+            "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
+        }
+
+    def test_log_created_and_deleted_links(self, caplog):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+
+        with caplog.at_level(logging.INFO):
+            upsert_artist_offer_links([self._link(artist_models.ArtistType.AUTHOR)], offer)
+
+        created_logs = [record for record in caplog.records if "Artist offer links have been created" in record.message]
+        assert len(created_logs) == 1
+        assert created_logs[0].technical_message_id == "offer.artistOfferLinks.created"
+        assert created_logs[0].extra["offer_id"] == offer.id
+
+        with caplog.at_level(logging.INFO):
+            upsert_artist_offer_links([], offer)
+
+        deleted_logs = [record for record in caplog.records if "Artist offer links have been deleted" in record.message]
+        assert len(deleted_logs) == 1
+        assert deleted_logs[0].technical_message_id == "offer.artistOfferLinks.deleted"
+
+
+class CheckArtistOfferLinksTest:
+    def test_check_artist_offer_links_should_not_raise(self):
+        artist_offer_links = [
+            artist_serialize.ArtistOfferLinkBodyModel(
+                artist_id="any-id",
+                artist_type=artist_models.ArtistType.AUTHOR,
+                artist_name="any-name",
+            )
+        ]
+        check_artist_offer_links(artist_offer_links, subcategories.SEANCE_CINE)
+
+    def test_check_artist_offer_links_should_raise(self):
+        artist_offer_links = [
+            artist_serialize.ArtistOfferLinkBodyModel(
+                artist_id="any-id",
+                artist_type=artist_models.ArtistType.PERFORMER,
+                artist_name="any-name",
+            )
+        ]
+        with pytest.raises(api_errors.ApiErrors) as exc:
+            check_artist_offer_links(artist_offer_links, subcategories.SEANCE_CINE)
+
+        assert exc.value.errors == {
+            "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
+        }

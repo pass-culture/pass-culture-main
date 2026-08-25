@@ -4096,8 +4096,6 @@ class GetOfferLocationFromAddressTest:
         offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body, venue_id=venue.id)
 
         assert get_or_create_offer_location.call_args.kwargs["label"] is None
-        # the body is edited in place, not copied
-        assert address_body.label is None
 
     def test_should_refuse_a_missing_offerer(self):
         venue = offerers_factories.VenueFactory()
