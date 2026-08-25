@@ -33,7 +33,8 @@ from tests.core.subscription.bonus import bonus_fixtures
 @pytest.mark.usefixtures("db_session")
 class QuotientFamilialApplicationTest:
     @patch("pcapi.core.external.attributes.api.update_external_user")
-    def test_apply_for_quotient_familial_bonus(self, update_external_user_mock, caplog):
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_apply_for_quotient_familial_bonus(self, record_attempt_mock, update_external_user_mock, caplog):
         eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
         with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
         with_18_child_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
@@ -53,6 +54,7 @@ class QuotientFamilialApplicationTest:
                 },
                 "quotient_familial": None,
             },
+            reason=bonus_constants.QUOTIENT_FAMILIAL_ENDPOINT_ORIGIN,
         )
 
         with requests_mock.Mocker() as mock:
@@ -88,6 +90,12 @@ class QuotientFamilialApplicationTest:
 
         for log_record in caplog.records:
             assert not log_record.extra.get("url")
+
+        record_attempt_mock.assert_called_once_with(
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            [],
+            1,
+        )
 
     @patch("pcapi.core.external.attributes.api.update_external_user")
     def test_apply_for_quotient_familial_bonus_as_householder(self, update_external_user_mock):
@@ -258,7 +266,8 @@ class QuotientFamilialApplicationTest:
         for log_record in caplog.records:
             assert not log_record.extra.get("url")
 
-    def test_person_not_found(self, caplog):
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_person_not_found(self, record_attempt_mock, caplog):
         user = users_factories.BeneficiaryFactory()
         custodian = subscription_factories.BonusCreditPersonFactory()
         now = date_utils.get_naive_utc_now()
@@ -309,7 +318,14 @@ class QuotientFamilialApplicationTest:
         for log_record in caplog.records:
             assert not log_record.extra.get("url")
 
-    def test_user_not_in_tax_household(self):
+        record_attempt_mock.assert_called_once_with(
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            [subscription_models.FraudReasonCode.PERSON_NOT_FOUND],
+            None,
+        )
+
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_user_not_in_tax_household(self, record_attempt_mock):
         user = users_factories.BeneficiaryFactory()
         custodian = subscription_factories.BonusCreditPersonFactory()
         now = date_utils.get_naive_utc_now()
@@ -378,7 +394,14 @@ class QuotientFamilialApplicationTest:
         out_mail = mails_testing.outbox[0]
         assert out_mail["template"] == TransactionalEmail.BONUS_DECLINED.value.__dict__
 
-    def test_user_quotient_familial_too_high(self):
+        record_attempt_mock.assert_called_once_with(
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            [subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD],
+            None,
+        )
+
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_user_quotient_familial_too_high(self, record_attempt_mock):
         eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
         high_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
         high_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
@@ -452,6 +475,12 @@ class QuotientFamilialApplicationTest:
         assert len(mails_testing.outbox) == 1
         out_mail = mails_testing.outbox[0]
         assert out_mail["template"] == TransactionalEmail.BONUS_DECLINED.value.__dict__
+
+        record_attempt_mock.assert_called_once_with(
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            [subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH],
+            None,
+        )
 
     def test_bonus_fraud_checks_deletion_when_granted(self):
         eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
@@ -577,7 +606,8 @@ def _build_user_from_fixture(quotient_familial_json_response: dict) -> users_mod
 @pytest.mark.usefixtures("db_session")
 class DisabledAdultAllowanceTest:
     @patch("pcapi.core.external.attributes.api.update_external_user")
-    def test_apply_for_disabled_adult_allowance_bonus(self, update_external_user_mock, caplog):
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_apply_for_disabled_adult_allowance_bonus(self, record_attempt_mock, update_external_user_mock, caplog):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
@@ -617,7 +647,10 @@ class DisabledAdultAllowanceTest:
         for log_record in caplog.records:
             assert not log_record.extra.get("url")
 
-    def test_not_recipient_for_disabled_adult_allowance_bonus(self):
+        record_attempt_mock.assert_called_once_with(subscription_models.FraudCheckType.AAH_BONUS_CREDIT, [], 0)
+
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_not_recipient_for_disabled_adult_allowance_bonus(self, record_attempt_mock):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
@@ -645,7 +678,14 @@ class DisabledAdultAllowanceTest:
         assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
 
-    def test_person_not_found(self):
+        record_attempt_mock.assert_called_once_with(
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            [subscription_models.FraudReasonCode.NOT_RECIPIENT],
+            None,
+        )
+
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_person_not_found(self, record_attempt_mock):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
@@ -673,7 +713,14 @@ class DisabledAdultAllowanceTest:
         assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
 
-    def test_application_not_found(self, caplog):
+        record_attempt_mock.assert_called_once_with(
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            [subscription_models.FraudReasonCode.PERSON_NOT_FOUND],
+            None,
+        )
+
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_application_not_found(self, record_attempt_mock, caplog):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
@@ -704,6 +751,12 @@ class DisabledAdultAllowanceTest:
 
         for log_record in caplog.records:
             assert not log_record.extra.get("url")
+
+        record_attempt_mock.assert_called_once_with(
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND],
+            None,
+        )
 
     def test_bonus_fraud_checks_deletion_when_granted(self):
         user = users_factories.BeneficiaryFactory()
@@ -829,7 +882,10 @@ class DisabledChildEducationAllowanceTest:
         [bonus_fixtures.AEEH_RECIPIENT_RESPONSE, bonus_fixtures.AEEH_OPENING_RIGHTS_RESPONSE],
     )
     @patch("pcapi.core.external.attributes.api.update_external_user")
-    def test_apply_for_disabled_child_education_allowance_bonus(self, update_external_user_mock, aeeh_response, caplog):
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_apply_for_disabled_child_education_allowance_bonus(
+        self, record_attempt_mock, update_external_user_mock, aeeh_response, caplog
+    ):
         user = users_factories.BeneficiaryFactory()
 
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
@@ -870,7 +926,10 @@ class DisabledChildEducationAllowanceTest:
         for log_record in caplog.records:
             assert not log_record.extra.get("url")
 
-    def test_not_recipient_for_disabled_child_education_allowance_bonus(self):
+        record_attempt_mock.assert_called_once_with(subscription_models.FraudCheckType.AEEH_BONUS_CREDIT, [], 0)
+
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_not_recipient_for_disabled_child_education_allowance_bonus(self, record_attempt_mock):
         user = users_factories.BeneficiaryFactory()
 
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
@@ -899,7 +958,14 @@ class DisabledChildEducationAllowanceTest:
         assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
 
-    def test_person_not_found(self, caplog):
+        record_attempt_mock.assert_called_once_with(
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            [subscription_models.FraudReasonCode.NOT_RECIPIENT],
+            None,
+        )
+
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_person_not_found(self, record_attempt_mock, caplog):
         user = users_factories.BeneficiaryFactory()
 
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
@@ -932,7 +998,14 @@ class DisabledChildEducationAllowanceTest:
         for log_record in caplog.records:
             assert not log_record.extra.get("url")
 
-    def test_application_not_found(self, caplog):
+        record_attempt_mock.assert_called_once_with(
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            [subscription_models.FraudReasonCode.PERSON_NOT_FOUND],
+            None,
+        )
+
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_bonus_attempt")
+    def test_application_not_found(self, record_attempt_mock, caplog):
         user = users_factories.BeneficiaryFactory()
 
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
@@ -964,6 +1037,12 @@ class DisabledChildEducationAllowanceTest:
 
         for log_record in caplog.records:
             assert not log_record.extra.get("url")
+
+        record_attempt_mock.assert_called_once_with(
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND],
+            None,
+        )
 
     def test_bonus_fraud_checks_deletion_when_granted(self):
         user = users_factories.BeneficiaryFactory()
