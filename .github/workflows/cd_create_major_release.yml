@@ -10,6 +10,10 @@ on:
 
 permissions: write-all
 
+env:
+  REPO_URL: "${{ github.server_url }}/${{ github.repository }}"
+  RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
 jobs:
   check-major-release-creation-is-allowed: # TODO (tcoudray-pass, 15/04/2026) Refacto when we get rid of the old workflow
     runs-on: ubuntu-latest
@@ -34,9 +38,9 @@ jobs:
     needs: check-major-release-creation-is-allowed
     runs-on: ubuntu-latest
     outputs:
-      release-number: ${{ steps.version.outputs.release-number }}
-      sha: ${{ steps.rc_commit.outputs.sha }}
-      latest-tag: ${{ steps.version.outputs.latest-tag }}
+      release-number: ${{ steps.compute.outputs.release-number }}
+      sha: ${{ steps.compute.outputs.commit-hash }}
+      message-base: ${{ steps.compute.outputs.message-base }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -44,29 +48,35 @@ jobs:
           fetch-tags: true
           persist-credentials: false
 
-      - name: Get release-number major version
-        id: version
+      - name: Compute release number, rc info and slack message base
+        id: compute
         run: |
-          # Get all with format vX.X.X, sort them and get the last one
-          latest_tag="$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" | sort -V | tail -n 1)"
-          echo "latest-tag=$latest_tag" >> "$GITHUB_OUTPUT"
-
-          # Extract major version
-          major="$(echo "$latest_tag" | sed -E 's/^v([0-9]+)\..*/\1/')"
-
-          release_number="$((major + 1))"
-          echo "release-number=$release_number" >> "$GITHUB_OUTPUT"
-
-      - name: Get commit hash from RC tag
-        id: rc_commit
-        run: |
+          # Check that rc tag exists
           rc_tag="$(git tag -l "rc" | tail -n 1)"
           if [ -z "$rc_tag" ]; then
             echo "Pas de tag RC trouvé"
             exit 1
           fi
+          
+          # Get all tags with format vX.X.X, sort them and keep the last one
+          latest_tag="$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" | sort -V | tail -n 1)"
+          
+          # Extract major version and add 1
+          major="$(echo "$latest_tag" | sed -E 's/^v([0-9]+)\..*/\1/')"
+          release_number="$((major + 1))"
+          
+          # Get the rc tag info
           commit_hash="$(git rev-list -n 1 "$rc_tag")"
-          echo "sha=$commit_hash" >> "$GITHUB_OUTPUT"
+          commit_date="$(git show -s --format=%cd --date=format:'%d/%m/%Y à %H:%M' "$commit_hash")"
+          subject="$(git show -s --format=%s "$commit_hash")"
+          
+          # compute Slack message base  — backtick are interpreted so we use [] around the release number
+          message_base="de la <${{ env.RUN_URL }}|release> [v$release_number] basée sur le commit <${{ env.REPO_URL }}/$commit_hash|$subject> (poussé le $commit_date)"
+          
+          # Write outputs
+          echo "commit-hash=$commit_hash" >> "$GITHUB_OUTPUT"
+          echo "release-number=$release_number" >> "$GITHUB_OUTPUT"
+          echo "message-base=$message_base" >> "$GITHUB_OUTPUT"
 
   notify-workflow-start:
     needs: compute-major-version-variables
@@ -74,7 +84,7 @@ jobs:
     uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      message: ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|création de la release>  `v${{ needs.compute-major-version-variables.outputs.release-number }}` est lancée"
+      message: ":github-pending: Création ${{ needs.compute-major-version-variables.outputs.message-base }}"
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
@@ -126,7 +136,7 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message-ts: ${{ needs.notify-workflow-start.outputs.message-ts }}
-      message: ":github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|release> `v${{ needs.compute-major-version-variables.outputs.release-number }}` a été créé avec succès"
+      message: ":github-success: Succès ${{ needs.compute-major-version-variables.outputs.message-base }}"
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
@@ -143,7 +153,7 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message-ts: ${{ needs.notify-workflow-start.outputs.message-ts }}
-      message: ":github-failure: La création de la <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|release> `v${{ needs.compute-major-version-variables.outputs.release-number }}` a échoué cc <!subteam^${{vars.SLACK_SHERIF_BACK_ID}}> <!subteam^${{vars.SLACK_SHERIF_INFRA_ID}}>"
+      message: ":github-failure: Échec ${{ needs.compute-major-version-variables.outputs.message-base }}"
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
