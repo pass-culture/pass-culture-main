@@ -330,3 +330,43 @@ def translate_offer_errors(errors: dict[str, typing.Any]) -> dict[str, typing.An
         translated[key] = messages
 
     return translated
+
+
+EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
+    "name",
+    "audioDisabilityCompliant",
+    "externalTicketOfficeUrl",
+    "mentalDisabilityCompliant",
+    "motorDisabilityCompliant",
+    "visualDisabilityCompliant",
+    "description",
+    "offererAddress",
+    "venue",
+    "url",
+}
+EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
+EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
+    "name",
+    "description",
+    "isActive",
+    "isDuo",
+    "bookingContact",
+    "bookingEmail",
+    "ean",
+    "extraData",
+    "withdrawalDetails",
+    "durationMinutes",
+    "idAtProvider",
+    "bookingAllowedDatetime",
+    "publicationDatetime",
+} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
+
+
+def get_editable_fields(provider: providers_models.Provider | None) -> set[str] | None:
+    if provider is None:
+        return None
+    if provider.isAllocine:
+        return EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
+    if provider.hasOffererProvider:
+        return EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER
+    return EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER

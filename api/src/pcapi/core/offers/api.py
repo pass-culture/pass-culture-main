@@ -66,7 +66,6 @@ from pcapi.core.reminders.external import reminders_notifications
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.models import pc_object
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
@@ -333,6 +332,8 @@ def update_offer(
     withdrawal_details: str | None | T_UNCHANGED = UNCHANGED,
     withdrawal_type: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
     mandatory_extra_data_fields: typing.Collection[str],
+    editable_fields: typing.Collection[str] | None = None,
+    not_editable_fields: typing.Collection[str] = (),
     venue: offerers_models.Venue | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
     venue_provider: providers_models.VenueProvider | None = None,
@@ -367,7 +368,9 @@ def update_offer(
         "withdrawalDetails": withdrawal_details,
         "withdrawalType": withdrawal_type,
     }
+
     fields = {key: value for key, value in fields.items() if value is not UNCHANGED}
+
     if venue:
         fields["venue"] = venue
     if offerer_address:
@@ -379,6 +382,8 @@ def update_offer(
         offer,
         updates,
         mandatory_extra_data_fields=mandatory_extra_data_fields,
+        editable_fields=editable_fields,
+        not_editable_fields=not_editable_fields,
         venue_provider=venue_provider,
     )
 
