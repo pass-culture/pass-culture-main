@@ -21,6 +21,8 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
+          sparse-checkout: |
+            .github/
       - id: check-date-exclusion
         run: ./.github/workflows/scripts/check-schedule-exclusion.sh >> "$GITHUB_OUTPUT"
       - name: Check is allowed
@@ -47,6 +49,8 @@ jobs:
         with: 
           fetch-tags: true
           persist-credentials: false
+          sparse-checkout: |
+            .github/
 
       - name: Compute release number, rc info and slack message base
         id: compute
