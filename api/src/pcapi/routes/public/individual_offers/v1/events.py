@@ -308,6 +308,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
             url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
             withdrawal_details=updates.get("itemCollectionDetails", offers_api.UNCHANGED),
             mandatory_extra_data_fields=utils.mandatory_extra_data_fields(offer.subcategoryId),
+            editable_fields=utils.get_editable_fields(offer.lastProvider),
             venue=venue,
             offerer_address=offerer_address,
             venue_provider=venue_provider,

@@ -587,6 +587,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
         publication_datetime=publication_datetime,
         withdrawal_details=updates.get("itemCollectionDetails", offers_api.UNCHANGED),
         mandatory_extra_data_fields=utils.mandatory_extra_data_fields(offer.subcategoryId),
+        editable_fields=utils.get_editable_fields(offer.lastProvider),
         venue=venue,
         offerer_address=offerer_address,
         venue_provider=venue_provider,

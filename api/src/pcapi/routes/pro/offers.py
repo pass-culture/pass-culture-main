@@ -479,6 +479,60 @@ def patch_all_offers_active_status(
     return offers_serialize.PatchAllOffersActiveStatusResponseModel()
 
 
+NOT_EDITABLE_WHEN_PRODUCT_BASED = {
+    "artistOfferLinks",
+    "description",
+    "durationMinutes",
+    "ean",
+    "extraData",
+    "hasCulturalOutreachClaim",
+    "name",
+    "subcategoryId",
+}
+
+NOT_EDITABLE_WHEN_SYNCHRONIZED = {
+    "artistOfferLinks",
+    "bookingAllowedDatetime",
+    "bookingContact",
+    "bookingEmail",
+    "description",
+    "durationMinutes",
+    "ean",
+    "extraData",
+    "isDuo",
+    "isNational",
+    "name",
+    "offererAddress",
+    "publicationDatetime",
+    "subcategoryId",
+    "url",
+    "withdrawalDelay",
+    "withdrawalDetails",
+    "withdrawalType",
+}
+# (tcoudray-pass, 10/02/26) to unblock the synchronization of EPNs, museums may edit
+# the name and the description of their synchronized offers
+NOT_EDITABLE_FOR_A_MUSEUM_WHEN_SYNCHRONIZED = NOT_EDITABLE_WHEN_SYNCHRONIZED - {"description", "name"}
+NOT_EDITABLE_WHEN_SYNCHRONIZED_BY_ALLOCINE = NOT_EDITABLE_WHEN_SYNCHRONIZED - {"withdrawalDetails"}
+
+
+def _get_not_editable_fields(offer: models.Offer) -> set[str]:
+    not_editable_fields: set[str] = set()
+
+    if offer.productId is not None:
+        not_editable_fields |= NOT_EDITABLE_WHEN_PRODUCT_BASED
+
+    if offer.lastProvider is not None:
+        synchronized_fields = set(NOT_EDITABLE_WHEN_SYNCHRONIZED)
+        if offer.venue.activity == offerers_models.Activity.MUSEUM:
+            synchronized_fields &= NOT_EDITABLE_FOR_A_MUSEUM_WHEN_SYNCHRONIZED
+        if offer.isFromAllocine:
+            synchronized_fields &= NOT_EDITABLE_WHEN_SYNCHRONIZED_BY_ALLOCINE
+        not_editable_fields |= synchronized_fields
+
+    return not_editable_fields
+
+
 def _mandatory_extra_data_fields(subcategory_id: str) -> set[str]:
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     return {
@@ -537,16 +591,27 @@ def patch_offer(
         )
 
     subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
+    not_editable_fields = _get_not_editable_fields(offer)
 
     if body.artist_offer_links is not None:
-        artist_api.upsert_artist_offer_links(body.artist_offer_links, offer, subcategory_id=subcategory_id)
+        validation.check_fields_are_editable({"artistOfferLinks"}, not_editable_fields=not_editable_fields)
+        artist_api.upsert_artist_offer_links(
+            body.artist_offer_links,
+            offer,
+            subcategory_id=subcategory_id,
+        )
 
     if body.hasCulturalOutreachClaim is not None:
-        cultural_outreach_api.set_cultural_outreach_claim(offer, body.hasCulturalOutreachClaim)
+        validation.check_fields_are_editable({"hasCulturalOutreachClaim"}, not_editable_fields=not_editable_fields)
+        cultural_outreach_api.set_cultural_outreach_claim(
+            offer,
+            body.hasCulturalOutreachClaim,
+        )
 
     offers_api.update_offer(
         offer,
         mandatory_extra_data_fields=_mandatory_extra_data_fields(subcategory_id),
+        not_editable_fields=not_editable_fields,
         audio_disability_compliant=updates.get("audioDisabilityCompliant", offers_api.UNCHANGED),
         booking_allowed_datetime=updates.get("bookingAllowedDatetime", offers_api.UNCHANGED),
         booking_contact=updates.get("bookingContact", offers_api.UNCHANGED),
