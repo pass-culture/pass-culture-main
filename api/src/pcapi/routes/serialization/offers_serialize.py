@@ -1,4 +1,6 @@
 import datetime
+import json
+import re
 import typing
 from typing import Any
 
@@ -12,6 +14,7 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offerers.utils import is_venue_address
+from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offers_validation
@@ -28,15 +31,32 @@ from pcapi.routes.serialization.address_serialize import LocationResponseModel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.serialization.exceptions import PydanticError
-from pcapi.serialization.utils import NOW_LITERAL
 from pcapi.serialization.utils import DecimalField
 from pcapi.serialization.utils import HttpUrlStr
+from pcapi.serialization.utils import ValidHttpUrlStr
+from pcapi.serialization.utils import future_tz_aware_datetime_keep_tz
+from pcapi.serialization.utils import future_tz_aware_datetime_or_now_keep_tz
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_timezoned_datetime
 from pcapi.serialization.utils import validate_url
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.string import to_camelcase
+
+
+MAX_EXTRA_DATA_SIZE_BYTES = 64 * 1024
+
+# '<[^>]*>' to match <...> , 'on\w+\s*=' to match classic JS actions (onerror=, onload=...)
+HTML_INJECTION_REGEX = re.compile(r"<[^>]*>|on\w+\s*=", re.IGNORECASE)
+
+
+def validate_extra_data_size(extra_data: offers_models.OfferExtraData | None) -> None:
+    if len(json.dumps(extra_data).encode("utf-8")) > MAX_EXTRA_DATA_SIZE_BYTES:
+        raise PydanticError("extraData field is too big (maximum 64 Ko).")
+
+
+def validate_extra_data_content(extra_data: offers_models.OfferExtraData | None) -> None:
+    if HTML_INJECTION_REGEX.search(json.dumps(extra_data)):
+        raise PydanticError("extraData field includes forbidden caracters or scripts")
 
 
 class SubcategoryGetterDict(GetterDict):
@@ -81,81 +101,55 @@ class CategoryResponseModel(BaseModel):
         orm_mode = True
 
 
-class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModel] | None
-    location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
-    bookingContact: EmailStr | None
-    bookingEmail: EmailStr | None
-    hasCulturalOutreachClaim: bool | None
-    description: str | None
-    isNational: bool | None
-    name: str | None
-    extraData: offers_models.OfferExtraData | None
-    externalTicketOfficeUrl: HttpUrl | None
-    url: HttpUrl | None
-    withdrawalDetails: str | None
-    withdrawalType: offers_models.WithdrawalTypeEnum | None
-    withdrawalDelay: int | None
-    isDuo: bool | None
-    durationMinutes: int | None
-    shouldSendMail: bool | None
-    publicationDatetime: datetime.datetime | NOW_LITERAL | None
-    bookingAllowedDatetime: datetime.datetime | None
-    subcategory_id: str | None
-    audio_disability_compliant: bool | None
-    mental_disability_compliant: bool | None
-    motor_disability_compliant: bool | None
-    visual_disability_compliant: bool | None
+# escape the inherited alias_generator=to_camel sets by HttpBodyModel
+@pydantic_v2.with_config(pydantic_v2.ConfigDict(extra="forbid"))
+class OfferExtraDataV2(offers_models.OfferExtraData):
+    pass
 
-    _validation_bookings_allowed_datetime = validate_timezoned_datetime("bookingAllowedDatetime")
-    _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
-    _validation_external_ticket_office_url = validate_url("externalTicketOfficeUrl")
-    _validation_url = validate_url("url")
 
-    @validator("name", pre=True, allow_reuse=True)
-    def validate_name(cls, name: str) -> str:
-        if name:
-            offers_validation.check_offer_name_length_is_valid(name)
-        return name
+class PatchOfferBodyModel(HttpBodyModel):
+    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModelV2] | None = None
+    location: address_serialize.LocationBodyModelV2 | address_serialize.LocationOnlyOnVenueBodyModelV2 | None = (
+        pydantic_v2.Field(default=None, discriminator="isVenueLocation")
+    )
+    bookingContact: pydantic_v2.EmailStr | None = None
+    bookingEmail: pydantic_v2.EmailStr | None = None
+    hasCulturalOutreachClaim: bool | None = None
+    description: str | None = None
+    isNational: bool | None = None
+    name: str | None = pydantic_v2.Field(default=None, max_length=offers_constants.MAX_OFFER_NAME_LENGTH)
+    extraData: OfferExtraDataV2 | None = None
+    externalTicketOfficeUrl: ValidHttpUrlStr | None = None
+    url: ValidHttpUrlStr | None = None
+    withdrawalDetails: str | None = None
+    withdrawalType: offers_models.WithdrawalTypeEnum | None = None
+    withdrawalDelay: int | None = None
+    isDuo: bool | None = None
+    durationMinutes: int | None = None
+    shouldSendMail: bool | None = None
+    publicationDatetime: future_tz_aware_datetime_or_now_keep_tz | None = None
+    bookingAllowedDatetime: future_tz_aware_datetime_keep_tz | None = None
+    subcategory_id: str | None = None
+    audio_disability_compliant: bool | None = None
+    mental_disability_compliant: bool | None = None
+    motor_disability_compliant: bool | None = None
+    visual_disability_compliant: bool | None = None
 
-    @validator("subcategory_id", pre=True)
-    def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:
-        from pcapi.core.offers.validation import check_offer_subcategory_is_valid
-
-        check_offer_subcategory_is_valid(subcategory_id)
+    @pydantic_v2.field_validator("subcategory_id")
+    @classmethod
+    def validate_subcategory_id(cls, subcategory_id: str | None) -> str | None:
+        offers_validation.check_offer_subcategory_is_valid(subcategory_id)
         return subcategory_id
 
-    @validator("extraData", pre=True)
-    def format_extra_data(cls, extra_data: typing.Any) -> typing.Any:
-        if not isinstance(extra_data, dict):
-            return extra_data
-
-        formated_extra_data: dict[str, typing.Any] = {}
-        for key, value in extra_data.items():
-            if not isinstance(key, str):
-                # will raise during OfferExtraData validation
-                formated_extra_data[key] = value
-                continue
-
-            field_name = to_camelcase(key)
-            formated_extra_data[field_name] = value
-
-        return formated_extra_data
-
-    @validator("extraData")
-    def validate_extra_data(
-        cls, extra_data: offers_models.OfferExtraData | None
-    ) -> offers_models.OfferExtraData | None:
+    @pydantic_v2.field_validator("extraData")
+    @classmethod
+    def validate_extra_data(cls, extra_data: OfferExtraDataV2 | None) -> OfferExtraDataV2 | None:
         if extra_data is None:
             return None
 
-        offers_validation.validate_extra_data_size(extra_data)
-        offers_validation.validate_extra_data_content(extra_data)
+        validate_extra_data_size(extra_data)
+        validate_extra_data_content(extra_data)
         return extra_data
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
 
 
 class UpdateOfferVideoBodyModel(HttpBodyModel):

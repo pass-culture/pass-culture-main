@@ -1320,7 +1320,7 @@ class Returns400Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 400
-        assert response.json == {"volunteeringUrl": ["Input should be a valid URL, relative URL without a base"]}
+        assert response.json == {"volunteeringUrl": ["L'URL est invalide"]}
 
     def test_update_with_wrong_volunteering_url_domain(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
