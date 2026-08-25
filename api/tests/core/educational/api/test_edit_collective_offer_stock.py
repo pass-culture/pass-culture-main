@@ -22,6 +22,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class EditCollectiveOfferStocksTest:
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_should_update_all_fields_when_all_changed(self) -> None:
         initial_event_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
         initial_booking_limit_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
@@ -57,6 +58,7 @@ class EditCollectiveOfferStocksTest:
         assert stock.numberOfTickets == 35
         assert stock.numberOfTeachers == 5
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_should_update_some_fields_and_keep_non_edited_ones(self) -> None:
         initial_event_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
         initial_booking_limit_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
@@ -111,7 +113,7 @@ class EditCollectiveOfferStocksTest:
     @time_machine.travel("2020-11-17 15:00:00", tick=False)
     def should_update_bookings_cancellation_limit_date_if_startDatetime_earlier(self) -> None:
         initial_event_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=20)
-        educational_year = factories.educational_year = factories.create_educational_year(initial_event_date)
+        educational_year = factories.create_educational_year(initial_event_date)
         cancellation_limit_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
         stock_to_be_updated = factories.CollectiveStockFactory(startDatetime=initial_event_date)
         booking = factories.CollectiveBookingFactory(
