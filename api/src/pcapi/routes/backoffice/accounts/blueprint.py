@@ -2272,7 +2272,7 @@ def get_eligibility_history(user: users_models.User) -> dict[str, serialization.
     for eligibility in eligibility_types:
         subscriptions[eligibility.value] = serialization.EligibilitySubscriptionHistoryModel(
             subscriptionItems=[
-                serialization.SubscriptionItemModel.from_orm(method(user, eligibility))
+                serialization.SubscriptionItemModel.model_validate(method(user, eligibility))
                 for method in subscription_item_methods
             ],
             idCheckHistory=[
