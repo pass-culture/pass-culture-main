@@ -10,6 +10,7 @@ import pcapi.core.users.models as users_models
 import pcapi.utils.cron as cron_decorators
 from pcapi import settings
 from pcapi.core.mails.transactional.users.ubble import reminder_emails
+from pcapi.core.subscription.bonus import statistics_api as bonus_statistics_api
 from pcapi.core.subscription.bonus import tasks as bonus_tasks
 from pcapi.core.subscription.ubble import tasks as ubble_tasks
 from pcapi.core.subscription.ubble.api import recover_pending_ubble_applications
@@ -131,6 +132,20 @@ def ubble_archive_past_identifications_automation() -> None:
 @cron_decorators.log_cron
 def recover_started_bonus_credit_applications() -> None:
     bonus_tasks.recover_started_bonus_credit_applications(cutoff_time=date_utils.get_naive_utc_now())
+
+
+@blueprint.cli.command("log_bonus_credit_statistics")
+@cron_decorators.log_cron
+def log_bonus_credit_statistics() -> None:
+    """
+    Logs the bonus credit counters recorded in Redis for the data team.
+    The bonus credit fraud checks being deleted once the bonus is granted, these logs are the only
+    trace left of which source granted the bonus. The grant counters wait for the disability grants
+    to hide in the quotient familial crowd before being published, so running this often only makes
+    the logs emptier, never more disclosing.
+    """
+    bonus_statistics_api.log_bonus_credit_counters()
+    bonus_statistics_api.log_first_bonus_credit_attempt_delays()
 
 
 @blueprint.cli.command("recover_incomplete_ubble_id_verification")

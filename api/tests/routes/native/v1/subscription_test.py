@@ -929,8 +929,10 @@ class QuotientFamilialBonusTest:
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_first_bonus_attempt")
     def test_create_qf_bonus_fraud_check(
         self,
+        mocked_record_first_attempt,
         mocked_apply_for_aeeh_task,
         mocked_apply_for_aah_task,
         mocked_apply_for_qf_task,
@@ -1041,6 +1043,8 @@ class QuotientFamilialBonusTest:
         route_call_record = caplog.records[0]
         assert route_call_record.deviceId == route_call_record.extra["deviceId"] == "[REDACTED]"
         assert route_call_record.sourceIp == route_call_record.extra["sourceIp"] == "[REDACTED]"
+
+        mocked_record_first_attempt.assert_called_once()
 
     @pytest.mark.parametrize(
         "fraud_check_status",
@@ -1232,12 +1236,47 @@ class QuotientFamilialBonusTest:
         assert response.status_code == 400, response.json
         assert list(response.json.keys()) == ["birthCityCogCode"], response.json
 
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_first_bonus_attempt")
+    def test_only_the_first_attempt_records_a_delay(
+        self,
+        mocked_record_first_attempt,
+        mocked_apply_for_aeeh_task,
+        mocked_apply_for_aah_task,
+        mocked_apply_for_qf_task,
+        client,
+    ):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.AAHBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.KO,
+            reason=bonus_constants.QUOTIENT_FAMILIAL_ENDPOINT_ORIGIN,
+        )
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "08480",
+            },
+        )
+        assert response.status_code == 204
+
+        mocked_record_first_attempt.assert_not_called()
+
 
 class DisabilityBonusTest:
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_first_bonus_attempt")
     def test_create_disability_bonus_fraud_checks(
-        self, mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, client, caplog
+        self, mocked_record_first_attempt, mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, client, caplog
     ):
         user = users_factories.BeneficiaryFactory()
         now = date_utils.get_naive_utc_now()
@@ -1301,6 +1340,8 @@ class DisabilityBonusTest:
         route_call_record = caplog.records[0]
         assert route_call_record.deviceId == route_call_record.extra["deviceId"] == "[REDACTED]"
         assert route_call_record.sourceIp == route_call_record.extra["sourceIp"] == "[REDACTED]"
+
+        mocked_record_first_attempt.assert_called_once()
 
     @pytest.mark.parametrize(
         "fraud_check_status",
@@ -1435,3 +1476,31 @@ class DisabilityBonusTest:
 
         assert response.status_code == 400
         assert list(response.json.keys()) == ["birthCityCogCode"], response.json
+
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_first_bonus_attempt")
+    def test_only_the_first_attempt_records_a_delay(
+        self,
+        mocked_record_first_attempt,
+        mocked_apply_for_aeeh_task,
+        mocked_apply_for_aah_task,
+        client,
+    ):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.QFBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.KO,
+            reason=bonus_constants.QUOTIENT_FAMILIAL_ENDPOINT_ORIGIN,
+        )
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/disability",
+            json={
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "67482",  # Strasbourg
+            },
+        )
+        assert response.status_code == 204, response.json
+
+        mocked_record_first_attempt.assert_not_called()

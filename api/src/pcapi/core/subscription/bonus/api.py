@@ -14,10 +14,11 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import constants as bonus_constants
+from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.bonus import staging_api
+from pcapi.core.subscription.bonus import statistics_api
 from pcapi.core.users import models as users_models
-from pcapi.models import db
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import atomic
 
@@ -61,6 +62,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     if qf_result.response:
         qf_result.status, qf_result.reason_codes = _get_quotient_familial_bonus_status(user, qf_result.response.data)
 
+    granted_after_attempts: int | None = None
     with atomic():
         if qf_result.status == subscription_models.FraudCheckStatus.KO:
             _update_quotient_familial_fraud_check_content(quotient_familial_fraud_check, qf_result)
@@ -69,9 +71,10 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
             transactional_mails.send_bonus_declined_email(user)
 
         elif qf_result.status == subscription_models.FraudCheckStatus.OK:
-            given_recredit = _grant_bonus(quotient_familial_fraud_check)
+            given_recredit, attempts_count = _grant_bonus(quotient_familial_fraud_check)
 
             if given_recredit:
+                granted_after_attempts = attempts_count
                 trigger_events.track_has_received_bonus(user.id)
                 transactional_mails.send_bonus_granted_email(user)
 
@@ -79,6 +82,10 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
             raise NotImplementedError(f"no handler was implemented for {qf_result.status}")
 
         external_attributes_api.update_external_user(user)
+
+    statistics_api.record_bonus_attempt(
+        subscription_models.FraudCheckType.QF_BONUS_CREDIT, qf_result.reason_codes, granted_after_attempts
+    )
 
 
 def _get_user_quotient_familial_response(
@@ -235,6 +242,7 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
     if aah_result.response:
         aah_result.status, aah_result.reason_codes = _get_adult_disability_bonus_status(aah_result.response.data)
 
+    granted_after_attempts: int | None = None
     with atomic():
         if aah_result.status == subscription_models.FraudCheckStatus.KO:
             _decline_bonus(aah_fraud_check, aah_result)
@@ -245,9 +253,10 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
                 transactional_mails.send_bonus_declined_email(user)
 
         elif aah_result.status == subscription_models.FraudCheckStatus.OK:
-            given_recredit = _grant_bonus(aah_fraud_check)
+            given_recredit, attempts_count = _grant_bonus(aah_fraud_check)
 
             if given_recredit:
+                granted_after_attempts = attempts_count
                 trigger_events.track_has_received_bonus(user.id)
                 transactional_mails.send_bonus_granted_email(user)
 
@@ -255,6 +264,10 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
             raise NotImplementedError(f"no handler was implemented for {aah_result.status}")
 
         external_attributes_api.update_external_user(user)
+
+    statistics_api.record_bonus_attempt(
+        subscription_models.FraudCheckType.AAH_BONUS_CREDIT, aah_result.reason_codes, granted_after_attempts
+    )
 
 
 def _get_adult_disability_bonus_status(
@@ -300,6 +313,7 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
             aeeh_result.response.data
         )
 
+    granted_after_attempts: int | None = None
     with atomic():
         if aeeh_result.status == subscription_models.FraudCheckStatus.KO:
             _decline_bonus(aeeh_fraud_check, aeeh_result)
@@ -310,9 +324,10 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
                 transactional_mails.send_bonus_declined_email(user)
 
         elif aeeh_result.status == subscription_models.FraudCheckStatus.OK:
-            given_recredit = _grant_bonus(aeeh_fraud_check)
+            given_recredit, attempts_count = _grant_bonus(aeeh_fraud_check)
 
             if given_recredit:
+                granted_after_attempts = attempts_count
                 trigger_events.track_has_received_bonus(user.id)
                 transactional_mails.send_bonus_granted_email(user)
 
@@ -320,6 +335,10 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
             raise NotImplementedError(f"no handler was implemented for {aeeh_result.status}")
 
         external_attributes_api.update_external_user(user)
+
+    statistics_api.record_bonus_attempt(
+        subscription_models.FraudCheckType.AEEH_BONUS_CREDIT, aeeh_result.reason_codes, granted_after_attempts
+    )
 
 
 def _get_disabled_child_education_bonus_status(
@@ -393,27 +412,15 @@ def _decline_bonus(
         fraud_check.resultContent["error_code"] = result.error_code
 
 
-def _grant_bonus(fraud_check: subscription_models.BeneficiaryFraudCheck) -> finance_models.Recredit | None:
+def _grant_bonus(
+    fraud_check: subscription_models.BeneficiaryFraudCheck,
+) -> tuple[finance_models.Recredit | None, int | None]:
     user = fraud_check.user
     given_recredit = deposit_api.recredit_bonus_credit(user)
+    attempts_count: int | None = None
 
     if given_recredit:
-        _delete_bonus_fraud_checks(user)
+        attempts_count = bonus_fraud_api.count_manual_attempts(user)
+        bonus_fraud_api.delete_bonus_fraud_checks(user)
 
-    return given_recredit
-
-
-def _delete_bonus_fraud_checks(user: users_models.User) -> None:
-    """
-    We delete every bonus fraud checks to avoid retro engineering which bonus credit was granted through which process
-    (AAH/AEEH or QF).
-    """
-    bonus_fraud_checks = [
-        fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
-    ]
-    for fraud_check in bonus_fraud_checks:
-        db.session.delete(fraud_check)
-
-    db.session.flush()
+    return given_recredit, attempts_count

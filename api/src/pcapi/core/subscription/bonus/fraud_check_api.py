@@ -4,6 +4,7 @@ import random
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
+from pcapi.core.finance import models as finance_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
@@ -160,3 +161,76 @@ def accelerate_automatic_disability_bonus_fraud_checks(
         accelerated_fraud_checks.append(fraud_check)
 
     return accelerated_fraud_checks
+
+
+def get_first_manual_attempt(user: users_models.User) -> subscription_models.BeneficiaryFraudCheck | None:
+    return next(
+        (
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+            and fraud_check.reason
+            and fraud_check.reason.startswith(bonus_constants.MANUAL_FORM_ENDPOINT_ORIGINS)
+        ),
+        None,
+    )
+
+
+def get_attempt_delay_in_seconds(fraud_check: subscription_models.BeneficiaryFraudCheck) -> int | None:
+    eighteenth_recredit_date = _get_eighteenth_recredit_date(fraud_check.user)
+    if eighteenth_recredit_date is None:
+        return None
+
+    can_fill_bonus_credit_form_since = max(eighteenth_recredit_date, settings.BONUS_CREDIT_DEPLOYMENT_DATETIME)
+    elapsed_seconds = int((fraud_check.dateCreated - can_fill_bonus_credit_form_since).total_seconds())
+    return elapsed_seconds
+
+
+def _get_eighteenth_recredit_date(user: users_models.User) -> datetime.datetime | None:
+    deposit = user.deposit
+    if not deposit:
+        return None
+
+    eighteenth_recredits = [
+        recredit for recredit in deposit.recredits if recredit.recreditType == finance_models.RecreditType.RECREDIT_18
+    ]
+    if not eighteenth_recredits:
+        return None
+
+    return min(recredit.dateCreated for recredit in eighteenth_recredits)
+
+
+def count_manual_attempts(user: users_models.User, bonus_type: subscription_models.FraudCheckType | None = None) -> int:
+    """
+    Counts how many times the beneficiary filled a bonus credit form manually. Automatic and backoffice attempts are left out.
+    """
+    if bonus_type is None:
+        bonus_types = [
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+        ]
+    else:
+        bonus_types = [bonus_type]
+    return sum(
+        1
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type in bonus_types
+        and fraud_check.reason
+        and fraud_check.reason.startswith(bonus_constants.MANUAL_FORM_ENDPOINT_ORIGINS)
+    )
+
+
+def delete_bonus_fraud_checks(user: users_models.User) -> None:
+    """
+    We delete every bonus fraud checks to avoid retro engineering which bonus credit was granted through which process
+    (AAH/AEEH or QF).
+    """
+    bonus_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+    ]
+    for fraud_check in bonus_fraud_checks:
+        db.session.delete(fraud_check)
+
+    db.session.flush()

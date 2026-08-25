@@ -15,6 +15,7 @@ from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
+from pcapi.core.subscription.bonus import statistics_api as bonus_statistics_api
 from pcapi.core.subscription.bonus import tasks as bonus_tasks
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
@@ -184,6 +185,9 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.Quotient
             {"code": "BONUS_NOT_ELIGIBLE", "message": "Non éligible à la bonification"},
             status_code=400,
         )
+    first_attempt = bonus_fraud_api.get_first_manual_attempt(current_user)
+    is_first_attempt = first_attempt is None
+
     fraud_check = bonus_fraud_api.create_qf_bonus_credit_fraud_check(
         current_user,
         last_name=body.last_name,
@@ -198,6 +202,11 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.Quotient
 
     payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
     on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
+
+    if is_first_attempt:
+        delay = bonus_fraud_api.get_attempt_delay_in_seconds(fraud_check)
+        if delay is not None:
+            on_commit(partial(bonus_statistics_api.record_first_bonus_attempt, delay))
 
     disability_fraud_checks = bonus_fraud_api.accelerate_automatic_disability_bonus_fraud_checks(
         current_user.beneficiaryFraudChecks, new_origin="/subscription/bonus/quotient_familial endpoint"
@@ -224,6 +233,9 @@ def create_disability_bonus_credit_fraud_checks(body: serializers.DisabilityBonu
             status_code=400,
         )
 
+    first_attempt = bonus_fraud_api.get_first_manual_attempt(current_user)
+    is_first_attempt = first_attempt is None
+
     aah_fraud_check, aeeh_fraud_check = bonus_fraud_api.create_disability_bonus_credit_fraud_checks(
         current_user,
         birth_country_cog_code=body.birth_country_cog_code,
@@ -236,3 +248,8 @@ def create_disability_bonus_credit_fraud_checks(body: serializers.DisabilityBonu
 
     aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
     on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
+
+    if is_first_attempt:
+        delay = bonus_fraud_api.get_attempt_delay_in_seconds(aah_fraud_check)
+        if delay is not None:
+            on_commit(partial(bonus_statistics_api.record_first_bonus_attempt, delay))
