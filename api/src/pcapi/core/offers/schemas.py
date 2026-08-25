@@ -10,8 +10,6 @@ from pydantic.v1 import HttpUrl
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
-from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.serialization import BaseModel
@@ -69,57 +67,6 @@ class CreateOffer(BaseModel):
         return is_national
 
     class Config:
-        alias_generator = serialization_utils.to_camel
-        extra = "forbid"
-
-
-class UpdateOffer(BaseModel):
-    name: str | None = None
-    audio_disability_compliant: bool | None = None
-    mental_disability_compliant: bool | None = None
-    motor_disability_compliant: bool | None = None
-    visual_disability_compliant: bool | None = None
-
-    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModel] | None = None
-    location: offerers_schemas.LocationModel | offerers_schemas.LocationOnlyOnVenueModel | None = None
-    booking_contact: EmailStr | None = None
-    booking_email: EmailStr | None = None
-    description: str | None = None
-    duration_minutes: int | None = None
-    external_ticket_office_url: HttpUrl | None = None
-    ean: str | None = None
-    extra_data: typing.Any = None
-    has_cultural_outreach_claim: bool | None = None
-    id_at_provider: str | None = None
-    is_duo: bool | None = None
-    offerer_address: offerers_models.OffererAddress | None
-    url: HttpUrl | None = None
-    withdrawal_delay: int | None = None
-    withdrawal_details: str | None = None
-    withdrawal_type: offers_models.WithdrawalTypeEnum | None = None
-    publicationDatetime: datetime.datetime | None
-    bookingAllowedDatetime: datetime.datetime | None
-    subcategory_id: str | None = None
-
-    # is_national must be placed after url so that the validator
-    # can access the url field in the dict of values
-    # (which contains only previously validated fields)
-    is_national: bool | None = None
-
-    should_send_mail: bool | None = None
-
-    @validator("is_duo")
-    def validate_is_duo(cls, is_duo: bool | None) -> bool:
-        return bool(is_duo)
-
-    @validator("is_national")
-    def validate_is_national(cls, is_national: bool | None, values: dict) -> bool:
-        url = values.get("url")
-        is_national = True if url else bool(is_national)
-        return is_national
-
-    class Config:
-        arbitrary_types_allowed = True
         alias_generator = serialization_utils.to_camel
         extra = "forbid"
 

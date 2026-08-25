@@ -9,8 +9,8 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 
 
-class LocationOnlyOnVenueBodyModelV2(HttpBodyModel):
-    isVenueLocation: typing.Literal[True] = True
+class LocationOnlyOnVenueBodyModelV2(HttpBodyModel, offerers_schema.CoreLocationOnlyOnVenueModelV2):
+    pass
 
 
 class LocationBodyModelV2(HttpBodyModel, offerers_schema.CoreLocationModelV2):
