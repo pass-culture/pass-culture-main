@@ -211,7 +211,6 @@ if settings.PROFILE_REQUESTS:
 # header: the client IP and the Google Front End IP. Hence `x_for=2`.
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2)
 
-app.secret_key = settings.FLASK_SECRET
 app.json_provider_class = EnumJSONEncoder
 app.json = EnumJSONEncoder(app)
 

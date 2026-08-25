@@ -1,6 +1,7 @@
 import flask
 import flask_login
 
+from pcapi import settings
 from pcapi.core.users import models as users_models
 
 from . import _common
@@ -8,7 +9,15 @@ from . import _native
 from . import _pro
 
 
+REDIS_SESSION_KEY = "pcapi:session:backoffice:keys"
+
+
 def install_login() -> None:
+    _common.configure_session_keys(
+        default_session_key=settings.FLASK_SECRET,
+        session_keys_secret=settings.FLASK_SECRET_NAME,
+        redis_key=REDIS_SESSION_KEY,
+    )
     login_manager = flask_login.LoginManager()
     login_manager.init_app(flask.current_app)
     login_manager.unauthorized_handler(_common.unauthorized_handler)

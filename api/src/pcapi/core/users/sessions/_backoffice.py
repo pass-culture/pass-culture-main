@@ -5,6 +5,7 @@ import flask
 import flask_login
 from sqlalchemy import orm as sa_orm
 
+from pcapi import settings
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -14,9 +15,15 @@ from . import _common
 
 # a french worker cannot work for more than 12 hours so disconnecting them after 13 hours is safe
 MAXIMUM_SESSION_LENGTH_HOURS = 13
+REDIS_SESSION_KEY = "pcapi:session:backoffice:keys"
 
 
 def install_login() -> None:
+    _common.configure_session_keys(
+        default_session_key=settings.FLASK_SECRET,
+        session_keys_secret=settings.FLASK_SECRET_NAME,
+        redis_key=REDIS_SESSION_KEY,
+    )
     login_manager = flask_login.LoginManager()
     login_manager.init_app(flask.current_app)
     login_manager.unauthorized_handler(_common.unauthorized_handler)

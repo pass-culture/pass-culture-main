@@ -206,7 +206,7 @@ def clear_outboxes():
 @pytest.fixture(autouse=True)
 def clear_redis(app):
     try:
-        yield
+        yield app.redis_client
     finally:
         app.redis_client.flushdb()
 

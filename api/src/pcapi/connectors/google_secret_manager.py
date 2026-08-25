@@ -76,5 +76,5 @@ class SecretManagerBackend:
                     break
 
         except Exception as exp:
-            logger.exception("Error while extracting versions for secret %s" % secret_name)  # nosemgrep
+            logger.exception("Error while extracting the secret versions", extra={"secret_name": secret_name})
             raise SecretManagerException() from exp
