@@ -49,5 +49,5 @@ class ClickhouseBackend(BaseBackend):
         ip = settings.CLICKHOUSE_IP
         user = settings.CLICKHOUSE_USER
         password = settings.CLICKHOUSE_PASSWORD
-        uri = f"clickhouse://{user}:{password}@{ip}:8123/default?protocol=http"
+        uri = f"clickhousedb://{user}:{password}@{ip}:8123/default"
         return sa.create_engine(uri, pool_pre_ping=True)
