@@ -1,4 +1,5 @@
 import abc
+import logging
 from datetime import timedelta
 from enum import Enum
 from uuid import UUID
@@ -6,11 +7,16 @@ from uuid import UUID
 import flask
 
 from pcapi import settings
+from pcapi.connectors.google_secret_manager import SecretManagerBackend
+from pcapi.connectors.google_secret_manager import SecretManagerException
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
+from pcapi.utils.redis import get_redis_client
 
+
+logger = logging.getLogger(__name__)
 
 NATIVE_FOLDERS = {
     "/native/",
@@ -111,3 +117,34 @@ def disconnect_user_session(user_id: int, session_uuid: UUID | None = None) -> i
         query = query.filter(users_models.UserSession.uuid == session_uuid)
 
     return query.delete(synchronize_session=False)
+
+
+def configure_session_keys(*, default_session_key: str, session_keys_secret: str, redis_key: str) -> None:
+    if session_keys_secret:
+        key_dict: dict[str, str] = {}
+
+        secret_manager = SecretManagerBackend()
+        try:
+            for secret in secret_manager.get_last_secret_versions(secret_name=session_keys_secret):
+                key_dict[str(secret.creation_timestamp)] = secret.value
+        except SecretManagerException:
+            logger.exception("Error while building the session keyring")
+            key_dict = get_redis_client().hgetall(redis_key)
+
+        if not key_dict:
+            raise ValueError("Error while building the session keyring, no backup available in redis")
+
+        get_redis_client().hset(redis_key, mapping=key_dict)  # type: ignore [arg-type]
+        flask.current_app.config["SECRET_KEY"] = key_dict.pop(  # the newest key will be used to sign new sessions
+            max(key_dict.keys())
+        )
+        flask.current_app.config["SECRET_KEY_FALLBACKS"] = list(
+            key_dict.values()
+        )  # all the other keys can be used as fallback
+
+        if default_session_key:
+            flask.current_app.config["SECRET_KEY_FALLBACKS"].append(default_session_key)
+    elif default_session_key:
+        flask.current_app.config["SECRET_KEY"] = default_session_key
+    else:
+        raise ValueError("A session key or a secret pointing on a list of session keys is needed")
