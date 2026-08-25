@@ -264,7 +264,7 @@ def create_offer(
     db.session.flush()
 
     if artist_offer_links is not None:
-        validation.check_artist_offer_links(artist_offer_links, subcategory)
+        artist_api.check_artist_offer_links(artist_offer_links, subcategory)
 
         for artist_offer_link in artist_offer_links:
             link_key = artist_api.get_artist_offer_link_key(artist_offer_link)

@@ -6,6 +6,8 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+import pcapi.core.artist.api as artist_api
+import pcapi.core.cultural_outreach.api as cultural_outreach_api
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.constants as offers_constants
@@ -534,9 +536,17 @@ def patch_offer(
             address_body=body.location, venue=offer.venue
         )
 
+    subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
+
+    if body.artist_offer_links is not None:
+        artist_api.upsert_artist_offer_links(body.artist_offer_links, offer, subcategory_id=subcategory_id)
+
+    if body.hasCulturalOutreachClaim is not None:
+        cultural_outreach_api.set_cultural_outreach_claim(offer, body.hasCulturalOutreachClaim)
+
     offers_api.update_offer(
         offer,
-        mandatory_extra_data_fields=_mandatory_extra_data_fields(updates.get("subcategoryId", offer.subcategoryId)),
+        mandatory_extra_data_fields=_mandatory_extra_data_fields(subcategory_id),
         audio_disability_compliant=updates.get("audioDisabilityCompliant", offers_api.UNCHANGED),
         booking_allowed_datetime=updates.get("bookingAllowedDatetime", offers_api.UNCHANGED),
         booking_contact=updates.get("bookingContact", offers_api.UNCHANGED),
