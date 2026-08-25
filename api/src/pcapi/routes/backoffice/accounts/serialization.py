@@ -4,6 +4,8 @@ import datetime
 import sqlalchemy as sa
 from flask import url_for
 from markupsafe import Markup
+from pydantic import BaseModel
+from pydantic import ConfigDict
 
 from pcapi import settings
 from pcapi.core.subscription import models as subscription_models
@@ -12,7 +14,6 @@ from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
-from pcapi.routes.serialization import BaseModel
 
 
 def get_fraud_check_eligibility_type(
@@ -41,18 +42,13 @@ def get_fraud_check_eligibility_type(
 
 
 class SubscriptionItemModel(BaseModel):
-    class Config:
-        orm_mode = True
-        use_enum_values = True
-
     type: subscription_schemas.SubscriptionStep
     status: subscription_schemas.SubscriptionItemStatus
 
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
+
 
 class IdCheckItemModel(BaseModel):
-    class Config:
-        use_enum_values = True
-
     id: int
     type: subscription_models.FraudCheckType
     dateCreated: datetime.datetime
@@ -61,9 +57,11 @@ class IdCheckItemModel(BaseModel):
     reason: str | None
     reasonCodes: list[subscription_models.FraudReasonCode] | None
     technicalDetails: dict | None
-    sourceId: str | None = None  # DMS only
+    sourceId: str | None  # DMS only
     eligibilityType: users_models.EligibilityType | None
     applicable_eligibilities: list[users_models.EligibilityType]
+
+    model_config = ConfigDict(use_enum_values=True)
 
     @classmethod
     def build(cls, fraud_check: subscription_models.BeneficiaryFraudCheck) -> "IdCheckItemModel":
