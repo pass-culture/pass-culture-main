@@ -1,5 +1,7 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Link } from '@/design-system/Link/Link'
+import { LinkColor } from '@/design-system/Link/types'
 import fullBackIcon from '@/icons/full-back.svg'
 
 import styles from './Declaration.module.scss'
@@ -38,10 +40,10 @@ export const EcoDesignPolicy = () => {
           Le référentiel général de l’écoconception des services numériques,
           document réalisé par l’Arcep et l’Arcom, en collaboration avec
           l’ADEME, la DINUM, la CNIL et l’Inria, est disponible sur le{' '}
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+          <Link
+            color={LinkColor.NEUTRAL}
+            shouldOpenNewTab
+            isExternalLink
             to="https://www.arcep.fr/demarches-et-services/professionnels/referentiel-general-ecoconception-services-numeriques.html"
             label="site web de l’Arcep"
           />

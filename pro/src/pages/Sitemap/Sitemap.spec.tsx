@@ -82,8 +82,11 @@ describe('Sitemap', () => {
         name: 'Chiffre d’affaires',
         href: '/administration/remboursements/revenus',
       },
-      { name: 'Individuel', href: '/donnees-activité/individuel' },
-      { name: 'Collectif', href: '/donnees-activité/collectif' },
+      {
+        name: 'Individuel',
+        href: '/administration/donnees-activite/individuel',
+      },
+      { name: 'Collectif', href: '/administration/donnees-activite/collectif' },
       { name: 'Collaborateurs', href: '/administration/collaborateurs' },
       {
         name: 'Paramètres',

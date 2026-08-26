@@ -94,10 +94,10 @@ export const Commitment = () => {
           Culture et, <i>in fine</i> , à l’accès de tous les jeunes à la
           culture. En 2024, ce travail a été prolongé avec la mise en place d’un
           partenariat technologique avec{' '}
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+          <Link
+            color={LinkColor.NEUTRAL}
+            shouldOpenNewTab
+            isExternalLink
             to="https://acceslibre.beta.gouv.fr/"
             label="acceslibre"
           />{' '}
@@ -116,6 +116,7 @@ export const Commitment = () => {
             to="https://pass.culture.fr/schema-pluriannuel-2025-2027"
             color={LinkColor.NEUTRAL}
             isExternalLink
+            shouldOpenNewTab
             label="Schéma pluriannuel d’accessibilité 2025 - 2027"
           />
         </p>
@@ -146,9 +147,10 @@ export const Commitment = () => {
         </p>
         <p className={styles['paragraph']}>
           <Link
-            to="https://aide.passculture.app/hc/fr/sections/4597468688924-Situation-de-handicap"
+            to="https://aide.passculture.app/hc/fr"
             color={LinkColor.NEUTRAL}
             isExternalLink
+            shouldOpenNewTab
             label="Vous pouvez retrouver également toutes nos fiches d’aide pour vous
           inscrire sur le pass Culture directement dans notre centre d’aide."
           />
