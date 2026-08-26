@@ -54,9 +54,8 @@ export const VenueProviderCard = ({
       {isPublicAPIProvider ? (
         <div className={style['venue-provider-info-container']}>
           <div className={style['venue-provider-account-info']}>
-            Date d&apos;ajout :
+            Date d'ajout :{' '}
             <span>
-              {' '}
               {formatLocalTimeDateString(
                 dateCreated,
                 venueDepartmentCode,
