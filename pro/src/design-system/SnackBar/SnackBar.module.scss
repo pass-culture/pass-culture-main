@@ -8,14 +8,6 @@
   max-width: 100%;
   width: 100%;
 
-  &.show {
-    animation: slide-in-top var(--snackbar-animation-duration) ease-out forwards;
-  }
-
-  &.hide {
-    animation: slide-out-top var(--snackbar-animation-duration) ease-in forwards;
-  }
-
   .wrapper {
     border-radius: 0;
     animation-name: none;
@@ -157,11 +149,29 @@
 
 .container.mobile {
   @include mobile-layout;
+
+  &.show {
+    animation: slide-in-top var(--snackbar-animation-duration) ease-out forwards;
+  }
+
+  &.hide {
+    animation: slide-out-top var(--snackbar-animation-duration) ease-in forwards;
+  }
 }
 
 @media (max-width: size.$tablet) {
   .container {
     @include mobile-layout;
+
+    &.show {
+      animation: slide-in-top var(--snackbar-animation-duration) ease-out
+        forwards;
+    }
+
+    &.hide {
+      animation: slide-out-top var(--snackbar-animation-duration) ease-in
+        forwards;
+    }
   }
 }
 
