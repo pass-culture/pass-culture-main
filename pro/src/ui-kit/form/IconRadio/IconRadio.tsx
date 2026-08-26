@@ -9,8 +9,6 @@ interface IconRadioProps {
   name: string
   label: string
   icon: string | JSX.Element
-  hasError?: boolean
-  className?: string
   checked?: boolean
   disabled?: boolean
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
@@ -19,16 +17,7 @@ interface IconRadioProps {
 
 export const IconRadio = forwardRef(
   (
-    {
-      name,
-      label,
-      icon,
-      hasError,
-      checked,
-      disabled,
-      onChange,
-      onBlur,
-    }: IconRadioProps,
+    { name, label, icon, checked, disabled, onChange, onBlur }: IconRadioProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
     const labelId = useId()
@@ -46,7 +35,6 @@ export const IconRadio = forwardRef(
             className={cn(styles['icon-radio-input'], {
               [styles['icon-radio-input-checked']]: checked,
             })}
-            aria-invalid={hasError}
             checked={checked}
             disabled={disabled}
             name={name}

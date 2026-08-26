@@ -85,6 +85,7 @@ export const RadioButtonGroup = ({
   return (
     <fieldset
       aria-describedby={describedByIds || undefined}
+      aria-invalid={!!error || undefined}
       className={cn(styles['radio-button-group'], {
         [styles['label-as-text']]: isStringLabel,
       })}

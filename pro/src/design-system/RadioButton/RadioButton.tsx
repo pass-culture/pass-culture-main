@@ -93,7 +93,6 @@ export const RadioButton = forwardRef(
               disabled={disabled}
               name={name}
               checked={checked}
-              aria-invalid={hasError}
             />
             <div>
               <span>{label}</span>
