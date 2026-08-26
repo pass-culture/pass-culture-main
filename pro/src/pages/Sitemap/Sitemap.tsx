@@ -109,12 +109,12 @@ export const Sitemap = () => {
           children: [
             {
               title: 'Individuel',
-              path: '/donnees-activité/individuel',
+              path: '/administration/donnees-activite/individuel',
               children: [],
             },
             {
               title: 'Collectif',
-              path: '/donnees-activité/collectif',
+              path: '/administration/donnees-activite/collectif',
               children: [],
             },
           ],
