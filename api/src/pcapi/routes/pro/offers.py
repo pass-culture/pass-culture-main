@@ -473,7 +473,7 @@ def patch_all_offers_active_status(
         "offerer_address_id": body.offerer_address_id,
     }
     payload = tasks.UpdateAllOffersActiveStatusPayload(is_active=body.is_active, **filters)
-    tasks.update_all_offers_active_status_task.delay(payload.model_dump())
+    tasks.update_all_offers_active_status_task.delay(payload.model_dump(mode="json"))
     return offers_serialize.PatchAllOffersActiveStatusResponseModel()
 
 

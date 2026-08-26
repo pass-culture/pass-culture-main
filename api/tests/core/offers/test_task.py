@@ -29,7 +29,7 @@ def test_update_all_venue_offers_email_task():
     new_email = "new.venue@email.com"
 
     tasks.update_all_venue_offers_email_task.delay(
-        tasks.UpdateAllVenueOffersEmailPayload(venue_id=venue.id, email=new_email).model_dump()
+        tasks.UpdateAllVenueOffersEmailPayload(venue_id=venue.id, email=new_email).model_dump(mode="json")
     )
     offer1 = db.session.query(models.Offer).filter_by(id=offer1_id).one()
     offer2 = db.session.query(models.Offer).filter_by(id=offer2_id).one()

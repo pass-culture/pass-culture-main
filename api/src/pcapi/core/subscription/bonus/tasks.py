@@ -219,7 +219,7 @@ def recover_started_bonus_credit_applications(
                     return handled_fraud_checks
 
                 payload = BonusTaskPayload(fraud_check_id=fraud_check.id)
-                apply_for_quotient_familial_bonus_task.delay(payload=payload.model_dump())
+                apply_for_quotient_familial_bonus_task.delay(payload=payload.model_dump(mode="json"))
                 handled_fraud_checks.append(fraud_check)
 
             case subscription_models.FraudCheckType.AAH_BONUS_CREDIT:
@@ -229,7 +229,7 @@ def recover_started_bonus_credit_applications(
                     return handled_fraud_checks
 
                 payload = BonusTaskPayload(fraud_check_id=fraud_check.id)
-                apply_for_adult_disability_bonus_task.delay(payload=payload.model_dump())
+                apply_for_adult_disability_bonus_task.delay(payload=payload.model_dump(mode="json"))
                 handled_fraud_checks.append(fraud_check)
 
             case subscription_models.FraudCheckType.AEEH_BONUS_CREDIT:
@@ -239,7 +239,7 @@ def recover_started_bonus_credit_applications(
                     return handled_fraud_checks
 
                 payload = BonusTaskPayload(fraud_check_id=fraud_check.id)
-                apply_for_disabled_child_education_bonus_task.delay(payload=payload.model_dump())
+                apply_for_disabled_child_education_bonus_task.delay(payload=payload.model_dump(mode="json"))
                 handled_fraud_checks.append(fraud_check)
 
             case _:

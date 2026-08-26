@@ -29,4 +29,4 @@ def zendesk_webhook_ticket_notification(body: zendesk_serializers.WebhookRequest
         email=body.requester_email,
         phone_number=body.requester_phone,
     )
-    tasks.update_zendesk_attributes_task.delay(data.model_dump())
+    tasks.update_zendesk_attributes_task.delay(data.model_dump(mode="json"))

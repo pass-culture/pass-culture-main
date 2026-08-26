@@ -51,9 +51,9 @@ class SendinblueBackend(BaseBackend):
                 use_pro_subaccount=data.template.use_pro_subaccount,
             )
             if data.template.use_priority_queue:
-                tasks.send_transactional_email_primary_task.delay(payload.model_dump())
+                tasks.send_transactional_email_primary_task.delay(payload.model_dump(mode="json"))
             else:
-                tasks.send_transactional_email_secondary_task.delay(payload.model_dump())
+                tasks.send_transactional_email_secondary_task.delay(payload.model_dump(mode="json"))
 
         elif isinstance(data, models.TransactionalWithoutTemplateEmailData):
             payload = serialization.SendTransactionalEmailRequest(
@@ -68,7 +68,7 @@ class SendinblueBackend(BaseBackend):
                 params=None,
                 tags=None,
             )
-            tasks.send_transactional_email_secondary_task.delay(payload.model_dump())
+            tasks.send_transactional_email_secondary_task.delay(payload.model_dump(mode="json"))
 
         else:
             raise ValueError(f"Tried sending an email via Brevo, but received incorrectly formatted data: {data}")

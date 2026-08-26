@@ -851,4 +851,4 @@ def put_batch_update_cinema_sessions(body: events_serializers.PutCinemaSessions)
         provider_id=current_api_key.provider.id,
         request_payload=body,
     )
-    providers_tasks.batch_update_cinema_offers_task.delay(payload.model_dump())
+    providers_tasks.batch_update_cinema_offers_task.delay(payload.model_dump(mode="json"))

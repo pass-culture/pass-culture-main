@@ -621,7 +621,7 @@ def add_cinema_sessions_synchronize_task(venue_id: int, provider_id: int) -> res
     venue_provider = _fetch_venue_provider(venue_id, provider_id)
 
     payload = providers_tasks.CinemaSynchronisationTaskPayload(venue_provider_id=venue_provider.id)
-    providers_tasks.synchronize_cinema_sessions_task.delay(payload.model_dump())
+    providers_tasks.synchronize_cinema_sessions_task.delay(payload.model_dump(mode="json"))
 
     flash(Markup("La tâche de synchronisation a été ajoutée"), "success")
 

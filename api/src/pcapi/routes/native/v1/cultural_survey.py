@@ -48,7 +48,7 @@ def post_cultural_survey_answers(body: serializers.CulturalSurveyAnswersRequest)
         answers=answers,
     )
 
-    tasks.upload_answers_task.delay(payload.model_dump())
+    tasks.upload_answers_task.delay(payload.model_dump(mode="json"))
 
     with transaction():
         current_user.needsToFillCulturalSurvey = False

@@ -33,7 +33,7 @@ class QuotientFamilialBonusTaskTest:
         mocked_get_quotient_familial.return_value = bonus_fixtures.QF_DESERIALIZED_RESPONSE
 
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check_id)
-        tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
+        tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump(mode="json"))
 
         assert len(mocked_get_quotient_familial.mock_calls) == 12
         mocked_get_quotient_familial.assert_called_with(
@@ -52,7 +52,7 @@ class QuotientFamilialBonusTaskTest:
         mocked_get_quotient_familial.side_effect = RuntimeError
 
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check.id)
-        tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
+        tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump(mode="json"))
 
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check.id)
         assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
@@ -77,7 +77,7 @@ class AdultDisabilityBonusTaskTest:
         )
 
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check_id)
-        tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump())
+        tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump(mode="json"))
 
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
@@ -91,7 +91,7 @@ class AdultDisabilityBonusTaskTest:
         mocked_disabled_adult_allowance.side_effect = RuntimeError
 
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check.id)
-        tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump())
+        tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump(mode="json"))
 
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check.id)
         assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
@@ -118,7 +118,7 @@ class DisabledChildEducationBonusTaskTest:
         )
 
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check_id)
-        tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump())
+        tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump(mode="json"))
 
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
@@ -132,7 +132,7 @@ class DisabledChildEducationBonusTaskTest:
         mocked_disabled_child_education_allowance.side_effect = RuntimeError
 
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check.id)
-        tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump())
+        tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump(mode="json"))
 
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check.id)
         assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
