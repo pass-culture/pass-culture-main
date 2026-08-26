@@ -11,7 +11,6 @@ import {
   TEMPLATE_OFFERS_COLUMNS,
 } from './common/constants'
 import { expect, test } from './fixtures/createCollectiveOffer'
-import type { AccessibilityResult } from './fixtures/desk'
 import {
   autoCompleteAddress,
   fillCustomAddress,
@@ -77,6 +76,9 @@ test.describe('Create collective offers', () => {
     authenticatedPage: page,
     checkAccessibility,
   }) => {
+    await expect(
+      page.getByRole('heading', { name: 'Créer une offre collective' })
+    ).toBeVisible()
     await checkAccessibility()
     await fillBasicOFferForm(page)
     await fillOfferDetails(page, checkAccessibility)
@@ -414,9 +416,7 @@ async function fillBasicOFferForm(page: Page) {
 
 async function fillOfferDetails(
   page: Page,
-  checkAccessibility: (
-    disabledRules?: string[]
-  ) => Promise<AccessibilityResult>,
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>,
   withFormCheck = false
 ) {
   await page.getByLabel(/Titre de l’offre/).fill(commonOfferData.title)
@@ -440,7 +440,7 @@ async function fillOfferDetails(
 
 async function fillDatesAndPrice(
   page: Page,
-  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>
 ) {
   await expect(
     page.getByRole('heading', {
@@ -471,7 +471,7 @@ async function fillDatesAndPrice(
 
 async function fillInstitution(
   page: Page,
-  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>
 ) {
   await page
     .getByLabel(/Nom de l’établissement scolaire ou code UAI */)
@@ -506,9 +506,7 @@ async function searchOffer(
 
 async function publishAndSearchOffer(
   page: Page,
-  checkAccessibility: (
-    disabledRules?: string[]
-  ) => Promise<AccessibilityResult>,
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>,
   waitForResponseFn: (response: Response) => boolean = (response: Response) =>
     isGetCollectiveOffersBookableResponse(response)
 ) {

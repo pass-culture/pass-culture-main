@@ -1,5 +1,4 @@
 import * as path from 'node:path'
-import AxeBuilder from '@axe-core/playwright'
 import {
   type APIRequestContext,
   test as base,
@@ -8,19 +7,8 @@ import {
   request as playwrightRequest,
 } from '@playwright/test'
 
+import { checkAccessibility as checkAccessibilityHelper } from '../helpers/accessibility'
 import { doLogin } from '../helpers/auth'
-
-export interface AccessibilityResult {
-  violations: Array<{
-    id: string
-    impact: string
-    description: string
-    nodes: Array<{
-      html: string
-      target: string[]
-    }>
-  }>
-}
 
 interface AuthSession {
   data: any
@@ -31,7 +19,7 @@ const sessionCache = new Map<string, AuthSession>()
 
 export const test = base.extend<{
   callSandbox: (ctx: APIRequestContext) => Promise<any>
-  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>
   authSession: AuthSession
   authenticatedPage: Page
 }>({
@@ -81,29 +69,9 @@ export const test = base.extend<{
     await context.close()
   },
 
-  checkAccessibility: async ({ authenticatedPage }, use) => {
-    const checkAccessibility = async (
-      disabledRules: string[] = []
-    ): Promise<AccessibilityResult> => {
-      const axeBuilder = new AxeBuilder({ page: authenticatedPage })
-
-      if (disabledRules.length > 0) {
-        axeBuilder.disableRules(disabledRules)
-      }
-
-      const results = await axeBuilder.analyze()
-
-      return {
-        violations: results.violations.map((violation) => ({
-          id: violation.id,
-          impact: violation.impact ?? 'unknown',
-          description: violation.description,
-          nodes: violation.nodes.map((node) => ({
-            html: node.html,
-            target: node.target as string[],
-          })),
-        })),
-      }
+  checkAccessibility: async ({ authenticatedPage }, use): Promise<void> => {
+    const checkAccessibility = (disabledRules: string[] = []) => {
+      return checkAccessibilityHelper(authenticatedPage, disabledRules)
     }
 
     await use(checkAccessibility)
