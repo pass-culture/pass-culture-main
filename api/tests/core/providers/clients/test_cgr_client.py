@@ -4,11 +4,11 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.providers.clients.cgr_client as cgr_client
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.external_bookings.exceptions import ShowRemovedException
 from pcapi.core.external_bookings.exceptions import ShowSoldOutException
+from pcapi.core.providers.clients import cgr_client
 from pcapi.core.providers.clients.cgr_client import CGRAPIException
 from pcapi.utils.crypto import encrypt
 

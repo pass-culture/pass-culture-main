@@ -289,12 +289,11 @@ def remove_db_session(exc: BaseException | None = None) -> None:
     try:
         db.session.remove()
     except Exception as exception:
-        logger.error(
+        logger.exception(
             "An error happened while removing the transaction",
             extra={
                 "exc": str(exception),
             },
-            exc_info=True,
         )
 
 
@@ -307,12 +306,11 @@ def teardown_atomic(exc: BaseException | None = None) -> None:
             transaction_manager._finalize_managed_session()
             db.session.autoflush = True
         except Exception as exception:
-            logger.error(
+            logger.exception(
                 "An error happened while managing the transaction",
                 extra={
                     "exc": str(exception),
                 },
-                exc_info=True,
             )
 
 

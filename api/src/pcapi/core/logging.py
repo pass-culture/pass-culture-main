@@ -224,9 +224,9 @@ class PlainTextFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         if record.exc_info:
             # restore printing stacktrace in dev
-            print("")
+            print()
             traceback.print_exception(*record.exc_info)
-            print("")
+            print()
 
         extra = getattr(record, "extra", {})
         formated_extra = ""

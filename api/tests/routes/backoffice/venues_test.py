@@ -130,7 +130,7 @@ class ListVenuesTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == venues[0].managingOfferer.name
         assert rows[0]["Permanent"] == "Partenaire culturel permanent"
         assert rows[0]["Label"] == venues[0].venueLabel.label
-        assert sorted(rows[0]["Tags"].split()) == sorted("Criterion_cinema Criterion_art".split())
+        assert sorted(rows[0]["Tags"].split()) == ["Criterion_art", "Criterion_cinema"]
         assert rows[0]["Date de création"] == venues[0].dateCreated.strftime("%d/%m/%Y")
 
     def test_list_venues_by_label(self, authenticated_client, venues):

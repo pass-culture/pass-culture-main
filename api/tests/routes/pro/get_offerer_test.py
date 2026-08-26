@@ -2,7 +2,6 @@ import datetime
 
 import pytest
 
-import pcapi.core.categories.subcategories as subcategories
 import pcapi.core.educational.factories as collective_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
@@ -12,6 +11,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE

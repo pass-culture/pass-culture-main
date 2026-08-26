@@ -78,7 +78,7 @@ class BookingFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.Booking:
-        if not kwargs.get("status") == models.BookingStatus.CANCELLED:
+        if kwargs.get("status") != models.BookingStatus.CANCELLED:
             stock: offers_models.Stock = kwargs["stock"]
             stock.dnBookedQuantity = stock.dnBookedQuantity + kwargs.get("quantity", 1)
             kwargs["stock"] = stock

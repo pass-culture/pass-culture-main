@@ -10,7 +10,6 @@ import requests_mock
 import sentry_sdk
 from dateutil.relativedelta import relativedelta
 
-import pcapi.connectors.api_particulier as api_particulier
 import pcapi.core.external.batch.testing as push_testing
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
@@ -22,12 +21,13 @@ import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 import pcapi.utils.date as date_utils
+from pcapi.connectors import api_particulier
 from pcapi.core.external.batch import models as batch_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.utils.sentry import before_send
 
-import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures
+from tests.core.subscription.bonus import bonus_fixtures
 
 
 @pytest.mark.usefixtures("db_session")

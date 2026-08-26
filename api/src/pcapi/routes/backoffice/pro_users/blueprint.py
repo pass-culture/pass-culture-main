@@ -216,7 +216,7 @@ def delete(user_id: int) -> response_utils.BackofficeResponse:
         flash("Le formulaire n'est pas valide", "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
-    if not form.email.data == user.email:
+    if form.email.data != user.email:
         mark_transaction_as_invalid()
         flash("L'email saisi ne correspond pas à celui du compte", "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)

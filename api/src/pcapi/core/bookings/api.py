@@ -1064,7 +1064,7 @@ def mark_as_cancelled(
     )
 
     if one_side_cancellation:
-        logging.info("External booking cancelled unilaterally", extra={"booking_id": booking.id})
+        logger.info("External booking cancelled unilaterally", extra={"booking_id": booking.id})
         assert booking.stock.beginningDatetime
         if booking.stock.beginningDatetime < date_utils.get_naive_utc_now():
             transactional_mails.send_booking_cancelled_unilaterally_provider_support_email(booking)

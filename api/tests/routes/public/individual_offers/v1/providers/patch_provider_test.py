@@ -113,10 +113,6 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
                 {"bookingUrl": ["Input should be a valid URL, relative URL without a base"]},
             ),
             (
-                {"bookingUrl": "test"},
-                {"bookingUrl": ["Input should be a valid URL, relative URL without a base"]},
-            ),
-            (
                 {"cancelUrl": "test"},
                 {"cancelUrl": ["Input should be a valid URL, relative URL without a base"]},
             ),

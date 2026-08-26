@@ -1,4 +1,4 @@
-import pcapi.celery_tasks.metrics as metrics
+from pcapi.celery_tasks import metrics
 from pcapi.celery_tasks.tasks import celery_async_task
 
 

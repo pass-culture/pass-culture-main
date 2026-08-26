@@ -1363,7 +1363,7 @@ def move_collective_offer(collective_offer_id: int, destination_venue_id: int) -
         "new_offerer_id": destination_venue.managingOffererId,
         "new_venue_id": destination_venue_id,
     }
-    logging.info("Move collective offer", extra=extra)
+    logger.info("Move collective offer", extra=extra)
 
     collective_offer.venue = destination_venue
     if collective_offer.offererAddress:
@@ -1390,7 +1390,7 @@ def move_collective_offer(collective_offer_id: int, destination_venue_id: int) -
         if finance_repository.has_reimbursement(collective_booking):
             raise exceptions.BookingIsAlreadyRefunded()
 
-        logging.info(
+        logger.info(
             "Move collective booking",
             extra={"collective_booking_id": collective_booking.id, "status": collective_booking.status.value, **extra},
         )

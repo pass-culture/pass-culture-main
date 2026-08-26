@@ -244,11 +244,11 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
         for offer in offers_not_to_restore:
             offer = get_or_404(offers_models.Offer, offer.id)
-            assert not offer.validation == offers_models.OfferValidationStatus.APPROVED
+            assert offer.validation != offers_models.OfferValidationStatus.APPROVED
             assert offer.lastValidationDate.strftime("%d/%m/%Y") == (
                 datetime.date.today() - datetime.timedelta(days=2)
             ).strftime("%d/%m/%Y")
-            assert not offer.lastValidationType == OfferValidationType.MANUAL
+            assert offer.lastValidationType != OfferValidationType.MANUAL
 
         mocked_async_index_offer_ids.assert_called_once_with(
             [o.id for o in offers_to_restore],

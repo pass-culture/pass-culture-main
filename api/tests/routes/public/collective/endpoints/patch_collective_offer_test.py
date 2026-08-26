@@ -755,7 +755,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert collective_offer.locationType == models.CollectiveLocationType.ADDRESS
         assert collective_offer.locationComment is None
-        assert not collective_offer.offererAddress == venue.offererAddress
+        assert collective_offer.offererAddress != venue.offererAddress
         assert collective_offer.offererAddress == offerer_address
 
     @pytest.mark.parametrize(

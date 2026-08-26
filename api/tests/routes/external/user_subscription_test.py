@@ -41,6 +41,9 @@ from tests.core.subscription import test_factories
 from tests.test_utils import json_default
 
 
+logger = logging.getLogger(__name__)
+
+
 @pytest.mark.usefixtures("db_session")
 class DmsWebhookApplicationTest:
     token = settings.DMS_WEBHOOK_TOKEN_LIST[0]
@@ -1649,14 +1652,14 @@ class UbbleWebhookTest:
             )
 
     def _log_for_debug(self, user, ubble_fraud_check):
-        logging.warning("%s", user)
-        logging.warning("  - roles: %s", user.roles)
-        logging.warning("  - deposit: %s", user.deposit)
-        logging.warning("%s", ubble_fraud_check)
-        logging.warning("  - status: %s", ubble_fraud_check.status)
-        logging.warning("  - reason: %s", ubble_fraud_check.reason)
-        logging.warning("  - reasonCodes: %s", ubble_fraud_check.reasonCodes)
-        logging.warning("  - resultContent: %s", ubble_fraud_check.resultContent)
+        logger.warning("%s", user)
+        logger.warning("  - roles: %s", user.roles)
+        logger.warning("  - deposit: %s", user.deposit)
+        logger.warning("%s", ubble_fraud_check)
+        logger.warning("  - status: %s", ubble_fraud_check.status)
+        logger.warning("  - reason: %s", ubble_fraud_check.reason)
+        logger.warning("  - reasonCodes: %s", ubble_fraud_check.reasonCodes)
+        logger.warning("  - resultContent: %s", ubble_fraud_check.resultContent)
 
     def _assert_email_sent(self, user, id_prod):
         assert len(mails_testing.outbox) == 1
@@ -2508,7 +2511,6 @@ class UbbleWebhookTest:
         [
             ubble_serializers.UbbleScore.VALID.value,
             ubble_serializers.UbbleScore.UNDECIDABLE.value,
-            ubble_serializers.UbbleScore.UNDECIDABLE.value,
         ],
     )
     @pytest.mark.parametrize(
@@ -2516,14 +2518,12 @@ class UbbleWebhookTest:
         [
             ubble_serializers.UbbleScore.VALID.value,
             ubble_serializers.UbbleScore.UNDECIDABLE.value,
-            ubble_serializers.UbbleScore.UNDECIDABLE.value,
         ],
     )
     @pytest.mark.parametrize(
         "ref_data_check_score",
         [
             ubble_serializers.UbbleScore.VALID.value,
-            ubble_serializers.UbbleScore.UNDECIDABLE.value,
             ubble_serializers.UbbleScore.UNDECIDABLE.value,
         ],
     )

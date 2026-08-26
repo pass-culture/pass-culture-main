@@ -1,7 +1,7 @@
 import functools
 import logging
 
-import pcapi.core.offers.models as models
+import pcapi.core.offers.models as offers_models
 import pcapi.utils.date as date_utils
 from pcapi.core.pro_advice.exceptions import ProAdviceException
 from pcapi.models import db
@@ -12,18 +12,18 @@ logger = logging.getLogger(__name__)
 
 
 def create_pro_advice(
-    offer: models.Offer,
+    offer: offers_models.Offer,
     content: str,
     author: str | None,
     user_id: int,
-) -> models.ProAdvice:
-    if offer.validation != models.OfferValidationStatus.APPROVED:
+) -> offers_models.ProAdvice:
+    if offer.validation != offers_models.OfferValidationStatus.APPROVED:
         raise ProAdviceException({"global": ["Impossible de créer une recommandation sur cette offre"]})
 
     if offer.proAdvice is not None:
         raise ProAdviceException({"global": ["Une recommandation existe déjà pour cette offre"]})
 
-    pro_advice = models.ProAdvice(
+    pro_advice = offers_models.ProAdvice(
         offerId=offer.id,
         venueId=offer.venueId,
         content=content,
@@ -47,12 +47,12 @@ def create_pro_advice(
 
 
 def update_pro_advice(
-    offer: models.Offer,
+    offer: offers_models.Offer,
     content: str,
     author: str | None,
     user_id: int,
-) -> models.ProAdvice:
-    if offer.validation != models.OfferValidationStatus.APPROVED:
+) -> offers_models.ProAdvice:
+    if offer.validation != offers_models.OfferValidationStatus.APPROVED:
         raise ProAdviceException({"global": ["Impossible de modifier une recommandation sur cette offre"]})
 
     if offer.proAdvice is None:
@@ -78,10 +78,10 @@ def update_pro_advice(
 
 
 def delete_pro_advice(
-    offer: models.Offer,
+    offer: offers_models.Offer,
     user_id: int,
 ) -> None:
-    if offer.validation != models.OfferValidationStatus.APPROVED:
+    if offer.validation != offers_models.OfferValidationStatus.APPROVED:
         raise ProAdviceException({"global": ["Impossible de supprimer une recommandation sur cette offre"]})
 
     if offer.proAdvice is None:

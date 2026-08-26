@@ -8,8 +8,8 @@ from celery import Task
 from celery import shared_task
 from pydantic import BaseModel as BaseModelV2
 
-import pcapi.celery_tasks.metrics as metrics
 from pcapi import settings
+from pcapi.celery_tasks import metrics
 from pcapi.utils import requests
 
 

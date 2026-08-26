@@ -203,15 +203,11 @@ ignore = [
   "EXE001",  # shebang-not-executable : Shebang is present but file is not executable
   "EXE002",  # shebang-missing-executable-file : The file is executable but no shebang is present
   "FLY002",  # static-join-to-f-string : Consider f-string instead of string join
-  "FURB105",  # print-empty-string : Unnecessary empty string passed to `print`
   "FURB136",  # if-expr-min-max : Replace if-expression with `min()` or `max()`
   "FURB157",  # verbose-decimal-constructor : Use `Decimal()` rather than `Decimal("0")`
   "FURB163",  # redundant-log-base : `math.log()` base is redundant
   "FURB192",  # sorted-min-max : Prefer `min()` / `max()` over `sorted()`
-  "G010",  # logging-warn : Logging statement uses `warn` instead of `warning`
-  "G201",  # logging-exc-info : Logging `.exception(...)` should be used instead of `.error(..., exc_info=True)`
   "ISC004",  # implicit-string-concatenation-in-collection-literal : Implicitly concatenated string literals on one line
-  "LOG015",  # root-logger-call : Use of root logger
   "PERF402",  # manual-list-copy : Use `list` or `list.copy` to create a copy of a list
   "PGH005",  # invalid-mock-access : Mock objects have no attribute
   "PIE790",  # unnecessary-placeholder : Unnecessary `pass` statement
@@ -221,9 +217,7 @@ ignore = [
   "PIE808",  # unnecessary-range-start : Unnecessary `start` argument in `range`
   "PIE810",  # multiple-starts-ends-with : Call `.startswith()` or `.endswith()` once with a tuple
   "PLC0206",  # dict-index-missing-items : Extracting value from dictionary without calling `.items()`
-  "PLR0402",  # manual-from-import : Use `from module import name` in lieu of alias
   "PLW1508",  # invalid-envvar-default : Invalid type for environment variable default
-  "PT014",  # pytest-duplicate-parametrize-test-cases : Duplicate test cases in `@pytest.mark.parametrize`
   "PYI009",  # pass-statement-stub-body : Empty body should contain `...`, not `pass`
   "PYI020",  # quoted-annotation-in-stub : Quoted annotations should not be included in stubs
   "PYI030",  # unnecessary-literal-union : Multiple literal members in a union
@@ -255,9 +249,7 @@ ignore = [
   "SIM115",  # open-file-with-context-handler : Use context handler for opening files
   "SIM117",  # multiple-with-statements : Use a single `with` statement with multiple contexts
   "SIM118",  # in-dict-keys : Use `key in dict` instead of `key in dict.keys()`
-  "SIM201",  # negate-cmp-op-with-not : Use `!=` instead of `not ==`
   "SIM401",  # if-else-block-instead-of-dict-get : Use `dict.get(key, default)` instead of an `if` block
-  "SIM905",  # split-static-string : Unnecessary string split
   "T100",  # debugger : Trace found: `breakpoint` used
   "TRY002",  # raise-vanilla-class : Create your own exception
   "TRY004",  # type-check-without-type-error : Prefer `TypeError` exception for invalid type
@@ -281,7 +273,6 @@ ignore = [
   "UP045",  # non-pep604-annotation-optional : Use `X | None` instead of `Optional[X]`
   "UP047",  # non-pep695-generic-function : Generic function uses `TypeVar` instead of the `type` keyword
   "UP049",  # private-type-parameter : Private type parameter
-  "W605",  # invalid-escape-sequence : Invalid escape sequence
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]

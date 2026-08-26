@@ -237,7 +237,7 @@ def _create_new_deposit_and_transfer_funds(
         for booking in user.deposit.bookings
         if booking.status in [bookings_models.BookingStatus.CONFIRMED, bookings_models.BookingStatus.USED]
         # Ignore non-reimbursed bookings. Thay are not cancelled by the user nor the cultural partners.
-        and not booking.stock.offer.subcategory.reimbursement_rule == ReimbursementRuleChoices.NOT_REIMBURSED
+        and booking.stock.offer.subcategory.reimbursement_rule != ReimbursementRuleChoices.NOT_REIMBURSED
     ]
 
     # create new deposit
