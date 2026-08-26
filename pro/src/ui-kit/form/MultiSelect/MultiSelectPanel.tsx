@@ -64,9 +64,9 @@ export const MultiSelectPanel = ({
         className={styles['panel-scrollable']}
         data-testid="panel-scrollable"
       >
-        <p className={styles['visually-hidden']} role="status">
-          <span>{filteredOptions.length} résultats trouvés</span>
-        </p>
+        <output className={styles['visually-hidden']} aria-live="polite">
+          {filteredOptions.length} résultats trouvés
+        </output>
         {filteredOptions.length > 0 ? (
           <ul className={styles['container']}>
             {hasSelectAllOptions && (

@@ -78,7 +78,7 @@ type MultiSelectProps = {
     }
   /* If `hasSearch` is `false` or undefined, `searchLabel` should not be provided. */
   | {
-      hasSearch?: false | undefined
+      hasSearch?: false
       searchLabel?: never
     }
 )

@@ -69,18 +69,21 @@ export const BaseTimePicker = forwardRef(
       props.value = `0${props.value}`
     }
 
+    let inputValue = props.value
+    if (!ref && !isValidTime(props.value)) {
+      inputValue = ''
+    }
+
     return (
       <>
         <input
           type="time"
-          {...(hasTimeOptions ? { list: optionsListId } : {})}
+          list={hasTimeOptions ? optionsListId : undefined}
           autoComplete="off"
           {...props}
           //  If the component has no ref, it is controlled, and the value must not be undefined
           //  Otherwise React thinks it becomes controlled, and switching inbetween control modes is forbidden
-          value={
-            ref ? props.value : isValidTime(props.value) ? props.value : ''
-          }
+          value={inputValue}
           className={cn(className, styles['timepicker'], {
             [styles['has-error']]: hasError,
           })}
