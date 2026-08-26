@@ -61,6 +61,20 @@ describe('AdageOfferInfoSection', () => {
     expect(screen.getByText('Price details for bookable offer')).toBeVisible()
   })
 
+  it('should display the offer price details for a template offer', () => {
+    renderAdageOfferInfoSection({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        educationalPriceDetail: 'The detail of the price',
+      },
+    })
+
+    expect(
+      screen.getByRole('heading', { name: 'Information sur le prix' })
+    ).toBeVisible()
+    expect(screen.getByText('The detail of the price')).toBeVisible()
+  })
+
   it('should not display the price details section if the offer has no price details', () => {
     renderAdageOfferInfoSection({
       offer: {
@@ -287,7 +301,7 @@ describe('AdageOfferInfoSection', () => {
       expect(screen.getByText("Détail pratique de l'offre")).toBeVisible()
     })
 
-    it('should not display informations pratiques section when additionalDetails is absent', () => {
+    it('should not display informations pratiques section when additionalDetails is missing', () => {
       renderAdageOfferInfoSection(
         {
           offer: {
