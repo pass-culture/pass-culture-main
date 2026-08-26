@@ -7,6 +7,7 @@ from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 from .serialization import subscription as serializers
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.native_route("/subscription/stepper", version="v2", methods=["GET"])
+@atomic()
 @authenticated_and_active_user_required
 @spectree_serialize(
     response_model=serializers.SubscriptionStepperResponseV2,

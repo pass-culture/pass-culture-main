@@ -9,12 +9,14 @@ from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v3.serialization import subscription as serializers
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
 
 
 @blueprint.native_route("/subscription/stepper", version="v3", methods=["GET"])
+@atomic()
 @authenticated_and_active_user_required
 @spectree_serialize(
     response_model=serializers.SubscriptionStepperResponseV3,

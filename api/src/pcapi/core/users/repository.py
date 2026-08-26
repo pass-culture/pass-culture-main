@@ -183,7 +183,11 @@ def get_single_sign_on(sso_provider: str, sso_user_id: str) -> models.SingleSign
 
 
 def create_single_sign_on(user: models.User, sso_provider: str, sso_user_id: str) -> models.SingleSignOn:
-    return models.SingleSignOn(user=user, ssoProvider=sso_provider, ssoUserId=sso_user_id)
+    sso = models.SingleSignOn(user=user, ssoProvider=sso_provider, ssoUserId=sso_user_id)
+    db.session.add(sso)
+    db.session.flush()
+
+    return sso
 
 
 def fill_phone_number_on_all_users_offerer_without_any(offerer_id: int, phone_number: str) -> None:

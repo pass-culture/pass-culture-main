@@ -23,7 +23,6 @@ from pcapi.routes.native.security import _raise_forbidden
 from pcapi.routes.native.security import authenticated_with_refresh_token
 from pcapi.routes.native.v2.serialization import authentication
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
@@ -33,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.native_route("/signin", version="v2", methods=["POST"])
+@atomic()
 @spectree_serialize(
     response_model=authentication.SigninResponseV2,
     on_success_status=200,
@@ -103,6 +103,7 @@ def refresh(body: authentication.RefreshRequestV2) -> authentication.RefreshResp
 
 
 @blueprint.native_route("/oauth/state", version="v2", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=authentication.OauthStateResponseV2, on_success_status=200, api=blueprint.api)
 def sso_oauth_state() -> authentication.OauthStateResponseV2:
     encoded_oauth_state_token = users_api.create_oauth_state_token()
@@ -116,6 +117,7 @@ _SSO_ACCESS_DENIED_ERROR = {
 
 
 @blueprint.native_route("/oauth/<string:sso_provider>/authorize", version="v2", methods=["POST"])
+@atomic()
 @spectree_serialize(
     response_model=authentication.SigninResponseV2,
     on_success_status=200,
@@ -195,22 +197,20 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) 
         raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
 
     sso_user_id = sso_user.sub
-    with transaction():
-        if not user.isEmailValidated:
-            # An account registered with a password and with its email not validated is a symptom
-            # of an account pre-hijacking attack waiting for an email validation. To prevent this
-            # we disable the email + password login when a SSO is enabled.
-            user.password = None
-            user.isEmailValidated = True
+    if not user.isEmailValidated:
+        # An account registered with a password and with its email not validated is a symptom
+        # of an account pre-hijacking attack waiting for an email validation. To prevent this
+        # we disable the email + password login when a SSO is enabled.
+        user.password = None
+        user.isEmailValidated = True
 
-        current_provider_sso = None
-        user_ssos_for_provider = [sso for sso in user.single_sign_ons if sso.ssoProvider == sso_provider]
-        if user_ssos_for_provider:
-            current_provider_sso = user_ssos_for_provider[0]
-            current_provider_sso.ssoUserId = sso_user.sub
-        else:
-            current_provider_sso = users_repo.create_single_sign_on(user, sso_provider, sso_user_id)
-            db.session.add(current_provider_sso)
+    current_provider_sso = None
+    user_ssos_for_provider = [sso for sso in user.single_sign_ons if sso.ssoProvider == sso_provider]
+    if user_ssos_for_provider:
+        current_provider_sso = user_ssos_for_provider[0]
+        current_provider_sso.ssoUserId = sso_user.sub
+    else:
+        current_provider_sso = users_repo.create_single_sign_on(user, sso_provider, sso_user_id)
 
     users_api.save_device_info_and_notify_user(user, body.device_info)
 

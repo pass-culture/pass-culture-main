@@ -792,8 +792,6 @@ class HandleDmsAnnotationsTest:
             birth_date_error=None,
             fraud_check=fraud_check,
         )
-        db.session.add(fraud_check)
-        db.session.commit()
 
         mock_update_annotations.assert_called_once_with(
             "St1l3s", "AnnotationId", "Aucune erreur détectée. Le dossier peut être passé en instruction."
