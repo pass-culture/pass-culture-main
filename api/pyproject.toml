@@ -148,82 +148,40 @@ line-length = 120
 
 [tool.ruff.lint]
 extend-select = [
-  "I",       # isort
-  "D419",    # empty-docstring
-  "W291",    # trailing-whitespace
-  "PLC0414", # useless-import-alias
+  "C416",    # unnecessary-comprehension
   "PLC2401", # non-ascii-name
-  "PLC3002", # unnecessary-direct-lambda-call
-  "PLE0101", # return-in-init
-  "F706",    # return-outside-function
-  "F704",    # yield-outside-function
-  "PLE0115", # nonlocal-and-global
-  "PLE0116", # continue-in-finally
-  "PLE0117", # nonlocal-without-binding
   "PLE0241", # duplicate-bases
   "PLE0302", # unexpected-special-method-signature
-  "PLE0604", # invalid-all-object
-  "PLE0605", # invalid-all-format
-  "PLE0643", # potential-index-error
-  "PLE0704", # misplaced-bare-raise
-  "PLE1205", # logging-too-many-args
-  "PLE1206", # logging-too-few-args
-  "PLE1307", # bad-string-format-type
-  "PLE1310", # bad-str-strip-call
-  "PLE1507", # invalid-envvar-value
-  "PLE1519", # singledispatch-method
-  "PLE1520", # singledispatchmethod-function
-  "PLE2502", # bidirectional-unicode
-  "PLE2510", # invalid-character-backspace
-  "PLE2512", # invalid-character-sub
-  "PLE2513", # invalid-character-esc
-  "PLE2514", # invalid-character-nul
-  "PLE2515", # invalid-character-zero-width-space
-  "UP004",   # useless-object-inheritance
-  "PLR0206", # property-with-parameters
-  "PLR1704", # redefined-argument-from-local
-  "PLR1711", # useless-return
-  "C416",    # unnecessary-comprehension
   "PLR1736", # unnecessary-list-index-lookup
-  "PLW0120", # useless-else-on-loop
-  "PLW0127", # self-assigning-variable
-  "PLW0128", # redeclared-assigned-name
-  "PLW0129", # assert-on-string-literal
-  "B033",    # duplicate-value
-  "PLW0131", # named-expr-without-context
-  "PLW0211", # bad-staticmethod-argument
-  "PLW0245", # super-without-brackets
-  "PLW0406", # import-self
-  "PLW0602", # global-variable-not-assigned
   "PLW0603", # global-statement
-  "PLW0604", # global-at-module-level
-  "F401",    # unused-import
-  "F841",    # unused-variable
-  "E722",    # bare-except
-  "PLW0711", # binary-op-exception
-  "PLW1501", # bad-open-mode
-  # "PLW1508",  # invalid-envvar-default not compatible by what is done in settings.py
-  "PLW1509", # subprocess-popen-preexec-fn
-  "PLW2101", # useless-with-lock
   "PLW3301", # nested-min-max
-  # "E501",  # line-too-long
-  # "PLR0904",  # too-many-public-methods -> preview mode only
-  # "PLR0911",  # too-many-return-statements
-  # "PLR0912",  # too-many-branches
-  # "PLR0913",  # too-many-arguments
-  # "PLR0914",  # too-many-locals -> preview mode only
-  # "PLR0915",  # too-many-statements
-  # "PLR0917",  # too-many-positional-arguments -> preview mode only
-  "S704",   # unsafe-markup-use
-  "TID251", # banned-api (requests)
-  "DTZ003", # call-datetime-utcnow
+  "S704",    # unsafe-markup-use
+  "TID251",  # banned-api (requests)
+  "W291",    # trailing-whitespace
 ]
 
 ignore = [
-  "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert)
-  "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy
+  "BLE001",  # blind-except : Do not catch blind exception: `Exception`
+  "DTZ001",  # call-datetime-without-tzinfo : The use of `datetime.datetime()` without `tzinfo` argument is not allowed
+  "DTZ002",  # call-datetime-today : The use of `datetime.datetime.today()` is not allowed
+  "DTZ005",  # call-datetime-now-without-tzinfo : The use of `datetime.datetime.now()` without `tzinfo` argument is not allowed
+  "DTZ006",  # call-datetime-fromtimestamp : The use of `datetime.datetime.fromtimestamp()` without `tzinfo` argument is not allowed
+  "DTZ007",  # call-datetime-strptime-without-zone : The use of `datetime.datetime.strptime()` without %z must be followed by `.replace(tzinfo=)`
+  "DTZ011",  # call-date-today : The use of `datetime.date.today()` is not allowed
+  "DTZ901",  # datetime-min-max : `datetime.datetime.min` and `datetime.datetime.max` lack timezone information
+
+  # We want to ignore the following rules; if you want to activate them, don't forget to add them to extend-select
+  "E501",  # line-too-long
+  "PLR0904",  # too-many-public-methods -> preview mode only
+  "PLR0911",  # too-many-return-statements
+  "PLR0912",  # too-many-branches
+  "PLR0913",  # too-many-arguments
+  "PLR0914",  # too-many-locals -> preview mode only
+  "PLR0915",  # too-many-statements
+  "PLR0917",  # too-many-positional-arguments -> preview mode only
 
   # a lot of rules have been added in 0.16.0, we ignore the following for now and will decide later for each rule if we fix it or leave it ignored
+  # TODO : delete following rules from this list, and fix each case (check if you need to add them to extend-select by comparing to https://docs.astral.sh/ruff/default-rules/)
   "B006",  # mutable-argument-default : Do not use mutable data structures for argument defaults
   "B008",  # function-call-in-default-argument : Do not perform function calls in argument defaults
   "B009",  # get-attr-with-constant : Do not call `getattr` with a constant attribute value
@@ -233,7 +191,6 @@ ignore = [
   "B017",  # assert-raises-exception : `pytest.raises(Exception)` should be considered evil
   "B018",  # useless-expression : Found useless expression. Either assign it to a variable or remove it
   "B019",  # cached-instance-method : Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
-  "BLE001",  # blind-except : Do not catch blind exception: `Exception`
   "C400",  # unnecessary-generator-list : Unnecessary generator (rewrite as a `list` comprehension)
   "C401",  # unnecessary-generator-set : Unnecessary generator (rewrite as a `set` comprehension)
   "C403",  # unnecessary-list-comprehension-set : Unnecessary list comprehension (rewrite as a `set` comprehension)
@@ -243,13 +200,8 @@ ignore = [
   "C414",  # nested-iterable : Unnecessary nested iterable
   "C417",  # unnecessary-map : Unnecessary `map` usage (rewrite using a generator expression or comprehension)
   "C419",  # unnecessary-comprehension-any-all : Unnecessary list comprehension passed to `any()` or `all()`
-  "DTZ001",  # call-datetime-without-tzinfo : The use of `datetime.datetime()` without `tzinfo` argument is not allowed
-  "DTZ002",  # call-datetime-today : The use of `datetime.datetime.today()` is not allowed
-  "DTZ005",  # call-datetime-now-without-tzinfo : The use of `datetime.datetime.now()` without `tzinfo` argument is not allowed
-  "DTZ006",  # call-datetime-fromtimestamp : The use of `datetime.datetime.fromtimestamp()` without `tzinfo` argument is not allowed
-  "DTZ007",  # call-datetime-strptime-without-zone : The use of `datetime.datetime.strptime()` without %z must be followed by `.replace(tzinfo=)`
-  "DTZ011",  # call-date-today : The use of `datetime.date.today()` is not allowed
-  "DTZ901",  # datetime-min-max : `datetime.datetime.min` and `datetime.datetime.max` lack timezone information
+  "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy; TODO add me to extend-select
+  "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert); TODO add me to extend-select
   "EXE001",  # shebang-not-executable : Shebang is present but file is not executable
   "EXE002",  # shebang-missing-executable-file : The file is executable but no shebang is present
   "FLY002",  # static-join-to-f-string : Consider f-string instead of string join
