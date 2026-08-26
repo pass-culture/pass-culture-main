@@ -9,11 +9,11 @@ import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
-import pcapi.core.providers.clients.boost_serializers as boost_serializers
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi import settings
 from pcapi.core.providers.clients import boost_client
+from pcapi.core.providers.clients import boost_serializers
 from pcapi.core.providers.clients import cinema_client
 from pcapi.utils import date
 from pcapi.utils import date as date_utils

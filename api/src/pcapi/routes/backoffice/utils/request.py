@@ -61,7 +61,7 @@ def rule_for_url(url: str, method: str = "GET") -> Rule | None:
     if not parsed_url.netloc:
         # We require an absolute URL
         return None
-    if not parsed_url.netloc == urlparse(settings.BACKOFFICE_URL).netloc:
+    if parsed_url.netloc != urlparse(settings.BACKOFFICE_URL).netloc:
         # only accept URL from BO
         return None
 

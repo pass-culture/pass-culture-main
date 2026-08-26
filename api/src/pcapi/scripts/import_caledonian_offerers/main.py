@@ -86,7 +86,7 @@ def parse_csv_data(rows: list[dict]) -> list[dict]:
         ridet = row[CSV_COLUMN_MAPPING["ridet"]].strip().replace(" ", "").replace(".", "")
 
         if not ridet:
-            logger.warn(f"Ridet is missing for row line {i}")
+            logger.warning(f"Ridet is missing for row line {i}")
             continue
 
         extracted_data = {}
@@ -169,7 +169,7 @@ def create_or_get_address(address_data: dict) -> geography_models.Address:
 
 
 def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str) -> offerers_models.Offerer:
-    logging.info("Processing RIDET %s", data["ridet"])
+    logger.info("Processing RIDET %s", data["ridet"])
 
     """Crée un offerer et sa venue correspondante."""
     ridet = data["ridet"].strip().replace(" ", "").replace(".", "")

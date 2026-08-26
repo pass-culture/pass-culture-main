@@ -512,7 +512,7 @@ class GetEventDetailsTest(GetEndpointHelper):
     @staticmethod
     def _extract_user_id_from_cell(cell_tag):
         raw_text = html_parser.filter_whitespaces(cell_tag.text)
-        match = re.search("\ \((?P<user_id>\d+)\)", raw_text)
+        match = re.search(r"\ \((?P<user_id>\d+)\)", raw_text)
         return match.groupdict().get("user_id") if match else None
 
     def test_display_user_tags(self, authenticated_client):

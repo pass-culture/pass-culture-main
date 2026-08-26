@@ -58,7 +58,7 @@ class ImportCounter(BaseModel):
 def create_pro(
     user_row: UserRow, offerer: offerers_models.Offerer, row_number: int, counters: ImportCounter, comment: str
 ) -> None:
-    logging.info("Processing row %s - %s", row_number, email_utils.anonymize_email(user_row["email"]))
+    logger.info("Processing row %s - %s", row_number, email_utils.anonymize_email(user_row["email"]))
 
     pro_user = db.session.query(users_models.User).filter_by(email=user_row["email"]).one_or_none()
 

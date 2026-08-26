@@ -353,14 +353,14 @@ class OffererPatchBankAccountsTest:
 
         assert len(bank_account.venueLinks) == 2
         assert (
-            not db.session.query(offerers_models.VenueBankAccountLink)
+            db.session.query(offerers_models.VenueBankAccountLink)
             .join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
                 offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             )
             .count()
-            == 2
+            != 2
         )
 
         http_client = client.with_session_auth(pro_user.email)

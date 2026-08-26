@@ -5,7 +5,7 @@ import time_machine
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.offers.models as models
+import pcapi.core.offers.models as offers_models
 import pcapi.core.pro_advice.exceptions as pro_advice_exceptions
 import pcapi.core.users.factories as users_factories
 import pcapi.utils.date as date_utils
@@ -18,7 +18,7 @@ class Returns200Test:
     @time_machine.travel("2026-03-03 12:00:00", tick=False)
     def test_update_pro_advice(self, mock_update_pro_advice, client):
         updated_at = date_utils.get_naive_utc_now()
-        mock_update_pro_advice.return_value = models.ProAdvice(
+        mock_update_pro_advice.return_value = offers_models.ProAdvice(
             content="Une super reco.",
             author="Le libraire du coin",
             updatedAt=updated_at,
@@ -56,7 +56,7 @@ class Returns200Test:
     @time_machine.travel("2026-03-03 12:00:00", tick=False)
     def test_update_pro_advice_without_author(self, mock_update_pro_advice, client):
         updated_at = date_utils.get_naive_utc_now()
-        mock_update_pro_advice.return_value = models.ProAdvice(
+        mock_update_pro_advice.return_value = offers_models.ProAdvice(
             content="Une super reco.",
             author=None,
             updatedAt=updated_at,

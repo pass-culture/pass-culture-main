@@ -2,7 +2,7 @@ import pytest
 import time_machine
 
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.offers.models as models
+import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
 import pcapi.utils.date as date_utils
 from pcapi.core.pro_advice import api
@@ -23,7 +23,7 @@ class CreateProAdviceTest:
         with caplog.at_level("INFO"):
             api.create_pro_advice(offer, "Une super reco.", "Le libraire du coin", user.id)
 
-        pro_advice = db.session.query(models.ProAdvice).one()
+        pro_advice = db.session.query(offers_models.ProAdvice).one()
         assert pro_advice.offerId == offer.id
         assert pro_advice.venueId == offer.venueId
         assert pro_advice.content == "Une super reco."
@@ -76,7 +76,7 @@ class UpdateProAdviceTest:
         with caplog.at_level("INFO"):
             api.update_pro_advice(offer, "Nouveau conseil.", "Nouvel auteur", user.id)
 
-        pro_advice = db.session.query(models.ProAdvice).one()
+        pro_advice = db.session.query(offers_models.ProAdvice).one()
         assert pro_advice.offerId == offer.id
         assert pro_advice.venueId == offer.venueId
         assert pro_advice.content == "Nouveau conseil."
@@ -124,7 +124,7 @@ class DeleteProAdviceTest:
         with caplog.at_level("INFO"):
             api.delete_pro_advice(offer, user.id)
 
-        assert db.session.query(models.ProAdvice).count() == 0
+        assert db.session.query(offers_models.ProAdvice).count() == 0
 
         assert len(caplog.records) == 1
         assert caplog.records[0].technical_message_id == "pro_advice.deleted"
