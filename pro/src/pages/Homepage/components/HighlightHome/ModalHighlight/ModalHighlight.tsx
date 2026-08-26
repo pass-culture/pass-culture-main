@@ -84,8 +84,7 @@ export const ModalHighlight = ({
             <h2 className={styles['highlight-title']}>
               Les prochains temps forts :{' '}
             </h2>
-            {/* biome-ignore lint/a11y/noRedundantRoles: correct voiceover bug with list displayed with flex */}
-            <ul className={styles['cards-container']} role="list">
+            <ul className={styles['cards-container']}>
               {data?.map(
                 ({
                   id,
@@ -95,8 +94,7 @@ export const ModalHighlight = ({
                   communicationDate,
                   highlightDatespan,
                 }) => (
-                  // biome-ignore lint/a11y/noRedundantRoles: correct voiceover bug with list displayed with flex
-                  <li key={id} role="listitem">
+                  <li key={id}>
                     <HighlightCard
                       imageSrc={mediationUrl}
                       title={name}
