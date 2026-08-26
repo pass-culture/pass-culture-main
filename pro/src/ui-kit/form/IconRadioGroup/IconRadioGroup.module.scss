@@ -19,12 +19,6 @@
     width: fit-content;
   }
 
-  &-item {
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-  }
-
   &-scale {
     @include fonts.body-accent-xs;
 

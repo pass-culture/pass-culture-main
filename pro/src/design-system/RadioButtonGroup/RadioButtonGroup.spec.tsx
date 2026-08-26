@@ -99,10 +99,10 @@ describe('<RadioButtonGroup />', () => {
     )
     const errorAlert = screen.getByRole('alert')
     expect(errorAlert).toHaveTextContent(errorMessage)
-    options.forEach((option) => {
-      const radio = screen.getByRole('radio', { name: option.label })
-      expect(radio).toHaveAttribute('aria-invalid', 'true')
+    const group = screen.getByRole('group', {
+      name: 'Radio Button Group with Error',
     })
+    expect(group).toHaveAttribute('aria-invalid', 'true')
   })
 
   it('calls onChange when an option is selected', () => {

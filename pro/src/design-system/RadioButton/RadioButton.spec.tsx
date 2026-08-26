@@ -150,11 +150,10 @@ describe('<RadioButton />', () => {
   })
 
   it('handles error state', () => {
-    const { getByLabelText } = render(
+    const { container } = render(
       <RadioButton label="Label" name="groupe" value="valeur" hasError />
     )
-    const radio = getByLabelText('Label')
-    expect(radio).toHaveAttribute('aria-invalid', 'true')
+    expect(container.firstChild).toHaveClass('has-error')
   })
 
   it('calls onChange on click', () => {
