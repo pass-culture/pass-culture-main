@@ -179,6 +179,11 @@ def assert_user_equals(row: dict[str, str], expected_user: users_models.User):
             assert "Ancien Pass 15-17" in row["Type de crédit"]
     if not expected_user.isActive:
         assert "Suspendu" in row["Type de crédit"]
+        if expected_user.suspension_reason:
+            assert (
+                f"{users_constants.SUSPENSION_REASON_CHOICES.get(users_constants.SuspensionReason(expected_user.suspension_reason))} le {expected_user.suspension_date.strftime('%d/%m/%Y')}"
+                in row["Raison de suspension"]
+            )
 
 
 def advanced_filter_args(search_field, operator, operand, value, index=0):

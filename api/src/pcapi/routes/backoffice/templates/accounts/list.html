@@ -9,18 +9,23 @@
 {% set activate_sortable_columns = None %}
 {% set rows_count = rows | length %}
 {% block table_header %}
-  <th scope="col">ID</th>
-  <th scope="col">Nom</th>
-  {% call sortable_column(comparator="float") %}
+  {% call sortable_column(comparator="float", default_sort="up") %}
+    ID
+  {% endcall %}
+  {% call sortable_column(default_sort="up") %}
+    Nom
+  {% endcall %}
+  {% call sortable_column(comparator="float", default_sort="up") %}
     Date de naissance
   {% endcall %}
   <th scope="col">Email</th>
   <th scope="col">Ville</th>
   <th scope="col">Type de crédit</th>
-  {% call sortable_column(comparator="float") %}
+  {% call sortable_column(comparator="float", default_sort="up") %}
     Date d'expiration du crédit
   {% endcall %}
   <th scope="col">Tags</th>
+  <th scope="col">Raison de suspension</th>
 {% endblock table_header %}
 {% block table_body %}
   {% include "accounts/list_rows.html" %}
