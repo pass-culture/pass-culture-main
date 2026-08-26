@@ -164,8 +164,8 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
     Create a product in authorized categories.
     """
     authorization.get_venue_provider_or_raise_404(body.location.venue_id)
-    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
-    assert venue
+    venue = utils.get_venue_with_offerer_address(body.location.venue_id)
+    offerer_address = utils.extract_offerer_address_from_location(body.location, venue=venue)
 
     create_offer_schema = offers_schemas.CreateOffer(
         name=body.name,
@@ -548,8 +548,9 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
     _check_offer_can_be_edited(offer)
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
-    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
-    venue_provider = authorization.get_venue_provider_or_raise_404(venue.id if venue else offer.venueId)
+    utils.check_offer_stays_in_its_venue(offer, body.location)
+    offerer_address = utils.extract_offerer_address_from_location(body.location, venue=offer.venue)
+    venue_provider = authorization.get_venue_provider_or_raise_404(offer.venueId)
 
     updates = body.dict(by_alias=True, exclude_unset=True)
     accessibility = updates.get("accessibility", {})
@@ -573,9 +574,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
         description=updates.get("description", offers_api.UNCHANGED),
         external_ticket_office_url=updates.get("externalTicketOfficeUrl", offers_api.UNCHANGED),
         extra_data=(
-            serialization.deserialize_extra_data(
-                body.category_related_fields, extra_data, venue_id=venue.id if venue else None
-            )
+            serialization.deserialize_extra_data(body.category_related_fields, extra_data, venue_id=offer.venueId)
             if "categoryRelatedFields" in updates
             else extra_data
         ),
@@ -585,11 +584,9 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
         publication_datetime=publication_datetime,
         withdrawal_details=updates.get("itemCollectionDetails", offers_api.UNCHANGED),
         mandatory_extra_data_fields=utils.mandatory_extra_data_fields(offer.subcategoryId),
-        venue=venue,
         offerer_address=offerer_address,
         venue_provider=venue_provider,
     )
-    db.session.flush()
 
     if body.image:
         utils.save_image(body.image, updated_offer)

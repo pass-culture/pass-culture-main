@@ -25,45 +25,19 @@ from pcapi.utils import image_conversion
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class ExtractVenueAndOffererAddressFromLocationTest:
-    GET_VENUE = "pcapi.routes.public.individual_offers.v1.utils.get_venue_with_offerer_address"
+class ExtractOffererAddressFromLocationTest:
     GET_ADDRESS = "pcapi.routes.public.utils.get_address_or_raise_404"
     GET_VENUE_LOCATION = "pcapi.core.offers.api.get_or_create_offerer_address_from_address_body"
     GET_OFFER_LOCATION = "pcapi.core.offerers.api.get_or_create_offer_location"
 
     # --- No location sent
 
-    @mock.patch(GET_VENUE)
-    def test_should_return_no_venue_and_no_offerer_address_when_no_location_is_sent(
-        self, get_venue_with_offerer_address
-    ):
-        assert utils.extract_venue_and_offerer_address_from_location(None) == (None, None)
-        get_venue_with_offerer_address.assert_not_called()
-
-    # --- Venue resolution
-
-    @mock.patch(GET_VENUE)
-    def test_should_look_the_venue_up_by_the_id_sent_in_the_location(self, get_venue_with_offerer_address):
-        venue = offerers_factories.VenueFactory()
-        get_venue_with_offerer_address.return_value = venue
-
-        returned_venue, _ = utils.extract_venue_and_offerer_address_from_location(
-            serialization.PhysicalLocation(venue_id=venue.id)
-        )
-
-        get_venue_with_offerer_address.assert_called_once_with(venue.id)
-        assert returned_venue == venue
-
-    @mock.patch(GET_VENUE)
-    def test_should_not_look_the_venue_up_when_it_is_given_by_the_caller(self, get_venue_with_offerer_address):
+    @mock.patch(GET_ADDRESS)
+    def test_should_return_no_offerer_address_when_no_location_is_sent(self, get_address_or_raise_404):
         venue = offerers_factories.VenueFactory()
 
-        returned_venue, _ = utils.extract_venue_and_offerer_address_from_location(
-            serialization.PhysicalLocation(venue_id=venue.id), venue=venue
-        )
-
-        get_venue_with_offerer_address.assert_not_called()
-        assert returned_venue == venue
+        assert utils.extract_offerer_address_from_location(None, venue=venue) is None
+        get_address_or_raise_404.assert_not_called()
 
     # --- Physical and digital locations
 
@@ -82,7 +56,7 @@ class ExtractVenueAndOffererAddressFromLocationTest:
     ):
         venue = offerers_factories.VenueFactory()
 
-        _, offerer_address = utils.extract_venue_and_offerer_address_from_location(build_location(venue), venue=venue)
+        offerer_address = utils.extract_offerer_address_from_location(build_location(venue), venue=venue)
 
         get_address_or_raise_404.assert_not_called()
         get_or_create_offerer_address_from_address_body.assert_called_once_with(
@@ -98,7 +72,7 @@ class ExtractVenueAndOffererAddressFromLocationTest:
         address = geography_factories.AddressFactory()
         get_address_or_raise_404.return_value = address
 
-        utils.extract_venue_and_offerer_address_from_location(
+        utils.extract_offerer_address_from_location(
             serialization.AddressLocation(venue_id=venue.id, address_id=address.id, address_label="Salle Jean Vilar"),
             venue=venue,
         )
@@ -114,7 +88,7 @@ class ExtractVenueAndOffererAddressFromLocationTest:
         address = geography_factories.AddressFactory()
         get_address_or_raise_404.return_value = address
 
-        _, offerer_address = utils.extract_venue_and_offerer_address_from_location(
+        offerer_address = utils.extract_offerer_address_from_location(
             serialization.AddressLocation(venue_id=venue.id, address_id=address.id, address_label="Salle Jean Vilar"),
             venue=venue,
         )
@@ -135,7 +109,7 @@ class ExtractVenueAndOffererAddressFromLocationTest:
         venue = offerers_factories.VenueFactory()
         get_address_or_raise_404.return_value = venue.offererAddress.address
 
-        utils.extract_venue_and_offerer_address_from_location(
+        utils.extract_offerer_address_from_location(
             serialization.AddressLocation(
                 venue_id=venue.id,
                 address_id=venue.offererAddress.addressId,
@@ -159,7 +133,7 @@ class ExtractVenueAndOffererAddressFromLocationTest:
         venue = offerers_factories.VenueFactory()
         get_address_or_raise_404.return_value = venue.offererAddress.address
 
-        _, offerer_address = utils.extract_venue_and_offerer_address_from_location(
+        offerer_address = utils.extract_offerer_address_from_location(
             serialization.AddressLocation(
                 venue_id=venue.id,
                 address_id=venue.offererAddress.addressId,
@@ -182,7 +156,7 @@ class ExtractVenueAndOffererAddressFromLocationTest:
         venue = offerers_factories.VenueFactory()
         get_address_or_raise_404.return_value = venue.offererAddress.address
 
-        utils.extract_venue_and_offerer_address_from_location(
+        utils.extract_offerer_address_from_location(
             serialization.AddressLocation(
                 venue_id=venue.id, address_id=venue.offererAddress.addressId, address_label=None
             ),
@@ -219,6 +193,46 @@ class GetVenueWithOffererAddressTest:
         with testing.assert_num_queries(1):
             fetched_venue = utils.get_venue_with_offerer_address(venue_id)
             assert fetched_venue.offererAddress.addressId
+
+
+class CheckOfferStaysInItsVenueTest:
+    def test_should_accept_a_body_that_carries_no_location(self):
+        offer = offers_factories.OfferFactory()
+
+        utils.check_offer_stays_in_its_venue(offer, None)
+
+    @pytest.mark.parametrize(
+        "build_location",
+        [
+            lambda venue_id: serialization.PhysicalLocation(venue_id=venue_id),
+            lambda venue_id: serialization.AddressLocation(venue_id=venue_id, address_id=1),
+            lambda venue_id: serialization.DigitalLocation(venue_id=venue_id, url="https://example.com"),
+        ],
+        ids=["physical", "address", "digital"],
+    )
+    def test_should_accept_a_location_naming_the_venue_the_offer_already_has(self, build_location):
+        offer = offers_factories.OfferFactory()
+
+        utils.check_offer_stays_in_its_venue(offer, build_location(offer.venueId))
+
+    @pytest.mark.parametrize(
+        "build_location",
+        [
+            lambda venue_id: serialization.PhysicalLocation(venue_id=venue_id),
+            lambda venue_id: serialization.AddressLocation(venue_id=venue_id, address_id=1),
+            lambda venue_id: serialization.DigitalLocation(venue_id=venue_id, url="https://example.com"),
+        ],
+        ids=["physical", "address", "digital"],
+    )
+    def test_should_refuse_a_location_naming_another_venue(self, build_location):
+        offer = offers_factories.OfferFactory()
+        other_venue = offerers_factories.VenueFactory()
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            utils.check_offer_stays_in_its_venue(offer, build_location(other_venue.id))
+
+        assert error.value.errors == {"location.venueId": ["An offer cannot be moved to another venue"]}
+        assert error.value.status_code == 400
 
 
 class CheckOfferSubcategoryTest:

@@ -723,54 +723,6 @@ class Returns200Test(PatchEventEndpointHelper):
 
     # --- `location`
 
-    def test_should_move_the_event_to_another_venue_with_a_physical_location(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-
-        # a venue of another offerer: the only requirement is that it is linked to the calling provider
-        other_venue = providers_factories.VenueProviderFactory(provider=venue_provider.provider).venue
-        assert other_venue.managingOffererId != venue_provider.venue.managingOffererId
-        offerer_address_id = event.offererAddressId
-
-        response = self.make_request(
-            plain_api_key,
-            {"event_id": event.id},
-            json_body={"location": {"type": "physical", "venueId": other_venue.id}},
-        )
-
-        assert response.status_code == 200, response.json
-
-        db.session.refresh(event)
-        assert event.offererAddress.addressId == other_venue.offererAddress.addressId
-        assert event.offererAddress.label is None
-
-        assert event.venueId == other_venue.id
-        assert event.venue.managingOffererId == other_venue.managingOffererId
-
-        assert event.offererAddressId != offerer_address_id
-
-    def test_should_move_the_event_to_another_venue_with_an_address_location(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-
-        other_venue = providers_factories.VenueProviderFactory(provider=venue_provider.provider).venue
-        address = geography_factories.AddressFactory(street="28 boulevard des Capucines")
-
-        response = self.make_request(
-            plain_api_key,
-            {"event_id": event.id},
-            json_body={"location": {"type": "address", "venueId": other_venue.id, "addressId": address.id}},
-        )
-
-        assert response.status_code == 200, response.json
-
-        db.session.refresh(event)
-        assert event.venueId == other_venue.id
-        assert event.offererAddress.addressId == address.id
-        assert event.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
-        # the offerer address is attached to the venue the event moves to, not to the one it leaves
-        assert event.offererAddress.offererId == other_venue.managingOffererId
-
     @pytest.mark.parametrize("address_label", [None, "Salle Truffaut"])
     def test_should_update_the_offerer_address_with_an_address_location(self, address_label):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -1560,6 +1512,25 @@ class Returns400Test(PatchEventEndpointHelper):
 
     # --- `location`
 
+    def test_should_raise_400_because_the_event_cannot_be_moved_to_another_venue(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        other_venue = providers_factories.VenueProviderFactory(provider=venue_provider.provider).venue
+        before_update = event.dateUpdated
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"location": {"type": "physical", "venueId": other_venue.id}},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"location.venueId": ["An offer cannot be moved to another venue"]}
+
+        db.session.refresh(event)
+        assert event.venueId == venue_provider.venueId
+        assert event.dateUpdated == before_update
+
     def test_should_raise_400_because_location_type_is_unknown(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
@@ -2046,7 +2017,6 @@ class Returns400Test(PatchEventEndpointHelper):
 @pytest.mark.usefixtures("db_session")
 class Returns404Test(PatchEventEndpointHelper):
     EVENT_NOT_FOUND = {"event_id": ["The event offer could not be found"]}
-    VENUE_NOT_FOUND = {"global": "Venue cannot be found"}
 
     # --- The event
 
@@ -2099,38 +2069,6 @@ class Returns404Test(PatchEventEndpointHelper):
         assert response.json == self.EVENT_NOT_FOUND
 
     # --- `location`
-
-    def test_should_raise_404_because_venue_in_location_is_not_linked_to_provider(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        other_venue = self.setup_venue()
-        before_update = event.dateUpdated
-
-        response = self.make_request(
-            plain_api_key,
-            {"event_id": event.id},
-            json_body={"location": {"type": "physical", "venueId": other_venue.id}},
-        )
-
-        assert response.status_code == 404
-        assert response.json == self.VENUE_NOT_FOUND
-
-        db.session.refresh(event)
-        assert event.dateUpdated == before_update
-
-    def test_should_raise_404_because_venue_provider_of_venue_in_location_is_inactive(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        inactive_link = providers_factories.VenueProviderFactory(provider=venue_provider.provider, isActive=False)
-
-        response = self.make_request(
-            plain_api_key,
-            {"event_id": event.id},
-            json_body={"location": {"type": "physical", "venueId": inactive_link.venue.id}},
-        )
-
-        assert response.status_code == 404
-        assert response.json == self.VENUE_NOT_FOUND
 
     def test_should_raise_404_because_address_in_location_does_not_exist(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

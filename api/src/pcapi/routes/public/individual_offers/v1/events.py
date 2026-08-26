@@ -91,7 +91,7 @@ def post_event_offer(body: events_serializers.EventOfferCreation) -> events_seri
     withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
 
     try:
-        _, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location, venue=venue)
+        offerer_address = utils.extract_offerer_address_from_location(body.location, venue=venue)
 
         created_offer = offers_api.create_offer(
             offers_schemas.CreateOffer(
@@ -266,8 +266,9 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
     if not offer:
         raise api_errors.ResourceNotFoundError({"event_id": ["The event offer could not be found"]})
 
-    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
-    venue_provider = authorization.get_venue_provider_or_raise_404(venue.id if venue else offer.venueId)
+    utils.check_offer_stays_in_its_venue(offer, body.location)
+    offerer_address = utils.extract_offerer_address_from_location(body.location, venue=offer.venue)
+    venue_provider = authorization.get_venue_provider_or_raise_404(offer.venueId)
 
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
@@ -306,7 +307,6 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
             url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
             withdrawal_details=updates.get("itemCollectionDetails", offers_api.UNCHANGED),
             mandatory_extra_data_fields=utils.mandatory_extra_data_fields(offer.subcategoryId),
-            venue=venue,
             offerer_address=offerer_address,
             venue_provider=venue_provider,
         )

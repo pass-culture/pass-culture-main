@@ -83,6 +83,17 @@ def check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
         raise api_errors.ApiErrors({"venue_id": ["The venue could not be found"]}, status_code=404)
 
 
+def check_offer_stays_in_its_venue(
+    offer: offers_models.Offer,
+    location: v1_serialization.PhysicalLocation
+    | v1_serialization.DigitalLocation
+    | v1_serialization.AddressLocation
+    | None,
+) -> None:
+    if location is not None and location.venue_id != offer.venueId:
+        raise api_errors.ApiErrors({"location.venueId": ["An offer cannot be moved to another venue"]})
+
+
 def check_offer_subcategory(
     body: products_serializers.ProductOfferEdition | events_serializers.EventOfferEdition, offer_subcategory_id: str
 ) -> None:
@@ -245,18 +256,15 @@ def load_venue_and_provider_query(query: sa_orm.Query) -> sa_orm.Query:
     )
 
 
-def extract_venue_and_offerer_address_from_location(
+def extract_offerer_address_from_location(
     location: v1_serialization.PhysicalLocation
     | v1_serialization.DigitalLocation
     | v1_serialization.AddressLocation
     | None,
-    venue: offerers_models.Venue | None = None,
-) -> tuple[offerers_models.Venue | None, offerers_models.OffererAddress | None]:
+    venue: offerers_models.Venue,
+) -> offerers_models.OffererAddress | None:
     if not location:
-        return None, None
-
-    if venue is None:
-        venue = get_venue_with_offerer_address(location.venue_id)
+        return None
 
     if location.type == "address":
         address = public_utils.get_address_or_raise_404(location.address_id)
@@ -279,7 +287,7 @@ def extract_venue_and_offerer_address_from_location(
             venue,
         )
 
-    return venue, offerer_address
+    return offerer_address
 
 
 def mandatory_extra_data_fields(subcategory_id: str) -> set[str]:
