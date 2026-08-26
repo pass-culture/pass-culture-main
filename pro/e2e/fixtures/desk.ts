@@ -1,5 +1,4 @@
 import * as path from 'node:path'
-import AxeBuilder from '@axe-core/playwright'
 import {
   test as base,
   expect,
@@ -14,18 +13,6 @@ import {
   type DeskBookingsData,
 } from '../helpers/sandbox'
 
-export interface AccessibilityResult {
-  violations: Array<{
-    id: string
-    impact: string
-    description: string
-    nodes: Array<{
-      html: string
-      target: string[]
-    }>
-  }>
-}
-
 interface AuthSession {
   data: DeskBookingsData
   storageStatePath: string
@@ -34,7 +21,6 @@ interface AuthSession {
 const sessionCache = new Map<string, AuthSession>()
 
 export const test = base.extend<{
-  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
   deskData: DeskBookingsData
   authSession: AuthSession
   authenticatedPage: Page
@@ -91,42 +77,6 @@ export const test = base.extend<{
     await use(page)
 
     await context.close()
-  },
-
-  checkAccessibility: async ({ authenticatedPage }, use) => {
-    const checkAccessibility = async (
-      disabledRules: string[] = []
-    ): Promise<AccessibilityResult> => {
-      const axeBuilder = new AxeBuilder({ page: authenticatedPage })
-
-      if (disabledRules.length > 0) {
-        axeBuilder.disableRules(disabledRules)
-      }
-
-      // Wait for CSS animations to finish before running axe-core,
-      // otherwise mid-animation transforms can cause false color-contrast failures.
-      // Use allSettled so that cancelled animations (e.g. snackbar auto-dismiss)
-      // don't cause a rejection that would abort the check.
-      await authenticatedPage.evaluate(() =>
-        Promise.allSettled(document.getAnimations().map((a) => a.finished))
-      )
-
-      const results = await axeBuilder.analyze()
-
-      return {
-        violations: results.violations.map((violation) => ({
-          id: violation.id,
-          impact: violation.impact ?? 'unknown',
-          description: violation.description,
-          nodes: violation.nodes.map((node) => ({
-            html: node.html,
-            target: node.target as string[],
-          })),
-        })),
-      }
-    }
-
-    await use(checkAccessibility)
   },
 })
 

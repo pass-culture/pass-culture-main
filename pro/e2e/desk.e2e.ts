@@ -1,6 +1,7 @@
 import { addDays, format } from 'date-fns'
 
 import { expect, test } from './fixtures/desk'
+import { checkAccessibility } from './helpers/accessibility'
 
 test.describe('Desk (Guichet)', () => {
   test.describe.configure({ mode: 'serial' })
@@ -33,7 +34,6 @@ test.describe('Desk (Guichet)', () => {
   test('should validate a valid countermark', async ({
     authenticatedPage: page,
     deskData,
-    checkAccessibility,
   }) => {
     const tokenInput = page.getByLabel('Contremarque')
     await tokenInput.fill(deskData.tokenConfirmed)
@@ -42,8 +42,7 @@ test.describe('Desk (Guichet)', () => {
 
     await expect(page.getByText('Contremarque validée')).toBeVisible()
 
-    const a11yResults = await checkAccessibility()
-    expect(a11yResults.violations).toHaveLength(0)
+    await checkAccessibility(page)
   })
 
   test('should extract token from QR code scan with prefix', async ({

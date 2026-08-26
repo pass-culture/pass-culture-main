@@ -1,7 +1,6 @@
 import * as path from 'node:path'
 import type { Page, TestInfo } from '@playwright/test'
 
-import type { AccessibilityResult } from './fixtures/common'
 import { expect, test } from './fixtures/createIndividualOffer'
 import {
   autoCompleteAddress,
@@ -21,7 +20,7 @@ import {
 async function handleImageUpload(
   page: Page,
   testInfo: TestInfo,
-  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>
 ) {
   await page
     .getByLabel('Importez une image')
@@ -128,7 +127,7 @@ test.describe('Create individual offers new flow', () => {
       page.getByText('Accepter les réservations “Duo“')
     ).toBeVisible()
 
-    checkAccessibility()
+    await checkAccessibility()
     await Promise.all([
       page.waitForResponse(isPutPriceCategoriesResponse),
       page.getByText('Enregistrer et continuer').click(),
@@ -191,13 +190,13 @@ test.describe('Create individual offers new flow', () => {
       .getByLabel('Nombre de jours avant le début de l’évènement')
       .fill('3')
 
-    checkAccessibility()
+    await checkAccessibility()
     await Promise.all([
       page.waitForResponse(isGetOfferResponse),
       page.getByText('Valider').click(),
     ])
 
-    checkAccessibility()
+    await checkAccessibility()
     await page.getByText('Enregistrer et continuer').click()
 
     await page.getByLabel('Retrait sur place (guichet, comptoir...)').click()
@@ -205,14 +204,14 @@ test.describe('Create individual offers new flow', () => {
       .getByLabel(/Email de contact communiqué aux bénéficiaires/)
       .fill('passculture@example.com')
 
-    checkAccessibility()
+    await checkAccessibility()
     await page.getByText('Enregistrer et continuer').click()
 
     await expect(
       page.getByRole('heading', { name: 'Publication et réservation' })
     ).toBeVisible()
 
-    checkAccessibility()
+    await checkAccessibility()
     await Promise.all([
       page.waitForResponse(isGetOfferResponse),
       page.waitForResponse(isPublishOfferResponse),
@@ -286,7 +285,7 @@ test.describe('Create individual offers new flow', () => {
     await page.getByLabel(/Prix/).fill('42')
     await page.getByLabel('Date limite de réservation').fill('2042-05-03')
     await page.getByLabel(/Stock/).fill('42')
-    checkAccessibility()
+    await checkAccessibility()
     await Promise.all([
       page.waitForResponse(isPatchOffersResponse),
       page.getByText('Enregistrer et continuer').click(),

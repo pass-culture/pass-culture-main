@@ -1,25 +1,14 @@
 import type { Page } from '@playwright/test'
 import { addDays, format } from 'date-fns'
-import {
-  type APIRequestContext,
-  request as playwrightRequest,
-  type Response,
-} from 'playwright-core'
+import type { Response } from 'playwright-core'
 
 import { COLLECTIVE_OFFERS_COLUMNS } from './common/constants'
 import { expect, test } from './fixtures/createCollectiveOffer'
-import type { AccessibilityResult } from './fixtures/desk'
-import {
-  autoCompleteAddress,
-  fillCustomAddress,
-  mockAddressSearch,
-} from './helpers/address'
+import { autoCompleteAddress, fillCustomAddress } from './helpers/address'
 import {
   expectCollectiveOffersAreFound,
   expectSuccessSnackbar,
 } from './helpers/assertions'
-import { setFeatureFlags } from './helpers/features'
-import { navigateToHubAndPickVenue } from './helpers/navigation'
 import {
   isGetCollectiveOffersBookableResponse,
   isGetDomainsResponse,
@@ -27,10 +16,8 @@ import {
   isPatchOffersResponse,
   isPostCollectiveStocksResponse,
 } from './helpers/requests'
-import { BASE_API_URL } from './helpers/sandbox'
 
 const newOfferName = 'Ma nouvelle offre collective créée'
-const venueName = 'Mon Lieu A'
 const venueFullAddress = '1 boulevard Poissonnière, 75002, Paris'
 const defaultDate = addDays(new Date(), 2)
 const defaultBookingLimitDate = addDays(new Date(), 1)
@@ -57,26 +44,13 @@ const commonOfferData = {
 const totalParticipants = commonOfferData.students + commonOfferData.teachers
 
 test.describe('Create collective offers', () => {
-  let requestContext: APIRequestContext
-  test.beforeEach(async ({ authenticatedPage: page }) => {
-    requestContext = await playwrightRequest.newContext({
-      baseURL: BASE_API_URL,
-    })
-    await setFeatureFlags(requestContext, [
-      {
-        name: 'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
-        isActive: true,
-      },
-    ])
-    await navigateToHubAndPickVenue(page, venueName)
-    await page.goto('/offre/creation')
-    await mockAddressSearch(page)
-  })
-
   test('Create collective bookable offers with a precise address (the venue address, selected by default)', async ({
     authenticatedPage: page,
     checkAccessibility,
   }) => {
+    await expect(
+      page.getByRole('heading', { name: 'Créer une offre collective' })
+    ).toBeVisible()
     await checkAccessibility()
     await fillBasicOfferForm(page)
     await fillOfferDetails(page, checkAccessibility)
@@ -400,7 +374,7 @@ async function fillBasicOfferForm(page: Page) {
 
 async function fillOfferDetails(
   page: Page,
-  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>
 ) {
   await page.getByLabel(/Titre de l’offre/).fill(commonOfferData.title)
   await page
@@ -415,7 +389,7 @@ async function fillOfferDetails(
 
 async function fillDatesAndPrice(
   page: Page,
-  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>
 ) {
   await expect(
     page.getByRole('heading', { name: 'Date de votre offre' })
@@ -488,7 +462,7 @@ async function fillDatesAndPrice(
 
 async function fillInformations(
   page: Page,
-  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>
 ) {
   await expect(
     page.getByRole('heading', {
@@ -509,7 +483,7 @@ async function fillInformations(
 
 async function fillInstitution(
   page: Page,
-  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>
 ) {
   await page
     .getByLabel(/Nom de l’établissement scolaire ou code UAI */)
@@ -544,9 +518,7 @@ async function searchOffer(
 
 async function publishAndSearchOffer(
   page: Page,
-  checkAccessibility: (
-    disabledRules?: string[]
-  ) => Promise<AccessibilityResult>,
+  checkAccessibility: (disabledRules?: string[]) => Promise<void>,
   waitForResponseFn: (response: Response) => boolean = (response: Response) =>
     isGetCollectiveOffersBookableResponse(response)
 ) {
