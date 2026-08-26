@@ -1042,6 +1042,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         # explicit join on Venue then Offerer
         return sa.and_(
             cls.isPublished,
+            offerers_models.Venue.state == None,
             offerers_models.Offerer.isActive,
             offerers_models.Offerer.isValidated,
         )
