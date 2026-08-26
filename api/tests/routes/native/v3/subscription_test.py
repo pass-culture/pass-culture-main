@@ -24,7 +24,7 @@ class SubscriptionStepperTest:
         client.with_token(user)
         db.session.delete(user)
 
-        with assert_num_queries(1):  # user
+        with assert_num_queries(2):  # user + rollback
             response = client.get("/native/v3/subscription/stepper")
             assert response.status_code == 401
 
@@ -34,7 +34,7 @@ class SubscriptionStepperTest:
         user = users_factories.EmailValidatedUserFactory(isActive=False)
 
         client.with_token(user)
-        with assert_num_queries(1):  # user
+        with assert_num_queries(2):  # user + rollback
             response = client.get("/native/v3/subscription/stepper")
             assert response.status_code == 401
 

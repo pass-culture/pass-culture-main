@@ -50,7 +50,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import string as string_utils
-from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.redis import get_redis_client
 from pcapi.utils.requests import ExternalAPIException
@@ -126,18 +125,13 @@ def create_account(
         ),
         phoneNumber=phone_number,
         lastConnectionDate=date_utils.get_naive_utc_now(),
+        externalIds={"firebase_pseudo_id": firebase_pseudo_id} if firebase_pseudo_id else {},
     )
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
 
     setup_login(user, password, sso_provider, sso_user_id, sso_extra_data)
-
-    if user.externalIds is None:
-        user.externalIds = {}
-
-    if firebase_pseudo_id:
-        user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id
 
     db.session.add(user)
     db.session.flush()
@@ -414,21 +408,21 @@ def suspend_account(
         if user.backoffice_profile:
             user.backoffice_profile.roles = []
 
-    if reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
-        update_user_password(user, random_password())
+        if reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
+            update_user_password(user, random_password())
 
-    n_bookings = _cancel_bookings_of_user_on_requested_account_suspension(user, reason, is_backoffice_action)
+        n_bookings = _cancel_bookings_of_user_on_requested_account_suspension(user, reason, is_backoffice_action)
 
-    logger.info(
-        "Account has been suspended",
-        extra={
-            "actor": actor.id if actor else None,
-            "user": user.id,
-            "reason": str(reason),
-        },
-    )
+        logger.info(
+            "Account has been suspended",
+            extra={
+                "actor": actor.id if actor else None,
+                "user": user.id,
+                "reason": str(reason),
+            },
+        )
 
-    remove_external_user(user)
+        remove_external_user(user)
 
     return {"cancelled_bookings": n_bookings}
 
@@ -539,14 +533,9 @@ def unsuspend_account(
 ) -> None:
     suspension_reason = user.suspension_reason
     user.isActive = True
-    db.session.add(user)
     db.session.query(models.GdprUserAnonymization).filter(models.GdprUserAnonymization.userId == user.id).delete()
 
     history_api.add_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
-
-    db.session.flush()
-    if not transaction_manager.is_managed_transaction():
-        db.session.commit()
 
     logger.info(
         "Account has been unsuspended",
@@ -582,21 +571,12 @@ def change_email(
     current_user.email = new_email
     db.session.add(current_user)
     db.session.add(email_history)
-
-    if transaction_manager.is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
+    db.session.flush()
 
     db.session.query(models.UserSession).filter_by(userId=current_user.id).delete(synchronize_session=False)
     sessions.disconnect_native_user_sessions(user_id=current_user.id)
 
     revoke_sso_access(current_user, SingleSignOnProviders.ALL)
-
-    if transaction_manager.is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
 
     logger.info("User has changed their email", extra={"user": current_user.id})
 
@@ -615,12 +595,7 @@ def change_pro_user_email(
 
 def update_user_password(user: models.User, new_password: str) -> None:
     user.setPassword(new_password)
-    db.session.add(user)
     sessions.disconnect_native_user_sessions(user.id)
-    if transaction_manager.is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
 
 
 def update_password_and_external_user(user: models.User, new_password: str) -> None:
@@ -651,7 +626,7 @@ def update_user_info(
     id_piece_number: str | T_UNCHANGED = UNCHANGED,
     marketing_email_subscription: bool | T_UNCHANGED = UNCHANGED,
     activity: models.ActivityEnum | T_UNCHANGED = UNCHANGED,
-    commit: bool = True,  # TODO (tcoudray-pass, 08/04/2026) Remove this param
+    add_action: bool = True,
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
     snapshot = history_api.ObjectUpdateSnapshot(user, author)
@@ -724,12 +699,8 @@ def update_user_info(
             batch_extra_data["last_status_update_date"] = date_utils.get_naive_utc_now()
         user.activity = activity.value
 
-    if commit:
+    if add_action:
         snapshot.add_action()
-        db.session.add(user)
-        db.session.commit()
-    else:
-        db.session.add(user)
 
     external_attributes_api.update_external_user(user, batch_extra_data=batch_extra_data)
 
@@ -895,11 +866,6 @@ def update_last_connection_date(user: models.User) -> None:
 
     if should_save_last_connection_date:
         user.lastConnectionDate = last_connection_date
-        db.session.add(user)
-        if transaction_manager.is_managed_transaction():
-            db.session.flush()
-        else:
-            db.session.commit()
 
     if should_update_brevo_last_connection_date:
         external_attributes_api.update_external_user(user, skip_batch=True)
@@ -966,8 +932,6 @@ def update_notification_subscription(
 
 def reset_recredit_amount_to_show(user: models.User) -> None:
     user.recreditAmountToShow = None
-    db.session.add(user)
-    db.session.commit()
 
 
 def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> tuple[sa_orm.Query, sa.ColumnElement]:
@@ -1150,12 +1114,6 @@ def validate_pro_user_email(user: models.User, author_user: models.User | None =
     if author_user:
         history_api.add_action(history_models.ActionType.USER_EMAIL_VALIDATED, author=author_user, user=user)
 
-    db.session.add(user)
-    if transaction_manager.is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
-
     # FIXME (prouzet-pass): accept_offerer_invitation_if_exists also add() and commit()... in a loop!
     offerers_api.accept_offerer_invitation_if_exists(user)
 
@@ -1179,10 +1137,7 @@ def save_trusted_device(device_info: "DeviceInfo | DeviceInfoV2", user: models.U
         user=user,
     )
     db.session.add(trusted_device)
-    if transaction_manager.is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
+    db.session.flush()
 
 
 def update_login_device_history(
@@ -1209,7 +1164,7 @@ def update_login_device_history(
         location=location,
     )
     db.session.add(login_device)
-    db.session.commit()
+    db.session.flush()
 
     return login_device
 
@@ -1325,7 +1280,6 @@ def delete_old_trusted_devices() -> None:
     five_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=5)
 
     db.session.query(models.TrustedDevice).filter(models.TrustedDevice.dateCreated <= five_years_ago).delete()
-    db.session.commit()
 
 
 def delete_old_login_device_history() -> None:
@@ -1334,7 +1288,6 @@ def delete_old_login_device_history() -> None:
     db.session.query(models.LoginDeviceHistory).filter(
         models.LoginDeviceHistory.dateCreated <= thirteen_months_ago
     ).delete()
-    db.session.commit()
 
 
 def _get_users_with_suspended_account() -> sa_orm.Query:

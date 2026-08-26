@@ -588,7 +588,7 @@ class UpdateUserInfoTest:
         user = users_factories.UserFactory(firstName="Noël", lastName="Flantier")
 
         modified_info = users_api.update_user_info(
-            user, author=user, first_name="Hubert", last_name="Bonisseur de la Bath", commit=False
+            user, author=user, first_name="Hubert", last_name="Bonisseur de la Bath"
         )
         assert modified_info.to_dict() == {
             "firstName": {"new_info": "Hubert", "old_info": "Noël"},
@@ -1511,8 +1511,6 @@ class UpdateUserLastConnectionDateTest:
 
         users_api.update_last_connection_date(user)
 
-        db.session.refresh(user)
-
         assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 11, 11, 11)
         assert len(brevo_testing.brevo_requests) == 1
 
@@ -1532,8 +1530,6 @@ class UpdateUserLastConnectionDateTest:
         user = users_factories.UserFactory(lastConnectionDate=datetime.datetime(2021, 9, 20, 9, 0))
 
         users_api.update_last_connection_date(user)
-
-        db.session.refresh(user)
 
         assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 11, 11, 11)
         assert len(brevo_testing.brevo_requests) == 0

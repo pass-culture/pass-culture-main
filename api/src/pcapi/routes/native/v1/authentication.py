@@ -41,7 +41,6 @@ from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRes
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
@@ -122,6 +121,7 @@ def refresh() -> authentication.RefreshResponse:
 
 
 @blueprint.native_route("/request_password_reset", methods=["POST"])
+@atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def request_password_reset(body: RequestPasswordResetRequest) -> None:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
@@ -144,10 +144,10 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
 
 
 @blueprint.native_route("/reset_password", methods=["POST"])
+@atomic()
 @spectree_serialize(
     response_model=ResetPasswordResponse, on_success_status=200, api=blueprint.api, on_error_statuses=[400]
 )
-@atomic()
 def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
     user = users_api.reset_password_with_token(body.new_password, body.reset_password_token)
     tokens = create_user_jwt_tokens(user=user, device_info=body.device_info)
@@ -158,8 +158,9 @@ def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
 
 
 @blueprint.native_route("/change_password", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
+@atomic()
 @authenticated_and_active_user_required
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def change_password(body: ChangePasswordRequest) -> None:
     if current_user.password is None:
         raise ApiErrors({"code": "NO_CURRENT_PASSWORD"})
@@ -183,6 +184,7 @@ def change_password(body: ChangePasswordRequest) -> None:
 
 
 @blueprint.native_route("/validate_email", methods=["POST"])
+@atomic()
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=ValidateEmailResponse)
 def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     try:
@@ -198,7 +200,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
     user.isEmailValidated = True
     db.session.add(user)
-    db.session.commit()
+    db.session.flush()
     external_attributes_api.update_external_user(user)
 
     try:
@@ -218,6 +220,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
 
 @blueprint.native_route("/oauth/state", methods=["GET"])
+@atomic()
 @spectree_serialize(
     response_model=authentication.OauthStateResponse, on_success_status=200, api=blueprint.api, deprecated=True
 )
@@ -233,6 +236,7 @@ _SSO_ACCESS_DENIED_ERROR = {
 
 
 @blueprint.native_route("/oauth/<string:sso_provider>/authorize", methods=["POST"])
+@atomic()
 @spectree_serialize(
     response_model=authentication.SigninResponse,
     on_success_status=200,
@@ -319,36 +323,35 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
         )
         raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
 
-    with transaction():
-        if not user.isEmailValidated:
-            # An account registered with a password and with its email not validated is a symptom
-            # of an account pre-hijacking attack waiting for an email validation. To prevent this
-            # we disable the email + password login when a SSO is enabled.
-            user.password = None
-            user.isEmailValidated = True
+    if not user.isEmailValidated:
+        # An account registered with a password and with its email not validated is a symptom
+        # of an account pre-hijacking attack waiting for an email validation. To prevent this
+        # we disable the email + password login when a SSO is enabled.
+        user.password = None
+        user.isEmailValidated = True
 
-        user_ssos_for_provider = [sso for sso in user.single_sign_ons if sso.ssoProvider == sso_provider]
-        if user_ssos_for_provider:
-            current_provider_sso = user_ssos_for_provider[0]
-            current_provider_sso.ssoUserId = sso_user.sub
+    user_ssos_for_provider = [sso for sso in user.single_sign_ons if sso.ssoProvider == sso_provider]
+    if user_ssos_for_provider:
+        current_provider_sso = user_ssos_for_provider[0]
+        current_provider_sso.ssoUserId = sso_user.sub
 
-            if sso_provider == "apple":
-                extra_data = MutableDict[str, str]()
+        if sso_provider == "apple":
+            extra_data = MutableDict[str, str]()
 
-                if current_provider_sso.ssoExtraData is not None:
-                    extra_data.update(current_provider_sso.ssoExtraData)
+            if current_provider_sso.ssoExtraData is not None:
+                extra_data.update(current_provider_sso.ssoExtraData)
 
-                if sso_extra_data:
-                    extra_data.update(sso_extra_data)
+            if sso_extra_data:
+                extra_data.update(sso_extra_data)
 
-                current_provider_sso.ssoExtraData = extra_data or None
-        else:
-            users_repo.create_single_sign_on(
-                user,
-                sso_provider,
-                sso_user_id,
-                sso_extra_data,
-            )
+            current_provider_sso.ssoExtraData = extra_data or None
+    else:
+        users_repo.create_single_sign_on(
+            user,
+            sso_provider,
+            sso_user_id,
+            sso_extra_data,
+        )
 
     users_api.save_device_info_and_notify_user(user, body.device_info)
 

@@ -177,7 +177,7 @@ def update_pro_user(user_id: int) -> response_utils.BackofficeResponse:
         phone_number=form.phone_number.data,
         postal_code=form.postal_code.data,
         marketing_email_subscription=form.marketing_email_subscription.data,
-        commit=False,
+        add_action=False,
     )
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
