@@ -44,6 +44,14 @@ You have **three options** for the location:
 """
 
 
+OFFER_LOCATION_EDITION_DESCRIPTION = (
+    OFFER_LOCATION_DESCRIPTION
+    + """
+The `venueId` must be the one the offer already belongs to: an offer cannot be moved to another venue.
+"""
+)
+
+
 COLLECTIVE_OFFER_LOCATION_DESCRIPTION = f"""
 Indicates where the collective offer will take place - [see this page]({COLLECTIVE_LOCATION_PAGE}).
 

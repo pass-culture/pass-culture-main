@@ -1864,28 +1864,17 @@ class UpdateOfferTest:
 
         assert offer.isDuo is expected
 
-    def test_should_move_the_offer_to_another_venue(self, venue_provider):
-        offer = self.build_offer()
-        other_venue = offerers_factories.VenueFactory()
-
-        api.update_offer(offer, venue=other_venue, mandatory_extra_data_fields=set(), venue_provider=venue_provider)
-        db.session.flush()
-
-        assert offer.venueId == other_venue.id
-
-    def test_should_not_clear_venue_and_offerer_address(self, venue_provider):
+    def test_should_not_clear_the_offerer_address(self, venue_provider):
         offer = self.build_offer()
         venue_id = offer.venueId
 
         api.update_offer(
             offer,
-            venue=None,
             offerer_address=None,
             name="Jules et Jim",
             mandatory_extra_data_fields=set(),
             venue_provider=venue_provider,
         )
-        db.session.flush()
 
         assert offer.venueId == venue_id
         assert offer.offererAddress is not None
@@ -2297,28 +2286,27 @@ class UpdateOfferTest:
         assert updated_offer
         assert updated_offer.offererAddressId == new_offerer_address.id
 
-    def test_update_both_venue_and_offerer_address(self):
+    def test_update_offerer_address_does_not_move_the_offer_to_another_venue(self):
         offer = factories.OfferFactory()
-        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        venue_id = offer.venueId
+        other_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
         new_offerer_address = offerers_factories.OfferLocationFactory(
             address__latitude=50.63153,
             address__longitude=3.06089,
             address__postalCode="59000",
             address__city="Lille",
-            venue=new_venue,
-            offerer=new_venue.managingOfferer,
+            venue=other_venue,
+            offerer=other_venue.managingOfferer,
         )
 
-        updated_offer = api.update_offer(
-            offer, mandatory_extra_data_fields=set(), venue=new_venue, offerer_address=new_offerer_address
-        )
+        updated_offer = api.update_offer(offer, mandatory_extra_data_fields=set(), offerer_address=new_offerer_address)
 
         db.session.commit()
         db.session.refresh(updated_offer)
 
         assert updated_offer
         assert updated_offer.offererAddressId == new_offerer_address.id
-        assert updated_offer.venueId == new_venue.id
+        assert updated_offer.venueId == venue_id
 
     @pytest.mark.parametrize(
         "bookingAllowedDatetime,expected_calls_count",

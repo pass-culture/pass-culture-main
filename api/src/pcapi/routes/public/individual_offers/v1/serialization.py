@@ -512,7 +512,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
     name: OfferName | None = fields.OFFER_NAME
-    location: PhysicalLocation | DigitalLocation | AddressLocation | None = fields.OFFER_LOCATION
+    location: PhysicalLocation | DigitalLocation | AddressLocation | None = fields.OFFER_LOCATION_EDITION
     publication_datetime: datetime.datetime | serialization_utils.NOW_LITERAL | None = fields.OFFER_PUBLICATION_DATETIME
     booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
 
