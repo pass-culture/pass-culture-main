@@ -33,10 +33,13 @@ services:
     build:
       context: ./api
       target: api-flask
+      args:
+        - network_mode=${NETWORK_MODE:-default}
     working_dir: /usr/src/app
     container_name: pc-api
-    command: ["./start-api-when-database-is-ready.sh"]
+    command: ["./entrypoint.sh"]
     volumes:
+      - pcapi_prometheus_data:/tmp/prometheus
       - ./api/documentation/static/openapi.json:/usr/src/app/documentation/static/openapi.json
       - ./api/tests:/usr/src/app/tests
       - ./api/src/pcapi/alembic/versions:/usr/src/app/src/pcapi/alembic/versions # Alembic migrations
@@ -57,6 +60,7 @@ services:
       - env_file
     environment:
       - PYTHONDONTWRITEBYTECODE=1 # prevent .pyc sync loop
+      - FLASK_SERVER=${FLASK_SERVER:-1}
     networks:
       - db_nw
       - web_nw
@@ -66,6 +70,8 @@ services:
       - postgres-test
     ports:
       - 5001:5001
+      - :5002
+      - 5010:5010
       - 10002:10002 # debugger port
     stdin_open: true
     tty: true
@@ -159,6 +165,7 @@ networks:
     driver: bridge
 
 volumes:
+  pcapi_prometheus_data:
   postgres_data:
   postgres_data_test:
   redis_data:

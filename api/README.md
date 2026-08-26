@@ -38,6 +38,18 @@ Il est possible de se connecter aux bases de données lancées via docker compos
   - port : 5433
   - database : pass_culture
 
+#### Exposition des métriques prometheus
+
+Les métriques prometheus ne sont exposées que lorsque le backend est lancé via gunicorn.
+
+Pour lancer le backend localement via docker compose avec gunicorn il suffit de rajouter la variable d'environnement : `FLASK_SERVER=0`
+
+```bash
+NETWORK_MODE=proxy FLASK_SERVER=0 docker compose -f docker-compose-backend.yml up redis postgres flask --build
+```
+
+Les métriques sont ensuites disponibles sur `http://localhost:5010/metrics`
+
 #### Troubleshooting
 
 Si la commande `pc start-backend` renvoie une erreur de type
@@ -89,6 +101,13 @@ pc restart-api-no-docker
 pc reset-db-no-docker
 # Supprimer et recréer la DB de test
 pc reset-db-test-no-docker
+```
+
+- Soit via gunicorn (similaire à ce qui est fait sur nos environnements cloud)
+
+```bash
+source .venv/bin/activate  # avant chaque commande
+GUNICORN_PORT=5001 FLASK_SERVER=0 ./entrypoint.sh
 ```
 
 ### Installation et lancement sans Docker
@@ -149,6 +168,21 @@ La plus conséquente est `industrial`, elle se créée avec cette commande:
 flask sandbox -n industrial  # setup sans docker
 pc sandbox -n industrial     # setup avec docker
 ```
+
+## Métriques prometheus
+
+Notre backend expose des métriques prometheus. Pour pouvoir travailler avec ces métriques en local il faut deux conditions :
+
+* Que le backend soit lancé avec gunicorn (cf options présentées plus haut)
+* Utiliser ces variables d'environnement
+
+```
+  ENABLE_FLASK_PROMETHEUS_EXPORTER="1"
+  FLASK_PROMETHEUS_EXPORTER_PORT="5010"
+  PROMETHEUS_MULTIPROC_DIR="/tmp"
+```
+
+Les métriques sont ensuites disponibles sur le port indiqué au chemin `/metrics`. Par exemple `http://localhost:5010/metrics`
 
 ### Troubleshooting
 
@@ -342,6 +376,7 @@ Quelques commandes VSCode utiles lorsqu'on est dans un fichier de test, avec leu
 - `Test: Rerun Failed Tests`
 
 Voir <https://code.visualstudio.com/docs/python/testing> pour plus d'informations.
+
 
 ## Contributing
 

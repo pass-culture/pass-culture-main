@@ -162,3 +162,4 @@ RUN apt-get update && \
 USER pcapi
 
 COPY --from=builder-dev --chown=pcapi:pcapi /usr/src/app/ /usr/src/app/
+

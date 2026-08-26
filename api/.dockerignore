@@ -28,3 +28,4 @@ LICENSE
 helm
 mypy.ini
 Procfile
+venv
