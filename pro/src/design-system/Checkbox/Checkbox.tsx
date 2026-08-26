@@ -136,7 +136,7 @@ export const Checkbox = forwardRef(
             id={inputId}
             ref={(e) => {
               //  The ref could be a ref callback function or a ref object
-              if (ref instanceof Function) {
+              if (typeof ref === 'function') {
                 ref(e)
               } else if (ref) {
                 ref.current = e
