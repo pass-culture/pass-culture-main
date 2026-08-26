@@ -551,7 +551,6 @@ def update_offer(
     withdrawal_details: str | None | T_UNCHANGED = UNCHANGED,
     withdrawal_type: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
     mandatory_extra_data_fields: typing.Collection[str],
-    venue: offerers_models.Venue | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
     venue_provider: providers_models.VenueProvider | None = None,
 ) -> models.Offer:
@@ -580,8 +579,6 @@ def update_offer(
         "withdrawalType": withdrawal_type,
     }
     fields = {key: value for key, value in fields.items() if value is not UNCHANGED}
-    if venue:
-        fields["venue"] = venue
     if offerer_address:
         fields["offererAddress"] = offerer_address
 
@@ -632,6 +629,7 @@ def update_offer(
         setattr(offer, key, value)
 
     db.session.add(offer)
+    db.session.flush()
 
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
