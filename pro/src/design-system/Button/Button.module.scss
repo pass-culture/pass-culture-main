@@ -13,22 +13,6 @@
   border: 1px solid $color;
 }
 
-@mixin hover-state {
-  &.btn-hovered,
-  &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
-    @content;
-  }
-}
-
-@mixin disabled-state {
-  &:disabled,
-  &.btn-disabled,
-  &[aria-disabled="true"] {
-    cursor: not-allowed;
-    @content;
-  }
-}
-
 // =============================================================================
 // BASE BUTTON STYLES
 // =============================================================================
@@ -113,7 +97,8 @@
 
       @include button-border(var(--color-border-brand-primary));
 
-      @include hover-state {
+      &.btn-hovered,
+      &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
         background-color: var(--color-background-brand-primary-hover);
 
         @include button-border(var(--color-background-brand-primary-hover));
@@ -130,7 +115,8 @@
         background-color: transparent;
       }
 
-      @include hover-state {
+      &.btn-hovered,
+      &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
         color: var(--color-text-brand-primary-hover);
 
         @include button-border(var(--color-border-brand-primary-hover));
@@ -147,7 +133,8 @@
       color: var(--color-text-brand-primary);
       padding: 0;
 
-      @include hover-state {
+      &.btn-hovered,
+      &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
         color: var(--color-text-brand-primary-hover);
       }
     }
@@ -163,7 +150,8 @@
 
       @include button-border(var(--color-border-selected));
 
-      @include hover-state {
+      &.btn-hovered,
+      &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
         background-color: var(--color-background-brand-primary-hover);
 
         @include button-border(var(--color-border-brand-primary-hover));
@@ -180,7 +168,8 @@
         background-color: transparent;
       }
 
-      @include hover-state {
+      &.btn-hovered,
+      &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
         @include button-border(var(--color-border-brand-primary-hover));
 
         color: var(--color-text-brand-primary-hover);
@@ -197,7 +186,8 @@
       color: var(--color-text-default);
       padding: 0;
 
-      @include hover-state {
+      &.btn-hovered,
+      &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
         color: var(--color-text-brand-primary-hover);
       }
     }
@@ -213,7 +203,8 @@
 
       @include button-border(var(--color-border-danger));
 
-      @include hover-state {
+      &.btn-hovered,
+      &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
         background-color: var(--color-background-danger-hover);
 
         @include button-border(var(--color-border-danger-hover));
@@ -230,7 +221,8 @@
         background-color: transparent;
       }
 
-      @include hover-state {
+      &.btn-hovered,
+      &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
         @include button-border(var(--color-border-danger-hover));
 
         color: var(--color-text-danger-hover);
@@ -247,7 +239,8 @@
       color: var(--color-text-danger);
       padding: 0;
 
-      @include hover-state {
+      &.btn-hovered,
+      &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
         color: var(--color-text-danger-hover);
       }
     }
@@ -255,7 +248,10 @@
 
   &.btn-primary,
   &.btn-secondary {
-    @include disabled-state {
+    &:disabled,
+    &.btn-disabled,
+    &[aria-disabled="true"] {
+      cursor: not-allowed;
       background-color: var(--color-background-disabled);
       color: var(--color-text-disabled);
 
@@ -268,7 +264,10 @@
   }
 
   &.btn-tertiary {
-    @include disabled-state {
+    &:disabled,
+    &.btn-disabled,
+    &[aria-disabled="true"] {
+      cursor: not-allowed;
       color: var(--color-text-disabled);
     }
   }

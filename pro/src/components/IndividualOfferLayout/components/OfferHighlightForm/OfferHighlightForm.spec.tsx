@@ -346,7 +346,7 @@ describe('OfferHighlightForm', () => {
     const submitButton = screen.getByRole('button', {
       name: 'Valider la sélection',
     })
-    userEvent.click(submitButton)
+    await userEvent.click(submitButton)
 
     await waitFor(() => {
       expect(submitButton).toBeDisabled()

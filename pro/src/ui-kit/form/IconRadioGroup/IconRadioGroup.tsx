@@ -51,6 +51,7 @@ export const IconRadioGroup = ({
       className={styles['icon-radio-group']}
       name={`icon-radio-group-${name}`}
       aria-describedby={`${hasError ? errorId : ''} ${scaleId}`}
+      aria-invalid={hasError || undefined}
     >
       <legend className={styles['icon-radio-group-legend']}>
         {legend}
@@ -66,12 +67,10 @@ export const IconRadioGroup = ({
           {group.map((item) => (
             <IconRadio
               name={name}
-              className={styles['icon-radio-group-item']}
               key={item.label}
               icon={item.icon}
               label={item.label}
               checked={item.value === value}
-              hasError={hasError}
               onChange={() => {
                 onChange(item.value)
               }}

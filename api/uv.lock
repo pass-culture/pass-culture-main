@@ -1207,23 +1207,6 @@ wheels = [
 ]
 
 [[package]]
-name = "google-cloud-tasks"
-version = "2.24.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "google-api-core", extra = ["grpc"] },
-    { name = "google-auth" },
-    { name = "grpc-google-iam-v1" },
-    { name = "grpcio" },
-    { name = "proto-plus" },
-    { name = "protobuf" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/cf/b2/7cfe6f0108baaaf535a8e3ccb5876f79430c2eb85f6f433e43c763dbe326/google_cloud_tasks-2.24.0.tar.gz", hash = "sha256:aa4f8764e5b157cbab81af619cc4fd9f14ebece8b69e5394a657c328a8366228", size = 370764, upload-time = "2026-08-06T06:24:45.842Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/53/8e/dc52d38465cc227fd8f5358984b67cc55080ed24781b99f6f7ff9d2b5e1e/google_cloud_tasks-2.24.0-py3-none-any.whl", hash = "sha256:1c82007a252d47efb4006eae5a5a0d9f6d375f917ab1c5cd80ce4a6f0ea4690d", size = 310091, upload-time = "2026-08-06T06:23:39.897Z" },
-]
-
-[[package]]
 name = "google-crc32c"
 version = "1.8.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1956,7 +1939,6 @@ dependencies = [
     { name = "google-cloud-iam" },
     { name = "google-cloud-secret-manager" },
     { name = "google-cloud-storage" },
-    { name = "google-cloud-tasks" },
     { name = "googleapis-common-protos" },
     { name = "googlemaps" },
     { name = "gql", extra = ["requests"] },
@@ -1970,7 +1952,6 @@ dependencies = [
     { name = "phonenumberslite" },
     { name = "pillow" },
     { name = "prometheus-flask-exporter" },
-    { name = "protobuf" },
     { name = "psycopg2" },
     { name = "py7zr" },
     { name = "pycountry" },
@@ -2066,7 +2047,6 @@ requires-dist = [
     { name = "google-cloud-iam", specifier = "==2.24.1" },
     { name = "google-cloud-secret-manager", specifier = ">=2.30.0" },
     { name = "google-cloud-storage", specifier = "==3.13.1" },
-    { name = "google-cloud-tasks", specifier = "==2.24.0" },
     { name = "googleapis-common-protos", specifier = "==1.75.1" },
     { name = "googlemaps", specifier = "==4.10.0" },
     { name = "gql", extras = ["requests"], specifier = "==4.0.0" },
@@ -2080,7 +2060,6 @@ requires-dist = [
     { name = "phonenumberslite", specifier = "==9.0.36" },
     { name = "pillow", specifier = "==12.3.0" },
     { name = "prometheus-flask-exporter", specifier = "==0.23.2" },
-    { name = "protobuf", specifier = "==7.35.1" },
     { name = "psycopg2", specifier = "==2.9.12" },
     { name = "py7zr", specifier = "==1.1.3" },
     { name = "pycountry", specifier = "==26.2.16" },
@@ -2125,7 +2104,7 @@ dev = [
     { name = "ipdb", specifier = "==0.13.13" },
     { name = "jsbeautifier", specifier = "==2.0.3" },
     { name = "mypy", specifier = "==2.3.0" },
-    { name = "pgcli", specifier = "==4.5.0" },
+    { name = "pgcli", specifier = "==4.6.0" },
     { name = "psycopg", extras = ["binary"], specifier = "==3.3.4" },
     { name = "pytest", specifier = "==9.1.1" },
     { name = "pytest-dotenv", specifier = "==0.5.2" },
@@ -2159,7 +2138,7 @@ wheels = [
 
 [[package]]
 name = "pgcli"
-version = "4.5.0"
+version = "4.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cli-helpers", extra = ["styles"] },
@@ -2174,9 +2153,9 @@ dependencies = [
     { name = "sqlparse" },
     { name = "tzlocal" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e0/ca/b081f0ae381425f87dd751b449c33aca7398c2183799fc56501fe7c26975/pgcli-4.5.0.tar.gz", hash = "sha256:9dce07f5b628068156256cb818e5191a773afe6eeb7054f210fa892813625e3e", size = 665814, upload-time = "2026-06-03T00:03:20.685Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/97/5d/d6fcf98556e6089915e12af12c6189e9d774d82b473c4ce9e124a62ec235/pgcli-4.6.0.tar.gz", hash = "sha256:4b0633a6ce753ea38fb1fe2dc54b66b732c4d0b29fadf48cad78b2e7f6636d9d", size = 671208, upload-time = "2026-08-26T08:14:39.702Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/74/f7/3619b56e90b96fc7e1bb96711c4323e3bd567309ba9896551c0cbcd5075f/pgcli-4.5.0-py3-none-any.whl", hash = "sha256:c17fd6d7a29e6eeddc100885f4c5f5867e9ec632722504f2c2da4859343127a2", size = 86816, upload-time = "2026-06-03T00:03:19.371Z" },
+    { url = "https://files.pythonhosted.org/packages/2f/63/39cfc5be0a1dd619ee506c971a9c4814b8882e4635ba3181ec8319589eaf/pgcli-4.6.0-py3-none-any.whl", hash = "sha256:bdf524c6f5046b9993520d44d452046001c7593d9c6e6fe60234e75d37a6178d", size = 88040, upload-time = "2026-08-26T08:14:38.077Z" },
 ]
 
 [[package]]

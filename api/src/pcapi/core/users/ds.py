@@ -23,7 +23,7 @@ from pcapi.utils import phone_number as phone_number_utils
 
 logger = logging.getLogger(__name__)
 
-# Avoid connection timeout when DS takes time to respond in daily or hourly cloud tasks (not in synchronous requests)
+# Avoid connection timeout when DS takes time to respond in daily or hourly asynchronous tasks (not in synchronous requests)
 LONG_TIMEOUT = 60
 
 # Sometimes BO users have timeout when accepting, which causes inconsistent data between DS and the backend

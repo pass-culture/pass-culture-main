@@ -53,7 +53,7 @@ const renderCollectiveOfferConfirmation = async (
       ...options?.storeOverrides,
     },
   })
-  await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+  await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 }
 
 describe('CollectiveOfferConfirmation', () => {
