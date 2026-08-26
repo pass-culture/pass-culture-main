@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
@@ -268,9 +268,8 @@ describe('Income', () => {
       const unselectedVenue = deleteVenueButtons[0]
       await userEvent.click(unselectedVenue)
 
-      await waitFor(() =>
-        expect(screen.getByTestId('income-spinner')).toBeInTheDocument()
-      )
+      await screen.findByTestId('income-spinner')
+
       expect(api.getStatistics).toHaveBeenNthCalledWith(2, {
         query: { venueIds: [2] },
       })
@@ -352,7 +351,7 @@ describe('Income', () => {
       })
       renderIncome()
 
-      await waitFor(() => screen.getAllByText(LABELS.incomeResultsLabel))
+      await screen.findAllByText(LABELS.incomeResultsLabel)
 
       const emptyYear = Object.keys(MOCK_DATA.incomeByYear).find(
         (year) =>
@@ -377,7 +376,7 @@ describe('Income', () => {
 
       renderIncome()
 
-      await waitFor(() => screen.getAllByText(LABELS.incomeResultsLabel))
+      await screen.findAllByText(LABELS.incomeResultsLabel)
 
       await userEvent.click(
         screen.getByRole('button', {
