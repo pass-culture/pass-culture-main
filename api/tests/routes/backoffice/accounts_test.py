@@ -161,34 +161,29 @@ def create_bunch_of_accounts():
     return underage, old_grant_18, new_grant_18, pro, random, no_address
 
 
-def assert_user_equals(result_card_text: str, expected_user: users_models.User):
-    assert f"{expected_user.firstName} {expected_user.lastName} " in result_card_text
-    assert f"User ID : {expected_user.id} " in result_card_text
-    assert f"Email : {expected_user.email} " in result_card_text
+def assert_user_equals(row: dict[str, str], expected_user: users_models.User):
+    assert row["ID"] == str(expected_user.id)
+    assert row["Nom"] == expected_user.full_name
+    assert row["Email"] == expected_user.email
     if birth_date := expected_user.validatedBirthDate or expected_user.dateOfBirth:
-        assert f"Date de naissance : {birth_date.strftime('%d/%m/%Y')} " in result_card_text
+        assert row["Date de naissance"] == f"{birth_date.strftime('%d/%m/%Y')} ({expected_user.age} ans)"
     if users_models.UserRole.BENEFICIARY in expected_user.roles:
         if expected_user.deposit.type == finance_models.DepositType.GRANT_17_18:
-            assert "Pass 18 " in result_card_text
+            assert "Pass 18" in row["Type de crédit"]
         else:
-            assert "Ancien Pass 18 " in result_card_text
+            assert "Ancien Pass 18" in row["Type de crédit"]
     if users_models.UserRole.UNDERAGE_BENEFICIARY in expected_user.roles:
         if expected_user.deposit.type == finance_models.DepositType.GRANT_17_18:
-            assert "Pass 17 " in result_card_text
+            assert "Pass 17" in row["Type de crédit"]
         else:
-            assert "Ancien Pass 15-17 " in result_card_text
+            assert "Ancien Pass 15-17" in row["Type de crédit"]
     if not expected_user.isActive:
-        assert "Suspendu" in result_card_text
+        assert "Suspendu" in row["Type de crédit"]
         if expected_user.suspension_reason:
             assert (
-                f"Raison de suspension : {users_constants.SUSPENSION_REASON_CHOICES.get(users_constants.SuspensionReason(expected_user.suspension_reason))} le {expected_user.suspension_date.strftime('%d/%m/%Y')}"
-                in result_card_text
+                f"{users_constants.SUSPENSION_REASON_CHOICES.get(users_constants.SuspensionReason(expected_user.suspension_reason))} le {expected_user.suspension_date.strftime('%d/%m/%Y')}"
+                in row["Raison de suspension"]
             )
-
-
-def user_id_from_card(card_text: str) -> int | None:
-    match = re.search(r"User ID : (?P<user_id>\d+)", card_text)
-    return match.groupdict().get("user_id") if match else None
 
 
 def advanced_filter_args(search_field, operator, operand, value, index=0):
@@ -233,7 +228,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, q=query))
         assert response.status_code == 200
 
-        assert len(html_parser.extract_cards_text(response.data)) == 0
+        assert html_parser.count_table_rows(response.data) == 0
 
     def test_can_search_public_account_by_id(self, authenticated_client):
         underage, _, _, _, _, _ = create_bunch_of_accounts()
@@ -252,6 +247,36 @@ class ListPublicAccountsTest(GetEndpointHelper):
             total_items=1,
         )
 
+    def test_can_search_public_account_by_multiple_names(self, authenticated_client):
+        tag1, tag2 = users_factories.UserTagFactory.create_batch(2)
+        searched_user1 = users_factories.BeneficiaryGrant18Factory(
+            tags=[tag1, tag2], firstName="jean", departementCode="75"
+        )
+        searched_user2 = users_factories.BeneficiaryGrant18Factory(
+            tags=[tag1, tag2], firstName="jeanne", departementCode=None, isActive=False
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="jean"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert rows[0]["ID"] == str(searched_user1.id)
+        assert rows[0]["Nom"] == f"{searched_user1.firstName} {searched_user1.lastName}"
+        assert rows[0]["Date de naissance"] == "%s (18 ans)" % searched_user1.birth_date.strftime("%d/%m/%Y")
+        assert rows[0]["Email"] == searched_user1.email
+        assert rows[0]["Ville"] == f"{searched_user1.city} ({searched_user1.departementCode})"
+        assert rows[0]["Type de crédit"] == "Pass 18"
+        assert rows[0]["Date d'expiration du crédit"] == searched_user1.deposit.expirationDate.astimezone(
+            tz=pytz.timezone("Europe/Paris")
+        ).strftime("%d/%m/%Y à %Hh%M")
+        assert rows[0]["Tags"] == f"{tag1} {tag2}"
+        assert rows[1]["ID"] == str(searched_user2.id)
+        assert rows[1]["Nom"] == f"{searched_user2.firstName} {searched_user2.lastName}"
+        assert rows[1]["Ville"] == f"{searched_user2.city}"
+        assert rows[1]["Type de crédit"] == "Pass 18 Suspendu"
+
     def test_can_search_public_account_by_multiple_ids(self, authenticated_client):
         searched_user1, _, _, _, searched_user2, _ = create_bunch_of_accounts()
         search_query = f" {searched_user1.id}, {searched_user2.id}"
@@ -260,8 +285,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
             assert response.status_code == 200
 
-        cards_titles = html_parser.extract_cards_titles(response.data)
-        assert set(cards_titles) == {searched_user1.full_name, searched_user2.full_name}
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == {searched_user1.full_name, searched_user2.full_name}
 
     def test_can_search_public_account_by_small_id(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
@@ -346,8 +371,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
             assert response.status_code == 200
 
-        cards_titles = html_parser.extract_cards_titles(response.data)
-        assert set(cards_titles) == {searched_user1.full_name, searched_user2.full_name}
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == {searched_user1.full_name, searched_user2.full_name}
 
     def test_can_search_public_account_by_email_domain(self, authenticated_client):
         underage, old_grant_18, new_grant_18, _, random, _ = create_bunch_of_accounts()
@@ -356,19 +381,19 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q="@example.net"))
             assert response.status_code == 200
 
-        cards_titles = html_parser.extract_cards_titles(response.data)
-        assert set(cards_titles) == {
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == {
             underage.full_name,
             old_grant_18.full_name,
             new_grant_18.full_name,
             random.full_name,
         }
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert_user_equals(cards_text[0], underage)
-        assert_user_equals(cards_text[1], old_grant_18)
-        assert_user_equals(cards_text[2], new_grant_18)
-        assert_user_equals(cards_text[3], random)
+        rows = sorted(rows, key=lambda row: int(row["ID"]))  # ensures deterministic order
+        assert_user_equals(rows[0], underage)
+        assert_user_equals(rows[1], old_grant_18)
+        assert_user_equals(rows[2], new_grant_18)
+        assert_user_equals(rows[3], random)
 
     @pytest.mark.parametrize("query", ["+33756273849", "0756273849", "756273849"])
     def test_can_search_public_account_by_phone(self, authenticated_client, query):
@@ -455,8 +480,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 0
+        assert html_parser.count_table_rows(response.data) == 0
 
     def test_can_search_public_account_empty_query(self, authenticated_client):
         create_bunch_of_accounts()
@@ -465,7 +489,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q=""))
             assert response.status_code == 200
 
-        assert len(html_parser.extract_cards_text(response.data)) == 0
+        assert html_parser.count_table_rows(response.data) == 0
 
     @pytest.mark.parametrize("query", ["Ge*", "([{#/="])
     def test_can_search_public_account_unexpected(self, authenticated_client, query):
@@ -475,8 +499,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 0
+        assert html_parser.count_table_rows(response.data) == 0
 
     def test_search_public_account_with_percent_is_forbidden(self, authenticated_client):
         create_bunch_of_accounts()
@@ -560,9 +583,9 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 3
-        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 3
+        user_ids = {row["ID"] for row in rows}
         assert user_ids == {str(user_with_tag1.id), str(user_with_tag1_and_tag2.id), str(user_with_tag2.id)}
 
     def test_can_search_public_account_having_mulitple_tags(self, authenticated_client):
@@ -578,9 +601,9 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 2
-        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        user_ids = {row["ID"] for row in rows}
         assert user_ids == {str(user_with_tag1.id), str(user_with_tag1_and_tag2.id)}
 
     def test_can_list_all_public_accounts_matching_several_tags_each(self, authenticated_client):
@@ -594,8 +617,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert {user_id_from_card(card_text) for card_text in cards_text} == {str(user.id) for user in users}
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == {str(user.id) for user in users}
 
     def test_can_search_public_account_by_tags_and_query(self, authenticated_client):
         tag1, tag2, _ = users_factories.UserTagFactory.create_batch(3)
@@ -610,9 +633,9 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q="jean", **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 2
-        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        user_ids = {row["ID"] for row in rows}
         assert user_ids == {str(user2.id), str(user4.id)}
 
     @pytest.mark.parametrize(
@@ -638,8 +661,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert {user_id_from_card(card_text) for card_text in cards_text} == user_ids_of_groups(users, expected_groups)
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == user_ids_of_groups(users, expected_groups)
 
     def test_display_accounts_tags(self, authenticated_client):
         tag1 = users_factories.UserTagFactory(label="Tag 1")
@@ -653,23 +676,16 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q="jean"))
             assert response.status_code == 200
 
-        soup = html_parser.get_soup(response.data)
-        cards = soup.find_all(class_="card")
-        assert len(cards) == 2
+        rows = html_parser.extract_table_rows(response.data, td_text_only=False)
+        rows_by_user_id = {html_parser.filter_whitespaces(row["ID"].text): row for row in rows}
+        assert set(rows_by_user_id) == {str(user1.id), str(user2.id)}
 
-        user_ids = {user_id_from_card(html_parser.filter_whitespaces(card.text)) for card in cards}
-        assert user_ids == {str(user1.id), str(user2.id)}
-        card1 = [c for c in cards if user_id_from_card(html_parser.filter_whitespaces(c.text)) == str(user1.id)][0]
-        card2 = [c for c in cards if user_id_from_card(html_parser.filter_whitespaces(c.text)) == str(user2.id)][0]
-
-        card1_badges = html_parser.extract_badges(card1.encode())
-        card2_badges = html_parser.extract_badges(card2.encode())
-        assert set(card1_badges) == {"Tag 1", "tag-2"}
-        assert set(card2_badges) == {"Tag 3"}
+        assert set(html_parser.extract_badges(rows_by_user_id[str(user1.id)]["Tags"].decode())) == {"Tag 1", "tag-2"}
+        assert set(html_parser.extract_badges(rows_by_user_id[str(user2.id)]["Tags"].decode())) == {"Tag 3"}
 
     def test_search_suspended_public_account_data(self, authenticated_client):
         underage, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
-        # we must have at least two results so that it does not redirect to details page and we can check cards content
+        # we must have at least two results so that it does not redirect to details page and we can check rows content
         common_name = "Suspended-Family"
         underage.lastName = common_name
         underage.isActive = False
@@ -686,10 +702,11 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q=common_name))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 2
-        assert_user_equals(cards_text[0], underage)
-        assert_user_equals(cards_text[1], old_grant_18)
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        rows = sorted(rows, key=lambda row: int(row["ID"]))  # ensures deterministic order
+        assert_user_equals(rows[0], underage)
+        assert_user_equals(rows[1], old_grant_18)
 
     def test_search_suspended_unsuspended_twice(self, authenticated_client):
         user = users_factories.UserFactory(isActive=False)
@@ -790,10 +807,11 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 2
-        assert_user_equals(cards_text[0], users["underage_user"])
-        assert_user_equals(cards_text[1], users["beneficiary_user"])
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        rows = sorted(rows, key=lambda row: int(row["ID"]))  # ensures deterministic order
+        assert_user_equals(rows[0], users["underage_user"])
+        assert_user_equals(rows[1], users["beneficiary_user"])
 
     def test_search_with_credits_not_in_filter(self, authenticated_client):
         users = self._create_users_by_credit()
@@ -805,10 +823,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert {user_id_from_card(card_text) for card_text in cards_text} == {
-            str(users[name].id) for name in expected_names
-        }
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == {str(users[name].id) for name in expected_names}
 
     def _create_users_by_credit(self) -> dict[str, users_models.User]:
         return {
@@ -839,8 +855,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q="vi", **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert {user_id_from_card(card_text) for card_text in cards_text} == {str(user.id) for user in tagged_users}
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == {str(user.id) for user in tagged_users}
 
     @pytest.mark.parametrize(
         "operator,date_value,expected_groups",
@@ -867,8 +883,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert {user_id_from_card(card_text) for card_text in cards_text} == user_ids_of_groups(users, expected_groups)
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == user_ids_of_groups(users, expected_groups)
 
     @pytest.mark.parametrize(
         "operator,days_from_now,expected_groups",
@@ -907,8 +923,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert {user_id_from_card(card_text) for card_text in cards_text} == user_ids_of_groups(users, expected_groups)
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == user_ids_of_groups(users, expected_groups)
 
     def test_list_accounts_by_deposit_expiration_date_finds_expired_deposits(self, authenticated_client):
         now = date_utils.get_naive_utc_now()
@@ -922,10 +938,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert {user_id_from_card(card_text) for card_text in cards_text} == {
-            str(user.id) for user in users_with_expired_deposit
-        }
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == {str(user.id) for user in users_with_expired_deposit}
 
     @pytest.mark.parametrize(
         "operator,searched_domain,expected_groups",
@@ -953,8 +967,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert {user_id_from_card(card_text) for card_text in cards_text} == user_ids_of_groups(users, expected_groups)
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == user_ids_of_groups(users, expected_groups)
 
     @pytest.mark.parametrize(
         "operator,expected_groups",
@@ -974,8 +988,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert {user_id_from_card(card_text) for card_text in cards_text} == user_ids_of_groups(users, expected_groups)
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == user_ids_of_groups(users, expected_groups)
 
     @pytest.mark.parametrize(
         "operator,expected_groups",
@@ -1001,8 +1015,8 @@ class ListPublicAccountsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert {user_id_from_card(card_text) for card_text in cards_text} == user_ids_of_groups(users, expected_groups)
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == user_ids_of_groups(users, expected_groups)
 
     def test_list_accounts_by_multiple_filters(self, authenticated_client):
         matching_user = users_factories.UserFactory(

@@ -51,13 +51,8 @@ addonList.push(
         return ($a, $b) => {
           const aValue = this.#getValue($a, index)
           const bValue = this.#getValue($b, index)
-          if (aValue === bValue){
-            return 0
-          }else if([aValue, bValue].toSorted()[0] === aValue) {
-            return -1
-          } else {
-            return 1
-          }
+
+          return aValue.localeCompare(bValue)
         }
       }
     }
@@ -70,6 +65,7 @@ addonList.push(
       const collapsables = []
       let $header = null
       for (let i = 0; i < rawLines.length; i++) {
+        // TODO (igabriele, 2026-08-27): $line doesn't exist. Fix that in a BSR after investigation.
         if($container !== $table || !$line.getElementsByTagName('th')){
           const $line = rawLines[i]
           if($line?.classList?.contains('accordion-collapse')){

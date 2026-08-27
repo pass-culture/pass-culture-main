@@ -1,18 +1,34 @@
-{% macro result_card_switch(row) %}
-  {% set search_form = advanced_form %}
-  {% include "components/search/result_card.html" %}
-{% endmacro %}
-<div>
-  {% if rows %}
-    <div>
-      <p class="lead">{{ rows | length }} résultat{{ rows | length | pluralize }}</p>
-      <div>
-        <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-4">
-          {% for row in rows %}
-            <div class="col">{{ result_card_switch(row) }}</div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  {% endif %}
-</div>
+{% import "components/badges.html" as badges %}
+{% for user in rows %}
+  <tr id="user-row-{{ user.id }}">
+    <td data-pc-sort-table-value="{{ user.id }}">
+      <a class="link-primary"
+         href="{{ get_link_to_detail(user.id, form=advanced_form) }}">{{ user.id }}</a>
+    </td>
+    <td data-pc-sort-table-value="{{ user.lastName }} {{ user.firstName }}">{{ user.firstName ~ " " ~ user.lastName }}</td>
+    <td data-pc-sort-table-value="{% if user.birth_date %}{{ user.birth_date }}{% endif %}">
+      {{ user.birth_date | format_date }} ({{ user.age }} ans)
+    </td>
+    <td>{{ user.email }}</td>
+    <td>
+      {{ user.city | empty_string_if_null }}
+      {% if user.departementCode %}({{ user.departementCode }}){% endif %}
+    </td>
+    <td>
+      {% for role in user.roles %}
+        {{ role | format_role(deposits=user.deposits) | format_badge("primary") }}
+      {% endfor %}
+      {% if not user.isActive %}{{ user.isActive | format_state | format_badge("danger") }}{% endif %}
+    </td>
+    <td data-pc-sort-table-value="{% if user.deposit.expirationDate %}{{ user.deposit.expirationDate }}{% endif %}">
+      {{ user.deposit.expirationDate | format_date_time }}
+    </td>
+    <td>{{ user.tags | map("string") | format_as_badges }}</td>
+    <td>
+      {% if user.suspension_reason_expression %}
+        {{ user.suspension_reason_expression | format_reason_label }}
+        le {{ user.suspension_date_expression | format_date }}
+      {% endif %}
+    </td>
+  </tr>
+{% endfor %}
