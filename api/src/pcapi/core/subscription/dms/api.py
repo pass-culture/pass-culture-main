@@ -4,7 +4,6 @@ import hashlib
 import logging
 import urllib.parse
 
-import flask
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 from dateutil.relativedelta import relativedelta
@@ -1093,12 +1092,9 @@ def create_ubble_identification(
 
     webhook_url = urllib.parse.urljoin(
         settings.API_URL,
-        flask.url_for(
-            "Public API.ubble_webhook_for_demarche_numerique",
-            procedure_number=application_content.procedure_number,
-            application_number=application_content.application_number,
-            _external=False,
-        ),
+        # flask.url_for() causes an exception when code runs from flask command `import_all_updated_dms_applications`:
+        # Unable to build URLs outside an active request without 'SERVER_NAME' configured. [...]
+        f"/webhooks/ubble/sync-dn/{application_content.procedure_number}/{application_content.application_number}",
     )
 
     ubble_content = ubble.create_and_start_identity_verification(
