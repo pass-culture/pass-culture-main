@@ -82,7 +82,7 @@
     "yup": "1.7.1"
   },
   "devDependencies": {
-    "@axe-core/playwright": "4.12.1",
+    "@axe-core/playwright": "4.13.0",
     "@biomejs/biome": "2.5.7",
     "@hey-api/openapi-ts": "0.99.0",
     "@playwright/test": "1.62.1",
