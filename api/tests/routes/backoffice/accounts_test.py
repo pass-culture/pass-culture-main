@@ -6678,3 +6678,278 @@ class DisconnectPublicAccountTest(PostEndpointHelper):
         assert action_history.actionType == history_models.ActionType.USER_DISCONNECTED
         assert action_history.comment == "A funny comment"
         assert action_history.userId == user.id
+
+
+class GetBatchSendPublicAccountResetPasswordEmailFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_send_public_account_reset_password_email_form"
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_get_batch_send_reset_password_email_form(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client)
+        assert response.status_code == 200
+
+
+class BatchSendPublicAccountResetPasswordEmailTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_send_public_account_reset_password_email"
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_batch_send_reset_password_email(self, authenticated_client):
+        users = users_factories.BeneficiaryFactory.create_batch(2)
+        passwords_before_response = [user.password for user in users]
+
+        expected_num_queries = 1  # session + current user
+        expected_num_queries += 1  # select users with their tags
+        expected_num_queries += 1  # select users to render the updated rows
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": ",".join(str(user.id) for user in users)},
+            expected_num_queries=expected_num_queries,
+        )
+        assert response.status_code == 200
+
+        assert [user.password for user in users] == passwords_before_response
+
+        assert len(mails_testing.outbox) == len(users)
+        assert {email_data["To"] for email_data in mails_testing.outbox} == {user.email for user in users}
+        for email_data in mails_testing.outbox:
+            assert email_data["template"] == TransactionalEmail.NEW_PASSWORD_REQUEST.value.__dict__
+
+        for user in users:
+            html_parser.get_tag(response.data, tag="tr", id=f"user-row-{user.id}")
+
+    def test_batch_send_reset_password_email_with_invalid_object_ids(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "1,abc"})
+        assert response.status_code == 400
+        assert len(mails_testing.outbox) == 0
+
+    def test_batch_send_reset_password_email_with_users_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "0"})
+        assert response.status_code == 404
+        assert len(mails_testing.outbox) == 0
+
+    def test_batch_send_reset_password_email_with_non_beneficiary_user(self, authenticated_client):
+        beneficiary = users_factories.BeneficiaryFactory()
+        pro_user = users_factories.ProFactory()
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": f"{beneficiary.id},{pro_user.id}"})
+        assert response.status_code == 403
+        assert len(mails_testing.outbox) == 0
+
+
+class GetBatchInvalidatePublicAccountPasswordFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_invalidate_public_account_password_form"
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_get_batch_invalidate_password_form(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client)
+        assert response.status_code == 200
+
+
+class BatchInvalidatePublicAccountPasswordTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_invalidate_public_account_password"
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_batch_invalidate_password(self, authenticated_client, legit_user):
+        users = users_factories.BeneficiaryFactory.create_batch(2)
+        passwords_before_response = [user.password for user in users]
+
+        expected_num_queries = 1  # session + current user
+        expected_num_queries += 1  # select users with their tags
+        expected_num_queries += len(users) * 2  # for each user: delete native sessions + update password
+        expected_num_queries += len(users)  # for each user: insert action history
+        expected_num_queries += 1  # select users to render the updated rows
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": ",".join(str(user.id) for user in users)},
+            expected_num_queries=expected_num_queries,
+        )
+        assert response.status_code == 200
+
+        for user, password_before_response in zip(users, passwords_before_response):
+            assert user.password != password_before_response
+            assert len(user.action_history) == 1
+            assert user.action_history[0].actionType == history_models.ActionType.USER_PASSWORD_INVALIDATED
+            assert user.action_history[0].authorUser == legit_user
+
+            html_parser.get_tag(response.data, tag="tr", id=f"user-row-{user.id}")
+
+    def test_batch_invalidate_password_with_invalid_object_ids(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "1,abc"})
+        assert response.status_code == 400
+
+    def test_batch_invalidate_password_with_non_beneficiary_user(self, authenticated_client):
+        beneficiary = users_factories.BeneficiaryFactory()
+        pro_user = users_factories.ProFactory()
+        password_before_response = beneficiary.password
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": f"{beneficiary.id},{pro_user.id}"})
+        assert response.status_code == 403
+        assert beneficiary.password == password_before_response
+
+
+class GetBatchSuspendPublicAccountFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_suspend_public_account_form"
+    needed_permission = perm_models.Permissions.SUSPEND_USER
+
+    def test_get_batch_suspend_form(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client)
+        assert response.status_code == 200
+
+
+class BatchSuspendPublicAccountTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_suspend_public_account"
+    needed_permission = perm_models.Permissions.SUSPEND_USER
+
+    def test_batch_suspend(self, authenticated_client, legit_user):
+        users = users_factories.BeneficiaryFactory.create_batch(2)
+
+        expected_num_queries = 1  # session + current user
+        expected_num_queries += 1  # select users with their tags
+        expected_num_queries += len(users)  # update user (isActive)
+        expected_num_queries += len(users) * 2  # delete web + native user sessions
+        expected_num_queries += len(users)  # select backoffice profile
+        expected_num_queries += len(users)  # insert action history
+        expected_num_queries += len(users)  # select confirmed bookings to cancel
+        expected_num_queries += len(users)  # check email not used as venue booking email (Brevo cleanup)
+        expected_num_queries += 1  # select users to render the updated rows
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": ",".join(str(user.id) for user in users),
+                "reason": users_constants.SuspensionReason.FRAUD_SUSPICION.name,
+                "comment": "Suspension en masse",
+            },
+            expected_num_queries=expected_num_queries,
+        )
+        assert response.status_code == 200
+
+        for user in users:
+            assert not user.isActive
+            assert len(user.action_history) == 1
+            assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+            assert user.action_history[0].authorUser == legit_user
+            assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.FRAUD_SUSPICION.value
+            assert user.action_history[0].comment == "Suspension en masse"
+
+            html_parser.get_tag(response.data, tag="tr", id=f"user-row-{user.id}")
+
+    def test_batch_suspend_with_invalid_reason(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client, form={"object_ids": str(user.id), "reason": "invalid", "comment": ""}
+        )
+        assert response.status_code == 400
+        assert user.isActive
+
+    def test_batch_suspend_with_invalid_object_ids(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": "1,abc",
+                "reason": users_constants.SuspensionReason.FRAUD_SUSPICION.name,
+                "comment": "",
+            },
+        )
+        assert response.status_code == 400
+
+    def test_batch_suspend_with_non_beneficiary_user(self, authenticated_client):
+        beneficiary = users_factories.BeneficiaryFactory()
+        pro_user = users_factories.ProFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": f"{beneficiary.id},{pro_user.id}",
+                "reason": users_constants.SuspensionReason.FRAUD_SUSPICION.name,
+                "comment": "",
+            },
+        )
+        assert response.status_code == 403
+        assert beneficiary.isActive
+        assert pro_user.isActive
+
+
+class GetBatchTagPublicAccountFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_tag_public_account_form"
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
+
+    def test_get_batch_tag_form(self, authenticated_client):
+        common_tag = users_factories.UserTagFactory(label="Ambassadeur A")
+        other_tag = users_factories.UserTagFactory(label="Ambassadeur B")
+        users = [
+            users_factories.BeneficiaryFactory(tags=[common_tag]),
+            users_factories.BeneficiaryFactory(tags=[common_tag, other_tag]),
+        ]
+
+        response = self.post_to_endpoint(
+            authenticated_client, form={"object_ids": ",".join(str(user.id) for user in users)}
+        )
+        assert response.status_code == 200
+
+    def test_get_batch_tag_form_with_users_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "0"})
+        assert response.status_code == 404
+
+
+class BatchTagPublicAccountTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_tag_public_account"
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
+
+    def test_batch_tag(self, authenticated_client):
+        common_tag_to_remove = users_factories.UserTagFactory(label="Common Tag To Remove")
+        common_tag_to_keep = users_factories.UserTagFactory(label="Common Tag to Keep")
+        common_tag_to_add = users_factories.UserTagFactory(label="Common Tag To Add")
+        common_but_existing_tag_to_add = users_factories.UserTagFactory(label="Common But Existing Tag To Add")
+        specific_tag_to_keep = users_factories.UserTagFactory(label="Specific Tag To Keep")
+
+        users = [
+            users_factories.BeneficiaryFactory(
+                tags=[common_tag_to_remove, common_tag_to_keep, common_but_existing_tag_to_add]
+            ),
+            users_factories.BeneficiaryFactory(tags=[common_tag_to_remove, common_tag_to_keep, specific_tag_to_keep]),
+        ]
+
+        expected_num_queries = 1  # session + current user
+        expected_num_queries += 1  # select tags for form choices
+        expected_num_queries += 1  # select users with their tags
+        expected_num_queries += 1  # delete user tags
+        expected_num_queries += 1  # insert user tags
+        expected_num_queries += 1  # select users to render the updated rows
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": ",".join(str(user.id) for user in users),
+                "tags": [common_tag_to_keep.id, common_tag_to_add.id, common_but_existing_tag_to_add.id],
+            },
+            expected_num_queries=expected_num_queries,
+        )
+        assert response.status_code == 200
+
+        assert set(users[0].tags) == {common_tag_to_keep, common_tag_to_add, common_but_existing_tag_to_add}
+        assert set(users[1].tags) == {
+            common_tag_to_keep,
+            common_tag_to_add,
+            common_but_existing_tag_to_add,
+            specific_tag_to_keep,
+        }
+
+        for user in users:
+            html_parser.get_tag(response.data, tag="tr", id=f"user-row-{user.id}")
+
+    def test_batch_tag_with_invalid_object_ids(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "1,abc", "tags": []})
+        assert response.status_code == 400
+
+    def test_batch_tag_with_non_beneficiary_user(self, authenticated_client):
+        tag = users_factories.UserTagFactory(label="Ambassadeur A")
+        beneficiary = users_factories.BeneficiaryFactory()
+        pro_user = users_factories.ProFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": f"{beneficiary.id},{pro_user.id}", "tags": [tag.id]},
+        )
+        assert response.status_code == 403
+        assert beneficiary.tags == []
+        assert pro_user.tags == []

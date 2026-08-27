@@ -10,6 +10,7 @@ from flask_wtf import FlaskForm
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.utils.access_control import has_current_user_permission
 
@@ -55,6 +56,10 @@ class SuspendUserForm(FlaskForm):
             self.reason.choices = PUBLIC_SUSPENSION_FORM_CHOICES
         if suspension_type in (SuspensionUserType.PRO, SuspensionUserType.ADMIN):
             del self.clear_email
+
+
+class BatchSuspendUserForm(empty_forms.BatchForm, SuspendUserForm):
+    pass
 
 
 class UnsuspendUserForm(FlaskForm):
