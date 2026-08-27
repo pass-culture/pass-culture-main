@@ -559,7 +559,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                     "stock": {"price": 10, "quantity": 10},
                     "ean": "1234567890123",
                     "publicationDatetime": (
-                        datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=3)
+                        datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=3)
                     ).isoformat(),
                 },
                 {"products.0.publicationDatetime": ["The datetime must be in the future."]},
@@ -579,7 +579,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                     "stock": {"price": 10, "quantity": 10},
                     "ean": "1234567890123",
                     "bookingAllowedDatetime": (
-                        datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=3)
+                        datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=3)
                     ).isoformat(),
                 },
                 {"products.0.bookingAllowedDatetime": ["The datetime must be in the future."]},
@@ -598,14 +598,14 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                 {
                     "stock": {
                         "bookingLimitDatetime": (
-                            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3)
+                            datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=3)
                         ).isoformat(),
                         "price": 10,
                         "quantity": 10,
                     },
                     "ean": "1234567890123",
                     "publicationDatetime": (
-                        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100)
+                        datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=100)
                     ).isoformat(),
                 },
                 {"products.0.__root__": ["`stock.bookingLimitDatetime` must be after `publicationDatetime`"]},
@@ -615,14 +615,14 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                 {
                     "stock": {
                         "bookingLimitDatetime": (
-                            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3)
+                            datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=3)
                         ).isoformat(),
                         "price": 10,
                         "quantity": 10,
                     },
                     "ean": "1234567890123",
                     "bookingAllowedDatetime": (
-                        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100)
+                        datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=100)
                     ).isoformat(),
                 },
                 {"products.0.__root__": ["`stock.bookingLimitDatetime` must be after `bookingAllowedDatetime`"]},

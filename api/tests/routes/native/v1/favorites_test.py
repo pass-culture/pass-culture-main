@@ -1,8 +1,8 @@
 import concurrent.futures
 import time
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from decimal import Decimal
 from unittest import mock
 
@@ -54,7 +54,7 @@ class GetTest:
             # Given
             # 13h time delta should make this runnable everywhere on earth: it
             # should always be > now()
-            start = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=13)
+            start = datetime.now(UTC).replace(tzinfo=None) + timedelta(hours=13)
             day_before_start = start - timedelta(days=1)
             day_after_start = start + timedelta(days=1)
             user = users_factories.UserFactory()

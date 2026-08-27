@@ -91,7 +91,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         offer = factories.create_collective_offer_by_status(status=status, provider=venue_provider.provider)
 
         # add an offer with another status that will not be present in the result
-        other_status = next((s for s in models.CollectiveOfferDisplayedStatus if s != status))
+        other_status = next(s for s in models.CollectiveOfferDisplayedStatus if s != status)
         factories.create_collective_offer_by_status(status=other_status, provider=venue_provider.provider)
 
         with testing.assert_num_queries(self.num_queries):

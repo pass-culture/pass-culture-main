@@ -4,7 +4,7 @@ from contextlib import contextmanager
 
 
 @contextmanager
-def logging_at_level(target_logger: logging.Logger, level: int) -> Generator[None, None, None]:
+def logging_at_level(target_logger: logging.Logger, level: int) -> Generator[None]:
     """
     Generator to set logging level of given logger to target level (most often to `DEBUG`) during the execution of a function
     and restore logging level to previous level afterwards.

@@ -450,7 +450,7 @@ def format_cents(
 
 
 def format_count(number: int) -> str:
-    return "{:,}".format(number).replace(",", "\u202f")
+    return f"{number:,}".replace(",", "\u202f")
 
 
 def format_rate(rate: float | None, display_percent_sign: bool = True) -> str:
@@ -1771,7 +1771,7 @@ def format_offer_types(data: list[str]) -> str:
 
 def format_website(website: str) -> str:
     if not re.match(r"^\w+://", website):
-        return "https://{}".format(website)
+        return f"https://{website}"
     return website
 
 

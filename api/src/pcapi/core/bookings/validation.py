@@ -55,7 +55,7 @@ def _stock_can_be_booked(stock: Stock) -> bool:
         return True
 
     timezoned_starting_from = date_utils.default_timezone_to_local_datetime(starting_from, "UTC")
-    return timezoned_starting_from <= datetime.datetime.now(datetime.timezone.utc)
+    return timezoned_starting_from <= datetime.datetime.now(datetime.UTC)
 
 
 def check_stock_is_bookable(stock: Stock, quantity: int) -> None:

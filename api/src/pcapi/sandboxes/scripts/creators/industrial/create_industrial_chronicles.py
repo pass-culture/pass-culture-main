@@ -17,12 +17,12 @@ logger = logging.getLogger(__name__)
 
 def ean_generator(factor: int) -> str:
     seed = 7236233859864
-    return str((seed * (factor + 1)))[:13]
+    return str(seed * (factor + 1))[:13]
 
 
 def allocine_id_generator(factor: int) -> str:
     seed = 7236233859864
-    return str((seed * (factor + 1)))[:10]
+    return str(seed * (factor + 1))[:10]
 
 
 @log_func_duration

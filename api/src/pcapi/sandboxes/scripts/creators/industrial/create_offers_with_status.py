@@ -77,7 +77,7 @@ def create_offers_fully_booked(user_bene: User, venue: Venue) -> None:
 
 
 def create_offers_expired(venue: Venue) -> None:
-    for i in range(0, 10):
+    for i in range(10):
         offer_event = EventOfferFactory.create(
             name=f"Ciné expiré {i}",
             venue=venue,
@@ -93,7 +93,7 @@ def create_offers_expired(venue: Venue) -> None:
 
 
 def create_offers_pending_and_refused(venue: Venue) -> None:
-    for i in range(0, 10):
+    for i in range(10):
         offer_event = EventOfferFactory.create(
             name=f"Ciné en attente de validation {i}",
             venue=venue,

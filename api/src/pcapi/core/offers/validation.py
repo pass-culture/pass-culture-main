@@ -507,11 +507,9 @@ def check_activation_codes_expiration_datetime(
 
     if booking_limit_datetime is not None:
         if activation_codes_expiration_datetime.tzinfo is None:
-            activation_codes_expiration_datetime = activation_codes_expiration_datetime.replace(
-                tzinfo=datetime.timezone.utc
-            )
+            activation_codes_expiration_datetime = activation_codes_expiration_datetime.replace(tzinfo=datetime.UTC)
         if booking_limit_datetime.tzinfo is None:
-            booking_limit_datetime = booking_limit_datetime.replace(tzinfo=datetime.timezone.utc)
+            booking_limit_datetime = booking_limit_datetime.replace(tzinfo=datetime.UTC)
 
         if activation_codes_expiration_datetime < booking_limit_datetime + datetime.timedelta(days=7):
             errors = api_errors.ApiErrors()

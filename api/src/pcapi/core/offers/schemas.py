@@ -51,7 +51,7 @@ class CreateOffer(BaseModel):
 
     @root_validator(pre=True)
     def set_ean_from_extra_data(cls, values: dict) -> dict:
-        if "extraData" in values and values["extraData"]:
+        if values.get("extraData"):
             ean = values["extraData"].get("ean")
             if ean:
                 values["ean"] = ean

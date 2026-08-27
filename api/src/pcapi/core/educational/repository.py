@@ -540,7 +540,7 @@ def get_collective_offers_by_filters(filters: schemas.CollectiveOffersFilter) ->
     if filters.name_keywords is not None:
         search = filters.name_keywords
         if len(filters.name_keywords) > 3:
-            search = "%{}%".format(filters.name_keywords)
+            search = f"%{filters.name_keywords}%"
 
         query = query.filter(models.CollectiveOffer.name.ilike(search))
 
@@ -586,7 +586,7 @@ def get_collective_offers_by_filters(filters: schemas.CollectiveOffersFilter) ->
 
     if filters.formats:
         query = query.filter(
-            models.CollectiveOffer.formats.overlap(postgresql.array((format.name for format in filters.formats)))
+            models.CollectiveOffer.formats.overlap(postgresql.array(format.name for format in filters.formats))
         )
 
     if filters.location_type is not None:
@@ -628,7 +628,7 @@ def get_collective_offers_template_by_filters(
     if filters.name_keywords is not None:
         search = filters.name_keywords
         if len(filters.name_keywords) > 3:
-            search = "%{}%".format(filters.name_keywords)
+            search = f"%{filters.name_keywords}%"
 
         query = query.filter(models.CollectiveOfferTemplate.name.ilike(search))
 
@@ -652,9 +652,7 @@ def get_collective_offers_template_by_filters(
 
     if filters.formats:
         query = query.filter(
-            models.CollectiveOfferTemplate.formats.overlap(
-                postgresql.array((format.name for format in filters.formats))
-            )
+            models.CollectiveOfferTemplate.formats.overlap(postgresql.array(format.name for format in filters.formats))
         )
 
     if filters.location_type is not None:

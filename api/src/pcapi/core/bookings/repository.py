@@ -907,7 +907,7 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
     return output.getvalue()
 
 
-def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[models.Booking, None, None]:
+def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[models.Booking]:
     """Find bookings expiring in exactly `expiration_days_delta` days"""
     query = (
         db.session.query(models.Booking)

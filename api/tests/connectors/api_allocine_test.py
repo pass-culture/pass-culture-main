@@ -183,19 +183,19 @@ class GetMoviePosterFromAllocineTest:
     def test_should_return_poster_content_from_allocine_api(self, request_get):
         poster_url = "https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg"
         response_return_value = MagicMock(status_code=200, text="")
-        response_return_value.content = bytes()
+        response_return_value.content = b""
         request_get.return_value = response_return_value
 
         api_response = get_movie_poster_from_allocine(poster_url)
 
         request_get.assert_called_once_with(poster_url)
-        assert api_response == bytes()
+        assert api_response == b""
 
     @patch("pcapi.connectors.api_allocine.requests.get")
     def test_should_raise_exception_when_allocine_api_call_fails(self, request_get):
         poster_url = "https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg"
         response_return_value = MagicMock(status_code=400, text="")
-        response_return_value.content = bytes()
+        response_return_value.content = b""
         request_get.return_value = response_return_value
 
         with pytest.raises(AllocineException) as exception:

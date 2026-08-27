@@ -9,7 +9,7 @@ def validate_generic(model: Model) -> ApiErrors:
     api_errors = ApiErrors()
     columns = model.__mapper__.column_attrs
 
-    for key in columns.keys():
+    for key in columns.keys():  # noqa: SIM118
         if key.startswith("_sa_"):
             continue
         if isinstance(columns[key].expression, Label):

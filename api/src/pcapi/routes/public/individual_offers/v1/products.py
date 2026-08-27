@@ -1,7 +1,7 @@
 import copy
 import logging
+from datetime import UTC
 from datetime import datetime
-from datetime import timezone
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -208,7 +208,7 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
     offers_api.update_offer_fraud_information(offer, user=None)
 
     updates = body.dict(by_alias=True, exclude_unset=True)
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    now = datetime.now(UTC).replace(tzinfo=None)
     publication_datetime = updates.get("publicationDatetime", now)
 
     # if publication_datetime is explicitly set to None, the offer
@@ -506,7 +506,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
             {
                 "product.subcategory": [
                     "Only "
-                    + ", ".join((subcategory.id for subcategory in serialization.ALLOWED_PRODUCT_SUBCATEGORIES))
+                    + ", ".join(subcategory.id for subcategory in serialization.ALLOWED_PRODUCT_SUBCATEGORIES)
                     + " products can be edited"
                 ]
             }
@@ -563,7 +563,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
     # TODO(jbaudet): remove this part, do not use isActive once
     # the public API does not allow it anymore
     if "publicationDatetime" not in updates and updates.get("isActive") is not None:
-        publication_datetime = datetime.now(timezone.utc) if is_active else None
+        publication_datetime = datetime.now(UTC) if is_active else None
 
     offer_body = offers_schemas.UpdateOffer(
         name=get_field(offer, updates, "name"),

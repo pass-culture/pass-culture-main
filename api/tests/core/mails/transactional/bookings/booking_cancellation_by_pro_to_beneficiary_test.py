@@ -1,6 +1,6 @@
 import decimal
+from datetime import UTC
 from datetime import datetime
-from datetime import timezone
 
 import pytest
 import time_machine
@@ -131,9 +131,7 @@ class BrevoSendWarningToBeneficiaryAfterProBookingCancellationTest:
 class BrevoRetrieveDataToWarnUserAfterProBookingCancellationTest:
     def test_should_return_event_data_when_booking_is_on_an_event(self):
         # Given
-        stock = offers_factories.EventStockFactory(
-            beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        )
+        stock = offers_factories.EventStockFactory(beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=UTC))
         booking = bookings_factories.BookingFactory(
             stock=stock,
             user__firstName="Georges",

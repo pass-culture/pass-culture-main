@@ -75,7 +75,7 @@ class CGRExtractTransformLoadProcess(CinemaETLProcessTemplate[CGRAPIClient, CGRE
                 show_datetime = date_utils.local_datetime_to_default_timezone(
                     datetime.datetime.combine(show.Date, show.Heure), local_tz
                 )
-                show_datetime = show_datetime.astimezone(tz=datetime.timezone.utc).replace(tzinfo=None)
+                show_datetime = show_datetime.astimezone(tz=datetime.UTC).replace(tzinfo=None)
 
                 features = [ShowFeatures.VF if show.Version == "VF" else ShowFeatures.VO]
                 if show.Relief == "3D":

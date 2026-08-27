@@ -191,7 +191,7 @@ def test_unindex_all_offers(app):
     with requests_mock.Mocker() as mocker:
         posted = mocker.post(
             "https://dummy-app-id.algolia.net/1/indexes/offers/clear",
-            json={"task_id": 123, "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat()},
+            json={"task_id": 123, "updated_at": datetime.datetime.now(datetime.UTC).isoformat()},
         )
         backend.unindex_all_offers()
         assert posted.called
@@ -230,7 +230,7 @@ def test_unindex_all_collective_offer_templates():
     with requests_mock.Mocker() as mocker:
         posted = mocker.post(
             "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/clear",
-            json={"task_id": 123, "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat()},
+            json={"task_id": 123, "updated_at": datetime.datetime.now(datetime.UTC).isoformat()},
         )
         backend.unindex_all_collective_offer_templates()
         assert posted.called

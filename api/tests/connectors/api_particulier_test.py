@@ -111,7 +111,7 @@ class QuotientFamilialTest:
             "annee": ["2023"],
             "mois": ["6"],
         }
-        assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
+        assert "codeCogInseeCommuneNaissance" not in post_request.qs
 
     def test_get_quotient_familial_autofills_birth_country(self, requests_mock):
         custodian = subscription_factories.BonusCreditPersonFactory.create(
@@ -221,7 +221,7 @@ class DisabledAdultAllowanceTest:
             "sexeEtatCivil": ["M"],
             "codeCogInseePaysNaissance": ["99243"],
         }
-        assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
+        assert "codeCogInseeCommuneNaissance" not in post_request.qs
 
     def test_get_adult_disability_allowance_autofills_birth_country(self, requests_mock):
         person = subscription_factories.BonusCreditPersonFactory.create(
@@ -327,7 +327,7 @@ class DisabledChildEducationAllowanceTest:
             "sexeEtatCivil": ["M"],
             "codeCogInseePaysNaissance": ["99243"],
         }
-        assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
+        assert "codeCogInseeCommuneNaissance" not in post_request.qs
 
     def test_get_child_disability_allowance_autofills_birth_country(self, requests_mock):
         person = subscription_factories.BonusCreditPersonFactory.create(

@@ -156,7 +156,7 @@ class FormatDatetimeFromLocalTimezoneToUtcTest:
         result = local_datetime_to_default_timezone(dt=dt, local_tz=local_tz)
 
         # Then
-        assert result == datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.timezone.utc)
+        assert result == datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.UTC)
 
     def test_should_ignore_local_tz_when_datetime_already_have_a_timezone(self):
         # Given
@@ -167,7 +167,7 @@ class FormatDatetimeFromLocalTimezoneToUtcTest:
         result = local_datetime_to_default_timezone(dt=dt, local_tz=local_tz)
 
         # Then
-        assert result == datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.timezone.utc)
+        assert result == datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.UTC)
 
 
 class LocalDateToNaiveUtcDatetimeTest:
@@ -192,7 +192,7 @@ class FormatDatetimeFromUtcTimezoneToLocalTimezoneTest:
 
     def test_should_ignore_default_tz_when_datetime_already_have_a_timezone_convert_to_local(self):
         # Given
-        dt = datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.timezone.utc)
+        dt = datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.UTC)
         local_tz = METROPOLE_TIMEZONE
 
         # When

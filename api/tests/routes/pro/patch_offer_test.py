@@ -51,8 +51,8 @@ class Returns200Test:
             name="L'amie prodigieuse",
             description="Un livre sur l'italie des années 60",
         )
-        publication_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=2)
-        booking_allowed_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1)
+        publication_datetime = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(days=2)
+        booking_allowed_datetime = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(days=1)
 
         data = {
             "name": "Notre part de nuit",
@@ -86,8 +86,8 @@ class Returns200Test:
             offererAddress=None,
             description="description",
         )
-        publication_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=2)
-        booking_allowed_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1)
+        publication_datetime = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(days=2)
+        booking_allowed_datetime = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(days=1)
 
         data = {
             "name": "New name",
@@ -114,7 +114,7 @@ class Returns200Test:
         assert updated_offer.bookingAllowedDatetime == booking_allowed_datetime
         assert not updated_offer.product
 
-    @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.timezone.utc), tick=False)
+    @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.UTC), tick=False)
     @pytest.mark.parametrize(
         "initial_publication_datetime,request_publication_datetime,final_publication_datetime,response_publication_datetime",
         [
@@ -173,7 +173,7 @@ class Returns200Test:
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.publicationDatetime == final_publication_datetime
 
-    @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.timezone.utc), tick=False)
+    @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.UTC), tick=False)
     @pytest.mark.parametrize(
         "initial_booking_allowed_datetime,request_booking_allowed_datetime,final_booking_allowed_datetime,response_booking_allowed_datetime",
         [
@@ -1310,16 +1310,16 @@ class Returns200Test:
             externalTicketOfficeUrl="http://old.com",
             isDuo=False,
             durationMinutes=60,
-            publicationDatetime=datetime.datetime(2026, 8, 15, 12, 0, tzinfo=datetime.timezone.utc),
-            bookingAllowedDatetime=datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc),
+            publicationDatetime=datetime.datetime(2026, 8, 15, 12, 0, tzinfo=datetime.UTC),
+            bookingAllowedDatetime=datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.UTC),
             extraData={"old": "data"},
             idAtProvider="old-id",
             offererAddress=None,
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        new_publication_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=3)
-        new_booking_allowed_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=2)
+        new_publication_datetime = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(days=3)
+        new_booking_allowed_datetime = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(days=2)
 
         data = {
             "name": "New name",
@@ -1889,7 +1889,7 @@ class Returns200Test:
         assert response.json["highlightRequests"] == [{"id": highlight.id, "name": "Un temps fort"}]
         assert response.json["hasCulturalOutreachClaim"] is True
 
-    @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.timezone.utc), tick=False)
+    @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.UTC), tick=False)
     @pytest.mark.parametrize(
         "request_publication_datetime,expected_status",
         [
@@ -1926,7 +1926,7 @@ class Returns200Test:
             venue=venue,
             publicationDatetime=None,
         )
-        publication_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=2)
+        publication_datetime = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(days=2)
 
         response = auth_client.patch(
             self.endpoint.format(offer_id=offer.id),

@@ -160,7 +160,7 @@ class CGRStocks(LocalProvider):
         show_datetime = utils_date.local_datetime_to_default_timezone(
             datetime.datetime.combine(showtime.Date, showtime.Heure), local_tz
         )
-        show_datetime = show_datetime.astimezone(tz=datetime.timezone.utc).replace(
+        show_datetime = show_datetime.astimezone(tz=datetime.UTC).replace(
             tzinfo=None
         )  # to enable comparison in finance event update
         old_beginning_datetime = stock.beginningDatetime
@@ -231,7 +231,7 @@ class CGRStocks(LocalProvider):
         if self.film_infos.Affiche:
             image_url = self.film_infos.Affiche
             return self.cgr_client_api.get_movie_poster_from_api(image_url)
-        return bytes()
+        return b""
 
     def shall_synchronize_thumbs(self) -> bool:
         return True

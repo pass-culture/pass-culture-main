@@ -3477,7 +3477,7 @@ class GetOfferStockEditFormTest(GetEndpointHelper):
 
         assert response.status_code == 200
         assert (
-            "Le script de génération des cashflows est en cours, veuillez réessayer plus tard.".encode("utf-8")
+            "Le script de génération des cashflows est en cours, veuillez réessayer plus tard.".encode()
             in response.data
         )
 

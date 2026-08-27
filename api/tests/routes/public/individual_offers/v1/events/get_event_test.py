@@ -1,6 +1,6 @@
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 
 import pytest
 import time_machine
@@ -66,7 +66,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
             assert response.status_code == 404
 
-    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
+    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=UTC), tick=False)
     def test_get_event(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = self.setup_base_resource(venue=venue_provider.venue)

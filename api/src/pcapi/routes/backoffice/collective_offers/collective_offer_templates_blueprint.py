@@ -115,7 +115,7 @@ def _get_collective_offer_templates(
     if form.formats.data:
         base_query = base_query.filter(
             educational_models.CollectiveOfferTemplate.formats.overlap(
-                sa.dialects.postgresql.array((fmt for fmt in form.formats.data))
+                sa.dialects.postgresql.array(fmt for fmt in form.formats.data)
             )
         )
 
@@ -137,7 +137,7 @@ def _get_collective_offer_templates(
         if string_utils.is_numeric(search_query):
             base_query = base_query.filter(educational_models.CollectiveOfferTemplate.id == int(search_query))
         else:
-            name_query = "%{}%".format(search_query)
+            name_query = f"%{search_query}%"
             base_query = base_query.filter(educational_models.CollectiveOfferTemplate.name.ilike(name_query))
 
     if form.sort.data:

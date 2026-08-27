@@ -753,7 +753,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         """
         if self.thumbCount == 0:
             return None
-        return "{}/{}/{}".format(self.thumb_base_url, self.thumb_path_component, humanize(self.id))
+        return f"{self.thumb_base_url}/{self.thumb_path_component}/{humanize(self.id)}"
 
     def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
         if field not in type(self).__table__.columns:

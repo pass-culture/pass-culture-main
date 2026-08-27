@@ -136,9 +136,7 @@ def _get_collective_booking_ids_query(form: booking_forms.GetCollectiveBookingLi
 
     if form.formats.data:
         base_query = base_query.filter(
-            educational_models.CollectiveOffer.formats.overlap(
-                sa_dialects_psql.array((fmt for fmt in form.formats.data))
-            )
+            educational_models.CollectiveOffer.formats.overlap(sa_dialects_psql.array(fmt for fmt in form.formats.data))
         )
 
     if form.institution.data:

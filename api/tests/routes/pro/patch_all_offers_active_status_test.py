@@ -1,7 +1,6 @@
 from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 
 import pytest
 import time_machine
@@ -15,7 +14,7 @@ from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 
-now_datetime_with_tz = datetime.now(timezone.utc)
+now_datetime_with_tz = datetime.now(UTC)
 now_datetime_without_tz = now_datetime_with_tz.replace(tzinfo=None)
 
 

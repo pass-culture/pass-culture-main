@@ -132,5 +132,5 @@ class PatchPriceCategoryTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        assert all((stock.price == decimal.Decimal("0.25") for stock in offer.stocks if not stock.isEventExpired))
+        assert all(stock.price == decimal.Decimal("0.25") for stock in offer.stocks if not stock.isEventExpired)
         assert expired_stock.price != decimal.Decimal("0.25")

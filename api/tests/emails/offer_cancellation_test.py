@@ -1,6 +1,6 @@
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from unittest.mock import patch
 
 import pytest
@@ -18,7 +18,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_offer_cancellation_confirmation_by_offerer_event_when_no_other_booking(self, app):
         # Given
-        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=UTC)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
         stock = offers_factories.EventStockFactory(
@@ -60,7 +60,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_offer_cancellation_confirmation_by_offerer_event_when_no_other_booking_without_offerer_address(self, app):
         # Given
-        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=UTC)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
         stock = offers_factories.EventStockFactory(
@@ -99,7 +99,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         # Given
         other_beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.EventStockFactory(
-            beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc), price=20, quantity=10
+            beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=UTC), price=20, quantity=10
         )
         booking1 = bookings_factories.BookingFactory(stock=stock, token="98765")
         booking2 = bookings_factories.BookingFactory(user=other_beneficiary, stock=stock, token="12345")

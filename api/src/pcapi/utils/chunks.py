@@ -6,7 +6,7 @@ from itertools import islice
 T = typing.TypeVar("T")
 
 
-def get_chunks(input_data: typing.Iterable[T], chunk_size: int) -> typing.Generator[list[T], None, None]:
+def get_chunks(input_data: typing.Iterable[T], chunk_size: int) -> typing.Generator[list[T]]:
     """
     Build chunks of `chunk_size` max from an iterable.
     eg. get_chunks([1, 2, 3], 2) -> ([1, 2], [2])

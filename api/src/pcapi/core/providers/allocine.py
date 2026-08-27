@@ -179,7 +179,7 @@ def get_movie_poster(poster_url: str) -> bytes:
                 "url": poster_url,
             },
         )
-        return bytes()
+        return b""
 
 
 def _exclude_empty_movies_and_special_events(

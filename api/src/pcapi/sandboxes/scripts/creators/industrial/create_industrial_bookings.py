@@ -87,7 +87,7 @@ def _create_bookings_for_other_beneficiaries(
             if index > 0 and offer_index % (OFFER_WITH_SEVERAL_STOCKS_REMOVE_MODULO + index):
                 continue
 
-            booking_name = "{} / {} / {}".format(offer_name, user_name, str(token))
+            booking_name = f"{offer_name} / {user_name} / {str(token)}"
 
             is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
@@ -160,5 +160,5 @@ def _create_has_booked_some_bookings(
         )
         if is_used:
             finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
-        booking_name = "{} / {} / {}".format(offer_name, user_name, booking.token)
+        booking_name = f"{offer_name} / {user_name} / {booking.token}"
         bookings_by_name[booking_name] = booking

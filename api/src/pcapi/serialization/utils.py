@@ -204,7 +204,7 @@ def check_date_in_future_and_remove_timezone_v2(value: datetime.datetime | NOW_L
 
 
 def check_url[T: (pydantic_v1.HttpUrl | pydantic_v2.HttpUrl | str | None)](
-    value: T, pydantic_version: typing.Literal["v1"] | typing.Literal["v2"]
+    value: T, pydantic_version: typing.Literal["v1", "v2"]
 ) -> T:
     ErrorClass = PydanticError if pydantic_version == "v2" else ValueError
     if not value:
@@ -215,7 +215,7 @@ def check_url[T: (pydantic_v1.HttpUrl | pydantic_v2.HttpUrl | str | None)](
     except Exception:
         raise ErrorClass("The url is invalid.")
 
-    scheme, netloc, path, query, fragment = parse.urlsplit(unquoted_url)
+    scheme, netloc, path, _query, _fragment = parse.urlsplit(unquoted_url)
 
     if "/../" in path:
         raise ErrorClass("Relative path are forbidden.")

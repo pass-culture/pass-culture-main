@@ -2,10 +2,10 @@ import hashlib
 import hmac
 import json
 import re
+from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from unittest.mock import patch
 
 import pytest
@@ -54,7 +54,7 @@ class PostBookingTest:
     identifier = "pascal.ture@example.com"
 
     def test_post_bookings(self, client):
-        yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+        yesterday = datetime.now(UTC) - timedelta(days=1)
         stock = offers_factories.StockFactory(offer__bookingAllowedDatetime=yesterday)
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
@@ -915,7 +915,7 @@ class PostBookingTest:
         assert db.session.query(Booking).count() == 0
 
     def test_offer_cannot_be_booked_if_not_bookable_yet(self, client):
-        later = datetime.now(timezone.utc) + timedelta(days=64)
+        later = datetime.now(UTC) + timedelta(days=64)
         stock = offers_factories.StockFactory(offer__bookingAllowedDatetime=later)
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 

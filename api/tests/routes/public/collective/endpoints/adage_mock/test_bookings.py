@@ -1,6 +1,6 @@
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from unittest.mock import patch
 
 import pytest
@@ -687,7 +687,7 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
             # deposit creates an educational year
             collectiveOffer__institution=deposit.educationalInstitution,
             # start will not match the educational year
-            startDatetime=datetime.now(timezone.utc) + timedelta(weeks=512),
+            startDatetime=datetime.now(UTC) + timedelta(weeks=512),
         ).collectiveOffer
 
         self.assert_request_has_expected_result(

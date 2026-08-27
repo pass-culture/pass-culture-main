@@ -23,10 +23,10 @@ else:
 
 # check if the variable name is already in any of the .env.{environment} files
 for env in ENV_FILES:
-    with open(".env.{}".format(env), "r", encoding="utf8") as f:
+    with open(f".env.{env}", "r", encoding="utf8") as f:
         # if the variable name is already defined, exit the script
-        if re.search(r"^{}=.*$".format(var_name), f.read(), re.MULTILINE):
-            print("The variable {} is already defined in the .env.{} file.".format(var_name, env))
+        if re.search(rf"^{var_name}=.*$", f.read(), re.MULTILINE):
+            print(f"The variable {var_name} is already defined in the .env.{env} file.")
             sys.exit(1)
 
 
@@ -35,23 +35,23 @@ for env in ENV_FILES:
 var_value = {}
 
 for env in ENV_FILES:
-    env_value = input("value in {} (enter to skip): ".format(env.upper()))
+    env_value = input(f"value in {env.upper()} (enter to skip): ")
     if env_value:
         var_value[env] = env_value
 
 # Finally, write the variable to each .env.{environment_name} file
 for env, value in var_value.items():
-    with open(".env.{}".format(env), "r", encoding="utf8") as file_pointer:
+    with open(f".env.{env}", "r", encoding="utf8") as file_pointer:
         lines = file_pointer.readlines()
         # find the line to insert the variable after
         # Find line where the variable name is alphabetically before the variable to insert. Ignore lines that are comments.
         # If no line is found, insert the variable at the beginning of the file.
         line_index = next(
-            (i for i, line in enumerate(lines) if not line.startswith("#") and line > "{}=".format(var_name)),
+            (i for i, line in enumerate(lines) if not line.startswith("#") and line > f"{var_name}="),
             len(lines),
         )
 
-    with open(".env.{}".format(env), "w", encoding="utf8") as f:
+    with open(f".env.{env}", "w", encoding="utf8") as f:
         # Write the variable at the right place
-        lines = lines[:line_index] + ["{}={}\n".format(var_name, value)] + lines[line_index:]
+        lines = lines[:line_index] + [f"{var_name}={value}\n"] + lines[line_index:]
         f.writelines(lines)

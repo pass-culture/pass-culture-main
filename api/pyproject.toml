@@ -213,33 +213,24 @@ ignore = [
   "PIE790",  # unnecessary-placeholder : Unnecessary `pass` statement
   "PIE794",  # duplicate-class-field-definition : Class field is defined multiple times
   "PIE796",  # non-unique-enums : Enum contains duplicate value
-  "PIE800",  # unnecessary-spread : Unnecessary spread `**`
-  "PIE808",  # unnecessary-range-start : Unnecessary `start` argument in `range`
   "PIE810",  # multiple-starts-ends-with : Call `.startswith()` or `.endswith()` once with a tuple
   "PLC0206",  # dict-index-missing-items : Extracting value from dictionary without calling `.items()`
   "PLW1508",  # invalid-envvar-default : Invalid type for environment variable default
   "PYI009",  # pass-statement-stub-body : Empty body should contain `...`, not `pass`
   "PYI020",  # quoted-annotation-in-stub : Quoted annotations should not be included in stubs
-  "PYI030",  # unnecessary-literal-union : Multiple literal members in a union
   "PYI034",  # non-self-return-type : `__new__` methods usually return `self` at runtime
   "PYI036",  # bad-exit-annotation : Star-args in `__exit__` should be annotated with `object`
   "PYI041",  # redundant-numeric-union : Use `float` instead of `int | float`
   "PYI052",  # unannotated-assignment-in-stub : Unannotated assignment in stub
   "PYI063",  # pep484-style-positional-only-parameter : Use PEP 570 syntax for positional-only arguments
-  "RET501",  # unnecessary-return-none : Do not explicitly `return None` in function if it is the only possible return value
   "RUF010",  # explicit-f-string-type-conversion : Use explicit conversion flag
   "RUF012",  # mutable-class-default : Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF013",  # implicit-optional : PEP 484 prohibits implicit `Optional`
   "RUF015",  # unnecessary-iterable-allocation-for-first-element : Prefer `next(iter(...))` over single element slice
   "RUF017",  # quadratic-list-summation : Avoid quadratic list summation
   "RUF018",  # assignment-in-assert : Avoid assignment expressions in `assert` statements
-  "RUF019",  # unnecessary-key-check : Unnecessary key check before dictionary access
-  "RUF022",  # unsorted-dunder-all : `__all__` is not sorted
   "RUF028",  # invalid-formatter-suppression-comment : `fmt: off` is not supported
-  "RUF032",  # decimal-from-float-literal : Decimal constructor passed a float literal
-  "RUF034",  # useless-if-else : Useless `if`-`else` condition
   "RUF046",  # unnecessary-cast-to-int : Unnecessary `int` cast
-  "RUF059",  # unused-unpacked-variable : Unpacked variable is never used
   "RUF100",  # unused-noqa : Unused `noqa` directive
   "S110",  # try-except-pass : `try`-`except`-`pass` detected, consider logging the exception
   "SIM102",  # nested-if : Use a single `if` statement instead of nested `if` statements
@@ -248,8 +239,6 @@ ignore = [
   "SIM114",  # if-with-same-arms : Combine `if` branches using logical `or` operator
   "SIM115",  # open-file-with-context-handler : Use context handler for opening files
   "SIM117",  # multiple-with-statements : Use a single `with` statement with multiple contexts
-  "SIM118",  # in-dict-keys : Use `key in dict` instead of `key in dict.keys()`
-  "SIM401",  # if-else-block-instead-of-dict-get : Use `dict.get(key, default)` instead of an `if` block
   "T100",  # debugger : Trace found: `breakpoint` used
   "TRY002",  # raise-vanilla-class : Create your own exception
   "TRY004",  # type-check-without-type-error : Prefer `TypeError` exception for invalid type
@@ -257,19 +246,13 @@ ignore = [
   "TRY401",  # verbose-log-message : Redundant exception object included in `logging.exception` call
   "UP006",  # non-pep585-annotation : Use standard library generic types instead of typing module
   "UP007",  # non-pep604-annotation : Use `X | Y` for type annotations
-  "UP012",  # unnecessary-encode-utf8 : Unnecessary call to `encode` as UTF-8
-  "UP017",  # datetime-timezone-utc : Use `datetime.UTC` alias
-  "UP018",  # native-literals : Unnecessary native literal call
   "UP022",  # replace-stdout-stderr : Sending stdout and stderr to `PIPE` is deprecated, use `capture_output`
   "UP028",  # yield-in-for-loop : Replace `yield` over `for` loop with `yield from`
   "UP031",  # printf-string-formatting : Use format specifiers instead of percent format
-  "UP032",  # f-string : Use f-string instead of `format` call
-  "UP034",  # extraneous-parentheses : Avoid extraneous parentheses
   "UP035",  # deprecated-import : Import from standard library instead of deprecated modules
   "UP036",  # outdated-version-block : Version block is outdated for minimum Python version
   "UP037",  # quoted-annotation : Remove quotes from type annotation
   "UP040",  # non-pep695-type-alias : Type alias uses `TypeAlias` annotation instead of the `type` keyword
-  "UP043",  # unnecessary-default-type-args : Unnecessary default type arguments
   "UP045",  # non-pep604-annotation-optional : Use `X | None` instead of `Optional[X]`
   "UP047",  # non-pep695-generic-function : Generic function uses `TypeVar` instead of the `type` keyword
   "UP049",  # private-type-parameter : Private type parameter

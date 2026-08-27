@@ -323,7 +323,7 @@ def log_elapsed(
     logger: logging.Logger,
     message: str,
     extra: dict | None = None,
-) -> collections.abc.Generator[None, None, None]:
+) -> collections.abc.Generator[None]:
     """A context manager that logs ``message`` with an additional
     ``elapsed`` key in "extra" that is the execution time (in seconds)
     of the block.

@@ -818,7 +818,7 @@ class CloseTest(PostEndpointHelper):
         ]
         finance_factories.CashflowBatchFactory(label="VIR30")  # should not be associated
         notice = offerers_factories.NonPaymentNoticeFactory(
-            amount=Decimal(1234.5), fees=Decimal(150), dateReceived=datetime.date(2025, 8, 7), offerer=offerer
+            amount=Decimal("1234.5"), fees=Decimal(150), dateReceived=datetime.date(2025, 8, 7), offerer=offerer
         )
         response = self.post_to_endpoint(
             authenticated_client,

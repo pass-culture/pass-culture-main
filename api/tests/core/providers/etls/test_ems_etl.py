@@ -47,8 +47,8 @@ class EMSExtractTransformLoadProcessTest:
 
     def setup_requests_mock(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
     def test_execute_should_raise_inactive_provider(self, requests_mock):
         venue_provider = self.setup_cinema_objects()
@@ -354,8 +354,8 @@ class EMSExtractTransformLoadProcessTest:
 
     def test_should_reuse_price_category(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
         venue_provider = self.setup_cinema_objects()
 
         EMSExtractTransformLoadProcess(venue_provider).execute()
@@ -415,7 +415,7 @@ class EMSExtractTransformLoadProcessTest:
         with open(file_path, "rb") as thumb_file:
             poster = thumb_file.read()
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=poster)
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
         EMSExtractTransformLoadProcess(venue_provider).execute()
 
@@ -441,7 +441,7 @@ class EMSExtractTransformLoadProcessTest:
 
         venue_provider = self.setup_cinema_objects()
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", **get_adapter_error_params)
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
         with caplog.at_level(logging.WARNING):
             EMSExtractTransformLoadProcess(venue_provider).execute()
@@ -463,8 +463,8 @@ class EMSExtractTransformLoadProcessTest:
 
     def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
         venue = offerers_factories.VenueFactory(
             bookingEmail="seyne-sur-mer-booking@example.com",
@@ -486,8 +486,8 @@ class EMSExtractTransformLoadProcessTest:
 
         # synchronize with show with same date
         requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
         with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
             EMSExtractTransformLoadProcess(venue_provider).execute()
@@ -495,7 +495,7 @@ class EMSExtractTransformLoadProcessTest:
 
         # synchronize with show with new date
         requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0_WITH_NEW_DATE)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
         # targeting specific stock whith idAtprovider
         stock = (
             db.session.query(offers_models.Stock).where(offers_models.Stock.idAtProviders.like("%999700079243")).first()

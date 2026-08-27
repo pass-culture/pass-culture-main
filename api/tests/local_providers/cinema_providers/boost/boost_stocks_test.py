@@ -149,8 +149,8 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
             json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
         )
-        requests_mock.get("http://example.com/images/159673.jpg", content=bytes())
-        requests_mock.get("http://example.com/images/159570.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/159673.jpg", content=b"")
+        requests_mock.get("http://example.com/images/159570.jpg", content=b"")
 
         boost_stocks = self.execute_import(ProcessClass, venue_provider)
         if isinstance(boost_stocks, BoostStocks):
@@ -245,7 +245,7 @@ class BoostStocksTest:
             json=fixtures.ShowtimesEndpointResponse.SAME_FILM_TWICE_JSON_DATA,
         )
 
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/158026.jpg", content=b"")
         boost_stocks = self.execute_import(ProcessClass, venue_provider)
         if isinstance(boost_stocks, BoostStocks):
             assert boost_stocks.erroredObjects == 0
@@ -305,7 +305,7 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/158026.jpg", content=b"")
 
         self.execute_import(ProcessClass, venue_provider)
         self.execute_import(ProcessClass, venue_provider)
@@ -359,7 +359,7 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/158026.jpg", content=b"")
         self.execute_import(ProcessClass, venue_provider)
         created_stock = db.session.query(Stock).one()
         # we received numberSeatsForOnlineSale = 96
@@ -409,7 +409,7 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/158026.jpg", content=b"")
         should_apply_movie_festival_rate_mock.return_value = True
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
@@ -438,7 +438,7 @@ class BoostStocksTest:
             "https://cinema-0.example.com/api/showtimes/36683",
             json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/158026.jpg", content=b"")
 
         with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
             self.execute_import(ProcessClass, venue_provider)
@@ -567,7 +567,7 @@ class BoostStocksTest:
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
 
-        get_poster_adapter = requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+        get_poster_adapter = requests_mock.get("http://example.com/images/158026.jpg", content=b"")
 
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
@@ -647,8 +647,8 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
-        requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/158026.jpg", content=b"")
+        requests_mock.get("http://example.com/images/149489.jpg", content=b"")
 
         product_1 = ProductFactory(name="Produit 1", extraData={"visa": "158026"})
         product_2 = ProductFactory(name="Produit 2", extraData={"visa": "149489"})

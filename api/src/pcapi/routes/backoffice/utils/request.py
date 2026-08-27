@@ -79,7 +79,7 @@ def rule_for_url(url: str, method: str = "GET") -> Rule | None:
     assert url_adapter is not None  # helps mypy
 
     try:
-        rule, view_args = url_adapter.match(parsed_url.path, method, return_rule=True)
+        rule, _view_args = url_adapter.match(parsed_url.path, method, return_rule=True)
         return rule
     except RequestRedirect as r:
         # A redirect typically implies `/folder` -> `/folder/`

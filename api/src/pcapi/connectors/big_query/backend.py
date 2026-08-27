@@ -13,7 +13,7 @@ def get_backend() -> "BaseBackend":
 
 
 Row = bigquery.table.Row
-BigQueryRowIterator = typing.Generator[Row, None, None]
+BigQueryRowIterator = typing.Generator[Row]
 
 
 class BaseBackend:

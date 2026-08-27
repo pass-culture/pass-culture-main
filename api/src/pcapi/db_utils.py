@@ -215,12 +215,12 @@ def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typ
                     sa.text(
                         """DO $$
                         BEGIN
-                            IF EXISTS (SELECT 1 FROM pg_sequences WHERE schemaname = 'public' AND sequencename = '{table.__tablename__}_id_seq') THEN
-                                EXECUTE 'SELECT setval(''{table.__tablename__}_id_seq'', 1, false)';
+                            IF EXISTS (SELECT 1 FROM pg_sequences WHERE schemaname = 'public' AND sequencename = :table_name) THEN
+                                EXECUTE 'SELECT setval(':table_name', 1, false)';
                             END IF;
                         END $$;
-                        """.format(table=table)
-                    )
+                        """
+                    ).bindparams(table_name=table.__tablename__ + "_id_seq")
                 )
         except sa_exc.ProgrammingError:
             # If the table does not exist, it will raise a ProgrammingError

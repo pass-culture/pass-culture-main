@@ -581,7 +581,7 @@ class UbbleTestClient(TestClient):
 
     def _compute_signature(self, json: dict):
         timestamp = time.time()
-        signed_payload = (f"{timestamp}:{json_lib.dumps(json)}").encode("utf-8")
+        signed_payload = (f"{timestamp}:{json_lib.dumps(json)}").encode()
         raw_signature = self.signing_key.sign(
             signed_payload,
             hashfunc=hashlib.sha512,

@@ -23,35 +23,35 @@ class EducationalValidationTest:
         educational_deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(1400.00),
+            amount=Decimal("1400.00"),
         )
 
         PendingCollectiveBookingFactory(
-            collectiveStock__price=Decimal(2000.00),
+            collectiveStock__price=Decimal("2000.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
         CancelledCollectiveBookingFactory(
-            collectiveStock__price=Decimal(2000.00),
+            collectiveStock__price=Decimal("2000.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
         ConfirmedCollectiveBookingFactory.create_batch(
             2,
-            collectiveStock__price=Decimal(200.00),
+            collectiveStock__price=Decimal("200.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            collectiveStock__price=Decimal("400.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
         UsedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            collectiveStock__price=Decimal("400.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
@@ -63,10 +63,10 @@ class EducationalValidationTest:
         # - 400 (confirmed booking)
         # - 400 (used booking)
         # = 200
-        check_institution_fund(booking_amount=Decimal(200.00), deposit=educational_deposit)
+        check_institution_fund(booking_amount=Decimal("200.00"), deposit=educational_deposit)
 
         with pytest.raises(exceptions.InsufficientFund):
-            check_institution_fund(booking_amount=Decimal(201.00), deposit=educational_deposit)
+            check_institution_fund(booking_amount=Decimal("201.00"), deposit=educational_deposit)
 
     def test_institution_fund_is_temporary_insufficient(self):
         educational_institution = EducationalInstitutionFactory()
@@ -74,31 +74,31 @@ class EducationalValidationTest:
         educational_deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(1400.00),
+            amount=Decimal("1400.00"),
             isFinal=False,
         )
 
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            collectiveStock__price=Decimal("400.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            collectiveStock__price=Decimal("400.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
         UsedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            collectiveStock__price=Decimal("400.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
 
         with pytest.raises(exceptions.InsufficientTemporaryFund):
-            check_institution_fund(booking_amount=Decimal(200.00), deposit=educational_deposit)
+            check_institution_fund(booking_amount=Decimal("200.00"), deposit=educational_deposit)
 
     def test_institution_fund_is_insufficient(self):
         educational_institution = EducationalInstitutionFactory()
@@ -106,30 +106,30 @@ class EducationalValidationTest:
         educational_deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(400.00),
+            amount=Decimal("400.00"),
         )
 
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(100.00),
+            collectiveStock__price=Decimal("100.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(100.00),
+            collectiveStock__price=Decimal("100.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
         UsedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(100.00),
+            collectiveStock__price=Decimal("100.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
 
         with pytest.raises(exceptions.InsufficientFund):
-            check_institution_fund(booking_amount=Decimal(200.00), deposit=educational_deposit)
+            check_institution_fund(booking_amount=Decimal("200.00"), deposit=educational_deposit)
 
     def test_check_deposit_not_final(self):
         educational_institution = EducationalInstitutionFactory()

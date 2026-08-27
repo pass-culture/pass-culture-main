@@ -45,7 +45,7 @@ class BookingRaceConditionTest:
         mocked_movies = [cds_fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
 
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
 
         requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[cds_fixtures.SHOW_1])
         requests_mock.get(

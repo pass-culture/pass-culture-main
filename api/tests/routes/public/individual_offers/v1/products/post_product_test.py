@@ -106,7 +106,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 404
 
-    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC), tick=False)
     def test_physical_product_minimal_body(self, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         payload = self._get_base_payload(venue_provider.venue.id)
@@ -192,7 +192,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "idAtProvider": None,
         }
 
-    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC), tick=False)
     def test_product_creation_with_full_body(self, clear_tests_assets_bucket, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -322,7 +322,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             },
         }
 
-    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC), tick=False)
     @pytest.mark.parametrize(
         "partial_request_json,expected_publication_datetime,expected_response_publication_datetime",
         [
@@ -358,7 +358,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.publicationDatetime == expected_publication_datetime
 
-    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC), tick=False)
     @pytest.mark.parametrize(
         "partial_request_json,expected_booking_allowed_datetime,expected_response_booking_allowed_datetime",
         [
@@ -651,13 +651,13 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                 {
                     "stock": {
                         "bookingLimitDatetime": (
-                            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3)
+                            datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=3)
                         ).isoformat(),
                         "price": 10,
                         "quantity": 10,
                     },
                     "publicationDatetime": (
-                        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100)
+                        datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=100)
                     ).isoformat(),
                 },
                 {"__root__": ["`stock.bookingLimitDatetime` must be after `publicationDatetime`"]},
@@ -667,13 +667,13 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                 {
                     "stock": {
                         "bookingLimitDatetime": (
-                            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3)
+                            datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=3)
                         ).isoformat(),
                         "price": 10,
                         "quantity": 10,
                     },
                     "bookingAllowedDatetime": (
-                        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100)
+                        datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=100)
                     ).isoformat(),
                 },
                 {"__root__": ["`stock.bookingLimitDatetime` must be after `bookingAllowedDatetime`"]},

@@ -60,8 +60,8 @@ class EMSStocksTest:
         self, ProcessClass, requests_mock
     ):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
         venue = offerers_factories.VenueFactory(
             bookingEmail="seyne-sur-mer-booking@example.com", withdrawalDetails="Modalité de retrait"
@@ -87,8 +87,8 @@ class EMSStocksTest:
     @mock.patch("pcapi.local_providers.movie_festivals.api.should_apply_movie_festival_rate")
     def should_update_stock_with_movie_festival_rate(self, should_apply_movie_festival_rate_mock, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0_MOVIE_FESTIVAL)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
         venue = offerers_factories.VenueFactory(
             bookingEmail="seyne-sur-mer-booking@example.com", withdrawalDetails="Modalité de retrait"
@@ -123,8 +123,8 @@ class EMSStocksTest:
         self, ProcessClass, requests_mock
     ):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
         offers_factories.ProductFactory(
             name="Produit allociné 1",
@@ -250,8 +250,8 @@ class EMSStocksTest:
             "version": 86400,
         }
         requests_mock.get("https://fake_url.com?version=0", json=DATA_VERSION_0_WITHOUT_ADDRESS_INFO)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
         offers_factories.ProductFactory(
             name="Produit allociné 1",
@@ -285,8 +285,8 @@ class EMSStocksTest:
     @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
     def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, ProcessClass, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
         venue = offerers_factories.VenueFactory(
             bookingEmail="seyne-sur-mer-booking@example.com",
@@ -308,8 +308,8 @@ class EMSStocksTest:
 
         # synchronize with show with same date
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
 
         with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
             self.execute_import(ProcessClass, venue_provider)
@@ -317,7 +317,7 @@ class EMSStocksTest:
 
         # synchronize with show with new date
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0_WITH_NEW_DATE)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
         # targeting specific stock whith idAtprovider
         stock = (
             db.session.query(offers_models.Stock).where(offers_models.Stock.idAtProviders.like("%999700079243")).first()
@@ -333,8 +333,8 @@ class EMSStocksTest:
         connector = EMSScheduleConnector()
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://fake_url.com?version=86400", json=fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
         venue = offerers_factories.VenueFactory(
             bookingEmail="booking@example.com", withdrawalDetails="Modalité de retrait"
         )
@@ -472,10 +472,10 @@ class EMSStocksTest:
     @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
     def test_successive_version_syncs(self, ProcessClass, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/311D01C8/600/HIJIC.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=b"")
+        requests_mock.get("https://example.com/FR/poster/311D01C8/600/HIJIC.jpg", content=b"")
         requests_mock.get("https://fake_url.com?version=86400", json=fixtures.DATA_VERSION_86400)
 
         ems_provider = get_provider_by_local_class("EMSStocks")

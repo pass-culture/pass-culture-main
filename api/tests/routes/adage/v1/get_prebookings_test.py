@@ -58,7 +58,7 @@ class Returns200Test:
             response = client.with_eac_token().get(dst)
 
         assert response.status_code == 200
-        assert "prebookings" in response.json.keys()
+        assert "prebookings" in response.json
         assert len(response.json["prebookings"]) == 1
         assert response.json["prebookings"][0] == expected_serialized_prebooking(booking)
 

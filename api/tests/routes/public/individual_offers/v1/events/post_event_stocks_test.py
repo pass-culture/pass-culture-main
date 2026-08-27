@@ -221,11 +221,11 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             ),
             # errors because too many items
             (
-                [{} for a in range(0, offers_models.Offer.MAX_STOCKS_PER_OFFER + 1)],
+                [{} for a in range(offers_models.Offer.MAX_STOCKS_PER_OFFER + 1)],
                 {"dates": ["ensure this value has at most 2500 items"]},
             ),
             (  # should raise because offer has already one stock
-                [{} for a in range(0, offers_models.Offer.MAX_STOCKS_PER_OFFER)],
+                [{} for a in range(offers_models.Offer.MAX_STOCKS_PER_OFFER)],
                 {
                     "dates": [
                         f"The maximum number of stock entries allowed per offer is {offers_models.Offer.MAX_STOCKS_PER_OFFER}"

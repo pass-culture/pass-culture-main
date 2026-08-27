@@ -2062,7 +2062,7 @@ class GetActiveOfferByVenueIdAndEanTest:
 
     def test_most_recent_offer_is_returned_if_many_amongst_venue_shares_same_ean(self, caplog):
         def past_date(delta):
-            today = datetime.datetime.now(datetime.timezone.utc)
+            today = datetime.datetime.now(datetime.UTC)
             return today - datetime.timedelta(days=delta)
 
         venue = offerers_factories.VenueFactory()
@@ -2129,7 +2129,7 @@ class GetUnbookableUnbookedOldOfferIdsTest:
     def test_get_old_offer_with_an_expired_stock_with_quantity_is_matched(self):
         offer = factories.StockFactory(
             quantity=10,
-            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2),
+            bookingLimitDatetime=datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=2),
             offer__dateCreated=self.a_year_ago,
             offer__dateUpdated=self.a_year_ago,
         ).offer

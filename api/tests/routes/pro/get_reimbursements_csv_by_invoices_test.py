@@ -112,7 +112,7 @@ def test_with_pricings(client):
     assert row["Intitulé du tarif"] == ""
     assert row["Montant de la réservation"] == str(booking.amount).replace(".", ",")
     assert row["Barème"].replace("\xa0", " ") == "100 %"
-    assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
+    assert row["Montant remboursé"] == f"{-pricing.amount / 100:.2f}".replace(".", ",")
 
 
 def test_with_pricings_collective_use_case(client):
@@ -211,7 +211,7 @@ def test_with_pricings_collective_use_case(client):
     assert row["Intitulé du tarif"] == ""
     assert row["Montant de la réservation"] == str(collective_booking.collectiveStock.price).replace(".", ",")
     assert row["Barème"].replace("\xa0", " ") == "100 %"
-    assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
+    assert row["Montant remboursé"] == f"{-pricing.amount / 100:.2f}".replace(".", ",")
 
 
 def test_return_only_searched_invoice(client):

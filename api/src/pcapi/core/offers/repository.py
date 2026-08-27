@@ -298,7 +298,7 @@ def get_offers_by_publication_datetime(start: datetime.datetime, end: datetime.d
 
 def get_offers_by_booking_allowed_datetime(booking_allowed_datetime: datetime.datetime | None = None) -> sa_orm.Query:
     if booking_allowed_datetime is None:
-        booking_allowed_datetime = datetime.datetime.now(datetime.timezone.utc)
+        booking_allowed_datetime = datetime.datetime.now(datetime.UTC)
 
     # The lower bound is intentionally very far in the past.
     # This function should be called every quarter hour, but filtering the last days allows auto-correction
@@ -363,11 +363,9 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
     for offer in offers:
         if offer.id in offer_data_by_id:
             merged_data = {
-                **{
-                    "offerName": offer.name,
-                    "image": offer.image,
-                    "isHeadlineOffer": offer.is_headline_offer,
-                },
+                "offerName": offer.name,
+                "image": offer.image,
+                "isHeadlineOffer": offer.is_headline_offer,
                 **offer_data_by_id[offer.id],
             }
             merged_data_list.append(merged_data)
@@ -734,7 +732,7 @@ def get_offers_by_filters(
         else:
             search = name_keywords_or_ean
             if len(name_keywords_or_ean) > 3:
-                search = "%{}%".format(name_keywords_or_ean)
+                search = f"%{name_keywords_or_ean}%"
             query = query.filter(models.Offer.name.ilike(search))
 
     if status is not None:
@@ -1433,7 +1431,7 @@ def get_filtered_stocks(
         )
     )
     if only_future_stocks:
-        now = datetime.datetime.now(datetime.timezone.utc)
+        now = datetime.datetime.now(datetime.UTC)
         query = query.filter(models.Stock.bookingLimitDatetime > now)
     if price_category_id is not None:
         query = query.filter(models.Stock.priceCategoryId == price_category_id)
@@ -1621,10 +1619,10 @@ def get_movie_products_matching_allocine_id_or_film_visa(
         raise ValueError("`allocine_id` or `visa` must be defined")
 
     if allocine_id:
-        filters.append((models.Product.extraData.op("->")("allocineId") == str(allocine_id)))
+        filters.append(models.Product.extraData.op("->")("allocineId") == str(allocine_id))
 
     if visa:
-        filters.append((models.Product.extraData["visa"].astext == visa))
+        filters.append(models.Product.extraData["visa"].astext == visa)
 
     return db.session.query(models.Product).filter(sa.or_(*filters)).all()
 
@@ -1676,9 +1674,7 @@ def get_offer_existing_stocks_count(offer_id: int) -> int:
     )
 
 
-def get_unbookable_unbooked_old_offer_ids(
-    min_id: int, max_id: int, batch_size: int = 5_000
-) -> typing.Generator[int, None, None]:
+def get_unbookable_unbooked_old_offer_ids(min_id: int, max_id: int, batch_size: int = 5_000) -> typing.Generator[int]:
     """Find unbookable unbooked old offer ids.
 
     * An unbookable offer is an offer without any stock OR with only soft

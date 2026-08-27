@@ -73,7 +73,7 @@ def get_ff_from_target(target: str) -> dict[str, bool]:
 def check_feature_flags_vs(target: str) -> None:
     remote_flags = get_ff_from_target(target)
     local_flags = {ff.name: ff.isActive for ff in db.session.query(feature_models.Feature).all()}
-    for flag_name in remote_flags.keys():
+    for flag_name in remote_flags:
         if flag_name not in local_flags:
             logger.warning(f"Feature flag {flag_name} exists in {target} but not locally")
         if remote_flags[flag_name] != local_flags[flag_name]:

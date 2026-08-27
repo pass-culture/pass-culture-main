@@ -58,7 +58,7 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
             assert response.status_code == 404
 
-    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC), tick=False)
     def test_product_without_stock(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue

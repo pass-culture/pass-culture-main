@@ -383,10 +383,10 @@ class UbbleEndToEndTest:
         assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert fraud_check.source_data().status == ubble_schemas.UbbleIdentificationStatus.PROCESSED
         assert fraud_check.source_data().processed_datetime == datetime.datetime(
-            2018, 1, 1, 8, 41, 2, 504663, tzinfo=datetime.timezone.utc
+            2018, 1, 1, 8, 41, 2, 504663, tzinfo=datetime.UTC
         )
         assert fraud_check.source_data().status_updated_at == datetime.datetime(
-            2018, 1, 1, 8, 41, 2, 504682, tzinfo=datetime.timezone.utc
+            2018, 1, 1, 8, 41, 2, 504682, tzinfo=datetime.UTC
         )
 
         user = _refresh_user(user_id)

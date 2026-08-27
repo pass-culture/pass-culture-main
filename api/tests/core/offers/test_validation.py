@@ -963,7 +963,7 @@ class CheckBookingLimitDatetimeTest:
         offer = offer_factory(offererAddress=oa)
         stock = offers_factories.StockFactory(offer=offer)
 
-        beginning_date = datetime.datetime(2024, 7, 19, 8, tzinfo=datetime.timezone.utc)
+        beginning_date = datetime.datetime(2024, 7, 19, 8, tzinfo=datetime.UTC)
         booking_limit_date = beginning_date - datetime.timedelta(hours=1)
 
         try:
@@ -993,7 +993,7 @@ class CheckBookingLimitDatetimeTest:
         )  # oa guadeloupe venue#france
         offer = offers_factories.OfferFactory(offererAddress=oa, venue=venue)  # reunion
         stock = offers_factories.StockFactory(offer=offer)
-        beginning_date = datetime.datetime(2024, 7, 19, 8, tzinfo=datetime.timezone.utc)
+        beginning_date = datetime.datetime(2024, 7, 19, 8, tzinfo=datetime.UTC)
         booking_limit_date = beginning_date - datetime.timedelta(hours=1)
 
         # It's ok to ignore the tuple unpacking warning here because we are testing the value of beginning
@@ -1192,11 +1192,11 @@ class CheckActivationCodesExpirationDatetimeTest:
             (None, None),
             (None, datetime.datetime.now()),
             (datetime.datetime.now() + datetime.timedelta(days=8), datetime.datetime.now()),
-            (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=8), datetime.datetime.now()),
-            (datetime.datetime.now() + datetime.timedelta(days=8), datetime.datetime.now(datetime.timezone.utc)),
+            (datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=8), datetime.datetime.now()),
+            (datetime.datetime.now() + datetime.timedelta(days=8), datetime.datetime.now(datetime.UTC)),
             (
-                datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=8),
-                datetime.datetime.now(datetime.timezone.utc),
+                datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=8),
+                datetime.datetime.now(datetime.UTC),
             ),
         ],
     )

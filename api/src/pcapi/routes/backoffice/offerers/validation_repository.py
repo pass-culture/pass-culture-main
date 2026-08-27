@@ -137,7 +137,7 @@ def _apply_query_filters(
             query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)
             query = query.filter(offerers_models.Venue.dmsToken == dms_token_term.group(1).lower())
         else:
-            name_query = "%{}%".format(clean_accents(q))
+            name_query = f"%{clean_accents(q)}%"
             # UNION is really faster than OR when filtering on different tables (verified experimentally):
             # - everything in `OR` => sequential scan on offerer
             # - using `UNION` to split between offerer conditions and user condition => index scan

@@ -5,7 +5,6 @@ import pathlib
 from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from unittest import mock
 
 import pytest
@@ -39,7 +38,7 @@ ACCESSIBILITY_FIELDS = {
     "visualDisabilityCompliant": True,
 }
 
-now_datetime_with_tz = datetime.now(timezone.utc)
+now_datetime_with_tz = datetime.now(UTC)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -170,7 +169,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.finalizationDatetime == now_datetime_with_tz
         assert not created_offer.bookingAllowedDatetime
 
-    @time_machine.travel(datetime(2025, 6, 26, tzinfo=timezone.utc), tick=False)
+    @time_machine.travel(datetime(2025, 6, 26, tzinfo=UTC), tick=False)
     @pytest.mark.parametrize(
         "request_publication_date,address_tz,expected_publication_date,response_publication_date",
         [
@@ -215,7 +214,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         assert not created_offer.bookingAllowedDatetime
 
-    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
+    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=UTC), tick=False)
     @pytest.mark.parametrize(
         "partial_request_json,expected_publication_datetime,expected_response_publication_datetime",
         [
@@ -251,7 +250,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.publicationDatetime == expected_publication_datetime
 
-    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
+    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=UTC), tick=False)
     @pytest.mark.parametrize(
         "partial_request_json,expected_booking_allowed_datetime,expected_response_booking_allowed_datetime",
         [
@@ -284,7 +283,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.bookingAllowedDatetime == expected_booking_allowed_datetime
 
-    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
+    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=UTC), tick=False)
     @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeTestingBackend")
     @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
     def test_event_creation_with_full_body(self, get_video_metadata_from_cache_mock, clear_tests_assets_bucket):

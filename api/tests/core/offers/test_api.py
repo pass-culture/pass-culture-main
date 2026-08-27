@@ -8,7 +8,6 @@ from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from decimal import Decimal
 from unittest import mock
 
@@ -1136,7 +1135,7 @@ class UpsertOfferThingStocksTest:
         offer = factories.ThingOfferFactory()
         stock = factories.ThingStockFactory(offer=offer, quantity=10, price=decimal.Decimal("5"))
 
-        booking_limit_datetime = datetime.now(timezone.utc).replace(microsecond=0) + timedelta(days=1)
+        booking_limit_datetime = datetime.now(UTC).replace(microsecond=0) + timedelta(days=1)
         api.upsert_offer_thing_stocks(
             offer,
             [
@@ -2305,7 +2304,7 @@ class UpdateOfferTest:
         mocked_create_claim.assert_called_once_with(offer)
 
 
-now_datetime_with_tz = datetime.now(timezone.utc)
+now_datetime_with_tz = datetime.now(UTC)
 now_datetime_without_tz = now_datetime_with_tz.replace(tzinfo=None)
 
 yesterday_datetime_with_tz = now_datetime_with_tz - timedelta(days=1)
@@ -4836,7 +4835,7 @@ class ReplacePriceCategoriesTest:
             offer=offer,
             priceCategory=price_category,
             price=Decimal("20.00"),
-            beginningDatetime=datetime.now(timezone.utc) + timedelta(days=7),
+            beginningDatetime=datetime.now(UTC) + timedelta(days=7),
         )
         inputs: list[offers_schemas.PriceCategoryInput] = [
             {"id": price_category.id, "label": "Standard", "price": Decimal("30.00")},
@@ -4858,7 +4857,7 @@ class ReplacePriceCategoriesTest:
             offer=offer,
             priceCategory=price_category,
             price=Decimal("20.00"),
-            beginningDatetime=datetime.now(timezone.utc) + timedelta(days=7),
+            beginningDatetime=datetime.now(UTC) + timedelta(days=7),
         )
         inputs: list[offers_schemas.PriceCategoryInput] = [
             {"id": price_category.id, "label": "Updated Label", "price": Decimal("20.00")},
@@ -4882,13 +4881,13 @@ class ReplacePriceCategoriesTest:
             offer=offer,
             priceCategory=price_category,
             price=Decimal("20.00"),
-            beginningDatetime=datetime.now(timezone.utc) - timedelta(days=2),
+            beginningDatetime=datetime.now(UTC) - timedelta(days=2),
         )
         future_stock = factories.EventStockFactory(
             offer=offer,
             priceCategory=price_category,
             price=Decimal("20.00"),
-            beginningDatetime=datetime.now(timezone.utc) + timedelta(days=7),
+            beginningDatetime=datetime.now(UTC) + timedelta(days=7),
         )
         inputs: list[offers_schemas.PriceCategoryInput] = [
             {"id": price_category.id, "label": "Standard", "price": Decimal("35.00")},

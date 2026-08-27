@@ -55,7 +55,7 @@ def _reader_from_response(response):
 
 
 def _format_date(date_time, tz):
-    return date_time.replace(tzinfo=datetime.timezone.utc).astimezone(tz).isoformat()
+    return date_time.replace(tzinfo=datetime.UTC).astimezone(tz).isoformat()
 
 
 class Returns200Test:

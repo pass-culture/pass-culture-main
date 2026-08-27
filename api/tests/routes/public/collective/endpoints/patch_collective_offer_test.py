@@ -1,6 +1,6 @@
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
@@ -1284,7 +1284,7 @@ class AllowedActionsTest(PublicAPIVenueEndpointHelper):
             status, venue=venue_provider.venue, provider=venue_provider.provider
         )
 
-        new_limit = datetime.now(timezone.utc) + timedelta(days=10)
+        new_limit = datetime.now(UTC) + timedelta(days=10)
         new_start = new_limit + timedelta(days=5)
         new_end = new_limit + timedelta(days=7)
         payload = {
@@ -1308,7 +1308,7 @@ class AllowedActionsTest(PublicAPIVenueEndpointHelper):
             status, venue=venue_provider.venue, provider=venue_provider.provider
         )
 
-        new_date = datetime.now(timezone.utc) + timedelta(days=5)
+        new_date = datetime.now(UTC) + timedelta(days=5)
         for date_field in ("bookingLimitDatetime", "startDatetime", "endDatetime"):
             response = self.make_request(key, {"offer_id": offer.id}, json_body={date_field: new_date.isoformat()})
 

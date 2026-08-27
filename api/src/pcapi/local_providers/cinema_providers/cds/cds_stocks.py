@@ -257,7 +257,7 @@ class CDSStocks(LocalProvider):
         if self.movie_information.posterpath:
             image_url = self.movie_information.posterpath
             return self.client_cds.get_movie_poster(image_url)
-        return bytes()
+        return b""
 
     def shall_synchronize_thumbs(self) -> bool:
         return True

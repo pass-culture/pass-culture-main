@@ -1441,7 +1441,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         # (unfortunately). However, a fresh offer object might have a
         # timezone-aware publicationDatetime (built from python code
         # that could have used a timezone-aware datetime object).
-        now = datetime.datetime.now(datetime.timezone.utc)
+        now = datetime.datetime.now(datetime.UTC)
         now = now.replace(tzinfo=None) if self.publicationDatetime.tzinfo is None else now
         return self.publicationDatetime <= now
 

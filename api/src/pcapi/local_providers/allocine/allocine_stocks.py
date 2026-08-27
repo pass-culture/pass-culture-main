@@ -231,7 +231,7 @@ class AllocineStocks(LocalProvider):
         if self.movie and self.movie.poster:
             image_url = str(self.movie.poster.url)
             return get_movie_poster(image_url)
-        return bytes()
+        return b""
 
     def shall_synchronize_thumbs(self) -> bool:
         return True

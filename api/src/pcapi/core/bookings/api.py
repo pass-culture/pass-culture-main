@@ -1295,7 +1295,7 @@ def auto_mark_as_used_after_event() -> None:
 
 def get_individual_bookings_from_stock(
     stock_id: int,
-) -> typing.Generator[sa.Row[tuple[int, int]], None, None]:
+) -> typing.Generator[sa.Row[tuple[int, int]]]:
     query = (
         db.session.query(
             models.Booking.id,

@@ -1,6 +1,6 @@
 from dataclasses import asdict
+from datetime import UTC
 from datetime import datetime
-from datetime import timezone
 
 import pytest
 
@@ -19,12 +19,12 @@ from pcapi.core.testing import assert_num_queries
 
 def make_booking(**kwargs):
     attributes = dict(
-        dateCreated=datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc),
+        dateCreated=datetime(2019, 10, 3, 13, 24, 6, tzinfo=UTC),
         token="ABC123",
         user__firstName="John",
         user__lastName="Doe",
         user__email="john@example.com",
-        stock__beginningDatetime=datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc),
+        stock__beginningDatetime=datetime(2019, 11, 6, 14, 59, 5, tzinfo=UTC),
         stock__price=10,
         stock__offer__name="Super évènement",
         stock__offer__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,

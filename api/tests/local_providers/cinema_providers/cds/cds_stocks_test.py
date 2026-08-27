@@ -185,8 +185,8 @@ class CDSStocksTest:
             {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 5, "price_label": "pass Culture"},
         ]
         mock_get_shows.return_value = mocked_shows
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
-        requests_mock.get("https://example.com/topgun.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
+        requests_mock.get("https://example.com/topgun.png", content=b"")
 
         CDSStocks(venue_provider=venue_provider).updateObjects()
         assert db.session.query(Offer).count() == 2
@@ -208,8 +208,8 @@ class CDSStocksTest:
         mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
 
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
-        requests_mock.get("https://example.com/topgun.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
+        requests_mock.get("https://example.com/topgun.png", content=b"")
 
         requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[fixtures.SHOW_1, fixtures.SHOW_2])
         get_voucher_types_adapter = requests_mock.get(
@@ -302,8 +302,8 @@ class CDSStocksTest:
         mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
 
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
-        requests_mock.get("https://example.com/topgun.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
+        requests_mock.get("https://example.com/topgun.png", content=b"")
 
         requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[fixtures.SHOW_1, fixtures.SHOW_2])
         get_voucher_types_adapter = requests_mock.get(
@@ -385,8 +385,8 @@ class CDSStocksTest:
         mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
 
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
-        requests_mock.get("https://example.com/topgun.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
+        requests_mock.get("https://example.com/topgun.png", content=b"")
 
         requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[fixtures.SHOW_1, fixtures.SHOW_2])
         get_voucher_types_adapter = requests_mock.get(
@@ -464,8 +464,8 @@ class CDSStocksTest:
         mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
 
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
-        requests_mock.get("https://example.com/topgun.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
+        requests_mock.get("https://example.com/topgun.png", content=b"")
 
         requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[fixtures.SHOW_1, fixtures.SHOW_2])
         get_voucher_types_adapter = requests_mock.get(
@@ -516,7 +516,7 @@ class CDSStocksTest:
         ]
         mock_get_shows.return_value = mocked_same_film_shows
 
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
 
         cds_stocks = CDSStocks(venue_provider=venue_provider)
 
@@ -589,7 +589,7 @@ class CDSStocksTest:
         ]
         mock_get_shows.return_value = mocked_same_film_shows
 
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
 
         cds_stocks = CDSStocks(venue_provider=venue_provider)
         should_apply_movie_festival_rate_mock.return_value = True
@@ -629,7 +629,7 @@ class CDSStocksTest:
         ]
         mock_get_shows.return_value = mocked_shows
 
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
 
         # When
         CDSStocks(venue_provider=venue_provider).updateObjects()
@@ -805,7 +805,7 @@ class CDSStocksTest:
         requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
         mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
-        mocked_get_movie_poster.return_value = bytes()
+        mocked_get_movie_poster.return_value = b""
 
         mocked_shows = [{"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5, "price_label": "pass Culture"}]
         mock_get_shows.return_value = mocked_shows
@@ -832,7 +832,7 @@ class CDSStocksTest:
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
         )
         requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
 
         cds_stocks = CDSStocks(venue_provider=venue_provider)
         cds_stocks.updateObjects()
@@ -863,8 +863,8 @@ class CDSStocksTest:
             {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 5, "price_label": "pass Culture"},
         ]
         mock_get_shows.return_value = mocked_shows
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
-        requests_mock.get("https://example.com/topgun.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
+        requests_mock.get("https://example.com/topgun.png", content=b"")
 
         product_1 = offers_factories.ProductFactory(name="Produit 1", extraData={"visa": "123456"})
         product_2 = offers_factories.ProductFactory(name="Produit 2", extraData={"visa": "333333"})
@@ -896,7 +896,7 @@ class CDSStocksQuantityTest:
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [{"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5, "price_label": "pass Culture"}]
         mock_get_shows.return_value = mocked_shows
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=b"")
         # When
         cds_stocks_provider = CDSStocks(venue_provider=venue_provider)
         cds_stocks_provider.updateObjects()

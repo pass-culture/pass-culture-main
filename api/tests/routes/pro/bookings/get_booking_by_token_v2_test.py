@@ -62,7 +62,7 @@ class Returns200Test:
             "isUsed": False,
             "offerId": booking.stock.offerId,
             "offerName": "An offer you cannot refuse",
-            "offerType": "EVENEMENT",
+            "offerType": "BIEN",
             "phoneNumber": "+33101010101",
             "price": 10.1,
             "priceCategoryLabel": None,
