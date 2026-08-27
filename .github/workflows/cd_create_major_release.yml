@@ -68,18 +68,16 @@ jobs:
           # Extract major version and add 1
           major="$(echo "$latest_tag" | sed -E 's/^v([0-9]+)\..*/\1/')"
           release_number="$((major + 1))"
+          echo "release-number=$release_number" >> "$GITHUB_OUTPUT"
           
           # Get the rc tag info
           commit_hash="$(git rev-list -n 1 "$rc_tag")"
+          echo "commit-hash=$commit_hash" >> "$GITHUB_OUTPUT"
           commit_date="$(git show -s --format=%cd --date=format:'%d/%m/%Y à %H:%M' "$commit_hash")"
           subject="$(git show -s --format=%s "$commit_hash")"
           
           # compute Slack message base  — backtick are interpreted so we use [] around the release number
           message_base="de la <${{ env.RUN_URL }}|release> [v$release_number] basée sur le commit <${{ env.REPO_URL }}/$commit_hash|$subject> (poussé le $commit_date)"
-          
-          # Write outputs
-          echo "commit-hash=$commit_hash" >> "$GITHUB_OUTPUT"
-          echo "release-number=$release_number" >> "$GITHUB_OUTPUT"
           echo "message-base=$message_base" >> "$GITHUB_OUTPUT"
 
   notify-workflow-start:
