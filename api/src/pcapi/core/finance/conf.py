@@ -1,12 +1,23 @@
 import decimal
 
 import pcapi.core.offers.models as offers_models
+from pass_culture_rules.montant_credit import MontantCreditAlgo
 from pcapi.core.users import models as users_models
 from pcapi.utils.regions import MAYOTTE_DEPARTMENT_CODE
 from pcapi.utils.regions import SAINT_PIERRE_ET_MIQUELON_DEPARTMENT_CODE
 from pcapi.utils.regions import WALLIS_AND_FUTUNA_DEPARTMENT_CODE
+from regalgo import AlgoInput
 
 from . import models
+
+
+# NOTE (chore/delegate-regulatory-rules-to-pass-culture-rules, 2026-08-27):
+# The two lookup functions below delegate to the independent
+# `pass-culture-rules` package (https://github.com/qloridant/package-pass-culture),
+# a regalgo-conformant algorithm (algo_id "pass-culture.montant-credit.v1").
+# This dependency is NOT YET PUBLISHED (no PyPI release, not pinned to a
+# reviewed commit) — see the PR description; do not merge as-is.
+_montant_credit_algo = MontantCreditAlgo()
 
 
 # Lock to prevent parallel push of invoices
@@ -96,27 +107,21 @@ def get_credit_amount_per_age_and_eligibility(
 
 
 def _get_deposit_17_18_credit_amount_per_age(age: int) -> decimal.Decimal | None:
-    match age:
-        case 17:
-            return GRANTED_DEPOSIT_AMOUNT_17_v3
-        case 18:
-            return GRANTED_DEPOSIT_AMOUNT_18_v3
-        case _:
-            return None
+    # Delegates to the "pass_17_18_2025" cohort of pass-culture-rules'
+    # montant_credit algo. Equivalent to the previous inline match on
+    # {17: GRANTED_DEPOSIT_AMOUNT_17_v3, 18: GRANTED_DEPOSIT_AMOUNT_18_v3}.
+    result = _montant_credit_algo.compute(AlgoInput(data={"age": age, "cohorte": "pass_17_18_2025"}))
+    return decimal.Decimal(result.value) if result.value is not None else None
 
 
 def _get_pre_decree_credit_amount_per_age(age: int) -> decimal.Decimal | None:
-    match age:
-        case 15:
-            return GRANTED_DEPOSIT_AMOUNT_15
-        case 16:
-            return GRANTED_DEPOSIT_AMOUNT_16
-        case 17:
-            return GRANTED_DEPOSIT_AMOUNT_17
-        case 18:
-            return GRANTED_DEPOSIT_AMOUNT_18_v2
-        case _:
-            return None
+    # Delegates to the "multi_year_2021" cohort of pass-culture-rules'
+    # montant_credit algo. Equivalent to the previous inline match on
+    # {15: ..._15, 16: ..._16, 17: ..._17, 18: GRANTED_DEPOSIT_AMOUNT_18_v2}
+    # (that table's four values are identical to this module's constants —
+    # verified when the pass-culture-rules package was built from this file).
+    result = _montant_credit_algo.compute(AlgoInput(data={"age": age, "cohorte": "multi_year_2021"}))
+    return decimal.Decimal(result.value) if result.value is not None else None
 
 
 def digital_cap_applies_to_offer(offer: offers_models.Offer) -> bool:

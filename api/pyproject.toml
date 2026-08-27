@@ -48,6 +48,17 @@ dependencies = [
   "libsass ==0.23.0",
   "markupsafe ==3.0.3",
   "openpyxl ==3.1.5",
+  # TODO (chore/delegate-regulatory-rules-to-pass-culture-rules): NOT MERGEABLE AS-IS.
+  # regalgo is published on TestPyPI only (not real PyPI) — this repo has no
+  # TestPyPI index configured. pass-culture-rules is an unpublished, unpinned
+  # VCS dependency (floating @main branch), added as a proof of concept for
+  # this PR. Before this can be merged: get regalgo onto a real index (or
+  # vendor it), publish pass-culture-rules and pin it to a reviewed commit/tag,
+  # and have both go through the same review/audit as any other regulatory
+  # logic. See PR description for the correctness gaps found and fixed
+  # during this work.
+  "regalgo",
+  "pass-culture-rules @ git+https://github.com/qloridant/package-pass-culture.git@main",
   "phonenumberslite==9.0.37",
   "pillow==12.3.0",
   "prometheus-flask-exporter ==0.23.2",

@@ -1,6 +1,7 @@
 import datetime
 
 from dateutil.relativedelta import relativedelta
+from pass_culture_rules.statut_eligibilite import StatutEligibiliteAlgo
 
 from pcapi import settings
 from pcapi.core.finance.models import DepositType
@@ -10,8 +11,37 @@ from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.utils import date as date_utils
+from regalgo import AlgoInput
 
 from . import exceptions
+
+
+# NOTE (chore/delegate-regulatory-rules-to-pass-culture-rules, 2026-08-27):
+# get_eligibility_at_date below delegates to the independent
+# `pass-culture-rules` package's statut_eligibilite algo (regalgo-conformant,
+# algo_id "pass-culture.statut-eligibilite.v1"). This dependency is NOT YET
+# PUBLISHED — see the PR description; do not merge as-is.
+#
+# The other window/compatibility helpers below (is_datetime_within_eligibility_period,
+# get_eligibility_start_datetime, get_eligibility_end_datetime,
+# is_user_age_compatible_with_eligibility, is_underage_eligibility,
+# is_18_or_above_eligibility) are NOT delegated and keep their original
+# inline implementation: the regalgo-shaped package exposes exactly one
+# compute() per legal decision, not a library of reusable sub-functions —
+# these six are small, general-purpose helpers, not standalone legal
+# decisions of their own, so pass-culture-rules deliberately doesn't
+# expose them separately. Forcing them through compute() would mean
+# reverse-engineering internal values (e.g. calling compute() just to read
+# a window boundary back out) rather than a genuine delegation.
+_statut_eligibilite_algo = StatutEligibiliteAlgo()
+
+_TO_RULES_ELIGIBILITY_TYPE: dict[users_models.EligibilityType, str] = {
+    users_models.EligibilityType.UNDERAGE: "underage",
+    users_models.EligibilityType.AGE18: "age18",
+    users_models.EligibilityType.AGE17_18: "age17_18",
+    users_models.EligibilityType.FREE: "free",
+}
+_FROM_RULES_ELIGIBILITY_TYPE = {v: k for k, v in _TO_RULES_ELIGIBILITY_TYPE.items()}
 
 
 class EligibilityError(Exception):
@@ -129,24 +159,17 @@ def get_first_eligible_registration_date(
 def get_eligibility_at_date(
     birth_date: datetime.date | None, at_datetime: datetime.datetime, department_code: str | None = None
 ) -> users_models.EligibilityType | None:
-    if not birth_date or not is_datetime_within_eligibility_period(birth_date, at_datetime, department_code):
+    if not birth_date:
         return None
-
-    age = users_utils.get_age_at_date(birth_date, at_datetime, department_code)
-
-    if at_datetime < settings.CREDIT_V3_DECREE_DATETIME:
-        if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
-            return users_models.EligibilityType.UNDERAGE
-        if constants.ELIGIBILITY_AGE_18 == age:
-            return users_models.EligibilityType.AGE18
-
-    if 17 <= age <= 18:
-        return users_models.EligibilityType.AGE17_18
-
-    if 15 <= age <= 16:
-        return users_models.EligibilityType.FREE
-
-    return None
+    result = _statut_eligibilite_algo.compute(
+        AlgoInput(
+            data={"date_naissance": birth_date, "departement": department_code},
+            context={"date_evaluation": at_datetime, "date_decret_v3": settings.CREDIT_V3_DECREE_DATETIME},
+        )
+    )
+    if result.value is None:
+        return None
+    return _FROM_RULES_ELIGIBILITY_TYPE[result.value]
 
 
 def is_datetime_within_eligibility_period(
