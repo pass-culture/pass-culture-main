@@ -5,7 +5,7 @@
       <a class="link-primary"
          href="{{ get_link_to_detail(user.id, form=advanced_form) }}">{{ user.id }}</a>
     </td>
-    <td data-pc-sort-table-value="{{ user.lastName }}">{{ user.firstName ~ " " ~ user.lastName }}</td>
+    <td data-pc-sort-table-value="{{ user.lastName }} {{ user.firstName }}">{{ user.firstName ~ " " ~ user.lastName }}</td>
     <td data-pc-sort-table-value="{% if user.birth_date %}{{ user.birth_date }}{% endif %}">
       {{ user.birth_date | format_date }} ({{ user.age }} ans)
     </td>
@@ -26,10 +26,8 @@
     <td>{{ user.tags | map("string") | format_as_badges }}</td>
     <td>
       {% if user.suspension_reason_expression %}
-        <p>
-          {{ user.suspension_reason_expression | format_reason_label }}
-          le {{ user.suspension_date_expression | format_date }}
-        </p>
+        {{ user.suspension_reason_expression | format_reason_label }}
+        le {{ user.suspension_date_expression | format_date }}
       {% endif %}
     </td>
   </tr>
