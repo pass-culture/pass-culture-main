@@ -1,9 +1,3 @@
-// New 2023 standard options that should be available in TypeScript ^5.5
-// At this moment, VSCode's TypeScript version is still ^5.4
-// (See: https://github.com/microsoft/TypeScript/issues/56269)
-import { isError } from '@/apiClient/helpers'
-import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
-
 export type ResolvedNumberFormatOptions = Intl.NumberFormatOptions & {
   roundingPriority?: 'auto' | 'morePrecision' | 'lessPrecision'
   roundingIncrement?:
@@ -39,33 +33,11 @@ export function formatPrice(
   price: number,
   options?: ResolvedNumberFormatOptions
 ) {
-  let formattedPrice = ''
-  try {
-    formattedPrice = Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-      ...options,
-    })
-      .format(price)
-      .replace(/^([+-])/, '$1 ') // space after sign (ex: - 10,00 €)
-  } catch (e) {
-    // Safari 14.1.2 throws an exception here.
-    if (
-      isError(e) &&
-      e.message.includes(
-        'Failed to initialize NumberFormat since used feature is not supported in the linked ICU version'
-      )
-    ) {
-      formattedPrice = `${
-        price
-          .toFixed(2)
-          .replaceAll(/\d(?=(\d{3})+\.)/g, '$& ') // space after each group of 3
-          .replace('.', ',')
-          .replace(/^([+-])/, '$1 ') // space after sign (ex: - 10,00 €)
-      } €`
-    } else {
-      sendSentryCustomError(e)
-    }
-  }
-  return formattedPrice
+  return Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+    ...options,
+  })
+    .format(price)
+    .replace(/^([+-])/, '$1 ') // space after sign (ex: - 10,00 €)
 }
