@@ -769,6 +769,17 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["Contremarque"] for row in rows) == set(expected_results)
 
+    def test_list_booking_with_unlimited_stock_quantity(self, authenticated_client):
+        token = bookings_factories.BookingFactory(stock__quantity=None).token
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=token))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Stock"] == "Illimité"
+
 
 class MarkBookingAsUsedTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.mark_booking_as_used"
