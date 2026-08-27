@@ -1,9 +1,9 @@
 import logging
 import random
 import typing
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from unittest.mock import patch
 
 import sqlalchemy as sa
@@ -319,7 +319,7 @@ def build_many_extra_invoices(count: int = 2) -> None:
         return booking
 
     # start in the past, move on to today
-    start = datetime.now(timezone.utc) - timedelta(days=15 * count)
+    start = datetime.now(UTC) - timedelta(days=15 * count)
 
     beneficiary = None
 

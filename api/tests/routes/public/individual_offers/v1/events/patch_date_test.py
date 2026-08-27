@@ -346,7 +346,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
 
         price_category = offers_factories.PriceCategoryFactory(offer=event)
 
-        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+        start = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=10)
         stock = offers_factories.EventStockFactory(
             offer=event,
             priceCategory=price_category,
@@ -364,7 +364,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
 
         parsed_date = datetime.datetime.fromisoformat(response.json["beginningDatetime"])
 
-        assert parsed_date.tzinfo == datetime.timezone.utc
+        assert parsed_date.tzinfo == datetime.UTC
         assert parsed_date.date() == start.date()
 
         assert stock.beginningDatetime == start.replace(tzinfo=None)

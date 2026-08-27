@@ -1045,7 +1045,7 @@ class BankAccountJourneyTest:
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
             state=GraphQLApplicationStates.accepted.value,
-            b64_encoded_application_id=b64encode("Champ-123".encode()),
+            b64_encoded_application_id=b64encode(b"Champ-123"),
             application_id=123,
             iban=fake_iban,
         )

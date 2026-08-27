@@ -765,7 +765,7 @@ class IdentificationSessionTest:
         )
 
         # Perform previous Ubble identifications
-        for _ in range(0, retry_number):
+        for _ in range(retry_number):
             subscription_factories.BeneficiaryFraudCheckFactory(
                 user=user,
                 type=subscription_models.FraudCheckType.UBBLE,

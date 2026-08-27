@@ -1,8 +1,8 @@
 import collections
 import decimal
 import typing
+from datetime import UTC
 from datetime import datetime
-from datetime import timezone
 
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
@@ -80,7 +80,7 @@ def validate_start_datetime(start_datetime: datetime | None, values: dict[str, t
         return None
 
     if start_datetime.tzinfo is not None:
-        if start_datetime < datetime.now(timezone.utc):
+        if start_datetime < datetime.now(UTC):
             raise ValueError("L'évènement ne peut commencer dans le passé.")
     elif start_datetime < date_utils.get_naive_utc_now():
         raise ValueError("L'évènement ne peut commencer dans le passé.")
@@ -93,7 +93,7 @@ def validate_end_datetime(end_datetime: datetime | None, values: dict[str, typin
         return None
 
     if end_datetime.tzinfo is not None:
-        if end_datetime < datetime.now(timezone.utc):
+        if end_datetime < datetime.now(UTC):
             raise ValueError("L'évènement ne peut se terminer dans le passé.")
     elif end_datetime < date_utils.get_naive_utc_now():
         raise ValueError("L'évènement ne peut se terminer dans le passé.")

@@ -154,7 +154,7 @@ def is_datetime_within_eligibility_period(
 ) -> bool:
     tz_aware_datetime = at_datetime
     if not tz_aware_datetime.tzinfo:
-        tz_aware_datetime = tz_aware_datetime.replace(tzinfo=datetime.timezone.utc)
+        tz_aware_datetime = tz_aware_datetime.replace(tzinfo=datetime.UTC)
 
     eligibility_start = get_eligibility_start_datetime(birth_date, department_code)
     eligibility_end = get_eligibility_end_datetime(birth_date, department_code)

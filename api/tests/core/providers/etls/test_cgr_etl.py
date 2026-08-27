@@ -265,7 +265,7 @@ class CGRExtractTransformLoadProcessTest:
 
     def test_should_reuse_price_category(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
-        requests_mock.get("https://example.com/149341.jpg", content=bytes())
+        requests_mock.get("https://example.com/149341.jpg", content=b"")
 
         venue_provider = self.setup_cinema_objects()
 

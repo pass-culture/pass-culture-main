@@ -1,8 +1,8 @@
+from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-from datetime import timezone as tz
 from typing import overload
 from zoneinfo import ZoneInfo
 
@@ -265,7 +265,7 @@ def timespan_str_to_readable_str(timespans: list[list[str]] | None = None) -> st
 
 def days_ago_timestamp(days: int) -> int:
     """Get a timestamp from a date `days` ago"""
-    days_ago = datetime.now(tz.utc) - timedelta(days=days)
+    days_ago = datetime.now(UTC) - timedelta(days=days)
     return int(days_ago.timestamp())
 
 
@@ -275,16 +275,16 @@ def parse_titelive_date_to_string(date_str: str) -> str:
 
 def make_timezone_aware_utc(dt: datetime) -> datetime:
     """Convert a timezone-naive datetime into a datetime in utc timezone"""
-    return dt.replace(tzinfo=tz.utc)
+    return dt.replace(tzinfo=UTC)
 
 
 def get_naive_utc_now() -> datetime:
     """To replace deprecated `datetime.utcnow()`"""
-    return datetime.now(tz.utc).replace(tzinfo=None)
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 def get_naive_utc_from_iso_str(iso_str: str) -> datetime:
-    return datetime.fromisoformat(iso_str).astimezone(tz.utc).replace(tzinfo=None)
+    return datetime.fromisoformat(iso_str).astimezone(UTC).replace(tzinfo=None)
 
 
 @overload

@@ -1,6 +1,6 @@
 import dataclasses
+from datetime import UTC
 from datetime import datetime
-from datetime import timezone
 
 import pytest
 import time_machine
@@ -413,7 +413,7 @@ def test_digital_offer_without_departement_code_information_brevo():
     """
     offer = offers_factories.DigitalOfferFactory()
     stock = offers_factories.StockFactory(offer=offer)
-    date_created = datetime(2032, 7, 1, 10, 0, 0, tzinfo=timezone.utc)
+    date_created = datetime(2032, 7, 1, 10, 0, 0, tzinfo=UTC)
     booking = BookingFactory(stock=stock, dateCreated=date_created)
 
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)

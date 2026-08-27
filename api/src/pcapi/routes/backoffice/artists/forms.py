@@ -36,7 +36,7 @@ artist_form_field_configuration = {
 
 class GetArtistsBaseFields(forms_utils.PCForm):
     sort = wtforms.HiddenField(
-        "sort", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("date_created")))
+        "sort", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf("date_created"))
     )
     order = wtforms.HiddenField(
         "order", default="asc", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))

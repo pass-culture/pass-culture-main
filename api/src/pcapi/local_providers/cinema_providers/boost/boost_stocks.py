@@ -224,7 +224,7 @@ class BoostStocks(LocalProvider):
 
     def get_object_thumb(self) -> bytes:
         image_url = self.showtime_details.film.posterUrl
-        return self._boost_api_client.get_movie_poster(image_url) if image_url else bytes()
+        return self._boost_api_client.get_movie_poster(image_url) if image_url else b""
 
     def shall_synchronize_thumbs(self) -> bool:
         return True

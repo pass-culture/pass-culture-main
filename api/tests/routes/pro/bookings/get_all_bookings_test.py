@@ -1,5 +1,5 @@
+from datetime import UTC
 from datetime import datetime
-from datetime import timezone
 from typing import Any
 from unittest.mock import patch
 
@@ -19,7 +19,7 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 
 BOOKING_PERIOD_PARAMS = "bookingPeriodBeginningDate=2020-08-10&bookingPeriodEndingDate=2020-08-12"
 
-BOOKING_PERIOD = (datetime(2020, 8, 10, tzinfo=timezone.utc).date(), datetime(2020, 8, 12, tzinfo=timezone.utc).date())
+BOOKING_PERIOD = (datetime(2020, 8, 10, tzinfo=UTC).date(), datetime(2020, 8, 12, tzinfo=UTC).date())
 
 
 class GetAllBookingsTest:
@@ -309,7 +309,7 @@ class Returns200Test:
         assert response.json["total"] == 1
 
     def when_requested_with_booking_period_dates(self, client: Any):
-        booking_date = datetime(2020, 8, 12, 20, 00, tzinfo=timezone.utc)
+        booking_date = datetime(2020, 8, 12, 20, 00, tzinfo=UTC)
         booking_period_beginning_date = "2020-08-10"
         booking_period_ending_date = "2020-08-12"
         booking = bookings_factories.BookingFactory(dateCreated=booking_date, token="AAAAAA")
@@ -338,11 +338,11 @@ class Returns200Test:
         assert response.json["total"] == 1
 
     def test_should_not_return_booking_token_when_booking_is_external(self, client: Any):
-        booking_date = datetime(2020, 8, 11, 10, 00, tzinfo=timezone.utc)
+        booking_date = datetime(2020, 8, 11, 10, 00, tzinfo=UTC)
         externalbooking = ExternalBookingFactory(
             booking__dateCreated=booking_date,
             booking__status=bookings_models.BookingStatus.USED,
-            booking__dateUsed=datetime(2020, 8, 11, 20, 00, tzinfo=timezone.utc),
+            booking__dateUsed=datetime(2020, 8, 11, 20, 00, tzinfo=UTC),
         )
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=externalbooking.booking.offerer)

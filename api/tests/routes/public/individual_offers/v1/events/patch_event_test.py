@@ -22,7 +22,7 @@ from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
-FROZEN_NOW = datetime.datetime(2026, 6, 25, 12, 30, tzinfo=datetime.timezone.utc)
+FROZEN_NOW = datetime.datetime(2026, 6, 25, 12, 30, tzinfo=datetime.UTC)
 
 VIDEO_URL = "https://www.youtube.com/watch?v=fW6goBu8aP0"
 VIDEO_METADATA = youtube.YoutubeVideoMetadata(
@@ -1359,7 +1359,7 @@ class Returns200Test(PatchEventEndpointHelper):
 @pytest.mark.usefixtures("db_session")
 class Returns401Test(PatchEventEndpointHelper):
     def test_should_raise_401_because_not_authenticated(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        _plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         before_update = event.dateUpdated
 

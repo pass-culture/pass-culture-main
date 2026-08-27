@@ -26,7 +26,7 @@ from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 from tests.routes.public.individual_offers.v1 import utils as test_utils
 
 
-FROZEN_NOW = datetime.datetime(2026, 6, 25, 12, 30, tzinfo=datetime.timezone.utc)
+FROZEN_NOW = datetime.datetime(2026, 6, 25, 12, 30, tzinfo=datetime.UTC)
 
 
 def has_log(caplog: pytest.LogCaptureFixture, technical_message_id: str) -> bool:

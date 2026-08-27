@@ -16,7 +16,7 @@ def test_native_openapi_json(client):
     _assert_components_are_equal(actual_json, expected_json)
 
     already_tested_keys = ["paths", "components"]
-    keys_to_test = set([key for key in expected_json.keys() if key not in already_tested_keys])
+    keys_to_test = set([key for key in expected_json if key not in already_tested_keys])
     for key in keys_to_test:
         assert actual_json[key] == expected_json[key]
 
@@ -26,7 +26,7 @@ def _assert_paths_are_equal(actual_json: dict, expected_json: dict) -> None:
     actual_paths_dict = actual_json["paths"]
     assert set(actual_paths_dict.keys()) == set(expected_paths_dict.keys())
 
-    for path in expected_paths_dict.keys():
+    for path in expected_paths_dict:
         assert actual_paths_dict[path] == expected_paths_dict[path]
 
 
@@ -37,5 +37,5 @@ def _assert_components_are_equal(actual_json: dict, expected_json: dict) -> None
     actual_schemas_dict = actual_json["components"]["schemas"]
     assert set(actual_schemas_dict.keys()) == set(expected_schemas_dict.keys())
 
-    for schema in expected_schemas_dict.keys():
+    for schema in expected_schemas_dict:
         assert actual_schemas_dict[schema] == expected_schemas_dict[schema]

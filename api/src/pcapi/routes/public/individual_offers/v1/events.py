@@ -1,7 +1,7 @@
 import copy
 import logging
+from datetime import UTC
 from datetime import datetime
-from datetime import timezone
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -284,7 +284,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
         # TODO(jbaudet): remove this part, do not use isActive once
         # the public API does not allow it anymore
         if "publicationDatetime" not in updates and updates.get("isActive") is not None:
-            publication_datetime = datetime.now(timezone.utc) if is_active else None
+            publication_datetime = datetime.now(UTC) if is_active else None
 
         offer = offers_api.update_offer(
             offer,

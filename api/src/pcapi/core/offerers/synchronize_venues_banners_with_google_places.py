@@ -122,7 +122,7 @@ def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> str:
         max_width=photo.width,
     )
     object_id = f"{prefix}{venue_id}.jpeg"
-    data = bytes()
+    data = b""
     for chunk in photos_result:
         if chunk:
             data += chunk

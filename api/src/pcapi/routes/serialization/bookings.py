@@ -46,7 +46,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         offer_id=booking.stock.offer.id,
         public_offer_id=humanize(booking.stock.offer.id),
         offer_name=booking.stock.offer.name,
-        offer_type=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
+        offer_type=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.BIEN,
         phone_number=booking.user.phoneNumber,
         price=float(booking.amount),
         price_category_label=booking.priceCategoryLabel,

@@ -168,7 +168,7 @@ def sync_user_account_update_requests(
 
 
 def _from_ds_date(date_time: str) -> datetime.datetime:
-    return datetime.datetime.fromisoformat(date_time).astimezone(datetime.timezone.utc)
+    return datetime.datetime.fromisoformat(date_time).astimezone(datetime.UTC)
 
 
 def _get_updated_data(node: dict) -> dict:
@@ -211,7 +211,7 @@ def check_set_without_continuation(user_request: users_models.UserAccountUpdateR
         and data["dateLastInstructorMessage"] is not None
         and data["dateLastInstructorMessage"]
         + relativedelta(days=settings.DS_MARK_WITHOUT_CONTINUATION_UDPATE_REQUEST_DEADLINE)
-        < date_utils.get_naive_utc_now().astimezone(datetime.timezone.utc)
+        < date_utils.get_naive_utc_now().astimezone(datetime.UTC)
         and data["dateLastInstructorMessage"] > last_user_action_date
     ):
         try:

@@ -158,8 +158,8 @@ class CGRStocksTest:
     def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(
         self, ProcessClass: Type[CGRExtractTransformLoadProcess] | Type[CGRStocks], requests_mock
     ):
-        requests_mock.get("https://example.com/149341.jpg", content=bytes())
-        requests_mock.get("https://example.com/82382.jpg", content=bytes())
+        requests_mock.get("https://example.com/149341.jpg", content=b"")
+        requests_mock.get("https://example.com/82382.jpg", content=b"")
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
             "https://cgr-cinema-0.example.com/web_service",
@@ -212,8 +212,8 @@ class CGRStocksTest:
     @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_fill_offer_and_stock_information_for_each_movie_based_on_product(self, ProcessClass, requests_mock):
         self._create_products()
-        requests_mock.get("https://example.com/149341.jpg", content=bytes())
-        requests_mock.get("https://example.com/82382.jpg", content=bytes())
+        requests_mock.get("https://example.com/149341.jpg", content=b"")
+        requests_mock.get("https://example.com/82382.jpg", content=b"")
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
             "https://cgr-cinema-0.example.com/web_service",
@@ -275,12 +275,12 @@ class CGRStocksTest:
         assert created_offers[1]._extraData == {}
 
         assert created_stocks[1].quantity == 168
-        assert created_stocks[1].price == Decimal(11.00)
+        assert created_stocks[1].price == Decimal("11.00")
         assert created_stocks[1].dateCreated is not None
         assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 3, 4, 15)
         assert created_stocks[1].offer == created_offers[1]
         assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 4, 15)
-        assert created_stocks[1].priceCategory.price == Decimal(11.00)
+        assert created_stocks[1].priceCategory.price == Decimal("11.00")
         assert created_stocks[1].priceCategory.label == "Tarif standard 3D"
         assert created_stocks[1].features == ["VF", "3D", "ICE"]
 
@@ -290,8 +290,8 @@ class CGRStocksTest:
     @mock.patch("pcapi.local_providers.movie_festivals.api.should_apply_movie_festival_rate")
     def should_update_stock_with_movie_festival_rate(self, should_apply_movie_festival_rate_mock, requests_mock):
         self._create_products()
-        requests_mock.get("https://example.com/149341.jpg", content=bytes())
-        requests_mock.get("https://example.com/82382.jpg", content=bytes())
+        requests_mock.get("https://example.com/149341.jpg", content=b"")
+        requests_mock.get("https://example.com/82382.jpg", content=b"")
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
             "https://cgr-cinema-0.example.com/web_service",
@@ -326,7 +326,7 @@ class CGRStocksTest:
     def should_fill_stocks_and_price_categories_for_a_movie_based_on_product(self, ProcessClass, requests_mock):
         self._create_products()
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
-        requests_mock.get("https://example.com/82382.jpg", content=bytes())
+        requests_mock.get("https://example.com/82382.jpg", content=b"")
 
         cgr_provider = get_provider_by_local_class("CGRStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
@@ -393,7 +393,7 @@ class CGRStocksTest:
     @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_reuse_price_category(self, ProcessClass, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
-        requests_mock.get("https://example.com/149341.jpg", content=bytes())
+        requests_mock.get("https://example.com/149341.jpg", content=b"")
 
         cgr_provider = get_provider_by_local_class("CGRStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
@@ -585,7 +585,7 @@ class CGRStocksTest:
             "https://cgr-cinema-0.example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
         )
 
-        get_image_adapter = requests_mock.get("https://example.com/149341.jpg", content=bytes())
+        get_image_adapter = requests_mock.get("https://example.com/149341.jpg", content=b"")
 
         cgr_stocks = self.execute_import(ProcessClass, venue_provider)
 
@@ -639,7 +639,7 @@ class CGRStocksTest:
         requests_mock.post(
             "https://cgr-cinema-0.example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
         )
-        get_poster_adapter = requests_mock.get("https://example.com/149341.jpg", content=bytes())
+        get_poster_adapter = requests_mock.get("https://example.com/149341.jpg", content=b"")
 
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
@@ -693,8 +693,8 @@ class CGRStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_link_offer_with_known_visa_to_product(self, ProcessClass, requests_mock):
-        requests_mock.get("https://example.com/149341.jpg", content=bytes())
-        requests_mock.get("https://example.com/82382.jpg", content=bytes())
+        requests_mock.get("https://example.com/149341.jpg", content=b"")
+        requests_mock.get("https://example.com/82382.jpg", content=b"")
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
             "https://cgr-cinema-0.example.com/web_service",

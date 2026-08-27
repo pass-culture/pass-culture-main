@@ -78,7 +78,7 @@ def create_industrial_offerers() -> dict[str, Offerer]:
         mock_index = location_index % len(MOCK_NAMES) + starting_index
 
         valid_siren = siren_utils.complete_siren_or_siret(str(incremented_siren))
-        offerer_name = "{} lat:{} lon:{}".format(valid_siren, location.latitude, location.longitude)
+        offerer_name = f"{valid_siren} lat:{location.latitude} lon:{location.longitude}"
 
         offerer = offerers_factories.OffererFactory.create(
             name=MOCK_NAMES[mock_index],

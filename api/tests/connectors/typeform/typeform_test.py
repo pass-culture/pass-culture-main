@@ -46,7 +46,7 @@ class GetFormTest:
 
         assert form.form_id == form_id
         assert form.title == "Jeu concours - Maître Corbeau"
-        assert form.date_created == datetime.datetime(2024, 9, 2, 12, 51, 25, tzinfo=datetime.timezone.utc)
+        assert form.date_created == datetime.datetime(2024, 9, 2, 12, 51, 25, tzinfo=datetime.UTC)
 
         fields = form.fields
         assert len(fields) == 7
@@ -116,7 +116,7 @@ class GetResponsesTest:
 
         response = responses[1]
         assert response.response_id == "zxmkrzc9uyxp6jsivn9zxmkrziwwcte2"
-        assert response.date_submitted == datetime.datetime(2024, 9, 7, 16, 39, 53, tzinfo=datetime.timezone.utc)
+        assert response.date_submitted == datetime.datetime(2024, 9, 7, 16, 39, 53, tzinfo=datetime.UTC)
         assert response.phone_number == "+33700000002"
         assert response.email == "second@example.com"
         assert len(response.answers) == 7
@@ -140,7 +140,7 @@ class GetResponsesTest:
 
         response = responses[3]
         assert response.response_id == "hsm1mxckfhbqtk50l9ahsm1mxa4ivy8o"
-        assert response.date_submitted == datetime.datetime(2024, 9, 10, 11, 19, 42, tzinfo=datetime.timezone.utc)
+        assert response.date_submitted == datetime.datetime(2024, 9, 10, 11, 19, 42, tzinfo=datetime.UTC)
         assert response.phone_number == "+33600000004"
         assert response.email == "fourth@example.com"
         assert len(response.answers) == 7

@@ -1,8 +1,8 @@
 import collections
 import decimal
 import typing
+from datetime import UTC
 from datetime import datetime
-from datetime import timezone
 
 import pydantic as pydantic_v2
 
@@ -25,13 +25,13 @@ def validate_booking_limit_datetime(booking_limit_datetime: datetime, info: pyda
 
 
 def validate_start_datetime(start_datetime: datetime) -> datetime:
-    if start_datetime < datetime.now(timezone.utc):
+    if start_datetime < datetime.now(UTC):
         raise PydanticError("L'évènement ne peut commencer dans le passé.")
     return start_datetime
 
 
 def validate_end_datetime(end_datetime: datetime, info: pydantic_v2.ValidationInfo) -> datetime:
-    if end_datetime < datetime.now(timezone.utc):
+    if end_datetime < datetime.now(UTC):
         raise PydanticError("L'évènement ne peut se terminer dans le passé.")
 
     start_datetime = info.data.get("startDatetime")

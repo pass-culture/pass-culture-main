@@ -38,7 +38,7 @@ def send_cancel_booking_notification(booking_ids: list[int]) -> None:
     bookings = db.session.query(Booking).filter(Booking.id.in_(booking_ids)).all()
 
     if not bookings:
-        return None
+        return
 
     offer = bookings[0].stock.offer
     cancelled_object = "commande" if offer.hasUrl or offer.isThing else "réservation"

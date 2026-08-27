@@ -2258,7 +2258,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "total_amount": booking.amount * decimal.Decimal(1.21),
+                "total_amount": booking.amount * decimal.Decimal("1.21"),
                 "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
                 "comment": "Commentaire facultatif",
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,

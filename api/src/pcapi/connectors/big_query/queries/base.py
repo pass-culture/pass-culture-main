@@ -7,7 +7,7 @@ import pcapi.connectors.big_query as big_query_connector
 
 
 Row = typing.TypeVar("Row", bound=pydantic.BaseModel)
-RowIterator = typing.Generator[Row, None, None]
+RowIterator = typing.Generator[Row]
 
 
 class MalformedRow(Exception):

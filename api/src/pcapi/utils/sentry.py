@@ -78,7 +78,7 @@ def _scrub_frames_below_sensitive_boundary(frames: list[dict]) -> None:
 
     for tainted_frame in frames[boundary_frame_index:]:
         if tainted_frame.get("vars"):
-            tainted_frame["vars"] = {key: SCRUBBED_INFO_PLACEHOLDER for key in tainted_frame["vars"].keys()}
+            tainted_frame["vars"] = {key: SCRUBBED_INFO_PLACEHOLDER for key in tainted_frame["vars"]}
 
 
 def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":

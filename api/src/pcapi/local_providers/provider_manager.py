@@ -78,7 +78,7 @@ def new_etl_integration_can_be_enabled(venue_provider: provider_models.VenueProv
 
 
 def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, limit: int | None = None) -> None:
-    assert venue_provider.provider.localClass in _NAME_TO_LOCAL_PROVIDER_CLASS.keys(), (
+    assert venue_provider.provider.localClass in _NAME_TO_LOCAL_PROVIDER_CLASS, (
         f"Only {', '.join(_NAME_TO_LOCAL_PROVIDER_CLASS.keys())} should reach this code"
     )
     # new integration

@@ -20,16 +20,16 @@ def create_industrial_admin_users() -> dict[str, User]:
 
     for departement_code in departement_codes:
         for admin_count in range(ADMINS_COUNT):
-            email = "pctest.admin{}.{}@example.com".format(departement_code, admin_count)
+            email = f"pctest.admin{departement_code}.{admin_count}@example.com"
             user = users_factories.AdminFactory.create(
                 departementCode=str(departement_code),
                 email=email,
                 firstName="PC Test Admin",
-                lastName="{} {}".format(departement_code, admin_count),
-                postalCode="{}100".format(departement_code),
+                lastName=f"{departement_code} {admin_count}",
+                postalCode=f"{departement_code}100",
             )
 
-            users_by_name["admin{} {}".format(departement_code, admin_count)] = user
+            users_by_name[f"admin{departement_code} {admin_count}"] = user
 
     logger.info("created %d users", len(users_by_name))
 

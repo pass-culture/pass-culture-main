@@ -1,7 +1,7 @@
 import decimal
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 
 import pytest
 import time_machine
@@ -708,7 +708,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_endDatetime_before_stock_startDatetime(self, client):
-        start = datetime.now(timezone.utc) + timedelta(days=10)
+        start = datetime.now(UTC) + timedelta(days=10)
         factories.create_educational_year(date_time=start)
         stock = factories.CollectiveStockFactory(startDatetime=start, endDatetime=start)
         offerers_factories.UserOffererFactory(

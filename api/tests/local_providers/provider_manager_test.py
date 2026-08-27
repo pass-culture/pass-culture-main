@@ -152,7 +152,7 @@ class SynchronizeEMSVenueProviderTest:
         ems_cinema_details = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=pivot, lastVersion=0)
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
-            requests_mocker.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=bytes())
+            requests_mocker.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=b"")
 
             with caplog.at_level(logging.DEBUG, logger="pcapi.connectors.ems"):
                 synchronize_ems_venue_provider(venue_provider)

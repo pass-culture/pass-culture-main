@@ -94,7 +94,7 @@ class UpdateObjectsTest:
         mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
             fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
-        mock_api_poster.return_value = bytes()
+        mock_api_poster.return_value = b""
 
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
@@ -166,7 +166,7 @@ class UpdateObjectsTest:
         mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
             fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
-        mock_api_poster.return_value = bytes()
+        mock_api_poster.return_value = b""
 
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
@@ -204,7 +204,7 @@ class UpdateObjectsTest:
         mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
             fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
-        mock_api_poster.return_value = bytes()
+        mock_api_poster.return_value = b""
 
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
@@ -242,7 +242,7 @@ class UpdateObjectsTest:
         mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
             fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
-        mock_api_poster.return_value = bytes()
+        mock_api_poster.return_value = b""
 
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
@@ -300,7 +300,7 @@ class UpdateObjectsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_create_one_offer_and_associated_stocks(self, mock_poster_get_allocine, mock_call_allocine_api):
         # Given
-        mock_poster_get_allocine.return_value = bytes()
+        mock_poster_get_allocine.return_value = b""
         mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
             fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
@@ -374,7 +374,7 @@ class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
         def test_should_update_stocks_based_on_stock_date(self, mock_poster_get_allocine, mock_call_allocine_api):
             # Given
-            mock_poster_get_allocine.return_value = bytes()
+            mock_poster_get_allocine.return_value = b""
             updated_showtimes = copy.deepcopy(fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST)
             updated_showtimes["movieShowtimeList"]["edges"][0]["node"]["showtimes"] = updated_showtimes[
                 "movieShowtimeList"
@@ -436,7 +436,7 @@ class UpdateObjectsTest:
                 fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
             )
             mock_call_allocine_api.side_effect = [mock_result, mock_result]
-            mock_poster_get_allocine.return_value = bytes()
+            mock_poster_get_allocine.return_value = b""
             offerer = offerers_factories.OffererFactory(siren="775671464")
             venue1 = offerers_factories.VenueFactory(
                 managingOfferer=offerer,
@@ -485,7 +485,7 @@ class UpdateObjectsTest:
             self, mock_poster_get_allocine, mock_call_allocine_api
         ):
             # Given
-            mock_poster_get_allocine.return_value = bytes()
+            mock_poster_get_allocine.return_value = b""
             mock_result = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
                 fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
             )
@@ -547,7 +547,7 @@ class UpdateObjectsTest:
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         def test_should_preserve_manual_modification(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
-            mock_poster_get_allocine.return_value = bytes()
+            mock_poster_get_allocine.return_value = b""
             mock_result = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
                 fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
             )
@@ -584,7 +584,7 @@ class UpdateObjectsTest:
             self, mock_poster_get_allocine, mock_call_allocine_api
         ):
             # Given
-            mock_poster_get_allocine.return_value = bytes()
+            mock_poster_get_allocine.return_value = b""
             mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
                 fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
             )
@@ -624,7 +624,7 @@ class UpdateObjectsTest:
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         def test_should_only_update_default_price_category(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
-            mock_poster_get_allocine.return_value = bytes()
+            mock_poster_get_allocine.return_value = b""
             mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
                 fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
             )
@@ -682,7 +682,7 @@ class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
         def test_should_preserve_deletion(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
-            mock_poster_get_allocine.return_value = bytes()
+            mock_poster_get_allocine.return_value = b""
             mock_result = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
                 fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
             )
@@ -715,7 +715,7 @@ class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
         def test_should_preserve_is_duo_default_value(self, mock_poster_get_allocine, mock_call_allocine_api):
             # Given
-            mock_poster_get_allocine.return_value = bytes()
+            mock_poster_get_allocine.return_value = b""
             mock_result = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
                 fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
             )
@@ -744,7 +744,7 @@ class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
         def test_should_preserve_quantity_default_value(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
-            mock_poster_get_allocine.return_value = bytes()
+            mock_poster_get_allocine.return_value = b""
             mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
                 fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
             )
@@ -842,4 +842,4 @@ class GetObjectThumbTest:
 
         # Then
         mock_poster_get_allocine.assert_not_called()
-        assert poster_thumb == bytes()
+        assert poster_thumb == b""

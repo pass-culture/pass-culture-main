@@ -81,7 +81,7 @@ class LocalProvider(Iterator):
         )
 
     def get_object_thumb(self) -> bytes:
-        return bytes()
+        return b""
 
     def shall_synchronize_thumbs(self) -> bool:
         return False

@@ -267,7 +267,7 @@ class Returns200Test:
         offer = factories.create_collective_offer_by_status(status, venue=venue)
 
         # Add an offer with another status that will not be present in the result
-        other_status = next((s for s in models.CollectiveOfferDisplayedStatus if s != status))
+        other_status = next(s for s in models.CollectiveOfferDisplayedStatus if s != status)
         factories.create_collective_offer_by_status(status=other_status, venue=venue)
 
         client = client.with_session_auth(email=user_offerer.user.email)

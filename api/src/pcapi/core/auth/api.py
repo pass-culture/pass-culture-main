@@ -16,7 +16,7 @@ TOKEN_URI = "https://accounts.google.com/o/oauth2/token"
 BACKOFFICE_SERVICE_ACCOUNT_SCOPES = ("https://www.googleapis.com/auth/admin.directory.group.readonly",)
 
 BACKOFFICE_ROLE_NAME_RE = re.compile(
-    (r"^backoffice-((?P<env>(development|testing|staging|production|integration))-)(?P<role>.+)$")
+    r"^backoffice-((?P<env>(development|testing|staging|production|integration))-)(?P<role>.+)$"
 )
 
 

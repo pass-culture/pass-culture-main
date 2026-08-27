@@ -84,12 +84,12 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
     status = content.status
     if status in PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
-        fraud_check.updatedAt = datetime.datetime.now(datetime.timezone.utc)
+        fraud_check.updatedAt = datetime.datetime.now(datetime.UTC)
         return
 
     if status in CANCELED_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
-        fraud_check.updatedAt = datetime.datetime.now(datetime.timezone.utc)
+        fraud_check.updatedAt = datetime.datetime.now(datetime.UTC)
         return
 
     if status not in CONCLUSIVE_STATUSES:
@@ -563,7 +563,7 @@ def _get_stale_fraud_checks_id_and_status(
     return db.session.execute(stale_fraud_check_ids_stmt).all()
 
 
-def _get_pending_fraud_checks_pages() -> typing.Generator[list[subscription_models.BeneficiaryFraudCheck], None, None]:
+def _get_pending_fraud_checks_pages() -> typing.Generator[list[subscription_models.BeneficiaryFraudCheck]]:
     # Ubble guarantees an application is processed after 3 hours.
     # We give ourselves some extra time and we retrieve the applications that are still pending after 12 hours.
     twelve_hours_ago = datetime.date.today() - datetime.timedelta(hours=12)

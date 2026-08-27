@@ -651,7 +651,7 @@ class BoostExtractTransformLoadProcessTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/158026.jpg", content=b"")
 
         BoostExtractTransformLoadProcess(venue_provider).execute()
         BoostExtractTransformLoadProcess(venue_provider).execute()

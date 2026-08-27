@@ -116,7 +116,7 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        assert all((stock.price == 25 for stock in offer.stocks if not stock.isEventExpired))
+        assert all(stock.price == 25 for stock in offer.stocks if not stock.isEventExpired)
         assert expired_stock.price != 25
 
     def test_delete_price_category(self, client):

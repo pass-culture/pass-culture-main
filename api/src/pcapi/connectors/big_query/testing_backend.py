@@ -4,7 +4,7 @@ from .backend import BaseBackend
 
 
 TestingRow = typing.TypeVar("TestingRow")
-TestingRowIterator = typing.Generator[TestingRow, None, None]
+TestingRowIterator = typing.Generator[TestingRow]
 
 
 class TestingBackend(BaseBackend):

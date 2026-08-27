@@ -57,7 +57,7 @@ class CinemaAPIClient:
                     "url": image_url,
                 },
             )
-            return bytes()
+            return b""
 
         return api_response.content
 

@@ -2068,7 +2068,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
-        assert "Informations expirées".encode("utf-8") in response.data
+        assert "Informations expirées".encode() in response.data
 
 
 class GetUserActivityTest(GetEndpointHelper):
@@ -3172,7 +3172,7 @@ class DisabilityBonusCreditRequestTest(PostEndpointHelper):
         assert aah_fraud_check.resultContent
         person = aah_fraud_check.resultContent["person"]
         assert person["birth_country_cog_code"] == "99101"
-        assert "birth_city_cog_code" not in person.keys()
+        assert "birth_city_cog_code" not in person
 
         aeeh_fraud_checks = users_api.get_bonus_credit_fraud_checks(
             user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
@@ -3184,7 +3184,7 @@ class DisabilityBonusCreditRequestTest(PostEndpointHelper):
         assert aeeh_fraud_check.resultContent
         person = aeeh_fraud_check.resultContent["person"]
         assert person["birth_country_cog_code"] == "99101"
-        assert "birth_city_cog_code" not in person.keys()
+        assert "birth_city_cog_code" not in person
 
     def test_city_is_missing(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()

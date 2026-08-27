@@ -29,9 +29,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
     venue = booking.venue
     user_name = booking.userName
     user_email = booking.email
-    email_subject = "Confirmation de votre annulation de réservation pour {}, proposé par {}".format(
-        stock_name, venue.name
-    )
+    email_subject = f"Confirmation de votre annulation de réservation pour {stock_name}, proposé par {venue.name}"
     ongoing_stock_bookings = find_ongoing_bookings_by_stock(booking.stock.id)
     try:
         # Booking is (being) cancelled, but the query here may still

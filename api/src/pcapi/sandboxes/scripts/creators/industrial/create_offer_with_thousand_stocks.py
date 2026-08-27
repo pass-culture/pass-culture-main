@@ -27,7 +27,7 @@ def create_offer_with_thousand_stocks(offerer: Offerer) -> None:
         subcategoryId=subcategories.SEANCE_CINE.id,
     )
     price_category = PriceCategoryFactory.create(offer=offer_event)
-    for i in range(0, 1000):
+    for i in range(1000):
         EventStockFactory.create(
             offer=offer_event,
             quantity=1,

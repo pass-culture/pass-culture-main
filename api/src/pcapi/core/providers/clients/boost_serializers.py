@@ -47,7 +47,7 @@ class Collection(pydantic.BaseModel):
 
 def _convert_to_utc_datetime(datetime_with_tz_offset: datetime.datetime) -> datetime.datetime:
     """Convert the upcoming date information to utc before stripping it"""
-    return datetime_with_tz_offset.astimezone(tz=datetime.timezone.utc).replace(tzinfo=None)
+    return datetime_with_tz_offset.astimezone(tz=datetime.UTC).replace(tzinfo=None)
 
 
 class ShowtimePricing(pydantic.BaseModel):

@@ -117,11 +117,11 @@ def check_start_is_before_end(start_datetime: datetime.datetime, end_datetime: d
     # if start or end datetime does not have a timezone, it is assumed to be UTC
     check_start = start_datetime
     if check_start.tzinfo is None:
-        check_start = check_start.replace(tzinfo=datetime.timezone.utc)
+        check_start = check_start.replace(tzinfo=datetime.UTC)
 
     check_end = end_datetime
     if check_end.tzinfo is None:
-        check_end = check_end.replace(tzinfo=datetime.timezone.utc)
+        check_end = check_end.replace(tzinfo=datetime.UTC)
 
     if check_end < check_start:
         raise exceptions.EndDatetimeBeforeStartDatetime()

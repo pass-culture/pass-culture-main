@@ -35,13 +35,13 @@ def create_industrial_event_offers(
 
         event_venue = offerer.managedVenues[0]
 
-        for venue_event_index in range(0, EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE):
+        for venue_event_index in range(EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE):
             event_subcategory_index = (venue_event_index + event_index) % len(event_subcategories)
             event_subcategory = event_subcategories[event_subcategory_index]
             mock_index = (venue_event_index + event_index) % len(MOCK_NAMES)
             event_name = MOCK_NAMES[mock_index]
 
-            name = "{} / {}".format(event_name, event_venue.name)
+            name = f"{event_name} / {event_venue.name}"
             if offer_index % DEACTIVATED_OFFERS_PICK_MODULO == 0:
                 is_active = False
             else:

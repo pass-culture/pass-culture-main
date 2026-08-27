@@ -74,7 +74,7 @@ class DMSGraphQLClient:
         state: dms_models.GraphQLApplicationStates | None = None,
         page_token: str | None = None,
         since: datetime.datetime | None = None,
-    ) -> Generator[dms_models.DmsApplicationResponse, None, None]:
+    ) -> Generator[dms_models.DmsApplicationResponse]:
         variables: dict[str, int | str] = {
             "demarcheNumber": procedure_id,
         }
@@ -102,7 +102,7 @@ class DMSGraphQLClient:
 
     def get_deleted_applications(
         self, procedure_id: int, page_token: str | None = None, deletedSince: datetime.datetime | None = None
-    ) -> Generator[dms_models.DmsDeletedApplication, None, None]:
+    ) -> Generator[dms_models.DmsDeletedApplication]:
         variables: dict[str, Any] = {"demarcheNumber": procedure_id}
         if page_token:
             variables["after"] = page_token
@@ -409,7 +409,7 @@ class DMSGraphQLClient:
         since: datetime.datetime | None = None,
         page_token: str | None = None,
         archived: bool | None = False,  # None means: both archived and not archived
-    ) -> Generator[dict, None, None]:
+    ) -> Generator[dict]:
         variables: dict[str, int | str | None] = {
             "demarcheNumber": procedure_number,
             "archived": archived,
@@ -446,7 +446,7 @@ class DMSGraphQLClient:
         state: dms_models.GraphQLApplicationStates | None = None,
         since: datetime.datetime | None = None,
         page_token: str | None = None,
-    ) -> Generator[dict, None, None]:
+    ) -> Generator[dict]:
         variables: dict[str, int | str] = {
             "demarcheNumber": procedure_number,
         }
@@ -482,7 +482,7 @@ class DMSGraphQLClient:
         state: dms_models.GraphQLApplicationStates | None = None,
         since: datetime.datetime | None = None,
         page_token: str | None = None,
-    ) -> Generator[dict, None, None]:
+    ) -> Generator[dict]:
         variables: dict[str, int | str] = {"demarcheNumber": procedure_number}
         if state:
             variables["state"] = state.value

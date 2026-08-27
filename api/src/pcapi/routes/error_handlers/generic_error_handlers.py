@@ -97,7 +97,7 @@ def decimal_cast_error(error: DecimalCastError) -> ApiErrorResponse:
     mark_transaction_as_invalid()
     api_errors = ApiErrors()
     logger.warning(json.dumps(error.errors))
-    for field in error.errors.keys():
+    for field in error.errors:
         api_errors.add_error(field, "Saisissez un nombre valide")
     return app.generate_error_response(api_errors.errors), 400
 
@@ -107,7 +107,7 @@ def date_time_cast_error(error: DateTimeCastError) -> ApiErrorResponse:
     mark_transaction_as_invalid()
     api_errors = ApiErrors()
     logger.warning(json.dumps(error.errors))
-    for field in error.errors.keys():
+    for field in error.errors:
         api_errors.add_error(field, "Format de date invalide")
     return app.generate_error_response(api_errors.errors), 400
 

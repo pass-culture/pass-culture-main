@@ -17,7 +17,7 @@ def validate_opening_hours(opening_hours: list[Hour]) -> list[Hour]:
         raise ValueError("ensure this value has at most 2 items")
     start, end = opening_hours
     if start >= end:
-        raise ValueError("opening hours start ({}) cannot be after end ({}), nor can they be equal".format(start, end))
+        raise ValueError(f"opening hours start ({start}) cannot be after end ({end}), nor can they be equal")
     return opening_hours
 
 

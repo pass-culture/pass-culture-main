@@ -1890,7 +1890,7 @@ def get_educational_offerers(offerer_id: int | None, current_user: users_models.
 
 def get_venues_by_batch(
     max_venues: int | None = None,
-) -> typing.Generator[models.Venue, None, None]:
+) -> typing.Generator[models.Venue]:
     query = db.session.query(models.Venue).order_by(models.Venue.id)
 
     if max_venues:
@@ -2660,7 +2660,7 @@ class OffererVenues:
 
 def get_providers_offerer_and_venues(
     provider: providers_models.Provider, siren: str | None = None
-) -> typing.Generator[OffererVenues, None, None]:
+) -> typing.Generator[OffererVenues]:
     offerers_query = (
         db.session.query(offerers_models.Offerer, offerers_models.Venue)
         .options(

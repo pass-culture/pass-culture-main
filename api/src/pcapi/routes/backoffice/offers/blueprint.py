@@ -1553,8 +1553,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             offer.lastValidationAuthorUserId = current_user.id
 
             is_not_a_future_offer = (
-                offer.publicationDatetime is None
-                or offer.publicationDatetime <= datetime.datetime.now(datetime.timezone.utc)
+                offer.publicationDatetime is None or offer.publicationDatetime <= datetime.datetime.now(datetime.UTC)
             )
             if is_not_a_future_offer:
                 offer.publicationDatetime = datetime.datetime.now(datetime.UTC)

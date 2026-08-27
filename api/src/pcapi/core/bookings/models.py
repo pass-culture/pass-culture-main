@@ -492,7 +492,7 @@ class Booking(PcObject, Model):
         try:
             # pricing.amount is in cents, amount in euros
             # -> the result is a percentage
-            return float("{:.2f}".format((-self.reimbursement_pricing.amount / self.total_amount)))
+            return float(f"{-self.reimbursement_pricing.amount / self.total_amount:.2f}")
         except (decimal.DivisionByZero, decimal.InvalidOperation):  # raised when both values are 0
             return None
 

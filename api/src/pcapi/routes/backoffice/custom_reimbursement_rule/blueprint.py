@@ -149,7 +149,7 @@ def _get_custom_reimbursement_rules(
             query = base_query.filter(offers_models.Offer.id == int(search_query))
 
         else:
-            name = "%{}%".format(search_query)
+            name = f"%{search_query}%"
             query = base_query.filter(offers_models.Offer.name.ilike(name))
     else:
         query = base_query

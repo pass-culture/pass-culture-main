@@ -175,7 +175,7 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
 
     formatted_extra_data: models.OfferExtraData = {}
 
-    for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields.keys():
+    for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields:
         if extra_data.get(field_name):
             formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
 
@@ -2765,16 +2765,14 @@ def replace_offer_price_categories(
 
     synced_price_categories = []
     for idx, synced_price_category_input in enumerate(synced_price_category_inputs):
-        validation.check_stock_price(
-            synced_price_category_input["price"], offer, None, "priceCategories.{}.price".format(idx)
-        )
+        validation.check_stock_price(synced_price_category_input["price"], offer, None, f"priceCategories.{idx}.price")
 
         price_category_id = synced_price_category_input.get("id")
 
         if price_category_id:
             if price_category_id not in existing_price_categories_by_id:
                 raise exceptions.OfferException(
-                    {"price_category_id": ["Le tarif avec l'id {} n'existe pas".format(price_category_id)]}
+                    {"price_category_id": [f"Le tarif avec l'id {price_category_id} n'existe pas"]}
                 )
             existing_price_category = existing_price_categories_by_id[price_category_id]
             existing_price_category.label = synced_price_category_input["label"]

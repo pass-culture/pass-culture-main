@@ -184,7 +184,7 @@ class AlgoliaIndexingQueuesMixin:
         queue: str,
         count: int,
         cast_to_int: bool = True,
-    ) -> abc.Generator[set, None, None]:
+    ) -> abc.Generator[set]:
         """Return a set of int identifiers from the queue, as a
         context manager.
 

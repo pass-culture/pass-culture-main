@@ -1,7 +1,7 @@
 import math
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from unittest.mock import patch
 
 import pytest
@@ -17,7 +17,7 @@ from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 
-now_datetime_with_tz = datetime.now(timezone.utc)
+now_datetime_with_tz = datetime.now(UTC)
 now_datetime_without_tz = now_datetime_with_tz.replace(tzinfo=None)
 
 
@@ -47,7 +47,7 @@ class Returns204Test:
 
     def when_deactivating_existing_offers(self, client):
         venue = offerers_factories.VenueFactory()
-        finalization_datetime = datetime.now(timezone.utc)
+        finalization_datetime = datetime.now(UTC)
         offer = offers_factories.OfferFactory(
             venue=venue,
             finalizationDatetime=finalization_datetime,
@@ -132,7 +132,7 @@ def is_around_now(dt: datetime) -> bool:
     on insert/update an automatic offset might have been added if the
     local timezone is not UTC.
     """
-    utc_now = datetime.now(timezone.utc)
+    utc_now = datetime.now(UTC)
 
     local_utc_offset = datetime.now().astimezone().utcoffset()
     abs_tol = local_utc_offset.seconds + 5

@@ -7,7 +7,7 @@ from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 
 __all__ = (
     "AllocineStocks",
-    "CDSStocks",
     "BoostStocks",
+    "CDSStocks",
     "CGRStocks",
 )

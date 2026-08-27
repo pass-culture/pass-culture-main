@@ -110,13 +110,13 @@ def generate_bundle(files: list[Path], destination: Path) -> None:
             paths = list(path.iterdir())
 
         for filepath in paths:
-            bundle_content += f"/* {filepath} */\n".encode("utf-8")
+            bundle_content += f"/* {filepath} */\n".encode()
             with open(filepath, mode="rb") as fp:
                 bundle_content += fp.read()
                 bundle_content += b"\n"
 
     bundle_hash = hashlib.sha256(bundle_content).hexdigest()
-    bundle_content = (f"/*{bundle_hash}*/\n").encode("utf-8") + bundle_content
+    bundle_content = (f"/*{bundle_hash}*/\n").encode() + bundle_content
 
     with open(destination, mode="wb") as fp:
         fp.write(bundle_content)

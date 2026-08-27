@@ -74,7 +74,7 @@ class ComplianceBackend(BaseBackend):
         return api_response.json()
 
     def _get_signed_jwt(self, target_service_account: str, resource_url: str) -> str:
-        iat = datetime.datetime.now(tz=datetime.timezone.utc)
+        iat = datetime.datetime.now(tz=datetime.UTC)
         exp = iat + datetime.timedelta(seconds=3600)
 
         payload = {

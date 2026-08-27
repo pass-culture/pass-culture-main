@@ -246,7 +246,7 @@ class Returns200Test:
     def test_user_can_create_offerer(self, client):
         pro = users_factories.ProFactory(phoneNumber=None)
 
-        body = {**REQUEST_BODY, **{"phoneNumber": "0123456789"}}
+        body = {**REQUEST_BODY, "phoneNumber": "0123456789"}
         assert not pro.phoneNumber
 
         client = client.with_session_auth(pro.email)
@@ -261,7 +261,7 @@ class Returns200Test:
     def test_user_can_create_offerer_without_phone_number(self, client):
         pro = users_factories.ProFactory(phoneNumber=None)
 
-        body = {**REQUEST_BODY, **{"phoneNumber": None}}
+        body = {**REQUEST_BODY, "phoneNumber": None}
 
         assert not pro.phoneNumber
 

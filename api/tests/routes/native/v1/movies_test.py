@@ -443,7 +443,7 @@ class MovieCalendarTest:
             "longitude": 2.35,
             "from": date.today(),
             "to": date.today() + timedelta(days=1),
-            **{field_name: value},
+            field_name: value,
         }
         response = client.get("/native/v1/movie/calendar", params=params)
         assert response.status_code == 400
@@ -464,7 +464,7 @@ class MovieCalendarTest:
             "longitude": 2.35,
             "from": date.today(),
             "to": date.today() + timedelta(days=1),
-            **{field_name: value},
+            field_name: value,
         }
         response = client.get("/native/v1/movie/calendar", params=params)
         assert response.status_code == 404
@@ -923,7 +923,7 @@ class MovieCalendarForUserTest:
             "longitude": 2.35,
             "from": date.today(),
             "to": date.today() + timedelta(days=1),
-            **{field_name: value},
+            field_name: value,
         }
         client.with_token(user)
         response = client.get("/native/v1/movie/calendar/me", params=params)
@@ -949,7 +949,7 @@ class MovieCalendarForUserTest:
             "longitude": 2.35,
             "from": date.today(),
             "to": date.today() + timedelta(days=1),
-            **{field_name: value},
+            field_name: value,
         }
         client.with_token(user)
         response = client.get("/native/v1/movie/calendar/me", params=params)

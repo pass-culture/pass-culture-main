@@ -120,7 +120,7 @@ def load_jwt(request: flask.Request, *, jwt_type: JwtType) -> JwtContainer | Non
 def save_jwt_container(data: tuple[dict, dict], request: flask.Request) -> JwtContainer:
     raw = request.headers.get("Authorization", " ").split(" ")[1]
 
-    unsigned_data, signed_data = data
+    _unsigned_data, signed_data = data
     flask.g.jwt = JwtContainer(
         raw=raw,
         data=JwtData(

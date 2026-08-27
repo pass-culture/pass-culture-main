@@ -33,13 +33,13 @@ def create_industrial_thing_offers(
     for offerer in offerers_by_name.values():
         physical_venue = sorted(offerer.managedVenues, key=lambda venue: venue.id)[0]
 
-        for venue_thing_index in range(0, THINGS_PER_OFFERER):
+        for venue_thing_index in range(THINGS_PER_OFFERER):
             subcategory_index = (venue_thing_index + thing_index) % len(thing_subcategories)
             subcategory = thing_subcategories[subcategory_index]
             thing_name_index = (venue_thing_index + thing_index) % len(MOCK_NAMES)
             thing_name = MOCK_NAMES[thing_name_index]
 
-            name = "{} / {}".format(thing_name, physical_venue.name)
+            name = f"{thing_name} / {physical_venue.name}"
             if offer_index % DEACTIVATED_OFFERS_PICK_MODULO == 0:
                 is_active = False
             else:

@@ -1295,11 +1295,8 @@ def _get_drive_folder_name(batch: models.CashflowBatch) -> str:
     Looks like "2022-03 - jusqu'au 15 mars".
     """
     last_day = pytz.utc.localize(batch.cutoff).astimezone(utils.ACCOUNTING_TIMEZONE).date() - datetime.timedelta(days=1)
-    return "{year}-{month:02} - jusqu'au {day} {month_name}".format(
-        year=last_day.year,
-        month=last_day.month,
-        day=last_day.day,
-        month_name=date_utils.MONTHS_IN_FRENCH[last_day.month],
+    return (
+        f"{last_day.year}-{last_day.month:02} - jusqu'au {last_day.day} {date_utils.MONTHS_IN_FRENCH[last_day.month]}"
     )
 
 

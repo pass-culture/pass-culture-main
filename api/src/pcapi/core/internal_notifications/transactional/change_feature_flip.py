@@ -6,18 +6,11 @@ from pcapi.utils import urls
 
 
 def send(feature: Feature, current_user: User) -> None:
-    env_prefix = "" if settings.IS_PROD else """[{}] """.format(settings.ENV)
+    env_prefix = "" if settings.IS_PROD else f"""[{settings.ENV}] """
     status_icon = ":white_check_mark:" if feature.isActive else ":x:"
     edit_link = urls.build_backoffice_feature_flipping_link()
 
-    text = """{env}{status} *{name}* est passé à *{is_active}*\nPar le user_email {email}. <{link}|Modifier>""".format(
-        env=env_prefix,
-        status=status_icon,
-        name=feature.name,
-        is_active=feature.isActive,
-        email=current_user.email,
-        link=edit_link,
-    )
+    text = f"""{env_prefix}{status_icon} *{feature.name}* est passé à *{feature.isActive}*\nPar le user_email {current_user.email}. <{edit_link}|Modifier>"""
 
     blocks = [{"type": "section", "text": {"type": "mrkdwn", "text": text}}]
 

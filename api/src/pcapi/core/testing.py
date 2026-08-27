@@ -24,7 +24,7 @@ STACKS_FOLDER = "stacks"
 
 
 @contextlib.contextmanager
-def assert_no_duplicated_queries() -> collections.abc.Generator[None, None, None]:
+def assert_no_duplicated_queries() -> collections.abc.Generator[None]:
     """A context manager that verifies that no SQL statement is run twice
     during the execution of the code in the context to prevent N+1 issues.
 
@@ -56,9 +56,7 @@ def assert_no_duplicated_queries() -> collections.abc.Generator[None, None, None
 
 
 @contextlib.contextmanager
-def assert_num_queries(
-    expected_n_queries: int, expire_session: bool = True
-) -> collections.abc.Generator[None, None, None]:
+def assert_num_queries(expected_n_queries: int, expire_session: bool = True) -> collections.abc.Generator[None]:
     """A context manager that verifies that we do not perform unexpected
     SQL queries.
 

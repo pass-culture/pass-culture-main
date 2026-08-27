@@ -17,7 +17,7 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
     def test_list_educational_institutions(self):
         plain_api_key, _ = self.setup_provider()
         expected_json = []
-        for _ in range(0, 6):
+        for _ in range(6):
             educational_institution = educational_factories.EducationalInstitutionFactory()
             expected_json.append(
                 {

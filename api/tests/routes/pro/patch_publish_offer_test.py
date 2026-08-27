@@ -43,7 +43,7 @@ class Returns404Test:
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
-now_datetime_with_tz = datetime.datetime.now(datetime.timezone.utc)
+now_datetime_with_tz = datetime.datetime.now(datetime.UTC)
 
 
 @patch("pcapi.core.search.async_index_offer_ids")
@@ -219,7 +219,7 @@ class Returns200Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        booking_allowed_datetime = datetime.datetime.now(datetime.timezone.utc).replace(
+        booking_allowed_datetime = datetime.datetime.now(datetime.UTC).replace(
             minute=0, second=0, microsecond=0
         ) + datetime.timedelta(days=30)
         offer_id = stock.offerId
@@ -268,10 +268,10 @@ class Returns200Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        publication_date = datetime.datetime.now(datetime.timezone.utc).replace(
+        publication_date = datetime.datetime.now(datetime.UTC).replace(
             minute=0, second=0, microsecond=0
         ) + datetime.timedelta(days=30)
-        booking_allowed_datetime = datetime.datetime.now(datetime.timezone.utc).replace(
+        booking_allowed_datetime = datetime.datetime.now(datetime.UTC).replace(
             minute=0, second=0, microsecond=0
         ) + datetime.timedelta(days=31)
         offer_id = stock.offerId

@@ -255,7 +255,7 @@ class CineOfficeAPIClient(cinema_client.CinemaAPIClient):
     ) -> list[cine_office_serializers.Seat]:
         seatmap = self.get_seatmap(show.id)
         available_seats_index = [
-            (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] == 1
+            (i, j) for i in range(seatmap.nb_row) for j in range(seatmap.nb_col) if seatmap.map[i][j] == 1
         ]
         if len(available_seats_index) == 0:
             return []
@@ -271,7 +271,7 @@ class CineOfficeAPIClient(cinema_client.CinemaAPIClient):
         seatmap_center = ((seatmap.nb_row - 1) / 2, (seatmap.nb_col - 1) / 2)
 
         available_seats_index = [
-            (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] == 1
+            (i, j) for i in range(seatmap.nb_row) for j in range(seatmap.nb_col) if seatmap.map[i][j] == 1
         ]
         if len(available_seats_index) <= 1:
             return []
