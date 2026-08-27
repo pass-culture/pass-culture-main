@@ -155,7 +155,7 @@ RUN apt-get update && \
   apt-get install --no-install-recommends -y \
   postgresql-client \
   libgdal-dev \
-  google-cloud-sdk &&  \
+  google-cloud-cli &&  \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*  # reduce image size
 
