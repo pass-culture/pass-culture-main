@@ -1390,6 +1390,20 @@ def _generate_changing_bank_accounts_file(
 
     previous_link = sa_orm.aliased(offerers_models.VenueBankAccountLink)
     previous_bank_account = sa_orm.aliased(models.BankAccount)
+    subquery_link = sa_orm.aliased(offerers_models.VenueBankAccountLink)
+
+    previous_link_id_subquery = (
+        db.session.query(subquery_link.id)
+        .filter(
+            subquery_link.venueId == offerers_models.VenueBankAccountLink.venueId,
+            subquery_link.id != offerers_models.VenueBankAccountLink.id,
+            subquery_link.timespan.overlaps(db_utils.make_timerange(start=None, end=previous_cutoff, bounds="[]")),
+        )
+        .order_by(subquery_link.id.desc())
+        .limit(1)
+        .correlate(offerers_models.VenueBankAccountLink)
+        .scalar_subquery()
+    )
 
     query = (
         db.session.query(offerers_models.Venue)
@@ -1402,13 +1416,7 @@ def _generate_changing_bank_accounts_file(
             ),
         )
         .join(models.BankAccount, models.BankAccount.id == offerers_models.VenueBankAccountLink.bankAccountId)
-        .join(
-            previous_link,
-            sa.and_(
-                offerers_models.Venue.id == previous_link.venueId,
-                previous_link.timespan.contains(previous_cutoff),
-            ),
-        )
+        .join(previous_link, previous_link.id == previous_link_id_subquery)
         .join(previous_bank_account, previous_bank_account.id == previous_link.bankAccountId)
         .filter(previous_bank_account.id != models.BankAccount.id)
         .with_entities(
@@ -1421,6 +1429,7 @@ def _generate_changing_bank_accounts_file(
             models.BankAccount.label.label("new_bank_account_label"),
             models.BankAccount.iban.label("new_bank_account_iban"),
         )
+        .order_by(offerers_models.Venue.id)
     )
 
     return _write_csv("changing_bank_accounts", header, rows=query, row_formatter=_changing_bank_accounts_row_formatter)

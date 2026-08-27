@@ -129,12 +129,12 @@ class TSVector(sa_types.TypeDecorator):
 
 
 def make_timerange(
-    start: datetime.datetime,
+    start: datetime.datetime | None,
     end: datetime.datetime | None = None,
     bounds: str = "[)",
 ) -> psycopg2.extras.DateTimeRange:
     return psycopg2.extras.DateTimeRange(
-        lower=start.astimezone(pytz.utc).isoformat(),
+        lower=start.astimezone(pytz.utc).isoformat() if start else None,
         upper=end.astimezone(pytz.utc).isoformat() if end else None,
         bounds=bounds,
     )
