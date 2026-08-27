@@ -111,7 +111,7 @@
     "playwright-core": "1.62.1",
     "prettier": "3.9.6",
     "regenerator-runtime": "0.14.1",
-    "rollup-plugin-visualizer": "7.0.1",
+    "rollup-plugin-visualizer": "7.1.1",
     "sass": "1.102.0",
     "storybook": "10.5.7",
     "storybook-addon-remix-react-router": "7.0.0",
