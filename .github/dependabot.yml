@@ -72,6 +72,8 @@ updates:
       - dependency-name: 'boto3'
         update-types:
           - "version-update:semver-patch"
+      # sqlalchemy-easy-softdelete is a fork hosted in one of our public repositories
+      - dependency-name: 'sqlalchemy-easy-softdelete'
 
   # GitHub Actions
   - package-ecosystem: 'github-actions'
