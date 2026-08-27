@@ -1413,16 +1413,24 @@ def move_collective_offer(collective_offer_id: int, destination_venue_id: int) -
 
             finance_event = (
                 db.session.query(finance_models.FinanceEvent)
-                .filter_by(collectiveBookingId=collective_booking.id)
+                .filter(
+                    finance_models.FinanceEvent.collectiveBookingId == collective_booking.id,
+                    finance_models.FinanceEvent.status.in_(finance_models.CANCELLABLE_FINANCE_EVENT_STATUSES),
+                )
                 .one_or_none()
             )
             if finance_event:
                 finance_event.venueId = destination_venue.id
-                finance_event.pricingPointId = destination_venue.current_pricing_point_id
-                finance_event.status = finance_models.FinanceEventStatus.READY
-                # pricingOrderingDate can be reset to NOW for collective offers because there is ordering to take into
-                # account for reimbursement rate on collective pricings.
-                finance_event.pricingOrderingDate = date_utils.get_naive_utc_now()
+                new_pricing_point_id = destination_venue.current_pricing_point_id
+                finance_event.pricingPointId = new_pricing_point_id
+                if new_pricing_point_id:
+                    finance_event.status = finance_models.FinanceEventStatus.READY
+                    # pricingOrderingDate can be reset to NOW for collective offers because there is ordering to take into
+                    # account for reimbursement rate on collective pricings.
+                    finance_event.pricingOrderingDate = date_utils.get_naive_utc_now()
+                else:
+                    finance_event.status = finance_models.FinanceEventStatus.PENDING
+                    finance_event.pricingOrderingDate = None
                 db.session.add(finance_event)
 
     db.session.flush()
