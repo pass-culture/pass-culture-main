@@ -28,6 +28,7 @@ import pcapi.core.users.utils as users_utils
 import pcapi.utils.date as date_utils
 import pcapi.utils.email as email_utils
 import pcapi.utils.postal_code as postal_code_utils
+from pass_culture_rules.bonification_handicap import BonificationHandicapAlgo
 from pcapi import settings
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
@@ -58,6 +59,7 @@ from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.redis import get_redis_client
 from pcapi.utils.requests import ExternalAPIException
 from pcapi.utils.transaction_manager import atomic
+from regalgo import AlgoInput
 
 
 if typing.TYPE_CHECKING:
@@ -1574,88 +1576,63 @@ def get_user_qf_bonification_status(user: models.User) -> bonus_schemas.QFBonifi
     return bonus_schemas.QFBonificationStatus.KO
 
 
+# NOTE (chore/delegate-regulatory-rules-to-pass-culture-rules, 2026-08-27):
+# get_user_disability_bonification_status below delegates to the
+# independent `pass-culture-rules` package's bonification_handicap algo
+# (regalgo-conformant, algo_id "pass-culture.bonification-handicap.v1").
+# This dependency is NOT YET PUBLISHED — see the PR description; do not
+# merge as-is. The algo's status/reason-code strings are plain lowercase
+# values matching subscription_models.FraudCheckStatus/FraudReasonCode's
+# own .value and bonus_schemas.DisabilityBonificationStatus's own .value —
+# by design (the algo's metadata.json enumerates exactly these strings),
+# not by accident; DisabilityBonificationStatus(result.value) below raises
+# loudly if that ever stops being true, rather than silently misreading a
+# status.
+_bonification_handicap_algo = BonificationHandicapAlgo()
+
+
 def get_user_disability_bonification_status(user: models.User) -> bonus_schemas.DisabilityBonificationStatus:
     """
     Get only the AAH bonus credit status.
     The AEEH bonus credit status follows it closely: both are created and handled at the same time.
     """
     deposit = user.deposit
-    if not deposit:
-        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
-
-    if deposit.type != finance_models.DepositType.GRANT_17_18:
-        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
-
-    has_received_bonus = finance_models.RecreditType.BONUS_CREDIT in [
-        recredit.recreditType for recredit in deposit.recredits
-    ]
-    if has_received_bonus:
-        return bonus_schemas.DisabilityBonificationStatus.GRANTED
-
-    has_eligible_age = False
-    if user.age == 18:
-        has_eligible_age = True
-    elif user.age == 19 and user.birth_date is not None:
-        nineteenth_birthday = user.birth_date + relativedelta(years=19)
-        has_eligible_age = (
-            settings.CREDIT_V3_DECREE_DATETIME.date()
-            <= nineteenth_birthday
-            <= settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME.date()
-        )
-
-    if not has_eligible_age:
-        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
+    dispose_credit_17_18 = deposit is not None and deposit.type == finance_models.DepositType.GRANT_17_18
+    bonification_deja_versee = dispose_credit_17_18 and (
+        finance_models.RecreditType.BONUS_CREDIT in [recredit.recreditType for recredit in deposit.recredits]
+    )
 
     aah_bonus_credit_fraud_checks = get_bonus_credit_fraud_checks(
         user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
     )
-    if not aah_bonus_credit_fraud_checks:
-        return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
+    historique_verifications = [
+        {
+            "statut": fraud_check.status.value,
+            "codes_motif": [code.value for code in (fraud_check.reasonCodes or [])],
+            "origine": fraud_check.reason,
+            "date_creation": fraud_check.dateCreated,
+        }
+        for fraud_check in aah_bonus_credit_fraud_checks
+    ]
 
-    aah_bonus_fraud_check = aah_bonus_credit_fraud_checks[-1]
-    aah_fraud_check_status = aah_bonus_fraud_check.status
-    is_pending_fraud_check = aah_fraud_check_status in (
-        subscription_models.FraudCheckStatus.STARTED,
-        subscription_models.FraudCheckStatus.PENDING,
+    result = _bonification_handicap_algo.compute(
+        AlgoInput(
+            data={
+                "age": user.age,
+                "date_naissance": user.birth_date,
+                "departement": user.departementCode,
+                "dispose_credit_17_18": dispose_credit_17_18,
+                "bonification_deja_versee": bonification_deja_versee,
+                "historique_verifications": historique_verifications,
+            },
+            context={
+                "date_evaluation": date_utils.get_naive_utc_now(),
+                "date_decret_v3": settings.CREDIT_V3_DECREE_DATETIME,
+                "date_limite_fenetre_transitoire": settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME,
+            },
+        )
     )
-    is_automatic_fraud_check = aah_bonus_fraud_check.reason is not None and aah_bonus_fraud_check.reason.startswith(
-        bonus_constants.AUTOMATIC_ORIGIN
-    )
-    if is_pending_fraud_check and not is_automatic_fraud_check:
-        return bonus_schemas.DisabilityBonificationStatus.STARTED
-
-    has_never_completely_tried = aah_fraud_check_status in (
-        None,
-        subscription_models.FraudCheckStatus.CANCELED,
-        subscription_models.FraudCheckStatus.ERROR,
-    )
-    if has_never_completely_tried or (is_pending_fraud_check and is_automatic_fraud_check):
-        return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
-
-    if aah_fraud_check_status == subscription_models.FraudCheckStatus.KO:
-        reason_codes = (aah_bonus_fraud_check.reasonCodes if aah_bonus_fraud_check else None) or []
-
-        if aah_bonus_fraud_check:
-            fraud_created_date_in_user_departement_tz = date_utils.utc_datetime_to_department_timezone(
-                aah_bonus_fraud_check.dateCreated, user.departementCode
-            ).date()
-            today_user_departement_tz = date_utils.utc_datetime_to_department_timezone(
-                date_utils.get_naive_utc_now(), user.departementCode
-            ).date()
-            # normally, fraud_created_date_in_user_departement_tz can't be > today, but you never know.
-            if fraud_created_date_in_user_departement_tz >= today_user_departement_tz:
-                return bonus_schemas.DisabilityBonificationStatus.TOO_MANY_RETRIES
-
-        if subscription_models.FraudReasonCode.PERSON_NOT_FOUND in reason_codes:
-            return bonus_schemas.DisabilityBonificationStatus.PERSON_NOT_FOUND
-
-        if subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND in reason_codes:
-            return bonus_schemas.DisabilityBonificationStatus.APPLICATION_NOT_FOUND
-
-        if subscription_models.FraudReasonCode.NOT_RECIPIENT in reason_codes:
-            return bonus_schemas.DisabilityBonificationStatus.NOT_RECIPIENT
-
-    return bonus_schemas.DisabilityBonificationStatus.KO
+    return bonus_schemas.DisabilityBonificationStatus(result.value)
 
 
 def get_latest_user_recredit_type(user: models.User) -> finance_models.RecreditType | None:
