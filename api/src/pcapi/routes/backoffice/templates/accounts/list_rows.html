@@ -1,6 +1,12 @@
 {% import "components/badges.html" as badges %}
 {% for user in rows %}
   <tr id="user-row-{{ user.id }}">
+    <td>
+      <input type="checkbox"
+             class="form-check-input"
+             name="pc-table-multi-select-check-{{ user.id }}"
+             data-id="{{ user.id }}" />
+    </td>
     <td data-pc-sort-table-value="{{ user.id }}">
       <a class="link-primary"
          href="{{ get_link_to_detail(user.id, form=advanced_form) }}">{{ user.id }}</a>
