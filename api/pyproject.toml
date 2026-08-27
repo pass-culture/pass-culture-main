@@ -75,7 +75,8 @@ dependencies = [
   "shapely ==2.1.2",
   "slack-sdk==3.43.0",
   "spectree ==1.5.8",
-  "sqlalchemy-easy-softdelete @ git+https://github.com/pass-culture/sqlalchemy-easy-softdelete.git",
+  # from our private fork
+  "sqlalchemy-easy-softdelete",
   "sqlalchemy[mypy]==2.0.52",
   "time-machine==3.4.0",
   "transitions ==0.9.3",
@@ -308,3 +309,6 @@ verbosity_assertions = 2
 
 [tool.djlint]
 profile="jinja"
+
+[tool.uv.sources]
+sqlalchemy-easy-softdelete = { git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" }
