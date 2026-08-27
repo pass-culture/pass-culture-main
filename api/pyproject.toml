@@ -41,7 +41,7 @@ dependencies = [
   "googleapis-common-protos==1.75.1",
   "googlemaps ==4.10.0",
   "gql[requests] ==4.0.0",
-  "gunicorn==26.0.0",
+  "gunicorn==26.1.0",
   "html5lib ==1.1",
   "ipython==9.16.1",
   "jinja2 ==3.1.6",
