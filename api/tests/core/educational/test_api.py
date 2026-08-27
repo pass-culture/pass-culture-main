@@ -671,6 +671,34 @@ class MoveCollectiveOfferTest:
             destination_venue.bookingEmail,
         }
 
+    def test_move_collective_offer_with_used_booking_no_destination_pricing_point(self):
+        offer = factories.CollectiveOfferOnOtherAddressLocationFactory()
+        source_venue = offer.venue
+        booking = factories.UsedCollectiveBookingFactory(collectiveStock=offer.collectiveStock)
+        finance_factories.CollectivePricingFactory(collectiveBooking=booking)
+        destination_venue = offerers_factories.VenueWithoutSiretFactory(pricing_point=None)
+
+        educational_api_offer.move_collective_offer(offer.id, destination_venue.id)
+
+        db.session.refresh(booking)
+        db.session.refresh(offer)
+
+        assert offer.venue == destination_venue
+        assert offer.offererAddress.venue == destination_venue
+        assert booking.offerer == destination_venue.managingOfferer
+        assert booking.venue == destination_venue
+
+        assert len(booking.pricings) == 0
+        assert len(booking.finance_events) == 1
+        assert booking.finance_events[0].status == finance_models.FinanceEventStatus.PENDING
+        assert booking.finance_events[0].venue == destination_venue
+        assert booking.finance_events[0].pricingPoint is None
+
+        assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {
+            source_venue.bookingEmail,
+            destination_venue.bookingEmail,
+        }
+
     @pytest.mark.parametrize(
         "factory",
         [factories.PendingReimbursementCollectiveBookingFactory, factories.ReimbursedCollectiveBookingFactory],
