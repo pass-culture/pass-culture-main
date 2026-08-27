@@ -53,7 +53,7 @@
     <td>{{ links.build_offer_name_to_details_link(offer, text_attr="id") }}</td>
     <td>{{ (booking.quantity == 2) | format_bool }}</td>
     <td>{{ booking.stock.id }}</td>
-    <td>{{ booking.stock.quantity }}</td>
+    <td>{{ "Illimité" if booking.stock.quantity is none else booking.stock.quantity }}</td>
     <td>{{ booking.total_amount | format_amount(target=booking.user) }}</td>
     <td>{{ booking | format_booking_status(with_badge=True) }}</td>
     {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
