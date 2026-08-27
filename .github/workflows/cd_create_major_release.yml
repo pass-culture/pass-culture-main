@@ -18,7 +18,7 @@ jobs:
   check-major-release-creation-is-allowed: # TODO (tcoudray-pass, 15/04/2026) Refacto when we get rid of the old workflow
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           sparse-checkout: |
@@ -45,7 +45,7 @@ jobs:
       message-base: ${{ steps.compute.outputs.message-base }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: 
           fetch-tags: true
           persist-credentials: false
@@ -110,7 +110,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout new tag
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: v${{ needs.compute-major-version-variables.outputs.release-number }}.0.0
           persist-credentials: true
