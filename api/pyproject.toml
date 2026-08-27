@@ -108,7 +108,7 @@ dev = [
   "requests-mock ==1.12.1",
   "ruff==0.16.2",
   "squawk-cli==2.62.0",
-  "types-protobuf==7.34.1.20260518",
+  "types-protobuf==7.34.1.20260816",
   "types-python-dateutil==2.9.0.20260807",
   "types-pytz==2026.3.1.20260727",
   "types-pyyaml==6.0.12.20260724",
