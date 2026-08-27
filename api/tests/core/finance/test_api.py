@@ -2048,6 +2048,22 @@ def test_generate_changing_bank_accounts_file(clean_temp_files):
         timespan=[now - datetime.timedelta(days=2)],
     )
 
+    venue_with_new_ba_after_missing_ba = offerers_factories.VenueFactory()
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_new_ba_after_missing_ba,
+        timespan=[now - datetime.timedelta(days=300), now - datetime.timedelta(days=100)],
+    )
+    link_before_missing = offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_new_ba_after_missing_ba,
+        bankAccount__label="Avant le trou",
+        timespan=[now - datetime.timedelta(days=100), now - datetime.timedelta(days=45)],
+    )
+    link_after_missing = offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_new_ba_after_missing_ba,
+        bankAccount__label="Après le trou",
+        timespan=[now - datetime.timedelta(days=5)],
+    )
+
     # Venue with no bank account
     offerers_factories.VenueFactory()
 
@@ -2059,27 +2075,38 @@ def test_generate_changing_bank_accounts_file(clean_temp_files):
     with path.open(encoding="utf-8") as fp:
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
         rows = list(reader)
-    assert len(rows) == 2
-    assert {
-        "ID de structure": str(classic_venue.id),
-        "Nom de la structure": classic_venue.name,
-        "Ancien ID de CB": str(old_link.bankAccount.id),
-        "Ancien nom de CB": old_link.bankAccount.label,
-        "Ancien IBAN de CB": old_link.bankAccount.iban,
-        "Nouvel ID de CB": str(new_link.bankAccount.id),
-        "Nouveau nom de CB": new_link.bankAccount.label,
-        "Nouvel IBAN de CB": new_link.bankAccount.iban,
-    } in rows
-    assert {
-        "ID de structure": str(venue_with_many_bank_accounts.id),
-        "Nom de la structure": venue_with_many_bank_accounts.name,
-        "Ancien ID de CB": str(previous_old_link.bankAccount.id),
-        "Ancien nom de CB": previous_old_link.bankAccount.label,
-        "Ancien IBAN de CB": previous_old_link.bankAccount.iban,
-        "Nouvel ID de CB": str(recent_link.bankAccount.id),
-        "Nouveau nom de CB": recent_link.bankAccount.label,
-        "Nouvel IBAN de CB": recent_link.bankAccount.iban,
-    } in rows
+    assert rows == [
+        {
+            "ID de structure": str(classic_venue.id),
+            "Nom de la structure": classic_venue.name,
+            "Ancien ID de CB": str(old_link.bankAccount.id),
+            "Ancien nom de CB": old_link.bankAccount.label,
+            "Ancien IBAN de CB": old_link.bankAccount.iban,
+            "Nouvel ID de CB": str(new_link.bankAccount.id),
+            "Nouveau nom de CB": new_link.bankAccount.label,
+            "Nouvel IBAN de CB": new_link.bankAccount.iban,
+        },
+        {
+            "ID de structure": str(venue_with_many_bank_accounts.id),
+            "Nom de la structure": venue_with_many_bank_accounts.name,
+            "Ancien ID de CB": str(previous_old_link.bankAccount.id),
+            "Ancien nom de CB": previous_old_link.bankAccount.label,
+            "Ancien IBAN de CB": previous_old_link.bankAccount.iban,
+            "Nouvel ID de CB": str(recent_link.bankAccount.id),
+            "Nouveau nom de CB": recent_link.bankAccount.label,
+            "Nouvel IBAN de CB": recent_link.bankAccount.iban,
+        },
+        {
+            "ID de structure": str(venue_with_new_ba_after_missing_ba.id),
+            "Nom de la structure": venue_with_new_ba_after_missing_ba.name,
+            "Ancien ID de CB": str(link_before_missing.bankAccount.id),
+            "Ancien nom de CB": link_before_missing.bankAccount.label,
+            "Ancien IBAN de CB": link_before_missing.bankAccount.iban,
+            "Nouvel ID de CB": str(link_after_missing.bankAccount.id),
+            "Nouveau nom de CB": link_after_missing.bankAccount.label,
+            "Nouvel IBAN de CB": link_after_missing.bankAccount.iban,
+        },
+    ]
 
 
 def test_generate_payments_file(clean_temp_files):
