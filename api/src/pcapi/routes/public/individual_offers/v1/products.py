@@ -546,6 +546,8 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
     if not offer:
         raise api_errors.ApiErrors({"offerId": ["The product offer could not be found"]}, status_code=404)
 
+    utils.log_offer_edition_without_last_provider(offer, body)
+
     _check_offer_can_be_edited(offer)
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
