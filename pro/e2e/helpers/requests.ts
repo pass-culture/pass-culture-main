@@ -104,8 +104,11 @@ export function isSynchronizeOffererOnboardingResponse(response: Response) {
 }
 
 export function isPatchStocksResponse(response: Response) {
+  const pathname = new URL(response.url()).pathname
+
   return (
-    /\/offers\/\d+\/stocks\/$/.test(response.url()) &&
+    (pathname.endsWith('/stocks/bulk') ||
+      /\/offers\/\d+\/stocks\/?$/.test(pathname)) &&
     response.request().method() === 'PATCH' &&
     response.status() === 200
   )

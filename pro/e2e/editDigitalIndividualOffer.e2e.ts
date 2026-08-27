@@ -3,6 +3,7 @@ import { addDays, format } from 'date-fns'
 
 import { checkAccessibility } from './helpers/accessibility'
 import { loginAndNavigate } from './helpers/auth'
+import { isPatchStocksResponse } from './helpers/requests'
 import {
   BASE_API_URL,
   createProUserWithBookings,
@@ -119,12 +120,6 @@ test.describe('Edit digital individual offers', () => {
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
       await expect(page.getByTestId('spinner')).toHaveCount(0)
 
-      const patchStockPromise = page.waitForResponse(
-        (response) =>
-          response.url().includes('/stocks/bulk') &&
-          response.request().method() === 'PATCH'
-      )
-
       await page
         .getByRole('button', { name: 'Modifier la date' })
         .first()
@@ -136,7 +131,16 @@ test.describe('Edit digital individual offers', () => {
       // Save modifications
       await page.getByText('Valider').click()
 
-      await patchStockPromise
+      await expect(
+        page.getByRole('heading', {
+          name: 'Modifier la date des réservations existantes ?',
+        })
+      ).toBeVisible()
+
+      await Promise.all([
+        page.waitForResponse(isPatchStocksResponse),
+        page.getByRole('button', { name: 'Confirmer la modification' }).click(),
+      ])
 
       // Check that booking date has been modified
       await page.goto('/offre/individuelle/2/reservations')

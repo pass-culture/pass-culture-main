@@ -70,11 +70,18 @@ export function StocksCalendarTable({
   onDeleteStocks,
   onUpdateFilters,
 }: Readonly<StocksCalendarTableProps>) {
+  type StockAction = 'delete' | 'editTime' | 'editDate' | 'editTimeDate'
+  type WarningModalState = {
+    stock: GetOfferStockResponseModel
+    action: StockAction
+    pendingStockUpdate?: EventStockUpdateBodyModel
+  }
+
   const [isEditStockDialogOpen, setIsEditStockDialogOpen] = useState(false)
   const [stockOpenedInDialog, setStockOpenedInDialog] =
     useState<GetOfferStockResponseModel | null>(null)
-  const [stockBeingDeleted, setStockBeingDeleted] =
-    useState<GetOfferStockResponseModel | null>(null)
+  const [warningModalState, setWarningModalState] =
+    useState<WarningModalState | null>(null)
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
@@ -84,7 +91,7 @@ export function StocksCalendarTable({
 
   const snackBar = useSnackBar()
 
-  async function handleUpdateStock(stock: EventStockUpdateBodyModel) {
+  const updateStock = async (stock: EventStockUpdateBodyModel) => {
     try {
       await onUpdateStock(stock)
     } catch {
@@ -95,6 +102,106 @@ export function StocksCalendarTable({
       setIsEditStockDialogOpen(false)
     }
   }
+
+  async function handleUpdateStock(stock: EventStockUpdateBodyModel) {
+    if (
+      stockOpenedInDialog?.beginningDatetime &&
+      stockHasBookings(stockOpenedInDialog)
+    ) {
+      const action = getEditionAction(
+        stockOpenedInDialog?.beginningDatetime,
+        stock.beginningDatetime
+      )
+      if (action) {
+        shouldOpenWarningModal(stockOpenedInDialog, action, stock)
+        return
+      }
+    }
+
+    await updateStock(stock)
+  }
+
+  const getEditionAction = (
+    currentBeginningDatetime: string,
+    updatedBeginningDatetime: string
+  ): StockAction | null => {
+    const hasDateChanged =
+      formatLocalTimeDateString(
+        currentBeginningDatetime,
+        departmentCode,
+        FORMAT_DD_MM_YYYY
+      ) !==
+      formatLocalTimeDateString(
+        updatedBeginningDatetime,
+        departmentCode,
+        FORMAT_DD_MM_YYYY
+      )
+
+    const hasTimeChanged =
+      formatLocalTimeDateString(
+        currentBeginningDatetime,
+        departmentCode,
+        FORMAT_HH_mm
+      ) !==
+      formatLocalTimeDateString(
+        updatedBeginningDatetime,
+        departmentCode,
+        FORMAT_HH_mm
+      )
+
+    if (hasDateChanged && hasTimeChanged) {
+      return 'editTimeDate'
+    }
+
+    if (hasDateChanged) {
+      return 'editDate'
+    }
+
+    if (hasTimeChanged) {
+      return 'editTime'
+    }
+
+    return null
+  }
+
+  const getModalTitle = (action: StockAction) => {
+    switch (action) {
+      case 'delete':
+        return `Supprimer la date et annuler les réservations existantes ?`
+      case 'editTime':
+        return `Modifier l'horaire des réservations existantes ?`
+      case 'editDate':
+        return 'Modifier la date des réservations existantes ?'
+      case 'editTimeDate':
+        return `Modifier la date et l’horaire des réservations existantes ?`
+    }
+  }
+
+  const getModalContent = (action: StockAction) => {
+    return {
+      title: getModalTitle(action),
+      description:
+        action === 'delete'
+          ? 'Cette action entrainera automatiquement l’annulation des réservations en cours et validées pour cette date. L’ensemble des bénéficiaires concernés sera averti par email.'
+          : 'Cette action laissera la possibilité aux bénéficiaires concernés de se rétracter dans les prochaines 48 heures. Ils seront avertis par email.',
+    }
+  }
+
+  const stockHasBookings = (stock: GetOfferStockResponseModel) =>
+    stock.bookingsQuantity && stock.bookingsQuantity > 0
+
+  const shouldOpenWarningModal = (
+    stock: GetOfferStockResponseModel,
+    action: StockAction,
+    pendingStockUpdate?: EventStockUpdateBodyModel
+  ) => {
+    setIsEditStockDialogOpen(false)
+    setWarningModalState({ stock, action, pendingStockUpdate })
+  }
+
+  const modalContent = warningModalState
+    ? getModalContent(warningModalState.action)
+    : null
 
   const getStockDateLabel = (stock: GetOfferStockResponseModel) =>
     stock.beginningDatetime
@@ -224,7 +331,13 @@ export function StocksCalendarTable({
                 size={ButtonSize.SMALL}
                 icon={fullTrashIcon}
                 tooltip="Supprimer la date"
-                onClick={() => setStockBeingDeleted(stock)}
+                onClick={() => {
+                  if (stockHasBookings(stock)) {
+                    shouldOpenWarningModal(stock, 'delete')
+                  } else {
+                    onDeleteStocks([stock.id])
+                  }
+                }}
               />
             )}
           </div>
@@ -241,6 +354,10 @@ export function StocksCalendarTable({
         variant="drawer"
         open={isEditStockDialogOpen}
         onOpenChange={(isOpen) => {
+          if (warningModalState) {
+            return
+          }
+
           if (!isOpen) {
             setTimeout(() => {
               //  Re-focus the trigger of the dialog when it's closed
@@ -292,13 +409,15 @@ export function StocksCalendarTable({
       />
       <SimpleModal
         iconPath={strokeWarningIcon}
-        title="Vous êtes sur le point d'annuler toutes les réservations en cours pour cette date"
-        isOpen={Boolean(stockBeingDeleted)}
-        onClose={() => setStockBeingDeleted(null)}
+        title={modalContent?.title ?? ''}
+        isOpen={Boolean(warningModalState)}
+        onClose={() => {
+          setWarningModalState(null)
+        }}
         actionButtons={[
           <Button
             onClick={() => {
-              setStockBeingDeleted(null)
+              setWarningModalState(null)
             }}
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
@@ -306,27 +425,31 @@ export function StocksCalendarTable({
             key="cancel"
           />,
           <Button
-            onClick={() => {
-              if (stockBeingDeleted) {
-                onDeleteStocks([stockBeingDeleted.id])
+            onClick={async () => {
+              if (!warningModalState) {
+                return
               }
-              setStockBeingDeleted(null)
+
+              if (warningModalState.action === 'delete') {
+                onDeleteStocks([warningModalState.stock.id])
+              } else if (warningModalState.pendingStockUpdate) {
+                await updateStock(warningModalState.pendingStockUpdate)
+              }
+
+              setWarningModalState(null)
             }}
             variant={ButtonVariant.PRIMARY}
             color={ButtonColor.DANGER}
-            label={'Confirmer la suppression'}
+            label={
+              warningModalState?.action === 'delete'
+                ? 'Confirmer la suppression'
+                : 'Confirmer la modification'
+            }
             key="confirm"
           />,
         ]}
       >
-        {stockBeingDeleted?.bookingsQuantity &&
-        stockBeingDeleted.bookingsQuantity > 0 ? (
-          <>
-            En effectuant cette action, les réservations en cours et validées
-            seront automatiquement annulées. L’ensemble des bénéficiaires
-            concernés sera automatiquement averti par email.
-          </>
-        ) : null}
+        {modalContent?.description ?? ''}
       </SimpleModal>
     </>
   )
