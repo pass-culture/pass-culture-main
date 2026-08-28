@@ -1,5 +1,9 @@
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
+import {
+  WEBINAR_COLLECTIVE,
+  WEBINAR_INDIVIDUAL,
+} from '@/commons/core/shared/constants'
 import { useFunctionOnce } from '@/commons/hooks/useFunctionOnce'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -15,10 +19,8 @@ import individual from './assets/individual.png'
 import styles from './WebinarCard.module.scss'
 
 export const WEBINAR_LINKS = {
-  [HomepageVariant.COLLECTIVE]:
-    'https://us06web.zoom.us/meeting/register/Bcw5SGLWSL-hcecl4d7e4w#/registration',
-  [HomepageVariant.INDIVIDUAL]:
-    'https://us06web.zoom.us/meeting/register/wtda-V2MQwmKKzkuvgpNlw#/registration',
+  [HomepageVariant.COLLECTIVE]: WEBINAR_COLLECTIVE,
+  [HomepageVariant.INDIVIDUAL]: WEBINAR_INDIVIDUAL,
 }
 
 export interface WebinarCardProps {
