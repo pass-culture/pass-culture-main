@@ -37,45 +37,15 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import stock_serialize as serialization
 from pcapi.utils import date
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.string import is_canonical_integer
-from pcapi.utils.string import to_camelcase
 
 
 logger = logging.getLogger(__name__)
 
-EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
-    "name",
-    "audioDisabilityCompliant",
-    "externalTicketOfficeUrl",
-    "mentalDisabilityCompliant",
-    "motorDisabilityCompliant",
-    "visualDisabilityCompliant",
-    "description",
-    "offererAddress",
-    "venue",
-    "url",
-}
-EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "priceCategory", "quantity"}
-EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
-    "name",
-    "description",
-    "isActive",
-    "isDuo",
-    "bookingContact",
-    "bookingEmail",
-    "ean",
-    "extraData",
-    "withdrawalDetails",
-    "durationMinutes",
-    "idAtProvider",
-    "bookingAllowedDatetime",
-    "publicationDatetime",
-} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 
 MAX_THUMBNAIL_SIZE = 10_000_000
 MIN_THUMBNAIL_WIDTH = 400
@@ -104,18 +74,18 @@ def check_can_edit_synchronized_stock(
         raise exceptions.OfferException({"global": ["Les offres importées ne sont pas modifiables"]})
 
 
-def check_update_only_allowed_fields_for_offer_from_provider(
-    updated_fields: set, provider: providers_models.Provider
+def check_fields_are_editable(
+    updated_fields: set[str],
+    editable_fields: typing.Collection[str] | None = None,
+    not_editable_fields: typing.Collection[str] = (),
 ) -> None:
-    if provider.isAllocine:
-        rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
-    elif provider.hasOffererProvider:
-        rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER
-    else:
-        rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
+    rejected_fields = set(updated_fields) & set(not_editable_fields)
+
+    if editable_fields is not None:
+        rejected_fields |= set(updated_fields) - set(editable_fields)
     if rejected_fields:
         api_error = api_errors.ApiErrors()
-        for field in rejected_fields:
+        for field in sorted(rejected_fields):
             api_error.add_error(field, "Vous ne pouvez pas modifier ce champ")
 
         raise api_error
@@ -622,6 +592,8 @@ def check_offer_update(
     fields: dict[str, typing.Any],
     *,
     mandatory_extra_data_fields: typing.Collection[str],
+    editable_fields: typing.Collection[str] | None = None,
+    not_editable_fields: typing.Collection[str] = (),
     venue_provider: providers_models.VenueProvider | None = None,
 ) -> None:
     check_validation_status(offer)
@@ -630,8 +602,7 @@ def check_offer_update(
     if not updates:
         return
 
-    if offer.lastProvider is not None:
-        check_update_only_allowed_fields_for_offer_from_provider(updates, offer.lastProvider)
+    check_fields_are_editable(updates, editable_fields, not_editable_fields)
 
     if "subcategoryId" in updates and offer.status != OfferStatus.DRAFT:
         raise exceptions.UnallowedUpdate("subcategoryId")
@@ -1058,15 +1029,3 @@ def check_offer_can_ask_for_highlight_request(offer: models.Offer) -> None:
         raise api_errors.ApiErrors(
             errors={"global": ["La sous catégorie de l'offre ne lui permet pas de participer à un temps fort"]}
         )
-
-
-def check_artist_offer_links(
-    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModel], subcategory: subcategories.Subcategory
-) -> None:
-    for link in artist_offer_links:
-        # TODO (tpommellet-pass): refacto once artists are no longer stored in extradata
-        # Convert snake_case ArtistType values to camelCase to match conditional_fields keys (ArtistFieldEnum)
-        if to_camelcase(link.artist_type.value) not in subcategory.conditional_fields:
-            raise api_errors.ApiErrors(
-                errors={"artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]}
-            )

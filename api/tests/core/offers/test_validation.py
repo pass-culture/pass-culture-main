@@ -7,7 +7,6 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-import pcapi.core.artist.models as artist_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
@@ -19,7 +18,6 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.serialization import artist_serialize
 from pcapi.utils import date as date_utils
 
 import tests
@@ -1258,33 +1256,6 @@ class CheckOfferNameIsValidTest:
         validation.check_offer_name_length_is_valid(offer_title_less_than_90_characters)
 
 
-class CheckArtistOfferLinksTest:
-    def test_check_artist_offer_links_should_not_raise(self):
-        artist_offer_links = [
-            artist_serialize.ArtistOfferLinkBodyModel(
-                artist_id="any-id",
-                artist_type=artist_models.ArtistType.AUTHOR,
-                artist_name="any-name",
-            )
-        ]
-        validation.check_artist_offer_links(artist_offer_links, subcategories.SEANCE_CINE)
-
-    def test_check_artist_offer_links_should_raise(self):
-        artist_offer_links = [
-            artist_serialize.ArtistOfferLinkBodyModel(
-                artist_id="any-id",
-                artist_type=artist_models.ArtistType.PERFORMER,
-                artist_name="any-name",
-            )
-        ]
-        with pytest.raises(ApiErrors) as exc:
-            validation.check_artist_offer_links(artist_offer_links, subcategories.SEANCE_CINE)
-
-        assert exc.value.errors == {
-            "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
-        }
-
-
 class CheckAccessibilityComplianceTest:
     @pytest.mark.parametrize(
         "missing_field",
@@ -1351,83 +1322,6 @@ class CheckDurationMinutesTest:
                 "(e.g., a 3-day festival pass), please leave this field empty."
             ]
         }
-
-
-class CheckUpdateOnlyAllowedFieldsForOfferFromProviderTest:
-    # accepted by an Allociné provider, refused by a plain one
-    ALLOCINE_ONLY = ["isDuo"]
-
-    # accepted by a public API provider, refused by the two others
-    PUBLIC_API_ONLY = [
-        "bookingAllowedDatetime",
-        "bookingContact",
-        "bookingEmail",
-        "durationMinutes",
-        "ean",
-        "extraData",
-        "idAtProvider",
-        "isActive",
-        "publicationDatetime",
-        "withdrawalDetails",
-    ]
-
-    def build_public_api_provider(self):
-        provider = providers_factories.PublicApiProviderFactory()
-        providers_factories.OffererProviderFactory(provider=provider)
-        return provider
-
-    def test_should_accept_every_field_of_the_shared_set(self):
-        provider = providers_factories.ProviderFactory()
-
-        validation.check_update_only_allowed_fields_for_offer_from_provider(
-            set(validation.EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER), provider
-        )
-
-    def test_should_accept_every_field_of_the_allocine_set(self):
-        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
-        assert provider.isAllocine
-
-        validation.check_update_only_allowed_fields_for_offer_from_provider(
-            set(validation.EDITABLE_FIELDS_FOR_ALLOCINE_OFFER), provider
-        )
-
-    def test_should_accept_every_field_of_the_public_api_set(self):
-        provider = self.build_public_api_provider()
-        assert provider.hasOffererProvider
-
-        validation.check_update_only_allowed_fields_for_offer_from_provider(
-            set(validation.EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER), provider
-        )
-
-    @pytest.mark.parametrize("field", ALLOCINE_ONLY)
-    def test_reject_an_allocine_field_only_for_another_provider(self, field):
-        with pytest.raises(ApiErrors) as error:
-            validation.check_update_only_allowed_fields_for_offer_from_provider(
-                {field}, providers_factories.ProviderFactory()
-            )
-
-        assert error.value.errors == {field: ["Vous ne pouvez pas modifier ce champ"]}
-
-    @pytest.mark.parametrize("field", PUBLIC_API_ONLY)
-    def test_should_reject_a_public_api_field_only_for_another_provider(self, field):
-        allocine = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
-        with pytest.raises(ApiErrors) as error:
-            validation.check_update_only_allowed_fields_for_offer_from_provider({field}, allocine)
-
-        assert error.value.errors == {field: ["Vous ne pouvez pas modifier ce champ"]}
-
-    @pytest.mark.parametrize("provider_kind", ["plain", "allocine", "public_api"])
-    def test_should_reject_a_field_outside_every_set(self, provider_kind):
-        provider = {
-            "plain": lambda: providers_factories.ProviderFactory(),
-            "allocine": lambda: providers_factories.AllocineProviderFactory(localClass="AllocineStocks"),
-            "public_api": self.build_public_api_provider,
-        }[provider_kind]()
-
-        with pytest.raises(ApiErrors) as error:
-            validation.check_update_only_allowed_fields_for_offer_from_provider({"isNational"}, provider)
-
-        assert error.value.errors == {"isNational": ["Vous ne pouvez pas modifier ce champ"]}
 
 
 class CheckUrlIsCoherentWithSubcategoryTest:
@@ -1516,6 +1410,32 @@ class FormatExtraDataTest:
 
     def test_should_return_none_when_there_is_no_extra_data(self):
         assert validation.format_extra_data(subcategories.FESTIVAL_MUSIQUE.id, None) is None
+
+
+class CheckFieldsAreEditableTest:
+    def test_should_accept_everything_when_unrestricted(self):
+        validation.check_fields_are_editable({"name", "isDuo"})
+
+    def test_should_reject_what_is_outside_the_editable_fields(self):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_fields_are_editable({"name", "isDuo"}, editable_fields={"name"})
+
+        assert error.value.errors == {"isDuo": ["Vous ne pouvez pas modifier ce champ"]}
+
+    def test_should_reject_what_is_inside_the_not_editable_fields(self):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_fields_are_editable({"name", "isDuo"}, not_editable_fields={"isDuo"})
+
+        assert error.value.errors == {"isDuo": ["Vous ne pouvez pas modifier ce champ"]}
+
+    def test_should_report_every_rejected_field(self):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_fields_are_editable({"name", "isDuo"}, editable_fields=set())
+
+        assert error.value.errors == {
+            "isDuo": ["Vous ne pouvez pas modifier ce champ"],
+            "name": ["Vous ne pouvez pas modifier ce champ"],
+        }
 
 
 class CheckOfferUpdateTest:
@@ -1752,6 +1672,17 @@ class CheckOfferUpdateTest:
             venue_provider=venue_provider,
         )
 
+    def test_should_check_extra_data_when_only_the_ean_changes(self, venue_provider):
+        offer = self.build_offer(ean="9782070100002")
+
+        with mock.patch("pcapi.core.offers.validation.check_extra_data") as check_extra_data:
+            validation.check_offer_update(
+                offer, {"ean": "9782070100003"}, mandatory_extra_data_fields=set(), venue_provider=venue_provider
+            )
+
+        check_extra_data.assert_called_once()
+        assert check_extra_data.call_args.kwargs["ean"] == "9782070100003"
+
     # --- `durationMinutes`
 
     @mock.patch("pcapi.core.offers.validation.check_offer_duration")
@@ -1764,41 +1695,92 @@ class CheckOfferUpdateTest:
 
         check_offer_duration.assert_called_once_with(1440)
 
-    # --- Fields locked by the provider
-
-    @mock.patch("pcapi.core.offers.validation.check_update_only_allowed_fields_for_offer_from_provider")
-    def test_should_check_the_whitelist_against_the_changed_fields(
-        self, check_update_only_allowed_fields, venue_provider
+    @mock.patch("pcapi.core.offers.validation.check_url_is_coherent_with_subcategory")
+    @mock.patch("pcapi.core.offers.validation.check_url_and_offererAddress_are_not_both_set")
+    def test_should_skip_location_coherence_on_a_draft_offer(
+        self, check_url_and_offererAddress_are_not_both_set, check_url_is_coherent_with_subcategory, venue_provider
     ):
-        provider = providers_factories.PublicApiProviderFactory()
-        offer = self.build_offer(lastProvider=provider)
+        offer = self.build_offer(validation=OfferValidationStatus.DRAFT, url=None)
+
+        validation.check_offer_update(
+            offer,
+            {"description": "Une autre description."},
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+
+        check_url_is_coherent_with_subcategory.assert_not_called()
+        check_url_and_offererAddress_are_not_both_set.assert_not_called()
+
+    # --- Fields the caller may not change
+
+    @mock.patch("pcapi.core.offers.validation.check_fields_are_editable")
+    def test_should_check_the_changed_fields_against_what_the_caller_allows(
+        self, check_fields_are_editable, venue_provider
+    ):
+        offer = self.build_offer()
 
         validation.check_offer_update(
             offer,
             {"name": "Jules et Jim", "durationMinutes": 120, "description": "Deux amis."},
             mandatory_extra_data_fields=set(),
+            editable_fields={"name"},
+            not_editable_fields={"description"},
             venue_provider=venue_provider,
         )
 
-        check_update_only_allowed_fields.assert_called_once_with({"name", "durationMinutes", "description"}, provider)
-
-    @mock.patch("pcapi.core.offers.validation.check_update_only_allowed_fields_for_offer_from_provider")
-    def test_should_not_check_the_whitelist_for_an_offer_created_on_the_pro_interface(
-        self, check_update_only_allowed_fields, venue_provider
-    ):
-        offer = self.build_offer(lastProvider=None)
-
-        validation.check_offer_update(
-            offer, {"name": "Jules et Jim"}, mandatory_extra_data_fields=set(), venue_provider=venue_provider
+        check_fields_are_editable.assert_called_once_with(
+            {"name", "durationMinutes", "description"}, {"name"}, {"description"}
         )
 
-        check_update_only_allowed_fields.assert_not_called()
+    @mock.patch("pcapi.core.offers.validation.check_offer_withdrawal")
+    def test_should_check_withdrawal_against_the_requested_type_and_delay(self, check_offer_withdrawal, venue_provider):
+        offer = self.build_offer(withdrawalType=None, withdrawalDelay=None)
+
+        validation.check_offer_update(
+            offer,
+            {"withdrawalType": WithdrawalTypeEnum.ON_SITE, "withdrawalDelay": 3600},
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+
+        check_offer_withdrawal.assert_called_once_with(
+            withdrawal_type=WithdrawalTypeEnum.ON_SITE,
+            withdrawal_delay=3600,
+            subcategory_id=self.SUBCATEGORY.id,
+            booking_contact=offer.bookingContact,
+            provider=offer.lastProvider,
+            venue_provider=venue_provider,
+        )
+
+    # --- `subcategoryId`
+
+    def test_should_accept_a_subcategory_change_on_a_draft_offer(self, venue_provider):
+        offer = self.build_offer(validation=OfferValidationStatus.DRAFT)
+
+        validation.check_offer_update(
+            offer,
+            {"subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id},
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+
+    def test_should_refuse_a_subcategory_change_on_a_published_offer(self, venue_provider):
+        offer = self.build_offer()
+
+        with pytest.raises(exceptions.UnallowedUpdate):
+            validation.check_offer_update(
+                offer,
+                {"subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id},
+                mandatory_extra_data_fields=set(),
+                venue_provider=venue_provider,
+            )
 
     # --- Location coherence
 
     @mock.patch("pcapi.core.offers.validation.check_url_is_coherent_with_subcategory")
     @mock.patch("pcapi.core.offers.validation.check_url_and_offererAddress_are_not_both_set")
-    def test_should_always_check_location_coherence(
+    def test_should_check_location_coherence_on_a_published_offer(
         self, check_url_and_offererAddress_are_not_both_set, check_url_is_coherent_with_subcategory, venue_provider
     ):
         offer = self.build_offer()

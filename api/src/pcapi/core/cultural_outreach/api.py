@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import insert
 
 import pcapi.core.offers.models as offers_models
 from pcapi.models import db
+from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.transaction_manager import on_commit
 
 from . import models
@@ -29,6 +30,19 @@ def _check_can_claim_cultural_outreach(offer: offers_models.Offer) -> bool:
             {"global": ["Le statut de l'offre ne permet pas de déclarer une action de médiation"]}
         )
     return True
+
+
+def set_cultural_outreach_claim(offer: offers_models.Offer, is_claimed: bool) -> None:
+    cultural_outreach = offer.culturalOutreach
+    was_claimed = cultural_outreach is not None and cultural_outreach.claimedDatetime is not None
+
+    if is_claimed == was_claimed:
+        return
+
+    if cultural_outreach is None:
+        create_cultural_outreach_claim(offer)
+    else:
+        update_cultural_outreach_claim(get_naive_utc_now() if is_claimed else None, offer)
 
 
 def create_cultural_outreach_claim(
