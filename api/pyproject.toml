@@ -309,6 +309,9 @@ verbosity_assertions = 2
 profile="jinja"
 
 [tool.uv]
+exclude-newer = "7 days"
+## TODO: (2026-08-28) fseguin-pass: remove next week
+exclude-newer-package = { pgcli = "2 days" }
 override-dependencies = [
     "pyopenssl>=26.0.0",
 ]
