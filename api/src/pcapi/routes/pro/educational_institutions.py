@@ -36,6 +36,6 @@ def get_educational_institutions(
             for institution in institutions
         ],
         page=query.page,
-        pages=max(int(math.ceil(total / query.per_page_limit)), 1),
+        pages=max(math.ceil(total / query.per_page_limit), 1),
         total=total,
     )

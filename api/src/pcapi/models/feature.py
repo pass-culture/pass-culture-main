@@ -157,11 +157,9 @@ class FeatureToggle(enum.Enum):
     def is_active(self) -> bool:
         if flask.has_request_context():
             if not hasattr(flask.request, "_cached_features"):
-                setattr(
-                    flask.request,
-                    "_cached_features",
-                    {f.name: f.isActive for f in db.session.query(Feature.name, Feature.isActive)},
-                )
+                flask.request._cached_features = {  # type: ignore[attr-defined]
+                    f.name: f.isActive for f in db.session.query(Feature.name, Feature.isActive)
+                }
             return flask.request._cached_features[self.name]  # type: ignore[attr-defined]
         return db.session.query(Feature).filter_by(name=self.name).one().isActive
 

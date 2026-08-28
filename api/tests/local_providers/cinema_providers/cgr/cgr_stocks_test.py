@@ -108,48 +108,48 @@ class CGRStocksTest:
             CGRStocks(venue_provider=venue_provider)
 
         assert len(caplog.records) == 3  # Info Fetching CGR movies + warning zeep + debug call
-        caplog.records[2].message == "[CINEMA] Call to external API"
-        caplog.records[2].extra == {
+        assert caplog.records[2].message == "[CINEMA] Call to external API"
+        assert caplog.records[2].extra == {
             "api_client": "CGRAPIClient",
             "cinema_id": "00000002600013",
-            "method": "get_films",
+            "method": "GetSeancesPassCulture",
             "response": {
                 "CodeErreur": 0,
                 "IntituleErreur": "",
                 "ObjetRetour": {
+                    "NumCine": 999,
                     "Films": [
                         {
-                            "Affiche": "https://example.com/149341.jpg",
-                            "Duree": 112,
                             "IDFilm": 138473,
                             "IDFilmAlloCine": 138473,
+                            "Titre": "Venom",
                             "NumVisa": 149341,
-                            "Seances": [
-                                {
-                                    "Date": datetime.date(2023, 1, 29),
-                                    "Heure": datetime.time(14, 0),
-                                    "IDSeance": 177182,
-                                    "NbPlacesRestantes": 99,
-                                    "PrixUnitaire": Decimal("6.9"),
-                                    "Relief": "2D",
-                                    "Version": "VF",
-                                    "bAVP": False,
-                                    "bAvecDuo": True,
-                                    "bAvecPlacement": True,
-                                    "bICE": True,
-                                    "libTarif": "Tarif Standard ICE",
-                                }
-                            ],
+                            "Duree": 112,
                             "Synopsis": "Possédé par un symbiote "
                             "qui agit de manière "
                             "autonome, le journaliste "
                             "Eddie Brock devient le "
                             "protecteur létal Venom.",
-                            "Titre": "Venom",
+                            "Affiche": "https://example.com/149341.jpg",
                             "TypeFilm": "CNC",
+                            "Seances": [
+                                {
+                                    "IDSeance": 177182,
+                                    "Date": "2023-01-29",
+                                    "Heure": "14:00:00.000",
+                                    "NbPlacesRestantes": 99,
+                                    "bAvecPlacement": True,
+                                    "bAvecDuo": True,
+                                    "bICE": True,
+                                    "Relief": "2D",
+                                    "Version": "VF",
+                                    "bAVP": False,
+                                    "PrixUnitaire": 6.9,
+                                    "libTarif": "Tarif Standard ICE",
+                                }
+                            ],
                         }
                     ],
-                    "NumCine": 999,
                 },
             },
         }

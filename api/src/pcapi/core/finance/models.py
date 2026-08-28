@@ -785,9 +785,7 @@ class CustomReimbursementRule(PcObject, ReimbursementRule, Model):
                 return False
         if get_pricing_point_link(booking).pricingPointId == self.venueId:
             return True
-        if booking.offererId == self.offererId:
-            return True
-        return False
+        return booking.offererId == self.offererId
 
     def apply(
         self,

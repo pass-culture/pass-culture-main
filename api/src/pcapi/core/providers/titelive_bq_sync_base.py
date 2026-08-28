@@ -49,12 +49,10 @@ class BigQuerySyncTemplate[
     @abc.abstractmethod
     def titelive_base(self) -> TiteliveBase:
         """Returns the Titelive base enum (BOOK or MUSIC)."""
-        pass
 
     @abc.abstractmethod
     def get_query(self) -> BaseQuery:
         """Returns the BigQuery query instance to execute."""
-        pass
 
     @abc.abstractmethod
     def filter_batch(
@@ -66,7 +64,6 @@ class BigQuerySyncTemplate[
             - A list of valid products to upsert.
             - A list of EANs that were rejected/ineligible.
         """
-        pass
 
     @abc.abstractmethod
     def fill_product_specifics(
@@ -75,7 +72,6 @@ class BigQuerySyncTemplate[
         """
         Populates specific fields of the product (subcategoryId, extraData) based on the BQ model.
         """
-        pass
 
     def log_sync_status(
         self, event_type: LocalProviderEventType, message: str | None = None

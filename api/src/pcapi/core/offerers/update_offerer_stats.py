@@ -35,8 +35,7 @@ def save_offerer_stats(daily_views: list[offerers_models.OffererStats]) -> None:
 def update_offerer_daily_views_stats() -> None:
     daily_views_query = OffererDailyViewsLast180Days().execute(page_size=PAGE_SIZE)
     daily_views = []
-    counter = 0
-    for daily_views_row in daily_views_query:
+    for counter, daily_views_row in enumerate(daily_views_query):
         daily_views_model = offerers_models.OffererStats(
             offererId=daily_views_row.offererId,
             table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
@@ -44,7 +43,6 @@ def update_offerer_daily_views_stats() -> None:
             syncDate=date_utils.get_naive_utc_now(),
         )
         daily_views.append(daily_views_model)
-        counter += 1
         if counter % PAGE_SIZE == 0:
             save_offerer_stats(daily_views)
             daily_views = []
@@ -56,8 +54,7 @@ def update_offerer_daily_views_stats() -> None:
 def update_offerer_top_views_stats() -> None:
     top_offers_query = OffererTopOffersAndTotalViewsLast30Days().execute(page_size=PAGE_SIZE)
     top_offers = []
-    counter = 0
-    for top_offers_row in top_offers_query:
+    for counter, top_offers_row in enumerate(top_offers_query):
         top_offers_model = offerers_models.OffererStats(
             offererId=top_offers_row.offererId,
             table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
@@ -69,7 +66,6 @@ def update_offerer_top_views_stats() -> None:
             syncDate=date_utils.get_naive_utc_now(),
         )
         top_offers.append(top_offers_model)
-        counter += 1
         if counter % PAGE_SIZE == 0:
             db.session.bulk_save_objects(top_offers)
             db.session.commit()

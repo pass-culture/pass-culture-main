@@ -169,7 +169,7 @@ class TypeformBackend(BaseBackend):
         self,
         path: str,
         params: dict | None = None,
-        timeout: int | float | None = None,
+        timeout: float | None = None,
     ) -> dict:
         url = self.base_url + path
         try:

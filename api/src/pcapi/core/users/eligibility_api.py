@@ -158,15 +158,12 @@ def is_datetime_within_eligibility_period(
 
     eligibility_start = get_eligibility_start_datetime(birth_date, department_code)
     eligibility_end = get_eligibility_end_datetime(birth_date, department_code)
-    if (
-        not birth_date
-        or not eligibility_start
-        or not eligibility_end
-        or not (eligibility_start <= tz_aware_datetime < eligibility_end)
-    ):
-        return False
-
-    return True
+    return (
+        birth_date is not None
+        and eligibility_start is not None
+        and eligibility_end is not None
+        and eligibility_start <= tz_aware_datetime < eligibility_end
+    )
 
 
 def get_eligibility_start_datetime(

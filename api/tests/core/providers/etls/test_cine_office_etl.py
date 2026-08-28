@@ -589,6 +589,6 @@ class CineOfficeExtractTransformLoadProcessTest:
         self.setup_requests_mock(requests_mock)
 
         CineOfficeExtractTransformLoadProcess(venue_provider).execute()
-        db.session.query(offers_models.PriceCategory).count() == 2
+        assert db.session.query(offers_models.PriceCategory).count() == 2
         CineOfficeExtractTransformLoadProcess(venue_provider).execute()
-        db.session.query(offers_models.PriceCategory).count() == 2
+        assert db.session.query(offers_models.PriceCategory).count() == 2

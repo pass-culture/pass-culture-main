@@ -252,7 +252,7 @@ class ComputeArtistsMostRelevantImageTest:
         commands.compute_artists_most_relevant_image(batch_size=2)
 
         assert all(artist.computed_image == product_mediation.url for artist in artists)
-        app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_TO_INDEX) == {artist.id for artist in artists}
+        assert app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_TO_INDEX) == {artist.id for artist in artists}
 
     @patch("pcapi.core.artist.commands.async_index_artist_ids")
     def test_update_artists_computed_image_only_if_changed(self, mock_async_index_artist):

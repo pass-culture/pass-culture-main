@@ -896,7 +896,7 @@ class Returns200Test:
         assert len(mails_testing.outbox) == 3
 
         outbox = sorted(mails_testing.outbox, key=lambda mail: mail["params"]["OFFER_TOKEN"])
-        bookings.sort(key=lambda b: b.activationCode.code if getattr(b, "activationCode") else b.token)
+        bookings.sort(key=lambda b: b.activationCode.code if b.activationCode else b.token)
         assert [mail["To"] for mail in outbox] == [b.user.email for b in bookings]
         assert [mail["params"]["USER_FIRST_NAME"] for mail in outbox] == [b.user.firstName for b in bookings]
         assert [mail["params"]["OFFER_NAME"] for mail in outbox] == [b.stock.offer.name for b in bookings]

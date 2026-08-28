@@ -31,7 +31,7 @@ def create_industrial_thing_offers(
     thing_index = 0
     offer_index = 0
     for offerer in offerers_by_name.values():
-        physical_venue = sorted(offerer.managedVenues, key=lambda venue: venue.id)[0]
+        physical_venue = min(offerer.managedVenues, key=lambda venue: venue.id)
 
         for venue_thing_index in range(THINGS_PER_OFFERER):
             subcategory_index = (venue_thing_index + thing_index) % len(thing_subcategories)

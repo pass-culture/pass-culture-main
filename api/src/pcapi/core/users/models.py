@@ -498,7 +498,7 @@ class User(PcObject, Model, DeactivableMixin):
     def deposit(self) -> "Deposit | None":
         if len(self.deposits) == 0:
             return None
-        return sorted(self.deposits, key=attrgetter("expirationDate"), reverse=True)[0]
+        return max(self.deposits, key=attrgetter("expirationDate"))
 
     @property
     def deposit_activation_date(self) -> datetime | None:

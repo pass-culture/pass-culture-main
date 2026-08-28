@@ -183,12 +183,7 @@ ignore = [
   # TODO : delete following rules from this list, and fix each case (check if you need to add them to extend-select by comparing to https://docs.astral.sh/ruff/default-rules/)
   "B006",  # mutable-argument-default : Do not use mutable data structures for argument defaults
   "B008",  # function-call-in-default-argument : Do not perform function calls in argument defaults
-  "B009",  # get-attr-with-constant : Do not call `getattr` with a constant attribute value
-  "B010",  # set-attr-with-constant : Do not call `setattr` with a constant attribute value
-  "B013",  # redundant-tuple-in-exception-handler : A length-one tuple literal is redundant in exception handlers
-  "B015",  # useless-comparison : Pointless comparison. This comparison does nothing but waste CPU instructions
   "B017",  # assert-raises-exception : `pytest.raises(Exception)` should be considered evil
-  "B018",  # useless-expression : Found useless expression. Either assign it to a variable or remove it
   "B019",  # cached-instance-method : Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
   "C400",  # unnecessary-generator-list : Unnecessary generator (rewrite as a `list` comprehension)
   "C401",  # unnecessary-generator-set : Unnecessary generator (rewrite as a `set` comprehension)
@@ -196,28 +191,20 @@ ignore = [
   "C405",  # unnecessary-literal-set : Unnecessary literal (rewrite as a `set` literal)
   "C408",  # unnecessary-collection-call : Unnecessary collection call (rewrite as a literal)
   "C409",  # unnecessary-literal-tuple : Unnecessary literal passed to `tuple()` (rewrite as a `tuple` literal)
-  "C414",  # nested-iterable : Unnecessary nested iterable
   "C417",  # unnecessary-map : Unnecessary `map` usage (rewrite using a generator expression or comprehension)
   "C419",  # unnecessary-comprehension-any-all : Unnecessary list comprehension passed to `any()` or `all()`
   "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy; TODO add me to extend-select
   "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert); TODO add me to extend-select
   "FLY002",  # static-join-to-f-string : Consider f-string instead of string join
-  "FURB136",  # if-expr-min-max : Replace if-expression with `min()` or `max()`
   "FURB157",  # verbose-decimal-constructor : Use `Decimal()` rather than `Decimal("0")`
-  "FURB163",  # redundant-log-base : `math.log()` base is redundant
-  "FURB192",  # sorted-min-max : Prefer `min()` / `max()` over `sorted()`
   "ISC004",  # implicit-string-concatenation-in-collection-literal : Implicitly concatenated string literals on one line
-  "PERF402",  # manual-list-copy : Use `list` or `list.copy` to create a copy of a list
   "PGH005",  # invalid-mock-access : Mock objects have no attribute
-  "PIE790",  # unnecessary-placeholder : Unnecessary `pass` statement
   "PIE794",  # duplicate-class-field-definition : Class field is defined multiple times
   "PIE796",  # non-unique-enums : Enum contains duplicate value
   "PIE810",  # multiple-starts-ends-with : Call `.startswith()` or `.endswith()` once with a tuple
-  "PLC0206",  # dict-index-missing-items : Extracting value from dictionary without calling `.items()`
   "PLW1508",  # invalid-envvar-default : Invalid type for environment variable default
   "PYI034",  # non-self-return-type : `__new__` methods usually return `self` at runtime
   "PYI036",  # bad-exit-annotation : Star-args in `__exit__` should be annotated with `object`
-  "PYI041",  # redundant-numeric-union : Use `float` instead of `int | float`
   "RUF010",  # explicit-f-string-type-conversion : Use explicit conversion flag
   "RUF012",  # mutable-class-default : Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF013",  # implicit-optional : PEP 484 prohibits implicit `Optional`
@@ -225,13 +212,9 @@ ignore = [
   "RUF017",  # quadratic-list-summation : Avoid quadratic list summation
   "RUF018",  # assignment-in-assert : Avoid assignment expressions in `assert` statements
   "RUF028",  # invalid-formatter-suppression-comment : `fmt: off` is not supported
-  "RUF046",  # unnecessary-cast-to-int : Unnecessary `int` cast
   "RUF100",  # unused-noqa : Unused `noqa` directive
   "S110",  # try-except-pass : `try`-`except`-`pass` detected, consider logging the exception
   "SIM102",  # nested-if : Use a single `if` statement instead of nested `if` statements
-  "SIM103",  # return-bool-condition-directly : Return the boolean condition directly
-  "SIM113",  # enumerate-for-loop : Use `enumerate()` for index variable in `for` loop
-  "SIM114",  # if-with-same-arms : Combine `if` branches using logical `or` operator
   "SIM115",  # open-file-with-context-handler : Use context handler for opening files
   "SIM117",  # multiple-with-statements : Use a single `with` statement with multiple contexts
   "T100",  # debugger : Trace found: `breakpoint` used

@@ -29,10 +29,10 @@ class IndexAllOffersTest:
         offers_factories.StockFactory(
             offer__publicationDatetime=None,
             offer__bookingAllowedDatetime=booking_allowed_date,
-        ).offer
+        )
 
         # inactive or without any bookable stock -> should not indexed
-        offers_factories.StockFactory(offer__publicationDatetime=None).offer
+        offers_factories.StockFactory(offer__publicationDatetime=None)
         offers_factories.OfferFactory(isActive=False)
         offers_factories.OfferFactory(isActive=True)
 

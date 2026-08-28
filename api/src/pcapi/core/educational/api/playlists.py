@@ -141,7 +141,7 @@ def synchronize_collective_playlist(playlist_type: models.PlaylistType) -> None:
     has_error = False
 
     for row in ctx.query().execute(page_size=BIGQUERY_PLAYLIST_BATCH_SIZE):
-        current_institution_id = int(getattr(row, "institution_id"))
+        current_institution_id = int(row.institution_id)
         if institution is None:
             institution = db.session.get(models.EducationalInstitution, current_institution_id)
 

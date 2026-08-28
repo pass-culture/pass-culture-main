@@ -926,10 +926,8 @@ def _is_collective_offer_price_editable(collective_offer: educational_models.Col
             ),
         )
     )
-    if pricing_query.one_or_none():
-        return False
 
-    return True
+    return not db.session.query(pricing_query.exists()).scalar()
 
 
 def _get_step_update(status: educational_models.CollectiveOfferDisplayedStatus) -> dict[str, str]:

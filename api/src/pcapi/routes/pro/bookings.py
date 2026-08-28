@@ -76,7 +76,7 @@ def get_bookings_pro(query: GetBookingsProQueryModel) -> GetBookingsProResponseM
     return GetBookingsProResponseModel(
         bookingsRecap=[serialize_bookings(booking) for booking in bookings_query],
         page=page,
-        pages=int(math.ceil(total / per_page_limit)),
+        pages=math.ceil(total / per_page_limit),
         total=total,
     )
 

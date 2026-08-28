@@ -227,4 +227,4 @@ class UpsertArtistOfferLinksTest:
         ]
         upsert_artist_offer_links(incoming_links, offer)
         mock_create_artist_offer_link.assert_called()
-        len(mock_create_artist_offer_link.call_args_list) == 2
+        assert len(mock_create_artist_offer_link.call_args_list[0]) == 2

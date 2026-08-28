@@ -1352,8 +1352,8 @@ def _flash_success_and_error_messages(
             error_text = Markup("Impossible {action} ces incidents : <br>").format(
                 action="de valider" if is_validating else "d'annuler"
             )
-        for key in error_dict:
-            incident_ids = [str(incident_id) for incident_id in error_dict[key]]
+        for key, ids in error_dict.items():
+            incident_ids = [str(incident_id) for incident_id in ids]
             match key:
                 case "FinanceIncidentAlreadyCancelled":
                     error_text += _build_incident_error_str(

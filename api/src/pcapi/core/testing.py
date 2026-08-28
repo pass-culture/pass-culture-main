@@ -137,7 +137,7 @@ def _extract_test_meta(stacks: list[str]) -> tuple[int, str]:
 def _format_sql_query(query: dict, i: int, total: int) -> str:
     # SQLAlchemy inserts '\n' into the generated SQL. We add padding
     # so that the whole query is properly aligned.
-    prefix_length = 3 + int(math.log(total, 10))
+    prefix_length = 3 + int(math.log10(total))
     # XXX: ugly work around to handle multiple statements,
     # e.g. `INSERT INTO` with multiple rows.
     try:

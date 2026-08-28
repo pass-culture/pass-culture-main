@@ -159,7 +159,7 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
         base_query = base_query.join(offerers_models.Venue.managingOfferer).filter(offerers_models.Offerer.isValidated)
 
     if form.order.data:
-        base_query = base_query.order_by(getattr(getattr(offerers_models.Venue, "id"), form.order.data)())
+        base_query = base_query.order_by(getattr(offerers_models.Venue.id, form.order.data)())
     # TODO(xordoquy): implement a proper fix in the soft delete library
     # +1 to check if there are more results than requested
     return base_query.filter(offerers_models.Venue.isSoftDeleted != True).limit(form.limit.data + 1).all()

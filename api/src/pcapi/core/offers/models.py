@@ -668,9 +668,7 @@ class HeadlineOffer(PcObject, Model):
     @hybrid_property
     def isActive(self) -> bool:
         now = date_utils.get_naive_utc_now()
-        if now in self.timespan and self.offer.status == OfferStatus.ACTIVE and self.offer.hasActiveImage:
-            return True
-        return False
+        return now in self.timespan and self.offer.status == OfferStatus.ACTIVE and self.offer.hasActiveImage
 
     @isActive.inplace.expression
     @classmethod

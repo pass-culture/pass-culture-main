@@ -198,7 +198,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
     loaded_settlements: dict[tuple[int, str], finance_models.Settlement] = {}
     rejected_settlements: list[finance_models.Settlement] = []
 
-    for bank_account_id in settlements_by_bank_account_id:
+    for bank_account_id, settlements in settlements_by_bank_account_id.items():
         if bank_account_id not in bank_account_ids:
             logger.warning(
                 "No bank account found on our side for this bank account id",
@@ -208,9 +208,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
 
         # Deal with paying payloads
         bill_settlement_payloads = (
-            settlement
-            for settlement in settlements_by_bank_account_id[bank_account_id]
-            if settlement.settlement_type == SettlementType.PAYMENT
+            settlement for settlement in settlements if settlement.settlement_type == SettlementType.PAYMENT
         )
 
         for payload in bill_settlement_payloads:
@@ -277,9 +275,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
 
         # Deal with cancelling payloads
         bill_cancelling_settlement_payloads = (
-            settlement
-            for settlement in settlements_by_bank_account_id[bank_account_id]
-            if settlement.settlement_type == SettlementType.VOIDED_PAYMENT
+            settlement for settlement in settlements if settlement.settlement_type == SettlementType.VOIDED_PAYMENT
         )
 
         for payload in bill_cancelling_settlement_payloads:

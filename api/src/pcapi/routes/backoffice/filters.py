@@ -494,7 +494,7 @@ def format_string_list(data: list[str] | None, max_characters: int | None = None
     return result
 
 
-def pluralize(count: int | float | decimal.Decimal | None, singular: str = "", plural: str = "s") -> str:
+def pluralize(count: float | decimal.Decimal | None, singular: str = "", plural: str = "s") -> str:
     return plural if count and count > 1 else singular
 
 

@@ -361,7 +361,7 @@ class ApiAdresseBackend(BaseBackend):
         *,
         params: dict | None = None,
         files: list | None = None,
-        timeout: int | float | None = None,
+        timeout: float | None = None,
     ) -> requests.Response:
         methods = {"GET": requests.get, "POST": requests.post}
         try:
