@@ -200,8 +200,6 @@ ignore = [
   "C419",  # unnecessary-comprehension-any-all : Unnecessary list comprehension passed to `any()` or `all()`
   "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy; TODO add me to extend-select
   "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert); TODO add me to extend-select
-  "EXE001",  # shebang-not-executable : Shebang is present but file is not executable
-  "EXE002",  # shebang-missing-executable-file : The file is executable but no shebang is present
   "FLY002",  # static-join-to-f-string : Consider f-string instead of string join
   "FURB136",  # if-expr-min-max : Replace if-expression with `min()` or `max()`
   "FURB157",  # verbose-decimal-constructor : Use `Decimal()` rather than `Decimal("0")`
