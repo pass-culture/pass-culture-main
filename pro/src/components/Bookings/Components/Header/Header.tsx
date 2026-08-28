@@ -32,14 +32,14 @@ export const Header = ({
     return (
       <div className={styles['bookings-header']}>
         {!queryBookingId ? (
-          <span className={styles['bookings-header-number']}>
+          <p className={styles['bookings-header-number']}>
             {bookingsRecapFilteredLength}{' '}
             {pluralizeFr(
               bookingsRecapFilteredLength,
               'réservation',
               'réservations'
             )}
-          </span>
+          </p>
         ) : (
           <Button
             variant={ButtonVariant.TERTIARY}

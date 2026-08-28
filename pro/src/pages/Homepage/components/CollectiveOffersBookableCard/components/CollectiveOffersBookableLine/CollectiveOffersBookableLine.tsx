@@ -78,9 +78,9 @@ export const CollectiveOffersBookableLine = ({
             {offer.name}
           </Link>
         </h4>
-        <div className={styles['offer-line-content-secondary']}>
+        <p className={styles['offer-line-content-secondary']}>
           {dateAndTicketsCount}
-        </div>
+        </p>
       </div>
       <div className={styles['offer-line-status']}>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />

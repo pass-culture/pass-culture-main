@@ -84,9 +84,9 @@ export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
           {offer.highlightRequests.length > 0 && (
             <Tag label={offer.highlightRequests[0].name} />
           )}
-          <div className={styles['title-column-name']}>{offer.name}</div>
+          <p className={styles['title-column-name']}>{offer.name}</p>
           {offer.isEvent && (
-            <span className={styles['stocks']}>
+            <div className={styles['stocks']}>
               {getDateInformations()}
               {shouldShowIndividualWarning && (
                 <Tooltip
@@ -102,7 +102,7 @@ export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
                   </button>
                 </Tooltip>
               )}
-            </span>
+            </div>
           )}
           {offer.productIsbn && (
             <div className={styles['isbn']} data-testid="offer-isbn">

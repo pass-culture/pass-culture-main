@@ -65,20 +65,22 @@ export const BookingOfferCell = ({
   return (
     <div className={styles['offer-details-wrapper']}>
       <div>
-        <a href={offerUrl} className={styles['booking-offer-name']}>
-          {booking.stock.offerName}
-        </a>
+        <p>
+          <a href={offerUrl} className={styles['booking-offer-name']}>
+            {booking.stock.offerName}
+          </a>
+        </p>
         {booking.stock.offerEan ||
           (eventBeginningDatetime && (
-            <div className={styles['booking-offer-additional-info']}>
+            <p className={styles['booking-offer-additional-info']}>
               {eventDatetimeFormatted || booking.stock.offerEan}
-            </div>
+            </p>
           ))}
-        <div className={styles['tarif']}>
+        <p className={styles['tarif']}>
           {booking.bookingPriceCategoryLabel
             ? `${booking.bookingPriceCategoryLabel} - ${formattedPrice}`
             : formattedPriceWithoutCategoryLabel}
-        </div>
+        </p>
       </div>
       {booking.bookingIsDuo && (
         <SvgIcon

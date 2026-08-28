@@ -47,17 +47,17 @@ export function ExpirationCell({ offer }: ExpirationCellProps) {
         {isExpiringSoon && (
           <div className={styles['banner-expiration-days-badge']}>
             <SvgIcon alt="" src={fullInfoIcon} width="16" />
-            <div>{expirationText}</div>
+            <p>{expirationText}</p>
           </div>
         )}
-        <div className={styles['banner-expiration-waiting']}>
+        <p className={styles['banner-expiration-waiting']}>
           <SvgIcon alt="" src={fullWaitIcon} width="16" /> En attente de{' '}
           {offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED
             ? 'préréservation par l’enseignant'
             : 'réservation par le chef d’établissement'}
-        </div>
+        </p>
       </div>
-      <div>
+      <p>
         date limite de réservation :{' '}
         {bookingLimitDate
           ? format(
@@ -65,7 +65,7 @@ export function ExpirationCell({ offer }: ExpirationCellProps) {
               FORMAT_DD_MM_YYYY
             )
           : '-'}
-      </div>
+      </p>
     </div>
   )
 }

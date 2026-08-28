@@ -30,11 +30,9 @@ export const OfferNameCell = ({ offer }: OfferNameCellProps) => {
         {isTemplateTable ? (
           <Tag label="Offre vitrine" />
         ) : (
-          <span
-            className={styles['title-column-offer-id']}
-          >{`N°${offer.id}`}</span>
+          <p className={styles['title-column-offer-id']}>{`N°${offer.id}`}</p>
         )}
-        <div>{offer.name}</div>
+        <p>{offer.name}</p>
       </div>
     </Link>
   )

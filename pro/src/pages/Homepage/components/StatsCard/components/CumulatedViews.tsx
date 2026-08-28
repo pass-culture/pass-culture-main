@@ -121,11 +121,11 @@ export const CumulatedViews = ({
             Les statistiques sur l'individuel
           </h3>
         )}
-        <span className={styles['total-views']}>
+        <p className={styles['total-views']}>
           Vos offres individuelles ont été vues{' '}
           {totalViewsLast30Days.toLocaleString('fr-FR')} fois ces 30 derniers
           jours
-        </span>
+        </p>
       </div>
 
       {hasNoViews ? (
