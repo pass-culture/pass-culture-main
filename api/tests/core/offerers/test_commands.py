@@ -68,7 +68,7 @@ class CheckClosedOfferersTest:
 
         assert offerer1.tags == offerer2.tags == offerer3.tags == offerer4.tags == [siren_caduc_tag]
 
-        mock_close_offerer.call_count == 4
+        assert mock_close_offerer.call_count == 4
 
     @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
     @patch(

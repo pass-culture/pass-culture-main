@@ -239,9 +239,7 @@ def _has_completed_profile_for_previous_eligibility_only(user: users_models.User
 def has_completed_underage_profile(user: users_models.User) -> bool:
     if subscription_repository.get_completed_underage_profile_check(user) is not None:
         return True
-    if subscription_repository.get_filled_underage_dms_fraud_check(user) is not None:
-        return True
-    return False
+    return subscription_repository.get_filled_underage_dms_fraud_check(user) is not None
 
 
 def _has_subscription_issues(user_subscription_state: subscription_schemas.UserSubscriptionState) -> bool:

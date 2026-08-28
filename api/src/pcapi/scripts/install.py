@@ -46,4 +46,4 @@ def install_commands(app: flask.Flask) -> None:
 
     for path in module_paths:
         module = importlib.import_module(path)
-        app.register_blueprint(getattr(module, "blueprint"), cli_group=None)
+        app.register_blueprint(module.blueprint, cli_group=None)

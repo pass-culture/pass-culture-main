@@ -107,9 +107,5 @@ def compute_pro_session_validity(last_login: datetime, last_api_call: datetime) 
     ):  # connected more than 14 days ago and did not do anything in the last hour
         return False
 
-    if (
-        last_login + settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS > now
-    ):  # connected more than 14 days ago BUT less than 15 days ago, did something in the last hour
-        return True
-
-    return False
+    # connected more than 14 days ago BUT less than 15 days ago, did something in the last hour
+    return last_login + settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS > now

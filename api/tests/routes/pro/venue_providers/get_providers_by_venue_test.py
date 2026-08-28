@@ -129,11 +129,11 @@ def test_venue_does_not_exist(client):
     num_queries += 1  # rollback
     with testing.assert_num_queries(num_queries):
         response = client.get("/venues/1234/providers")
-        response.status_code == 404
+        assert response.status_code == 404
 
 
 @pytest.mark.usefixtures("db_session")
 def test_user_is_not_logged_in(client):
     with testing.assert_num_queries(0):
         response = client.get("/venues/1234/providers")
-        response.status_code == 401
+        assert response.status_code == 401

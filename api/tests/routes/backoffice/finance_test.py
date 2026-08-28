@@ -381,7 +381,7 @@ class ListIncidentsTest(GetEndpointHelper):
 
     def test_list_incident_by_offerer(self, authenticated_client):
         incident = finance_factories.IndividualBookingFinanceIncidentFactory().incident
-        finance_factories.IndividualBookingFinanceIncidentFactory().incident
+        finance_factories.IndividualBookingFinanceIncidentFactory()
         offerer_id = str(incident.venue.managingOffererId)
 
         with testing.assert_num_queries(self.expected_num_queries + 1):  # +1 to prefill offerer selection in form
@@ -403,7 +403,7 @@ class ListIncidentsTest(GetEndpointHelper):
 
     def test_list_incident_by_venue(self, authenticated_client):
         incident = finance_factories.IndividualBookingFinanceIncidentFactory().incident
-        finance_factories.IndividualBookingFinanceIncidentFactory().incident
+        finance_factories.IndividualBookingFinanceIncidentFactory()
         venue_id = str(incident.venueId)
 
         with testing.assert_num_queries(self.expected_num_queries + 1):  # +1 to prefill venue selection in form

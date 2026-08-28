@@ -185,7 +185,7 @@ def check_stock_price(
         reference_price = (
             offer.lastValidationPrice
             if offer.lastValidationPrice is not None
-            else sorted(offer.stocks, key=lambda s: s.id)[0].price
+            else min(offer.stocks, key=lambda s: s.id).price
         )
         if (
             price < (1 - offer_price_limitation_rule.rate) * reference_price

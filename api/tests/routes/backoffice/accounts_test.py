@@ -1277,7 +1277,7 @@ class GetPublicAccountTest(GetEndpointHelper):
                 tz=pytz.timezone("Europe/Paris")
             ).strftime("%d/%m/%Y à %Hh%M")
         else:
-            "Date de dernière connexion" not in descriptions
+            assert "Date de dernière connexion" not in descriptions
 
         assert url_for("backoffice_web.users.redirect_to_brevo_user_page", user_id=user_id).encode() in response.data
 

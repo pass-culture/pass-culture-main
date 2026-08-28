@@ -129,7 +129,7 @@ class Seatmap(pydantic.RootModel, CineOfficeBaseModel):
 
     @property
     def nb_col(self) -> int:
-        return len(self.map[0]) if len(self.map[0]) > 0 else 0
+        return len(self.map[0])
 
 
 class CancelBooking(CineOfficeBaseModel):

@@ -2706,7 +2706,7 @@ def upsert_highlight_requests(
                 extra={
                     "offer_id": offer.id,
                     "venue_id": offer.venueId,
-                    "highlight_ids": sorted(list(highlight_ids_to_delete)),
+                    "highlight_ids": sorted(highlight_ids_to_delete),
                 },
                 technical_message_id="offer.highlightRequests.deleted",
             )
@@ -2732,7 +2732,7 @@ def upsert_highlight_requests(
                 extra={
                     "offer_id": offer.id,
                     "venue_id": offer.venueId,
-                    "highlight_ids": sorted(list(highlight_ids_of_highlight_requests_to_create)),
+                    "highlight_ids": sorted(highlight_ids_of_highlight_requests_to_create),
                 },
                 technical_message_id="offer.highlightRequests.created",
             )

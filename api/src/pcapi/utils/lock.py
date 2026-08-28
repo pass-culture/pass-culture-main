@@ -17,7 +17,7 @@ class LockError(Exception):
 
 
 @contextmanager
-def lock(name: str, ttl: int | datetime.timedelta = 60, timeout: int | float = 30) -> typing.Iterator[None]:
+def lock(name: str, ttl: int | datetime.timedelta = 60, timeout: float = 30) -> typing.Iterator[None]:
     redis_client = get_redis_client()
     start = time.time()
     while True:

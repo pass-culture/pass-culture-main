@@ -166,12 +166,9 @@ class VirusTotalBackend(BaseBackend):
         if last_submission_date < now - RESCAN_DELAY_DEFAULT:
             return True
 
-        if last_submission_date < now - RESCAN_DELAY_SUSPICIOUS and (
+        return last_submission_date < now - RESCAN_DELAY_SUSPICIOUS and (
             last_analysis_stats.get("suspicious", 0) > 0 or last_analysis_stats.get("malicious", 0) > 0
-        ):
-            return True
-
-        return False
+        )
 
     def _request_url_rescan(self, url: str) -> None:
         logger.info("Request URL scan", extra={"url": url}, technical_message_id="virustotal.rescan")

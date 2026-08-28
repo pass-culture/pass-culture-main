@@ -1206,10 +1206,7 @@ def is_login_device_a_trusted_device(device_info: "DeviceInfo | DeviceInfoV2 | N
     if device_info is None or not device_info.device_id:
         return False
 
-    if any(device.deviceId == device_info.device_id for device in user.trusted_devices):
-        return True
-
-    return False
+    return any(device.deviceId == device_info.device_id for device in user.trusted_devices)
 
 
 def get_recent_suspicious_logins(user: models.User) -> list[models.LoginDeviceHistory]:
@@ -1688,12 +1685,9 @@ def can_extend_deposit_validity(user: models.User) -> bool:
 
     assert deposit.expirationDate is not None  # helps mypy
 
-    if deposit.expirationDate >= date_utils.get_naive_utc_now() + datetime.timedelta(
+    return deposit.expirationDate < date_utils.get_naive_utc_now() + datetime.timedelta(
         days=constants.MAX_DEPOSIT_EXTENSION_DAYS
-    ):
-        return False
-
-    return True
+    )
 
 
 def extend_deposit_validity(user: models.User, new_expiration_date: datetime.date, *, author: models.User) -> None:

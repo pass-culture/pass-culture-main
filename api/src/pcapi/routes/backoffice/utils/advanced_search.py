@@ -101,8 +101,6 @@ class AdvancedSearchOperators(enum.Enum):
 class AdvancedSearchWarning(Exception):
     """Raised when a warning should be displayed to the user."""
 
-    pass
-
 
 def generate_search_query(
     query: sa_orm.Query,

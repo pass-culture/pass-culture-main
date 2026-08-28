@@ -347,7 +347,7 @@ class CreateThingWithEanTest(CreateOfferBase):
         """
         It does not seem to be logical.
         """
-        subcategory_id = sorted(THINGS_WITH_EAN)[0]
+        subcategory_id = min(THINGS_WITH_EAN)
         product = offers_factories.ProductFactory(subcategoryId=subcategory_id)
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
@@ -553,7 +553,7 @@ class CreateActivityRandomTest(CreateOfferBase):
                 assert response.status_code == 201
 
         offer = db.session.query(Offer).one()
-        offer.showSubType == 101
+        assert not offer.showSubType
 
 
 @pytest.mark.parametrize("activity", CULTURAL_OUTREACH_ALLOWED_ACTIVITIES)

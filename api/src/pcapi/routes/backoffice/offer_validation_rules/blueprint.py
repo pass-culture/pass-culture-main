@@ -504,11 +504,11 @@ def edit_rule(rule_id: int) -> response_utils.BackofficeResponse:
     try:
         # delete unwanted rules
         old_sub_rules = {sub_rule.id: sub_rule for sub_rule in rule_to_update.subRules}
-        for sub_rule_id in old_sub_rules:
+        for sub_rule_id, old_sub_rule in old_sub_rules.items():
             if sub_rule_id not in [sub_rule_data["id"] for sub_rule_data in form.sub_rules.data]:
-                _add_sub_rule_data_to_history(old_sub_rules[sub_rule_id], sub_rules_info["sub_rules_deleted"])
-                rule_to_update.subRules.remove(old_sub_rules[sub_rule_id])
-                db.session.delete(old_sub_rules[sub_rule_id])
+                _add_sub_rule_data_to_history(old_sub_rule, sub_rules_info["sub_rules_deleted"])
+                rule_to_update.subRules.remove(old_sub_rule)
+                db.session.delete(old_sub_rule)
 
         for sub_rule_data in form.sub_rules.data:
             comparated = (

@@ -694,7 +694,7 @@ class AcceslibreBackend(BaseBackend):
                 )
             created_at = parser.isoparse(response["created_at"])
             updated_at = parser.isoparse(response["updated_at"])
-            last_update = updated_at if updated_at > created_at else created_at
+            last_update = max(created_at, updated_at)
 
             acceslibre_data = [
                 AcceslibreWidgetData(

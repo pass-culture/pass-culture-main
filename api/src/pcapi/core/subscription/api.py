@@ -130,9 +130,7 @@ def has_completed_profile_for_given_eligibility(
 ) -> bool:
     if subscription_repository.get_completed_profile_check(user, eligibility) is not None:
         return True
-    if subscription_repository.get_filled_dms_fraud_check(user, eligibility) is not None:
-        return True
-    return False
+    return subscription_repository.get_filled_dms_fraud_check(user, eligibility) is not None
 
 
 def get_declared_names(user: users_models.User) -> tuple[str, str] | None:
@@ -293,13 +291,11 @@ def should_retry_identity_check(user_subscription_state: subscription_schemas.Us
     has_subscription_issues = user_subscription_state.young_status == young_status_module.Eligible(
         subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
     )
-    if (
+    return (
         user_subscription_state.next_step == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
         and has_subscription_issues
         and can_retry_identity_fraud_check(fraud_check)
-    ):
-        return True
-    return False
+    )
 
 
 def get_identity_check_subscription_item(
@@ -610,10 +606,7 @@ def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
     )
     eligibility_ranges = users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]
     eligibility_ranges = [age + 1 for age in eligibility_ranges]
-    if future_age > user.age and future_age in eligibility_ranges:  # type: ignore[operator]
-        return True
-
-    return False
+    return future_age > user.age and future_age in eligibility_ranges  # type: ignore[operator]
 
 
 def get_maintenance_page_type(user: users_models.User) -> subscription_schemas.MaintenancePageType | None:
@@ -767,12 +760,10 @@ def requires_identity_check_step(user: users_models.User) -> bool:
     if not fraud_check:
         return True
 
-    if (
+    return not (
         fraud_check.status == subscription_models.FraudCheckStatus.OK
         and fraud_check.type in models.VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION
-    ):
-        return False
-    return True
+    )
 
 
 def move_subscription_fraud_checks(

@@ -462,11 +462,10 @@ def _get_most_booked(grouped_bookings: defaultdict[str, list[bookings_models.Boo
     if not grouped_bookings:
         return None
 
-    return sorted(
+    return max(
         grouped_bookings.items(),
-        key=lambda kv: (len(kv[1]), sum(booking.total_amount for booking in kv[1])),
-        reverse=True,
-    )[0][0]
+        key=lambda booking_group: (len(booking_group[1]), sum(booking.total_amount for booking in booking_group[1])),
+    )[0]
 
 
 def get_bookings_categories_and_subcategories(

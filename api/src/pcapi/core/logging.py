@@ -27,7 +27,7 @@ def _is_within_app_context() -> bool:
         # Just accessing `flask.g` itself is not enough because it
         # does exist even outside an app context. We need to look
         # "inside" to trigger an exception.
-        "anything" in flask.g
+        "anything" in flask.g  # noqa: B015
     except RuntimeError:
         return False
     return True

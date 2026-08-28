@@ -20,7 +20,7 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.string import u_nbsp
 
 
-def format_number_as_french(num: int | float) -> str:
+def format_number_as_french(num: float) -> str:
     return str(num).replace(".", ",")
 
 

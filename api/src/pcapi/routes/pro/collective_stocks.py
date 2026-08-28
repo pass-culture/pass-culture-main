@@ -99,7 +99,7 @@ def edit_collective_stock(
             {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]}
         )
     except (
-        offers_exceptions.OfferException,
+        offers_exceptions.OfferException
     ) as error:  # (tcoudray-pass, 14/05/2025) TODO: Refactor, should not raise this kind of error
         raise ApiErrors(error.errors)
     except exceptions.StartAndEndEducationalYearDifferent:

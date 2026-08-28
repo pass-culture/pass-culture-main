@@ -6,7 +6,7 @@ from pcapi.core.users import models as users_models
 
 
 def format_price(
-    amount_in_euros: int | float | Decimal,
+    amount_in_euros: float | Decimal,
     target: users_models.User | offerers_models.Offerer | offerers_models.Venue | None,
     replace_free_amount: bool = True,
 ) -> str:

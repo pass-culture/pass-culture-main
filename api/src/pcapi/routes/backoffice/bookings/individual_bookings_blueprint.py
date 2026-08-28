@@ -602,8 +602,7 @@ def _flash_success_and_error_messages(
             error_text = Markup("Impossible {action} ces réservations : <br>").format(
                 action="de valider" if is_validating else "d'annuler"
             )
-        for key in error_dict:
-            tokens = error_dict[key]
+        for key, tokens in error_dict.items():
             match key:
                 case "BookingIsAlreadyCancelled":
                     error_text += _build_booking_error_str(

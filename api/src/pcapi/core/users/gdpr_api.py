@@ -233,12 +233,10 @@ def is_beneficiary_anonymizable(user: models.User) -> bool:
         return True
 
     # Check if the user is over 21.
-    if (
+    return bool(
         user.validatedBirthDate
         and users_utils.get_age_at_date(user.validatedBirthDate, date_utils.get_naive_utc_now()) >= 21
-    ):
-        return True
-    return False
+    )
 
 
 def is_only_beneficiary(user: models.User) -> bool:

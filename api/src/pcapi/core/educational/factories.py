@@ -124,10 +124,7 @@ class CollectiveOfferFactory(BaseFactory[models.CollectiveOffer]):
             return
 
         if extracted:
-            domains = []
-            for domain in extracted:
-                domains.append(domain)
-            self.domains = domains
+            self.domains = list.copy(extracted)
 
 
 class CollectiveOfferTemplateFactory(BaseFactory[models.CollectiveOfferTemplate]):
@@ -184,10 +181,7 @@ class CollectiveOfferTemplateFactory(BaseFactory[models.CollectiveOfferTemplate]
             self.domains = [domain]
 
         if extracted:
-            domains = []
-            for domain in extracted:
-                domains.append(domain)
-            self.domains = domains
+            self.domains = list.copy(extracted)
 
 
 class CollectiveStockFactory(BaseFactory[models.CollectiveStock]):

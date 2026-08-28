@@ -41,7 +41,6 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
     logger.info("create_industrial_venues")
 
     venue_by_name = {}
-    mock_index = 0
     mock_accessibility_index = 0
 
     application_id_prefix = "12"
@@ -53,7 +52,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
         latitude = float(geoloc_match.group(2)) if geoloc_match else None
         longitude = float(geoloc_match.group(3)) if geoloc_match else None
 
-        venue_name = MOCK_NAMES[mock_index % len(MOCK_NAMES)]
+        venue_name = MOCK_NAMES[offerer_index % len(MOCK_NAMES)]
         venue_public_name = MOCK_NAME_TO_PUBLIC_NAME.get(venue_name, venue_name)
         venue_accessibility = ACCESSIBILITY_MOCK[mock_accessibility_index % len(ACCESSIBILITY_MOCK)]
 
@@ -128,8 +127,6 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 )
                 venue_by_name[second_venue_name] = second_venue
             mock_accessibility_index += 1
-
-        mock_index += 1
 
     # Venue Allocine
 
