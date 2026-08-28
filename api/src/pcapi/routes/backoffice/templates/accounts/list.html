@@ -97,8 +97,8 @@
   {% endif %}
 {% endblock %}
 {% block after_table %}
-  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_send_public_account_reset_password_email_form'), "batch-send-public-account-reset-password-email-modal", method="post", form="form-ids-" + table_name) }}
-  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_invalidate_public_account_password_form'), "batch-invalidate-public-account-password-modal", method="post", form="form-ids-" + table_name) }}
-  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_suspend_public_account_form'), "batch-suspend-public-account-modal", method="post", form="form-ids-" + table_name) }}
-  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_tag_public_account_form'), "batch-tag-public-account-modal", method="post", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_send_public_account_reset_password_email_form'), "batch-send-public-account-reset-password-email-modal", method="get", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_invalidate_public_account_password_form'), "batch-invalidate-public-account-password-modal", method="get", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_suspend_public_account_form'), "batch-suspend-public-account-modal", method="get", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_tag_public_account_form'), "batch-tag-public-account-modal", method="get", form="form-ids-" + table_name) }}
 {% endblock %}

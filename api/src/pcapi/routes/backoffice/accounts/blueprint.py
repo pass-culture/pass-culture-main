@@ -2619,18 +2619,13 @@ def view_id_document(user_id: int) -> response_utils.BackofficeResponse:
     )
 
 
-def _get_users_by_ids(user_ids: list[int]) -> list[users_models.User]:
+def _render_public_account_rows(user_ids: list[int]) -> response_utils.BackofficeResponse:
     user_ids_with_search_scores_query = (
         users_api.get_public_account_base_query()
         .filter(users_models.User.id.in_(user_ids))
         .with_entities(users_models.User.id, sa.null().label("search_score"))
     )
-
-    return _get_and_sort_users(user_ids_with_search_scores_query)
-
-
-def _render_public_account_rows(user_ids: list[int]) -> response_utils.BackofficeResponse:
-    users = _get_users_by_ids(user_ids=user_ids)
+    users = _get_and_sort_users(user_ids_with_search_scores_query)
 
     return render_template(
         "accounts/list_rows.html",
@@ -2639,10 +2634,10 @@ def _render_public_account_rows(user_ids: list[int]) -> response_utils.Backoffic
     )
 
 
-@public_accounts_blueprint.route("/batch/send-reset-password-email", methods=["POST"])
+@public_accounts_blueprint.route("/batch/send-reset-password-email", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def get_batch_send_public_account_reset_password_email_form() -> response_utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
+    form = empty_forms.BatchForm(request.args)
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -2655,7 +2650,7 @@ def get_batch_send_public_account_reset_password_email_form() -> response_utils.
     )
 
 
-@public_accounts_blueprint.route("/batch-send-reset-password-email", methods=["POST"])
+@public_accounts_blueprint.route("/batch/send-reset-password-email", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def batch_send_public_account_reset_password_email() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -2664,22 +2659,18 @@ def batch_send_public_account_reset_password_email() -> response_utils.Backoffic
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.safe_redirect_back(request, code=400)
 
-    _batch_send_public_account_reset_password_email(form.object_ids_list)
+    users = _get_users_from_user_ids(form.object_ids_list)
+    for user in users:
+        users_api.request_password_reset(user)
     flash("Les emails de changement de mot de passe ont été envoyés", "success")
 
     return _render_public_account_rows(form.object_ids_list)
 
 
-def _batch_send_public_account_reset_password_email(user_ids: list[int]) -> None:
-    users = _ensure_beneficiary_public_accounts(user_ids)
-    for user in users:
-        users_api.request_password_reset(user)
-
-
-@public_accounts_blueprint.route("/batch/invalidate-password", methods=["POST"])
+@public_accounts_blueprint.route("/batch/invalidate-password", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def get_batch_invalidate_public_account_password_form() -> response_utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
+    form = empty_forms.BatchForm(request.args)
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -2692,7 +2683,7 @@ def get_batch_invalidate_public_account_password_form() -> response_utils.Backof
     )
 
 
-@public_accounts_blueprint.route("/batch-invalidate-password", methods=["POST"])
+@public_accounts_blueprint.route("/batch/invalidate-password", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def batch_invalidate_public_account_password() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -2701,23 +2692,19 @@ def batch_invalidate_public_account_password() -> response_utils.BackofficeRespo
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.safe_redirect_back(request, code=400)
 
-    _batch_invalidate_public_account_password(form.object_ids_list)
+    users = _get_users_from_user_ids(form.object_ids_list)
+    for user in users:
+        users_api.update_user_password(user, random_password())
+        history_api.add_action(history_models.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user)
     flash("Les mots de passe ont été invalidés", "success")
 
     return _render_public_account_rows(form.object_ids_list)
 
 
-def _batch_invalidate_public_account_password(user_ids: list[int]) -> None:
-    users = _ensure_beneficiary_public_accounts(user_ids)
-    for user in users:
-        users_api.update_user_password(user, random_password())
-        history_api.add_action(history_models.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user)
-
-
-@public_accounts_blueprint.route("/batch/suspend", methods=["POST"])
+@public_accounts_blueprint.route("/batch/suspend", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.SUSPEND_USER)
 def get_batch_suspend_public_account_form() -> response_utils.BackofficeResponse:
-    form = user_forms.BatchSuspendUserForm()
+    form = account_forms.BatchSuspendPublicAccountForm(request.args)
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -2730,42 +2717,36 @@ def get_batch_suspend_public_account_form() -> response_utils.BackofficeResponse
     )
 
 
-@public_accounts_blueprint.route("/batch-suspend", methods=["POST"])
+@public_accounts_blueprint.route("/batch/suspend", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.SUSPEND_USER)
 def batch_suspend_public_account() -> response_utils.BackofficeResponse:
-    form = user_forms.BatchSuspendUserForm()
+    form = account_forms.BatchSuspendPublicAccountForm()
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.safe_redirect_back(request, code=400)
 
-    _batch_suspend_public_account(
-        form.object_ids_list, users_constants.SuspensionReason[form.reason.data], form.comment.data
-    )
+    users = _get_users_from_user_ids(form.object_ids_list)
+    for user in users:
+        users_api.suspend_account(
+            user,
+            reason=users_constants.SuspensionReason[form.reason.data],
+            actor=current_user,
+            comment=form.comment.data,
+            is_backoffice_action=True,
+        )
+        if form.clear_email.data:
+            email_update.clear_email_by_admin(user)
     flash("Les comptes ont été suspendus", "success")
 
     return _render_public_account_rows(form.object_ids_list)
 
 
-def _batch_suspend_public_account(
-    user_ids: list[int], suspension_reason: users_constants.SuspensionReason, comment: str | None
-) -> None:
-    users = _ensure_beneficiary_public_accounts(user_ids)
-    for user in users:
-        users_api.suspend_account(
-            user,
-            reason=suspension_reason,
-            actor=current_user,
-            comment=comment,
-            is_backoffice_action=True,
-        )
-
-
-@public_accounts_blueprint.route("/batch/tag", methods=["POST"])
+@public_accounts_blueprint.route("/batch/tag", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
 def get_batch_tag_public_account_form() -> response_utils.BackofficeResponse:
-    form = account_forms.BatchTagAccountForm()
-    users = _ensure_beneficiary_public_accounts(form.object_ids_list)
+    form = account_forms.BatchTagAccountForm(request.args)
+    users = _get_users_from_user_ids(form.object_ids_list)
 
     common_user_tags = set.intersection(*[set(user.tags) for user in users])
     form.tags.data = list(common_user_tags)
@@ -2781,7 +2762,7 @@ def get_batch_tag_public_account_form() -> response_utils.BackofficeResponse:
     )
 
 
-@public_accounts_blueprint.route("/batch-tag", methods=["POST"])
+@public_accounts_blueprint.route("/batch/tag", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
 def batch_tag_public_account() -> response_utils.BackofficeResponse:
     form = account_forms.BatchTagAccountForm()
@@ -2797,22 +2778,19 @@ def batch_tag_public_account() -> response_utils.BackofficeResponse:
 
 
 def _batch_tag_public_account(user_ids: list[int], user_tags: list[users_models.UserTag]) -> None:
-    users = _ensure_beneficiary_public_accounts(user_ids)
+    users = _get_users_from_user_ids(user_ids)
     previous_common_user_tags = set.intersection(*[set(user.tags) for user in users])
-    next_common_user_tags = set(user_tags)
-    added_common_user_tags = set.difference(next_common_user_tags, previous_common_user_tags)
-    removed_common_user_tags = set.difference(previous_common_user_tags, next_common_user_tags)
+    removed_common_user_tags = previous_common_user_tags.difference(user_tags)
 
     for user in users:
-        new_user_tags = set.difference(added_common_user_tags, set(user.tags))
-        user.tags.extend(new_user_tags)
+        user.tags.extend(added_tag for added_tag in user_tags if added_tag not in user.tags)
         for removed_tag in removed_common_user_tags:
             user.tags.remove(removed_tag)
         db.session.add(user)
     db.session.flush()
 
 
-def _ensure_beneficiary_public_accounts(user_ids: list[int]) -> list[users_models.User]:
+def _get_users_from_user_ids(user_ids: list[int]) -> list[users_models.User]:
     users = (
         db.session.query(users_models.User)
         .filter(users_models.User.id.in_(user_ids))
