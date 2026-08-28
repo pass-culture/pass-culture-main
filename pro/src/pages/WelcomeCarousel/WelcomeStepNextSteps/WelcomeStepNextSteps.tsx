@@ -2,6 +2,7 @@ import cn from 'classnames'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
+import { WEBINAR_INDIVIDUAL } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -60,7 +61,7 @@ const WelcomeStepNextSteps = (): JSX.Element => {
             title="Besoin de plus d'informations ?"
             actions={[
               {
-                href: 'https://us06web.zoom.us/meeting/register/wtda-V2MQwmKKzkuvgpNlw#/',
+                href: WEBINAR_INDIVIDUAL,
                 icon: fullLinkIcon,
                 iconAlt: 'Nouvelle fenêtre',
                 isExternal: true,
