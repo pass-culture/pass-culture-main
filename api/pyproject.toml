@@ -310,5 +310,10 @@ verbosity_assertions = 2
 [tool.djlint]
 profile="jinja"
 
+[tool.uv]
+override-dependencies = [
+    "pyopenssl>=26.0.0",
+]
+
 [tool.uv.sources]
 sqlalchemy-easy-softdelete = { git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" }
