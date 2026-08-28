@@ -1,3 +1,5 @@
+import logging
+
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -22,6 +24,9 @@ from pcapi.utils import image_conversion
 
 from . import constants
 from . import serialization
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
@@ -87,6 +92,25 @@ def check_offer_subcategory(
         body.category_related_fields.subcategory_id != offer_subcategory_id
     ):
         raise api_errors.ApiErrors({"categoryRelatedFields.category": ["The category cannot be changed"]})
+
+
+# TODO(tpommellet): remove this log once the restriction is enforced.
+def log_offer_edition_without_last_provider(
+    offer: offers_models.Offer,
+    body: products_serializers.ProductOfferEdition | events_serializers.EventOfferEdition,
+) -> None:
+    if offer.lastProviderId is not None:
+        return
+    logger.info(
+        "Offer without lastProvider has been edited through the public API",
+        extra={
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "provider_id": current_api_key.providerId,
+            "body_fields": sorted(body.dict(by_alias=True, exclude_unset=True)),
+        },
+        technical_message_id="offer.edited_without_last_provider",
+    )
 
 
 def retrieve_offer_query(offer_id: int) -> sa_orm.Query:

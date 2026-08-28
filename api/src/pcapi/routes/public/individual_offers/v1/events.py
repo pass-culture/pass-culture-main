@@ -267,6 +267,8 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
     if not offer:
         raise api_errors.ResourceNotFoundError({"event_id": ["The event offer could not be found"]})
 
+    utils.log_offer_edition_without_last_provider(offer, body)
+
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
     if venue:
         authorization.get_venue_provider_or_raise_404(venue.id)
