@@ -2,6 +2,13 @@ version = 1
 revision = 3
 requires-python = "==3.13.*"
 
+[options]
+exclude-newer = "2026-08-21T12:45:58.254469Z"
+exclude-newer-span = "P7D"
+
+[options.exclude-newer-package]
+pgcli = { timestamp = "2026-08-26T12:45:58.254808Z", span = "P2D" }
+
 [manifest]
 overrides = [{ name = "pyopenssl", specifier = ">=26.0.0" }]
 
