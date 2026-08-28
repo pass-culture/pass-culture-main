@@ -1194,9 +1194,9 @@ class Returns200Test(PatchEventEndpointHelper):
         db.session.refresh(event)
         assert event.dateUpdated == before_update
 
-    def test_should_log_a_change_for_a_field_owned_by_the_product(self, caplog):
+    def test_should_not_log_a_change_for_a_field_owned_by_the_product(self, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product, event = self.setup_product_based_resource(venue_provider.venue, venue_provider.provider)
+        _, event = self.setup_product_based_resource(venue_provider.venue, venue_provider.provider)
         before_update = event.dateUpdated
 
         with caplog.at_level(logging.INFO):
@@ -1210,12 +1210,7 @@ class Returns200Test(PatchEventEndpointHelper):
         [update_log] = [
             record for record in caplog.records if getattr(record, "technical_message_id", None) == "offer.updated"
         ]
-        assert update_log.extra["changes"] == {
-            "description": {
-                "oldValue": product.description,
-                "newValue": "Deux amis épris de la même femme.",
-            }
-        }
+        assert update_log.extra["changes"] == {}
         db.session.refresh(event)
         assert event.dateUpdated == before_update
 

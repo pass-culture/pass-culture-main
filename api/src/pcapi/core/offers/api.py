@@ -628,8 +628,11 @@ def update_offer(
     for key, value in updates.items():
         if key == "extraData" and offer.product:
             continue
-        changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
+        old_value = getattr(offer, key)
         setattr(offer, key, value)
+        new_value = getattr(offer, key)
+        if new_value != old_value:
+            changes[key] = {"oldValue": old_value, "newValue": new_value}
 
     db.session.add(offer)
 
