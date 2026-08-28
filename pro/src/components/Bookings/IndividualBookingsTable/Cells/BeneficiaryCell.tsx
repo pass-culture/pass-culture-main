@@ -24,19 +24,13 @@ export const BeneficiaryCell = ({
   return (
     <div className={cn(className)}>
       {beneficiaryName !== '' && (
-        <div data-testid="booking-cell-beneficiary-name">
-          <span>{beneficiaryName}</span>
-          <br />
-        </div>
+        <p data-testid="booking-cell-beneficiary-name">{beneficiaryName}</p>
       )}
-      <span className={styles['beneficiary-subtitle']}>
-        {beneficiaryInfos.email}
-      </span>
-      <br />
+      <p className={styles['beneficiary-subtitle']}>{beneficiaryInfos.email}</p>
       {beneficiaryInfos.phonenumber && (
-        <span className={styles['beneficiary-subtitle']}>
+        <p className={styles['beneficiary-subtitle']}>
           {formatPhoneNumber(beneficiaryInfos.phonenumber)}
-        </span>
+        </p>
       )}
     </div>
   )

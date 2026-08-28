@@ -83,9 +83,9 @@ export const CollectiveOffersTemplateLine = ({
             {offer.name}
           </Link>
         </h3>
-        <div className={styles['offer-line-content-secondary']}>
+        <p className={styles['offer-line-content-secondary']}>
           {formattedOfferDates}
-        </div>
+        </p>
       </div>
       <div className={styles['offer-line-status']}>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />

@@ -19,8 +19,8 @@ export const BookingDateCell = ({ bookingDateTime }: BookingDateCellProps) => {
 
   return (
     <div>
-      <div>{bookingDateDay}</div>
-      <div className={styles['booking-date-subtitle']}>{bookingDateHour}</div>
+      <p>{bookingDateDay}</p>
+      <p className={styles['booking-date-subtitle']}>{bookingDateHour}</p>
     </div>
   )
 }

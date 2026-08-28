@@ -44,12 +44,12 @@ export const BookingStatusCellHistory = ({
 
   return (
     <>
-      <div
+      <p
         id={`booking-status-history-title-${index}`}
         className={styles['booking-status-history-title']}
       >
         Historique
-      </div>
+      </p>
       <ul
         aria-labelledby={`booking-status-history-title-${index}`}
         className={styles['booking-status-history-list']}

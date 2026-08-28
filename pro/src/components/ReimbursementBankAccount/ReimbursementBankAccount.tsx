@@ -61,12 +61,12 @@ export const ReimbursementBankAccount = ({
     <Panel>
       <div className={styles['bank-account']}>
         <div>
-          <div className={styles['informations-section-title']}>
+          <p className={styles['informations-section-title']}>
             {bankAccount.label}
-          </div>
-          <div className={styles['informations-section-content']}>
+          </p>
+          <p className={styles['informations-section-content']}>
             IBAN : **** {bankAccount.obfuscatedIban.slice(-4)}
-          </div>
+          </p>
         </div>
 
         <div className={styles['bank-account-divider']}></div>
@@ -120,7 +120,7 @@ export const ReimbursementBankAccount = ({
             className={styles['linked-venues-section']}
             data-testid="reimbursement-bank-account-linked-venues"
           >
-            <div className={styles['linked-venues-section-title']}>
+            <p className={styles['linked-venues-section-title']}>
               {pluralizeFr(
                 linkedCount,
                 'Structure rattachée',
@@ -135,24 +135,24 @@ export const ReimbursementBankAccount = ({
                   className={styles['error-icon']}
                 />
               )}
-            </div>
+            </p>
 
             {!hasManagedVenues && null}
 
             {hasManagedVenues && (
               <div>
                 {showNoLinkedMessage && (
-                  <div className={styles['issue-text']}>
+                  <p className={styles['issue-text']}>
                     Aucune structure n’est rattachée à ce compte bancaire.
                     {venuesNotLinkedToBankAccount === 0 &&
                       ' Désélectionnez une structure déjà rattachée et rattachez-la à ce compte bancaire.'}
-                  </div>
+                  </p>
                 )}
 
                 {showPartialWarning && (
-                  <div className={styles['issue-text']}>
+                  <p className={styles['issue-text']}>
                     Certaines de vos structures ne sont pas rattachées.
-                  </div>
+                  </p>
                 )}
 
                 {hasLinkedVenues && (

@@ -17,8 +17,8 @@ export const PriceAndParticipantsCell = ({
     <div className={styles['price-and-participants-column']}>
       {price && numberOfParticipants ? (
         <div className={styles['price-and-participants-container']}>
-          <span>{price}€</span>
-          <span>{`${numberOfParticipants} ${pluralizeFr(numberOfParticipants, 'participant', 'participants')}`}</span>
+          <p>{price}€</p>
+          <p>{`${numberOfParticipants} ${pluralizeFr(numberOfParticipants, 'participant', 'participants')}`}</p>
         </div>
       ) : (
         '-'

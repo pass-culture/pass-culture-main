@@ -101,7 +101,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
     return {
       content: (
         <>
-          <div>
+          <p>
             <span>Prix : </span>
             <span>
               {isCaledonian
@@ -110,7 +110,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
                   )
                 : priceText(row.bookingAmount)}
             </span>
-          </div>
+          </p>
           <BookingStatusCellHistory
             index={row.id}
             bookingStatusHistory={row.bookingStatusHistory}
