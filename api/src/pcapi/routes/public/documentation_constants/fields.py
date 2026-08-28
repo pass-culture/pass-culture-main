@@ -187,6 +187,7 @@ class _FIELDS:
         default=True,
     )
     OFFER_LOCATION = Field(discriminator="type", description=descriptions.OFFER_LOCATION_DESCRIPTION)
+    OFFER_LOCATION_EDITION = Field(discriminator="type", description=descriptions.OFFER_LOCATION_EDITION_DESCRIPTION)
 
     # Products fields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")

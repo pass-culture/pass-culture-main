@@ -2382,28 +2382,17 @@ class UpdateOfferTest:
 
         assert offer.isDuo is expected
 
-    def test_should_move_the_offer_to_another_venue(self, venue_provider):
-        offer = self.build_offer()
-        other_venue = offerers_factories.VenueFactory()
-
-        api.update_offer(offer, venue=other_venue, mandatory_extra_data_fields=set(), venue_provider=venue_provider)
-        db.session.flush()
-
-        assert offer.venueId == other_venue.id
-
-    def test_should_not_clear_venue_and_offerer_address(self, venue_provider):
+    def test_should_not_clear_the_offerer_address(self, venue_provider):
         offer = self.build_offer()
         venue_id = offer.venueId
 
         api.update_offer(
             offer,
-            venue=None,
             offerer_address=None,
             name="Jules et Jim",
             mandatory_extra_data_fields=set(),
             venue_provider=venue_provider,
         )
-        db.session.flush()
 
         assert offer.venueId == venue_id
         assert offer.offererAddress is not None
