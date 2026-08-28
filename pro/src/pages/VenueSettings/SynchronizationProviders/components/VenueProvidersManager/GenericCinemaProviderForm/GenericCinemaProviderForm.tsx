@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 
 import type { PostVenueProviderBody } from '@/apiClient/v1'
@@ -6,11 +5,10 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { Banner } from '@/design-system/Banner/Banner'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 
 import styles from './GenericCinemaProviderForm.module.scss'
@@ -25,19 +23,23 @@ export interface GenericCinemaProviderFormValues {
 export interface GenericCinemaProviderFormProps {
   saveVenueProvider: (payload: PostVenueProviderBody) => Promise<boolean>
   providerId: number
-  isCreatedEntity?: boolean
+  isCreationMode?: boolean
   initialValues?: GenericCinemaProviderFormValues
   onCancel?: () => void
   showAdvancedFields?: boolean // If true, show price & quantity
+  formId?: string
+  showFooter?: boolean
 }
 
 export const GenericCinemaProviderForm = ({
   saveVenueProvider,
   providerId,
-  isCreatedEntity = false,
+  isCreationMode = false,
   initialValues,
   onCancel,
   showAdvancedFields = false,
+  formId,
+  showFooter = true,
 }: GenericCinemaProviderFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
 
@@ -80,6 +82,7 @@ export const GenericCinemaProviderForm = ({
 
   return (
     <form
+      id={formId}
       className={styles['cinema-provider-form']}
       data-testid="generic-cinema-provider-form"
       onSubmit={(e) => {
@@ -106,7 +109,7 @@ export const GenericCinemaProviderForm = ({
             <div className={styles['nb-places-input']}>
               <QuantityInput
                 min={1}
-                label="Nombre de places/séance"
+                label="Nombre de places par séance"
                 value={formValues.quantity ?? undefined}
                 onChange={(e) => setValue('quantity', Number(e.target.value))}
               />
@@ -124,24 +127,33 @@ export const GenericCinemaProviderForm = ({
         {showAdvancedFields && (
           <div className={styles['allocine-provider-form-banner']}>
             <Banner
-              description="Seules les séances “classiques” peuvent être importées pour le moment. Les séances spécifiques (3D, Dolby Atmos, 4DX...) seront bientôt disponibles."
-              title="Séances “classiques” uniquement"
+              variant={isCreationMode ? undefined : BannerVariants.WARNING}
+              title={
+                isCreationMode
+                  ? 'Séances “classiques” uniquement'
+                  : 'Modifications applicables uniquement sur les nouvelles offres'
+              }
+              description={
+                isCreationMode
+                  ? 'Seules les séances “classiques” peuvent être importées pour le moment. Les séances spécifiques (3D, Dolby Atmos, 4DX...) seront bientôt disponibles.'
+                  : 'Les modifications s’appliqueront uniquement aux nouvelles offres créées. La modification doit être faite manuellement pour les offres existantes.'
+              }
             />
           </div>
         )}
       </div>
 
-      <DialogBuilder.Footer>
-        {isCreatedEntity ? (
-          <Button
-            type="submit"
-            isLoading={isSubmitting}
-            disabled={!isValid}
-            label="Lancer la synchronisation"
-          />
-        ) : (
-          <div className={styles['cinema-provider-form-buttons']}>
-            <Dialog.Close asChild>
+      {showFooter && (
+        <footer className={styles['cinema-provider-form-footer']}>
+          {isCreationMode ? (
+            <Button
+              type="submit"
+              isLoading={isSubmitting}
+              disabled={!isValid}
+              label="Lancer la synchronisation"
+            />
+          ) : (
+            <div className={styles['cinema-provider-form-buttons']}>
               <Button
                 variant={ButtonVariant.SECONDARY}
                 color={ButtonColor.NEUTRAL}
@@ -149,17 +161,17 @@ export const GenericCinemaProviderForm = ({
                 type="button"
                 label="Annuler"
               />
-            </Dialog.Close>
-            <Button
-              type="submit"
-              variant={ButtonVariant.PRIMARY}
-              isLoading={isSubmitting}
-              disabled={!isValid}
-              label="Modifier"
-            />
-          </div>
-        )}
-      </DialogBuilder.Footer>
+              <Button
+                type="submit"
+                variant={ButtonVariant.PRIMARY}
+                isLoading={isSubmitting}
+                disabled={!isValid}
+                label="Modifier"
+              />
+            </div>
+          )}
+        </footer>
+      )}
     </form>
   )
 }

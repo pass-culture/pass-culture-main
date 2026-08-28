@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -12,8 +12,8 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import fullEditIcon from '@/icons/full-edit.svg'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import {
   GenericCinemaProviderForm,
@@ -34,6 +34,7 @@ export const GenericCinemaProviderEdit = ({
 }: GenericCinemaProviderEditProps): JSX.Element => {
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
+  const cinemaProviderFormId = useId()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const editVenueProvider = async (
@@ -66,12 +67,12 @@ export const GenericCinemaProviderEdit = ({
   const onConfirmDialog = async (
     payload: PostVenueProviderBody
   ): Promise<boolean> => {
+    setIsDialogOpen(false)
+
     const isSuccess = await editVenueProvider({
       ...payload,
       isActive: venueProvider.isActive,
     })
-
-    setIsDialogOpen(false)
 
     return isSuccess
   }
@@ -84,34 +85,46 @@ export const GenericCinemaProviderEdit = ({
   }
 
   return (
-    <DialogBuilder
-      variant="drawer"
-      title="Modifier les paramètres de vos offres"
-      trigger={
-        <Button
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-          icon={fullEditIcon}
-          label="Paramétrer"
-          disabled={withVenueHelpers(venue).isClosed}
-        />
-      }
-      open={isDialogOpen}
-      onOpenChange={setIsDialogOpen}
-    >
-      <div className={styles['cinema-provider-form-dialog']}>
-        <div className={styles['explanation']}>
-          Les modifications s’appliqueront uniquement aux nouvelles offres
-          créées. La modification doit être faite manuellement pour les offres
-          existantes.
+    <>
+      <Button
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
+        icon={fullEditIcon}
+        label="Paramétrer"
+        disabled={withVenueHelpers(venue).isClosed}
+        onClick={() => setIsDialogOpen(true)}
+      />
+
+      <DetailedModal
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        title="Modifier les paramètres de vos offres"
+        primaryAction={
+          <Button type="submit" form={cinemaProviderFormId} label="Modifier" />
+        }
+        secondaryAction={
+          <Button
+            type="button"
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            onClick={() => setIsDialogOpen(false)}
+            label="Annuler"
+          />
+        }
+        isFooterFixed
+      >
+        <div className={styles['cinema-provider-form-dialog']}>
+          <GenericCinemaProviderForm
+            isCreationMode={false}
+            showAdvancedFields={showAdvancedFields}
+            initialValues={initialValues}
+            saveVenueProvider={onConfirmDialog}
+            providerId={venueProvider.provider.id}
+            formId={cinemaProviderFormId}
+            showFooter={false}
+          />
         </div>
-        <GenericCinemaProviderForm
-          showAdvancedFields={showAdvancedFields}
-          initialValues={initialValues}
-          saveVenueProvider={onConfirmDialog}
-          providerId={venueProvider.provider.id}
-        />
-      </div>
-    </DialogBuilder>
+      </DetailedModal>
+    </>
   )
 }

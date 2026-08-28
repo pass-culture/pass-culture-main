@@ -28,8 +28,6 @@
   right: 0;
   width: min(rem.torem(684px), 100vw);
   height: 100dvh;
-  border-top-left-radius: var(--size-border-radius-l);
-  border-bottom-left-radius: var(--size-border-radius-l);
   background-color: var(--color-background-default);
   box-shadow: var(--shadow-overlay);
   padding: var(--size-spacing-xxl) var(--size-spacing-xxl) 0;
@@ -185,7 +183,7 @@
 @media (max-width: size.$tablet) {
   .detailed-modal {
     width: 100vw;
-    border-radius: 0;
+    border-radius: var(--size-border-radius-m) var(--size-border-radius-m) 0 0;
     padding: var(--size-spacing-xl) var(--size-spacing-xl) 0;
     gap: var(--size-spacing-m);
 
