@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
+import { useId } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
@@ -20,7 +20,7 @@ import { OpeningHours } from '@/components/VenueEdition/OpeningHours/OpeningHour
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 
 import styles from './ComplementaryInfosDrawer.module.scss'
 
@@ -42,6 +42,7 @@ export const ComplementaryInfosDrawer = ({
 
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
+  const complementaryInfosFormId = useId()
   const initialValues: VenueEditionFormValues =
     setInitialFormValues(selectedPartnerVenue)
   const methods = useForm<VenueEditionFormValues>({
@@ -49,6 +50,11 @@ export const ComplementaryInfosDrawer = ({
     resolver: yupResolver(getValidationSchema()),
     mode: 'onBlur',
   })
+
+  const handleClose = () => {
+    onOpenChange(false)
+    methods.reset()
+  }
 
   const onSubmit = async (values: VenueEditionFormValues) => {
     try {
@@ -74,7 +80,7 @@ export const ComplementaryInfosDrawer = ({
       })
 
       snackBar.success('Vos modifications ont été sauvegardées')
-      onOpenChange(false)
+      handleClose()
     } catch (error) {
       let formErrors: Record<string, string> | undefined
       if (isErrorAPIError(error)) {
@@ -110,24 +116,36 @@ export const ComplementaryInfosDrawer = ({
     }
   }
   return (
-    <DialogBuilder
-      open={open}
-      onOpenChange={(open) => {
-        onOpenChange(open)
-        if (!open) {
-          methods.reset()
-        }
-      }}
+    <DetailedModal
+      isOpen={open}
+      onClose={handleClose}
       title="Informations complémentaires"
-      className={styles['dialog']}
-      variant="drawer"
+      description="Améliorez l'expérience de votre public en précisant vos modalités d'accueil et vos horaires."
+      primaryAction={
+        <Button
+          type="submit"
+          form={complementaryInfosFormId}
+          label="Enregistrer les informations"
+        />
+      }
+      secondaryAction={
+        <Button
+          onClick={() => {
+            onClose()
+            handleClose()
+          }}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler"
+        />
+      }
     >
-      <div className={styles['dialog-description']}>
-        Améliorez l'expérience de votre public en précisant vos modalités
-        d'accueil et vos horaires.
-      </div>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit((values) => onSubmit(values))}>
+        <form
+          id={complementaryInfosFormId}
+          onSubmit={methods.handleSubmit((values) => onSubmit(values))}
+          className={styles['drawer-form']}
+        >
           <FormLayout>
             <FormLayout.Section>
               <AccessibilityForm
@@ -160,22 +178,8 @@ export const ComplementaryInfosDrawer = ({
               )}
             </FormLayout.Section>
           </FormLayout>
-
-          <DialogBuilder.Footer>
-            <div className={styles['dialog-buttons']}>
-              <Dialog.Close asChild>
-                <Button
-                  onClick={onClose}
-                  variant={ButtonVariant.SECONDARY}
-                  color={ButtonColor.NEUTRAL}
-                  label="Annuler"
-                />
-              </Dialog.Close>
-              <Button type="submit" label="Enregistrer les informations" />
-            </div>
-          </DialogBuilder.Footer>
         </form>
       </FormProvider>
-    </DialogBuilder>
+    </DetailedModal>
   )
 }

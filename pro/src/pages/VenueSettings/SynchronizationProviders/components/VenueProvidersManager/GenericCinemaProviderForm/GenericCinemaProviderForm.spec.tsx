@@ -37,7 +37,7 @@ describe('GenericCinemaProviderForm', () => {
     props = {
       saveVenueProvider: vi.fn().mockReturnValue(true),
       providerId: providerId,
-      isCreatedEntity: true,
+      isCreationMode: true,
       onCancel: vi.fn(),
       initialValues: {
         isDuo: true,
@@ -96,7 +96,7 @@ describe('GenericCinemaProviderForm', () => {
 
   describe('edit existing cinema provider', () => {
     beforeEach(() => {
-      props.isCreatedEntity = false
+      props.isCreationMode = false
       props.initialValues = {
         isDuo: false,
         isActive: false,
@@ -131,7 +131,7 @@ describe('GenericCinemaProviderForm', () => {
 
   describe('edit existing allocine provider', () => {
     beforeEach(() => {
-      props.isCreatedEntity = false
+      props.isCreationMode = false
       props.initialValues = {
         isDuo: false,
         isActive: false,
@@ -148,7 +148,7 @@ describe('GenericCinemaProviderForm', () => {
       expect(priceInput).toBeInTheDocument()
 
       const callout = screen.getByText(
-        'Seules les séances “classiques” peuvent être importées pour le moment. Les séances spécifiques (3D, Dolby Atmos, 4DX...) seront bientôt disponibles.'
+        'Les modifications s’appliqueront uniquement aux nouvelles offres créées. La modification doit être faite manuellement pour les offres existantes.'
       )
 
       expect(callout).toBeInTheDocument()
@@ -157,7 +157,7 @@ describe('GenericCinemaProviderForm', () => {
     it('should call onChange when the input value changes', async () => {
       await renderCinemaProviderForm(props)
 
-      const input = screen.getByLabelText('Nombre de places/séance')
+      const input = screen.getByLabelText('Nombre de places par séance')
 
       await userEvent.clear(input)
       await userEvent.type(input, '10')
@@ -179,7 +179,7 @@ describe('GenericCinemaProviderForm', () => {
       await renderCinemaProviderForm(propsWithAdvancedFields)
 
       const priceInput = screen.getByLabelText(/Prix de vente par place/)
-      const quantityInput = screen.getByLabelText('Nombre de places/séance')
+      const quantityInput = screen.getByLabelText('Nombre de places par séance')
 
       await userEvent.clear(priceInput)
       await userEvent.type(priceInput, '15.5')

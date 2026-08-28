@@ -1,3 +1,5 @@
+import { useId, useState } from 'react'
+
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
 import type {
@@ -10,7 +12,9 @@ import {
   isCinemaProvider,
 } from '@/commons/core/Providers/utils/utils'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 
 import { GenericCinemaProviderForm } from './GenericCinemaProviderForm/GenericCinemaProviderForm'
 import { StocksProviderForm } from './StocksProviderForm/StocksProviderForm'
@@ -30,10 +34,16 @@ export const VenueProviderForm = ({
   providerSelectRef,
   selectSoftwareButtonRef,
 }: VenueProviderFormProps) => {
+  const [isCinemaModalOpen, setIsCinemaModalOpen] = useState(true)
+  const cinemaProviderFormId = useId()
   const snackBar = useSnackBar()
   const createVenueProvider = async (
     payload: PostVenueProviderBody
   ): Promise<boolean> => {
+    if (shouldDisplayCinemaDrawer) {
+      closeCinemaModal()
+    }
+
     try {
       await api.createVenueProvider({
         path: { venue_id: Number(venue.id) },
@@ -55,20 +65,43 @@ export const VenueProviderForm = ({
   const shouldDisplayCinemaDrawer =
     isAllocineProvider(provider) || isCinemaProvider(provider)
 
+  const closeCinemaModal = () => {
+    setIsCinemaModalOpen(false)
+    providerSelectRef?.current?.focus()
+  }
+
   return shouldDisplayCinemaDrawer ? (
-    <DialogBuilder
-      variant="drawer"
-      title="Modifier les paramètres de vos offres"
-      defaultOpen
-      refToFocusOnClose={providerSelectRef}
+    <DetailedModal
+      isOpen={isCinemaModalOpen}
+      onClose={closeCinemaModal}
+      title="Paramètres de vos offres"
+      primaryAction={
+        <Button
+          type="submit"
+          form={cinemaProviderFormId}
+          label="Lancer la synchronisation"
+        />
+      }
+      secondaryAction={
+        <Button
+          type="button"
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          onClick={closeCinemaModal}
+          label="Annuler"
+        />
+      }
+      isFooterFixed
     >
       <GenericCinemaProviderForm
-        isCreatedEntity
+        isCreationMode
         showAdvancedFields={isAllocineProvider(provider)}
         providerId={Number(provider.id)}
         saveVenueProvider={createVenueProvider}
+        formId={cinemaProviderFormId}
+        showFooter={false}
       />
-    </DialogBuilder>
+    </DetailedModal>
   ) : (
     <StocksProviderForm
       providerId={Number(provider.id)}

@@ -3,21 +3,11 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-.dialog {
+.drawer-form {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   max-width: rem.torem(684px);
-
-  &-buttons {
-    display: flex;
-    gap: var(--size-spacing-l);
-  }
-
-  &-description {
-    margin-bottom: var(--size-spacing-xxl);
-    color: var(--color-text-subtle);
-  }
 }
 
 .opening-hours {
