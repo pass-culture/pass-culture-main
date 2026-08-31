@@ -2,6 +2,7 @@ from flask_login import current_user
 from werkzeug.exceptions import BadRequest
 
 from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository
 from pcapi.core.offers.models import Product
 from pcapi.core.subscription import api as subscription_api
@@ -132,6 +133,7 @@ def get_movie_screenings_for_user(query: serializers.MovieScreeningsRequest) -> 
 def get_movie_screenings_by_venue(
     venue_id: int, query: serializers.VenueMovieScreeningsRequest
 ) -> serializers.VenueMovieCalendarResponse:
+    first_or_404(db.session.query(Venue).filter(Venue.id == venue_id))
     offers = repository.get_bookable_screenings_from_venue(
         venue_id,
         query.from_datetime,
@@ -170,6 +172,7 @@ def get_movie_screenings_by_venue(
 def get_movie_screenings_by_venue_for_user(
     venue_id: int, query: serializers.VenueMovieScreeningsRequest
 ) -> serializers.VenueMovieCalendarResponse:
+    first_or_404(db.session.query(Venue).filter(Venue.id == venue_id))
     offers = repository.get_bookable_screenings_from_venue(
         venue_id,
         query.from_datetime,
