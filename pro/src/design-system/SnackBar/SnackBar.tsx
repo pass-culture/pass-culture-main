@@ -138,9 +138,6 @@ export const SnackBar = ({
           '--snackbar-animation-duration': `${ANIMATION_DURATION}ms`,
         } as React.CSSProperties
       }
-      role={variantConfig.role}
-      aria-live={variantConfig.ariaLive}
-      aria-atomic="true"
       data-testid={testId}
     >
       <div className={cx(styles['wrapper'])}>
