@@ -80,7 +80,7 @@ export const InvoiceDownloadActionsBar = ({
   return (
     <div aria-live="polite">
       {checkedInvoices.length > 0 && (
-        <ActionsBarSticky>
+        <ActionsBarSticky isEmbedded>
           <ActionsBarSticky.Left>
             <p className={styles['checked-invoice-count']}>
               {checkedInvoicesCountText}

@@ -180,8 +180,9 @@ export const InvoiceTable = ({
           hasNoData: !hasInvoice || !hasBankAccount,
           message: getEmptyStateMessage(hasBankAccount),
         }}
-      />
-      <InvoiceDownloadActionsBar checkedInvoices={checkedInvoices} />
+      >
+        <InvoiceDownloadActionsBar checkedInvoices={checkedInvoices} />
+      </Table>
     </div>
   )
 }

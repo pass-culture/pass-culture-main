@@ -223,7 +223,7 @@ export const IndividualOffersActionsBar = ({
 
   return (
     <>
-      <ActionsBarSticky>
+      <ActionsBarSticky isEmbedded>
         <ActionsBarSticky.Left>
           {computeSelectedOffersLabel(selectedOffers.length)}
         </ActionsBarSticky.Left>

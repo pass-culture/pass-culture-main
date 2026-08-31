@@ -1,5 +1,5 @@
 import { isBefore } from 'date-fns'
-import { useRef, useState } from 'react'
+import { type ReactNode, useRef, useState } from 'react'
 
 import type {
   EventStockUpdateBodyModel,
@@ -54,6 +54,7 @@ export type StocksCalendarTableProps = {
   onUpdateStock: (stock: EventStockUpdateBodyModel) => Promise<void>
   onDeleteStocks: (id: number[]) => void
   onUpdateFilters: (filters: StocksTableFilters) => void
+  children?: ReactNode
 }
 
 export function StocksCalendarTable({
@@ -69,6 +70,7 @@ export function StocksCalendarTable({
   onUpdateStock,
   onDeleteStocks,
   onUpdateFilters,
+  children,
 }: Readonly<StocksCalendarTableProps>) {
   type StockAction = 'delete' | 'editTime' | 'editDate' | 'editTimeDate'
   type WarningModalState = {
@@ -406,7 +408,9 @@ export function StocksCalendarTable({
           },
         }}
         pagination={pagination}
-      />
+      >
+        {children}
+      </Table>
       <SimpleModal
         iconPath={strokeWarningIcon}
         title={modalContent?.title ?? ''}

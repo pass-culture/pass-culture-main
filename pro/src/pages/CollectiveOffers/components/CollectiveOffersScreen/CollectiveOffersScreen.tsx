@@ -242,8 +242,6 @@ export const CollectiveOffersScreen = ({
           }}
           getFullRow={getCollectiveOfferFullRow}
         />
-      </AccessibleScrollContainer>
-      <output>
         {selectedOfferIds.size > 0 && (
           <CollectiveOffersActionsBar
             areTemplateOffers={false}
@@ -253,7 +251,7 @@ export const CollectiveOffersScreen = ({
             searchButtonRef={searchButtonRef}
           />
         )}
-      </output>
+      </AccessibleScrollContainer>
     </div>
   )
 }

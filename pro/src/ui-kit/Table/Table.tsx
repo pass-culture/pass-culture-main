@@ -77,6 +77,7 @@ interface TableProps<T extends { id: string | number }> {
   noResult: NoResultProps
   noData: EmptyStateProps
   pagination?: PaginationProps
+  children?: ReactNode
 }
 
 function getValue<T>(
@@ -120,6 +121,7 @@ export function Table<
   getFullRow,
   isRowSelectable,
   pagination,
+  children,
 }: Readonly<TableProps<T>>) {
   const fullScope = allData ?? data
 
@@ -409,6 +411,7 @@ export function Table<
           })}
         </tbody>
       </table>
+      {children}
       {pagination && (
         <div className={styles['table-pagination']}>
           <Pagination

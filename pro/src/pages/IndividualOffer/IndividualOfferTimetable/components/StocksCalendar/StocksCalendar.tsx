@@ -303,18 +303,20 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
                     : Math.trunc(stockCount / STOCKS_PER_PAGE) + 1,
                 onPageClick: setPage,
               }}
-            />
+            >
+              {(!isOfferExposureEnabled ||
+                mode === OFFER_WIZARD_MODE.CREATION) && (
+                <StocksCalendarActionsBar
+                  checkedStocks={checkedStocks}
+                  hasStocks={offer.hasStocks}
+                  deleteStocks={deleteStocks}
+                  updateCheckedStocks={setCheckedStocks}
+                  mode={mode}
+                  offerId={offer.id}
+                />
+              )}
+            </StocksCalendarTable>
           </div>
-        )}
-        {(!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION) && (
-          <StocksCalendarActionsBar
-            checkedStocks={checkedStocks}
-            hasStocks={offer.hasStocks}
-            deleteStocks={deleteStocks}
-            updateCheckedStocks={setCheckedStocks}
-            mode={mode}
-            offerId={offer.id}
-          />
         )}
       </div>
     </>

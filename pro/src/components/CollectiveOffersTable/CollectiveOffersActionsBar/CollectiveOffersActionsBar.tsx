@@ -273,7 +273,7 @@ export function CollectiveOffersActionsBar<
 
   return (
     <>
-      <ActionsBarSticky>
+      <ActionsBarSticky isEmbedded>
         <ActionsBarSticky.Left>
           {computeSelectedOffersLabel(selectedOffers.length)}
         </ActionsBarSticky.Left>
