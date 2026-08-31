@@ -95,17 +95,10 @@ export const tryRestoreTargetAudienceFromStorage = (
   return targetAudiences
 }
 
-export const resetSimulatorActivityAndTargetStorage = () => {
+export const resetSimulatorStorage = () => {
   try {
     localStorageManager.removeItem(LOCAL_STORAGE_KEY.SIMULATOR_ACTIVITY)
     localStorageManager.removeItem(LOCAL_STORAGE_KEY.SIMULATOR_TARGET_CUSTOMER)
-  } catch {
-    return
-  }
-}
-
-export const resetSimulatorSiretAndOpenToPublicStorage = () => {
-  try {
     localStorageManager.removeItem(LOCAL_STORAGE_KEY.SIMULATOR_SIRET)
     localStorageManager.removeItem(LOCAL_STORAGE_KEY.SIMULATOR_OPEN_TO_PUBLIC)
   } catch {
