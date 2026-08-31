@@ -89,7 +89,7 @@ describe('validationSchema', () => {
       formValues: {
         ...values,
         startDate: new Date().toISOString().split('T')[0],
-        endDate: addDays(new Date(), 2).toISOString().split('T')[0],
+        endDate: new Date().toISOString().split('T')[0],
         bookingLimitDate: new Date().toISOString().split('T')[0],
         eventTime: format(subMinutes(new Date(), 1), 'HH:mm'),
       },

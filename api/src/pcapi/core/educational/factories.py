@@ -263,6 +263,10 @@ def _get_current_educational_year_adage_id() -> str:
     return str(_get_current_educational_year() - ADAGE_STARTING_EDUCATIONAL_YEAR)
 
 
+def _get_next_educational_year_adage_id() -> str:
+    return str(_get_current_educational_year() - ADAGE_STARTING_EDUCATIONAL_YEAR + 1)
+
+
 def _get_educational_year_start(civil_year: int) -> datetime.datetime:
     naive_start = datetime.datetime(year=civil_year, month=9, day=1)
     aware_start = pytz.timezone(date_utils.METROPOLE_TIMEZONE).localize(naive_start)
@@ -279,6 +283,12 @@ class EducationalCurrentYearFactory(EducationalYearFactory):
     beginningDate = factory.LazyFunction(lambda: _get_educational_year_start(_get_current_educational_year()))
     expirationDate = factory.LazyFunction(lambda: _get_educational_year_end(_get_current_educational_year() + 1))
     adageId = factory.LazyFunction(_get_current_educational_year_adage_id)
+
+
+class EducationalNextYearFactory(EducationalYearFactory):
+    beginningDate = factory.LazyFunction(lambda: _get_educational_year_start(_get_current_educational_year() + 1))
+    expirationDate = factory.LazyFunction(lambda: _get_educational_year_end(_get_current_educational_year() + 2))
+    adageId = factory.LazyFunction(_get_next_educational_year_adage_id)
 
 
 class EducationalDepositFactory(BaseFactory[models.EducationalDeposit]):
