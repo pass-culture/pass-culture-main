@@ -19,7 +19,6 @@ import {
 } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
-import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import styles from '../../../CollectiveOffersLine.module.scss'
@@ -66,7 +65,6 @@ export const CollectiveOffersTemplateLine = ({
     <div key={offer.id} className={styles['offer-line']}>
       <Thumb url={offer.imageUrl} alt={`Thumbnail for ${offer.name}`} />
       <div className={styles['offer-line-content']}>
-        <Tag variant={TagVariant.DEFAULT} label="Offre vitrine" />
         <h3 className={styles['offer-line-content-primary']}>
           <Link
             className={styles['offer-line-link']}
