@@ -4,7 +4,7 @@ on:
   schedule:
     # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onschedule
     # “At 08:27 on every day-of-week from Monday through Friday.”
-    - cron: '27 8 * * 1-5'
+    - cron: "27 8 * * 1-5"
       timezone: "Europe/Paris"
   workflow_dispatch:
 
@@ -46,7 +46,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: 
+        with:
           fetch-tags: true
           persist-credentials: false
           sparse-checkout: |
@@ -61,23 +61,23 @@ jobs:
             echo "Pas de tag RC trouvé"
             exit 1
           fi
-          
+
           # Get all tags with format vX.X.X, sort them and keep the last one
           latest_tag="$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" | sort -V | tail -n 1)"
-          
+
           # Extract major version and add 1
           major="$(echo "$latest_tag" | sed -E 's/^v([0-9]+)\..*/\1/')"
           release_number="$((major + 1))"
           echo "release-number=$release_number" >> "$GITHUB_OUTPUT"
-          
+
           # Get the rc tag info
           commit_hash="$(git rev-list -n 1 "$rc_tag")"
           echo "commit-hash=$commit_hash" >> "$GITHUB_OUTPUT"
           commit_date="$(git show -s --format=%cd --date=format:'%d/%m/%Y à %H:%M' "$commit_hash")"
           subject="$(git show -s --format=%s "$commit_hash")"
-          
+
           # compute Slack message base  — backtick are interpreted so we use [] around the release number
-          message_base="de la <${{ env.RUN_URL }}|release> [v$release_number] basée sur le commit <${{ env.REPO_URL }}/$commit_hash|$subject> (poussé le $commit_date)"
+          message_base="de la <${{ env.RUN_URL }}|release> [v$release_number] basée sur le commit <${{ env.REPO_URL }}/commit/$commit_hash|$subject> (poussé le $commit_date)"
           echo "message-base=$message_base" >> "$GITHUB_OUTPUT"
 
   notify-workflow-start:
@@ -100,7 +100,7 @@ jobs:
       tag-number: ${{ needs.compute-major-version-variables.outputs.release-number }}.0.0
       ref: ${{ needs.compute-major-version-variables.outputs.sha }}
       base-ref-is-a-branch: false
-    secrets: 
+    secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
