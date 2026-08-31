@@ -215,13 +215,9 @@ ignore = [
   "PIE810",  # multiple-starts-ends-with : Call `.startswith()` or `.endswith()` once with a tuple
   "PLC0206",  # dict-index-missing-items : Extracting value from dictionary without calling `.items()`
   "PLW1508",  # invalid-envvar-default : Invalid type for environment variable default
-  "PYI009",  # pass-statement-stub-body : Empty body should contain `...`, not `pass`
-  "PYI020",  # quoted-annotation-in-stub : Quoted annotations should not be included in stubs
   "PYI034",  # non-self-return-type : `__new__` methods usually return `self` at runtime
   "PYI036",  # bad-exit-annotation : Star-args in `__exit__` should be annotated with `object`
   "PYI041",  # redundant-numeric-union : Use `float` instead of `int | float`
-  "PYI052",  # unannotated-assignment-in-stub : Unannotated assignment in stub
-  "PYI063",  # pep484-style-positional-only-parameter : Use PEP 570 syntax for positional-only arguments
   "RUF010",  # explicit-f-string-type-conversion : Use explicit conversion flag
   "RUF012",  # mutable-class-default : Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF013",  # implicit-optional : PEP 484 prohibits implicit `Optional`
@@ -249,12 +245,9 @@ ignore = [
   "UP028",  # yield-in-for-loop : Replace `yield` over `for` loop with `yield from`
   "UP031",  # printf-string-formatting : Use format specifiers instead of percent format
   "UP035",  # deprecated-import : Import from standard library instead of deprecated modules
-  "UP036",  # outdated-version-block : Version block is outdated for minimum Python version
   "UP037",  # quoted-annotation : Remove quotes from type annotation
   "UP040",  # non-pep695-type-alias : Type alias uses `TypeAlias` annotation instead of the `type` keyword
-  "UP045",  # non-pep604-annotation-optional : Use `X | None` instead of `Optional[X]`
   "UP047",  # non-pep695-generic-function : Generic function uses `TypeVar` instead of the `type` keyword
-  "UP049",  # private-type-parameter : Private type parameter
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
