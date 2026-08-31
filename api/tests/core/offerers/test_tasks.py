@@ -10,6 +10,8 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import tasks as offerers_tasks
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -216,6 +218,20 @@ class FinalizeClosingVenueTaskTest:
         assert not venue.allocinePivot
 
         assert venue.state == offerers_models.VenueState.CLOSED
+
+    def test_draft_offers_should_be_deleted(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.BaseUserFactory()
+
+        # non draft offer should not be deleted
+        regular_offer_id = offers_factories.OfferFactory(venue=venue).id
+        draft_offer_id = offers_factories.DraftOfferFactory(venue=venue).id
+
+        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+
+        assert db.session.query(offers_models.Offer).filter(offers_models.Offer.id == regular_offer_id).one()
+        assert not db.session.query(offers_models.Offer).filter(offers_models.Offer.id == draft_offer_id).one_or_none()
 
     def create_synced_offers_with_bookings(self, venue):
         boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)
