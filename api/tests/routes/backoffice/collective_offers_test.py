@@ -178,7 +178,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == collective_offers[0].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == collective_offers[0].venue.name
         assert rows[0]["Ministère"] == "MENjs"
-        first_year = educational_factories._get_educational_year_beginning(date_utils.get_naive_utc_now())
+        first_year = educational_factories._get_educational_year_beginning(
+            collective_offers[0].collectiveStock.startDatetime
+        )
         assert rows[0]["Année"] == f"{first_year}-{first_year + 1}"
         assert rows[0]["Partenaire technique"] == "Cinéma Provider"
 
@@ -612,12 +614,23 @@ class ListCollectiveOffersTest(GetEndpointHelper):
                 )
             ]
         )
-        # current year created in collective_offers_fixture
+
+        meg_offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__institution=meg_educational_institution
+        ).collectiveOffer
+        other_offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__institution=other_educational_institution
+        ).collectiveOffer
+        leaving_meg_offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__institution=leaving_meg_educational_institution
+        ).collectiveOffer
+
+        # educational year created in collective_offers_fixture
         educational_year = (
             db.session.query(educational_models.EducationalYear)
             .filter(
-                educational_models.EducationalYear.beginningDate <= date_utils.get_naive_utc_now(),
-                date_utils.get_naive_utc_now() <= educational_models.EducationalYear.expirationDate,
+                educational_models.EducationalYear.beginningDate <= meg_offer.collectiveStock.startDatetime,
+                meg_offer.collectiveStock.startDatetime <= educational_models.EducationalYear.expirationDate,
             )
             .one()
         )
@@ -630,15 +643,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         educational_factories.EducationalDepositFactory(
             educationalInstitution=leaving_meg_educational_institution, educationalYear=educational_year
         )
-        meg_offer = educational_factories.CollectiveStockFactory(
-            collectiveOffer__institution=meg_educational_institution
-        ).collectiveOffer
-        other_offer = educational_factories.CollectiveStockFactory(
-            collectiveOffer__institution=other_educational_institution
-        ).collectiveOffer
-        leaving_meg_offer = educational_factories.CollectiveStockFactory(
-            collectiveOffer__institution=leaving_meg_educational_institution
-        ).collectiveOffer
 
         all_offers = list(collective_offers) + [meg_offer, leaving_meg_offer, other_offer]
 
