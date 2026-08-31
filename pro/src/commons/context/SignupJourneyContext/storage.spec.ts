@@ -33,6 +33,7 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 })
 
 import {
+  cleanInitialAddressStorage,
   cleanSignupJourneyStorage,
   RESTORE_ERRORS,
   saveActivityToStorage,
@@ -46,7 +47,6 @@ import {
 describe('SignupJourney storage', () => {
   beforeEach(() => {
     inMemoryLocalStorage.clear()
-    vi.clearAllMocks()
   })
 
   it('should restore offerer from storage', () => {
@@ -151,6 +151,39 @@ describe('SignupJourney storage', () => {
     expect(
       inMemoryLocalStorage.get(LOCAL_STORAGE_KEY.NEW_STRUCTURE_ACTIVITY)
     ).toBe(JSON.stringify(activity))
+  })
+
+  it('should clean signup initial address key', () => {
+    const offerer = JSON.stringify({
+      hasVenueWithSiret: true,
+      isDiffusible: false,
+    })
+    inMemoryLocalStorage.set(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER, offerer)
+    inMemoryLocalStorage.set(
+      LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER_INITIAL_ADDRESS,
+      JSON.stringify({
+        addressAutocomplete: 'x',
+        'search-addressAutocomplete': 'x',
+      })
+    )
+    const activity = JSON.stringify({ socialUrls: [], targetCustomer: null })
+    inMemoryLocalStorage.set(LOCAL_STORAGE_KEY.NEW_STRUCTURE_ACTIVITY, activity)
+    inMemoryLocalStorage.set('SOME_OTHER_KEY', 'keep')
+
+    cleanInitialAddressStorage()
+
+    expect(
+      inMemoryLocalStorage.get(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER)
+    ).toBe(offerer)
+    expect(
+      inMemoryLocalStorage.has(
+        LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER_INITIAL_ADDRESS
+      )
+    ).toBe(false)
+    expect(
+      inMemoryLocalStorage.get(LOCAL_STORAGE_KEY.NEW_STRUCTURE_ACTIVITY)
+    ).toBe(activity)
+    expect(inMemoryLocalStorage.get('SOME_OTHER_KEY')).toBe('keep')
   })
 
   it('should clean signup journey storage keys', () => {

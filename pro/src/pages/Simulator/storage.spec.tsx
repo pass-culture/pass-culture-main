@@ -1,7 +1,6 @@
 import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from 'commons/utils/localStorageManager'
 import {
-  resetSimulatorActivityAndTargetStorage,
-  resetSimulatorSiretAndOpenToPublicStorage,
+  resetSimulatorStorage,
   saveActivityToStorage,
   saveOpenToPublicToStorage,
   saveSiretToStorage,
@@ -35,6 +34,7 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
     },
   }
 })
+
 const mockSetSiret = vi.fn()
 const mockSetOpenToPublic = vi.fn()
 const mockSetTargetAudience = vi.fn()
@@ -91,9 +91,12 @@ describe('storage', () => {
     expect(mockSetTargetAudience).toHaveBeenCalledWith({ individual: true })
   })
 
-  it('should reset activity and target altogether', () => {
+  it('should reset all simulator storage altogether', () => {
     saveActivityToStorage(ActivityOpenToPublic.ARTISTIC_PRACTICE)
     saveTargetAudienceToStorage({ individual: true, collective: false })
+    saveSiretToStorage('12312312312312')
+    saveOpenToPublicToStorage('true')
+
     expect(Array.from(inMemoryLocalStorage.entries())).toEqual(
       expect.arrayContaining([
         ['PASS_CULTURE_SIMULATOR_ACTIVITY', 'ARTISTIC_PRACTICE'],
@@ -101,26 +104,13 @@ describe('storage', () => {
           'PASS_CULTURE_SIMULATOR_TARGET_CUSTOMER',
           '{"individual":true,"collective":false}',
         ],
-      ])
-    )
-    resetSimulatorActivityAndTargetStorage()
-    expect(Array.from(inMemoryLocalStorage.entries())).toEqual(
-      expect.arrayContaining([])
-    )
-  })
-
-  it('should reset siret and openToPublic altogether', () => {
-    saveSiretToStorage('12312312312312')
-    saveOpenToPublicToStorage('true')
-    expect(Array.from(inMemoryLocalStorage.entries())).toEqual(
-      expect.arrayContaining([
         ['PASS_CULTURE_SIMULATOR_SIRET', '12312312312312'],
         ['PASS_CULTURE_SIMULATOR_OPEN_TO_PUBLIC', 'true'],
       ])
     )
-    resetSimulatorSiretAndOpenToPublicStorage()
-    expect(Array.from(inMemoryLocalStorage.entries())).toEqual(
-      expect.arrayContaining([])
-    )
+
+    resetSimulatorStorage()
+
+    expect(Array.from(inMemoryLocalStorage.entries())).toEqual([])
   })
 })

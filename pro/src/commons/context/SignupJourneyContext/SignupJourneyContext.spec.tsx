@@ -5,8 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Target } from '@/apiClient/v1'
 import { DEFAULT_ADDRESS_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import {
-  resetSimulatorActivityAndTargetStorage,
-  resetSimulatorSiretAndOpenToPublicStorage,
+  resetSimulatorStorage,
   tryRestoreOpenToPublicFromStorage,
   tryRestoreActivityFromStorage as tryRestoreSimulatorActivityFromStorage,
   tryRestoreSiretFromStorage,
@@ -19,6 +18,7 @@ import {
   useSignupJourneyContext,
 } from './SignupJourneyContext'
 import {
+  cleanInitialAddressStorage,
   saveActivityToStorage,
   saveOffererToStorage,
   tryRestoreActivityFromStorage,
@@ -29,14 +29,14 @@ import {
 vi.mock('./storage', () => ({
   saveActivityToStorage: vi.fn(),
   saveOffererToStorage: vi.fn(),
+  cleanInitialAddressStorage: vi.fn(),
   tryRestoreActivityFromStorage: vi.fn(),
   tryRestoreInitialAddressFromStorage: vi.fn(),
   tryRestoreOffererFromStorage: vi.fn(),
 }))
 
 vi.mock('@/pages/Simulator/storage', () => ({
-  resetSimulatorActivityAndTargetStorage: vi.fn(),
-  resetSimulatorSiretAndOpenToPublicStorage: vi.fn(),
+  resetSimulatorStorage: vi.fn(),
   tryRestoreOpenToPublicFromStorage: vi.fn(),
   tryRestoreActivityFromStorage: vi.fn(),
   tryRestoreSiretFromStorage: vi.fn(),
@@ -73,9 +73,6 @@ const renderProvider = (search = '') =>
   )
 
 beforeEach(() => {
-  vi.clearAllMocks()
-  // Nothing stored anywhere and no simulator data by default; each test
-  // overrides what it actually needs.
   vi.mocked(tryRestoreActivityFromStorage).mockImplementation(throwNotFound)
   vi.mocked(tryRestoreOffererFromStorage).mockImplementation(throwNotFound)
   vi.mocked(tryRestoreInitialAddressFromStorage).mockImplementation(
@@ -89,35 +86,16 @@ beforeEach(() => {
   vi.mocked(tryRestoreOpenToPublicFromStorage).mockReturnValue(null as never)
 })
 
-describe('SignupJourneyContextProvider activity', () => {
-  it('restores the activity from the signup journey storage when available, ignoring the simulator', () => {
-    vi.mocked(tryRestoreActivityFromStorage).mockReturnValue({
-      activity: 'STRUCTURE',
-      targetCustomer: Target.EDUCATIONAL,
-    } as never)
-
-    renderProvider()
-
-    expect(screen.getByTestId('activity')).toHaveTextContent('STRUCTURE')
-    expect(screen.getByTestId('targetCustomer')).toHaveTextContent(
-      Target.EDUCATIONAL
+describe('SignupJourneyContextProvider - Scenario 1: Simulator Migration (SIRET is present)', () => {
+  it('loads data from simulator, saves it to standard storage, and clears simulator storage', () => {
+    vi.mocked(tryRestoreSiretFromStorage).mockReturnValue(
+      '22222222200022' as never
     )
-    expect(tryRestoreSimulatorActivityFromStorage).not.toHaveBeenCalled()
-  })
-
-  it('falls back to the default values when nothing is stored and there is no simulator or URL data', () => {
-    renderProvider()
-
-    expect(screen.getByTestId('activity')).toHaveTextContent(
-      DEFAULT_ACTIVITY_VALUES.activity ?? ''
-    )
-    expect(saveActivityToStorage).not.toHaveBeenCalled()
-    expect(resetSimulatorActivityAndTargetStorage).not.toHaveBeenCalled()
-  })
-
-  it('falls back to the simulator activity and audiences when the signup journey storage is empty', () => {
     vi.mocked(tryRestoreSimulatorActivityFromStorage).mockReturnValue(
       'STRUCTURE' as never
+    )
+    vi.mocked(tryRestoreOpenToPublicFromStorage).mockReturnValue(
+      'true' as never
     )
     vi.mocked(tryRestoreTargetAudienceFromStorage).mockReturnValue({
       individual: false,
@@ -126,15 +104,54 @@ describe('SignupJourneyContextProvider activity', () => {
 
     renderProvider()
 
+    expect(screen.getByTestId('siret')).toHaveTextContent('22222222200022')
     expect(screen.getByTestId('activity')).toHaveTextContent('STRUCTURE')
+    expect(screen.getByTestId('isOpenToPublic')).toHaveTextContent('true')
     expect(screen.getByTestId('targetCustomer')).toHaveTextContent(
       Target.EDUCATIONAL
     )
+    expect(screen.getByTestId('initialAddress')).toHaveTextContent(
+      JSON.stringify(DEFAULT_ADDRESS_FORM_VALUES)
+    )
+
     expect(saveActivityToStorage).toHaveBeenCalledTimes(1)
-    expect(resetSimulatorActivityAndTargetStorage).toHaveBeenCalledTimes(1)
+    expect(saveOffererToStorage).toHaveBeenCalledTimes(1)
+    expect(cleanInitialAddressStorage).toHaveBeenCalledTimes(1)
+    expect(resetSimulatorStorage).toHaveBeenCalledTimes(1)
+  })
+
+  it('prioritizes URL parameters over simulator storage values', () => {
+    vi.mocked(tryRestoreSiretFromStorage).mockReturnValue(
+      '22222222200022' as never
+    )
+    vi.mocked(tryRestoreSimulatorActivityFromStorage).mockReturnValue(
+      'STRUCTURE' as never
+    )
+    vi.mocked(tryRestoreOpenToPublicFromStorage).mockReturnValue(
+      'true' as never
+    )
+
+    renderProvider(
+      '?siret=33333333300033&activity=COLLECTIVITE&isOpenToPublic=false&targets=INDIVIDUAL'
+    )
+
+    expect(screen.getByTestId('siret')).toHaveTextContent('33333333300033')
+    expect(screen.getByTestId('activity')).toHaveTextContent('COLLECTIVITE')
+    expect(screen.getByTestId('isOpenToPublic')).toHaveTextContent('false')
+    expect(screen.getByTestId('targetCustomer')).toHaveTextContent(
+      Target.INDIVIDUAL
+    )
+
+    expect(saveActivityToStorage).toHaveBeenCalledTimes(1)
+    expect(saveOffererToStorage).toHaveBeenCalledTimes(1)
+    expect(cleanInitialAddressStorage).toHaveBeenCalledTimes(1)
+    expect(resetSimulatorStorage).toHaveBeenCalledTimes(1)
   })
 
   it('maps simulator audiences with both individual and collective to INDIVIDUAL_AND_EDUCATIONAL', () => {
+    vi.mocked(tryRestoreSiretFromStorage).mockReturnValue(
+      '22222222200022' as never
+    )
     vi.mocked(tryRestoreTargetAudienceFromStorage).mockReturnValue({
       individual: true,
       collective: true,
@@ -146,84 +163,18 @@ describe('SignupJourneyContextProvider activity', () => {
       Target.INDIVIDUAL_AND_EDUCATIONAL
     )
   })
-
-  it('prioritizes the activity URL param over the simulator activity', () => {
-    vi.mocked(tryRestoreSimulatorActivityFromStorage).mockReturnValue(
-      'STRUCTURE' as never
-    )
-
-    renderProvider('?activity=COLLECTIVITE')
-
-    expect(screen.getByTestId('activity')).toHaveTextContent('COLLECTIVITE')
-  })
-
-  it('prioritizes the targets URL param over the simulator audiences', () => {
-    vi.mocked(tryRestoreTargetAudienceFromStorage).mockReturnValue({
-      individual: false,
-      collective: true,
-    } as never)
-
-    renderProvider('?targets=INDIVIDUAL')
-
-    expect(screen.getByTestId('targetCustomer')).toHaveTextContent(
-      Target.INDIVIDUAL
-    )
-  })
 })
 
-describe('SignupJourneyContextProvider offerer', () => {
-  it('restores the offerer from the signup journey storage when available, ignoring the simulator', () => {
+describe('SignupJourneyContextProvider - Scenario 2: Standard Storage Restoration', () => {
+  it('restores all contexts from the signup journey storage when no SIRET is in simulator or URL', () => {
+    vi.mocked(tryRestoreActivityFromStorage).mockReturnValue({
+      activity: 'STRUCTURE',
+      targetCustomer: Target.EDUCATIONAL,
+    } as never)
     vi.mocked(tryRestoreOffererFromStorage).mockReturnValue({
       siret: '11111111100011',
       isOpenToPublic: 'true',
     } as never)
-
-    renderProvider()
-
-    expect(screen.getByTestId('siret')).toHaveTextContent('11111111100011')
-    expect(tryRestoreSiretFromStorage).not.toHaveBeenCalled()
-  })
-
-  it('falls back to the simulator siret and open-to-public value when nothing is stored', () => {
-    vi.mocked(tryRestoreSiretFromStorage).mockReturnValue(
-      '22222222200022' as never
-    )
-    vi.mocked(tryRestoreOpenToPublicFromStorage).mockReturnValue(
-      'true' as never
-    )
-
-    renderProvider()
-
-    expect(screen.getByTestId('siret')).toHaveTextContent('22222222200022')
-    expect(screen.getByTestId('isOpenToPublic')).toHaveTextContent('true')
-    expect(saveOffererToStorage).toHaveBeenCalledTimes(1)
-    expect(resetSimulatorSiretAndOpenToPublicStorage).toHaveBeenCalledTimes(1)
-  })
-
-  it('prioritizes the siret and isOpenToPublic URL params over the simulator storage', () => {
-    vi.mocked(tryRestoreSiretFromStorage).mockReturnValue(
-      '22222222200022' as never
-    )
-    vi.mocked(tryRestoreOpenToPublicFromStorage).mockReturnValue(
-      'true' as never
-    )
-
-    renderProvider('?siret=33333333300033&isOpenToPublic=false')
-
-    expect(screen.getByTestId('siret')).toHaveTextContent('33333333300033')
-    expect(screen.getByTestId('isOpenToPublic')).toHaveTextContent('false')
-  })
-
-  it('does not persist or reset the simulator storage when there is nothing new to merge', () => {
-    renderProvider()
-
-    expect(saveOffererToStorage).not.toHaveBeenCalled()
-    expect(resetSimulatorSiretAndOpenToPublicStorage).not.toHaveBeenCalled()
-  })
-})
-
-describe('SignupJourneyContextProvider initial address', () => {
-  it('restores the initial address from storage when available', () => {
     const storedAddress = { city: 'Paris' }
     vi.mocked(tryRestoreInitialAddressFromStorage).mockReturnValue(
       storedAddress as never
@@ -231,16 +182,38 @@ describe('SignupJourneyContextProvider initial address', () => {
 
     renderProvider()
 
+    expect(screen.getByTestId('activity')).toHaveTextContent('STRUCTURE')
+    expect(screen.getByTestId('targetCustomer')).toHaveTextContent(
+      Target.EDUCATIONAL
+    )
+    expect(screen.getByTestId('siret')).toHaveTextContent('11111111100011')
+    expect(screen.getByTestId('isOpenToPublic')).toHaveTextContent('true')
     expect(screen.getByTestId('initialAddress')).toHaveTextContent(
       JSON.stringify(storedAddress)
     )
-  })
 
-  it('falls back to the default address when nothing is stored', () => {
+    expect(saveActivityToStorage).not.toHaveBeenCalled()
+    expect(saveOffererToStorage).not.toHaveBeenCalled()
+    expect(cleanInitialAddressStorage).not.toHaveBeenCalled()
+    expect(resetSimulatorStorage).not.toHaveBeenCalled()
+  })
+})
+
+describe('SignupJourneyContextProvider - Scenario 3: Complete Fallback', () => {
+  it('falls back to the absolute default values when nothing is stored and there is no URL data', () => {
     renderProvider()
 
+    expect(screen.getByTestId('activity')).toHaveTextContent(
+      DEFAULT_ACTIVITY_VALUES.activity ?? ''
+    )
+    expect(screen.getByTestId('siret')).toHaveTextContent('')
     expect(screen.getByTestId('initialAddress')).toHaveTextContent(
       JSON.stringify(DEFAULT_ADDRESS_FORM_VALUES)
     )
+
+    expect(saveActivityToStorage).not.toHaveBeenCalled()
+    expect(saveOffererToStorage).not.toHaveBeenCalled()
+    expect(cleanInitialAddressStorage).not.toHaveBeenCalled()
+    expect(resetSimulatorStorage).not.toHaveBeenCalled()
   })
 })

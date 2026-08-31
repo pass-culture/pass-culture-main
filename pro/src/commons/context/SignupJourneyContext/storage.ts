@@ -78,6 +78,16 @@ export const saveActivityToStorage = (activity: ActivityContext) => {
   )
 }
 
+export const cleanInitialAddressStorage = () => {
+  try {
+    localStorageManager.removeItem(
+      LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER_INITIAL_ADDRESS
+    )
+  } catch {
+    return
+  }
+}
+
 export const cleanSignupJourneyStorage = () => {
   try {
     localStorageManager.removeItem(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER)

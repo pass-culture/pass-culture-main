@@ -42,13 +42,24 @@ vi.mock('@/commons/context/SignupJourneyContext/storage', async () => {
     cleanSignupJourneyStorage: vi.fn(() => {
       inMemoryLocalStorage.clear()
     }),
+    tryRestoreActivityFromStorage: vi.fn(() => {
+      return (
+        inMemoryLocalStorage.get(LOCAL_STORAGE_KEY.NEW_STRUCTURE_ACTIVITY) ||
+        null
+      )
+    }),
     tryRestoreOffererFromStorage: vi.fn(() => {
       const offererStr = inMemoryLocalStorage.get(
         LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER
       )
-      return JSON.parse(offererStr || 'null')
+      return offererStr ? JSON.parse(offererStr) : null
     }),
-    tryRestoreInitialAddressFromStorage: vi.fn(),
+    tryRestoreInitialAddressFromStorage: vi.fn(() => {
+      const addressStr = inMemoryLocalStorage.get(
+        LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER_INITIAL_ADDRESS
+      )
+      return addressStr ? JSON.parse(addressStr) : null
+    }),
   }
 })
 
@@ -161,19 +172,18 @@ const renderRealOffererScreen = (features: string[] = []) => {
 
 const mockSetOfferer = vi.fn()
 const mockSetInitialAddress = vi.fn()
+const mockSetActivity = vi.fn()
 
 describe('Offerer', () => {
   let contextValue: SignupJourneyContextValues
 
   beforeEach(() => {
     inMemoryLocalStorage.clear()
-    vi.mocked(cleanSignupJourneyStorage).mockClear()
-    vi.mocked(tryRestoreOffererFromStorage).mockReset()
-    vi.mocked(tryRestoreInitialAddressFromStorage).mockReset()
+
     contextValue = {
       activity: null,
       offerer: DEFAULT_OFFERER_FORM_VALUES,
-      setActivity: () => {},
+      setActivity: mockSetActivity,
       setOfferer: mockSetOfferer,
       initialAddress: null,
       setInitialAddress: mockSetInitialAddress,

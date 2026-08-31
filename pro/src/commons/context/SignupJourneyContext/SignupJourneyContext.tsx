@@ -16,8 +16,7 @@ import {
   DEFAULT_OFFERER_FORM_VALUES,
 } from '@/components/SignupJourneyForm/Offerer/constants'
 import {
-  resetSimulatorActivityAndTargetStorage,
-  resetSimulatorSiretAndOpenToPublicStorage,
+  resetSimulatorStorage,
   tryRestoreOpenToPublicFromStorage,
   tryRestoreActivityFromStorage as tryRestoreSimulatorActivityFromStorage,
   tryRestoreSiretFromStorage,
@@ -26,6 +25,7 @@ import {
 
 import { DEFAULT_ACTIVITY_VALUES } from './constants'
 import {
+  cleanInitialAddressStorage,
   saveActivityToStorage,
   saveOffererToStorage,
   tryRestoreActivityFromStorage,
@@ -104,72 +104,69 @@ const simulatorAudiencesToTarget = (
   return Target.INDIVIDUAL
 }
 
-function buildDefaultActivity(
-  activity: ActivityOpenToPublic | ActivityNotOpenToPublic | null,
-  audiences: TargetAudience[]
-): ActivityContext {
-  try {
-    return tryRestoreActivityFromStorage(noop)
-  } catch {
+function computeInitialContext(searchParams: URLSearchParams): {
+  activity: ActivityContext
+  offerer: Offerer
+  address: InitialAddress
+} {
+  const urlActivity = searchParams.get('activity') as
+    | ActivityOpenToPublic
+    | ActivityNotOpenToPublic
+    | null
+  const urlTargets = searchParams.getAll('targets') as TargetAudience[]
+  const urlSiret = searchParams.get('siret')
+  const urlIsOpenToPublic = searchParams.get('isOpenToPublic')
+  const simulatorSiret = tryRestoreSiretFromStorage(noop)
+
+  if (urlSiret || simulatorSiret) {
     const simulatorActivity = tryRestoreSimulatorActivityFromStorage(noop)
-    const simulatorAudiences = tryRestoreTargetAudienceFromStorage(noop)
-    const initialActivityContext = {
+    const simulatorTargets = tryRestoreTargetAudienceFromStorage(noop)
+    const simulatorIsOpenToPublic = tryRestoreOpenToPublicFromStorage(noop)
+
+    // Data from url prevails upon localstorage simulator data
+    const activity = {
       ...DEFAULT_ACTIVITY_VALUES,
       ...(simulatorActivity && { activity: simulatorActivity }),
-      ...(simulatorAudiences && {
-        targetCustomer: simulatorAudiencesToTarget(simulatorAudiences),
+      ...(simulatorTargets && {
+        targetCustomer: simulatorAudiencesToTarget(simulatorTargets),
       }),
-      ...(activity && { activity }),
-      ...(audiences.length && {
-        targetCustomer: targetAudiencesToTarget(audiences),
+      ...(urlActivity && { activity: urlActivity }),
+      ...(urlTargets.length && {
+        targetCustomer: targetAudiencesToTarget(urlTargets),
       }),
     }
-
-    if (
-      simulatorActivity ||
-      simulatorAudiences ||
-      activity ||
-      audiences.length
-    ) {
-      saveActivityToStorage(initialActivityContext)
-      resetSimulatorActivityAndTargetStorage()
-    }
-    return initialActivityContext
-  }
-}
-
-function buildDefaultOfferer(
-  siret: string | null,
-  isOpenToPublic: string | null
-): Offerer {
-  try {
-    return tryRestoreOffererFromStorage(noop)
-  } catch {
-    const simulatorSiret = tryRestoreSiretFromStorage(noop)
-    const simulatorIsOpenToPublic = tryRestoreOpenToPublicFromStorage(noop)
-    const initialOfferer = {
+    const offerer = {
       ...DEFAULT_OFFERER_FORM_VALUES,
       ...(simulatorSiret && { siret: simulatorSiret }),
       ...(simulatorIsOpenToPublic && {
         isOpenToPublic: simulatorIsOpenToPublic,
       }),
-      ...(siret && { siret }),
-      ...(isOpenToPublic && { isOpenToPublic }),
+      ...(urlSiret && { siret: urlSiret }),
+      ...(urlIsOpenToPublic && { isOpenToPublic: urlIsOpenToPublic }),
     }
+    saveActivityToStorage(activity)
+    saveOffererToStorage(offerer)
+    cleanInitialAddressStorage()
+    resetSimulatorStorage()
 
-    if (simulatorSiret || simulatorIsOpenToPublic || siret || isOpenToPublic) {
-      saveOffererToStorage(initialOfferer)
-      resetSimulatorSiretAndOpenToPublicStorage()
+    return {
+      activity,
+      offerer,
+      address: DEFAULT_ADDRESS_FORM_VALUES,
     }
-    return initialOfferer
   }
-}
 
-function buildDefaultInitialAddress(): InitialAddress {
   try {
-    return tryRestoreInitialAddressFromStorage(noop)
+    const activity = tryRestoreActivityFromStorage(noop)
+    const offerer = tryRestoreOffererFromStorage(noop)
+    const address = tryRestoreInitialAddressFromStorage(noop)
+    return { activity, offerer, address }
   } catch {
-    return DEFAULT_ADDRESS_FORM_VALUES
+    return {
+      activity: DEFAULT_ACTIVITY_VALUES,
+      offerer: DEFAULT_OFFERER_FORM_VALUES,
+      address: DEFAULT_ADDRESS_FORM_VALUES,
+    }
   }
 }
 
@@ -178,25 +175,13 @@ export function SignupJourneyContextProvider({
 }: Readonly<SignupJourneyContextProviderProps>) {
   const [searchParams, _setSearchParams] = useSearchParams()
 
-  const [activity, setActivity] = useState<ActivityContext | null>(() =>
-    buildDefaultActivity(
-      searchParams.get('activity') as
-        | ActivityOpenToPublic
-        | ActivityNotOpenToPublic
-        | null,
-      searchParams.getAll('targets') as TargetAudience[]
-    )
+  const [initialValues] = useState(() => computeInitialContext(searchParams))
+  const [activity, setActivity] = useState<ActivityContext | null>(
+    initialValues.activity
   )
-
-  const [offerer, setOfferer] = useState<Offerer | null>(() =>
-    buildDefaultOfferer(
-      searchParams.get('siret'),
-      searchParams.get('isOpenToPublic')
-    )
-  )
-
+  const [offerer, setOfferer] = useState<Offerer | null>(initialValues.offerer)
   const [initialAddress, setInitialAddress] = useState<InitialAddress | null>(
-    buildDefaultInitialAddress
+    initialValues.address
   )
 
   const contextValue = useMemo(
