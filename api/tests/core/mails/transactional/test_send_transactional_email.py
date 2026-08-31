@@ -8,6 +8,7 @@ from brevo.core import ApiError as BrevoApiError
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
 from pcapi.core import token as token_utils
+from pcapi.core.mails import exceptions
 from pcapi.core.mails import models
 from pcapi.core.mails import serialization
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -137,6 +138,24 @@ class TransactionalEmailWithTemplateTest:
             "body": {"code": "invalid_parameter", "message": "email is not valid in to"},
         }
         assert len(caplog.records) == 1
+
+    @patch("brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email")
+    def test_client_id_is_missing(self, mock, caplog):
+        mock.side_effect = BrevoApiError(
+            status_code=400,
+            headers={"Content-Type": "application/json"},
+            body={"code": "missing_parameter", "message": "client id is missing"},
+        )
+
+        payload = serialization.SendTransactionalEmailRequest(
+            recipients=["recipient@example.com"],
+            template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
+        )
+
+        with pytest.raises(exceptions.RetrySendEmail):
+            send_transactional_email(payload)
+
+        assert len(caplog.records) == 0
 
     @patch(
         "brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email",
