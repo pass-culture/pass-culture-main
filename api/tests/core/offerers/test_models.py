@@ -214,6 +214,18 @@ class VenueIsEligibleForSearchTest:
 
         assert venue.is_eligible_for_search is False
 
+    def test_closed_venue_is_not_eligible_for_search(self):
+        # without the CLOSED state, the venue would be eligible for
+        # search
+        venue = factories.VenueFactory(
+            managingOfferer__isActive=True,
+            managingOfferer__validationStatus=ValidationStatus.VALIDATED,
+            state=models.VenueState.CLOSED,
+        )
+        offers_factories.EventStockFactory(offer__venue=venue)
+
+        assert not venue.is_eligible_for_search
+
 
 class VenueHasActiveIndividualOffersTest:
     def test_has_active_individual_offer_property(self):
