@@ -1,4 +1,5 @@
 # isort: off
+# ruff: noqa
 
 # We monkey-patch `Logger._log` (see `pcapi.core.logging` module).
 # mypy does not detect that and wrongly reports errors when we call

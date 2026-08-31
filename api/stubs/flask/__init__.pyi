@@ -1,4 +1,5 @@
 # isort: off
+# ruff: noqa
 # This is a copy of `flask/__init__.py`
 
 from markupsafe import escape  # noqa F401

@@ -1,4 +1,5 @@
 # isort: off
+# ruff: noqa
 # This file was automatically generated with `stubgen .../flask/app.py`
 # from Flask 2.0.3 and then adapted to our needs. All changes appear
 # between `<change>` and `</change>` tags.
