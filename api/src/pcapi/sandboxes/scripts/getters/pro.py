@@ -386,7 +386,7 @@ def create_pro_user_with_collective_offers() -> dict:
     )
 
     educational_factories.EducationalCurrentYearFactory.create()
-    educational_factories.EducationalYearFactory.create()
+    educational_factories.EducationalNextYearFactory.create()
     educational_institution = educational_factories.EducationalInstitutionFactory(name="COLLEGE 123")
 
     offerPublished = educational_factories.CollectiveStockFactory.create(
@@ -557,6 +557,7 @@ def create_pro_user_with_collective_offer_templates() -> dict:
 
 def create_pro_user_with_active_collective_offer() -> dict:
     current_year = educational_factories.EducationalCurrentYearFactory.create()
+    next_year = educational_factories.EducationalNextYearFactory.create()
 
     educational_institution = educational_factories.EducationalInstitutionFactory.create(
         # should match id of user generated in create_adage_jwt_fake_token
@@ -564,6 +565,9 @@ def create_pro_user_with_active_collective_offer() -> dict:
     )
     educational_factories.EducationalDepositFactory.create(
         educationalInstitution=educational_institution, educationalYear=current_year
+    )
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=educational_institution, educationalYear=next_year
     )
 
     pro_user = users_factories.ProFactory.create()
@@ -577,11 +581,8 @@ def create_pro_user_with_active_collective_offer() -> dict:
         venue=venue,
         formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
     )
-    # Make sur the stock starts during the current year
-    stock_start = min(
-        date_utils.get_naive_utc_now() + datetime.timedelta(days=10),
-        current_year.expirationDate - datetime.timedelta(days=1),
-    )
+
+    stock_start = date_utils.get_naive_utc_now() + datetime.timedelta(days=10)
     offer.collectiveStock.startDatetime = stock_start
     offer.collectiveStock.endDatetime = stock_start
     db.session.add(offer.collectiveStock)
