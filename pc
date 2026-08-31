@@ -55,6 +55,7 @@ Commands:
   test-backend          Run tests for the API
   test-backoffice       Run tests for the Backoffice
   up-backend            Start API and backoffice on localhost (does not build the images)
+  start-gunicorn-api-no-docker Start API using gunicorn instead of the flask dev server
   "
   exit 0
 fi
@@ -271,6 +272,12 @@ elif [[ "$CMD" == "start-proxy-backend" ]]; then
 elif [[ "$CMD" == "up-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   start_backend
+
+# Commands to start API & Backoffice without docker
+elif [[ "$CMD" == "start-gunicorn-api-no-docker" ]]; then
+  cd api/ && \
+  eval $(poetry env activate) && \
+  GUNICORN_PORT=5001 FLASK_SERVER=0 ./entrypoint.sh
 
 # Commands to start API & Backoffice without docker
 elif [[ "$CMD" == "setup-no-docker" ]]; then
