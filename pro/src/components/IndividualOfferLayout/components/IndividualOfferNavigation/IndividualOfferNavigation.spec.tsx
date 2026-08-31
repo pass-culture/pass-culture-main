@@ -167,7 +167,7 @@ describe('IndividualOfferNavigation', () => {
 
       const steps = screen.getAllByRole('listitem')
       const links = screen.getAllByRole('link')
-      expect(steps.length).toEqual(links.length)
+      expect(steps).toHaveLength(links.length)
     })
 
     it('should display "Réservation" step', () => {
@@ -200,7 +200,7 @@ describe('IndividualOfferNavigation', () => {
 
       const steps = screen.getAllByRole('listitem')
       const links = screen.getAllByRole('link')
-      expect(steps.length).toEqual(links.length)
+      expect(steps).toHaveLength(links.length)
     })
 
     it('should display "Réservation" step', () => {

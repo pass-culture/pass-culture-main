@@ -31,7 +31,7 @@ export const PriceCategoriesSection = ({
 }: Props) => {
   const mode = useOfferWizardMode()
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
 
   const isCaledonian = useIsCaledonian()
 

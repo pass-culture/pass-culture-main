@@ -75,7 +75,7 @@ const toggleCollectiveOffersActiveInactiveStatus = async <
   if (collectiveOfferTemplateIds.length > 0) {
     await api.patchCollectiveOffersTemplateActiveStatus({
       body: {
-        ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
+        ids: collectiveOfferTemplateIds.map(Number),
         isActive: newStatus === CollectiveOfferDisplayedStatus.PUBLISHED,
       },
     })

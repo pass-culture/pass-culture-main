@@ -2,7 +2,6 @@ import cn from 'classnames'
 import type React from 'react'
 import { type ChangeEvent, useId, useRef, useState } from 'react'
 
-import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
@@ -14,18 +13,15 @@ import type { BookingsFilters } from '../types'
 import { INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS } from '../utils/bookingStatusConverter'
 import styles from './Filters.module.scss'
 
-export interface FilterByBookingStatusProps<
-  T extends BookingRecapResponseModel,
-> {
+export interface FilterByBookingStatusProps {
   bookingStatuses: string[]
-  bookingsRecap: T[]
   updateGlobalFilters: (filters: Partial<BookingsFilters>) => void
 }
 
-export const FilterByBookingStatus = <T extends BookingRecapResponseModel>({
+export const FilterByBookingStatus = ({
   bookingStatuses,
   updateGlobalFilters,
-}: FilterByBookingStatusProps<T>) => {
+}: FilterByBookingStatusProps) => {
   const [isToolTipVisible, setIsToolTipVisible] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const { logEvent } = useAnalytics()

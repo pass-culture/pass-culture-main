@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/browser'
-import { reactRouterV7BrowserTracingIntegration } from '@sentry/react'
+import { reactRouterBrowserTracingIntegration } from '@sentry/react'
 import { useEffect } from 'react'
 import {
   createRoutesFromChildren,
@@ -24,7 +24,7 @@ export const initializeSentry = () => {
     environment: ENVIRONMENT_NAME,
     release: VITE_APP_VERSION,
     integrations: [
-      reactRouterV7BrowserTracingIntegration({
+      reactRouterBrowserTracingIntegration({
         useEffect: useEffect,
         useLocation,
         useNavigationType,

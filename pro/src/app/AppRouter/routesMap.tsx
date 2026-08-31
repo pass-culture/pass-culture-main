@@ -29,10 +29,16 @@ import {
   mustNotBeOnboardedWithSelectedPartnerVenue,
 } from './utils'
 
-const NavigateToNewPasswordReset = ({ to, ...props }: NavigateProps) => {
+export const NavigateToNewPasswordReset = ({ to, ...props }: NavigateProps) => {
   const { search } = useLocation()
   const { token } = parse(search)
-  return <Navigate {...props} to={`${to}/${token}`} />
+
+  const destination =
+    typeof to === 'string'
+      ? `${to}/${token}`
+      : { ...to, pathname: `${to.pathname}/${token}` }
+
+  return <Navigate {...props} to={destination} />
 }
 
 export const routes: CustomRouteTree = [

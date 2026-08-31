@@ -1,14 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import {
-  type BookingRecapResponseModel,
-  BookingRecapStatus,
-} from '@/apiClient/v1'
-import {
-  bookingRecapFactory,
-  bookingRecapStockFactory,
-} from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -16,56 +8,13 @@ import {
   type FilterByBookingStatusProps,
 } from '../FilterByBookingStatus'
 
-const renderFilterByBookingStatus = (
-  props: FilterByBookingStatusProps<BookingRecapResponseModel>
-) => renderWithProviders(<FilterByBookingStatus {...props} />)
+const renderFilterByBookingStatus = (props: FilterByBookingStatusProps) =>
+  renderWithProviders(<FilterByBookingStatus {...props} />)
 
 describe('components | FilterByBookingStatus', () => {
-  let props: FilterByBookingStatusProps<BookingRecapResponseModel>
+  let props: FilterByBookingStatusProps
   beforeEach(() => {
     props = {
-      bookingsRecap: [
-        bookingRecapFactory({
-          stock: bookingRecapStockFactory({
-            offerName: 'Avez-vous déjà vu',
-          }),
-          beneficiary: {
-            lastname: 'Klepi',
-            firstname: 'Sonia',
-            email: 'sonia.klepi@example.com',
-          },
-          bookingDate: '2020-04-03T12:00:00Z',
-          bookingToken: 'ZEHBGD',
-          bookingStatus: BookingRecapStatus.BOOKED,
-          bookingIsDuo: false,
-          bookingStatusHistory: [
-            {
-              status: BookingRecapStatus.BOOKED,
-              date: '2020-04-03T12:00:00Z',
-            },
-          ],
-        }),
-        bookingRecapFactory({
-          stock: bookingRecapStockFactory({
-            offerName: 'Avez-vous déjà vu',
-          }),
-          beneficiary: {
-            lastname: 'Klepi',
-            firstname: 'Sonia',
-            email: 'sonia.klepi@example.com',
-          },
-          bookingDate: '2020-04-03T12:00:00Z',
-          bookingToken: 'ZEHBGD',
-          bookingStatus: BookingRecapStatus.VALIDATED,
-          bookingIsDuo: true,
-          bookingStatusHistory: [
-            {
-              status: BookingRecapStatus.BOOKED,
-              date: '2020-04-03T12:00:00Z',
-            },
-          ],
-        }),
-      ],
       bookingStatuses: [],
       updateGlobalFilters: vi.fn(),
     }

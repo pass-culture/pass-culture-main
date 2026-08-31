@@ -19,7 +19,7 @@ export const orejimeConfig = {
     duration: 182,
     stringify: (contents: { [id: string]: boolean }) => {
       const nonMandatoryConsents = Object.entries(contents).filter(([app]) => {
-        return mandatoryCookies.indexOf(app) === -1
+        return !mandatoryCookies.includes(app)
       })
       const cookieConsent = {
         choiceDatetime: toISOStringWithoutMilliseconds(new Date()),
@@ -33,7 +33,7 @@ export const orejimeConfig = {
             }),
           mandatory: Object.entries(contents)
             .filter(([app]) => {
-              return mandatoryCookies.indexOf(app) >= 0
+              return mandatoryCookies.includes(app)
             })
             .map(([app]) => {
               return app

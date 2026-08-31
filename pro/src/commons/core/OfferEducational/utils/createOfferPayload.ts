@@ -107,9 +107,7 @@ const getCommonOfferPayload = (
     ...disabilityCompliances(offer.accessibility),
     students: serializeParticipants(offer.participants),
     ...getLocationPayload(),
-    domains: (offer.domains || []).map((domainIdString) =>
-      Number(domainIdString)
-    ),
+    domains: (offer.domains || []).map(Number),
     interventionArea: getInterventionArea(),
     nationalProgramId: offer.nationalProgramId
       ? Number(offer.nationalProgramId)

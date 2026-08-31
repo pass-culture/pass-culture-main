@@ -13,7 +13,7 @@ import type { CustomRouteOrphan } from './types'
 import { filterRoutesByActiveFeatures } from './utils/filterRoutesByActiveFeatures'
 
 const sentryCreateBrowserRouter =
-  Sentry.wrapCreateBrowserRouterV7(createBrowserRouter)
+  Sentry.wrapCreateBrowserRouter(createBrowserRouter)
 
 export const AppRouter = () => {
   const activeFeatures = useAppSelector(selectActiveFeatures)

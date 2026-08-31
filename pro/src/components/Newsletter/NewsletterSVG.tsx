@@ -2,7 +2,7 @@ type NewsletterSVGProps = {
   className?: string
 }
 
-export function NewsletterSVG({ className }: NewsletterSVGProps) {
+export function NewsletterSVG({ className }: Readonly<NewsletterSVGProps>) {
   return (
     <svg
       width="85"

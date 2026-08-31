@@ -49,14 +49,12 @@ export const IndividualBookings = () => {
     appliedPreFilters,
     selectedPreFilters,
     wereBookingsRequested,
-    urlParams,
     hasPreFilters,
     isRefreshRequired,
     updateSelectedFilters,
     applyNow,
     resetPreFilters,
     resetAndApplyPreFilters,
-    updateUrl,
   } = useBookingsFilters()
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
@@ -167,14 +165,11 @@ export const IndividualBookings = () => {
         isRefreshRequired={isRefreshRequired}
         applyNow={applyNow}
         resetPreFilters={resetPreFiltersWithLog}
-        wereBookingsRequested={wereBookingsRequested}
         hasResult={(bookingsQuery ?? []).length > 0}
         isFiltersDisabled={!hasBookingsQuery.hasBookings}
         isLocalLoading={venueAddressQuery.isLoading}
         isTableLoading={isLoading}
         venueAddresses={venueAddresses}
-        urlParams={urlParams}
-        updateUrl={updateUrl}
       />
       {wereBookingsRequested && (
         <>

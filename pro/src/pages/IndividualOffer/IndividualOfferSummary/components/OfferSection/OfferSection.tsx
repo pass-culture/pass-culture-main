@@ -98,7 +98,7 @@ export const OfferSection = ({
   offer,
 }: OfferSummaryProps): JSX.Element => {
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const { categories, subCategories } = useIndividualOfferContext()
 
   const { musicTypes } = useMusicTypes()

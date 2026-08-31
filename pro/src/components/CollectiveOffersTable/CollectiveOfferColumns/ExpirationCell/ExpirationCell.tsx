@@ -21,7 +21,7 @@ type ExpirationCellProps = {
   offer: CollectiveOfferResponseModel
 }
 
-export function ExpirationCell({ offer }: ExpirationCellProps) {
+export function ExpirationCell({ offer }: Readonly<ExpirationCellProps>) {
   const bookingLimitDate = offer.stock?.bookingLimitDatetime
 
   const daysCountBeforeExpiration = differenceInCalendarDays(

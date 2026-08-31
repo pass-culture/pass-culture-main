@@ -7,7 +7,7 @@ import { OfferTypeScreen } from './OfferType/OfferType'
 
 export const OfferType = (): JSX.Element => {
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
 
   const children = <OfferTypeScreen />
 
