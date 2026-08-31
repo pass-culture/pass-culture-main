@@ -1,12 +1,113 @@
-// import { render } from '@testing-library/react'
-// import { axe } from 'vitest-axe'
+import { screen } from '@testing-library/react'
+import type { ComponentProps } from 'react'
+import { axe } from 'vitest-axe'
 
-// import { SettlementTable } from './SettlementTable'
+import type { SettlementResponseModel } from '@/apiClient/v1'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-// describe('<SettlementTable />', () => {
-//   it('should render without accessibility violations', async () => {
-//     const { container } = render(<SettlementTable />)
+import { SETTLEMENT_STATUS_LABELS } from './constants'
+import { SettlementTable } from './SettlementTable'
 
-//     expect(await axe(container)).toHaveNoViolations()
-//   })
-// })
+const [firstStatusKey, firstStatusMeta] = Object.entries(
+  SETTLEMENT_STATUS_LABELS
+)[0]
+
+const baseSettlement = {
+  id: 1,
+  label: 'VIR001',
+  date: '2024-06-01',
+  bankAccount: 'Compte principal',
+  status: firstStatusKey,
+  amount: 150,
+  invoicesCount: 3,
+} as SettlementResponseModel
+
+const renderSettlementTable = (
+  props: Partial<ComponentProps<typeof SettlementTable>> = {},
+  offererOverrides: Partial<typeof defaultGetOffererResponseModel> = {}
+) =>
+  renderWithProviders(
+    <SettlementTable
+      settlements={[baseSettlement]}
+      isLoading={false}
+      hasSettlement={true}
+      hasBankAccount={true}
+      {...props}
+    />,
+    {
+      storeOverrides: {
+        user: {
+          selectedAdminOfferer: {
+            ...defaultGetOffererResponseModel,
+            ...offererOverrides,
+          },
+        },
+      },
+    }
+  )
+
+describe('<SettlementTable />', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSettlementTable()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('renders the settlement row with formatted data', () => {
+    renderSettlementTable()
+
+    expect(screen.getByText('VIR001')).toBeVisible()
+    expect(screen.getByText('01/06/2024')).toBeVisible()
+    expect(screen.getByText('Compte principal')).toBeVisible()
+    expect(screen.getByText('3')).toBeVisible()
+    expect(screen.getByText(firstStatusMeta.label)).toBeVisible()
+    expect(screen.getByText('+ 150,00 €')).toBeVisible()
+  })
+
+  it('displays a dash when the settlement has no date', () => {
+    renderSettlementTable({
+      settlements: [{ ...baseSettlement, date: '' }] as never,
+    })
+
+    expect(screen.getByText('-')).toBeVisible()
+  })
+
+  it('formats the amount in pacific francs for a Caledonian offerer', () => {
+    renderSettlementTable({}, { isCaledonian: true })
+
+    expect(screen.getByText('+ 17 900 F')).toBeVisible()
+  })
+
+  it('shows the missing bank account empty state when hasBankAccount is false', () => {
+    renderSettlementTable({ hasBankAccount: false })
+
+    expect(screen.getByText('Aucun compte bancaire rattaché')).toBeVisible()
+    expect(
+      screen.getByRole('link', { name: 'Rattacher un compte bancaire' })
+    ).toHaveAttribute(
+      'href',
+      '/administration/remboursements/informations-bancaires'
+    )
+  })
+
+  it('shows the no-settlement-yet empty state when hasSettlement is false but a bank account exists', () => {
+    renderSettlementTable({ hasSettlement: false, settlements: [] })
+
+    expect(screen.getByText('Aucun virement pour le moment')).toBeVisible()
+    expect(
+      screen.getByRole('link', { name: 'Voir mes justificatifs' })
+    ).toHaveAttribute('href', '/administration/remboursements/justificatifs')
+  })
+
+  it('does not show an empty state when there is at least one settlement and a bank account', () => {
+    renderSettlementTable()
+
+    expect(
+      screen.queryByText('Aucun virement pour le moment')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Aucun compte bancaire rattaché')
+    ).not.toBeInTheDocument()
+  })
+})
