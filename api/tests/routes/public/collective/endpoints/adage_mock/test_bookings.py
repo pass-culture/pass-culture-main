@@ -4,6 +4,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
@@ -519,6 +520,7 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
     default_path_params = {"offer_id": 1}
     default_factory = factories.CollectiveOfferFactory
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_can_book_collective_offer(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         auth_client = client.with_explicit_token(plain_api_key)
