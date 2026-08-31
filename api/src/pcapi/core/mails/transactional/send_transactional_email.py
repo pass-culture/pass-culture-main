@@ -5,6 +5,7 @@ import brevo
 from brevo.core import ApiError as BrevoApiError
 
 from pcapi import settings
+from pcapi.core.mails import exceptions
 from pcapi.utils import email as email_utils
 from pcapi.utils import requests
 
@@ -66,6 +67,12 @@ def send_transactional_email(payload: serialization.SendTransactionalEmailReques
 
         if isinstance(exception.body, dict):
             code = exception.body.get("code", "unknown")
+            message = exception.body.get("message")
+
+            if status == 400 and code == "missing_parameter" and message == "client id is missing":
+                # Brevo support answered that this error comes from random incident on Brevo side.
+                # Their advice: ignore this error then retry.
+                raise exceptions.RetrySendEmail() from exception
 
             if status == 400 and code == "invalid_parameter":
                 # Don't raise exception for data which should be fixed but create a specific alert for every case.
@@ -76,7 +83,7 @@ def send_transactional_email(payload: serialization.SendTransactionalEmailReques
                     # Email is partially obfuscated in logs but full email is available in Sentry for investigation
                     ",".join(email_utils.anonymize_email(recipient) for recipient in payload.recipients),
                     code,
-                    exception.body.get("message"),
+                    message,
                     extra={
                         "payload": payload.model_dump(),
                         "status_code": exception.status_code,

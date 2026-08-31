@@ -1,0 +1,2 @@
+class RetrySendEmail(Exception):
+    pass
