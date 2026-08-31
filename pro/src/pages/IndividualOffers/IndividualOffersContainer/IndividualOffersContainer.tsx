@@ -223,22 +223,20 @@ export const IndividualOffersContainer = ({
               scrollToContentWrapper()
             },
           }}
-        />
+        >
+          {selectedOfferIds.size > 0 && (
+            <IndividualOffersActionsBar
+              areAllOffersSelected={areAllOffersSelected}
+              clearSelectedOffers={clearSelectedOffers}
+              selectedOffers={selectedOfferList}
+              canDelete={canDelete}
+              canDeactivate={canDeactivate}
+              canPublish={canPublish}
+              searchButtonRef={searchButtonRef}
+            />
+          )}
+        </Table>
       </AccessibleScrollContainer>
-
-      <output>
-        {selectedOfferIds.size > 0 && (
-          <IndividualOffersActionsBar
-            areAllOffersSelected={areAllOffersSelected}
-            clearSelectedOffers={clearSelectedOffers}
-            selectedOffers={selectedOfferList}
-            canDelete={canDelete}
-            canDeactivate={canDeactivate}
-            canPublish={canPublish}
-            searchButtonRef={searchButtonRef}
-          />
-        )}
-      </output>
     </div>
   )
 }

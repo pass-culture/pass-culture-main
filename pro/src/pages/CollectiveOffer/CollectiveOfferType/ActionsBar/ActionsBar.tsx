@@ -20,7 +20,7 @@ export const ActionsBar = ({
   disableNextButton = false,
 }: ActionsBarProps): JSX.Element => {
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const { logEvent } = useAnalytics()
 
   return (

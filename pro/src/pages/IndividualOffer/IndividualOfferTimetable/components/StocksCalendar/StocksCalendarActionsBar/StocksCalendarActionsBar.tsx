@@ -86,7 +86,7 @@ export function StocksCalendarActionsBar({
   return (
     <>
       {checkedStocks.size > 0 ? (
-        <ActionsBarSticky>
+        <ActionsBarSticky isEmbedded>
           <ActionsBarSticky.Left>
             {checkedStocks.size}&nbsp;
             {pluralizeFr(

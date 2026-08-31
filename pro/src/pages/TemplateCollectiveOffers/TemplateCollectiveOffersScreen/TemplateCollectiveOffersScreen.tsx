@@ -220,18 +220,18 @@ export const TemplateCollectiveOffersScreen = ({
               scrollToContentWrapper()
             },
           }}
-        />
+        >
+          {selectedOfferIds.size > 0 && (
+            <CollectiveOffersActionsBar
+              areTemplateOffers
+              areAllOffersSelected={areAllOffersSelected}
+              clearSelectedOfferIds={clearSelectedOfferIds}
+              selectedOffers={selectedOffers}
+            />
+          )}
+        </Table>
       </AccessibleScrollContainer>
-      <output>
-        {selectedOfferIds.size > 0 && (
-          <CollectiveOffersActionsBar
-            areTemplateOffers
-            areAllOffersSelected={areAllOffersSelected}
-            clearSelectedOfferIds={clearSelectedOfferIds}
-            selectedOffers={selectedOffers}
-          />
-        )}
-      </output>
+      <output></output>
     </div>
   )
 }
