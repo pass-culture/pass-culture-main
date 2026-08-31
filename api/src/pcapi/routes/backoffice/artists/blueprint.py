@@ -220,6 +220,10 @@ def _get_artist_details_actions() -> dict[ArtistDetailsActionType, bool]:
     can_manage_artists = access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ARTISTS)
     can_blacklist_artists = access_control.has_current_user_permission(perm_models.Permissions.BLACKLIST_ARTISTS)
 
+    from flask_login import current_user
+
+    print(current_user.backoffice_profile.permissions)
+
     actions = {
         ArtistDetailsActionType.EDIT: can_manage_artists,
         ArtistDetailsActionType.BLACKLIST: can_blacklist_artists,
