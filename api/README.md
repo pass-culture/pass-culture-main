@@ -174,7 +174,7 @@ pc sandbox -n industrial     # setup avec docker
 Notre backend expose des métriques prometheus. Pour pouvoir travailler avec ces métriques en local il faut deux conditions :
 
 * Que le backend soit lancé avec gunicorn (cf options présentées plus haut)
-* Utiliser ces variables d'environnement
+* Utiliser ces variables d'environnement (mise en place par défaut par le script `entrypoint.sh`)
 
 ```
   ENABLE_FLASK_PROMETHEUS_EXPORTER="1"
