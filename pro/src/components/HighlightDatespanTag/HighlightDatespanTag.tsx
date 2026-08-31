@@ -6,7 +6,7 @@ type HighlightDatespanTagProps = {
 
 export function HighlightDatespanTag({
   highlightDatespan,
-}: HighlightDatespanTagProps): React.ReactNode {
+}: Readonly<HighlightDatespanTagProps>): React.ReactNode {
   if (highlightDatespan[0] === highlightDatespan[1]) {
     return <AccessibleDate date={highlightDatespan[0]} />
   }

@@ -11,14 +11,14 @@ export const searchPatternInOptions = (
 ): SelectOptionNormalized[] => {
   const matchingOptions: SelectOptionNormalized[] = []
 
-  for (let i = 0; i < options.length; i++) {
+  for (const option of options) {
     //  Only search for matches while there are less matches found than max expected results
     if (maxDisplayedCount && matchingOptions.length >= maxDisplayedCount) {
       break
     }
 
     const normalizedOptionLabel =
-      options[i].normalizedLabel ?? normalizeStrForSearch(options[i].label)
+      option.normalizedLabel ?? normalizeStrForSearch(option.label)
 
     //  Look for options containing all of the pattern words
     const isLabelMatchingPattern = normalizeStrForSearch(pattern || '')
@@ -26,7 +26,7 @@ export const searchPatternInOptions = (
       .every((word) => normalizedOptionLabel.includes(word))
 
     if (isLabelMatchingPattern) {
-      matchingOptions.push(options[i])
+      matchingOptions.push(option)
     }
   }
 

@@ -13,7 +13,7 @@ vi.mock('@sentry/browser', () => ({
 }))
 
 vi.mock('@sentry/react', () => ({
-  reactRouterV7BrowserTracingIntegration: vi.fn(),
+  reactRouterBrowserTracingIntegration: vi.fn(),
 }))
 
 const SIGNUP_URL =

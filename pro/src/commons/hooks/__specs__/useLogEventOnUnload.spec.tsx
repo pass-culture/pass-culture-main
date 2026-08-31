@@ -13,35 +13,35 @@ describe('useBeforeUnload', () => {
       expect(
         spyAddEvent.mock.calls
           .map((args) => args[0] === 'beforeunload')
-          .filter(Boolean).length
-      ).toEqual(0)
+          .filter(Boolean)
+      ).toHaveLength(0)
       expect(
         spyRemoveEvent.mock.calls
           .map((args) => args[0] === 'beforeunload')
-          .filter(Boolean).length
-      ).toEqual(0)
+          .filter(Boolean)
+      ).toHaveLength(0)
       renderHook(() => useLogEventOnUnload(mockLogEvent))
       expect(
         spyAddEvent.mock.calls
           .map((args) => args[0] === 'beforeunload')
-          .filter(Boolean).length
-      ).toEqual(1)
+          .filter(Boolean)
+      ).toHaveLength(1)
       expect(
         spyRemoveEvent.mock.calls
           .map((args) => args[0] === 'beforeunload')
-          .filter(Boolean).length
-      ).toEqual(0)
+          .filter(Boolean)
+      ).toHaveLength(0)
       cleanup()
       expect(
         spyRemoveEvent.mock.calls
           .map((args) => args[0] === 'beforeunload')
-          .filter(Boolean).length
-      ).toEqual(1)
+          .filter(Boolean)
+      ).toHaveLength(1)
       expect(
         spyAddEvent.mock.calls
           .map((args) => args[0] === 'beforeunload')
-          .filter(Boolean).length
-      ).toEqual(1)
+          .filter(Boolean)
+      ).toHaveLength(1)
     })
   })
 })

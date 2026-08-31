@@ -76,7 +76,7 @@ describe('yup.array().uniqueBy', () => {
     } catch (error: unknown) {
       const validationError = error as yup.ValidationError
 
-      expect(validationError.inner.length).toBe(1)
+      expect(validationError.inner).toHaveLength(1)
       expect(
         validationError.inner.every(
           (innerError) => innerError.message === 'Codes must be unique.'

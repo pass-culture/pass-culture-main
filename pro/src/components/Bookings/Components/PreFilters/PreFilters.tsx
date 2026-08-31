@@ -29,12 +29,9 @@ export interface PreFiltersProps {
   hasResult: boolean
   isFiltersDisabled?: boolean
   isTableLoading: boolean
-  wereBookingsRequested: boolean
   isAdministrationSpace?: boolean
   isLocalLoading: boolean
   resetPreFilters: () => void
-  urlParams?: PreFiltersParams
-  updateUrl: (selectedPreFilters: PreFiltersParams) => void
   venueAddresses?: SelectOption<string | number>[]
   download?: (type: 'CSV' | 'XLS') => Promise<void>
   isDownloading?: boolean

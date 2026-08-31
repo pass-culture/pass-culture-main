@@ -1,10 +1,11 @@
-import type {
-  GetVenueAddressResponseModel,
-  GetVenueManagingOffererResponseModel,
-  LocationResponseModelV2,
-  VenueListItemLiteResponseModel,
+import {
+  DisplayableActivity,
+  type GetVenueAddressResponseModel,
+  type GetVenueManagingOffererResponseModel,
+  type GetVenueResponseModel,
+  type LocationResponseModelV2,
+  type VenueListItemLiteResponseModel,
 } from '@/apiClient/v1'
-import { DisplayableActivity, type GetVenueResponseModel } from '@/apiClient/v1'
 
 import type { PartialExcept } from '../types'
 

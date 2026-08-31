@@ -26,9 +26,6 @@ const IndividualActivityData = () => {
     resetPreFilters,
     selectedPreFilters,
     updateSelectedFilters,
-    updateUrl,
-    urlParams,
-    wereBookingsRequested,
   } = useBookingsFilters()
 
   // we want to reset filters when selected offerer changes
@@ -87,9 +84,6 @@ const IndividualActivityData = () => {
         resetPreFilters={resetPreFiltersAndLog}
         selectedPreFilters={selectedPreFilters}
         updateSelectedFilters={updateSelectedFilters}
-        updateUrl={updateUrl}
-        urlParams={urlParams}
-        wereBookingsRequested={wereBookingsRequested}
         download={download}
         isDownloading={isDownloading}
       />

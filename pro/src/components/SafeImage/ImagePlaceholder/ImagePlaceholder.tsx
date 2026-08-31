@@ -9,7 +9,9 @@ type ImagePlaceholderProps = {
   className?: string
 }
 
-export function ImagePlaceholder({ className }: ImagePlaceholderProps) {
+export function ImagePlaceholder({
+  className,
+}: Readonly<ImagePlaceholderProps>) {
   return (
     <div className={cn(styles['image-placeholder'], className)}>
       <SvgIcon alt="" src={strokeNoImageIcon} width="48" />

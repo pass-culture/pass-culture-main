@@ -25,7 +25,7 @@ export const SignupJourneyStepper = () => {
   const activeStep = useActiveStep()
 
   const logBreadcrumbClick = (to: SIGNUP_JOURNEY_STEP_IDS, stepUrl: string) => {
-    if (stepUrl.indexOf(activeStep) === -1) {
+    if (!stepUrl.includes(activeStep)) {
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
         to,
         used: SignupJourneyAction.Breadcrumb,

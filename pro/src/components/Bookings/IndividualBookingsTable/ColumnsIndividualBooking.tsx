@@ -29,7 +29,6 @@ type Opts = {
 
 export function useBookingsTableColumnsByIndex(opts: Opts) {
   const {
-    bookings,
     bookingStatuses = [],
     updateGlobalFilters,
     expandedIds,
@@ -75,7 +74,6 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
       header: updateGlobalFilters ? (
         <FilterByBookingStatus
           bookingStatuses={bookingStatuses}
-          bookingsRecap={bookings}
           updateGlobalFilters={updateGlobalFilters}
         />
       ) : undefined,

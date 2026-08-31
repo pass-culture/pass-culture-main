@@ -71,9 +71,7 @@ describe('filter bookings by bookings period', () => {
       resetPreFilters: vi.fn(),
       isFiltersDisabled: false,
       isTableLoading: false,
-      wereBookingsRequested: true,
       isLocalLoading: false,
-      updateUrl: vi.fn(),
 
       selectedPreFilters: {
         ...DEFAULT_PRE_FILTERS,

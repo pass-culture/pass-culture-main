@@ -14,7 +14,7 @@ function markdownToHtml(markdown: string) {
   markdown = markdown.replace(BOLD_REGEXP, '<strong>$1</strong>')
   markdown = markdown.replace(ITALIC_REGEXP, '<em>$1</em>')
   markdown = markdown.replace(URL_REGEXP, (url) => {
-    const href = url.match('^https?://') ? url : `https://${url}`
+    const href = /^https?:\/\//.exec(url) ? url : `https://${url}`
     return `<a class="${styles['markdown-link']}" href="${href}" rel="noreferrer" target="_blank">${url}</a>`
   })
   return markdown.replace(EMAIL_REGEXP, (email) => {

@@ -36,7 +36,7 @@ export const StockSection = ({
 }: StockSectionProps): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const snackBar = useSnackBar()
 
   const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)

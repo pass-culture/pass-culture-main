@@ -16,7 +16,7 @@ export const useBeamer = (consentedToBeamer: boolean) => {
       consentedToBeamer &&
       currentUser !== null &&
       window.Beamer !== undefined &&
-      location.pathname.indexOf('/inscription/structure') === -1
+      !location.pathname.includes('/inscription/structure')
     ) {
       // We use setTimeout because Beamer might not be loaded yet
       setTimeout(() => {
