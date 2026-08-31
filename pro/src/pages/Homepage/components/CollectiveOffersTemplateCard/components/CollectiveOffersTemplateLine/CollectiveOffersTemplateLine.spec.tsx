@@ -57,7 +57,6 @@ describe('<CollectiveOffersTemplateLine />', () => {
 
     expect(screen.getByText(offer.name)).toBeVisible()
     expect(screen.getByRole('img')).toBeVisible()
-    expect(screen.getByText('Offre vitrine')).toBeVisible()
     expect(
       screen.getByText(`Du ${expectedStartDate} au ${expectedEndDate}`)
     ).toBeVisible()

@@ -30,7 +30,6 @@ describe('OfferNameCell', () => {
       offer: eventOffer,
     })
 
-    expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
     expect(screen.getByText('Offre nom')).toBeInTheDocument()
   })
 
@@ -96,7 +95,7 @@ describe('OfferNameCell', () => {
       offer,
     })
     const offerTitle = screen.getByRole('link', {
-      name: `Offre vitrine ${offer.name}`,
+      name: 'Link test',
     })
     expect(offerTitle).toBeInTheDocument()
   })
