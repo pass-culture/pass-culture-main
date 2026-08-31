@@ -965,7 +965,8 @@ class VenueMovieCalendarTest:
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
         venue_id = stock.offer.venue.id
-        expected_num_queries = 1  # offers
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": today, "to": tomorrow})
             assert response.status_code == 200
@@ -1043,7 +1044,8 @@ class VenueMovieCalendarTest:
             offer__product=most_booked_product, beginningDatetime=beginning_datetime, offer__venue=venue
         )
         venue_id = venue.id
-        expected_num_queries = 1  # offers
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(
                 f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": movie_day, "to": day_after}
@@ -1069,7 +1071,8 @@ class VenueMovieCalendarTest:
         )
         last_screened_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=last_beginning_datetime)
         venue_id = offer.venue.id
-        expected_num_queries = 1  # offers
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(
                 f"/native/v1/venue/{venue_id}/movie/calendar",
@@ -1096,7 +1099,8 @@ class VenueMovieCalendarTest:
         in_four_days_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_four_days)
 
         venue_id = offer.venue.id
-        expected_num_queries = 1  # offers
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(
                 f"/native/v1/venue/{venue_id}/movie/calendar",
@@ -1118,27 +1122,11 @@ class VenueMovieCalendarTest:
         venue = offerers_factories.VenueFactory()
 
         venue_id = venue.id
-        expected_num_queries = 1  # offers
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(
                 f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": tomorrow, "to": in_two_days}
-            )
-            assert response.status_code == 200
-
-        assert response.json["calendar"] == [
-            {"date": tomorrow.isoformat(), "screenings": []},
-            {"date": in_two_days.isoformat(), "screenings": []},
-        ]
-
-    def test_calendar_is_empty_if_venue_not_found(self, client):
-        tomorrow = (datetime.today() + timedelta(days=1)).date()
-        in_two_days = (datetime.today() + timedelta(days=2)).date()
-
-        fake_venue_id = 999999
-        expected_num_queries = 1  # offers
-        with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{fake_venue_id}/movie/calendar", params={"from": tomorrow, "to": in_two_days}
             )
             assert response.status_code == 200
 
@@ -1155,7 +1143,8 @@ class VenueMovieCalendarTest:
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
         venue_id = stock.offer.venue.id
-        expected_num_queries = 1  # offers
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": today, "to": tomorrow})
             assert response.status_code == 200
@@ -1177,7 +1166,8 @@ class VenueMovieCalendarTest:
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
         venue_id = stock.offer.venue.id
-        expected_num_queries = 1  # offers
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": today, "to": tomorrow})
             assert response.status_code == 200
@@ -1186,6 +1176,12 @@ class VenueMovieCalendarTest:
         today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
         assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
+
+    def test_returns_404_if_venue_not_found(self, client):
+        expected_num_queries = 1  # venue
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/venue/999999999/movie/calendar")
+            assert response.status_code == 404
 
 
 class VenueMovieCalendarForUserTest:
@@ -1199,6 +1195,7 @@ class VenueMovieCalendarForUserTest:
         tomorrow = date.today() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
         expected_num_queries += 1  # offers
         expected_num_queries += 1  # deposit
         expected_num_queries += 1  # user bookings
@@ -1273,6 +1270,7 @@ class VenueMovieCalendarForUserTest:
         tomorrow = date.today() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
         expected_num_queries += 1  # offers
         expected_num_queries += 1  # deposits
         expected_num_queries += 1  # user bookings
@@ -1302,6 +1300,7 @@ class VenueMovieCalendarForUserTest:
         tomorrow = date.today() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
         expected_num_queries += 1  # offers
         expected_num_queries += 1  # deposits
         expected_num_queries += 1  # user bookings
@@ -1330,6 +1329,7 @@ class VenueMovieCalendarForUserTest:
         tomorrow = date.today() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
         expected_num_queries += 1  # offers
         expected_num_queries += 1  # deposits
         client.with_token(user)
@@ -1354,6 +1354,7 @@ class VenueMovieCalendarForUserTest:
         tomorrow = date.today() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
         expected_num_queries += 1  # offers
         expected_num_queries += 1  # deposit
         expected_num_queries += 1  # beneficiary_fraud_review
@@ -1398,6 +1399,7 @@ class VenueMovieCalendarForUserTest:
         tomorrow = date.today() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
         expected_num_queries += 1  # offers
         expected_num_queries += 1  # deposit
         expected_num_queries += 1  # beneficiary_fraud_review
@@ -1442,6 +1444,7 @@ class VenueMovieCalendarForUserTest:
         tomorrow = date.today() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
         expected_num_queries += 1  # offers
         expected_num_queries += 1  # deposit
         expected_num_queries += 1  # beneficiary_fraud_review
@@ -1471,6 +1474,7 @@ class VenueMovieCalendarForUserTest:
         venue_id = stock.offer.venue.id
 
         expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
         expected_num_queries += 1  # offers
         expected_num_queries += 1  # deposit
         expected_num_queries += 1  # user bookings
@@ -1498,6 +1502,7 @@ class VenueMovieCalendarForUserTest:
         venue_id = stock.offer.venue.id
 
         expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
         expected_num_queries += 1  # offers
         expected_num_queries += 1  # deposit
         expected_num_queries += 1  # user bookings
@@ -1510,3 +1515,12 @@ class VenueMovieCalendarForUserTest:
 
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_RELATED_OFFER"
+
+    def test_returns_404_if_venue_not_found(self, client):
+        user = users_factories.BeneficiaryFactory()
+        client.with_token(user)
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/venue/999999999/movie/calendar/me")
+            assert response.status_code == 404
