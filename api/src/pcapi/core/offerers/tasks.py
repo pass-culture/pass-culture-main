@@ -11,6 +11,8 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.transaction_manager import atomic
@@ -105,6 +107,14 @@ def finalize_closing_venue_task(payload: FinalizeClosingVenuePayload) -> None:
         offerers_api.cancel_collective_bookings_on_venue_closure(venue.id, payload.author_id)
 
         logger.info("closing venue: bookings cancelled", extra={"venue_id": venue.id})
+
+        offers_api.batch_delete_draft_offers(
+            db.session.query(offers_models.Offer)
+            .filter(offers_models.Offer.venueId == payload.venue_id)
+            .filter(offers_models.Offer.validation == offers_models.OfferValidationStatus.DRAFT)
+        )
+
+        logger.info("closing venue: draft offers deleted", extra={"venue_id": venue.id})
 
         offerers_api.delete_venue_pivots(venue.id)
         db.session.flush()
