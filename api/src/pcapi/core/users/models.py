@@ -347,6 +347,10 @@ class User(PcObject, Model, DeactivableMixin):
             sa.func.lower(city),
             postgresql_where=departementCode.is_not(None),
         ),
+        sa.CheckConstraint(
+            "NOT (('BENEFICIARY' = ANY(roles) OR 'UNDERAGE_BENEFICIARY' = ANY(roles)) AND 'ADMIN' = ANY(roles))",
+            name="check_admin_is_never_beneficiary",
+        ),
     )
 
     def __init__(self, **kwargs: typing.Any) -> None:
