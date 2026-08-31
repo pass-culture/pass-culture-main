@@ -1,12 +1,14 @@
 {% import "components/badges.html" as badges %}
 {% for user in rows %}
   <tr id="user-row-{{ user.id }}">
-    <td>
-      <input type="checkbox"
-             class="form-check-input"
-             name="pc-table-multi-select-check-{{ user.id }}"
-             data-id="{{ user.id }}" />
-    </td>
+    {% if has_permission("MANAGE_PUBLIC_ACCOUNT") or has_permission("SUSPEND_USER") or has_permission("MANAGE_ACCOUNT_TAGS") %}
+      <td>
+        <input type="checkbox"
+               class="form-check-input"
+               name="pc-table-multi-select-check-{{ user.id }}"
+               data-id="{{ user.id }}" />
+      </td>
+    {% endif %}
     <td data-pc-sort-table-value="{{ user.id }}">
       <a class="link-primary"
          href="{{ get_link_to_detail(user.id, form=advanced_form) }}">{{ user.id }}</a>
