@@ -1,4 +1,4 @@
-import React, { type ForwardedRef, useRef } from 'react'
+import React, { type ForwardedRef, useRef, useState } from 'react'
 
 import type { Currency } from '@/commons/core/shared/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -95,8 +95,9 @@ export const PriceInput = React.forwardRef(
   ) => {
     const freeRef = useRef<HTMLInputElement>(null)
     const freeName = `${name}.free`
+    const [isFocused, setIsFocused] = useState(false)
 
-    const isFree = value === 0 || value === '0'
+    const isFree = !isFocused && (value === 0 || value === '0')
     const step = currency === 'XPF' ? 1 : 0.01
     const labelCurrency = currency === 'XPF' ? '(en F)' : '(en €)'
 
@@ -126,7 +127,7 @@ export const PriceInput = React.forwardRef(
         key={String(isFree)}
         ref={ref}
         name={name}
-        disabled={disabled || isFree}
+        disabled={disabled || (isFree && showFreeCheckbox)}
         label={`${label} ${labelCurrency}`}
         error={error}
         step={step}
@@ -138,7 +139,11 @@ export const PriceInput = React.forwardRef(
         requiredIndicator={requiredIndicator}
         autoComplete="off"
         onChange={onChange}
-        onBlur={onBlur}
+        onBlur={(e) => {
+          setIsFocused(false)
+          onBlur?.(e)
+        }}
+        onFocus={() => setIsFocused(true)}
         onKeyDown={(event) => {
           if (step === 1 && /[,.]/.test(event.key)) {
             event.preventDefault()
