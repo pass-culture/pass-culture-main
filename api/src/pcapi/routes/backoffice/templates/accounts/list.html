@@ -9,12 +9,11 @@
 {% set table_id = "users-table" %}
 {% set rows_count = rows | length %}
 {% block table_header %}
-  <th scope="col"
-      data-pc-column-name="Checkbox">
-    <input type="checkbox"
-           class="form-check-input fs-6 mt-0"
-           name="pc-table-multi-select-check-all" />
-  </th>
+  {% if has_permission("MANAGE_PUBLIC_ACCOUNT") or has_permission("SUSPEND_USER") or has_permission("MANAGE_ACCOUNT_TAGS") %}
+    <th scope="col" data-pc-column-name="Checkbox">
+      <input type="checkbox" class="form-check-input fs-6 mt-0" name="pc-table-multi-select-check-all" />
+    </th>
+  {% endif %}
   {% call sortable_column(comparator="float", default_sort="up") %}
     ID
   {% endcall %}
@@ -97,8 +96,8 @@
   {% endif %}
 {% endblock %}
 {% block after_table %}
-  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_send_public_account_reset_password_email_form'), "batch-send-public-account-reset-password-email-modal", method="get", form="form-ids-" + table_name) }}
-  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_invalidate_public_account_password_form'), "batch-invalidate-public-account-password-modal", method="get", form="form-ids-" + table_name) }}
-  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_suspend_public_account_form'), "batch-suspend-public-account-modal", method="get", form="form-ids-" + table_name) }}
-  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_tag_public_account_form'), "batch-tag-public-account-modal", method="get", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_send_public_account_reset_password_email_form'), "batch-send-public-account-reset-password-email-modal", method="post", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_invalidate_public_account_password_form'), "batch-invalidate-public-account-password-modal", method="post", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_suspend_public_account_form'), "batch-suspend-public-account-modal", method="post", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_batch_tag_public_account_form'), "batch-tag-public-account-modal", method="post", form="form-ids-" + table_name) }}
 {% endblock %}
