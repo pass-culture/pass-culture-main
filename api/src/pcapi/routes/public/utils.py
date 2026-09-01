@@ -63,7 +63,7 @@ def setup_public_api_log_extra(route: typing.Callable) -> None:
             "function": route.__name__,
         }
         if request.path.startswith("/public/offers/v1") and request.is_json:
-            venue_id = request.json.get("location", {}).get("venueId", None)
+            venue_id = (request.json.get("location", {}) or {}).get("venueId", None)
             if venue_id is not None:
                 g.public_api_log_request_details_extra["public_api"]["venue"] = venue_id
 

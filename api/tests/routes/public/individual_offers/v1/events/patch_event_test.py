@@ -700,6 +700,18 @@ class Returns200Test(PatchEventEndpointHelper):
 
     # --- `location`
 
+    def test_should_not_crash_on_null_location(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"location": None},
+        )
+
+        assert response.status_code == 200
+
     def test_should_move_the_event_to_another_venue_with_a_physical_location(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
