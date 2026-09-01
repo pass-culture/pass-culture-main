@@ -367,6 +367,7 @@ def _process_in_progress_application(
 ) -> None:
     if not application_content.field_errors and birth_date_error is None:
         fraud_check.status = fraud_check_status
+        create_ubble_identification(application_scalar_id, application_content, is_forced=force_ubble)
         return
 
     errors = []
@@ -1078,17 +1079,35 @@ def create_ubble_identification(
     if not FeatureToggle.ENABLE_UBBLE_ID_CHECK_ON_DN_APPLICATION.is_active():
         return
 
+    extra = {
+        "procedure_number": application_content.procedure_number,
+        "application_number": application_content.application_number,
+    }
+
     if not is_forced and (
         not application_content.registration_datetime
         or application_content.registration_datetime < settings.DEMARCHE_NUMERIQUE_CREATE_UBBLE_MIN_DATETIME
     ):
+        logger.info(
+            "[DMS] Do not create Ubble identification for application registered before %s",
+            settings.DEMARCHE_NUMERIQUE_CREATE_UBBLE_MIN_DATETIME.date().isoformat(),
+            extra=extra,
+        )
         return
 
     if not application_content.ubble_identification_id_annotation:
-        return  # procedure not configured with this annotation
+        logger.info(
+            "[DMS] Do not create Ubble identification when %s is missing",
+            dms_serializer.UBBLE_ID_ANNOTATION_SLUG,
+            extra=extra,
+        )
+        return
 
     if application_content.ubble_identification_id_annotation.text:
-        return  # Ubble link already sent
+        logger.info("[DMS] Ubble link already sent", extra=extra)
+        return
+
+    logger.info("[DMS] Create Ubble identification", extra=extra)
 
     webhook_url = urllib.parse.urljoin(
         settings.API_URL,
