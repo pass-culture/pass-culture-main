@@ -12,8 +12,7 @@
   "ignoreFiles": [
     "scripts/customRequest.ts",
     "scripts/format_generated_index_exports.js",
-    "scripts/sanitize_enum_keys.js",
-    "src/design-system/DetailedModal/DetailedModal.tsx"
+    "scripts/sanitize_enum_keys.js"
   ],
   "ignoreDependencies": ["openapi-typescript-codegen"],
   "ignoreUnresolved": ["typescript-plugin-css-modules"],

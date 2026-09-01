@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
@@ -17,14 +16,7 @@ const mockLogEvent = vi.fn()
 const renderCinemaProviderForm = async (
   props: GenericCinemaProviderFormProps
 ) => {
-  renderWithProviders(
-    <Dialog.Root defaultOpen>
-      <Dialog.Content aria-describedby={undefined}>
-        <Dialog.Title>Title</Dialog.Title>
-        <GenericCinemaProviderForm {...props} />
-      </Dialog.Content>
-    </Dialog.Root>
-  )
+  renderWithProviders(<GenericCinemaProviderForm {...props} />)
 
   await screen.findByText('Accepter les réservations “Duo“')
 }
