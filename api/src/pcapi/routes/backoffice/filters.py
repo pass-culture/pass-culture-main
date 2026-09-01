@@ -259,6 +259,13 @@ def format_deposit_used(booking: bookings_models.Booking) -> str:
     return "Aucune information"
 
 
+def format_deposit_state(deposit: finance_models.Deposit | None) -> str:
+    if deposit:
+        if not deposit.expirationDate or deposit.expirationDate > date_utils.get_naive_utc_now():
+            return "Actif"
+    return "Expiré"
+
+
 def format_active_deposit(deposit: finance_models.Deposit | None) -> str:
     if deposit:
         if not deposit.expirationDate or deposit.expirationDate > date_utils.get_naive_utc_now():
@@ -2318,6 +2325,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_datespan"] = format_datespan
     app.jinja_env.filters["format_timezone"] = format_timezone
     app.jinja_env.filters["format_deposit_used"] = format_deposit_used
+    app.jinja_env.filters["format_deposit_state"] = format_deposit_state
     app.jinja_env.filters["format_active_deposit"] = format_active_deposit
     app.jinja_env.filters["format_validation_status"] = format_validation_status
     app.jinja_env.filters["format_withdrawal_type"] = format_withdrawal_type
