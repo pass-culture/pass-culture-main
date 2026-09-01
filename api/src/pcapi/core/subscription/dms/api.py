@@ -37,7 +37,6 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils.postal_code import PostalCode
-from pcapi.utils.transaction_manager import is_managed_transaction
 
 from . import repository as dms_repository
 
@@ -98,7 +97,7 @@ def try_dms_orphan_adoption(user: users_models.User) -> None:
 
     if fraud_check is not None:
         db.session.delete(dms_orphan)
-        db.session.commit()
+        db.session.flush()
 
 
 def _is_fraud_check_up_to_date(
@@ -413,12 +412,6 @@ def _update_fraud_check_with_field_errors(
     fraud_check.reasonCodes = reason_codes
     fraud_check.status = fraud_check_status
 
-    db.session.add(fraud_check)
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
-
 
 def _create_profile_completion_fraud_check_from_dms(
     user: users_models.User,
@@ -472,11 +465,6 @@ def _process_user_not_found_error(
             or orphan.latest_modification_datetime < latest_modification_datetime
         ):
             orphan.latest_modification_datetime = latest_modification_datetime
-            db.session.add(orphan)
-            if is_managed_transaction():
-                db.session.flush()
-            else:
-                db.session.commit()
         else:
             # Application was already processed
             return
@@ -764,10 +752,8 @@ def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
         processedApplications=processed_applications,
     )
     db.session.add(new_import_record)
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
+    db.session.flush()
+
     logger.info(
         "[DMS] End import of all applications from Démarche Numérique for procedure %s - Processed %s applications",
         procedure_id,
@@ -833,10 +819,7 @@ def import_all_updated_dms_applications(procedure_number: int, forced_since: dat
         processedApplications=processed_applications,
     )
     db.session.add(new_import_record)
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
+    db.session.flush()
 
     logger.info(
         "[DMS] End import of all applications from Démarche Numérique for procedure %s - Processed %s applications",
@@ -945,9 +928,7 @@ def handle_deleted_dms_applications(procedure_number: int) -> None:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
         fraud_check.reason = f"Dossier supprimé sur démarches-simplifiées. Motif: {dms_information.reason}"
 
-        db.session.add(fraud_check)
         updated_fraud_checks_count += 1
-    db.session.commit()
 
     logger.info(
         "Marked %d fraud checks as deleted for procedure %d since %s",
@@ -1053,8 +1034,6 @@ def _mark_cancel_dms_fraud_check(application_number: int, email: str) -> None:
     if fraud_check:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
         fraud_check.reason = f"Automatiquement classé sans_suite car aucune activité n'a eu lieu depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours"
-        db.session.add(fraud_check)
-        db.session.commit()
 
 
 def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationResponse) -> bool:

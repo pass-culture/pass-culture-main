@@ -29,7 +29,7 @@ def create_orphan_dms_application(
         latest_modification_datetime=latest_modification_datetime,
     )
     db.session.add(orphan_dms_application)
-    db.session.commit()
+    db.session.flush()
 
 
 def get_already_processed_applications_ids(procedure_number: int) -> set[int]:

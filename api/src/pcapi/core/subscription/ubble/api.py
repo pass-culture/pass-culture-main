@@ -37,7 +37,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.transaction_manager import atomic
-from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import on_commit
 
 from . import errors
@@ -276,12 +275,6 @@ def _update_identity_fraud_check(
         fraud_check.resultContent.update(**content.model_dump(exclude_none=True, mode="json"))
     else:
         fraud_check.resultContent = content.model_dump(exclude_none=True, mode="json")
-
-    db.session.add(fraud_check)
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
 
 
 def get_most_relevant_ubble_error(

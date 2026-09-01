@@ -35,6 +35,7 @@ from pcapi.core.users.api import get_domains_credit
 from pcapi.models import db
 from pcapi.routes.external.authentication import compute_signature
 from pcapi.utils import date as date_utils
+from pcapi.utils.transaction_manager import atomic
 
 from tests.connectors.fixtures import make_single_application
 from tests.core.subscription import test_factories
@@ -1441,8 +1442,6 @@ class UbbleWebhookTest:
         )
         fraud_check.status = subscription_models.FraudCheckStatus.OK
         fraud_check.user.roles = [users_models.UserRole.BENEFICIARY]
-        db.session.add(fraud_check)
-        db.session.commit()
 
         response = self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
 
@@ -1594,45 +1593,46 @@ class UbbleWebhookTest:
         birth_date = date_utils.get_naive_utc_now().date() - relativedelta.relativedelta(years=18, months=6)
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.combine(birth_date, datetime.time(0, 0)))
         identification_id = str(uuid.uuid4())
-        ubble_fraud_check = subscription_models.BeneficiaryFraudCheck(
-            user=user,
-            type=subscription_models.FraudCheckType.UBBLE,
-            thirdPartyId=identification_id,
-            resultContent={
-                "birth_date": None,
-                "comment": "",
-                "document_type": None,
-                "expiry_date_score": None,
-                "first_name": None,
-                "id_document_number": None,
-                "identification_id": identification_id,
-                "identification_url": f"https://id.ubble.ai/{identification_id}",
-                "last_name": None,
-                "registration_datetime": date_utils.get_naive_utc_now().isoformat(),
-                "score": None,
-                "status": ubble_schemas.UbbleIdentificationStatus.PROCESSING.value,
-                "supported": None,
-            },
-            status=subscription_models.FraudCheckStatus.PENDING,
-            reason=None,
-            reasonCodes=None,
-            eligibilityType=users_models.EligibilityType.AGE17_18,
-        )
-        db.session.add(ubble_fraud_check)
-        db.session.commit()
+        with atomic():
+            ubble_fraud_check = subscription_models.BeneficiaryFraudCheck(
+                user=user,
+                type=subscription_models.FraudCheckType.UBBLE,
+                thirdPartyId=identification_id,
+                resultContent={
+                    "birth_date": None,
+                    "comment": "",
+                    "document_type": None,
+                    "expiry_date_score": None,
+                    "first_name": None,
+                    "id_document_number": None,
+                    "identification_id": identification_id,
+                    "identification_url": f"https://id.ubble.ai/{identification_id}",
+                    "last_name": None,
+                    "registration_datetime": date_utils.get_naive_utc_now().isoformat(),
+                    "score": None,
+                    "status": ubble_schemas.UbbleIdentificationStatus.PROCESSING.value,
+                    "supported": None,
+                },
+                status=subscription_models.FraudCheckStatus.PENDING,
+                reason=None,
+                reasonCodes=None,
+                eligibilityType=users_models.EligibilityType.AGE17_18,
+            )
+            db.session.add(ubble_fraud_check)
+            db.session.flush()
 
-        honor_fraud_check = subscription_models.BeneficiaryFraudCheck(
-            user=user,
-            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
-            thirdPartyId="internal_check_4483",
-            resultContent=None,
-            status=subscription_models.FraudCheckStatus.OK,
-            reason=None,
-            reasonCodes=None,
-            eligibilityType=users_models.EligibilityType.AGE17_18,
-        )
-        db.session.add(honor_fraud_check)
-        db.session.commit()
+            honor_fraud_check = subscription_models.BeneficiaryFraudCheck(
+                user=user,
+                type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+                thirdPartyId="internal_check_4483",
+                resultContent=None,
+                status=subscription_models.FraudCheckStatus.OK,
+                reason=None,
+                reasonCodes=None,
+                eligibilityType=users_models.EligibilityType.AGE17_18,
+            )
+            db.session.add(honor_fraud_check)
+            db.session.flush()
 
         request_data = self._get_request_body(ubble_fraud_check, ubble_schemas.UbbleIdentificationStatus.PROCESSED)
         return user, ubble_fraud_check, request_data

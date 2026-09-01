@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 @public_api.route("/webhooks/dms/application_status", methods=["POST"])
+@atomic()
 @authentication.require_dms_token
 @spectree_serialize(on_success_status=204)
 def dms_webhook_update_application_status(form: dms_serializers.DMSWebhookRequest) -> None:
@@ -36,6 +37,7 @@ def dms_webhook_update_application_status(form: dms_serializers.DMSWebhookReques
 
 
 @public_api.route("/webhooks/ubble/dummy", methods=["POST"])
+@atomic()
 @spectree_serialize(
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,
@@ -45,12 +47,12 @@ def dummy_webook_ubble_v2(body: ubble_serializers.WebhookBodyV2) -> ubble_serial
 
 
 @public_api.route("/webhooks/ubble/v2/application_status", methods=["POST"])
+@atomic()
 @authentication.require_ubble_v2_signature
 @spectree_serialize(
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,
 )
-@atomic()
 def ubble_v2_webhook_update_application_status(
     body: ubble_serializers.WebhookBodyV2,
 ) -> ubble_serializers.WebhookDummyReponse:
@@ -86,13 +88,13 @@ def ubble_v2_webhook_update_application_status(
 
 
 @public_api.route("/webhooks/ubble/application_status", methods=["POST"])
+@atomic()
 @authentication.require_ubble_signature
 @spectree_serialize(
     headers=ubble_serializers.WebhookRequestHeaders,  # type: ignore[arg-type]
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,
 )
-@atomic()
 def ubble_webhook_update_application_status(
     body: ubble_serializers.WebhookRequest,
 ) -> ubble_serializers.WebhookDummyReponse:
@@ -123,6 +125,7 @@ def ubble_webhook_update_application_status(
 
 
 @public_api.route("/webhooks/ubble/store_id_pictures", methods=["POST"])
+@atomic()
 @spectree_serialize(
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,
@@ -146,12 +149,12 @@ def ubble_webhook_store_id_pictures(
 
 
 @public_api.route("/webhooks/ubble/sync-dn/<int:procedure_number>/<int:application_number>", methods=["POST"])
+@atomic()
 @authentication.require_ubble_v2_signature
 @spectree_serialize(
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,
 )
-@atomic()
 def ubble_webhook_for_demarche_numerique(
     procedure_number: int, application_number: int, body: ubble_serializers.WebhookBodyV2
 ) -> ubble_serializers.WebhookDummyReponse:

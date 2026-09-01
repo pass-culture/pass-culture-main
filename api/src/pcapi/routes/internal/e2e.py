@@ -5,11 +5,11 @@ from flask import jsonify
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.db_utils import clean_all_database
-from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.internal.auth import api_key_required
 from pcapi.sandboxes.scripts import getters
+from pcapi.utils.transaction_manager import atomic
 
 
 @private_api.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
@@ -30,10 +30,10 @@ def get_sandbox(module_name: str, getter_name: str) -> Response:
     getter = getattr(cypress_module, getter_name)
 
     try:
-        clean_all_database(reset_ids=True)
-        obj = getter()
-        db.session.commit()  # otherwise reverse relation may be unsaved when using factory_related_name (VenueLocation)
-        return jsonify(obj)
+        with atomic():
+            clean_all_database(reset_ids=True)
+            obj = getter()
+            return jsonify(obj)
     except Exception as e:
         errors = ApiErrors()
         errors.add_error(
