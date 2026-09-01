@@ -38,6 +38,7 @@ class GetOffererVenueResponseModel(HttpBodyModel):
     is_permanent: bool
     banner_url: str | None
     banner_meta: BannerMetaModel | None
+    state: offerers_models.VenueState | None
 
     @classmethod
     def build(
@@ -64,6 +65,7 @@ class GetOffererVenueResponseModel(HttpBodyModel):
             name=venue.name,
             public_name=venue.publicName,
             siret=venue.siret,
+            state=venue.state,
             withdrawal_details=venue.withdrawalDetails,
         )
 

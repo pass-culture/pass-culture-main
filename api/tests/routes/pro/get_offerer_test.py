@@ -107,6 +107,7 @@ class GetOffererTest:
                     "publicName": venue.publicName,
                     "siret": venue.siret,
                     "withdrawalDetails": venue.withdrawalDetails,
+                    "state": venue.state,
                 }
                 for venue in sorted(offerer.managedVenues, key=lambda v: v.publicName)
             ],
@@ -193,6 +194,23 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
+
+    def test_closed_managed_venue_state(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            state=offerers_models.VenueState.CLOSED,
+        )
+        offerer_id = user_offerer.offerer.id
+        client = client.with_session_auth(user_offerer.user.email)
+
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+
+        assert response.status_code == 200
+        assert len(response.json["managedVenues"]) == 1
+        assert response.json["managedVenues"][0]["id"] == venue.id
+        assert response.json["managedVenues"][0]["state"] == "CLOSED"
 
     def test_offerer_has_non_free_offer(self, client):
         pro = users_factories.ProFactory()

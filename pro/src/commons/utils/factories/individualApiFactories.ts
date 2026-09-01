@@ -352,6 +352,7 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     siret: null,
     bookingEmail: null,
     withdrawalDetails: null,
+    state: null,
   }
 
 export const defaultGetOffererVenueResponseModelNew: GetOffererVenueResponseModelNew =
@@ -370,6 +371,7 @@ export const defaultGetOffererVenueResponseModelNew: GetOffererVenueResponseMode
     siret: null,
     bookingEmail: null,
     withdrawalDetails: null,
+    state: null,
   }
 
 export const defaultGetVenueResponseModel: GetVenueResponseModel = {

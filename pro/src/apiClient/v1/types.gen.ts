@@ -3275,6 +3275,7 @@ export type GetOffererVenueResponseModel = {
      * Siret
      */
     siret: string | null;
+    state: VenueState | null;
     /**
      * Withdrawaldetails
      */
