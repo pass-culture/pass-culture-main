@@ -30,6 +30,7 @@ export type TextInputProps = {
   value?: string
   onChange?: ChangeEventHandler<HTMLInputElement>
   onBlur?: FocusEventHandler<HTMLInputElement>
+  onFocus?: FocusEventHandler<HTMLInputElement>
   onKeyDown?: KeyboardEventHandler<HTMLInputElement>
   disabled?: boolean
   description?: string
@@ -68,6 +69,7 @@ export const TextInput = forwardRef(
       iconButton,
       onChange,
       onBlur,
+      onFocus,
       onKeyDown,
       value,
       step,
@@ -136,6 +138,7 @@ export const TextInput = forwardRef(
               onChange?.(e)
             }}
             onBlur={onBlur}
+            onFocus={onFocus}
             onKeyDown={onKeyDown}
             onWheel={
               // This is to prevent input value to change on some browsers like Chrome

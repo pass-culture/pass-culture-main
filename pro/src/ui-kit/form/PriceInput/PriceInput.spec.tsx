@@ -116,6 +116,12 @@ describe('PriceInput', () => {
       await userEvent.click(checkbox)
       expect(onChange).toHaveBeenCalled()
     })
+    it('should not disable price input if checkbox is not shown and price is zero', () => {
+      renderPriceInput({ showFreeCheckbox: false, value: 0 })
+
+      const input = screen.getByRole('spinbutton', { name: LABELS.input })
+      expect(input).not.toBeDisabled()
+    })
   })
 
   describe('Input validation', () => {
