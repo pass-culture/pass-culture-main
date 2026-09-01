@@ -11556,6 +11556,41 @@ export type deleteVenuesByVenueIdBannerResponses = {
 
 export type deleteVenuesByVenueIdBannerResponse = deleteVenuesByVenueIdBannerResponses[keyof deleteVenuesByVenueIdBannerResponses];
 
+export type postVenuesByVenueIdCloseData = {
+    body?: never;
+    path: {
+        venue_id: number;
+    };
+    query?: never;
+    url: '/venues/{venue_id}/close';
+};
+
+export type postVenuesByVenueIdCloseErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Not Found
+     */
+    404: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type postVenuesByVenueIdCloseError = postVenuesByVenueIdCloseErrors[keyof postVenuesByVenueIdCloseErrors];
+
+export type postVenuesByVenueIdCloseResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type postVenuesByVenueIdCloseResponse = postVenuesByVenueIdCloseResponses[keyof postVenuesByVenueIdCloseResponses];
+
 export type patchVenuesByVenueIdCollectiveDataData = {
     body: EditVenueCollectiveDataBodyModel;
     path: {
