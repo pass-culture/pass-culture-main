@@ -27,7 +27,7 @@ export const OpenToPublicToggle = ({
         {
           label: "Oui, j'ai un lieu fixe ouvert au public",
           description:
-            'Le public se rend dans un local à ma disposition : salle, boutique, musée, cinéma…',
+            'Le public se rend dans un local dont je dispose : salle, boutique, musée, cinéma…',
           value: 'true',
         },
         {
