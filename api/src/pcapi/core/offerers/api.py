@@ -3595,38 +3595,6 @@ def delete_venue_pivots(venue_id: int) -> None:
     ).delete(synchronize_session=False)
 
 
-def deactivate_venue_offers(venue: models.Venue) -> None:
-    _BATCH_LIMIT = 100
-    continue_deactivation_process = True
-    while continue_deactivation_process:
-        query = (
-            db.session.query(offers_models.Offer)
-            .filter(
-                offers_models.Offer.venueId == venue.id,
-                offers_models.Offer.publicationDatetime.is_not(None),
-            )
-            .limit(_BATCH_LIMIT)
-        )
-
-        offers = query.all()
-        continue_deactivation_process = len(offers) == _BATCH_LIMIT
-
-        backup_data = {offer.id: {"publicationDatetime": offer.publicationDatetime} for offer in offers}
-
-        with atomic():
-            offer_ids = [offer.id for offer in offers]
-            db.session.execute(
-                sa.update(offers_models.Offer)
-                .where(offers_models.Offer.id.in_(offer_ids))
-                .values(publicationDatetime=None)
-            )
-
-        search.unindex_offer_ids([offer.id for offer in offers])
-        log_extra = {"venue_id": venue.id, "offers_backup": backup_data}
-        log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
-        logger.info(log_msg, extra=log_extra)
-
-
 def venue_has_ongoing_bookings(venue: models.Venue) -> bool:
     return db.session.query(
         db.session.query(bookings_models.Booking)

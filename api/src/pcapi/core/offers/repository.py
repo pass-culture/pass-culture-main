@@ -1731,3 +1731,10 @@ def get_unbookable_unbooked_old_offer_ids(min_id: int, max_id: int, batch_size: 
             logger.error(error_msg, min_id, min_id + batch_size, extra=extra)
 
         min_id += batch_size
+
+
+def offers_by_venue_query(venue_id: int, with_publication_datetime: bool = False) -> sa_orm.Query[models.Offer]:
+    query = db.session.query(models.Offer).filter(models.Offer.venueId == venue_id)
+    if with_publication_datetime:
+        query = query.filter(models.Offer.publicationDatetime.is_not(None))
+    return query
