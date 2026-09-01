@@ -16,7 +16,7 @@ def test_native_openapi_json(client):
     _assert_components_are_equal(actual_json, expected_json)
 
     already_tested_keys = ["paths", "components"]
-    keys_to_test = set([key for key in expected_json if key not in already_tested_keys])
+    keys_to_test = {key for key in expected_json if key not in already_tested_keys}
     for key in keys_to_test:
         assert actual_json[key] == expected_json[key]
 

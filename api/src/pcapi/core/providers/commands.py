@@ -1,6 +1,5 @@
 import logging
 from time import time
-from typing import Type
 
 import click
 
@@ -51,10 +50,12 @@ def test_etl_integration(venue_provider_id: int) -> None:
 
     local_class_to_etl_mapping: dict[
         str,
-        Type[BoostExtractTransformLoadProcess]
-        | Type[CineOfficeExtractTransformLoadProcess]
-        | Type[CGRExtractTransformLoadProcess]
-        | Type[EMSExtractTransformLoadProcess],
+        type[
+            BoostExtractTransformLoadProcess
+            | CineOfficeExtractTransformLoadProcess
+            | CGRExtractTransformLoadProcess
+            | EMSExtractTransformLoadProcess
+        ],
     ] = {
         "BoostStocks": BoostExtractTransformLoadProcess,
         # INFO: CDS is the old name of CineOffice

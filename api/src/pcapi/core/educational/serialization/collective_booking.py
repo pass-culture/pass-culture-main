@@ -1,5 +1,5 @@
 import decimal
-from typing import Iterable
+from collections.abc import Iterable
 
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas

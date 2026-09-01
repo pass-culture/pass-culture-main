@@ -23,7 +23,7 @@ class DummyBackend(AlgoliaBackend):
         )
 
     @typing.override
-    def delete_objects(self, index: str | None, object_ids: abc.Collection[typing.Union[str, int]]) -> None:
+    def delete_objects(self, index: str | None, object_ids: abc.Collection[str | int]) -> None:
         logger.info("Dummy delete_objects", extra={"index": index, "object_ids": object_ids})
 
     @typing.override

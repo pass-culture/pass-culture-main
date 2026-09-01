@@ -32,7 +32,7 @@ def choices_from_enum(
     return choices
 
 
-def values_from_enum(enum_cls: typing.Type[enum.Enum]) -> list[tuple]:
+def values_from_enum(enum_cls: type[enum.Enum]) -> list[tuple]:
     return [(opt.value, opt.value) for opt in enum_cls]
 
 

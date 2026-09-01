@@ -3,7 +3,6 @@ import logging
 from base64 import b64decode
 from decimal import Decimal
 from pathlib import Path
-from typing import Type
 from unittest import mock
 
 import pytest
@@ -46,7 +45,7 @@ class EMSStocksTest:
 
     def execute_import(
         self,
-        ProcessClass: Type[EMSExtractTransformLoadProcess] | Type[EMSStocks],
+        ProcessClass: type[EMSExtractTransformLoadProcess] | type[EMSStocks],
         venue_provider,
     ) -> None:
         if ProcessClass == EMSStocks:

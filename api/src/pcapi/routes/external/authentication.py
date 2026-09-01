@@ -2,8 +2,8 @@ import base64
 import functools
 import hashlib
 import hmac
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
 
 import ecdsa
 import flask

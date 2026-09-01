@@ -254,7 +254,7 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[subscription_models.BeneficiaryFraudCheck],
+        model_class: subscription_models.BeneficiaryFraudCheck,
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> subscription_models.BeneficiaryFraudCheck:

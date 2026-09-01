@@ -1,5 +1,3 @@
-from typing import List
-
 from prometheus_client import REGISTRY
 from prometheus_client import CollectorRegistry
 from prometheus_client import Counter
@@ -19,7 +17,7 @@ else:
 
 # When adding a task metric you should initialize it at 0 for all tasks by
 # calling <metric_object>.labels(task="my-task")
-metrics_list: List[Counter | Gauge | Histogram] = []
+metrics_list: list[Counter | Gauge | Histogram] = []
 tasks_counter = Counter(
     "celery_tasks_total",
     "Total number of Celery tasks started",

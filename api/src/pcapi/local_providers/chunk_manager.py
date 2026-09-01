@@ -57,7 +57,7 @@ def _filter_matching_pc_object_in_chunk(
 
 
 def _extract_dict_values_from_chunk(matching_tuples_in_chunk: list[tuple[str, Model]]) -> list[dict]:
-    return list(dictify_pc_object(pc_object_item) for pc_object_key, pc_object_item in matching_tuples_in_chunk)
+    return [dictify_pc_object(pc_object_item) for _, pc_object_item in matching_tuples_in_chunk]
 
 
 def get_last_update_for_provider(

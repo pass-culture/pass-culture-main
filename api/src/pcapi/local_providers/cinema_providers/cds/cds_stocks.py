@@ -1,9 +1,9 @@
 import decimal
 import logging
 import typing
+from collections.abc import Iterator
 from datetime import UTC
 from datetime import datetime
-from typing import Iterator
 
 import PIL
 

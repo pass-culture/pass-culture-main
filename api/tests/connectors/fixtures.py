@@ -1,7 +1,7 @@
 import datetime
 import random
 import string
-from typing import Iterable
+from collections.abc import Iterable
 
 import babel.dates
 from dateutil.relativedelta import relativedelta

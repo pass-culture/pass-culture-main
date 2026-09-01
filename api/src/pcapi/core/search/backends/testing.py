@@ -25,7 +25,7 @@ class TestingBackend(AlgoliaBackend):
             testing.search_store[index][obj["objectID"]] = obj
 
     @typing.override
-    def delete_objects(self, index: str | None, object_ids: abc.Collection[typing.Union[str, int]]) -> None:
+    def delete_objects(self, index: str | None, object_ids: abc.Collection[str | int]) -> None:
         assert index
         for object_id in object_ids:
             testing.search_store[index].pop(object_id, None)

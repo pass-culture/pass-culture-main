@@ -1,8 +1,8 @@
 import decimal
 import typing
+from typing import Annotated
 
 import pydantic as pydantic_v2
-from typing_extensions import Annotated
 
 import pcapi.serialization.utils as serialization_utils
 from pcapi.core.offers import models

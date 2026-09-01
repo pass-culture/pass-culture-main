@@ -2,7 +2,6 @@ from datetime import UTC
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Type
 from unittest.mock import patch
 
 import pytest
@@ -74,7 +73,7 @@ class CDSStocksTest:
 
     def execute_import(
         self,
-        ProcessClass: Type[CineOfficeExtractTransformLoadProcess] | Type[CDSStocks],
+        ProcessClass: type[CineOfficeExtractTransformLoadProcess] | type[CDSStocks],
         venue_provider,
     ) -> CineOfficeExtractTransformLoadProcess | CDSStocks:
         boost_stocks = ProcessClass(venue_provider=venue_provider)

@@ -1,8 +1,8 @@
 import datetime
 import logging
 import textwrap
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
 
 import pydantic as pydantic_v2
 
@@ -410,7 +410,7 @@ class OfferResponse(HttpBodyModel):
             chronicles_count=product.chroniclesCount if product and product.chroniclesCount else offer.chroniclesCount,
             pro_advices_count=product.proAdvicesCount if product else (1 if offer.hasProAdvice else 0),
             description=offer.description,
-            expense_domains=map(lambda domain: domain.value, get_expense_domains(offer)),
+            expense_domains=(domain.value for domain in get_expense_domains(offer)),
             external_ticket_office_url=offer.externalTicketOfficeUrl,
             extra_data=extra_data,
             images=offer.images,

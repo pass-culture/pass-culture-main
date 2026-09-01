@@ -195,7 +195,7 @@ class SearchNode:
         self.children = children or []
         self.search_value = search_value
         self.positions: dict[str, int] = {}
-        self.parents: list["SearchNode"] = []
+        self.parents: list[SearchNode] = []
 
         for child in self.children:
             child.parents.append(self)

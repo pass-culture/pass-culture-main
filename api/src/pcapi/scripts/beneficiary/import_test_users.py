@@ -1,9 +1,9 @@
 import csv
 import datetime
 import logging
+from collections.abc import Iterable
 from io import TextIOWrapper
 from secrets import token_urlsafe
-from typing import Iterable
 
 import click
 import schwifty

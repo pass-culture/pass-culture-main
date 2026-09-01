@@ -3,8 +3,8 @@ import datetime
 import decimal
 import typing
 from collections import namedtuple
+from collections.abc import Iterable
 from io import StringIO
-from typing import Iterable
 
 import pydantic as pydantic_v2
 import pytz

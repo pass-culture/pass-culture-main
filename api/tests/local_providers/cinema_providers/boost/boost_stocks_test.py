@@ -2,7 +2,6 @@ import datetime
 import decimal
 import logging
 from pathlib import Path
-from typing import Type
 from unittest import mock
 from unittest.mock import patch
 
@@ -80,7 +79,7 @@ class BoostStocksTest:
 
     def execute_import(
         self,
-        ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks],
+        ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks],
         venue_provider,
     ) -> BoostExtractTransformLoadProcess | BoostStocks:
         boost_stocks = ProcessClass(venue_provider=venue_provider)
@@ -133,7 +132,7 @@ class BoostStocksTest:
     @time_machine.travel(datetime.datetime(2023, 8, 11), tick=False)
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def should_fill_offer_and_stock_information_for_each_movie_based_on_product(
-        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+        self, ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks], requests_mock
     ):
         self._create_products()
         venue_provider = self._create_cinema_and_pivot()
@@ -231,7 +230,7 @@ class BoostStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def should_fill_offer_and_stocks_and_price_categories_based_on_product(
-        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+        self, ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks], requests_mock
     ):
         self._create_products()
         venue_provider = self._create_cinema_and_pivot()
@@ -293,7 +292,7 @@ class BoostStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def should_reuse_price_category(
-        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+        self, ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks], requests_mock
     ):
         venue_provider = self._create_cinema_and_pivot()
 
@@ -317,7 +316,7 @@ class BoostStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def should_not_create_stock_when_showtime_does_not_have_pass_culture_pricing(
-        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+        self, ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks], requests_mock
     ):
         venue_provider = self._create_cinema_and_pivot()
 
@@ -342,7 +341,7 @@ class BoostStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def should_update_stock_with_the_correct_stock_quantity(
-        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+        self, ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks], requests_mock
     ):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -423,7 +422,7 @@ class BoostStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def should_update_finance_event_when_stock_beginning_datetime_is_updated(
-        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+        self, ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks], requests_mock
     ):
         venue_provider = self._create_cinema_and_pivot()
 
@@ -466,7 +465,7 @@ class BoostStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def test_should_create_product_mediation(
-        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+        self, ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks], requests_mock
     ):
         venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(
@@ -496,7 +495,7 @@ class BoostStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def test_should_not_create_product_mediation(
-        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+        self, ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks], requests_mock
     ):
         venue_provider = self._create_cinema_and_pivot()
         requests_mock.get(
@@ -527,7 +526,7 @@ class BoostStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def should_create_offer_even_if_incorrect_thumb(
-        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+        self, ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks], requests_mock
     ):
         venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(
@@ -594,7 +593,7 @@ class BoostStocksTest:
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def test_handle_error_on_movie_poster(
         self,
-        ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks],
+        ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks],
         get_adapter_error_params,
         requests_mock,
         caplog,
@@ -632,7 +631,7 @@ class BoostStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def should_link_offer_with_known_visa_to_product(
-        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+        self, ProcessClass: type[BoostExtractTransformLoadProcess] | type[BoostStocks], requests_mock
     ):
         venue_provider = self._create_cinema_and_pivot()
 

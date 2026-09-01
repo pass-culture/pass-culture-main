@@ -15,6 +15,7 @@ but this decision might need to be revisited as the number increases.
 import time
 from threading import Lock
 from typing import Any
+from typing import Self
 from urllib.parse import urlparse
 
 from prometheus_client import Counter
@@ -77,7 +78,7 @@ class HttpMetricsContext:
         self.duration_histogram: Histogram | None = None
         self.status_counter: Counter | None = None
 
-    def __enter__(self) -> "HttpMetricsContext":
+    def __enter__(self) -> Self:
         if self.name_suffix:
             self.duration_histogram, self.status_counter = get_or_create_http_metrics(self.name_suffix)
             self.start_time = time.time()

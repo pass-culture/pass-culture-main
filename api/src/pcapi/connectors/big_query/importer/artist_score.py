@@ -1,7 +1,7 @@
 import itertools
 import logging
 import time
-from typing import Sequence
+from collections.abc import Sequence
 
 from sqlalchemy import exc as sa_exc
 

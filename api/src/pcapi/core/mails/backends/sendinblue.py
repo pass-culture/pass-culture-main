@@ -1,6 +1,6 @@
 import logging
+from collections.abc import Iterable
 from dataclasses import asdict
-from typing import Iterable
 
 from brevo import Brevo
 from brevo.core import ApiError as BrevoApiError

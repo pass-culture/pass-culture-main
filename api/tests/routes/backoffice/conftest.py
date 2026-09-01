@@ -707,7 +707,7 @@ def offerer_tags_fixture():
         offerers_factories.OffererTagFactory(label=label, categories=[category])
         for label in ("Top acteur", "Collectivité", "Établissement public")
     )
-    tags = tags + tuple([offerers_factories.OffererTagFactory(label="Festival", categories=[other_category])])
+    tags = tags + (offerers_factories.OffererTagFactory(label="Festival", categories=[other_category]),)
     return tags
 
 

@@ -1,8 +1,8 @@
 import enum
 import typing
+from collections.abc import Iterable
 from datetime import date
 from datetime import datetime
-from typing import Iterable
 
 import pydantic as pydantic_v2
 from sqlalchemy.engine import Row

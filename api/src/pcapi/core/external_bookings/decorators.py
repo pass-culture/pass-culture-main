@@ -1,8 +1,8 @@
 import functools
 import inspect
 import logging
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
 from typing import TypeVar
 
 from pcapi.core.providers.clients import cinema_client

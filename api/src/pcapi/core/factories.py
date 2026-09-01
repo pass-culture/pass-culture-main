@@ -45,7 +45,7 @@ class BaseFactory[T](factory.alchemy.SQLAlchemyModelFactory):
     @classmethod
     def _save(
         cls,
-        model_class: typing.Type[models.Model],
+        model_class: type[models.Model],
         session: typing.Any,
         *args: typing.Any,
         **kwargs: typing.Any,
@@ -80,7 +80,7 @@ class BaseFactory[T](factory.alchemy.SQLAlchemyModelFactory):
     @classmethod
     def _get_or_create(
         cls,
-        model_class: typing.Type[models.Model],
+        model_class: type[models.Model],
         session: typing.Any,
         *args: typing.Any,
         **kwargs: typing.Any,

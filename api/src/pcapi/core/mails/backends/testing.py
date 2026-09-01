@@ -1,5 +1,5 @@
+from collections.abc import Iterable
 from dataclasses import asdict
-from typing import Iterable
 
 from pcapi.core.users import testing as users_testing
 

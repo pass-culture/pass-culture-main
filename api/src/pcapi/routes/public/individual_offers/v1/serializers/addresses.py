@@ -1,5 +1,6 @@
+from typing import Annotated
+
 import pydantic as pydantic_v2
-from typing_extensions import Annotated
 
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields_v2 import fields_v2
