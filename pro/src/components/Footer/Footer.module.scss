@@ -6,6 +6,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  border-top: rem.torem(1px) solid var(--color-border-subtle);
+  margin-top: var(--size-spacing-xl);
 
   &-layout-sticky-basic,
   &-layout-sticky-onboarding {
