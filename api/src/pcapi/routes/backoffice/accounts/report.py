@@ -124,7 +124,7 @@ class ReportIncidentRow(ReportRow):
         self.date = validation_date
         self.amount = booking_finance_incident.booking.total_amount - decimal.Decimal(
             booking_finance_incident.newTotalAmount
-        ) / decimal.Decimal("100")
+        ) / decimal.Decimal(100)
 
 
 class Report:

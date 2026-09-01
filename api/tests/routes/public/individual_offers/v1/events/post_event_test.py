@@ -372,7 +372,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         )
 
         created_price_category = db.session.query(offers_models.PriceCategory).one()
-        assert created_price_category.price == decimal.Decimal("300")
+        assert created_price_category.price == decimal.Decimal(300)
         assert created_price_category.label == "triangle or"
         assert created_price_category.idAtProvider == "gold_triangle"
 

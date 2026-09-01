@@ -193,7 +193,6 @@ ignore = [
   "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy;
   "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert);
   "FLY002",  # static-join-to-f-string : Consider f-string instead of string join
-  "FURB157",  # verbose-decimal-constructor : Use `Decimal()` rather than `Decimal("0")`
   "ISC004",  # implicit-string-concatenation-in-collection-literal : Implicitly concatenated string literals on one line
   "PGH005",  # invalid-mock-access : Mock objects have no attribute
   "PIE794",  # duplicate-class-field-definition : Class field is defined multiple times

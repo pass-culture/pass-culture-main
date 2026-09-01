@@ -338,7 +338,7 @@ class PriceEventTest:
         author_user = users_factories.UserFactory()
 
         user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
-        assert user.wallet_balance == Decimal("300")
+        assert user.wallet_balance == Decimal(300)
         ###############################
         # Create an offer and book it #
         ###############################
@@ -475,7 +475,7 @@ class PriceEventTest:
         assert reversal_pricing_line_offerer_contribution.amount == 0
         assert reversal_pricing_line_offerer_revenue.amount == 60_40
 
-        assert user.wallet_balance == Decimal("300")
+        assert user.wallet_balance == Decimal(300)
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         # Ensure that the stock's booked quantity has been cancelled as well
@@ -495,7 +495,7 @@ class PriceEventTest:
         author_user = users_factories.UserFactory()
 
         user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
-        assert user.wallet_balance == Decimal("300")
+        assert user.wallet_balance == Decimal(300)
         ###############################
         # Create an offer and book it #
         ###############################
@@ -564,7 +564,7 @@ class PriceEventTest:
             author=author_user,
             origin=models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
             comment="BO",
-            amount=Decimal("30"),
+            amount=Decimal(30),
         )
 
         assert incident.kind == models.IncidentType.OVERPAYMENT
@@ -678,7 +678,7 @@ class PriceEventTest:
         assert new_price_pricing_line_offerer_revenue.amount == -35_00
         assert new_price_pricing_line_offerer_contribution.amount == 0
 
-        assert user.wallet_balance == Decimal("265")
+        assert user.wallet_balance == Decimal(265)
         assert booking.status == bookings_models.BookingStatus.REIMBURSED
         # Ensure that the stock's quantity didn't change as the overpayment incident is partial not total
         assert stock.dnBookedQuantity == 17
@@ -752,7 +752,7 @@ class PriceEventTest:
         author_user = users_factories.UserFactory()
 
         user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
-        assert user.wallet_balance == Decimal("300")
+        assert user.wallet_balance == Decimal(300)
 
         ###############################
         # Create a booking and use it #
@@ -2549,7 +2549,7 @@ def test_invoices_csv_commercial_gesture():
     author_user = users_factories.UserFactory()
 
     user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
-    assert user.wallet_balance == Decimal("300")
+    assert user.wallet_balance == Decimal(300)
 
     # Create a booking and use it
     stock = offers_factories.StockFactory(price=Decimal("10.1"), offer__venue=venue)
@@ -2621,7 +2621,7 @@ def test_invoices_csv_commercial_gesture():
     }
     row_offerer_contribution = [r for r in rows if r["Type de ticket de facturation"] == "offerer contribution"][0]
     row_commercial_gesture = [r for r in rows if r["Type de ticket de facturation"] == "commercial gesture"][0]
-    assert row_offerer_contribution["Somme des tickets de facturation"] == Decimal("0")
+    assert row_offerer_contribution["Somme des tickets de facturation"] == Decimal(0)
     assert row_commercial_gesture["Somme des tickets de facturation"] == Decimal("-1010.0")
 
 
@@ -3426,13 +3426,13 @@ class GenerateInvoicesTest:
         normal_booking = bookings_factories.BookingFactory(
             user=user,
             quantity=1,
-            stock__price=Decimal("10"),
+            stock__price=Decimal(10),
             stock__offer__venue=normal_venue,
         )  # 10€
         normal_free_booking = bookings_factories.BookingFactory(
             user=user,
             quantity=1,
-            stock__price=Decimal("0"),
+            stock__price=Decimal(0),
             stock__offer__venue=normal_venue,
         )  # 0€
         bookings_api.mark_as_used(
@@ -3451,7 +3451,7 @@ class GenerateInvoicesTest:
         free_booking = bookings_factories.BookingFactory(
             user=user,
             quantity=1,
-            stock__price=Decimal("0"),
+            stock__price=Decimal(0),
             stock__offer__venue=free_venue,
         )  # 0€
         bookings_api.mark_as_used(
@@ -3714,7 +3714,7 @@ class GenerateInvoiceLegacyTest:
         assert line.group == {"label": "Barème dérogatoire", "position": 4}
         assert line.reimbursedAmount == 0
         assert line.contributionAmount == 2300
-        assert line.rate == Decimal("0")
+        assert line.rate == Decimal(0)
         assert line.label == "Réservations"
 
     def test_100_per_cent_offerer_contribution_mixed(self):
@@ -3756,7 +3756,7 @@ class GenerateInvoiceLegacyTest:
 
         assert line1.group == {"label": "Barème non remboursé", "position": 3}
         assert line1.contributionAmount == 1000
-        assert line1.rate == Decimal("0")
+        assert line1.rate == Decimal(0)
         assert line1.label == "Réservations"
 
         assert line2.group == {"label": "Barème dérogatoire", "position": 4}
@@ -4196,7 +4196,7 @@ class GenerateInvoiceTest:
         assert line.group == {"label": "Barème dérogatoire", "position": 4}
         assert line.reimbursedAmount == 0
         assert line.contributionAmount == 2300
-        assert line.rate == Decimal("0")
+        assert line.rate == Decimal(0)
         assert line.label == "Réservations"
 
     def test_100_per_cent_offerer_contribution_mixed(self):
@@ -4238,7 +4238,7 @@ class GenerateInvoiceTest:
 
         assert line1.group == {"label": "Barème non remboursé", "position": 3}
         assert line1.contributionAmount == 1000
-        assert line1.rate == Decimal("0")
+        assert line1.rate == Decimal(0)
         assert line1.label == "Réservations"
 
         assert line2.group == {"label": "Barème dérogatoire", "position": 4}

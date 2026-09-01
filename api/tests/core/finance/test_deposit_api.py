@@ -869,7 +869,7 @@ class LastAgeRelatedRecreditTest:
         user = users_factories.BeneficiaryFactory(age=17)
         factories.RecreditFactory(
             deposit=user.deposit,
-            amount=Decimal("150"),
+            amount=Decimal(150),
             recreditType=models.RecreditType.RECREDIT_18,
             dateCreated=date_utils.get_naive_utc_now() - relativedelta(weeks=1),
         )
@@ -884,13 +884,13 @@ class LastAgeRelatedRecreditTest:
         user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
         factories.RecreditFactory(
             deposit=user.deposit,
-            amount=Decimal("30"),
+            amount=Decimal(30),
             recreditType=models.RecreditType.RECREDIT_17,
             dateCreated=date_utils.get_naive_utc_now() - relativedelta(weeks=1),
         )
         factories.RecreditFactory(
             deposit=user.deposit,
-            amount=Decimal("30"),
+            amount=Decimal(30),
             recreditType=models.RecreditType.RECREDIT_16,
             dateCreated=date_utils.get_naive_utc_now() - relativedelta(weeks=1),
         )

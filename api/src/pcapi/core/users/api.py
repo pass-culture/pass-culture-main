@@ -735,7 +735,7 @@ def _get_booking_credit(booking: bookings_models.Booking) -> Decimal:
                 finance_models.IncidentStatus.VALIDATED,
                 finance_models.IncidentStatus.INVOICED,
             ):
-                return Decimal(booking_finance_incident.newTotalAmount) / Decimal("100")
+                return Decimal(booking_finance_incident.newTotalAmount) / Decimal(100)
     return booking.total_amount
 
 
@@ -760,10 +760,10 @@ def get_domains_credit(
             remaining=(
                 max(
                     user.deposit.amount - sum(_get_booking_credit(booking) for booking in deposit_bookings),
-                    Decimal("0"),
+                    Decimal(0),
                 )
                 if user.has_active_deposit
-                else Decimal("0")
+                else Decimal(0)
             ),
         ),
     )
@@ -779,7 +779,7 @@ def get_domains_credit(
             initial=specific_caps.DIGITAL_CAP,
             remaining=(
                 min(
-                    max(specific_caps.DIGITAL_CAP - digital_bookings_total, Decimal("0")),
+                    max(specific_caps.DIGITAL_CAP - digital_bookings_total, Decimal(0)),
                     domains_credit.all.remaining,
                 )
             ),
@@ -795,7 +795,7 @@ def get_domains_credit(
             initial=specific_caps.PHYSICAL_CAP,
             remaining=(
                 min(
-                    max(specific_caps.PHYSICAL_CAP - physical_bookings_total, Decimal("0")),
+                    max(specific_caps.PHYSICAL_CAP - physical_bookings_total, Decimal(0)),
                     domains_credit.all.remaining,
                 )
             ),

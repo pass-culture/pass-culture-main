@@ -3491,7 +3491,7 @@ class ConfirmOfferStockTest(PostEndpointHelper):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
-            price=decimal.Decimal("10"),
+            price=decimal.Decimal(10),
         )
         bookings_factories.UsedBookingFactory(
             stock=stock_to_edit,
@@ -3499,11 +3499,11 @@ class ConfirmOfferStockTest(PostEndpointHelper):
         )
         bookings_factories.UsedBookingFactory(
             stock=stock_to_edit,
-            amount=decimal.Decimal("10"),
+            amount=decimal.Decimal(10),
         )
         bookings_factories.UsedBookingFactory(
             stock=stock_to_edit,
-            amount=decimal.Decimal("10"),
+            amount=decimal.Decimal(10),
         )
 
         response = self.post_to_endpoint(
@@ -3523,7 +3523,7 @@ class ConfirmOfferStockTest(PostEndpointHelper):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
-            price=decimal.Decimal("10"),
+            price=decimal.Decimal(10),
         )
         bookings_factories.UsedBookingFactory(
             stock=stock_to_edit,
@@ -3531,11 +3531,11 @@ class ConfirmOfferStockTest(PostEndpointHelper):
         )
         bookings_factories.UsedBookingFactory(
             stock=stock_to_edit,
-            amount=decimal.Decimal("10"),
+            amount=decimal.Decimal(10),
         )
         bookings_factories.UsedBookingFactory(
             stock=stock_to_edit,
-            amount=decimal.Decimal("10"),
+            amount=decimal.Decimal(10),
         )
 
         response = self.post_to_endpoint(
@@ -3555,11 +3555,11 @@ class ConfirmOfferStockTest(PostEndpointHelper):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
-            price=decimal.Decimal("10"),
+            price=decimal.Decimal(10),
         )
         bookings_factories.UsedBookingFactory(
             stock=stock_to_edit,
-            amount=decimal.Decimal("5"),
+            amount=decimal.Decimal(5),
         )
 
         response = self.post_to_endpoint(

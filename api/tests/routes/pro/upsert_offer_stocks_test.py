@@ -48,8 +48,8 @@ class Returns200Test:
         offer = offers_factories.ThingOfferFactory()
         user = users_factories.UserFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
-        stock_to_update = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal("5"), quantity=10)
-        stock_to_delete = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal("7"), quantity=3)
+        stock_to_update = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal(5), quantity=10)
+        stock_to_delete = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal(7), quantity=3)
 
         updated_stock_booking_limit_datetime = date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
         payload = {
@@ -210,7 +210,7 @@ class Returns400Test:
         offer = offers_factories.ThingOfferFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
             validation=offers_models.OfferValidationStatus.APPROVED,
-            lastValidationPrice=decimal.Decimal("100"),
+            lastValidationPrice=decimal.Decimal(100),
         )
         user = users_factories.UserFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
@@ -242,9 +242,9 @@ class Returns400Test:
         offer = offers_factories.ThingOfferFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
             validation=offers_models.OfferValidationStatus.APPROVED,
-            lastValidationPrice=decimal.Decimal("100"),
+            lastValidationPrice=decimal.Decimal(100),
         )
-        existing_stock = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal("100"), quantity=1)
+        existing_stock = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal(100), quantity=1)
         user = users_factories.UserFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
 

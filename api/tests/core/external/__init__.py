@@ -23,8 +23,8 @@ common_user_attributes = attributes_models.UserAttributes(
     deposit_activation_date=None,
     deposit_expiration_date=None,
     domains_credit=DomainsCredit(
-        all=Credit(initial=Decimal("500"), remaining=Decimal("480.00")),
-        digital=Credit(initial=Decimal("200"), remaining=Decimal("200")),
+        all=Credit(initial=Decimal(500), remaining=Decimal("480.00")),
+        digital=Credit(initial=Decimal(200), remaining=Decimal(200)),
         physical=Credit(initial=200, remaining=Decimal("180.00")),
     ),
     eligibility=EligibilityType.AGE18,

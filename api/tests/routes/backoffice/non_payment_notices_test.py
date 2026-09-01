@@ -508,7 +508,7 @@ class GetEditFormTest(GetEndpointHelper):
         venue = offerers_factories.VenueFactory()
         notice = offerers_factories.NonPaymentNoticeFactory(
             noticeType=offerers_models.NoticeType.REMINDER_LETTER,
-            amount=Decimal("1500"),
+            amount=Decimal(1500),
             offerer=venue.managingOfferer,
             venue=venue,
         )

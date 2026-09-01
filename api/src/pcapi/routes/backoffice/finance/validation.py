@@ -200,7 +200,7 @@ def check_commercial_gesture_total_amount(
                 message="Le montant du geste commercial ne peut pas être supérieur à 120% du montant d'une réservation sélectionnée.",
             )
 
-        if booking.quantity * amount_per_booking > decimal.Decimal("300"):
+        if booking.quantity * amount_per_booking > decimal.Decimal(300):
             return Valid(
                 is_valid=False,
                 message="Le montant du geste commercial ne peut jamais être supérieur à 300€ par réservation.",

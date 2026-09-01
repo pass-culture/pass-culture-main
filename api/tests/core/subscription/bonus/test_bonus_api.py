@@ -190,7 +190,7 @@ class QuotientFamilialApplicationTest:
         assert finance_models.RecreditType.BONUS_CREDIT in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
-        assert user.recreditAmountToShow == decimal.Decimal("50")
+        assert user.recreditAmountToShow == decimal.Decimal(50)
 
     @patch("pcapi.connectors.api_particulier.get_quotient_familial")
     def test_get_quotient_familial_calls(self, mocked_get_quotient_familial):

@@ -421,7 +421,7 @@ def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
     incident_booking = bookings_factories.BookingFactory.create(
         stock__offer__name="Offre pour note de débit en Nouvelle-Calédonie",
         stock__offer__venue=venue,
-        stock__price=decimal.Decimal("30"),
+        stock__price=decimal.Decimal(30),
         user=beneficiary,
     )
     bookings_api.mark_as_used(
@@ -443,7 +443,7 @@ def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
 
     assert incident_booking.status == bookings_models.BookingStatus.REIMBURSED
 
-    amount = decimal.Decimal("10")
+    amount = decimal.Decimal(10)
     check_bookings = validation.check_incident_bookings([incident_booking])
     check_amount = validation.check_total_amount(input_amount=amount, bookings=[incident_booking])
     if not (check_bookings and check_amount):

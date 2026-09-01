@@ -131,10 +131,10 @@ def _create_one_individual_incident(
         special_bookings = bookings_factories.BookingFactory.create_batch(
             1,
             stock__offer__venue=venue,
-            stock__price=decimal.Decimal("19990"),  # 19.99k€
+            stock__price=decimal.Decimal(19990),  # 19.99k€
             user__email=factory.Sequence("martin.cident_{}@example.com".format),
             user__deposit__source="create_industrial_incidents() in industrial sandbox",
-            user__deposit__amount=decimal.Decimal("20300"),  # 20.3k€
+            user__deposit__amount=decimal.Decimal(20300),  # 20.3k€
         )
 
     other_venue = None
@@ -149,7 +149,7 @@ def _create_one_individual_incident(
     incident_bookings = bookings_factories.BookingFactory.create_batch(
         size=2 if multiple_bookings else 1,
         stock__offer__venue=other_venue or venue,
-        stock__price=decimal.Decimal("30"),
+        stock__price=decimal.Decimal(30),
         user__deposit__source="create_industrial_incidents() in industrial sandbox",
     )
 
@@ -184,7 +184,7 @@ def _create_one_individual_incident(
         new_bookings = bookings_factories.BookingFactory.create_batch(
             size=3,
             stock__offer__venue=venue,
-            stock__price=decimal.Decimal("20") + decimal.Decimal(iteration),
+            stock__price=decimal.Decimal(20) + decimal.Decimal(iteration),
             user__email=factory.Sequence("valent.incident_{}@example.com".format),
         )
         for booking in new_bookings:
@@ -194,7 +194,7 @@ def _create_one_individual_incident(
             )
             finance_api.price_event(booking.finance_events[0])
 
-    amount = None if len(bookings) > 1 else decimal.Decimal("10")
+    amount = None if len(bookings) > 1 else decimal.Decimal(10)
     check_bookings = validation.check_incident_bookings(incident_bookings)
     check_amount = amount is None or validation.check_total_amount(input_amount=amount, bookings=incident_bookings)
     if not (check_bookings and check_amount):
@@ -279,7 +279,7 @@ def _create_one_collective_incident(
         special_bookings = educational_factories.UsedCollectiveBookingFactory.create_batch(
             1,
             collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__price=decimal.Decimal("19990"),
+            collectiveStock__price=decimal.Decimal(19990),
             collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
@@ -288,7 +288,7 @@ def _create_one_collective_incident(
     incident_bookings = educational_factories.UsedCollectiveBookingFactory.create_batch(
         size=2 if multiple_bookings else 1,
         collectiveStock__collectiveOffer__venue=other_venue or venue,
-        collectiveStock__price=decimal.Decimal("30"),
+        collectiveStock__price=decimal.Decimal(30),
         collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         educationalInstitution=deposit.educationalInstitution,
         educationalYear=deposit.educationalYear,
@@ -323,7 +323,7 @@ def _create_one_collective_incident(
     for i in range(3):
         new_booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=other_venue or venue,
-            collectiveStock__price=decimal.Decimal("20") + decimal.Decimal(i),
+            collectiveStock__price=decimal.Decimal(20) + decimal.Decimal(i),
             collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,

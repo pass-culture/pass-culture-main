@@ -24,7 +24,7 @@ def test_to_eurocents():
     assert utils.to_cents(7.504) == 750
     assert utils.to_cents(7.505) == 751
     assert utils.to_cents(7.515) == 752
-    assert utils.to_cents(decimal.Decimal("10")) == 1000
+    assert utils.to_cents(decimal.Decimal(10)) == 1000
     assert utils.to_cents(decimal.Decimal("10.10")) == 1010
     assert utils.to_cents(decimal.Decimal("10.105")) == 1011
     assert utils.to_cents(decimal.Decimal("10.115")) == 1012
@@ -41,9 +41,9 @@ def test_to_euros():
 
 
 def test_euros_to_xpf():
-    assert utils.euros_to_xpf(decimal.Decimal("1")) == 120
+    assert utils.euros_to_xpf(decimal.Decimal(1)) == 120
     assert utils.euros_to_xpf(decimal.Decimal("9.99")) == 1190
-    assert utils.euros_to_xpf(decimal.Decimal("10")) == 1195
+    assert utils.euros_to_xpf(decimal.Decimal(10)) == 1195
     assert utils.euros_to_xpf(decimal.Decimal("10.03")) == 1195
     assert utils.euros_to_xpf(decimal.Decimal("10.04")) == 1200
     assert utils.euros_to_xpf(decimal.Decimal("167.58")) == 20000

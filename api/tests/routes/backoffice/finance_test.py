@@ -1200,13 +1200,13 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         params_1 = mails_testing.outbox[0]["params"]
         assert params_1["OFFER_NAME"] == offer_1.name
         assert params_1["VENUE_NAME"] == venue.publicName
-        assert params_1["MONTANT_REMBOURSEMENT"] == decimal.Decimal("10")
+        assert params_1["MONTANT_REMBOURSEMENT"] == decimal.Decimal(10)
         assert params_1["FORMATTED_MONTANT_REMBOURSEMENT"] == "10 €"
         assert compare_digest(params_1["TOKEN_LIST"], cancelled_booking1.token)
         params_2 = mails_testing.outbox[1]["params"]
         assert params_2["OFFER_NAME"] == offer_2.name
         assert params_2["VENUE_NAME"] == venue.publicName
-        assert params_2["MONTANT_REMBOURSEMENT"] == decimal.Decimal("30")
+        assert params_2["MONTANT_REMBOURSEMENT"] == decimal.Decimal(30)
         assert params_2["FORMATTED_MONTANT_REMBOURSEMENT"] == "30 €"
         assert compare_digest(params_2["TOKEN_LIST"], cancelled_booking2.token)
 

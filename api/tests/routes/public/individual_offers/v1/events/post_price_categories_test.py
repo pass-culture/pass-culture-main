@@ -65,11 +65,11 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
             db.session.query(offers_models.PriceCategory).order_by(offers_models.PriceCategory.price).all()
         )
         assert carre_or_category.label == "carre or"
-        assert carre_or_category.price == decimal.Decimal("25")
+        assert carre_or_category.price == decimal.Decimal(25)
         assert carre_or_category.idAtProvider == "id_carre_or"
 
         assert triangle_argent_category.label == "triangle argent"
-        assert triangle_argent_category.price == decimal.Decimal("15")
+        assert triangle_argent_category.price == decimal.Decimal(15)
         assert triangle_argent_category.idAtProvider == "id_triangle_argent"
 
         assert response.json == {
@@ -166,7 +166,7 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
 
         offers_factories.PriceCategoryFactory(
             offer=offer,
-            price=decimal.Decimal("25"),
+            price=decimal.Decimal(25),
             label="carre or",
         )
 
