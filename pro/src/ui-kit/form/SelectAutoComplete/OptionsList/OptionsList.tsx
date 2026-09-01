@@ -111,7 +111,6 @@ const OptionListItem = ({
   onClick,
   children,
 }: OptionListItemProps) => (
-  // biome-ignore lint/a11y/useKeyWithClickEvents: the onKeyDown is handled in the parent component
   <li
     aria-selected={isHovered}
     aria-posinset={index + 1}
@@ -123,6 +122,12 @@ const OptionListItem = ({
     onMouseEnter={() => setHoveredOptionIndex(index)}
     onFocus={() => setHoveredOptionIndex(index)}
     onClick={onClick}
+    onKeyDown={(event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        onClick()
+      }
+    }}
     // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: Seems to be the only solution for combobox pattern
     role="option"
     tabIndex={-1}
