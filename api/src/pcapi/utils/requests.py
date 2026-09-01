@@ -22,8 +22,8 @@ Usage:
 
 import logging
 import re
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
 
 import gql.transport.exceptions
 import gql.transport.requests

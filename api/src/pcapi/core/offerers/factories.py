@@ -119,7 +119,7 @@ class VenueFactory(BaseFactory[models.Venue]):
     ) -> models.VenuePricingPointLink | None:
         if not create:
             return None
-        pricing_point: "VenueFactory | typing.Callable | None" = extracted
+        pricing_point: VenueFactory | typing.Callable | None = extracted
         if not pricing_point:
             return None
         if pricing_point == "self":

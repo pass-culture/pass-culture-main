@@ -1,8 +1,7 @@
 import itertools
 import logging
 import time
-from typing import Dict
-from typing import Sequence
+from collections.abc import Sequence
 
 from sqlalchemy import exc as sa_exc
 
@@ -61,7 +60,7 @@ class OfferQualityImporter:
 
         search.async_index_offer_ids(ids, reason=search.IndexationReason.OFFER_UPDATE)
 
-    def _process_one_by_one(self, batch: Sequence[OfferQualityModel], offer_map: Dict[int, offer_models.Offer]) -> None:
+    def _process_one_by_one(self, batch: Sequence[OfferQualityModel], offer_map: dict[int, offer_models.Offer]) -> None:
         for item in batch:
             try:
                 with transaction():
@@ -72,7 +71,7 @@ class OfferQualityImporter:
                     "Failed to update quality scores for offer ", extra={"offer_id": item.offer_id, "error": str(exc)}
                 )
 
-    def _apply_updates(self, items: Sequence[OfferQualityModel], offer_map: Dict[int, offer_models.Offer]) -> None:
+    def _apply_updates(self, items: Sequence[OfferQualityModel], offer_map: dict[int, offer_models.Offer]) -> None:
         for item in items:
             offer = offer_map.get(item.offer_id)
             if offer:

@@ -59,11 +59,9 @@ def test_get_folder(mocked_request):
     query = urllib.parse.parse_qs(query)
     assert query == {
         "q": [
-            # fmt: off
             "mimeType = 'application/vnd.google-apps.folder' "
             "and 'parent-folder-id' in parents "
             r"and name = 'name \'with\' single quotes'"
-            # fmt: on
         ],
         "fields": ["files (id)"],
         "includeItemsFromAllDrives": ["true"],

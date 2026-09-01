@@ -28,7 +28,7 @@ class SendBookingWithdrawalUpdatedTest:
             send_email_for_each_ongoing_booking(offer)
 
         assert len(mails_testing.outbox) == 4
-        assert set([email["To"] for email in mails_testing.outbox]) == {
+        assert {email["To"] for email in mails_testing.outbox} == {
             "joe.dalton@example.com",
             "jack.dalton@example.com",
             "william.dalton@example.com",

@@ -451,7 +451,7 @@ def synchronise_rurality_level() -> None:
 
 
 def get_offers_count_for_my_institution(uai: str) -> int:
-    offer_query: "sa_orm.Query[models.CollectiveOffer]" = (
+    offer_query: sa_orm.Query[models.CollectiveOffer] = (
         db.session.query(models.CollectiveOffer)
         .join(models.EducationalInstitution, models.CollectiveOffer.institution)
         .options(

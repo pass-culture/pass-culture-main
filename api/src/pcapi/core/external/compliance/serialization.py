@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import BaseModel as BaseModelV2
 
 from pcapi.core.offers.models import ComplianceValidationStatusPrediction
@@ -22,9 +20,9 @@ class UpdateOfferComplianceScorePayload(BaseModelV2):
 
 class ComplianceScorePredictionOutput(BaseModelV2):
     probability_validated: int | None = None
-    validation_main_features: List[str] | None = None
+    validation_main_features: list[str] | None = None
     probability_rejected: int | None = None
-    rejection_main_features: List[str] | None = None
+    rejection_main_features: list[str] | None = None
 
 
 class ComplianceValidationStatusPredictionOutput(BaseModelV2):

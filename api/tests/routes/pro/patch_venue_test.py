@@ -238,7 +238,7 @@ class Returns200Test:
         assert venue.publicName == "Ma librairie"
 
         # Not providing culturalDomains does not change the venue's collective domains
-        assert set(venue.collectiveDomains) == set([cultural_domains[i] for i in target_domains])
+        assert set(venue.collectiveDomains) == {cultural_domains[i] for i in target_domains}
 
     def test_update_venue_is_open_to_public_should_set_is_permanent_to_true_and_sync_acceslibre(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=date_utils.get_naive_utc_now())

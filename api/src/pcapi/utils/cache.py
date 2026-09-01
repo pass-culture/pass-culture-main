@@ -1,10 +1,10 @@
 import json
+from collections.abc import Callable
+from collections.abc import Iterable
 from functools import partial
 from functools import wraps
 from hashlib import sha256
 from typing import Any
-from typing import Callable
-from typing import Iterable
 from typing import cast
 
 import pydantic.v1 as pydantic_v1

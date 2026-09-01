@@ -31,7 +31,7 @@ def _create_email(text: str) -> str:
 
 
 def _create_gdpr_user(
-    factory: typing.Type, first_name: str, last_connection_date: datetime.datetime, comment: str, **kwargs: typing.Any
+    factory: type, first_name: str, last_connection_date: datetime.datetime, comment: str, **kwargs: typing.Any
 ) -> users_models.User:
     increment = next(INCREMENT)
 

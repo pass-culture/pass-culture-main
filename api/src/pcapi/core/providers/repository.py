@@ -1,6 +1,6 @@
 import datetime
-from typing import Iterable
-from typing import Sequence
+from collections.abc import Iterable
+from collections.abc import Sequence
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm

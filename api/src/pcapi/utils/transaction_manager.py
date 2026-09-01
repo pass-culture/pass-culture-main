@@ -66,7 +66,7 @@ class atomic:
     use on_commit
     """
 
-    def __enter__(self) -> "atomic":
+    def __enter__(self) -> typing.Self:
         # In that context g is local to the thread
         # use a list to make the context manager/decorator reentrant
 

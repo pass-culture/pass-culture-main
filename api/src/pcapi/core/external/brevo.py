@@ -1,13 +1,13 @@
 import enum
 import logging
 import urllib.parse
+from collections.abc import Callable
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from itertools import islice
 from typing import Any
-from typing import Callable
-from typing import Iterable
 
 import brevo
 from brevo.core import ApiError as BrevoApiError
@@ -98,7 +98,7 @@ class BrevoAttributes(Enum):
 
     @classmethod
     def list(cls) -> list[str]:
-        return list(map(lambda c: c.value, cls))
+        return [c.value for c in cls]
 
 
 class BrevoOptionalAttributes(Enum):

@@ -3,7 +3,6 @@ import decimal
 import logging
 from decimal import Decimal
 from pathlib import Path
-from typing import Type
 from unittest import mock
 
 import pytest
@@ -43,7 +42,7 @@ class CGRStocksTest:
 
     def execute_import(
         self,
-        ProcessClass: Type[CGRExtractTransformLoadProcess] | Type[CGRStocks],
+        ProcessClass: type[CGRExtractTransformLoadProcess] | type[CGRStocks],
         venue_provider,
     ) -> CGRExtractTransformLoadProcess | CGRStocks:
         boost_stocks = ProcessClass(venue_provider=venue_provider)
@@ -156,7 +155,7 @@ class CGRStocksTest:
 
     @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(
-        self, ProcessClass: Type[CGRExtractTransformLoadProcess] | Type[CGRStocks], requests_mock
+        self, ProcessClass: type[CGRExtractTransformLoadProcess] | type[CGRStocks], requests_mock
     ):
         requests_mock.get("https://example.com/149341.jpg", content=b"")
         requests_mock.get("https://example.com/82382.jpg", content=b"")

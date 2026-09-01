@@ -1,9 +1,9 @@
 import itertools
 import logging
 import traceback
+from collections.abc import Sequence
 from dataclasses import dataclass
 from dataclasses import field
-from typing import Sequence
 from typing import TypeVar
 from typing import TypedDict
 

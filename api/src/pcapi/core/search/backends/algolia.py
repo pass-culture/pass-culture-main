@@ -33,7 +33,7 @@ class AlgoliaBackend(
         with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
             client.save_objects(index, serialized_object)
 
-    def delete_objects(self, index: str, object_ids: abc.Collection[typing.Union[str, int]]) -> None:
+    def delete_objects(self, index: str, object_ids: abc.Collection[str | int]) -> None:
         with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
             client.delete_objects(index, [str(i) for i in object_ids])
 

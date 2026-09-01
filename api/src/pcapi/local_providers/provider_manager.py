@@ -1,5 +1,4 @@
 import logging
-from typing import Type
 
 from urllib3 import exceptions as urllib3_exceptions
 
@@ -24,7 +23,7 @@ from pcapi.utils.repository import transaction
 
 logger = logging.getLogger(__name__)
 
-_NAME_TO_LOCAL_PROVIDER_CLASS: dict[str, Type[LocalProvider]] = {
+_NAME_TO_LOCAL_PROVIDER_CLASS: dict[str, type[LocalProvider]] = {
     "AllocineStocks": AllocineStocks,
     "BoostStocks": BoostStocks,
     "CDSStocks": CDSStocks,  # INFO: CDS is the old name of CineOffice
@@ -33,9 +32,9 @@ _NAME_TO_LOCAL_PROVIDER_CLASS: dict[str, Type[LocalProvider]] = {
 
 _LOCAL_CLASS_NAME_TO_ETL_CLASS: dict[
     str,
-    Type[BoostExtractTransformLoadProcess]
-    | Type[CineOfficeExtractTransformLoadProcess]
-    | Type[CGRExtractTransformLoadProcess],
+    type[BoostExtractTransformLoadProcess]
+    | type[CineOfficeExtractTransformLoadProcess]
+    | type[CGRExtractTransformLoadProcess],
 ] = {
     "BoostStocks": BoostExtractTransformLoadProcess,
     "CDSStocks": CineOfficeExtractTransformLoadProcess,  # INFO: CDS is the old name of CineOffice

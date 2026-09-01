@@ -182,11 +182,11 @@ class UserTagMapping(PcObject, Model):
 class User(PcObject, Model, DeactivableMixin):
     __tablename__ = "user"
 
-    accountUpdateRequests: sa_orm.Mapped[list["UserAccountUpdateRequest"]] = sa_orm.relationship(
+    accountUpdateRequests: sa_orm.Mapped[list[UserAccountUpdateRequest]] = sa_orm.relationship(
         "UserAccountUpdateRequest", foreign_keys="UserAccountUpdateRequest.userId", back_populates="user"
     )
-    achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship("Achievement", back_populates="user")
-    action_history: sa_orm.Mapped[list["ActionHistory"]] = sa_orm.relationship(
+    achievements: sa_orm.Mapped[list[Achievement]] = sa_orm.relationship("Achievement", back_populates="user")
+    action_history: sa_orm.Mapped[list[ActionHistory]] = sa_orm.relationship(
         "ActionHistory",
         foreign_keys="ActionHistory.userId",
         back_populates="user",
@@ -195,13 +195,13 @@ class User(PcObject, Model, DeactivableMixin):
     )
     activity: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
     address: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    adminFraudReviews: sa_orm.Mapped[list["BeneficiaryFraudReview"]] = sa_orm.relationship(
+    adminFraudReviews: sa_orm.Mapped[list[BeneficiaryFraudReview]] = sa_orm.relationship(
         "BeneficiaryFraudReview", foreign_keys="BeneficiaryFraudReview.authorId", back_populates="author"
     )
-    beneficiaryFraudReviews: sa_orm.Mapped[list["BeneficiaryFraudReview"]] = sa_orm.relationship(
+    beneficiaryFraudReviews: sa_orm.Mapped[list[BeneficiaryFraudReview]] = sa_orm.relationship(
         "BeneficiaryFraudReview", foreign_keys="BeneficiaryFraudReview.userId", back_populates="user"
     )
-    beneficiaryImports: sa_orm.Mapped[list["BeneficiaryImport"]] = sa_orm.relationship(
+    beneficiaryImports: sa_orm.Mapped[list[BeneficiaryImport]] = sa_orm.relationship(
         "BeneficiaryImport", foreign_keys="BeneficiaryImport.beneficiaryId", back_populates="beneficiary"
     )
     birthPlace: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
@@ -223,7 +223,7 @@ class User(PcObject, Model, DeactivableMixin):
     extraData: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
         MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}"
     )
-    favorites: sa_orm.Mapped[list["Favorite"]] = sa_orm.relationship(
+    favorites: sa_orm.Mapped[list[Favorite]] = sa_orm.relationship(
         "Favorite", foreign_keys="Favorite.userId", back_populates="user"
     )
     firstName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
@@ -239,7 +239,7 @@ class User(PcObject, Model, DeactivableMixin):
     lastConnectionDate: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     lastName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
     married_name: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
-    mediations: sa_orm.Mapped[list["Mediation"]] = sa_orm.relationship(
+    mediations: sa_orm.Mapped[list[Mediation]] = sa_orm.relationship(
         "Mediation", foreign_keys="Mediation.authorId", back_populates="author"
     )
     needsToFillCulturalSurvey: sa_orm.Mapped[bool | None] = sa_orm.mapped_column(
@@ -251,16 +251,16 @@ class User(PcObject, Model, DeactivableMixin):
         default=asdict(NotificationSubscriptions()),
         server_default="""{"marketing_push": true, "marketing_email": true, "subscribed_themes": []}""",
     )
-    offer_reminders: sa_orm.Mapped[list["OfferReminder"]] = sa_orm.relationship(
+    offer_reminders: sa_orm.Mapped[list[OfferReminder]] = sa_orm.relationship(
         "OfferReminder", foreign_keys="OfferReminder.userId", back_populates="user"
     )
-    OffererInvitations: sa_orm.Mapped[list["OffererInvitation"]] = sa_orm.relationship(
+    OffererInvitations: sa_orm.Mapped[list[OffererInvitation]] = sa_orm.relationship(
         "OffererInvitation", back_populates="user"
     )
-    offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
+    offers: sa_orm.Mapped[list[Offer]] = sa_orm.relationship(
         "Offer", back_populates="author", foreign_keys="Offer.authorId"
     )
-    collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
+    collectiveOffers: sa_orm.Mapped[list[CollectiveOffer]] = sa_orm.relationship(
         "CollectiveOffer", back_populates="author", foreign_keys="CollectiveOffer.authorId"
     )
     password: sa_orm.Mapped[bytes | None] = sa_orm.mapped_column(sa.LargeBinary(60), nullable=True)
@@ -280,46 +280,46 @@ class User(PcObject, Model, DeactivableMixin):
     schoolType: sa_orm.Mapped[SchoolTypeEnum | None] = sa_orm.mapped_column(
         sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True
     )
-    email_history: sa_orm.Mapped[list["UserEmailHistory"]] = sa_orm.relationship(
+    email_history: sa_orm.Mapped[list[UserEmailHistory]] = sa_orm.relationship(
         "UserEmailHistory", foreign_keys="UserEmailHistory.userId", back_populates="user", passive_deletes=True
     )
     validatedBirthDate: sa_orm.Mapped[date | None] = sa_orm.mapped_column(
         sa.Date, nullable=True
     )  # validated by an Identity Provider
 
-    UserOfferers: sa_orm.Mapped[list["UserOfferer"]] = sa_orm.relationship("UserOfferer", back_populates="user")
+    UserOfferers: sa_orm.Mapped[list[UserOfferer]] = sa_orm.relationship("UserOfferer", back_populates="user")
     discordUser: sa_orm.Mapped[DiscordUser] = sa_orm.relationship(
         "DiscordUser", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True
     )
-    trusted_devices: sa_orm.Mapped[list["TrustedDevice"]] = sa_orm.relationship("TrustedDevice", back_populates="user")
-    login_device_history: sa_orm.Mapped[list["LoginDeviceHistory"]] = sa_orm.relationship(
+    trusted_devices: sa_orm.Mapped[list[TrustedDevice]] = sa_orm.relationship("TrustedDevice", back_populates="user")
+    login_device_history: sa_orm.Mapped[list[LoginDeviceHistory]] = sa_orm.relationship(
         "LoginDeviceHistory", back_populates="user"
     )
-    single_sign_ons: sa_orm.Mapped[list["SingleSignOn"]] = sa_orm.relationship(
+    single_sign_ons: sa_orm.Mapped[list[SingleSignOn]] = sa_orm.relationship(
         "SingleSignOn", back_populates="user", cascade="delete"
     )
-    backoffice_profile: sa_orm.Mapped["BackOfficeUserProfile"] = sa_orm.relationship(
+    backoffice_profile: sa_orm.Mapped[BackOfficeUserProfile] = sa_orm.relationship(
         "BackOfficeUserProfile", uselist=False, back_populates="user"
     )
-    gdprUserDataExtracts: sa_orm.Mapped[list["GdprUserDataExtract"]] = sa_orm.relationship(
+    gdprUserDataExtracts: sa_orm.Mapped[list[GdprUserDataExtract]] = sa_orm.relationship(
         "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
     )
-    tags: sa_orm.Mapped[list["UserTag"]] = sa_orm.relationship("UserTag", secondary=UserTagMapping.__table__)
-    reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="user", uselist=True)
-    chronicles: sa_orm.Mapped[list["Chronicle"]] = sa_orm.relationship("Chronicle", back_populates="user", uselist=True)
-    beneficiaryFraudChecks: sa_orm.Mapped[list["BeneficiaryFraudCheck"]] = sa_orm.relationship(
+    tags: sa_orm.Mapped[list[UserTag]] = sa_orm.relationship("UserTag", secondary=UserTagMapping.__table__)
+    reactions: sa_orm.Mapped[list[Reaction]] = sa_orm.relationship("Reaction", back_populates="user", uselist=True)
+    chronicles: sa_orm.Mapped[list[Chronicle]] = sa_orm.relationship("Chronicle", back_populates="user", uselist=True)
+    beneficiaryFraudChecks: sa_orm.Mapped[list[BeneficiaryFraudCheck]] = sa_orm.relationship(
         "BeneficiaryFraudCheck", back_populates="user", order_by="BeneficiaryFraudCheck.dateCreated"
     )
-    userBookings: sa_orm.Mapped[list["Booking"]] = sa_orm.relationship(
+    userBookings: sa_orm.Mapped[list[Booking]] = sa_orm.relationship(
         "Booking", foreign_keys="Booking.userId", back_populates="user"
     )
-    deposits: sa_orm.Mapped[list["Deposit"]] = sa_orm.relationship("Deposit", back_populates="user", uselist=True)
-    incidents: sa_orm.Mapped[list["BookingFinanceIncident"]] = sa_orm.relationship(
+    deposits: sa_orm.Mapped[list[Deposit]] = sa_orm.relationship("Deposit", back_populates="user", uselist=True)
+    incidents: sa_orm.Mapped[list[BookingFinanceIncident]] = sa_orm.relationship(
         "BookingFinanceIncident", back_populates="beneficiary", uselist=True
     )
 
-    suspension_reason_expression: sa_orm.Mapped["str | None"] = sa_orm.query_expression()
-    suspension_date_expression: sa_orm.Mapped["datetime | None"] = sa_orm.query_expression()
+    suspension_reason_expression: sa_orm.Mapped[str | None] = sa_orm.query_expression()
+    suspension_date_expression: sa_orm.Mapped[datetime | None] = sa_orm.query_expression()
 
     # unaccent is not immutable, so it can't be used for an index.
     # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
@@ -495,7 +495,7 @@ class User(PcObject, Model, DeactivableMixin):
         return sa.func.coalesce(cls.validatedBirthDate, sa.cast(cls.dateOfBirth, sa.Date))
 
     @property
-    def deposit(self) -> "Deposit | None":
+    def deposit(self) -> Deposit | None:
         if len(self.deposits) == 0:
             return None
         return max(self.deposits, key=attrgetter("expirationDate"))
@@ -509,7 +509,7 @@ class User(PcObject, Model, DeactivableMixin):
         return self.deposit.expirationDate if self.deposit else None
 
     @property
-    def deposit_type(self) -> "DepositType | None":
+    def deposit_type(self) -> DepositType | None:
         return self.deposit.type if self.deposit else None
 
     @property
@@ -895,15 +895,15 @@ class User(PcObject, Model, DeactivableMixin):
         return cls.roles.contains([UserRole.ANONYMIZED])
 
     @property
-    def impersonator(self) -> "User | None":
+    def impersonator(self) -> User | None:
         return getattr(self, "_impersonator", None)
 
     @impersonator.setter
-    def impersonator(self, impersonator: "User") -> None:
+    def impersonator(self, impersonator: User) -> None:
         self._impersonator = impersonator
 
     @property
-    def real_user(self) -> "User":
+    def real_user(self) -> User:
         return self.impersonator or self
 
     @property
@@ -940,7 +940,7 @@ class DiscordUser(PcObject, Model):
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), primary_key=True
     )
-    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", back_populates="discordUser")
+    user: sa_orm.Mapped[User] = sa_orm.relationship("User", back_populates="discordUser")
     discordId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, unique=True)
     hasAccess: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, server_default=expression.true())
     isBanned: sa_orm.Mapped[bool] = sa_orm.mapped_column(
@@ -1015,12 +1015,12 @@ class Favorite(PcObject, Model):
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], back_populates="favorites")
+    user: sa_orm.Mapped[User] = sa_orm.relationship("User", foreign_keys=[userId], back_populates="favorites")
 
     offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False
     )
-    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="favorites")
+    offer: sa_orm.Mapped[Offer] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="favorites")
 
     dateCreated = sa_orm.mapped_column(sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now)
 
@@ -1055,7 +1055,7 @@ class UserEmailHistory(PcObject, Model):
     userId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True
     )
-    user: sa_orm.Mapped["User | None"] = sa_orm.relationship(
+    user: sa_orm.Mapped[User | None] = sa_orm.relationship(
         "User", foreign_keys=[userId], back_populates="email_history"
     )
 
@@ -1086,7 +1086,7 @@ class UserEmailHistory(PcObject, Model):
         user: User,
         new_email: str | None,
         event_type: EmailHistoryEventTypeEnum,
-    ) -> "UserEmailHistory":
+    ) -> UserEmailHistory:
         old_user_email, old_domain_email = split_email(user.email)
         new_user_email, new_domain_email = split_email(new_email) if new_email else (None, None)
         return cls(
@@ -1099,33 +1099,31 @@ class UserEmailHistory(PcObject, Model):
         )
 
     @classmethod
-    def build_update_request(
-        cls, user: User, new_email: str | None = None, by_admin: bool = False
-    ) -> "UserEmailHistory":
+    def build_update_request(cls, user: User, new_email: str | None = None, by_admin: bool = False) -> UserEmailHistory:
         if by_admin:
             return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST)
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST)
 
     @classmethod
-    def build_confirmation(cls, user: User, new_email: str | None = None) -> "UserEmailHistory":
+    def build_confirmation(cls, user: User, new_email: str | None = None) -> UserEmailHistory:
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.CONFIRMATION)
 
     @classmethod
-    def build_cancellation(cls, user: User, new_email: str | None) -> "UserEmailHistory":
+    def build_cancellation(cls, user: User, new_email: str | None) -> UserEmailHistory:
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.CANCELLATION)
 
     @classmethod
-    def build_new_email_selection(cls, user: User, new_email: str) -> "UserEmailHistory":
+    def build_new_email_selection(cls, user: User, new_email: str) -> UserEmailHistory:
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION)
 
     @classmethod
-    def build_validation(cls, user: User, new_email: str, by_admin: bool) -> "UserEmailHistory":
+    def build_validation(cls, user: User, new_email: str, by_admin: bool) -> UserEmailHistory:
         if by_admin:
             return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_VALIDATION)
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.VALIDATION)
 
     @classmethod
-    def build_admin_update(cls, user: User, new_email: str) -> "UserEmailHistory":
+    def build_admin_update(cls, user: User, new_email: str) -> UserEmailHistory:
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_UPDATE)
 
     @hybrid_property
@@ -1463,7 +1461,7 @@ class UserTag(PcObject, Model):
     label: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
-    categories: sa_orm.Mapped[list["UserTagCategory"]] = sa_orm.relationship(
+    categories: sa_orm.Mapped[list[UserTagCategory]] = sa_orm.relationship(
         "UserTagCategory", secondary=UserTagCategoryMapping.__table__
     )
 
@@ -1506,7 +1504,7 @@ class UserProfileRefreshCampaign(PcObject, Model):
         sa.Boolean, nullable=False, server_default=expression.true(), default=True
     )
 
-    action_history: sa_orm.Mapped[list["ActionHistory"]] = sa_orm.relationship(
+    action_history: sa_orm.Mapped[list[ActionHistory]] = sa_orm.relationship(
         "ActionHistory",
         foreign_keys="ActionHistory.userProfileRefreshCampaignId",
         back_populates="userProfileRefreshCampaign",

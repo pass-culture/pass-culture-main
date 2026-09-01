@@ -3,19 +3,19 @@ import typing
 
 from celery import signals
 
-import pcapi.core.cultural_survey.tasks  # noqa: F401
-import pcapi.core.educational.tasks  # noqa: F401
-import pcapi.core.external.batch.tasks  # noqa: F401
-import pcapi.core.external.compliance.tasks  # noqa: F401
-import pcapi.core.external.zendesk.tasks  # noqa: F401
-import pcapi.core.external.zendesk_sell.tasks  # noqa: F401
-import pcapi.core.finance.tasks  # noqa: F401
-import pcapi.core.mails.tasks  # noqa: F401
-import pcapi.core.offerers.tasks  # noqa: F401
-import pcapi.core.offers.tasks  # noqa: F401
-import pcapi.core.operations.tasks  # noqa: F401
-import pcapi.core.providers.tasks  # noqa: F401
-import pcapi.core.subscription.bonus.tasks  # noqa: F401
+import pcapi.core.cultural_survey.tasks
+import pcapi.core.educational.tasks
+import pcapi.core.external.batch.tasks
+import pcapi.core.external.compliance.tasks
+import pcapi.core.external.zendesk.tasks
+import pcapi.core.external.zendesk_sell.tasks
+import pcapi.core.finance.tasks
+import pcapi.core.mails.tasks
+import pcapi.core.offerers.tasks
+import pcapi.core.offers.tasks
+import pcapi.core.operations.tasks
+import pcapi.core.providers.tasks
+import pcapi.core.subscription.bonus.tasks
 import pcapi.core.subscription.ubble.tasks  # noqa: F401
 from pcapi import settings
 from pcapi.celery_tasks import metrics

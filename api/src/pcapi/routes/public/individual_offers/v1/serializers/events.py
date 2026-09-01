@@ -1,11 +1,11 @@
 import datetime
 import decimal
 import typing
+from typing import Annotated
 
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from pydantic.v1.utils import GetterDict
-from typing_extensions import Annotated
 
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils

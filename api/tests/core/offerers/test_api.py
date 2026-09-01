@@ -4249,9 +4249,9 @@ class DeactivateVenueOffersTest:
         assert not search_testing.search_store["offers"]
 
         # not eligible for search -> won't be indexed
-        assert all([not o.is_eligible_for_search for o in venue.offers])
+        assert all(not o.is_eligible_for_search for o in venue.offers)
 
-        assert all([not o.publicationDatetime for o in venue.offers])
+        assert all(not o.publicationDatetime for o in venue.offers)
 
     def test_venue_with_only_non_synced_deactivated_offers(self):
         venue = offerers_factories.VenueFactory()
@@ -4269,9 +4269,9 @@ class DeactivateVenueOffersTest:
         assert not search_testing.search_store["offers"]
 
         # not eligible for search -> won't be indexed
-        assert all([not o.is_eligible_for_search for o in venue.offers])
+        assert all(not o.is_eligible_for_search for o in venue.offers)
 
-        assert all([not o.publicationDatetime for o in venue.offers])
+        assert all(not o.publicationDatetime for o in venue.offers)
 
     def test_venue_with_active_and_synced_offers(self, caplog):
         venue = offerers_factories.VenueFactory()
@@ -4295,9 +4295,9 @@ class DeactivateVenueOffersTest:
         assert not search_testing.search_store["offers"]
 
         # not eligible for search -> won't be indexed
-        assert all([not o.is_eligible_for_search for o in venue.offers])
+        assert all(not o.is_eligible_for_search for o in venue.offers)
 
-        assert all([not o.publicationDatetime for o in venue.offers])
+        assert all(not o.publicationDatetime for o in venue.offers)
 
     def test_offers_backup_data_is_logged(self, caplog):
         venue = offerers_factories.VenueFactory()

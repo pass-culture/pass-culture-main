@@ -1,6 +1,6 @@
 import functools
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
 
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.models import LocalProviderEvent

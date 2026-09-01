@@ -1,7 +1,7 @@
 import logging
+from collections.abc import Callable
 from copy import deepcopy
 from typing import Any
-from typing import Callable
 
 from pydantic import BaseModel as BaseModelV2
 from pydantic.v1 import BaseModel

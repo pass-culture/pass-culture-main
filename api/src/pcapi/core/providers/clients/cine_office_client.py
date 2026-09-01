@@ -303,12 +303,10 @@ class CineOfficeAPIClient(cinema_client.CinemaAPIClient):
     def _get_closest_seat_to_center(
         self, center: tuple[float, float], seats_index: list[tuple[int, int]]
     ) -> tuple[int, int]:
-        distances_to_center = list(
-            map(
-                lambda seat_index: math.sqrt(pow(seat_index[0] - center[0], 2) + pow(seat_index[1] - center[1], 2)),
-                seats_index,
-            )
-        )
+        distances_to_center = [
+            math.sqrt(pow(seat_index[0] - center[0], 2) + pow(seat_index[1] - center[1], 2))
+            for seat_index in seats_index
+        ]
         min_distance = min(distances_to_center)
         index_min_distance = distances_to_center.index(min_distance)
         return seats_index[index_min_distance]

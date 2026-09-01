@@ -2,7 +2,6 @@ import logging
 import re
 from datetime import datetime
 from functools import partial
-from typing import Type
 
 import sqlalchemy as sa
 from dateutil.relativedelta import relativedelta
@@ -136,10 +135,10 @@ def _extract_allocine_id(answer: typeform.TypeformAnswer) -> str | None:
 @atomic()
 def save_chronicle(
     form: typeform.TypeformResponse,
-    club_constants: Type[constants.BookClub]
-    | Type[constants.CineClub]
-    | Type[constants.AlbumClub]
-    | Type[constants.ConcertClub],
+    club_constants: type[constants.BookClub]
+    | type[constants.CineClub]
+    | type[constants.AlbumClub]
+    | type[constants.ConcertClub],
     club_type: models.ChronicleClubType,
     product_identifier_type: models.ChronicleProductIdentifierType,
 ) -> None:

@@ -34,7 +34,8 @@ class BookingFactory(BaseFactory):
     def usedRecreditType(
         obj: models.Booking,
     ) -> models.BookingRecreditType | None:
-        assert (deposit := obj.deposit)  # helps mypy
+        deposit = obj.deposit
+        assert deposit  # helps mypy
         if deposit.type in (DepositType.GRANT_15_17, DepositType.GRANT_18):
             return None
         sorted_recredits = sorted(deposit.recredits, key=lambda r: r.dateCreated, reverse=True)

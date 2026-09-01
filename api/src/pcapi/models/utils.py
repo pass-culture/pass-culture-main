@@ -17,7 +17,7 @@ def get_or_404_from_query(query: "sa_orm.Query[T]", obj_id: int | str) -> T:
     return obj
 
 
-def get_or_404(model: typing.Type[T], obj_id: int | str) -> T:
+def get_or_404(model: type[T], obj_id: int | str) -> T:
     return get_or_404_from_query(db.session.query(model), obj_id)
 
 
