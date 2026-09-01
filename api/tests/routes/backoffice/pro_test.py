@@ -295,14 +295,15 @@ class SearchProUserTest:
 
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 2
+        sorted_cards_text = sorted(cards_text, key=lambda text: int(re.findall(r"User ID : (\d+) ", text)[0]))
 
-        assert "Suspendu" not in cards_text[0]
-        assert "Raison de suspension" not in cards_text[0]
+        assert "Suspendu" not in sorted_cards_text[0]
+        assert "Raison de suspension" not in sorted_cards_text[0]
 
-        assert "Suspendu" in cards_text[1]
+        assert "Suspendu" in sorted_cards_text[1]
         assert (
             f"Raison de suspension : Fraude PRO usurpation le {suspended_user.suspension_date.strftime('%d/%m/%Y')}"
-            in cards_text[1]
+            in sorted_cards_text[1]
         )
 
     @pytest.mark.parametrize(
