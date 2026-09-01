@@ -2,12 +2,10 @@ import decimal
 import enum
 import json
 import re
-import typing
 from functools import partial
 from urllib.parse import urlencode
 
 import wtforms
-from flask import flash
 from flask import url_for
 from flask_wtf import FlaskForm
 
@@ -20,6 +18,7 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
+from pcapi.routes.backoffice.forms import advanced_search as advanced_search_forms
 from pcapi.routes.backoffice.forms import constants
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
@@ -82,8 +81,6 @@ class IndividualOffersLlmSearchAttributes(enum.Enum):
     PRICE = "Prix"
     SUBCATEGORY = "Sous-catégorie"
 
-
-operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
     "ADDRESS": {"field": "address", "operator": ["IN", "NOT_IN"]},
@@ -611,7 +608,7 @@ class OfferLlmSearchSubForm(forms_utils.PCForm):
     )
 
 
-class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
+class BaseOfferAdvancedSearchForm(advanced_search_forms.AdvancedSearchForm, GetOffersBaseFields):
     class Meta:
         csrf = False
 
@@ -622,26 +619,6 @@ class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
         label="recherches",
         min_entries=1,
     )
-
-    @classmethod
-    def is_sub_search_empty(cls, sub_search: dict[str, typing.Any]) -> bool:
-        field_name = sub_search.get("search_field")
-        operator = sub_search.get("operator")
-        if field_name:
-            field_attribute_name = cls.form_field_configuration.get(field_name, {}).get("field", "")
-            field_data = sub_search.get(field_attribute_name)
-            if field_data not in (None, []):
-                return False
-            if operator in operator_no_require_value:
-                return False
-        return True
-
-    @classmethod
-    def is_search_empty(cls, search_data: list[dict[str, typing.Any]]) -> bool:
-        for sub_search in search_data:
-            if not cls.is_sub_search_empty(sub_search):
-                return False
-        return True
 
     def get_sort_link_with_search_data(self, endpoint: str) -> str:
         search_data = {}
@@ -657,39 +634,13 @@ class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
 
         return f"{base_url}&{encoded_search_data}" if encoded_search_data else f"{base_url}"
 
-    def validate(self, extra_validators: dict | None = None) -> bool:
-        errors = []
-
-        for sub_search in self.search.data:
-            if search_field := sub_search.get("search_field"):
-                if type(self).is_sub_search_empty(sub_search):
-                    try:
-                        errors.append(f"Le filtre « {self.search_attributes[search_field].value} » est vide.")
-                    except KeyError:
-                        errors.append(f"Le filtre {search_field} est invalide.")
-                else:
-                    operator = sub_search.get("operator")
-                    if operator not in self.form_field_configuration.get(search_field, {}).get("operator", []):
-                        try:
-                            errors.append(
-                                f"L'opérateur « {advanced_search.AdvancedSearchOperators[operator].value} » n'est pas supporté par le filtre {IndividualOffersSearchAttributes[search_field].value}."
-                            )
-                        except KeyError:
-                            errors.append(f"L'opérateur {operator} n'est pas supporté par le filtre {search_field}.")
-
-        if errors:
-            flash("\n".join(errors), "warning")
-            return False
-
-        return super().validate(extra_validators)
-
 
 class GetOfferAdvancedSearchForm(BaseOfferAdvancedSearchForm):
     form_field_configuration = form_field_configuration
     search_attributes = IndividualOffersSearchAttributes
 
     def is_empty(self) -> bool:
-        return GetOfferAdvancedSearchForm.is_search_empty(self.search.data) and super().is_empty()
+        return self.is_search_empty() and super().is_empty()
 
 
 class GetOfferAlgoliaSearchForm(BaseOfferAdvancedSearchForm):
@@ -705,7 +656,7 @@ class GetOfferAlgoliaSearchForm(BaseOfferAdvancedSearchForm):
 
     def is_empty(self) -> bool:
         empty = not self.algolia_search.data
-        empty = empty and GetOfferAlgoliaSearchForm.is_search_empty(self.search.data)
+        empty = empty and self.is_search_empty()
         return empty and super().is_empty()
 
 
@@ -730,7 +681,7 @@ class GetOfferLlmSearchForm(BaseOfferAdvancedSearchForm):
 
     def is_empty(self) -> bool:
         empty = not self.llm_search.data
-        empty = empty and GetOfferLlmSearchForm.is_search_empty(self.search.data)
+        empty = empty and self.is_search_empty()
         return empty and super().is_empty()
 
 

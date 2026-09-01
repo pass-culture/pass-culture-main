@@ -18,6 +18,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
+from pcapi.routes.backoffice.forms import advanced_search as advanced_search_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.forms import utils
@@ -201,7 +202,7 @@ class AccountsSearchSubForm(utils.PCForm):
         autocomplete.prefill_account_cities_choice(self.city)
 
 
-class GetAccountsListSearchForm(utils.PCForm):
+class GetAccountsListSearchForm(advanced_search_forms.AdvancedSearchForm):
     class Meta:
         csrf = False
         locales = ["fr_FR", "fr"]
@@ -234,14 +235,7 @@ class GetAccountsListSearchForm(utils.PCForm):
     )
 
     def is_empty(self) -> bool:
-        if self.q.data:
-            return False
-
-        for search_field_data in self.search.data:
-            if not self._is_search_field_data_empty(search_field_data):
-                return False
-
-        return True
+        return not self.q.data and self.is_search_empty()
 
     def validate(self, extra_validators: dict | None = None) -> bool:
         errors = []
@@ -249,30 +243,10 @@ class GetAccountsListSearchForm(utils.PCForm):
         query_str = self.q.data.strip(" \t,;") if self.q.data else ""
         if "%" in query_str:
             errors.append("Le caractère % n'est pas autorisé")
-        elif (
-            query_str
-            and len(query_str) < 3
-            and not string_utils.is_numeric(query_str)
-            and all(self._is_search_field_data_empty(search_field_data) for search_field_data in self.search.data)
-        ):
+        elif query_str and len(query_str) < 3 and not string_utils.is_numeric(query_str) and self.is_search_empty():
             errors.append("Attention, la recherche doit contenir au moins 3 lettres.")
 
-        for search_field_data in self.search.data:
-            if search_field := search_field_data.get("search_field"):
-                if self._is_search_field_data_empty(search_field_data):
-                    try:
-                        errors.append(f"Le filtre « {self.search_attributes[search_field].value} » est vide.")
-                    except KeyError:
-                        errors.append(f"Le filtre {search_field} est invalide.")
-                else:
-                    operator = search_field_data.get("operator")
-                    if operator not in self.form_field_configuration.get(search_field, {}).get("operator", []):
-                        try:
-                            errors.append(
-                                f"L'opérateur « {advanced_search.AdvancedSearchOperators[operator].value} » n'est pas supporté par le filtre {self.search_attributes[search_field].value}."
-                            )
-                        except KeyError:
-                            errors.append(f"L'opérateur {operator} n'est pas supporté par le filtre {search_field}.")
+        errors += self.get_advanced_search_errors()
 
         if errors:
             flash("\n".join(errors), "warning")
@@ -283,16 +257,6 @@ class GetAccountsListSearchForm(utils.PCForm):
             flash("Les termes étant très courts, la recherche n'a porté que sur le nom complet exact.", "info")
 
         return super().validate(extra_validators)
-
-    def _is_search_field_data_empty(self, search_field_data: dict[str, typing.Any]) -> bool:
-        field_name = search_field_data.get("search_field")
-        if field_name:
-            field_attribute_name = self.form_field_configuration.get(field_name, {}).get("field", "")
-            field_data = search_field_data.get(field_attribute_name)
-            if field_data not in (None, []):
-                return False
-
-        return True
 
 
 class EditAccountForm(utils.PCForm):
