@@ -12,7 +12,7 @@ export const getDocumentCardContent = (
   switch (document) {
     case EligibilityDocument.WEBSITE:
       return {
-        title: 'Un site internet ou page de réseau social',
+        title: 'Site internet ou page de réseau social',
         description: 'Pour présenter votre activité',
       }
     case EligibilityDocument.RESUME_OR_PORTFOLIO:
@@ -65,7 +65,7 @@ export const getDocumentCardContent = (
       }
     case EligibilityDocument.DESCRIPTION:
       return {
-        title: 'Une description détaillée de vos offres',
+        title: 'Description détaillée de vos offres',
         description: 'Pour expliquer ce que vous souhaitez proposer',
       }
   }

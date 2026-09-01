@@ -120,7 +120,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.ALERT,
       },
       expected: {
-        documentTitle: 'Un site internet ou page de réseau social',
+        documentTitle: 'Site internet ou page de réseau social',
         bannerRole: 'alert',
         bannerTitle: /votre dépôt de dossier ADAGE/,
       },
@@ -216,7 +216,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.ALERT,
       },
       expected: {
-        documentTitle: 'Une description détaillée de vos offres',
+        documentTitle: 'Description détaillée de vos offres',
         bannerRole: 'alert',
         bannerTitle: /disposer d'un point de vente physique/,
       },
