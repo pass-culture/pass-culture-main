@@ -7,7 +7,6 @@ import {
   getOfferStockFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import {
   OfferPublicationEditionForm,
@@ -17,11 +16,7 @@ import {
 function renderOfferPublicationEditionForm(
   props: OfferPublicationEditionFormProps
 ) {
-  return renderWithProviders(
-    <DialogBuilder defaultOpen title="test">
-      <OfferPublicationEditionForm {...props} />
-    </DialogBuilder>
-  )
+  return renderWithProviders(<OfferPublicationEditionForm {...props} />)
 }
 
 describe('OfferPublicationEditionForm', () => {
