@@ -42,6 +42,19 @@ from pcapi.utils.transaction_manager import on_commit
 from . import blueprint
 
 
+@private_api.route("/venues/<int:venue_id>/close", methods=["POST"])
+@login_required
+@atomic()
+@spectree_serialize(on_success_status=204, on_error_statuses=[404], api=blueprint.pro_private_schema)
+def close_venue(venue_id: int) -> None:
+    if not FeatureToggle.WIP_CLOSE_VENUE.is_active():
+        raise ApiErrors(status_code=404)
+
+    venue = get_or_404(Venue, venue_id)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    offerers_api.close_venue(venue, author=current_user)
+
+
 @private_api.route("/venues/<int:venue_id>", methods=["GET"])
 @login_required
 @atomic()
