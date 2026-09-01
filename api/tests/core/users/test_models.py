@@ -461,13 +461,13 @@ class SQLFunctionsTest:
             user=user,
             type=finance_models.DepositType.GRANT_15_17,
             expirationDate=expiration_date,
-            amount=decimal.Decimal("3"),
+            amount=decimal.Decimal(3),
         )
         newest_deposit = users_factories.DepositGrantFactory(
             user=user,
             type=finance_models.DepositType.GRANT_18,
             expirationDate=expiration_date + relativedelta(weeks=1),
-            amount=decimal.Decimal("123"),
+            amount=decimal.Decimal(123),
         )
 
         (wallet_balance,) = db.session.query(sa.func.get_wallet_balance(user.id, False)).first()
@@ -487,7 +487,7 @@ class SQLFunctionsTest:
         assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == 0
 
     @pytest.mark.parametrize(
-        "initial_amount", (decimal.Decimal("150"), decimal.Decimal("152.45"), decimal.Decimal("152.55"))
+        "initial_amount", (decimal.Decimal(150), decimal.Decimal("152.45"), decimal.Decimal("152.55"))
     )
     def test_deposit_balance(self, initial_amount):
         user = users_factories.BeneficiaryFactory(age=18, deposit__amount=initial_amount)

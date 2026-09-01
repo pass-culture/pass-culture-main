@@ -39,12 +39,12 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
         price_category_1 = offers_factories.PriceCategoryFactory(
             offer=event,
             label="Carré d'or",
-            price=decimal.Decimal("30"),
+            price=decimal.Decimal(30),
         )
         price_category_2 = offers_factories.PriceCategoryFactory(
             offer=event,
             label="Triangle d'argent",
-            price=decimal.Decimal("15"),
+            price=decimal.Decimal(15),
             idAtProvider="silver_triangle",
         )
         offers_factories.PriceCategoryFactory()  # should not appear in result
@@ -69,12 +69,12 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
         offers_factories.PriceCategoryFactory(
             offer=event,
             label="Carré d'or",
-            price=decimal.Decimal("30"),
+            price=decimal.Decimal(30),
         )
         offers_factories.PriceCategoryFactory(
             offer=event,
             label="Triangle d'argent",
-            price=decimal.Decimal("15"),
+            price=decimal.Decimal(15),
             idAtProvider="silver_triangle",
         )
         offers_factories.PriceCategoryFactory()
@@ -82,13 +82,13 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
         price_category_3 = offers_factories.PriceCategoryFactory(
             offer=event,
             label="Cercle de bronze",
-            price=decimal.Decimal("10"),
+            price=decimal.Decimal(10),
             idAtProvider="bronze_circle",
         )
         price_category_4 = offers_factories.PriceCategoryFactory(
             offer=event,
             label="Hexagone en chocolat",
-            price=decimal.Decimal("5"),
+            price=decimal.Decimal(5),
             idAtProvider="chocolate_hexagon",
         )
         response = client.with_explicit_token(plain_api_key).get(

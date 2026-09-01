@@ -62,10 +62,10 @@ MULTIPLE_YEARS_AGGREGATED_VENUE_INDIVIDUAL_REVENUE = [
 AGGREGATED_VENUE_REVENUE_WITH_NO_INCOME = [
     MockAggregatedRevenueQueryResult(
         year=2026,
-        individual=Decimal("0"),
-        collective=Decimal("0"),
-        expected_individual=Decimal("0"),
-        expected_collective=Decimal("0"),
+        individual=Decimal(0),
+        collective=Decimal(0),
+        expected_individual=Decimal(0),
+        expected_collective=Decimal(0),
     ),
 ]
 

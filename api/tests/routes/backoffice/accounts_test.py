@@ -1508,7 +1508,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             roles=[users_models.UserRole.FREE_BENEFICIARY], postalCode=postal_code
         )
         users_factories.DepositGrantFactory(
-            user=free_beneficiary, type=finance_models.DepositType.GRANT_FREE, amount=decimal.Decimal("0")
+            user=free_beneficiary, type=finance_models.DepositType.GRANT_FREE, amount=decimal.Decimal(0)
         )
 
         user_id = free_beneficiary.id

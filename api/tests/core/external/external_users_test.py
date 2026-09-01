@@ -192,8 +192,8 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
 
     assert attributes == UserAttributes(
         domains_credit=DomainsCredit(
-            all=Credit(initial=Decimal("500"), remaining=Decimal("475.00")),
-            digital=Credit(initial=Decimal("200"), remaining=Decimal("200")),
+            all=Credit(initial=Decimal(500), remaining=Decimal("475.00")),
+            digital=Credit(initial=Decimal(200), remaining=Decimal(200)),
             physical=Credit(initial=200, remaining=Decimal("195.00")),
         ),
         bonification_status=bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE,
@@ -251,8 +251,8 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
 
     assert attributes == UserAttributes(
         domains_credit=DomainsCredit(
-            all=Credit(initial=Decimal("300.00"), remaining=Decimal("0")),
-            digital=Credit(initial=Decimal("100"), remaining=Decimal("0")),
+            all=Credit(initial=Decimal("300.00"), remaining=Decimal(0)),
+            digital=Credit(initial=Decimal(100), remaining=Decimal(0)),
             physical=None,
         ),
         bonification_status=bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE,
@@ -325,7 +325,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
     assert attributes == UserAttributes(
         domains_credit=DomainsCredit(
             all=Credit(initial=Decimal(initial_amount), remaining=Decimal("0.00")),
-            digital=Credit(initial=Decimal("100"), remaining=Decimal("0.00")),
+            digital=Credit(initial=Decimal(100), remaining=Decimal("0.00")),
             physical=None,
         ),
         bonification_status=bonus_schemas.QFBonificationStatus.ELIGIBLE,

@@ -101,7 +101,7 @@ class PatchPriceCategoryTest(PublicAPIVenueEndpointHelper):
         )
         assert response.status_code == 200
 
-        assert price_category.price == decimal.Decimal("25")
+        assert price_category.price == decimal.Decimal(25)
         assert price_category.label == "carre or"
         assert price_category.idAtProvider == "updated_id_at_provider"
 
@@ -114,7 +114,7 @@ class PatchPriceCategoryTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        assert price_category.price == decimal.Decimal("25")
+        assert price_category.price == decimal.Decimal(25)
 
     def test_stock_price_update(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

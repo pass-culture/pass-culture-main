@@ -105,7 +105,7 @@ def _create_total_commercial_gesture_collective_offer(
         # Create a regular "used" collective booking for the venue
         booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__price=decimal.Decimal("14") + decimal.Decimal(i),
+            collectiveStock__price=decimal.Decimal(14) + decimal.Decimal(i),
             collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
@@ -119,7 +119,7 @@ def _create_total_commercial_gesture_collective_offer(
         # Create collective bookings
         booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__price=decimal.Decimal("30") + decimal.Decimal(i),
+            collectiveStock__price=decimal.Decimal(30) + decimal.Decimal(i),
             educationalInstitution=institution,
         )
         finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory.create(
@@ -254,7 +254,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
         # Create a regular "used" collective booking for the venue
         booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__price=decimal.Decimal("14") + decimal.Decimal(i),
+            collectiveStock__price=decimal.Decimal(14) + decimal.Decimal(i),
             collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
@@ -268,7 +268,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
         # Create collective bookings
         booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__price=decimal.Decimal("30") + decimal.Decimal(i),
+            collectiveStock__price=decimal.Decimal(30) + decimal.Decimal(i),
             educationalInstitution=institution,
         )
         finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory.create(

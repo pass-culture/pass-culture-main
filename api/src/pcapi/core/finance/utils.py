@@ -67,7 +67,7 @@ def round_to_integer(amount: decimal.Decimal) -> int:
     >>> round(100.5)
     101
     """
-    exponent = decimal.Decimal("1")
+    exponent = decimal.Decimal(1)
     return int(amount.quantize(exponent, ROUNDING))
 
 
@@ -78,7 +78,7 @@ def fr_percentage_filter(decimal_rate: decimal.Decimal) -> str:
 def fr_currency_filter(cents: int, use_xpf: bool = False) -> str:
     """Returns a localized str without currency symbol"""
     if use_xpf:
-        amount = cents_to_full_unit(euros_to_xpf(cents), decimal.Decimal("1"))
+        amount = cents_to_full_unit(euros_to_xpf(cents), decimal.Decimal(1))
         str_format = "#,##0"
     else:
         amount = cents_to_full_unit(cents)

@@ -86,7 +86,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         )
         free_price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
-            price=decimal.Decimal("0"),
+            price=decimal.Decimal(0),
             label="gratuit",
         )
 
@@ -123,7 +123,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         assert first_stock.quantity == 10
         assert first_stock.idAtProviders == "id_143556"
         second_stock = next(stock for stock in created_stocks if stock.beginningDatetime == two_months_from_now)
-        assert second_stock.price == decimal.Decimal("0")
+        assert second_stock.price == decimal.Decimal(0)
         assert second_stock.quantity is None
         assert second_stock.idAtProviders is None
 
@@ -273,7 +273,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         )
         free_price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
-            price=decimal.Decimal("0"),
+            price=decimal.Decimal(0),
             label="gratuit",
         )
 
@@ -317,7 +317,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         assert first_stock.quantity == 10
         assert first_stock.idAtProviders == "id_143556"
         second_stock = next(stock for stock in created_stocks if stock.beginningDatetime == two_months_from_now)
-        assert second_stock.price == decimal.Decimal("0")
+        assert second_stock.price == decimal.Decimal(0)
         assert second_stock.quantity is None
         assert second_stock.idAtProviders is None
 

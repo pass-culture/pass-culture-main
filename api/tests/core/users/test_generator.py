@@ -263,7 +263,7 @@ class UserGeneratorTest:
 
         assert user.has_underage_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_15_17
-        assert user.deposit.amount == decimal.Decimal("30")
+        assert user.deposit.amount == decimal.Decimal(30)
 
     def test_generate_with_birth_date(self):
         birth_date = date_utils.get_naive_utc_now().date() - relativedelta(years=19)

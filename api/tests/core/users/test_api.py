@@ -848,9 +848,9 @@ class DomainsCreditTest:
         self._price_incident(incident3)
 
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal("500"), remaining=Decimal("470")),
-            digital=users_models.Credit(initial=Decimal("200"), remaining=Decimal("200")),
-            physical=users_models.Credit(initial=Decimal("200"), remaining=Decimal("200")),
+            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(470)),
+            digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
+            physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
         )
 
     def test_get_domains_regular_credit_with_finance_incidents_in_case_of_v3_deposit_transition(self):
@@ -969,9 +969,7 @@ class DomainsCreditTest:
 
         # initial amount of active deposit + incidents amounts = 50 + (6 + 5) = 61
         # 20€ are used with booking4 => remaining = 61 - 20 = 41€
-        assert users_api.get_domains_credit(user).all == users_models.Credit(
-            initial=Decimal("61"), remaining=Decimal("41")
-        )
+        assert users_api.get_domains_credit(user).all == users_models.Credit(initial=Decimal(61), remaining=Decimal(41))
 
     def test_get_domains_digital_credit_with_finance_incidents(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
@@ -1066,9 +1064,9 @@ class DomainsCreditTest:
         self._price_incident(incident3)
 
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal("500"), remaining=Decimal("476")),
-            digital=users_models.Credit(initial=Decimal("200"), remaining=Decimal("176")),
-            physical=users_models.Credit(initial=Decimal("200"), remaining=Decimal("200")),
+            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(476)),
+            digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(176)),
+            physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
         )
 
     def test_get_domains_physical_credit_with_finance_incidents(self):
@@ -1090,7 +1088,7 @@ class DomainsCreditTest:
         booking1 = bookings_factories.BookingFactory(
             user=user,
             quantity=4,
-            stock__price=Decimal("17"),
+            stock__price=Decimal(17),
             stock__offer__venue=venue,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )  # 68€
@@ -1100,7 +1098,7 @@ class DomainsCreditTest:
         booking2 = bookings_factories.BookingFactory(
             user=user,
             quantity=2,
-            stock__price=Decimal("16"),
+            stock__price=Decimal(16),
             stock__offer__venue=venue,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )  # 32€ → 0€
@@ -1110,7 +1108,7 @@ class DomainsCreditTest:
         booking3 = bookings_factories.BookingFactory(
             user=user,
             quantity=3,
-            stock__price=Decimal("13"),
+            stock__price=Decimal(13),
             stock__offer__venue=venue,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )  # 39€ → 27€
@@ -1161,9 +1159,9 @@ class DomainsCreditTest:
         self._price_incident(incident3)
 
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal("500"), remaining=Decimal("405")),
-            digital=users_models.Credit(initial=Decimal("200"), remaining=Decimal("200")),
-            physical=users_models.Credit(initial=Decimal("200"), remaining=Decimal("105")),
+            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(405)),
+            digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
+            physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(105)),
         )
 
 

@@ -559,7 +559,7 @@ class EditStockTest:
         existing_stock = factories.ThingStockFactory(
             price=110,
             offer__subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
-            offer__lastValidationPrice=decimal.Decimal("100"),
+            offer__lastValidationPrice=decimal.Decimal(100),
         )
 
         # When
@@ -617,7 +617,7 @@ class EditStockTest:
         existing_stock = factories.ThingStockFactory(
             price=110,
             offer__subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
-            offer__lastValidationPrice=decimal.Decimal("100"),
+            offer__lastValidationPrice=decimal.Decimal(100),
         )
 
         # When
@@ -636,7 +636,7 @@ class EditStockTest:
         existing_stock = factories.ThingStockFactory(
             price=110,
             offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-            offer__lastValidationPrice=decimal.Decimal("100"),
+            offer__lastValidationPrice=decimal.Decimal(100),
             offer__ean="1234567890123",
         )
 
@@ -1113,7 +1113,7 @@ class UpsertOfferThingStocksTest:
                             "activation_codes": None,
                             "activation_codes_expiration_datetime": None,
                             "booking_limit_datetime": None,
-                            "price": decimal.Decimal("1"),
+                            "price": decimal.Decimal(1),
                             "quantity": 1,
                         }
                     )
@@ -1124,7 +1124,7 @@ class UpsertOfferThingStocksTest:
 
     def test_soft_delete_only(self):
         offer = factories.ThingOfferFactory()
-        stock = factories.ThingStockFactory(offer=offer, quantity=10, price=decimal.Decimal("5"))
+        stock = factories.ThingStockFactory(offer=offer, quantity=10, price=decimal.Decimal(5))
 
         api.upsert_offer_thing_stocks(offer, [])
 
@@ -1133,7 +1133,7 @@ class UpsertOfferThingStocksTest:
 
     def test_update_booking_limit_with_timezone_conversion(self):
         offer = factories.ThingOfferFactory()
-        stock = factories.ThingStockFactory(offer=offer, quantity=10, price=decimal.Decimal("5"))
+        stock = factories.ThingStockFactory(offer=offer, quantity=10, price=decimal.Decimal(5))
 
         booking_limit_datetime = datetime.now(UTC).replace(microsecond=0) + timedelta(days=1)
         api.upsert_offer_thing_stocks(
@@ -1171,7 +1171,7 @@ class UpsertOfferThingStocksTest:
                         "activation_codes": activation_codes,
                         "activation_codes_expiration_datetime": activation_codes_expiration_datetime,
                         "booking_limit_datetime": booking_limit_datetime,
-                        "price": decimal.Decimal("0"),
+                        "price": decimal.Decimal(0),
                         "quantity": None,
                     }
                 )
@@ -1196,7 +1196,7 @@ class UpsertOfferThingStocksTest:
                         "activation_codes": None,
                         "activation_codes_expiration_datetime": None,
                         "booking_limit_datetime": None,
-                        "price": decimal.Decimal("0"),
+                        "price": decimal.Decimal(0),
                         "quantity": None,
                     }
                 )
@@ -1208,8 +1208,8 @@ class UpsertOfferThingStocksTest:
 
     def test_add_update_and_delete_stock_with_activations_codes(self):
         offer = factories.DigitalOfferFactory()
-        stock_to_be_updated = factories.ThingStockFactory(offer=offer, quantity=5, price=decimal.Decimal("1"))
-        stock_to_be_deleted = factories.ThingStockFactory(offer=offer, quantity=2, price=decimal.Decimal("2"))
+        stock_to_be_updated = factories.ThingStockFactory(offer=offer, quantity=5, price=decimal.Decimal(1))
+        stock_to_be_deleted = factories.ThingStockFactory(offer=offer, quantity=2, price=decimal.Decimal(2))
 
         activation_codes = ["CODE_1", "CODE_2"]
         booking_limit_datetime = datetime.now() + timedelta(days=7)
@@ -1223,7 +1223,7 @@ class UpsertOfferThingStocksTest:
                         "activation_codes": None,
                         "activation_codes_expiration_datetime": None,
                         "booking_limit_datetime": None,
-                        "price": decimal.Decimal("9"),
+                        "price": decimal.Decimal(9),
                         "quantity": 10,
                     }
                 ),
@@ -1233,7 +1233,7 @@ class UpsertOfferThingStocksTest:
                         "activation_codes": activation_codes,
                         "activation_codes_expiration_datetime": activation_codes_expiration_datetime,
                         "booking_limit_datetime": booking_limit_datetime,
-                        "price": decimal.Decimal("0"),
+                        "price": decimal.Decimal(0),
                         "quantity": None,
                     }
                 ),
@@ -1247,14 +1247,14 @@ class UpsertOfferThingStocksTest:
         assert not deleted_stock
 
         udpated_stock = db.session.get(models.Stock, stock_to_be_updated.id)
-        assert udpated_stock.price == decimal.Decimal("9") and udpated_stock.quantity == 10
+        assert udpated_stock.price == decimal.Decimal(9) and udpated_stock.quantity == 10
         created_stocks = [s for s in offer.activeStocks if s.id not in (stock_to_be_updated.id, stock_to_be_deleted.id)]
         assert len(created_stocks) == 1
         assert {ac.code for ac in created_stocks[0].activationCodes} == set(activation_codes)
 
     def test_delete_stock_with_existing_activation_codes_and_no_bookings(self):
         offer = factories.DigitalOfferFactory()
-        stock_to_be_deleted = factories.ThingStockFactory(offer=offer, quantity=3, price=decimal.Decimal("0"))
+        stock_to_be_deleted = factories.ThingStockFactory(offer=offer, quantity=3, price=decimal.Decimal(0))
         factories.ActivationCodeFactory(stock=stock_to_be_deleted, code="OLD_CODE_1")
 
         new_activation_codes = ["NEW_CODE_1"]
@@ -1269,7 +1269,7 @@ class UpsertOfferThingStocksTest:
                         "activation_codes": new_activation_codes,
                         "activation_codes_expiration_datetime": activation_codes_expiration_datetime,
                         "booking_limit_datetime": booking_limit_datetime,
-                        "price": decimal.Decimal("0"),
+                        "price": decimal.Decimal(0),
                         "quantity": None,
                     }
                 ),
