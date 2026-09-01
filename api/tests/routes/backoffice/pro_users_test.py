@@ -4,6 +4,8 @@ from unittest.mock import patch
 import pytest
 from flask import url_for
 
+from pcapi.core.chronicles import factories as chronicles_factories
+from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
@@ -11,6 +13,8 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.operations import factories as operations_factories
+from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import assert_num_queries
@@ -662,6 +666,8 @@ class DeleteProUserTest(PostEndpointHelper):
         user = users_factories.NonAttachedProFactory()
         users_factories.FavoriteFactory(user=user)
         offers_factories.MediationFactory(author=user)
+        operations_factories.SpecialEventResponseFactory(user=user)
+        chronicles_factories.ChronicleFactory(user=user)
 
         user_id = user.id
 
@@ -673,6 +679,8 @@ class DeleteProUserTest(PostEndpointHelper):
         assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
         assert db.session.query(users_models.Favorite).filter(users_models.Favorite.userId == user_id).count() == 0
         assert db.session.query(offers_models.Mediation).one().authorId is None
+        assert db.session.query(operations_models.SpecialEventResponse).one().userId is None
+        assert db.session.query(chronicles_models.Chronicle).one().userId is None
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
     @patch("pcapi.core.external.batch.tasks.delete_user_attributes_task")
