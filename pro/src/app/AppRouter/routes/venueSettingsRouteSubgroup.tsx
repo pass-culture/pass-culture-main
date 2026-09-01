@@ -43,5 +43,14 @@ export const venueSettingsRouteSubgroup: CustomRouteGroup = {
         title: 'Synchronisations',
       },
     },
+    {
+      path: 'gestion-structure',
+      lazy: () =>
+        import('@/pages/VenueSettings/VenueManagement/VenueManagement'),
+      handle: {
+        title: 'Gestion de la structure',
+      },
+      featureName: 'WIP_CLOSE_VENUE',
+    },
   ],
 }
