@@ -32,6 +32,7 @@ class Returns200Test:
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=2000,
+            lastPeriodRemainingAmount=200,
             isFinal=True,
         )
         booking = CollectiveBookingFactory(
@@ -47,6 +48,7 @@ class Returns200Test:
         EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=other_educational_year,
+            lastPeriodRemainingAmount=None,
             amount=2000,
             isFinal=False,
         )
@@ -67,6 +69,7 @@ class Returns200Test:
             "deposits": [
                 {
                     "credit": 2000,
+                    "lastPeriodRemainingCredit": 200,
                     "isFinal": True,
                     "period": {
                         "start": educational_year.beginningDate.isoformat() + "Z",
@@ -85,11 +88,13 @@ class Returns200Test:
         deposit_first_period = EducationalDepositFirstPeriodFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
+            lastPeriodRemainingAmount=200,
             amount=2000,
         )
         deposit_second_period = EducationalDepositSecondPeriodFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
+            lastPeriodRemainingAmount=None,
             amount=2500,
         )
 
@@ -103,6 +108,7 @@ class Returns200Test:
             "deposits": [
                 {
                     "credit": 2000,
+                    "lastPeriodRemainingCredit": 200,
                     "isFinal": True,
                     "period": {
                         "start": deposit_first_period.period.lower.isoformat() + "Z",
@@ -111,6 +117,7 @@ class Returns200Test:
                 },
                 {
                     "credit": 2500,
+                    "lastPeriodRemainingCredit": None,
                     "isFinal": True,
                     "period": {
                         "start": deposit_second_period.period.lower.isoformat() + "Z",
