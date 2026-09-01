@@ -674,8 +674,9 @@ def get_select_user_form(ds_application_id: int) -> response_utils.BackofficeRes
         )
 
     form = account_forms.AccountUpdateRequestSelectUserForm(
-        user=[update_request.userId] if update_request.userId else None,  # type: ignore[arg-type]
+        user=[update_request.userId] if update_request.userId else None
     )
+    autocomplete.prefill_public_users_choices(form.user)
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -715,7 +716,8 @@ def select_user(ds_application_id: int) -> response_utils.BackofficeResponse:
         flash(response_utils.build_form_error_msg(form), "warning")
         return _render_account_update_requests([ds_application_id])
 
-    update_request.set_user_id(form.user.data[0])
+    data = form.user.single_data
+    update_request.set_user_id(int(data) if data else None)
     db.session.add(update_request)
     db.session.flush()
 

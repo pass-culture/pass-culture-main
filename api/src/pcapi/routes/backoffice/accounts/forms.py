@@ -509,13 +509,9 @@ class AccountUpdateRequestSelectUserForm(utils.PCForm):
     user = fields.PCTomSelectField(
         "Compte jeune",
         choices=[],
-        validate_choice=True,
+        validate_choice=False,
         endpoint="backoffice_web.autocomplete_public_users",
     )
-
-    def __init__(self, *args: list, **kwargs: dict):
-        super().__init__(*args, **kwargs)
-        autocomplete.prefill_public_users_choices(self.user)
 
 
 class UserTagBaseForm(FlaskForm):

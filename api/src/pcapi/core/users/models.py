@@ -1322,7 +1322,7 @@ class UserAccountUpdateRequest(PcObject, Model):
             self.status in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going)
         )
 
-    def set_user_id(self, user_id: int) -> None:
+    def set_user_id(self, user_id: int | None) -> None:
         self.userId = user_id
         if not self.is_user_set_manually:
             self.flags = self.flags + [UserAccountUpdateFlag.USER_SET_MANUALLY]
