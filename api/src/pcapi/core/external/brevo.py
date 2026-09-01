@@ -142,7 +142,7 @@ def update_contact_email(user: users_models.User, old_email: str, new_email: str
     )
 
     if asynchronous:
-        tasks.update_contact_attributes_task.delay(contact_request.model_dump())
+        tasks.update_contact_attributes_task.delay(contact_request.model_dump(mode="json"))
     else:
         tasks.update_contact_attributes_task(contact_request.model_dump())
 
@@ -174,7 +174,7 @@ def update_contact_attributes(
     )
 
     if asynchronous:
-        tasks.update_contact_attributes_task.delay(contact_request.model_dump())
+        tasks.update_contact_attributes_task.delay(contact_request.model_dump(mode="json"))
     else:
         make_update_request(contact_request)
 

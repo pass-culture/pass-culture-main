@@ -50,7 +50,7 @@ def send_cancel_booking_notification(booking_ids: list[int]) -> None:
             body=f"""Ta {cancelled_object} "{offer.name}" a été annulée par l'offreur.""",
         ),
     )
-    tasks.send_transactional_notification_task.delay(payload.model_dump())
+    tasks.send_transactional_notification_task.delay(payload.model_dump(mode="json"))
 
 
 def _setup_today_min_max(utc_mean_offset: int, start_utc_hour: int = 13) -> tuple[datetime, datetime]:
@@ -101,7 +101,7 @@ def _send_today_event_notification(stock_ids: set[int]) -> None:
                     ),
                     extra={"deeplink": booking_app_link(booking)},
                 )
-                tasks.send_transactional_notification_task.delay(payload.model_dump())
+                tasks.send_transactional_notification_task.delay(payload.model_dump(mode="json"))
         except Exception:
             logger.exception("Could not send today stock notification", extra={"stock": stock_id})
 
@@ -159,7 +159,7 @@ def send_offer_link_by_push(user_id: int, offer: Offer) -> None:
             body="Pour la confirmer, clique sur le lien que tu as reçu par mail 📩",
         ),
     )
-    tasks.send_transactional_notification_task.delay(payload.model_dump())
+    tasks.send_transactional_notification_task.delay(payload.model_dump(mode="json"))
 
 
 def _get_soon_expiring_bookings_with_offers_notification_data(
@@ -195,7 +195,7 @@ def notify_users_bookings_not_retrieved() -> None:
     for booking in bookings:
         try:
             payload = _get_soon_expiring_bookings_with_offers_notification_data(booking)
-            tasks.send_transactional_notification_task.delay(payload.model_dump())
+            tasks.send_transactional_notification_task.delay(payload.model_dump(mode="json"))
         except exceptions.BookingIsExpired:
             logger.exception("Booking %d is expired", booking.id, extra={"booking": booking.id, "user": booking.userId})
         except Exception:

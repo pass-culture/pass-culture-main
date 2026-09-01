@@ -38,9 +38,9 @@ def search_offers(payload: serialization.SearchOffersRequest) -> serialization.S
 def update_offer_compliance_score(offer: offers_models.Offer, is_primary: bool) -> None:
     payload = _get_payload_for_compliance_api(offer)
     if is_primary:
-        tasks.update_offer_compliance_score_primary_task.delay(payload.model_dump())
+        tasks.update_offer_compliance_score_primary_task.delay(payload.model_dump(mode="json"))
     else:
-        tasks.update_offer_compliance_score_secondary_task.delay(payload.model_dump())
+        tasks.update_offer_compliance_score_secondary_task.delay(payload.model_dump(mode="json"))
 
 
 def make_update_offer_compliance_score(

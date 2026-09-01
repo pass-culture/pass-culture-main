@@ -1,4 +1,3 @@
-import json
 import logging
 import time
 import typing
@@ -38,12 +37,15 @@ def celery_async_task(
     """
     celery_async_task decorator is used to defer the function execution to a Celery worker.
 
+    If model is given, the decorated task should be sent with:
+    payload = model(...)
+    my_task.delay(payload.model_dump(mode="json"))
+
     Parameters :
     name:  controls what route is used for the task and therefore which worker will run it.
+    model: when given, we instanciate the pydantic model from the input and pass it as the task argument.
     autoretry_for:  a tuple of exception that will make the worker retry the task automatically if they are raised.
     retry_backoff: if set, the task will not be retried immediately and will follow an exponential backoff retry scheme.
-    model: if not None, will perform input validation against pydantic model and parse and load it to and from JSON to ensure
-    that the input is JSON serializable. Otherwise this step will be skipped.
     pii_fields: keys of the payload that will be scrubbed for logging only
     """
 
@@ -68,14 +70,7 @@ def celery_async_task(
             try:
                 parsed_payload: BaseModelV2 | None = None
                 if model is not None:
-                    # We want to ensure payload is JSON serializable, we do that by encoding and decoding
-                    # to and from json. This is needed because Celery uses the __repr__ of the task to pass
-                    # it so values like dates and Decimal will be preserved instead of being transformed to their
-                    # JSON representation.
-                    # This is the same behavior that we had on cloud_tasks
                     parsed_payload = model.model_validate(payload)
-                    parsed_payload = json.loads(parsed_payload.model_dump_json())
-                    parsed_payload = model.model_validate(parsed_payload)
 
                 f(parsed_payload)
                 metrics.tasks_succeeded_counter.labels(task=name).inc()

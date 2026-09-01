@@ -79,7 +79,7 @@ def update_ubble_workflow_if_needed(
         return
 
     payload = ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check.id)
-    update_ubble_workflow_task.delay(payload.model_dump())
+    update_ubble_workflow_task.delay(payload.model_dump(mode="json"))
 
 
 @celery_async_task(
@@ -157,7 +157,7 @@ def recover_incomplete_ubble_verification() -> None:
 
     for fraud_check_id in incomplete_fraud_check_ids:
         payload = ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check_id)
-        recover_incomplete_ubble_verification_task.delay(payload=payload.model_dump())
+        recover_incomplete_ubble_verification_task.delay(payload=payload.model_dump(mode="json"))
 
     logger.info(
         "Enqueued Ubble recovery from fraud check %d to fraud check %d",

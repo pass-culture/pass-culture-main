@@ -59,7 +59,7 @@ def check_active_offerers(apply: bool = False, day: int | None = None) -> None:
             siren=offerer.siren,
             close_or_tag_when_inactive=apply,
         )
-        offerers_tasks.check_offerer_siren_task.delay(payload.model_dump())
+        offerers_tasks.check_offerer_siren_task.delay(payload.model_dump(mode="json"))
 
 
 @blueprint.cli.command("check_closed_offerers")

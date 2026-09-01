@@ -180,7 +180,9 @@ def start_ubble_workflow(
     except ubble.UbbleConflictError:
         # resync the identity verification
         ubble_tasks.update_ubble_workflow_task.delay(
-            payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=ubble_fraud_check.id).model_dump()
+            payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=ubble_fraud_check.id).model_dump(
+                mode="json"
+            )
         )
 
         raise
@@ -513,7 +515,9 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
     stale_ubble_fraud_check_ids = _get_stale_fraud_checks_id_and_status(ubble_tasks.UBBLE_TASK_RATE_LIMIT)
     for fraud_check_id, fraud_check_status in stale_ubble_fraud_check_ids:
         ubble_tasks.update_ubble_workflow_task.delay(
-            payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check_id).model_dump()
+            payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check_id).model_dump(
+                mode="json"
+            )
         )
 
         if fraud_check_status == subscription_models.FraudCheckStatus.STARTED:
