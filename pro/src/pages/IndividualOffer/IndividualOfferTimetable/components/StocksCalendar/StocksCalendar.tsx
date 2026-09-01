@@ -318,6 +318,17 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
             </StocksCalendarTable>
           </div>
         )}
+        {hasNoStocks &&
+          (!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION) && (
+            <StocksCalendarActionsBar
+              checkedStocks={checkedStocks}
+              hasStocks={offer.hasStocks}
+              deleteStocks={deleteStocks}
+              updateCheckedStocks={setCheckedStocks}
+              mode={mode}
+              offerId={offer.id}
+            />
+          )}
       </div>
     </>
   )

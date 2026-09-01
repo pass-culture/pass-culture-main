@@ -251,7 +251,7 @@ test.describe('Create collective offers', () => {
       TEMPLATE_OFFERS_COLUMNS,
       [
         '',
-        `Offre vitrine${commonOfferData.title}`,
+        `${commonOfferData.title}`,
         'Toute l’année scolaire',
         `1 boulevard Poissonnière 75002 Paris`,
         'publiée',
@@ -493,13 +493,17 @@ async function searchOffer(
   waitForResponseFn: (response: Response) => boolean = (response: Response) =>
     isGetCollectiveOffersBookableResponse(response)
 ) {
+  const isNameSearchResponse = (response: Response) =>
+    waitForResponseFn(response) &&
+    new URL(response.url()).searchParams.get('name') === commonOfferData.title
+
   await page.getByRole('searchbox', { name: /Nom de l’offre/ }).clear()
   await page
     .getByRole('searchbox', { name: /Nom de l’offre/ })
     .fill(commonOfferData.title)
 
   await Promise.all([
-    page.waitForResponse(waitForResponseFn),
+    page.waitForResponse(isNameSearchResponse),
     page.getByText('Rechercher').click(),
   ])
 }
