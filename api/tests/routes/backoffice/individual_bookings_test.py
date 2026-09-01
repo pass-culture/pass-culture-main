@@ -1788,6 +1788,7 @@ class GetIndividualBookingTest(GetEndpointHelper):
     # check if booking has current incident (for commercial gestures)
     # mediation
     expected_num_queries = 6
+    expected_num_queries_without_incident_or_external = expected_num_queries - 3
 
     def test_reimbursed_booking(self, authenticated_client):
         booking = bookings_factories.ReimbursedBookingFactory(
@@ -1803,6 +1804,7 @@ class GetIndividualBookingTest(GetEndpointHelper):
         descriptions = html_parser.extract_descriptions(response.data)
         address = booking.stock.offer.offererAddress.address
         assert descriptions["Bénéficiaire"] == f"{booking.user.full_name} ({booking.user.id})"
+        assert descriptions["État du crédit"] == "Actif"
         assert descriptions["Montant"] == "10,10 €"
         assert descriptions["Contremarque"] == booking.token
         assert descriptions["ID réservation"] == str(booking.id)
@@ -1826,6 +1828,19 @@ class GetIndividualBookingTest(GetEndpointHelper):
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Incident comptable"] == f"Geste Commercial ({booking_incident.incidentId}) Créé"
 
+    def test_booking_with_expired_deposit(self, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+        booking.user.deposit.expirationDate = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        db.session.flush()
+        booking_id = booking.id
+
+        with assert_num_queries(self.expected_num_queries_without_incident_or_external):
+            response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
+            assert response.status_code == 200
+
+            descriptions = html_parser.extract_descriptions(response.data)
+            assert descriptions["État du crédit"] == "Expiré"
+
     def test_tunnel_completed(self, authenticated_client):
         booking = bookings_factories.BookingFactory(
             dateCreated=datetime.datetime(2025, 1, 1, 11, 30, 12),
@@ -1835,7 +1850,7 @@ class GetIndividualBookingTest(GetEndpointHelper):
         booking.cancellationLimitDate = datetime.datetime(2025, 1, 5, 11, 30, 12)
 
         booking_id = booking.id
-        with assert_num_queries(self.expected_num_queries - 3):  # do not check for incidents or external
+        with assert_num_queries(self.expected_num_queries_without_incident_or_external):
             response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
             assert response.status_code == 200
 
@@ -1854,7 +1869,7 @@ class GetIndividualBookingTest(GetEndpointHelper):
         booking.cancellationLimitDate = datetime.datetime(2025, 1, 5, 11, 30, 12)
 
         booking_id = booking.id
-        with assert_num_queries(self.expected_num_queries - 3):  # do not check for incidents or external
+        with assert_num_queries(self.expected_num_queries_without_incident_or_external):
             response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
             assert response.status_code == 200
 

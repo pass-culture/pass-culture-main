@@ -932,6 +932,7 @@ def get_individual_booking(booking_id: int) -> response_utils.BackofficeResponse
             .load_only(finance_models.CashflowBatch.label),
             sa_orm.joinedload(bookings_models.Booking.venue).joinedload(offerers_models.Venue.managingOfferer),
             sa_orm.joinedload(bookings_models.Booking.incidents),
+            sa_orm.joinedload(bookings_models.Booking.deposit),
         )
         .filter(bookings_models.Booking.id == booking_id)
         .one_or_none()

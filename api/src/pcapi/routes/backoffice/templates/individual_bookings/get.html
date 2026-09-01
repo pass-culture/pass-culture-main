@@ -76,6 +76,9 @@
           {{ links.build_public_user_name_to_details_link(booking.user) }}
           {{ copy_to_clipboard(booking.user.full_name, "Copier le nom du bénéficiaire") }}
         {% endcall %}
+        {% call description_detail_horizontal("État du crédit") %}
+          {{ booking.deposit | format_deposit_state }}
+        {% endcall %}
         {% call description_detail_horizontal("Contremarque") %}
           {{ booking.token }}
           {{ copy_to_clipboard(booking.token, "Copier la contremarque") }}
