@@ -1733,6 +1733,25 @@ class SelectUserTest(PostEndpointHelper):
         if additional_assertion:
             assert additional_assertion(update_request)
 
+    def test_clear_user(self, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            form={"user": ""},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
+        assert str(update_request.dsApplicationId) in cells[1]
+        assert cells[6] == "Compte jeune non trouvé"
+
+        db.session.refresh(update_request)
+        assert update_request.user is None
+        assert update_request.is_user_set_manually
+
     @pytest.mark.parametrize(
         "status",
         [
