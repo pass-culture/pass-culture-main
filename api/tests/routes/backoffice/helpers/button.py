@@ -8,6 +8,8 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 
+from tests.routes.backoffice.helpers import html_parser
+
 
 pytestmark = [
     pytest.mark.usefixtures("db_session"),
@@ -42,7 +44,7 @@ class ButtonHelper:
         response = authenticated_client.get(self.path)
         assert response.status_code == 200
 
-        assert self.button_label in response.data.decode("utf-8")
+        assert self.button_label in html_parser.extract(response.data, "button")
 
     def test_no_button(self, client, roles_with_permissions):
         client = client.with_bo_session_auth(self.unauthorized_user)
@@ -50,4 +52,4 @@ class ButtonHelper:
         response = client.get(self.path)
         assert response.status_code == 200
 
-        assert self.button_label not in response.data.decode("utf-8")
+        assert self.button_label not in html_parser.extract(response.data, "button")
