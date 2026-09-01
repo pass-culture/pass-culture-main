@@ -591,7 +591,7 @@ class GetBoUserTest(GetEndpointHelper):
 
 class UpdateButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
-    button_label = "Modifier les informations"
+    button_label = "Modifier les infos"
 
     @property
     def path(self):

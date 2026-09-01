@@ -367,7 +367,7 @@ class GetOffererTest(GetEndpointHelper):
 
     class CloseButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.CLOSE_OFFERER
-        button_label = "Fermer l&#39;entité juridique"
+        button_label = "Fermer l'entité juridique"
 
         @property
         def path(self):
