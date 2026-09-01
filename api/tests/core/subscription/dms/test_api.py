@@ -263,8 +263,9 @@ class HandleDmsApplicationTest:
 
         assert db.session.query(subscription_models.BeneficiaryFraudCheck).first() is None
 
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    def test_field_error_when_draft(self, send_dms_message_mock):
+    def test_field_error_when_draft(self, send_dms_message_mock, create_ubble_identification):
         user = users_factories.UserFactory()
         dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
@@ -299,8 +300,11 @@ class HandleDmsApplicationTest:
             )
         ]
 
+        create_ubble_identification.assert_not_called()  # because of error
+
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    def test_field_error_when_on_going(self, send_dms_message_mock):
+    def test_field_error_when_on_going(self, send_dms_message_mock, create_ubble_identification):
         application_number = 1
         user = users_factories.UserFactory()
         subscription_factories.BeneficiaryFraudCheckFactory(
@@ -337,6 +341,8 @@ class HandleDmsApplicationTest:
 
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == subscription_models.FraudCheckStatus.PENDING
+
+        create_ubble_identification.assert_not_called()  # because of error
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_field_error_when_accepted(self, send_dms_message_mock):
@@ -480,8 +486,11 @@ class HandleDmsApplicationTest:
         mock_send_user_message.assert_called_once()
         assert orphan.latest_modification_datetime == datetime.datetime(2020, 5, 13, 7, 9, 46)
 
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
-    def test_correcting_application_resets_errors(self, mock_send_user_message, db_session):
+    def test_correcting_application_resets_errors(
+        self, mock_send_user_message, create_ubble_identification, db_session
+    ):
         user = users_factories.UserFactory(email="john.stiles@example.com")
         dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
@@ -518,8 +527,13 @@ class HandleDmsApplicationTest:
         assert fraud_check.reasonCodes == []
         assert fraud_check.reason is None
 
+        create_ubble_identification.assert_called_once()
+
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.add_label_to_application")
-    def test_add_label_when_almost_19_years_old(self, mock_add_label_to_application, db_session):
+    def test_add_label_when_almost_19_years_old(
+        self, mock_add_label_to_application, create_ubble_identification, db_session
+    ):
         user = users_factories.UserFactory()
         dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
@@ -538,6 +552,8 @@ class HandleDmsApplicationTest:
             ),
         )
         assert db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=user.id).count() == 1
+
+        create_ubble_identification.assert_called_once()
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.add_label_to_application")
     def test_keep_label_when_almost_19_years_old(self, mock_add_label_to_application, db_session):
@@ -590,8 +606,9 @@ class HandleDmsApplicationTest:
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
     @pytest.mark.parametrize("annotation", ["NEL", "IDP, NEL", "NEL, IDM"])
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
-    def test_process_instructor_annotation_NEL(self, mock_make_refused, annotation):
+    def test_process_instructor_annotation_NEL(self, mock_make_refused, create_ubble_identification, annotation):
         user = users_factories.UserFactory()
         dms_response = fixtures.make_parsed_graphql_application(
             procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
@@ -632,10 +649,13 @@ class HandleDmsApplicationTest:
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
 
+        create_ubble_identification.assert_not_called()  # because becomes refused
+
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
     @pytest.mark.parametrize("annotation", ["IDP", "IDP, S"])
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
-    def test_process_instructor_annotation_IDP(self, mock_make_refused, annotation):
+    def test_process_instructor_annotation_IDP(self, mock_make_refused, create_ubble_identification, annotation):
         user = users_factories.UserFactory()
         dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
@@ -662,6 +682,8 @@ class HandleDmsApplicationTest:
 
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
+
+        create_ubble_identification.assert_not_called()  # because becomes refused
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
@@ -1776,8 +1798,11 @@ class RunIntegrationTest:
 
 @pytest.mark.usefixtures("db_session")
 class GraphQLSourceProcessApplicationTest:
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    def test_process_accepted_application_user_already_created(self, get_applications_with_details):
+    def test_process_accepted_application_user_already_created(
+        self, get_applications_with_details, create_ubble_identification
+    ):
         user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
 
         get_applications_with_details.return_value = [
@@ -1802,8 +1827,14 @@ class GraphQLSourceProcessApplicationTest:
         assert statement_fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert statement_fraud_check.reason == "honor statement contained in DMS application"
 
+        get_applications_with_details.assert_called_once()
+        create_ubble_identification.assert_not_called()  # because application is accepted
+
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    def test_process_accepted_application_user_registered_at_18(self, get_applications_with_details):
+    def test_process_accepted_application_user_registered_at_18(
+        self, get_applications_with_details, create_ubble_identification
+    ):
         user = users_factories.UserFactory(
             dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         )
@@ -1823,8 +1854,14 @@ class GraphQLSourceProcessApplicationTest:
         assert len(user.beneficiaryFraudChecks) == 5  # DMS, HONOR_STATEMENT, PROFILE_COMPLETION, AAH, AEEH
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
+        get_applications_with_details.assert_called_once()
+        create_ubble_identification.assert_not_called()  # because application is accepted
+
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    def test_process_accepted_application_user_registered_at_18_dms_at_19(self, get_applications_with_details):
+    def test_process_accepted_application_user_registered_at_18_dms_at_19(
+        self, get_applications_with_details, create_ubble_identification
+    ):
         user = users_factories.UserFactory(
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -1853,8 +1890,14 @@ class GraphQLSourceProcessApplicationTest:
         assert len(user.beneficiaryFraudChecks) == 5  # DMS, HONOR_STATEMENT, PROFILE_COMPLETION, AAH, AEEH
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
+        get_applications_with_details.assert_called_once()
+        create_ubble_identification.assert_not_called()  # because application is accepted
+
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    def test_process_accepted_application_user_registered_at_18_dms_started_at_19(self, get_applications_with_details):
+    def test_process_accepted_application_user_registered_at_18_dms_started_at_19(
+        self, get_applications_with_details, create_ubble_identification
+    ):
         user = users_factories.UserFactory(
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19, days=1),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -1881,8 +1924,14 @@ class GraphQLSourceProcessApplicationTest:
         assert len(user.beneficiaryFraudChecks) == 3  # profile, DMS, honor statement
         assert mails_testing.outbox[0]["subject"] == "Revue manuelle nécessaire"
 
+        get_applications_with_details.assert_called_once()
+        create_ubble_identification.assert_not_called()  # because application is accepted
+
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    def test_process_accepted_application_user_not_eligible(self, get_applications_with_details):
+    def test_process_accepted_application_user_not_eligible(
+        self, get_applications_with_details, create_ubble_identification
+    ):
         user = users_factories.UserFactory(
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19, months=4),
         )
@@ -1905,8 +1954,12 @@ class GraphQLSourceProcessApplicationTest:
         assert subscription_models.FraudReasonCode.NOT_ELIGIBLE in dms_fraud_check.reasonCodes
         assert user.roles == []
 
+        get_applications_with_details.assert_called_once()
+        create_ubble_identification.assert_not_called()  # because application is accepted
+
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    def test_dms_application_value_error(self, get_applications_with_details):
+    def test_dms_application_value_error(self, get_applications_with_details, create_ubble_identification):
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
             fixtures.make_parsed_graphql_application(
@@ -1936,8 +1989,12 @@ class GraphQLSourceProcessApplicationTest:
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
 
+        get_applications_with_details.assert_called_once()
+        create_ubble_identification.assert_not_called()  # because application is accepted
+
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    def test_reimport_same_user(self, get_applications_with_details):
+    def test_reimport_same_user(self, get_applications_with_details, create_ubble_identification):
         procedure_number = 42
         already_imported_user = users_factories.BeneficiaryGrant18Factory()
 
@@ -1960,6 +2017,9 @@ class GraphQLSourceProcessApplicationTest:
             .one()
         )
         assert fraud_check.status == subscription_models.FraudCheckStatus.OK
+
+        get_applications_with_details.assert_called_once()
+        create_ubble_identification.assert_not_called()  # because application is accepted
 
 
 class DmsImportTest:
