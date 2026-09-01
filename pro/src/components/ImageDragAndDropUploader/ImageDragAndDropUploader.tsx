@@ -69,6 +69,10 @@ export const ImageDragAndDropUploader = ({
   const shouldDisplayActions = hasImage && !hideActionButtons
 
   useEffect(() => {
+    setDraftCredit(credit)
+  }, [credit])
+
+  useEffect(() => {
     // This is to manage the focus when ImageDragAndDropUploader is re-rendered
     // after an image deletion (after a button action click, not as a result
     // of a deletion from the modal options)

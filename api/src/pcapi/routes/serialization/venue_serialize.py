@@ -156,7 +156,7 @@ class GetVenueResponseModel(HttpBodyModel):
                     crop_params = venue_banners_serialize.CropParamsV2()
 
                 banner_meta = venue_banners_serialize.BannerMetaModel(
-                    image_credit=None,
+                    image_credit=venue.bannerMeta.get("image_credit"),
                     original_image_url=venue.bannerMeta.get("original_image_url"),
                     crop_params=crop_params,
                 )
