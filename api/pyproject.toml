@@ -197,7 +197,6 @@ ignore = [
   "PGH005",  # invalid-mock-access : Mock objects have no attribute
   "PIE794",  # duplicate-class-field-definition : Class field is defined multiple times
   "PIE796",  # non-unique-enums : Enum contains duplicate value
-  "PLW1508",  # invalid-envvar-default : Invalid type for environment variable default
   "PYI036",  # bad-exit-annotation : Star-args in `__exit__` should be annotated with `object`
   "RUF010",  # explicit-f-string-type-conversion : Use explicit conversion flag
   "RUF012",  # mutable-class-default : Mutable class attributes should be annotated with `typing.ClassVar`
