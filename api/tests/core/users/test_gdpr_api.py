@@ -62,6 +62,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
 
     def test_anonymize_non_pro_non_beneficiary_users(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
+            birthPlace="Strasbourg",
             firstName="user_to_anonymize",
             lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             validatedBirthDate=datetime.date.today(),
@@ -147,6 +148,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.irisFrance == iris
         assert user_to_anonymize.validatedBirthDate.day == 1
         assert user_to_anonymize.validatedBirthDate.month == 1
+        assert user_to_anonymize.birthPlace is None
         assert user_to_anonymize.roles == [users_models.UserRole.ANONYMIZED]
         assert user_to_anonymize.trusted_devices == []
         assert len(user_to_anonymize.action_history) == 1
