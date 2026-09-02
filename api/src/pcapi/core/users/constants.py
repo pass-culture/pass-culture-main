@@ -21,6 +21,8 @@ MAX_SUSPICIOUS_LOGIN_EMAILS = 5
 
 MAX_EMAIL_UPDATE_ATTEMPTS_FOR_PRO = 5
 EMAIL_PRO_UPDATE_ATTEMPTS_TTL = 24 * 60 * 60  # 1 day in seconds
+ANONYMIZED_USER_EMAIL = "@anonymized.passculture"
+DELETED_USER_EMAIL = "@email.supprime"
 
 ELIGIBILITY_FREE_RANGE = [15, 16]
 # deprecated eligibilites

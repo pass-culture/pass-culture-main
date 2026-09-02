@@ -271,7 +271,9 @@ class AccountDetailsActionType(enum.StrEnum):
 def _get_account_details_actions(user: users_models.User) -> DetailsActions:
     account_details_actions = DetailsActions(AccountDetailsActionType)
 
-    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+    if access_control.has_current_user_permission(
+        perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+    ) and not user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL)):
         if not user.isEmailValidated:
             account_details_actions.add_action(AccountDetailsActionType.SEND_VALIDATION)
         account_details_actions.add_action(AccountDetailsActionType.RESET_PASSWORD)
@@ -1878,6 +1880,8 @@ def resend_validation_email(user_id: int) -> response_utils.BackofficeResponse:
 
     if user.has_admin_role or user.has_pro_role:
         flash("Cette action n'est pas supportée pour les utilisateurs admin ou pro", "warning")
+    elif user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL)):
+        flash("L'adresse email a été anonymisée ou supprimée", "warning")
     elif user.isEmailValidated:
         flash("L'adresse email est déjà validée", "warning")
     else:
@@ -2516,6 +2520,9 @@ def send_public_account_reset_password_email(user_id: int) -> response_utils.Bac
     if not (user.is_beneficiary or user.roles == []):
         flash("La fonctionnalité n'est disponible que pour un compte bénéficiaire ou grand public", "warning")
         return redirect(_get_public_account_link(user_id, active_tab="history"), code=303)
+    if user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL)):
+        flash("Impossible de réinitialiser car l'email a été anonymisé ou supprimé", "warning")
+        return redirect(_get_public_account_link(user_id, active_tab="history"), code=303)
 
     users_api.request_password_reset(user)
 
@@ -2616,3 +2623,218 @@ def view_id_document(user_id: int) -> response_utils.BackofficeResponse:
             f"data:{picture.mime_type};base64, {base64.b64encode(picture.content).decode()}"
         ),
     )
+
+
+def _render_public_account_rows(user_ids: list[int]) -> response_utils.BackofficeResponse:
+    user_ids_with_search_scores_query = (
+        users_api.get_public_account_base_query()
+        .filter(users_models.User.id.in_(user_ids))
+        .with_entities(users_models.User.id, sa.null().label("search_score"))
+    )
+    users = _get_and_sort_users(user_ids_with_search_scores_query)
+
+    return render_template(
+        "accounts/list_rows.html",
+        get_link_to_detail=_get_public_account_link,
+        rows=users,
+    )
+
+
+@public_accounts_blueprint.route("/batch/send-reset-password-email", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def get_batch_send_public_account_reset_password_email_form() -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id="#users-table",
+        form=form,
+        dst=url_for("backoffice_web.public_accounts.batch_send_public_account_reset_password_email"),
+        div_id="batch-send-public-account-reset-password-email-modal",
+        title="Voulez-vous envoyer un email de changement de mot de passe aux comptes sélectionnés ?",
+        button_text="Envoyer",
+    )
+
+
+@public_accounts_blueprint.route("/batch-send-reset-password-email", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def batch_send_public_account_reset_password_email() -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return _render_public_account_rows([])
+
+    users = users_api.get_public_account_base_query().filter(users_models.User.id.in_(form.object_ids_list)).all()
+    if not users:
+        mark_transaction_as_invalid()
+        flash("La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public", "warning")
+        return _render_public_account_rows([])
+    if any(
+        user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL))
+        for user in users
+    ):
+        mark_transaction_as_invalid()
+        flash("Certains des comptes sélectionnés ont un email anonymisé ou supprimé", "warning")
+        return _render_public_account_rows([])
+
+    for user in users:
+        users_api.request_password_reset(user)
+    flash("Les emails de changement de mot de passe ont été envoyés", "success")
+
+    return _render_public_account_rows(form.object_ids_list)
+
+
+@public_accounts_blueprint.route("/batch/invalidate-password", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def get_batch_invalidate_public_account_password_form() -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id="#users-table",
+        form=form,
+        dst=url_for("backoffice_web.public_accounts.batch_invalidate_public_account_password"),
+        div_id="batch-invalidate-public-account-password-modal",
+        title="Voulez-vous invalider le mot de passe des comptes sélectionnés ?",
+        button_text="Invalider",
+    )
+
+
+@public_accounts_blueprint.route("/batch-invalidate-password", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def batch_invalidate_public_account_password() -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return _render_public_account_rows([])
+
+    users = users_api.get_public_account_base_query().filter(users_models.User.id.in_(form.object_ids_list)).all()
+    if not users:
+        mark_transaction_as_invalid()
+        flash("La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public", "warning")
+        return _render_public_account_rows([])
+
+    for user in users:
+        users_api.update_user_password(user, random_password())
+        history_api.add_action(history_models.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user)
+    flash("Les mots de passe ont été invalidés", "success")
+
+    return _render_public_account_rows(form.object_ids_list)
+
+
+@public_accounts_blueprint.route("/batch/suspend", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.SUSPEND_USER)
+def get_batch_suspend_public_account_form() -> response_utils.BackofficeResponse:
+    form = account_forms.BatchSuspendPublicAccountForm()
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id="#users-table",
+        form=form,
+        dst=url_for("backoffice_web.public_accounts.batch_suspend_public_account"),
+        div_id="batch-suspend-public-account-modal",
+        title="Voulez-vous suspendre les comptes sélectionnés ?",
+        button_text="Suspendre",
+    )
+
+
+@public_accounts_blueprint.route("/batch-suspend", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.SUSPEND_USER)
+def batch_suspend_public_account() -> response_utils.BackofficeResponse:
+    form = account_forms.BatchSuspendPublicAccountForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return _render_public_account_rows([])
+
+    users = users_api.get_public_account_base_query().filter(users_models.User.id.in_(form.object_ids_list)).all()
+    if not users:
+        mark_transaction_as_invalid()
+        flash("La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public", "warning")
+        return _render_public_account_rows([])
+    if any(user.isActive is False for user in users):
+        mark_transaction_as_invalid()
+        flash("Certains comptes sélectionnés sont déjà suspendus", "warning")
+        return _render_public_account_rows([])
+
+    for user in users:
+        users_api.suspend_account(
+            user,
+            reason=users_constants.SuspensionReason[form.reason.data],
+            actor=current_user,
+            comment=form.comment.data,
+            is_backoffice_action=True,
+        )
+        if form.clear_email.data:
+            email_update.clear_email_by_admin(user)
+    flash("Les comptes ont été suspendus", "success")
+
+    return _render_public_account_rows(form.object_ids_list)
+
+
+@public_accounts_blueprint.route("/batch/tag", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
+def get_batch_tag_public_account_form() -> response_utils.BackofficeResponse:
+    form = account_forms.BatchTagAccountForm()
+
+    users = (
+        users_api.get_public_account_base_query()
+        .filter(users_models.User.id.in_(form.object_ids_list))
+        .options(sa_orm.joinedload(users_models.User.tags))
+        .all()
+    )
+    if not users:
+        mark_transaction_as_invalid()
+        return render_template(
+            "components/dynamic/modal_empty_form.html",
+            messages=["La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public."],
+        )
+
+    common_user_tags = set.intersection(*[set(user.tags) for user in users])
+    form.tags.data = list(common_user_tags)
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id="#users-table",
+        form=form,
+        dst=url_for("backoffice_web.public_accounts.batch_tag_public_account"),
+        div_id="batch-tag-public-account-modal",
+        title="Édition des comptes",
+        button_text="Enregistrer les modifications",
+    )
+
+
+@public_accounts_blueprint.route("/batch-tag", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
+def batch_tag_public_account() -> response_utils.BackofficeResponse:
+    form = account_forms.BatchTagAccountForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return _render_public_account_rows([])
+
+    users = (
+        users_api.get_public_account_base_query()
+        .filter(users_models.User.id.in_(form.object_ids_list))
+        .options(sa_orm.joinedload(users_models.User.tags))
+        .all()
+    )
+    if not users:
+        mark_transaction_as_invalid()
+        flash("La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public", "warning")
+        return _render_public_account_rows([])
+
+    previous_common_user_tags = set.intersection(*[set(user.tags) for user in users])
+    removed_common_user_tags = previous_common_user_tags.difference(form.tags.data)
+
+    for user in users:
+        user.tags.extend(added_tag for added_tag in form.tags.data if added_tag not in user.tags)
+        for removed_tag in removed_common_user_tags:
+            user.tags.remove(removed_tag)
+        db.session.add(user)
+    db.session.flush()
+    flash("Les comptes ont été modifiés", "success")
+
+    return _render_public_account_rows(form.object_ids_list)

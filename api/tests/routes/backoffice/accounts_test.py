@@ -1173,6 +1173,28 @@ class GetPublicAccountTest(GetEndpointHelper):
             assert response.status_code == 200
             assert self.button_label not in response.data.decode("utf-8")
 
+    class ResetPasswordButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+        button_label = "Réinitialiser MDP"
+
+        @property
+        def path(self):
+            user = users_factories.UserFactory()
+            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+
+        @pytest.mark.parametrize(
+            "email", [f"1{users_constants.DELETED_USER_EMAIL}", f"anonymous_1{users_constants.ANONYMIZED_USER_EMAIL}"]
+        )
+        def test_no_button_when_email_is_unusable(self, authenticated_client, email):
+            user = users_factories.UserFactory(email=email)
+
+            response = authenticated_client.get(
+                url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            )
+
+            assert response.status_code == 200
+            assert self.button_label not in response.data.decode("utf-8")
+
     class InvalidatePasswordButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
         button_label = "Invalider MDP"
@@ -2491,6 +2513,16 @@ class ResendValidationEmailTest(PostEndpointHelper):
 
     def test_no_email_sent_if_already_validated(self, authenticated_client):
         user = users_factories.BeneficiaryFactory(isEmailValidated=True)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+
+        assert response.status_code == 303
+        assert not mails_testing.outbox
+
+    @pytest.mark.parametrize(
+        "email", [f"1{users_constants.DELETED_USER_EMAIL}", f"anonymous_1{users_constants.ANONYMIZED_USER_EMAIL}"]
+    )
+    def test_no_email_sent_if_unusable_email(self, authenticated_client, email):
+        user = users_factories.BeneficiaryFactory(email=email, isEmailValidated=False)
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
         assert response.status_code == 303
@@ -6108,6 +6140,22 @@ class SendPublicAccountPasswordResetEmailTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=0)
         assert response.status_code == 404
 
+    @pytest.mark.parametrize(
+        "email", [f"1{users_constants.DELETED_USER_EMAIL}", f"anonymous_1{users_constants.ANONYMIZED_USER_EMAIL}"]
+    )
+    def test_with_unusable_email(self, authenticated_client, email):
+        user = users_factories.BeneficiaryFactory(email=email)
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 303
+        assert len(mails_testing.outbox) == 0
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Impossible de réinitialiser car l'email a été anonymisé ou supprimé"
+        )
+
     def test_with_non_beneficiary_user(self, authenticated_client, legit_user):
         user = users_factories.ProFactory()
 
@@ -6678,3 +6726,449 @@ class DisconnectPublicAccountTest(PostEndpointHelper):
         assert action_history.actionType == history_models.ActionType.USER_DISCONNECTED
         assert action_history.comment == "A funny comment"
         assert action_history.userId == user.id
+
+
+class GetBatchSendPublicAccountResetPasswordEmailFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_send_public_account_reset_password_email_form"
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_get_batch_send_reset_password_email_form(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            expected_num_queries=1,  # session + current user
+        )
+        assert response.status_code == 200
+
+
+class BatchSendPublicAccountResetPasswordEmailTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_send_public_account_reset_password_email"
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_batch_send_reset_password_email(self, authenticated_client):
+        users = users_factories.BeneficiaryFactory.create_batch(2)
+        passwords_before_response = [user.password for user in users]
+
+        expected_num_queries = 1  # session + current user
+        expected_num_queries += 1  # select users
+        expected_num_queries += 1  # select users to render the updated rows
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": ",".join(str(user.id) for user in users)},
+            expected_num_queries=expected_num_queries,
+        )
+        assert response.status_code == 200
+
+        assert [user.password for user in users] == passwords_before_response
+
+        assert len(mails_testing.outbox) == len(users)
+        assert {email_data["To"] for email_data in mails_testing.outbox} == {user.email for user in users}
+        for email_data in mails_testing.outbox:
+            assert email_data["template"] == TransactionalEmail.NEW_PASSWORD_REQUEST.value.__dict__
+
+        for user in users:
+            html_parser.get_tag(response.data, tag="tr", id=f"user-row-{user.id}")
+
+    def test_batch_send_reset_password_email_with_invalid_object_ids(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "1,abc"})
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+        assert len(mails_testing.outbox) == 0
+
+    @pytest.mark.parametrize(
+        "email", [f"1{users_constants.DELETED_USER_EMAIL}", f"anonymous_1{users_constants.ANONYMIZED_USER_EMAIL}"]
+    )
+    def test_batch_send_reset_password_email_with_unusable_email(self, authenticated_client, email):
+        valid_user = users_factories.BeneficiaryFactory()
+        unusable_email_user = users_factories.BeneficiaryFactory(email=email)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": f"{valid_user.id},{unusable_email_user.id}"},
+        )
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+        assert len(mails_testing.outbox) == 0
+        assert (
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            == "Certains des comptes sélectionnés ont un email anonymisé ou supprimé"
+        )
+
+    def test_batch_send_reset_password_email_with_users_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "0"})
+        assert response.status_code == 200
+        assert len(mails_testing.outbox) == 0
+        assert (
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            == "La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public"
+        )
+
+    def test_batch_send_reset_password_email_with_non_beneficiary_user(self, authenticated_client):
+        beneficiary = users_factories.BeneficiaryFactory()
+        pro_user = users_factories.ProFactory()
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": f"{beneficiary.id},{pro_user.id}"})
+        assert response.status_code == 200
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == beneficiary.email
+
+        html_parser.get_tag(response.data, tag="tr", id=f"user-row-{beneficiary.id}")
+        assert f"user-row-{pro_user.id}" not in response.data.decode("utf-8")
+
+
+class GetBatchInvalidatePublicAccountPasswordFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_invalidate_public_account_password_form"
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_get_batch_invalidate_password_form(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            expected_num_queries=1,  # session + current user
+        )
+        assert response.status_code == 200
+
+
+class BatchInvalidatePublicAccountPasswordTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_invalidate_public_account_password"
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_batch_invalidate_password(self, authenticated_client, legit_user):
+        users = users_factories.BeneficiaryFactory.create_batch(2)
+        passwords_before_response = [user.password for user in users]
+
+        expected_num_queries = 1  # session + current user
+        expected_num_queries += 1  # select users
+        expected_num_queries += len(users) * 2  # for each user: delete native sessions + update password
+        expected_num_queries += len(users)  # for each user: insert action history
+        expected_num_queries += 1  # select users to render the updated rows
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": ",".join(str(user.id) for user in users)},
+            expected_num_queries=expected_num_queries,
+        )
+        assert response.status_code == 200
+
+        for user, password_before_response in zip(users, passwords_before_response):
+            assert user.password != password_before_response
+            assert len(user.action_history) == 1
+            assert user.action_history[0].actionType == history_models.ActionType.USER_PASSWORD_INVALIDATED
+            assert user.action_history[0].authorUser == legit_user
+
+            html_parser.get_tag(response.data, tag="tr", id=f"user-row-{user.id}")
+
+    def test_batch_invalidate_password_with_invalid_object_ids(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "1,abc"})
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+
+    def test_batch_invalidate_password_with_users_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "0"})
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+        assert (
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            == "La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public"
+        )
+
+    def test_batch_invalidate_password_with_non_beneficiary_user(self, authenticated_client):
+        beneficiary = users_factories.BeneficiaryFactory()
+        pro_user = users_factories.ProFactory()
+        beneficiary_password_before_response = beneficiary.password
+        pro_user_password_before_response = pro_user.password
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": f"{beneficiary.id},{pro_user.id}"})
+        assert response.status_code == 200
+        assert beneficiary.password != beneficiary_password_before_response
+        assert pro_user.password == pro_user_password_before_response
+
+        html_parser.get_tag(response.data, tag="tr", id=f"user-row-{beneficiary.id}")
+        assert f"user-row-{pro_user.id}" not in response.data.decode("utf-8")
+
+
+class GetBatchSuspendPublicAccountFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_suspend_public_account_form"
+    needed_permission = perm_models.Permissions.SUSPEND_USER
+
+    def test_get_batch_suspend_form(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            expected_num_queries=1,  # session + current user
+        )
+        assert response.status_code == 200
+
+
+class BatchSuspendPublicAccountTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_suspend_public_account"
+    needed_permission = perm_models.Permissions.SUSPEND_USER
+
+    def _get_expected_num_queries(self, num_users: int) -> int:
+        expected_num_queries = 1  # session + current user
+        expected_num_queries += 1  # select users
+        expected_num_queries += num_users  # for each user: update user (isActive)
+        expected_num_queries += num_users * 2  # for each user: delete web + native user sessions
+        expected_num_queries += num_users  # for each user: select backoffice profile
+        expected_num_queries += num_users  # for each user: insert action history
+
+        return expected_num_queries
+
+    def test_batch_suspend(self, authenticated_client, legit_user):
+        users = users_factories.BeneficiaryFactory.create_batch(2)
+
+        expected_num_queries = self._get_expected_num_queries(len(users))
+        expected_num_queries += len(users)  # for each user: select confirmed bookings to cancel
+        expected_num_queries += len(users)  # for each user: check email not used as venue booking email (Brevo cleanup)
+        expected_num_queries += 1  # select users to render the updated rows
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": ",".join(str(user.id) for user in users),
+                "reason": users_constants.SuspensionReason.FRAUD_SUSPICION.name,
+                "comment": "Suspension en masse",
+                "clear_email": False,
+            },
+            expected_num_queries=expected_num_queries,
+        )
+        assert response.status_code == 200
+
+        for user in users:
+            assert not user.isActive
+            assert len(user.action_history) == 1
+            assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+            assert user.action_history[0].authorUser == legit_user
+            assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.FRAUD_SUSPICION.value
+            assert user.action_history[0].comment == "Suspension en masse"
+            assert user.email != f"{user.id}@email.supprime"
+
+            html_parser.get_tag(response.data, tag="tr", id=f"user-row-{user.id}")
+
+    def test_batch_suspend_and_clear_email(self, authenticated_client, legit_user):
+        users = users_factories.BeneficiaryFactory.create_batch(2)
+
+        expected_num_queries = self._get_expected_num_queries(len(users))
+        expected_num_queries += len(users)  # for each user: check email not used as venue booking email (Brevo cleanup)
+        expected_num_queries += len(
+            users
+        )  # for each user: delete native user sessions (a 2nd time via `clear_email_by_admin`)
+        expected_num_queries += len(users)  # for each user: update email with a dummy one
+        expected_num_queries += len(users)  # for each user: insert email history
+        expected_num_queries += 1  # select users to render the updated rows
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": ",".join(str(user.id) for user in users),
+                "reason": users_constants.SuspensionReason.DUPLICATE_REPORTED_BY_USER.name,
+                "comment": "",
+                "clear_email": True,
+            },
+            expected_num_queries=expected_num_queries,
+        )
+        assert response.status_code == 200
+
+        for user in users:
+            assert not user.isActive
+            assert len(user.action_history) == 1
+            assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+            assert user.action_history[0].authorUser == legit_user
+            assert (
+                user.action_history[0].extraData["reason"]
+                == users_constants.SuspensionReason.DUPLICATE_REPORTED_BY_USER.value
+            )
+            assert user.action_history[0].comment is None
+            assert user.email == f"{user.id}@email.supprime"
+
+            html_parser.get_tag(response.data, tag="tr", id=f"user-row-{user.id}")
+
+    @pytest.mark.parametrize("reason", [users_constants.SuspensionReason.END_OF_CONTRACT.name, "invalid"])
+    def test_batch_suspend_with_invalid_reason(self, authenticated_client, reason):
+        user = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client, form={"object_ids": str(user.id), "reason": reason, "comment": ""}
+        )
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+        assert user.isActive
+
+    def test_batch_suspend_with_invalid_object_ids(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": "1,abc",
+                "reason": users_constants.SuspensionReason.FRAUD_SUSPICION.name,
+                "comment": "",
+            },
+        )
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+
+    def test_batch_suspend_with_users_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": "0",
+                "reason": users_constants.SuspensionReason.FRAUD_SUSPICION.name,
+                "comment": "",
+            },
+        )
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+        assert (
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            == "La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public"
+        )
+
+    def test_batch_suspend_with_already_suspended_user(self, authenticated_client):
+        active_user = users_factories.BeneficiaryFactory()
+        suspended_user = users_factories.BeneficiaryFactory(isActive=False)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": f"{active_user.id},{suspended_user.id}",
+                "reason": users_constants.SuspensionReason.FRAUD_SUSPICION.name,
+                "comment": "",
+            },
+        )
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+        assert active_user.isActive
+        assert active_user.action_history == []
+        assert suspended_user.action_history == []
+        assert (
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            == "Certains comptes sélectionnés sont déjà suspendus"
+        )
+
+    def test_batch_suspend_with_non_beneficiary_user(self, authenticated_client):
+        beneficiary = users_factories.BeneficiaryFactory()
+        pro_user = users_factories.ProFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": f"{beneficiary.id},{pro_user.id}",
+                "reason": users_constants.SuspensionReason.FRAUD_SUSPICION.name,
+                "comment": "",
+            },
+        )
+        assert response.status_code == 200
+        assert not beneficiary.isActive
+        assert pro_user.isActive
+
+        html_parser.get_tag(response.data, tag="tr", id=f"user-row-{beneficiary.id}")
+        assert f"user-row-{pro_user.id}" not in response.data.decode("utf-8")
+
+
+class GetBatchTagPublicAccountFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_tag_public_account_form"
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
+
+    expected_num_queries = 1  # session + current user
+    expected_num_queries += 1  # select users with tags
+
+    def test_get_batch_tag_form(self, authenticated_client):
+        common_tag = users_factories.UserTagFactory(label="Ambassadeur A")
+        other_tag = users_factories.UserTagFactory(label="Ambassadeur B")
+        users = [
+            users_factories.BeneficiaryFactory(tags=[common_tag]),
+            users_factories.BeneficiaryFactory(tags=[common_tag, other_tag]),
+        ]
+        object_ids = ",".join([str(user.id) for user in users])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": object_ids},
+            expected_num_queries=self.expected_num_queries + 1,  # + select tags for form choices
+        )
+        assert response.status_code == 200
+
+        assert html_parser.extract_select_options(response.data, "tags", selected_only=True) == {
+            str(common_tag.id): common_tag.label
+        }
+
+    def test_get_batch_tag_form_with_users_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": "0"},
+            expected_num_queries=self.expected_num_queries + 1,  # + rollback
+        )
+        assert response.status_code == 200
+        assert "La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public." in (
+            html_parser.content_as_text(response.data)
+        )
+
+
+class BatchTagPublicAccountTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_tag_public_account"
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
+
+    def test_batch_tag(self, authenticated_client):
+        common_tag_to_remove = users_factories.UserTagFactory(label="Common Tag To Remove")
+        common_tag_to_keep = users_factories.UserTagFactory(label="Common Tag to Keep")
+        common_tag_to_add = users_factories.UserTagFactory(label="Common Tag To Add")
+        common_but_existing_tag_to_add = users_factories.UserTagFactory(label="Common But Existing Tag To Add")
+        specific_tag_to_keep = users_factories.UserTagFactory(label="Specific Tag To Keep")
+
+        users = [
+            users_factories.BeneficiaryFactory(
+                tags=[common_tag_to_remove, common_tag_to_keep, common_but_existing_tag_to_add]
+            ),
+            users_factories.BeneficiaryFactory(tags=[common_tag_to_remove, common_tag_to_keep, specific_tag_to_keep]),
+        ]
+
+        expected_num_queries = 1  # session + current user
+        expected_num_queries += 1  # select tags for form choices
+        expected_num_queries += 1  # select users with their tags
+        expected_num_queries += 1  # delete user tags
+        expected_num_queries += 1  # insert user tags
+        expected_num_queries += 1  # select users to render the updated rows
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": ",".join(str(user.id) for user in users),
+                "tags": [common_tag_to_keep.id, common_tag_to_add.id, common_but_existing_tag_to_add.id],
+            },
+            expected_num_queries=expected_num_queries,
+        )
+        assert response.status_code == 200
+
+        assert set(users[0].tags) == {common_tag_to_keep, common_tag_to_add, common_but_existing_tag_to_add}
+        assert set(users[1].tags) == {
+            common_tag_to_keep,
+            common_tag_to_add,
+            common_but_existing_tag_to_add,
+            specific_tag_to_keep,
+        }
+
+        for user in users:
+            html_parser.get_tag(response.data, tag="tr", id=f"user-row-{user.id}")
+
+    def test_batch_tag_with_invalid_object_ids(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "1,abc", "tags": []})
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+
+    def test_batch_tag_with_users_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": "0", "tags": []})
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+        assert (
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            == "La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public"
+        )
+
+    def test_batch_tag_with_non_beneficiary_user(self, authenticated_client):
+        tag = users_factories.UserTagFactory(label="Ambassadeur A")
+        beneficiary = users_factories.BeneficiaryFactory()
+        pro_user = users_factories.ProFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": f"{beneficiary.id},{pro_user.id}", "tags": [tag.id]},
+        )
+        assert response.status_code == 200
+        assert beneficiary.tags == [tag]
+        assert pro_user.tags == []
+
+        html_parser.get_tag(response.data, tag="tr", id=f"user-row-{beneficiary.id}")
+        assert f"user-row-{pro_user.id}" not in response.data.decode("utf-8")

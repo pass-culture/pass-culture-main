@@ -1043,7 +1043,7 @@ def search_public_account_in_history_email(search_query: str) -> tuple[sa_orm.Qu
     ), search_score_col
 
 
-def get_public_account_base_query() -> sa_orm.Query:
+def get_public_account_base_query() -> sa_orm.Query[models.User]:
     # There is no fully reliable condition to be sure that a user account is used as a public account (vs only pro).
     # In Flask-Admin backoffice, the difference was made from user_offerer table, which turns the user into a "pro"
     # account ; the same filter is kept here.

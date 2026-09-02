@@ -18,9 +18,11 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.routes.backoffice.utils import advanced_search
 from pcapi.routes.backoffice.utils import geography as geography_utils
 from pcapi.utils import countries as countries_utils
@@ -548,6 +550,15 @@ class TagAccountForm(FlaskForm):
         get_pk=lambda tag: tag.id,
         get_label=lambda tag: str(tag),
     )
+
+
+class BatchSuspendPublicAccountForm(empty_forms.BatchForm, user_forms.SuspendUserForm):
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init__(*args, suspension_type=user_forms.SuspensionUserType.PUBLIC, **kwargs)
+
+
+class BatchTagAccountForm(empty_forms.BatchForm, TagAccountForm):
+    pass
 
 
 class TagFraudulentBookingsForm(utils.PCForm):

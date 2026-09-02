@@ -299,7 +299,7 @@ def full_email_update_by_admin(user: models.User, email: str, commit: bool = Fal
 
 
 def clear_email_by_admin(user: models.User) -> None:
-    email = f"{user.id}@email.supprime"
+    email = f"{user.id}{constants.DELETED_USER_EMAIL}"
 
     admin_update_event = models.UserEmailHistory.build_admin_update(user=user, new_email=email)
     db.session.add(admin_update_event)
