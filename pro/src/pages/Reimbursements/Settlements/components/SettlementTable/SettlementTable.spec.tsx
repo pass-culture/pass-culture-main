@@ -2,23 +2,18 @@ import { screen } from '@testing-library/react'
 import type { ComponentProps } from 'react'
 import { axe } from 'vitest-axe'
 
-import type { SettlementResponseModel } from '@/apiClient/v1'
+import { type SettlementResponseModel, SettlementStatus } from '@/apiClient/v1'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { SETTLEMENT_STATUS_LABELS } from './constants'
 import { SettlementTable } from './SettlementTable'
-
-const [firstStatusKey, firstStatusMeta] = Object.entries(
-  SETTLEMENT_STATUS_LABELS
-)[0]
 
 const baseSettlement = {
   id: 1,
   label: 'VIR001',
   date: '2024-06-01',
   bankAccount: 'Compte principal',
-  status: firstStatusKey,
+  status: SettlementStatus.EXECUTED,
   amount: 150,
   invoicesCount: 3,
 } as SettlementResponseModel
@@ -61,13 +56,13 @@ describe('<SettlementTable />', () => {
     expect(screen.getByText('01/06/2024')).toBeVisible()
     expect(screen.getByText('Compte principal')).toBeVisible()
     expect(screen.getByText('3')).toBeVisible()
-    expect(screen.getByText(firstStatusMeta.label)).toBeVisible()
-    expect(screen.getByText('+ 150,00 €')).toBeVisible()
+    expect(screen.getByText('Virement émis')).toBeVisible()
+    expect(screen.getByText('150,00 €')).toBeVisible()
   })
 
   it('displays a dash when the settlement has no date', () => {
     renderSettlementTable({
-      settlements: [{ ...baseSettlement, date: '' }] as never,
+      settlements: [{ ...baseSettlement, date: null }] as never,
     })
 
     expect(screen.getByText('-')).toBeVisible()
@@ -76,7 +71,7 @@ describe('<SettlementTable />', () => {
   it('formats the amount in pacific francs for a Caledonian offerer', () => {
     renderSettlementTable({}, { isCaledonian: true })
 
-    expect(screen.getByText('+ 17 900 F')).toBeVisible()
+    expect(screen.getByText('17 900 F')).toBeVisible()
   })
 
   it('shows the missing bank account empty state when hasBankAccount is false', () => {
