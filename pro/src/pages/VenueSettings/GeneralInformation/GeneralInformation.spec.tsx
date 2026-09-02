@@ -332,6 +332,7 @@ describe('GeneralInformation', () => {
         id: 1,
         isOpenToPublic: true,
         activity: DisplayableActivity.FESTIVAL,
+        collectiveDomains: [{ id: 1, name: 'Danse' }],
         location: {
           ...defaultGetVenue.location,
           street: '123 Rue Principale',

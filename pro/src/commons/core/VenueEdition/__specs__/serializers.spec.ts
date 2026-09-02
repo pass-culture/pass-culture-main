@@ -5,6 +5,12 @@ describe('Venue edition payload serializer', () => {
     expect(serializeEditVenueBodyModel({}, true, false)).toEqual({})
   })
 
+  it('should default alreadyHasOpeningHours to false when not provided', () => {
+    expect(serializeEditVenueBodyModel({ openingHours: null }, true)).toEqual({
+      openingHours: null,
+    })
+  })
+
   it('should serialize newly added opening hours', () => {
     expect(
       serializeEditVenueBodyModel(
