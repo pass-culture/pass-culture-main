@@ -1,6 +1,9 @@
 """Add ondelete=SET NULL on special_event_response_userId_fkey (2/3)"""
 
+import sqlalchemy as sa
 from alembic import op
+
+from pcapi import settings
 
 
 # pre/post deployment: post
@@ -24,4 +27,10 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    op.execute("SET SESSION statement_timeout='300s'")  # or more if needed
     op.drop_constraint("special_event_response_userId_fkey", "special_event_response", type_="foreignkey")
+    op.execute(
+        sa.text("SET SESSION statement_timeout=:statement_timeout").bindparams(
+            statement_timeout=settings.DATABASE_STATEMENT_TIMEOUT
+        )
+    )
