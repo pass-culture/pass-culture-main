@@ -19,6 +19,8 @@ import fullDownIcon from '@/icons/full-down.svg'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 
+import { DOWNLOAD_REIMBURSEMENTS_LABEL } from '../constants'
+
 type InvoiceActionsProps = {
   invoice: InvoiceResponseV2Model
 }
@@ -77,13 +79,13 @@ export function InvoiceActions({ invoice }: Readonly<InvoiceActionsProps>) {
             onSelect: () => downloadPDFFile(invoice.url),
           },
           {
-            text: 'Télécharger le détail des réservations (.csv)',
+            text: DOWNLOAD_REIMBURSEMENTS_LABEL,
             icon: fullDownloadIcon,
             onSelect: () => downloadCSVFile(invoice.reference),
           },
         ],
       ]}
-      width={383}
+      width={420}
       trigger={
         <Button
           label="Télécharger"

@@ -8,6 +8,7 @@ import * as analyticsHook from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
+import { DOWNLOAD_REIMBURSEMENTS_LABEL } from '../constants'
 import { MAX_ITEMS_DOWNLOAD } from './InvoiceDownloadActionsBar'
 import { InvoiceTable } from './InvoiceTable'
 
@@ -137,9 +138,7 @@ describe('InvoiceTable', () => {
     await user.click(screen.getByLabelText('Tout sélectionner'))
 
     await user.click(screen.getByText('Télécharger les justificatifs (.pdf)'))
-    await user.click(
-      screen.getByText('Télécharger le détail des réservations (.csv)')
-    )
+    await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
 
     expect(getCombinedInvoicesMock).toHaveBeenCalledWith({
       query: {

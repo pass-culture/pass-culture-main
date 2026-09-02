@@ -21,6 +21,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
+import { DOWNLOAD_REIMBURSEMENTS_LABEL } from './constants'
 import { MAX_ITEMS_DOWNLOAD } from './InvoiceTable/InvoiceDownloadActionsBar'
 import { Component as ReimbursementsInvoices } from './ReimbursementsInvoices'
 
@@ -268,9 +269,7 @@ describe('reimbursementsWithFilters', () => {
     await user.click(screen.getByText('Télécharger le justificatif (.pdf)'))
 
     await user.click(screen.getByRole('button', { name: 'Télécharger' }))
-    await user.click(
-      screen.getByText('Télécharger le détail des réservations (.csv)')
-    )
+    await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
     expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith({
       parseAs: 'blob',
       query: {
@@ -373,9 +372,7 @@ describe('reimbursementsWithFilters', () => {
       screen.getByRole('checkbox', { name: 'Sélectionner toutes les lignes' })
     )
 
-    await user.click(
-      screen.getByText('Télécharger le détail des réservations (.csv)')
-    )
+    await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
 
     expect(api.getReimbursementsCsvV2).toHaveBeenCalledTimes(1)
     expect(api.getReimbursementsCsvV2).toHaveBeenNthCalledWith(1, {

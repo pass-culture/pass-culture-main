@@ -9,6 +9,7 @@ import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 
+import { DOWNLOAD_REIMBURSEMENTS_LABEL } from '../constants'
 import styles from './InvoiceDownloadActionsBar.module.scss'
 
 type InvoiceDownloadActionsBarProps = {
@@ -90,7 +91,7 @@ export const InvoiceDownloadActionsBar = ({
             <Button
               variant={ButtonVariant.SECONDARY}
               onClick={() => downloadCSVFiles(checkedInvoices)}
-              label="Télécharger le détail des réservations (.csv)"
+              label={DOWNLOAD_REIMBURSEMENTS_LABEL}
             />
             <Button
               variant={ButtonVariant.PRIMARY}
