@@ -28,6 +28,9 @@ jobs:
       CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
       continue_on_error: false
       version: "${{ inputs.sha }}"
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
 
   publish-pro-to-live-on-firebase:
     name: Publish pro
