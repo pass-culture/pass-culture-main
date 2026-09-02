@@ -87,7 +87,7 @@ NATIVE_CATEGORY_AUTRES_MEDIAS = NativeCategory(
 )
 NATIVE_CATEGORY_BIBLIOTHEQUE_MEDIATHEQUE = NativeCategory(
     search_value="BIBLIOTHEQUE_MEDIATHEQUE",
-    label="Abonnements aux médiathèques et bibliothèques",
+    label="Abonnements aux bibliothèques",
     included_subcategories=["ABO_BIBLIOTHEQUE", "ABO_MEDIATHEQUE"],
 )
 NATIVE_CATEGORY_CARTES_CINEMA = NativeCategory(
