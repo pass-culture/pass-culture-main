@@ -1,4 +1,3 @@
-import { ActivityNotOpenToPublic, ActivityOpenToPublic } from '@/apiClient/v1'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import { getVolunteeringUrlError } from '../getVolunteeringUrlError'
@@ -22,7 +21,6 @@ describe('VenueEditionForm validationSchema', () => {
     isOpenToPublic: 'true',
     openingHours: null,
     description: 'description',
-    activity: ActivityOpenToPublic.ART_GALLERY,
     volunteeringUrl: null,
   }
 
@@ -119,7 +117,6 @@ describe('VenueEditionForm validationSchema', () => {
       formValues: {
         ...defaultValues,
         isOpenToPublic: 'false',
-        activity: ActivityNotOpenToPublic.PRESS_OR_MEDIA,
         openingHours: {
           MONDAY: null,
         },
@@ -130,48 +127,12 @@ describe('VenueEditionForm validationSchema', () => {
 
   cases.forEach(({ description, formValues, expectedErrors }) => {
     it(`should validate the form for case: ${description}`, async () => {
-      const errors = await getYupValidationSchemaErrors(getValidationSchema(), {
-        ...formValues,
-        culturalDomains: ['test'],
-      })
+      const errors = await getYupValidationSchemaErrors(
+        getValidationSchema(),
+        formValues
+      )
       expect(errors).toEqual(expectedErrors)
     })
-  })
-
-  it('should require activity when feature flag is enabled and venue is open to public', async () => {
-    const errors = await getYupValidationSchemaErrors(getValidationSchema(), {
-      ...defaultValues,
-      activity: null,
-      culturalDomains: ['string'],
-    })
-
-    expect(errors).toEqual(['Veuillez renseigner ce champ'])
-  })
-
-  it('should require domains array', async () => {
-    const errors = await getYupValidationSchemaErrors(getValidationSchema(), {
-      ...defaultValues,
-      isOpenToPublic: 'false',
-      activity: 'PRESS_OR_MEDIA',
-      culturalDomains: null,
-    })
-
-    expect(errors).toEqual([
-      'Veuillez sélectionner un ou plusieurs domaines d’activité',
-    ])
-  })
-
-  it('should require domains values', async () => {
-    const errors = await getYupValidationSchemaErrors(getValidationSchema(), {
-      ...defaultValues,
-      isOpenToPublic: 'false',
-      activity: 'PRESS_OR_MEDIA',
-      culturalDomains: [],
-    })
-
-    expect(errors).toEqual([
-      'Veuillez sélectionner un ou plusieurs domaines d’activité',
-    ])
   })
 
   it('should call getVolunteeringUrlError to validate volunteeringUrl', async () => {

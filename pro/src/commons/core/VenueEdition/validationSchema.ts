@@ -2,13 +2,6 @@ import { openToPublicValidationSchema } from 'components/OpenToPublicToggle/vali
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
-import type {
-  ActivityNotOpenToPublic,
-  ActivityOpenToPublic,
-} from '@/apiClient/v1'
-import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
-import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
-import { getMapKeys } from '@/commons/mappings/helpers'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 
@@ -80,13 +73,6 @@ const openingHoursSchemaShape = {
 }
 
 export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
-  const activityTypeValuesOpenToPublic = getMapKeys(
-    ActivityOpenToPublicMap
-  ) as ActivityOpenToPublic[]
-  const activityTypeValuesNotOpenToPublic = getMapKeys(
-    ActivityNotOpenToPublicMap
-  ) as ActivityNotOpenToPublic[]
-
   return yup
     .object()
     .shape({
@@ -123,39 +109,6 @@ export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
         .when('isOpenToPublic', {
           is: 'true',
           then: (schema) => schema.shape(openingHoursSchemaShape),
-        }),
-      activity: yup
-        .mixed<ActivityNotOpenToPublic | ActivityOpenToPublic>()
-        .nullable()
-        .when(['isOpenToPublic'], {
-          is: (open: string) => open === 'true',
-          then: (schema) =>
-            schema
-              .oneOf(activityTypeValuesOpenToPublic, 'Activité non valide')
-              .required('Veuillez renseigner ce champ'),
-        })
-        .when(['isOpenToPublic'], {
-          is: (open: string) => open === 'false',
-          then: (schema) =>
-            schema
-              .oneOf(activityTypeValuesNotOpenToPublic, 'Activité non valide')
-              .required('Veuillez renseigner ce champ'),
-        }),
-      culturalDomains: yup
-        .array()
-        .of(yup.string().required())
-        .when('isOpenToPublic', {
-          is: (open: string) => open === 'false',
-          then: (schema) =>
-            schema
-              .required(
-                'Veuillez sélectionner un ou plusieurs domaines d’activité'
-              )
-              .min(
-                1,
-                'Veuillez sélectionner un ou plusieurs domaines d’activité'
-              ),
-          otherwise: (schema) => schema,
         }),
       volunteeringUrl: yup.string().test(volunteeringUrlSchema).nullable(),
       withdrawalDetails: yup.string().nullable(),

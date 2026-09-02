@@ -52,5 +52,19 @@ export const venueSettingsValidationSchema = yup
       .string()
       .nullable()
       .required('Veuillez sélectionner une activité parmi les suggestions'),
+    culturalDomains: yup
+      .array()
+      .of(yup.string().defined())
+      .when('isOpenToPublic', {
+        is: (open: string) => open === 'false',
+        then: (schema) =>
+          schema.nullable().test({
+            name: 'has-at-least-one-domain',
+            message:
+              'Veuillez sélectionner un ou plusieurs domaines d’activité',
+            test: (value) => Boolean(value?.filter(Boolean).length),
+          }),
+        otherwise: (schema) => schema.nullable(),
+      }),
   })
   .concat(SiretOrCommentValidationSchema)

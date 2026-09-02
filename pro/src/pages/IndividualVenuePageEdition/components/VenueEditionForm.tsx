@@ -4,7 +4,11 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+  GetVenueResponseModel,
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { getVolunteeringUrlError } from '@/commons/core/VenueEdition/getVolunteeringUrlError'
@@ -69,7 +73,18 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         body: serializeEditVenueBodyModel(
           values,
           !venue.siret,
-          venue.openingHours !== null
+          venue.openingHours !== null,
+          {
+            // Cast is needed because "GAMES_CENTRE" is present in
+            // `DisplayableActivity` but not in ActivityOpenToPublic | ActivityNotOpenToPublic
+            activity: venue.activity as
+              | ActivityOpenToPublic
+              | ActivityNotOpenToPublic
+              | null,
+            culturalDomains: venue.collectiveDomains.map(
+              (domain) => domain.name
+            ),
+          }
         ),
       })
 

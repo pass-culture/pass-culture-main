@@ -8,12 +8,22 @@ import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
 import type { VenueEditionFormValues } from './types'
 
+interface VenueReadOnlyFields {
+  activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null
+  culturalDomains?: string[]
+}
+
 export const serializeEditVenueBodyModel = (
   formValues: Partial<VenueEditionFormValues>,
   hideSiret: boolean,
-  alreadyHasOpeningHours: boolean = false
+  alreadyHasOpeningHours: boolean = false,
+  venueReadOnlyFields?: VenueReadOnlyFields
 ): EditVenueBodyModel => {
-  const payload = buildEditVenuePayload(formValues, alreadyHasOpeningHours)
+  const payload = buildEditVenuePayload(
+    formValues,
+    alreadyHasOpeningHours,
+    venueReadOnlyFields
+  )
 
   if (hideSiret && payload.siret) {
     delete payload.siret
@@ -24,9 +34,10 @@ export const serializeEditVenueBodyModel = (
 
 function buildEditVenuePayload(
   formValues: Partial<VenueEditionFormValues>,
-  alreadyHasOpeningHours: boolean
+  alreadyHasOpeningHours: boolean,
+  venueReadOnlyFields?: VenueReadOnlyFields
 ): EditVenueBodyModel {
-  const normalizedActivity = normalizeActivity(formValues.activity)
+  const normalizedActivity = normalizeActivity(venueReadOnlyFields?.activity)
 
   // TODO: this is a PATCH request. It should only contains changed values
   return {
@@ -51,7 +62,7 @@ function buildEditVenuePayload(
       ? formValues.isOpenToPublic === 'true'
       : undefined,
     activity: normalizedActivity,
-    culturalDomains: formValues.culturalDomains,
+    culturalDomains: venueReadOnlyFields?.culturalDomains,
     volunteeringUrl:
       formValues.volunteeringUrl === undefined
         ? undefined
@@ -61,7 +72,7 @@ function buildEditVenuePayload(
 }
 
 export function normalizeActivity(
-  activity: VenueEditionFormValues['activity']
+  activity: ActivityOpenToPublic | ActivityNotOpenToPublic | null | undefined
 ): ActivityOpenToPublic | ActivityNotOpenToPublic | null | undefined {
   if ((activity as string | null) === 'GAMES_CENTRE') {
     return null
