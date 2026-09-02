@@ -3483,9 +3483,9 @@ def validate_finance_overpayment_incident(
     db.session.add_all(finance_events)
 
     if not finance_incident.relates_to_collective_bookings:
-        beneficiaries = set(
+        beneficiaries = {
             booking_incident.beneficiary for booking_incident in finance_incident.booking_finance_incidents
-        )
+        }
         for beneficiary in beneficiaries:
             history_api.add_action(
                 history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT,

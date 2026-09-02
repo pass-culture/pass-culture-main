@@ -236,7 +236,7 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
-        assert set(int(row["ID"]) for row in rows) == {offers[0].id, offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {offers[0].id, offers[2].id}
 
     def test_list_offers_by_name(self, authenticated_client, offers):
         query_args = {
@@ -339,7 +339,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {offers[2].id}
 
     def test_list_offers_by_status_and_event_date(self, authenticated_client, offers):
         query_args = {
@@ -356,7 +356,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {offers[1].id}
 
     def test_list_offers_without_sort_should_not_have_created_date_sort_link(self, authenticated_client, offers):
         query_args = self._get_query_args_by_id(offers[0].id)
@@ -575,7 +575,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {stock.offer.id}
+        assert {int(row["ID"]) for row in rows} == {stock.offer.id}
 
     def test_list_offers_by_event_date_gte_only(self, authenticated_client, offers):
         # Query investigated for performance issue in PC-23801
@@ -594,7 +594,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {offers[1].id}
 
     @pytest.mark.parametrize(
         "operator,criteria_indexes,expected_offer_indexes,has_provider",
@@ -623,7 +623,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[index].id for index in expected_offer_indexes}
+        assert {int(row["ID"]) for row in rows} == {offers[index].id for index in expected_offer_indexes}
 
     def test_list_offers_by_in_and_not_in_criteria(self, authenticated_client, criteria, offers):
         query_args = {
@@ -641,7 +641,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[0].id}
+        assert {int(row["ID"]) for row in rows} == {offers[0].id}
 
     def test_list_offers_by_category(self, authenticated_client, offers):
         query_args = {
@@ -654,7 +654,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id, offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {offers[1].id, offers[2].id}
 
     def test_list_offers_by_subcategory(self, authenticated_client, offers):
         query_args = {
@@ -667,7 +667,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {offers[2].id}
 
     def test_list_offers_by_price(self, authenticated_client, offers):
         query_args = {
@@ -754,7 +754,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[0].id, offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {offers[0].id, offers[2].id}
 
     def test_list_offers_by_region(self, authenticated_client, offers):
         query_args = {
@@ -813,7 +813,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {offers[1].id}
 
     def test_list_offers_by_venue_activity(self, authenticated_client):
         offer = offers_factories.OfferFactory(venue__activity=offerers_models.Activity.BOOKSTORE)
@@ -828,7 +828,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offer.id}
+        assert {int(row["ID"]) for row in rows} == {offer.id}
 
     def test_list_offers_by_address(self, authenticated_client, offers):
         for offer in offers[:3]:
@@ -849,7 +849,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {offers[2].id}
 
     def test_list_offers_by_status(self, authenticated_client, offers):
         offer = offers_factories.OfferFactory(isActive=False)
@@ -864,7 +864,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offer.id}
+        assert {int(row["ID"]) for row in rows} == {offer.id}
 
     def test_list_offers_by_offerer(self, authenticated_client, offers):
         offerer_id = offers[1].venue.managingOffererId
@@ -880,7 +880,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {offers[1].id}
 
     def test_list_offers_by_validation(self, authenticated_client, offers):
         status = offers[2].validation
@@ -894,7 +894,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {offers[2].id}
         assert rows[0]["État"] == "Rejetée"
 
     def test_list_offers_by_four_filters(self, authenticated_client, criteria, offers):
@@ -922,7 +922,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {offers[2].id}
 
     @pytest.mark.parametrize(
         "order,expected_list",
@@ -1036,7 +1036,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {offers[1].id}
 
     def test_list_offers_by_no_tags_and_validation(self, authenticated_client, offers):
         query_args = {
@@ -1051,7 +1051,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {offers[1].id}
 
     def test_list_offers_by_no_tags_and_other_validation(self, authenticated_client, offers):
         query_args = {

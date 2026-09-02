@@ -183,13 +183,13 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
         invoice_references.add(payload.invoice_external_reference)
 
     # pre-load bank accounts and invoices found in payloads data
-    bank_account_ids = set(
+    bank_account_ids = {
         str(id[0])
         for id in db.session.query(finance_models.BankAccount)
         .filter(finance_models.BankAccount.id.in_(external_bank_account_ids))
         .with_entities(finance_models.BankAccount.id)
         .all()
-    )
+    }
 
     invoices = db.session.query(finance_models.Invoice).filter(finance_models.Invoice.reference.in_(invoice_references))
     invoices_dict = {invoice.reference: invoice for invoice in invoices}

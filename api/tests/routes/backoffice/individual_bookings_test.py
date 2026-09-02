@@ -207,7 +207,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 3
-        assert set(row["Contremarque"] for row in rows) == {"WTRL00", "ELBEIT", "REIMB3"}
+        assert {row["Contremarque"] for row in rows} == {"WTRL00", "ELBEIT", "REIMB3"}
 
     @pytest.mark.parametrize(
         "incident_kind, incident_status, expected_text",
@@ -352,7 +352,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         # Warning: test may return more than 1 row when an offer id is the same as expected user id
         assert len(rows) >= 1
-        assert bookings[1].token in set(row["Contremarque"] for row in rows)
+        assert bookings[1].token in {row["Contremarque"] for row in rows}
 
     @pytest.mark.parametrize("search_query", ["napo@leon.com", "Napo@Leon.com"])
     def test_list_bookings_by_user(self, authenticated_client, bookings, search_query):
@@ -361,7 +361,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == {"WTRL00", "ELBEIT"}
+        assert {row["Contremarque"] for row in rows} == {"WTRL00", "ELBEIT"}
 
     def test_list_bookings_by_category(self, authenticated_client, bookings):
         with assert_num_queries(self.expected_num_queries):
@@ -369,7 +369,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == {"CNCL02", "REIMB3"}
+        assert {row["Contremarque"] for row in rows} == {"CNCL02", "REIMB3"}
 
     def test_list_bookings_by_cashflow_batch(self, authenticated_client):
         cashflows = finance_factories.CashflowFactory.create_batch(
@@ -396,7 +396,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID résa"]) for row in rows) == {
+        assert {int(row["ID résa"]) for row in rows} == {
             reimbursed_pricing1.bookingId,
             reimbursed_pricing3.bookingId,
         }
@@ -421,7 +421,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == expected_tokens
+        assert {row["Contremarque"] for row in rows} == expected_tokens
 
     def test_list_bookings_by_cancellation_reason(self, authenticated_client):
         bookings_factories.CancelledBookingFactory.create_batch(
@@ -458,7 +458,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == {"CNCL02", "ELBEIT"}
+        assert {row["Contremarque"] for row in rows} == {"CNCL02", "ELBEIT"}
 
     @pytest.mark.parametrize(
         "from_date, to_date, expected_tokens",
@@ -484,7 +484,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == expected_tokens
+        assert {row["Contremarque"] for row in rows} == expected_tokens
 
     def test_list_bookings_by_offerer(self, authenticated_client, bookings):
         offerer_id = bookings[1].offererId
@@ -504,7 +504,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == {bookings[0].token, bookings[2].token}
+        assert {row["Contremarque"] for row in rows} == {bookings[0].token, bookings[2].token}
 
     @pytest.mark.parametrize(
         "deposit_filter_value, result_token, result_active",
@@ -722,7 +722,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == set(expected_results)
+        assert {row["Contremarque"] for row in rows} == set(expected_results)
 
     @pytest.mark.parametrize(
         "is_fraudulent, expected_results",
@@ -740,7 +740,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == set(expected_results)
+        assert {row["Contremarque"] for row in rows} == set(expected_results)
 
     @pytest.mark.parametrize("quantity", [1, 2])
     def test_display_duo_bookings(self, authenticated_client, bookings, quantity):
@@ -767,7 +767,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == set(expected_results)
+        assert {row["Contremarque"] for row in rows} == set(expected_results)
 
     def test_list_booking_with_unlimited_stock_quantity(self, authenticated_client):
         token = bookings_factories.BookingFactory(stock__quantity=None).token

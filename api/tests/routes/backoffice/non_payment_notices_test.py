@@ -146,7 +146,7 @@ class ListNonPaymentNoticesTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
-        assert set(row["ID"] for row in rows) == {str(notice.id), str(notice_with_close_name.id)}
+        assert {row["ID"] for row in rows} == {str(notice.id), str(notice_with_close_name.id)}
 
     def test_list_notices_by_reference(self, authenticated_client):
         notice = offerers_factories.NonPaymentNoticeFactory(reference="AZERT")

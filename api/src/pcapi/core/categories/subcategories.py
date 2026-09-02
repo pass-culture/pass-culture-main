@@ -1528,9 +1528,9 @@ MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS = {
 NUMBER_SECONDS_HIDE_QR_CODE = 3600 * 24 * 2
 
 
-assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
+assert {subcategory.id for subcategory in ALL_SUBCATEGORIES} == {
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)
-)
+}
 
 SubcategoryProLabelEnum = Enum(  # type: ignore[misc]
     "SubcategoryProLabelEnum",

@@ -21,7 +21,7 @@ class GetShowTypesTest(PublicAPIEndpointBaseHelper):
             response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
-        assert set(show_type["id"] for show_type in response.json) == set(show.SHOW_SUB_TYPES_BY_SLUG)
+        assert {show_type["id"] for show_type in response.json} == set(show.SHOW_SUB_TYPES_BY_SLUG)
 
     def test_show_type_serialization(self):
         plain_api_key, _ = self.setup_provider()

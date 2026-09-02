@@ -253,7 +253,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[2].id}
 
     def test_list_collective_offers_by_creation_date(self, authenticated_client, collective_offers):
         query_args = {
@@ -269,7 +269,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[2].id}
 
     def test_list_collective_offers_by_status_and_event_date(self, authenticated_client, collective_offers):
         query_args = {
@@ -286,7 +286,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[0].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[0].id}
 
     def test_list_collective_offers_without_sort_should_not_have_created_date_sort_link(
         self, authenticated_client, collective_offers
@@ -387,7 +387,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {stock.collectiveOffer.id}
+        assert {int(row["ID"]) for row in rows} == {stock.collectiveOffer.id}
 
     def test_list_collective_offers_by_event_date_gte_only(self, authenticated_client, collective_offers):
         # Query investigated for performance issue in PC-23801
@@ -406,7 +406,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[1].id}
 
     @pytest.mark.parametrize(
         "operator,formats,expected_offer_indexes,expected_queries",
@@ -447,7 +447,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[index].id for index in expected_offer_indexes}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[index].id for index in expected_offer_indexes}
 
     def test_list_collective_offers_by_price(self, authenticated_client, collective_offers):
         query_args = {
@@ -509,7 +509,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[1].id}
 
     def test_list_offers_by_institution(self, authenticated_client, collective_offers):
         institution_id = collective_offers[0].institutionId
@@ -525,7 +525,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[0].id, collective_offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[0].id, collective_offers[1].id}
 
     def test_list_offers_by_institution_department(self, authenticated_client, collective_offers):
         query_args = {
@@ -538,7 +538,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[2].id}
 
     def test_list_offers_by_institution_department_in_corsica(self, authenticated_client, collective_offers):
         query_args = {
@@ -551,7 +551,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[0].id, collective_offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[0].id, collective_offers[1].id}
 
     @pytest.mark.parametrize(
         "ministry,expected_indexes,expected_queries",
@@ -574,7 +574,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {
+        assert {int(row["ID"]) for row in rows} == {
             collective_offers[expected_index].id for expected_index in expected_indexes
         }
 
@@ -658,7 +658,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {
+        assert {int(row["ID"]) for row in rows} == {
             all_offers[expected_index].id for expected_index in expected_indexes
         }
         for row in rows:
@@ -676,7 +676,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[0].id, collective_offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[0].id, collective_offers[2].id}
 
     def test_list_collective_offers_by_region(self, authenticated_client, collective_offers):
         query_args = {
@@ -704,7 +704,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[1].id}
 
     def test_list_collective_offers_by_status(self, authenticated_client, collective_offers):
         offer = educational_factories.ReimbursedCollectiveOfferFactory()
@@ -719,7 +719,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offer.id}
+        assert {int(row["ID"]) for row in rows} == {offer.id}
         assert rows[0]["État"] == "Validée"
 
     def test_list_collective_offers_by_each_status(self, authenticated_client):
@@ -795,7 +795,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[1].id}
 
     def test_list_collective_offers_by_validation(self, authenticated_client, collective_offers):
         status = collective_offers[2].validation
@@ -809,7 +809,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[2].id}
         assert rows[0]["État"] == "Rejetée Date erronée"
 
     def test_list_collective_offers_by_four_filters(self, authenticated_client, collective_offers):
@@ -835,7 +835,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offers[2].id}
 
     @pytest.mark.parametrize(
         "order,expected_list",

@@ -549,7 +549,7 @@ class IndexOffersInQueueTest:
         # and stops because the maximum number of batches is reached
         assert mocked_reindex_offer_ids.call_count == 2
         assert app.redis_client.scard(queue) == 2
-        assert app.redis_client.smembers(queue) <= set(str(id_) for id_ in items)
+        assert app.redis_client.smembers(queue) <= {str(id_) for id_ in items}
 
 
 @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)

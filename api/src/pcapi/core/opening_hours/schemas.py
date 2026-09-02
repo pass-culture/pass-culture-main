@@ -26,7 +26,7 @@ OpeningHours = Annotated[list[Hour], AfterValidator(validate_opening_hours)]
 
 def validate_opening_hours_timespan(timespan: list[OpeningHours]) -> list[OpeningHours]:
     timespan_length = len(timespan)
-    hashable_timespans = set(tuple(hours) for hours in timespan)
+    hashable_timespans = {tuple(hours) for hours in timespan}
     has_unique_items = len(hashable_timespans) == timespan_length
     if timespan_length < 1:
         raise ValueError("ensure this value has at least 1 item")
