@@ -255,7 +255,7 @@ def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsRes
                     numberOfViews=top_offer.views,
                     offerName=offers_mapping[top_offer].name,
                     image=offers_api.build_offer_image(offers_mapping[top_offer]),
-                    isHeadlineOffer=offers_api.is_headline_offer(offers_mapping[top_offer]),
+                    isHeadlineOffer=offers_mapping[top_offer].is_headline_offer,
                 )
                 for top_offer in top_offers
             ],
