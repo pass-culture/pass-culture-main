@@ -132,10 +132,8 @@ const columns: Column<ExtendedSettlementResponseModel>[] = [
         })}
       >
         {settlement.isCaledonian
-          ? formatPacificFranc(convertEuroToPacificFranc(settlement.amount), {
-              signDisplay: 'always',
-            })
-          : formatPrice(settlement.amount, { signDisplay: 'always' })}
+          ? formatPacificFranc(convertEuroToPacificFranc(settlement.amount))
+          : formatPrice(settlement.amount)}
       </div>
     ),
   },
