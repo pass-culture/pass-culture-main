@@ -15,7 +15,7 @@ def test_update_pro_attributes(app, clear_redis, caplog):
     add_email_to_async_pro_attributes_update("welcome@example.com")
     with caplog.at_level(logging.INFO):
         update_pro_attributes()
-        assert set(record.extra["email"] for record in caplog.records if record.extra.get("email") is not None) == {
+        assert {record.extra["email"] for record in caplog.records if record.extra.get("email") is not None} == {
             "wilkommen@example.com",
             "bienvenue@example.com",
             "welcome@example.com",
@@ -30,7 +30,7 @@ def test_update_pro_attributes_with_backup(app, clear_redis, caplog):
     add_email_to_async_pro_attributes_update("bienvenue@example.com")
     with caplog.at_level(logging.INFO):
         update_pro_attributes()
-        assert set(record.extra["email"] for record in caplog.records if record.extra.get("email") is not None) == {
+        assert {record.extra["email"] for record in caplog.records if record.extra.get("email") is not None} == {
             "wilkommen@example.com",
             "bienvenue@example.com",
             "nemoubliezpas@example.com",

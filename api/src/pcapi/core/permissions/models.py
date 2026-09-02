@@ -130,8 +130,8 @@ def sync_enum_with_db_field(
     py_attr: str,
     db_class: type["Permission"] | type["Role"],
 ) -> None:
-    db_values = set(p.name for p in session.query(db_class.name).all())
-    py_values = set(getattr(e, py_attr) for e in py_enum)
+    db_values = {p.name for p in session.query(db_class.name).all()}
+    py_values = {getattr(e, py_attr) for e in py_enum}
 
     if removed_names := db_values - py_values:
         logger.warning(

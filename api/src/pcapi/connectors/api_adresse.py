@@ -558,7 +558,7 @@ class ApiAdresseBackend(BaseBackend):
         if payload_size > 50 * 1000 * 1000:  # 50 Mb
             raise ValueError("Payload is too large")
 
-        if len(set(line.count(",") for line in payload.split("\n"))) != 1:
+        if len({line.count(",") for line in payload.split("\n")}) != 1:
             raise ValueError("Malformed payload")
 
         if columns is None:

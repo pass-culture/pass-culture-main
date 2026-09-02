@@ -116,7 +116,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[2].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offer_templates[2].id}
 
     def test_list_collective_offer_templates_by_venue(self, authenticated_client, collective_offer_templates):
         venue_id = collective_offer_templates[1].venueId
@@ -125,7 +125,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[1].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offer_templates[1].id}
 
     def test_list_collective_offer_templates_by_offerer(self, authenticated_client, collective_offer_templates):
         offerer_id = collective_offer_templates[1].venue.managingOffererId
@@ -134,7 +134,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[1].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offer_templates[1].id}
 
     def test_list_collective_offer_templates_by_status(self, authenticated_client, collective_offer_templates):
         status = collective_offer_templates[2].validation
@@ -143,7 +143,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[2].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offer_templates[2].id}
         assert rows[0]["État"] == "Rejetée Date erronée"
 
     def test_list_offers_by_all_filters(self, authenticated_client, collective_offer_templates):
@@ -162,7 +162,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[2].id}
+        assert {int(row["ID"]) for row in rows} == {collective_offer_templates[2].id}
 
     @pytest.mark.parametrize(
         "order,expected_list",

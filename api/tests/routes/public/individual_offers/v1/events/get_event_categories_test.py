@@ -23,11 +23,11 @@ class GetEventCategoriesTest(PublicAPIEndpointBaseHelper):
             response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
-        assert set(subcategory["id"] for subcategory in response.json) == set(
+        assert {subcategory["id"] for subcategory in response.json} == {
             subcategory_id
             for subcategory_id, subcategory in subcategories.EVENT_SUBCATEGORIES.items()
             if subcategory.is_selectable
-        )
+        }
 
     def test_category_serialization(self):
         plain_api_key, _ = self.setup_provider()

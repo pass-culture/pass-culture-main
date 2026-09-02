@@ -19,9 +19,7 @@ def test_sync_first_perms(db_session):
     perm_models.sync_enum_with_db_field(db_session, TestPermissions, "name", perm_models.Permission)
 
     # then
-    assert set(p.name for p in db.session.query(perm_models.Permission.name).all()) == set(
-        p.name for p in TestPermissions
-    )
+    assert {p.name for p in db.session.query(perm_models.Permission.name).all()} == {p.name for p in TestPermissions}
 
 
 def test_sync_new_perms(db_session):
@@ -41,9 +39,7 @@ def test_sync_new_perms(db_session):
     perm_models.sync_enum_with_db_field(db_session, TestPermissions, "name", perm_models.Permission)
 
     # then
-    assert set(p.name for p in db.session.query(perm_models.Permission.name).all()) == set(
-        p.name for p in TestPermissions
-    )
+    assert {p.name for p in db.session.query(perm_models.Permission.name).all()} == {p.name for p in TestPermissions}
 
 
 def test_sync_removed_perms(db_session):
@@ -66,7 +62,7 @@ def test_sync_removed_perms(db_session):
     # then
     assert warn_mock.call_count == 1
     assert "BAZ" in warn_mock.call_args.args[2]
-    assert set(p.name for p in db.session.query(perm_models.Permission.name).all()) == {"FOO", "BAR", "BAZ"}
+    assert {p.name for p in db.session.query(perm_models.Permission.name).all()} == {"FOO", "BAR", "BAZ"}
 
 
 def test_sync_new_roles(db_session):

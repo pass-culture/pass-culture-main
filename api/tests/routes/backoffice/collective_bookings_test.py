@@ -349,7 +349,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID résa"]) for row in rows) == {
+        assert {int(row["ID résa"]) for row in rows} == {
             reimbursed_pricing1.collectiveBookingId,
             reimbursed_pricing3.collectiveBookingId,
         }
@@ -377,7 +377,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["ID résa"] for row in rows) == {str(collective_bookings[idx].id) for idx in expected_idx}
+        assert {row["ID résa"] for row in rows} == {str(collective_bookings[idx].id) for idx in expected_idx}
 
     def test_list_bookings_by_date(self, authenticated_client, collective_bookings):
         date_from = datetime.date.today() - datetime.timedelta(days=3)
@@ -394,7 +394,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id, collective_bookings[2].id}
+        assert {int(row["ID résa"]) for row in rows} == {collective_bookings[1].id, collective_bookings[2].id}
 
     def test_list_bookings_with_event_date_before_1900(
         self,
@@ -445,7 +445,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Nom de l'offre"] for row in rows) == expected_offers_name
+        assert {row["Nom de l'offre"] for row in rows} == expected_offers_name
 
     def test_list_bookings_by_offerer(self, authenticated_client, collective_bookings):
         offerer_ids = [collective_bookings[1].offererId, collective_bookings[3].offererId]
@@ -454,7 +454,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id, collective_bookings[3].id}
+        assert {int(row["ID résa"]) for row in rows} == {collective_bookings[1].id, collective_bookings[3].id}
 
     def test_list_bookings_by_venue(self, authenticated_client, collective_bookings):
         venue_id = collective_bookings[0].venueId
@@ -463,7 +463,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[0].id, collective_bookings[2].id}
+        assert {int(row["ID résa"]) for row in rows} == {collective_bookings[0].id, collective_bookings[2].id}
 
     def test_list_bookings_by_educational_institution(self, authenticated_client, collective_bookings):
         institution_id = collective_bookings[1].educationalInstitution.id
@@ -473,7 +473,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id}
+        assert {int(row["ID résa"]) for row in rows} == {collective_bookings[1].id}
 
     def test_list_bookings_by_ministry(self, authenticated_client, collective_bookings):
         with assert_num_queries(self.expected_num_queries):
@@ -483,7 +483,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id}
+        assert {int(row["ID résa"]) for row in rows} == {collective_bookings[1].id}
 
     def test_additional_data_when_reimbursed(self, authenticated_client, collective_bookings):
         reimbursed = collective_bookings[4]
@@ -556,10 +556,10 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == expected_results
         if has_incident == "true":
-            assert set(int(row["ID résa"]) for row in rows) == {booking_with_incident.id}
+            assert {int(row["ID résa"]) for row in rows} == {booking_with_incident.id}
 
         else:
-            assert set(int(row["ID résa"]) for row in rows) == {
+            assert {int(row["ID résa"]) for row in rows} == {
                 booking_with_wrong_incident.id,
                 booking_with_no_incident.id,
             }

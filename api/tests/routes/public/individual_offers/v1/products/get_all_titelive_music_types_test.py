@@ -21,7 +21,7 @@ class GetAllTiteliveMusicTypesTest(PublicAPIEndpointBaseHelper):
             response = self.make_request(plain_api_key=plain_api_key)
             assert response.status_code == 200
 
-        assert set(music_type["id"] for music_type in response.json) == set(GTL_ID_BY_TITELIVE_MUSIC_GENRE)
+        assert {music_type["id"] for music_type in response.json} == set(GTL_ID_BY_TITELIVE_MUSIC_GENRE)
 
     def test_music_serialization(self, client):
         plain_api_key, _ = self.setup_provider()

@@ -20,7 +20,7 @@ class GetAllTiteliveMusicTypesTest(PublicAPIEndpointBaseHelper):
             response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
-        assert set(music_type["id"] for music_type in response.json) == {
+        assert {music_type["id"] for music_type in response.json} == {
             genre
             for genre, gtl_id in GTL_ID_BY_TITELIVE_MUSIC_GENRE.items()
             if gtl_id[:2] not in ["03", "15", "16", "18"]

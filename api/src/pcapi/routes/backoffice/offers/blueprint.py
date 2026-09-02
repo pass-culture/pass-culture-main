@@ -1818,7 +1818,7 @@ def _get_editable_stock(offer_id: int) -> set[int]:
             ),
         )
     )
-    return set(stock_id for (stock_id,) in raw_stock_ids)
+    return {stock_id for (stock_id,) in raw_stock_ids}
 
 
 def _is_stock_editable(offer_id: int, stock_id: int) -> bool:

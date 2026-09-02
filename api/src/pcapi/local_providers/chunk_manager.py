@@ -29,7 +29,7 @@ def update_chunk(chunk_to_update: dict[str, Model]) -> None:
     # because it may not be populated yet if this module is imported too early.
     MODELS = {mapper.class_.__name__: mapper.class_ for mapper in Model.registry.mappers}
 
-    models_in_chunk: set[str] = set(_extract_model_name_from_chunk_key(key) for key in chunk_to_update)
+    models_in_chunk: set[str] = {_extract_model_name_from_chunk_key(key) for key in chunk_to_update}
 
     for model_in_chunk in models_in_chunk:
         matching_tuples_in_chunk = _filter_matching_pc_object_in_chunk(model_in_chunk, chunk_to_update)

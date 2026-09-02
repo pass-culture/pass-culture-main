@@ -974,7 +974,7 @@ def auto_tag_new_offerer(
             .all()
         )
         if len(tags) != len(tag_names_to_apply):
-            missing_tags = tag_names_to_apply - set(tag.name for tag in tags)
+            missing_tags = tag_names_to_apply - {tag.name for tag in tags}
             logger.error(
                 "Could not assign tag to offerer: tag not found in DB",
                 extra={"offerer": offerer.id, "tag_name": ",".join(missing_tags)},

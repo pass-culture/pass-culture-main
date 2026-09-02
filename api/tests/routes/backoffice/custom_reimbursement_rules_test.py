@@ -172,7 +172,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID règle"]) for row in rows) == {
+        assert {int(row["ID règle"]) for row in rows} == {
             offerer_rule_1.id,
             offerer_rule_2.id,
             offerer_rule_3.id,

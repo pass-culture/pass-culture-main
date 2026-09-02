@@ -1128,7 +1128,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         assert len(brevo_testing.brevo_requests) == 4
         assert len(batch_testing.requests) == 4
-        user_id_set = set(request["user_id"] for request in batch_testing.requests)
+        user_id_set = {request["user_id"] for request in batch_testing.requests}
         assert user_id_set == {
             user_beneficiary_to_anonymize.id,
             user_underage_beneficiary_to_anonymize.id,
