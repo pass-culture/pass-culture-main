@@ -140,7 +140,7 @@ class SubcategoriesTest:
             },
             {
                 "name": "BIBLIOTHEQUE_MEDIATHEQUE",
-                "value": "Abonnements aux m\u00e9diath\u00e8ques et biblioth\u00e8ques",
+                "value": "Abonnements aux biblioth\u00e8ques",
                 "genreType": None,
                 "parents": ["LIVRES"],
                 "positions": None,
