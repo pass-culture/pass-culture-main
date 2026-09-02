@@ -46,6 +46,10 @@ class GetCombinedInvoicesQueryModel(HttpQueryParamsModel):
 
 class SettlementListQueryModel(HttpQueryParamsModel):
     offerer_id: int
+    period_beginning_date: datetime.date | None = None
+    period_ending_date: datetime.date | None = None
+    bank_account_id: int | None = None
+    name_search: str | None = None
 
 
 # Response Models
