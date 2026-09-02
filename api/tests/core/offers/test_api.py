@@ -2384,7 +2384,7 @@ class BatchActivateOffersTest:
         assert not pending_offer.publicationDatetime
 
         mocked_async_index_offer_ids.assert_called_once()
-        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {offer1.id, offer2.id}
 
         assert len(caplog.records) == 3
         first_record = caplog.records[0]
@@ -2476,8 +2476,8 @@ class BatchUpdateOffersTest:
         def callback(offer_ids, venue_ids):
             nonlocal callback_called
             callback_called = callback_called + 1
-            assert set(offer_ids) == set([offer1.id, offer2.id])
-            assert set(venue_ids) == set([offer1.venueId, offer2.venueId])
+            assert set(offer_ids) == {offer1.id, offer2.id}
+            assert set(venue_ids) == {offer1.venueId, offer2.venueId}
 
         with caplog.at_level(logging.INFO):
             api.batch_update_offers(
@@ -2498,7 +2498,7 @@ class BatchUpdateOffersTest:
         assert not offer3.publicationDatetime
 
         mocked_async_index_offer_ids.assert_called_once()
-        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {offer1.id, offer2.id}
 
         assert len(caplog.records) == 2
         first_record = caplog.records[0]
@@ -2532,7 +2532,7 @@ class FutureOfferReminderTest:
         api.reindex_recently_published_offers()
 
         mocked_async_index_offer_ids.assert_called_once()
-        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer_1.id, offer_2.id])
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {offer_1.id, offer_2.id}
 
         assert db.session.get(models.Offer, offer_1.id).isActive
         assert db.session.get(models.Offer, offer_2.id).isActive
@@ -4093,7 +4093,7 @@ class ApproveProductAndRejectedOffersTest:
         )
 
         mocked_async_index_offer_ids.assert_called()
-        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offert_to_approve.id])
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {offert_to_approve.id}
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_approve_product_and_offers_with_one_offer_manually_rejected(self, mocked_async_index_offer_ids):

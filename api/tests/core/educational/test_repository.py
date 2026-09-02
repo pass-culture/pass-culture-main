@@ -51,7 +51,7 @@ class FilterCollectiveOfferByStatusesTest:
         assert filtered_pending_query.count() == 1
         assert filtered_pending_query.first() == pending_offer
 
-    @pytest.mark.parametrize("status", ALL_STATUS - set([models.CollectiveOfferDisplayedStatus.UNDER_REVIEW]))
+    @pytest.mark.parametrize("status", ALL_STATUS - {models.CollectiveOfferDisplayedStatus.UNDER_REVIEW})
     def test_filter_by_multiple_status(self, status):
         booked_offer = create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.BOOKED)
         _pending_offer = create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.UNDER_REVIEW)
@@ -63,7 +63,7 @@ class FilterCollectiveOfferByStatusesTest:
         assert filtered_booked_query.one() == booked_offer
 
     @pytest.mark.parametrize(
-        "status", ALL_STATUS_WITHOUT_INACTIVE - set([models.CollectiveOfferDisplayedStatus.UNDER_REVIEW])
+        "status", ALL_STATUS_WITHOUT_INACTIVE - {models.CollectiveOfferDisplayedStatus.UNDER_REVIEW}
     )
     def test_filter_by_status(self, status):
         offer = create_collective_offer_by_status(status)
@@ -76,7 +76,7 @@ class FilterCollectiveOfferByStatusesTest:
         assert filtered_booked_query.one() == offer
 
     @pytest.mark.parametrize(
-        "status", ALL_STATUS_WITHOUT_INACTIVE - set([models.CollectiveOfferDisplayedStatus.UNDER_REVIEW])
+        "status", ALL_STATUS_WITHOUT_INACTIVE - {models.CollectiveOfferDisplayedStatus.UNDER_REVIEW}
     )
     def test_filter_pending(self, status):
         _other_offer = create_collective_offer_by_status(status)
@@ -88,9 +88,7 @@ class FilterCollectiveOfferByStatusesTest:
 
         assert filtered_booked_query.one() == pending_offer
 
-    @pytest.mark.parametrize(
-        "status", ALL_STATUS_WITHOUT_INACTIVE - set([models.CollectiveOfferDisplayedStatus.PUBLISHED])
-    )
+    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE - {models.CollectiveOfferDisplayedStatus.PUBLISHED})
     def test_filter_active(self, status):
         other_offer = create_collective_offer_by_status(status)
         published_offer = create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.PUBLISHED)

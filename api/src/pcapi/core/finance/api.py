@@ -2961,7 +2961,7 @@ def _create_and_get_provider_reimbursement_csv(
         writer = csv.writer(fp, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(headers)
         for invoice in invoices:
-            reimbursement_details = find_reimbursement_details_by_invoices(set([invoice.reference]))
+            reimbursement_details = find_reimbursement_details_by_invoices({invoice.reference})
             for reimbursement_detail in reimbursement_details:
                 writer.writerow(reimbursement_detail.as_csv_row())
 

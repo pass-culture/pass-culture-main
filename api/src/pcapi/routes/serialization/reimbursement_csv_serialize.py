@@ -273,7 +273,7 @@ class ReimbursementCsvByInvoicesModel(HttpQueryParamsModel):
     @pydantic_v2.field_validator("invoicesReferences", mode="before")
     def ensure_invoices_references_is_a_set(cls, v: typing.Any) -> set[str]:
         if isinstance(v, str):
-            return set([v])
+            return {v}
         if isinstance(v, list):
             return set(v)
         raise PydanticError("Invalid value")

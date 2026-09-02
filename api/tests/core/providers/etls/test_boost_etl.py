@@ -408,7 +408,7 @@ class BoostExtractTransformLoadProcessTest:
         assert offer_2.product.extraData["allocineId"] == 269975
         assert offer_2.product.extraData["visa"] == "159570"
 
-        assert offers_id == set([offer_1.id, offer_2.id])
+        assert offers_id == {offer_1.id, offer_2.id}
 
         offer_1_stocks = offer_1.activeStocks
         assert len(offer_1_stocks) == 1
@@ -499,7 +499,7 @@ class BoostExtractTransformLoadProcessTest:
 
         offer_2 = db.session.query(offers_models.Offer).filter_by(idAtProvider=f"145%{venue_id}%Boost").one_or_none()
 
-        assert offers_id == set([offer_1.id, offer_2.id])
+        assert offers_id == {offer_1.id, offer_2.id}
         assert offer_1
         assert offer_1.bookingEmail == venue_provider.venue.bookingEmail
         assert offer_1.subcategoryId == subcategories.SEANCE_CINE.id
@@ -515,7 +515,7 @@ class BoostExtractTransformLoadProcessTest:
         assert offer_1.product.extraData["allocineId"] == 270935
         assert offer_1.product.extraData["visa"] == "159673"
 
-        assert offers_id == set([offer_1.id, offer_2.id])
+        assert offers_id == {offer_1.id, offer_2.id}
 
         assert len(db.session.query(offers_models.Stock).all()) == 3
 
@@ -625,7 +625,7 @@ class BoostExtractTransformLoadProcessTest:
         assert offer_2_stock_2.priceCategory.label == "PASS CULTURE"
 
         async_index_offer_ids_mock.assert_called_once_with(
-            set([offer_1.id, offer_2.id]),
+            {offer_1.id, offer_2.id},
             reason=search_models.IndexationReason.STOCK_UPDATE,
             log_extra={
                 "source": "provider_api",
