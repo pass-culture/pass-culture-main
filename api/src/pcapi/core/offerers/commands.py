@@ -219,8 +219,8 @@ def finalize_closing_venue_command(venue_id: int, author_id: int, apply: bool = 
     venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_id).one()
     author = db.session.query(users_models.User).filter(users_models.User.id == author_id).one()
     with atomic():
-        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
 
         if not apply:
             mark_transaction_as_invalid()

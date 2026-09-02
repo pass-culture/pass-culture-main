@@ -93,13 +93,13 @@ def match_acceslibre_task(payload: MatchAcceslibrePayload) -> None:
         offerers_api.match_acceslibre(venue)
 
 
-class FinalizeClosingVenuePayload(BaseModelV2):
+class DeactivateVenueOffersPayload(BaseModelV2):
     venue_id: int
     author_id: int
 
 
-@celery_async_task(name="tasks.offerers.default.finalize_closing_venue_task", model=FinalizeClosingVenuePayload)
-def finalize_closing_venue_task(payload: FinalizeClosingVenuePayload) -> None:
+@celery_async_task(name="tasks.offerers.default.deactivate_venue_offers_task", model=DeactivateVenueOffersPayload)
+def deactivate_venue_offers_task(payload: DeactivateVenueOffersPayload) -> None:
     with atomic():
         venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == payload.venue_id).one()
         offers_query = offers_repository.offers_by_venue_query(

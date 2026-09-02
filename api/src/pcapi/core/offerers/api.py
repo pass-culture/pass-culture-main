@@ -3528,10 +3528,10 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
     nullify_venue_emails(venue, author)
     history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
 
-    payload = tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
+    payload = tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
     on_commit(
         functools.partial(
-            tasks.finalize_closing_venue_task.delay,
+            tasks.deactivate_venue_offers_task.delay,
             payload.model_dump(),
         )
     )
