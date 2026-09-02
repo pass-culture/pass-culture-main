@@ -100,6 +100,7 @@
             {% if container.internal.user.departementCode %}<tr><td>Département</td><td>{{container.internal.user.departementCode}}</td></tr>{% endif %}
             {% if container.internal.user.dateOfBirth %}<tr><td>Date de naissance</td><td>{{container.internal.user.dateOfBirth.strftime('%d/%m/%Y')}}</td></tr> {%endif%}
             {% if container.internal.user.validatedBirthDate %}<tr><td>Date de naissance confirmée</td><td>{{container.internal.user.validatedBirthDate.strftime('%d/%m/%Y')}}</td></tr>{% endif %}
+            {% if container.internal.user.birthPlace %}<tr><td>Lieu de naissance</td><td>{{container.internal.user.birthPlace}}</td></tr>{% endif %}
             <tr><td>Date de création du compte</td><td>{{container.internal.user.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
             <tr><td>Compte actif</td><td>{% if container.internal.user.isActive%}oui{%else%}non{%endif%}</td></tr>
             {% if container.internal.user.activity %}<tr><td>Activité</td><td>{{container.internal.user.activity}}</td></tr>{% endif %}

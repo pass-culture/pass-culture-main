@@ -1537,6 +1537,7 @@ def generate_beneficiary():
     user = users_factories.UserFactory(
         activity="Lycéen",
         address="123 rue du pass",
+        birthPlace="Lyon",
         civility="M.",
         city="Paris",
         culturalSurveyFilledDate=now,
@@ -2049,6 +2050,7 @@ class ExtractBeneficiaryDataTest(StorageFolderManager):
                 "user": {
                     "activity": "Lycéen",
                     "address": "123 rue du pass",
+                    "birthPlace": "Lyon",
                     "city": "Paris",
                     "civility": "M.",
                     "culturalSurveyFilledDate": "2024-01-01T00:00:00",

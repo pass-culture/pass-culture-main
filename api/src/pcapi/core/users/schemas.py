@@ -15,6 +15,7 @@ class GdprSerializer(pydantic_v2.BaseModel):
 class GdprUserSerializer(GdprSerializer):
     activity: str | None = None
     address: str | None = None
+    birthPlace: str | None = None
     civility: str | None = None
     city: str | None = None
     culturalSurveyFilledDate: datetime | None = None
