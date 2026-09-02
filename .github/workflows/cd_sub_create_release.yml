@@ -46,6 +46,9 @@ jobs:
       REF: ${{ inputs.ref }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
       version: "${{ inputs.tag-number }}"
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
 
   create-pre-release-on-github:
     name: Create pre release on GitHub
