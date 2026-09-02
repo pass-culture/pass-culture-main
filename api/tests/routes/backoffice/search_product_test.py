@@ -1,3 +1,4 @@
+import copy
 import pathlib
 import re
 from unittest.mock import patch
@@ -152,6 +153,56 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
         else:
             assert "Inéligible pass Culture " in card_text[0]
 
+        assert "EAN whitelisté Non" in card_text[0]
+
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_search_by_ean_unexisting_product_on_database_but_exist_on_titelive_with_int_id_lectorat(
+        self, mock_get_by_ean13, authenticated_client
+    ):
+        titelive_data = copy.deepcopy(fixtures.BOOK_BY_SINGLE_EAN_FIXTURE)
+        titelive_data["oeuvre"]["article"][0]["id_lectorat"] = 0
+        mock_get_by_ean13.return_value = titelive_data
+        article = titelive_data["oeuvre"]["article"][0]
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    q="1234567891235",
+                    product_filter_type=ProductFilterTypeEnum.EAN.name,
+                )
+            )
+            assert response.status_code == 200
+
+        assert (
+            "Ce produit n'est pas encore dans la base de données du pass Culture. Vous pouvez l'ajouter en cliquant sur le bouton ci-dessous."
+            in html_parser.extract_alert(response.data)
+        )
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Importer ce produit dans la base de données du pass Culture" in buttons
+
+        soup = html_parser.get_soup(response.data)
+        card_titles = html_parser.extract_cards_titles(response.data)
+        card_text = html_parser.extract_cards_text(response.data)
+        card_ean = soup.find(id="titelive-data")
+
+        assert card_ean
+        assert card_titles[0] == "Détails du Produit"
+        assert soup.select(f'div.pc-ean-result img[src="{article["imagesUrl"]["recto"]}"]')
+        assert titelive_data["oeuvre"]["titre"] in card_text[0]
+        assert "EAN-13 " + titelive_data["ean"] in card_text[0]
+        assert "Lectorat " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
+
+        assert (
+            f"Prix HT {finance_utils.format_currency_for_backoffice(article['prixpays']['fr']['value'])}"
+            in card_text[0]
+        )
+        assert "Taux TVA 5,50 %" in card_text[0]
+        assert "Code CLIL " + article["code_clil"] in card_text[0]
+        assert "Code support " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
+
+        assert "Inéligible pass Culture " not in card_text[0]
         assert "EAN whitelisté Non" in card_text[0]
 
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
