@@ -158,6 +158,7 @@ def anonymize_user(
     user.email_history = []
     user.irisFranceId = iris.id if iris else None
     user.validatedBirthDate = user.validatedBirthDate.replace(day=1, month=1) if user.validatedBirthDate else None
+    user.birthPlace = None
 
     external_email_anonymized = api.remove_external_user(user)
 
