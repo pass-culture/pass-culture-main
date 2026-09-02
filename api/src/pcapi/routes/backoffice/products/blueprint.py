@@ -1,5 +1,6 @@
 import dataclasses
 import enum
+import logging
 from collections import defaultdict
 
 import sqlalchemy as sa
@@ -40,6 +41,9 @@ from pcapi.utils import requests
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms
+
+
+logger = logging.getLogger(__name__)
 
 
 list_products_blueprint = backoffice_blueprint.child_backoffice_blueprint(
@@ -576,7 +580,8 @@ def search_product() -> response_utils.BackofficeResponse:
                 )
             try:
                 data = TypeAdapter(TiteLiveBookWork).validate_python(titelive_data["oeuvre"])
-            except Exception:
+            except Exception as err:
+                logger.warning("Failed to parse Titelive data", extra={"ean": ean, "err": err})
                 titelive_data = {}
                 ineligibility_reason = None
             else:

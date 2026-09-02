@@ -213,6 +213,13 @@ class TiteLiveBookArticle(pydantic_v2.BaseModel):
     id_lectorat: str | None = None
     taux_tva: str | None = None
 
+    @pydantic_v2.field_validator("id_lectorat", mode="before")
+    @classmethod
+    def validate_id_lectorat(cls, value: typing.Any) -> str | None:
+        if value is None:
+            return None
+        return str(value)
+
     @pydantic_v2.field_validator("taux_tva", mode="before")
     @classmethod
     def validate_code_tva(cls, value: typing.Any) -> str | None:
