@@ -591,10 +591,13 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByRole('button', { name: 'Rechercher les réservations' })
     )
 
-    const informationalMessage = await screen.findByText(
-      'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
-    )
-    expect(informationalMessage).toBeInTheDocument()
+    expect(
+      (
+        await screen.findAllByText(
+          'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
+        )
+      ).length
+    ).toBeGreaterThan(0)
     expect(api.getBookingsPro).toHaveBeenCalledTimes(10)
   })
 

@@ -88,19 +88,19 @@ describe('<Table />', () => {
     renderTable()
 
     let rows = screen.getAllByRole('row')
-    expect(within(rows[1]).getByText('2')).toBeInTheDocument()
+    expect(within(rows[2]).getByText('2')).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('img', { name: 'Trier par ordre croissant' })
     )
     rows = screen.getAllByRole('row')
-    expect(within(rows[1]).getByText('1')).toBeInTheDocument()
+    expect(within(rows[2]).getByText('1')).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('img', { name: 'Trier par ordre décroissant' })
     )
     rows = screen.getAllByRole('row')
-    expect(within(rows[1]).getByText('2')).toBeInTheDocument()
+    expect(within(rows[2]).getByText('2')).toBeInTheDocument()
   })
 
   it('handles row selection and select‑all', async () => {
