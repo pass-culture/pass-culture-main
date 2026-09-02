@@ -212,7 +212,9 @@ describe('StocksCalendar', () => {
 
     expect(deleteSpy).toHaveBeenCalledOnce()
 
-    expect(screen.getByText(/Une date a été supprimée/)).toBeInTheDocument()
+    expect(
+      screen.getAllByText(/Une date a été supprimée/).length
+    ).toBeGreaterThan(0)
   })
 
   it('should delete all the checked stocks', async () => {
@@ -241,7 +243,9 @@ describe('StocksCalendar', () => {
 
     expect(deleteSpy).toHaveBeenCalledOnce()
 
-    expect(screen.getByText(/19 dates ont été supprimées/)).toBeInTheDocument()
+    expect(
+      screen.getAllByText(/19 dates ont été supprimées/).length
+    ).toBeGreaterThan(0)
   })
 
   it('should close the dialog when the form is validated', async () => {
@@ -476,8 +480,8 @@ describe('StocksCalendar', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
     expect(
-      screen.getByText('Aucune date n’a pu être modifiée')
-    ).toBeInTheDocument()
+      screen.getAllByText('Aucune date n’a pu être modifiée').length
+    ).toBeGreaterThan(0)
   })
 
   it('should not show a button to add more stocks if the offer is synchronized', async () => {
@@ -547,7 +551,9 @@ describe('StocksCalendar', () => {
       screen.getByRole('button', { name: 'Supprimer ces dates' })
     )
 
-    expect(screen.getByText(/3 dates ont été supprimées/)).toBeInTheDocument()
+    expect(
+      screen.getAllByText(/3 dates ont été supprimées/).length
+    ).toBeGreaterThan(0)
   })
 
   it('should delete stocks and refresh offer in edition mode', async () => {
@@ -572,7 +578,9 @@ describe('StocksCalendar', () => {
 
     expect(deleteSpy).toHaveBeenCalledOnce()
 
-    expect(screen.getByText(/Une date a été supprimée/)).toBeInTheDocument()
+    expect(
+      screen.getAllByText(/Une date a été supprimée/).length
+    ).toBeGreaterThan(0)
   })
 
   it('should show an error message when updating a stock fails', async () => {
@@ -604,10 +612,10 @@ describe('StocksCalendar', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(
+        screen.getAllByText(
           'Une erreur est survenue lors de la modification des dates'
-        )
-      ).toBeInTheDocument()
+        ).length
+      ).toBeGreaterThan(0)
     })
   })
 

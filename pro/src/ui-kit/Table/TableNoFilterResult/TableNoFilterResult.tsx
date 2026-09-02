@@ -12,6 +12,7 @@ interface NoResultsProps {
   subtitle?: string
   resetMessage?: string
   resetFilters: () => void
+  hasNoResult?: boolean
 }
 
 export const TableNoFilterResult = ({
@@ -20,28 +21,34 @@ export const TableNoFilterResult = ({
   subtitle = 'Vous pouvez modifier votre recherche ou',
   resetMessage = 'Réinitialiser les filtres',
   resetFilters,
+  hasNoResult = false,
 }: NoResultsProps): JSX.Element => (
   <tr>
-    <td colSpan={colSpan}>
-      <div className={styles['search-no-results']}>
-        <SvgIcon
-          src={strokeSearchIcon}
-          alt="Illustration de recherche"
-          className={styles['search-no-results-icon']}
-          width="80"
-        />
-        <p className={styles['search-no-results-title']}>{message}</p>
-        <p className={styles['search-no-results-subtitle']}>{subtitle}</p>
-        <div className={styles['search-no-results-cta']}>
-          <Button
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            icon={fullRefresh}
-            onClick={resetFilters}
-            label={resetMessage}
+    <td colSpan={colSpan} role="status">
+      {hasNoResult ? (
+        <div className={styles['search-no-results']}>
+          <SvgIcon
+            src={strokeSearchIcon}
+            alt=""
+            className={styles['search-no-results-icon']}
+            width="80"
+            aria-hidden={true}
           />
+          <p className={styles['search-no-results-title']}>{message}</p>
+          <p className={styles['search-no-results-subtitle']}>{subtitle}</p>
+          <div className={styles['search-no-results-cta']}>
+            <Button
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              icon={fullRefresh}
+              onClick={resetFilters}
+              label={resetMessage}
+            />
+          </div>
         </div>
-      </div>
+      ) : (
+        <span>&nbsp;</span>
+      )}
     </td>
   </tr>
 )

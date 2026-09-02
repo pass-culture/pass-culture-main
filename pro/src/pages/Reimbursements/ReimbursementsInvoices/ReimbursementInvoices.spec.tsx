@@ -112,7 +112,7 @@ describe('reimbursementsWithFilters', () => {
         periodEndingDate: '2020-12-15',
       },
     })
-    expect(await screen.findAllByRole('row')).toHaveLength(4)
+    expect(await screen.findAllByRole('row')).toHaveLength(5)
     expect(screen.queryAllByRole('columnheader')).toHaveLength(6)
 
     // first line
