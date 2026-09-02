@@ -215,6 +215,33 @@ class QuotientFamilialApplicationTest:
             any_order=True,
         )
 
+    @patch("pcapi.connectors.api_particulier.get_quotient_familial")
+    def test_get_quotient_familial_calls_no_more_than_needed(self, mocked_get_quotient_familial):
+        eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
+        with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QF_DESERIALIZED_RESPONSE)
+        with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QF_DESERIALIZED_RESPONSE)
+        child_data = with_18_child_quotient_familial.data.enfants[0]
+        child_data.date_naissance = eighteen_years_ago
+        user = users_factories.BeneficiaryFactory(
+            lastName=child_data.nom_naissance, firstName=child_data.prenoms, validatedBirthDate=eighteen_years_ago
+        )
+        fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+                quotient_familial=None
+            ).model_dump(),
+        )
+        mocked_get_quotient_familial.side_effect = (
+            api_particulier.ParticulierApiApplicationNotFound(status_code=404),
+            with_18_child_quotient_familial,
+            with_18_child_quotient_familial,
+        )
+
+        bonus_api.apply_for_quotient_familial_bonus(fraud_check)
+
+        assert len(mocked_get_quotient_familial.mock_calls) == 2
+
     def test_application_not_found(self, caplog):
         user = users_factories.BeneficiaryFactory()
         custodian = subscription_factories.BonusCreditPersonFactory()
