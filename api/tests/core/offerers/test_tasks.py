@@ -187,8 +187,8 @@ class FinalizeClosingVenueTaskTest:
         author = users_factories.BaseUserFactory()
         self.create_synced_offers_with_bookings(venue)
 
-        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
 
         db.session.refresh(venue)
         assert all(booking.isCancelled for booking in venue.bookings)
@@ -199,8 +199,8 @@ class FinalizeClosingVenueTaskTest:
         author = users_factories.BaseUserFactory()
         self.create_synced_offers_with_bookings(venue)
 
-        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
 
         db.session.refresh(venue)
         assert venue.state == offerers_models.VenueState.CLOSED
@@ -210,8 +210,8 @@ class FinalizeClosingVenueTaskTest:
         author = users_factories.BaseUserFactory()
         self.create_synced_offers_with_bookings(venue)
 
-        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
 
         db.session.refresh(venue)
         assert not venue.cinemaProviderPivot
@@ -227,8 +227,8 @@ class FinalizeClosingVenueTaskTest:
         regular_offer_id = offers_factories.OfferFactory(venue=venue).id
         draft_offer_id = offers_factories.DraftOfferFactory(venue=venue).id
 
-        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
 
         assert db.session.query(offers_models.Offer).filter(offers_models.Offer.id == regular_offer_id).one()
         assert not db.session.query(offers_models.Offer).filter(offers_models.Offer.id == draft_offer_id).one_or_none()
