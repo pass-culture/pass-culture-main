@@ -35,7 +35,7 @@ export const Settlements = (): JSX.Element => {
       fallbackData: [],
     }
   )
-  if (isLoading) {
+  if (isLoading || hasSettlementQuery.isLoading) {
     return <Spinner />
   }
 
