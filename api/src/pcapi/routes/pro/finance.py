@@ -39,7 +39,13 @@ def has_settlement(query: finance_serialize.HasSettlementQueryModel) -> finance_
 def get_settlements(query: finance_serialize.SettlementListQueryModel) -> finance_serialize.SettlementListResponseModel:
     rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
 
-    settlements_query = finance_repository.get_settlements_query(offerer_id=query.offerer_id)
+    settlements_query = finance_repository.get_settlements_query(
+        offerer_id=query.offerer_id,
+        bank_account_id=query.bank_account_id,
+        date_from=query.period_beginning_date,
+        date_until=query.period_ending_date,
+        name_search=query.name_search,
+    )
 
     return finance_serialize.SettlementListResponseModel(
         [finance_serialize.SettlementResponseModel.build(settlement) for settlement in settlements_query]
