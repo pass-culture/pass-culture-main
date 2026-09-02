@@ -10,6 +10,7 @@ import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { downloadFile } from '@/commons/utils/downloadFile'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
+import { DOWNLOAD_REIMBURSEMENTS_LABEL } from '../constants'
 import {
   InvoiceDownloadActionsBar,
   MAX_ITEMS_DOWNLOAD,
@@ -143,9 +144,7 @@ describe('InvoiceDownloadActionsBar', () => {
       <InvoiceDownloadActionsBar checkedInvoices={['INV-1', 'INV-2']} />
     )
 
-    await user.click(
-      screen.getByText('Télécharger le détail des réservations (.csv)')
-    )
+    await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
 
     expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith({
       query: { invoicesReferences: ['INV-1', 'INV-2'] },
@@ -176,9 +175,7 @@ describe('InvoiceDownloadActionsBar', () => {
       <InvoiceDownloadActionsBar checkedInvoices={['INV-1']} />
     )
 
-    await user.click(
-      screen.getByText('Télécharger le détail des réservations (.csv)')
-    )
+    await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
 
     expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
     expect(downloadFile).not.toHaveBeenCalled()
@@ -195,9 +192,7 @@ describe('InvoiceDownloadActionsBar', () => {
       <InvoiceDownloadActionsBar checkedInvoices={manyInvoices} />
     )
 
-    await user.click(
-      screen.getByText('Télécharger le détail des réservations (.csv)')
-    )
+    await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
 
     expect(snackBarError).toHaveBeenCalledWith(
       `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`

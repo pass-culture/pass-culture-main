@@ -10,6 +10,7 @@ import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import * as downloadFileModule from '@/commons/utils/downloadFile'
 
+import { DOWNLOAD_REIMBURSEMENTS_LABEL } from '../constants'
 import { InvoiceActions } from './InvoiceActions'
 
 vi.mock('@/app/App/analytics/firebase', () => ({
@@ -123,7 +124,7 @@ describe('InvoiceActions', () => {
     await user.click(triggerButton)
 
     const csvDownloadMenuItem = screen.getByRole('menuitem', {
-      name: 'Télécharger le détail des réservations (.csv)',
+      name: DOWNLOAD_REIMBURSEMENTS_LABEL,
     })
     await user.click(csvDownloadMenuItem)
 
@@ -146,7 +147,7 @@ describe('InvoiceActions', () => {
     await user.click(triggerButton)
 
     const csvDownloadMenuItem = screen.getByRole('menuitem', {
-      name: 'Télécharger le détail des réservations (.csv)',
+      name: DOWNLOAD_REIMBURSEMENTS_LABEL,
     })
     await user.click(csvDownloadMenuItem)
 
