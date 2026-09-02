@@ -271,11 +271,12 @@ class AccountDetailsActionType(enum.StrEnum):
 def _get_account_details_actions(user: users_models.User) -> DetailsActions:
     account_details_actions = DetailsActions(AccountDetailsActionType)
 
-    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+    if access_control.has_current_user_permission(
+        perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+    ) and not user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL)):
         if not user.isEmailValidated:
             account_details_actions.add_action(AccountDetailsActionType.SEND_VALIDATION)
-        if not user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL)):
-            account_details_actions.add_action(AccountDetailsActionType.RESET_PASSWORD)
+        account_details_actions.add_action(AccountDetailsActionType.RESET_PASSWORD)
     if user.isActive:
         account_details_actions.add_action(AccountDetailsActionType.BREVO)
     if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
@@ -1879,6 +1880,8 @@ def resend_validation_email(user_id: int) -> response_utils.BackofficeResponse:
 
     if user.has_admin_role or user.has_pro_role:
         flash("Cette action n'est pas supportée pour les utilisateurs admin ou pro", "warning")
+    elif user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL)):
+        flash("L'adresse email a été anonymisée ou supprimée", "warning")
     elif user.isEmailValidated:
         flash("L'adresse email est déjà validée", "warning")
     else:
@@ -2668,10 +2671,8 @@ def batch_send_public_account_reset_password_email() -> response_utils.Backoffic
         flash("La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public", "warning")
         return _render_public_account_rows([])
     if any(
-        [
-            user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL))
-            for user in users
-        ]
+        user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL))
+        for user in users
     ):
         mark_transaction_as_invalid()
         flash("Certains des comptes sélectionnés ont un email anonymisé ou supprimé", "warning")
@@ -2753,7 +2754,7 @@ def batch_suspend_public_account() -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public", "warning")
         return _render_public_account_rows([])
-    if any([AccountDetailsActionType.SUSPEND not in _get_account_details_actions(user) for user in users]):
+    if any(user.isActive is False for user in users):
         mark_transaction_as_invalid()
         flash("Certains comptes sélectionnés sont déjà suspendus", "warning")
         return _render_public_account_rows([])

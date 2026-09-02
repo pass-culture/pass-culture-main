@@ -2518,6 +2518,16 @@ class ResendValidationEmailTest(PostEndpointHelper):
         assert response.status_code == 303
         assert not mails_testing.outbox
 
+    @pytest.mark.parametrize(
+        "email", [f"1{users_constants.DELETED_USER_EMAIL}", f"anonymous_1{users_constants.ANONYMIZED_USER_EMAIL}"]
+    )
+    def test_no_email_sent_if_unusable_email(self, authenticated_client, email):
+        user = users_factories.BeneficiaryFactory(email=email, isEmailValidated=False)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+
+        assert response.status_code == 303
+        assert not mails_testing.outbox
+
 
 class ReviewPublicAccountTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.review_public_account"
@@ -6894,9 +6904,6 @@ class BatchSuspendPublicAccountTest(PostEndpointHelper):
     def _get_expected_num_queries(self, num_users: int) -> int:
         expected_num_queries = 1  # session + current user
         expected_num_queries += 1  # select users
-        expected_num_queries += (
-            num_users * 4
-        )  # for each user: deposit + recredits + pending anonymization + fraud checks
         expected_num_queries += num_users  # for each user: update user (isActive)
         expected_num_queries += num_users * 2  # for each user: delete web + native user sessions
         expected_num_queries += num_users  # for each user: select backoffice profile
