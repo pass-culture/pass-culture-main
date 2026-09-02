@@ -307,7 +307,7 @@ class CreateVenueTest:
 
         venue = db.session.query(offerers_models.Venue).one()
         assert venue.activity == offerers_models.Activity.ART_GALLERY
-        assert {domain.name for domain in venue.collectiveDomains} == set(["Architecture", "Bande dessinée"])
+        assert {domain.name for domain in venue.collectiveDomains} == {"Architecture", "Bande dessinée"}
 
 
 class DeleteVenueTest:

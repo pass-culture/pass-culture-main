@@ -262,12 +262,10 @@ class Returns200Test:
         assert venue.activity == offerers_models.Activity.BOOKSTORE
 
         assert venue.accessibilityProvider.externalAccessibilityId == "mon-lieu-chez-acceslibre"
-        assert set(venue.accessibilityProvider.externalAccessibilityData["access_modality"]) == set(
-            [
-                acceslibre_connector.ExpectedFieldsEnum.EXTERIOR_ONE_LEVEL.value,
-                acceslibre_connector.ExpectedFieldsEnum.ENTRANCE_ONE_LEVEL.value,
-            ]
-        )
+        assert set(venue.accessibilityProvider.externalAccessibilityData["access_modality"]) == {
+            acceslibre_connector.ExpectedFieldsEnum.EXTERIOR_ONE_LEVEL.value,
+            acceslibre_connector.ExpectedFieldsEnum.ENTRANCE_ONE_LEVEL.value,
+        }
 
     def test_update_venue_is_close_to_public_should_not_change_is_permanent_but_delete_sync_acceslibre(
         self, client
@@ -1016,12 +1014,10 @@ class Returns200Test:
 
         db.session.refresh(venue)
         assert venue.accessibilityProvider.externalAccessibilityId == "mon-lieu-chez-acceslibre"
-        assert set(venue.accessibilityProvider.externalAccessibilityData["access_modality"]) == set(
-            [
-                acceslibre_connector.ExpectedFieldsEnum.EXTERIOR_ONE_LEVEL.value,
-                acceslibre_connector.ExpectedFieldsEnum.ENTRANCE_ONE_LEVEL.value,
-            ]
-        )
+        assert set(venue.accessibilityProvider.externalAccessibilityData["access_modality"]) == {
+            acceslibre_connector.ExpectedFieldsEnum.EXTERIOR_ONE_LEVEL.value,
+            acceslibre_connector.ExpectedFieldsEnum.ENTRANCE_ONE_LEVEL.value,
+        }
 
     @pytest.mark.parametrize("venue_name, venue_publicName", [("toto", "toto"), ("toto", "bebechat")])
     def test_update_venue_empty_public_name(self, client, venue_name, venue_publicName):

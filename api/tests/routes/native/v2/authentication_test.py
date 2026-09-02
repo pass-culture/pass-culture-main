@@ -681,7 +681,7 @@ class SSOSigninTest:
             )
 
         assert response.status_code == 401
-        assert set(["code", "accountCreationToken", "general", "email"]) == response.json.keys()
+        assert {"code", "accountCreationToken", "general", "email"} == response.json.keys()
         assert response.json["code"] == "SSO_EMAIL_NOT_FOUND"
         assert response.json["email"] == self.valid_sso_user.email
 

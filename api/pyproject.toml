@@ -187,7 +187,6 @@ ignore = [
   "B008",  # function-call-in-default-argument : Do not perform function calls in argument defaults
   "B017",  # assert-raises-exception : `pytest.raises(Exception)` should be considered evil
   "B019",  # cached-instance-method : Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
-  "C405",  # unnecessary-literal-set : Unnecessary literal (rewrite as a `set` literal)
   "C408",  # unnecessary-collection-call : Unnecessary collection call (rewrite as a literal)
   "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy;
   "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert);

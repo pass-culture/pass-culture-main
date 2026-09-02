@@ -25,7 +25,7 @@ def soft_equals(a: object, b: object) -> bool:
 
 
 def less(a: typing.Any, b: typing.Any, *args: typing.Any) -> bool:
-    types = set([type(a), type(b)])
+    types = {type(a), type(b)}
     if float in types or int in types:
         try:
             a, b = float(a), float(b)

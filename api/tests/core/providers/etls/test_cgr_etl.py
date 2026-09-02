@@ -254,7 +254,7 @@ class CGRExtractTransformLoadProcessTest:
         assert offer_1_stock_1.lastProviderId == venue_provider.providerId
 
         async_index_offer_ids_mock.assert_called_once_with(
-            set([offer_1.id]),
+            {offer_1.id},
             reason=search_models.IndexationReason.STOCK_UPDATE,
             log_extra={
                 "source": "provider_api",
