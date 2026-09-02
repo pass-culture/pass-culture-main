@@ -67,7 +67,7 @@ QF_DESERIALIZED_RESPONSE = api_particulier.QuotientFamilialResponse(
         ],
         quotient_familial=api_particulier.QuotientFamilial(
             fournisseur="CNAF",
-            valeur=2550,
+            valeur=QUOTIENT_FAMILIAL_THRESHOLD,
             annee=2023,
             mois=6,
             annee_calcul=2024,

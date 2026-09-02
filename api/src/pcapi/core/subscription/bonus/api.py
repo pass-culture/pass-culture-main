@@ -51,26 +51,37 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
         logger.warning("trying to apply for bonus when not able to receive said bonus")
         return
 
-    source_data = quotient_familial_fraud_check.source_data()
-    if not isinstance(source_data, bonus_schemas.QuotientFamilialBonusCreditContent):
-        raise ValueError(f"QuotientFamilialBonusCreditContent was expected while {type(source_data)} was given")
+    most_relevant_result: _ApiParticulierResult[api_particulier.QuotientFamilialResponse] | None = None
+    for qf_result in _get_user_quotient_familial_responses(quotient_familial_fraud_check, user):
+        if qf_result.response:
+            qf_result.status, qf_result.reason_codes = _get_quotient_familial_bonus_status(
+                user, qf_result.response.data
+            )
 
-    qf_result = _call_api_particulier(
-        quotient_familial_fraud_check,
-        lambda: _get_user_quotient_familial_response(source_data.custodian, user),
-    )
-    if qf_result.response:
-        qf_result.status, qf_result.reason_codes = _get_quotient_familial_bonus_status(user, qf_result.response.data)
+        if not most_relevant_result:
+            most_relevant_result = qf_result
+        else:
+            most_relevant_result = max(most_relevant_result, qf_result, key=_get_result_relevance)
+
+        if most_relevant_result.status == subscription_models.FraudCheckStatus.OK:
+            break
+
+    if not most_relevant_result:
+        logger.error(
+            "No Quotient Familial was found or none were requested",
+            extra={"beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
+        )
+        return
 
     granted_after_attempts: int | None = None
     with atomic():
-        if qf_result.status == subscription_models.FraudCheckStatus.KO:
-            _update_quotient_familial_fraud_check_content(quotient_familial_fraud_check, qf_result)
-            _decline_bonus(quotient_familial_fraud_check, qf_result)
+        if most_relevant_result.status == subscription_models.FraudCheckStatus.KO:
+            _update_quotient_familial_fraud_check_content(quotient_familial_fraud_check, most_relevant_result)
+            _decline_bonus(quotient_familial_fraud_check, most_relevant_result)
 
             transactional_mails.send_bonus_declined_email(user)
 
-        elif qf_result.status == subscription_models.FraudCheckStatus.OK:
+        elif most_relevant_result.status == subscription_models.FraudCheckStatus.OK:
             given_recredit, attempts_count = _grant_bonus(quotient_familial_fraud_check)
 
             if given_recredit:
@@ -79,18 +90,18 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
                 transactional_mails.send_bonus_granted_email(user)
 
         else:
-            raise NotImplementedError(f"no handler was implemented for {qf_result.status}")
+            raise NotImplementedError(f"no handler was implemented for {most_relevant_result.status}")
 
         external_attributes_api.update_external_user(user)
 
     statistics_api.record_bonus_attempt(
-        subscription_models.FraudCheckType.QF_BONUS_CREDIT, qf_result.reason_codes, granted_after_attempts
+        subscription_models.FraudCheckType.QF_BONUS_CREDIT, most_relevant_result.reason_codes, granted_after_attempts
     )
 
 
-def _get_user_quotient_familial_response(
-    custodian: bonus_schemas.BonusCreditPerson, user: users_models.User
-) -> api_particulier.QuotientFamilialResponse:
+def _get_user_quotient_familial_responses(
+    quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck, user: users_models.User
+) -> typing.Generator[_ApiParticulierResult[api_particulier.QuotientFamilialResponse]]:
     """
     Calls the Quotient Familial API twelve times, returning the lowest one.
     """
@@ -100,36 +111,38 @@ def _get_user_quotient_familial_response(
 
     seventeenth_birthday = birth_date + relativedelta(years=17)
 
+    source_data = quotient_familial_fraud_check.source_data()
+    if not isinstance(source_data, bonus_schemas.QuotientFamilialBonusCreditContent):
+        raise ValueError(f"QuotientFamilialBonusCreditContent was expected while {type(source_data)} was given")
+
     MONTHS_IN_A_YEAR = 12
     api_particulier_cutoff_date = datetime.date.today() - relativedelta(years=2)
     cutoff_month = api_particulier_cutoff_date.replace(month=1, day=1)
-    all_quotient_familial_responses: list[api_particulier.QuotientFamilialResponse] = []
     for month_offset in range(MONTHS_IN_A_YEAR):
         at_date = seventeenth_birthday + relativedelta(months=month_offset)
         if at_date < cutoff_month:
             continue
 
-        if settings.ENABLE_PARTICULIER_API_MOCK:
-            quotient_familial_at_date = staging_api.get_and_mock_quotient_familial(custodian, at_date, user)
-        else:
-            quotient_familial_at_date = api_particulier.get_quotient_familial(custodian, at_date)
+        # freeze at_date loop variable to satisfy the B023 ruff rule and a named function is needed to satisfy mypy
+        def _get_quotient_familial(at: datetime.date = at_date) -> api_particulier.QuotientFamilialResponse:
+            if settings.ENABLE_PARTICULIER_API_MOCK:
+                return staging_api.get_and_mock_quotient_familial(source_data.custodian, at, user)
+            else:
+                return api_particulier.get_quotient_familial(source_data.custodian, at)
 
-        all_quotient_familial_responses.append(quotient_familial_at_date)
+        yield _call_api_particulier(quotient_familial_fraud_check, _get_quotient_familial)
 
-    quotients_familial_with_user = [
-        qf
-        for qf in all_quotient_familial_responses
-        if _is_user_part_of_tax_household(user, qf.data.enfants, qf.data.allocataires)
-    ]
-    if quotients_familial_with_user:
-        relevant_qf_responses = quotients_familial_with_user
-    else:
-        # we store the quotient familial even if the user does not seem to belong to the tax household,
-        # to allow the support department to have the last say if the identity matching algorithm fails
-        relevant_qf_responses = all_quotient_familial_responses
 
-    lowest_quotient_familial = min(relevant_qf_responses, key=lambda qf: qf.data.quotient_familial.valeur)
-    return lowest_quotient_familial
+def _get_quotient_familial_bonus_status(
+    user: users_models.User, quotient_familial_data: api_particulier.QuotientFamilialData
+) -> tuple[subscription_models.FraudCheckStatus, list[subscription_models.FraudReasonCode]]:
+    if not _is_user_part_of_tax_household(user, quotient_familial_data.enfants, quotient_familial_data.allocataires):
+        return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]
+
+    if quotient_familial_data.quotient_familial.valeur > bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD:
+        return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH]
+
+    return (subscription_models.FraudCheckStatus.OK, [])
 
 
 def _is_user_part_of_tax_household(
@@ -165,16 +178,29 @@ def _does_user_match_person(user: users_models.User, person: api_particulier.Api
     return has_first_name_match and has_last_name_match and has_birth_day_match and has_gender_match
 
 
-def _get_quotient_familial_bonus_status(
-    user: users_models.User, quotient_familial_data: api_particulier.QuotientFamilialData
-) -> tuple[subscription_models.FraudCheckStatus, list[subscription_models.FraudReasonCode]]:
-    if not _is_user_part_of_tax_household(user, quotient_familial_data.enfants, quotient_familial_data.allocataires):
-        return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]
+def _get_result_relevance(result: _ApiParticulierResult[typing.Any]) -> tuple[int, int]:
+    RELEVANT_STATUSES = [subscription_models.FraudCheckStatus.KO, subscription_models.FraudCheckStatus.OK]
+    if result.status in RELEVANT_STATUSES:
+        status_relevance = RELEVANT_STATUSES.index(result.status)
+    else:
+        status_relevance = -1
 
-    if quotient_familial_data.quotient_familial.valeur > bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD:
-        return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH]
+    RELEVANT_REASON_CODES = [
+        subscription_models.FraudReasonCode.PERSON_NOT_FOUND,
+        subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND,
+        subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD,
+        subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH,
+        subscription_models.FraudReasonCode.NOT_RECIPIENT,
+    ]
+    if not result.reason_codes:
+        reason_relevance = -1
+    else:
+        reason_relevance = max(
+            RELEVANT_REASON_CODES.index(reason_code) if reason_code in RELEVANT_STATUSES else -1
+            for reason_code in result.reason_codes
+        )
 
-    return (subscription_models.FraudCheckStatus.OK, [])
+    return (status_relevance, reason_relevance)
 
 
 def _update_quotient_familial_fraud_check_content(
