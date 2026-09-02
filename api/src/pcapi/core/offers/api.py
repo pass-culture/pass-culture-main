@@ -726,10 +726,6 @@ def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
     )
 
 
-def is_headline_offer(offer: offers_models.Offer) -> bool:
-    return len([ho for ho in offer.headlineOffers if ho.isActive]) > 0
-
-
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
     if stock.offer.isEvent:
         transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings))
