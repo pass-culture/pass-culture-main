@@ -49,6 +49,7 @@ def get_movie_screenings(query: serializers.MovieScreeningsRequest) -> serialize
                 provider_class=row["provider_class"],
                 stock_id=row["stock_id"],
                 thumb_url=row["thumb_url"],
+                timezone=row["timezone"],
                 venue_data=serializers.ScreeningVenueData(
                     city=row["city"],
                     distance=row["distance"],
@@ -106,6 +107,7 @@ def get_movie_screenings_for_user(query: serializers.MovieScreeningsRequest) -> 
             provider_class=row["provider_class"],
             stock_id=row["stock_id"],
             thumb_url=row["thumb_url"],
+            timezone=row["timezone"],
             user_data=serializers.ScreeningUserData(
                 has_already_booked_offer=row["stock_id"] in booked_stocks,
                 has_already_booked_related_offer=row["offer_id"] in booked_offers,
@@ -150,6 +152,7 @@ def get_movie_screenings_by_venue(
             provider_class=offer.lastProvider.localClass if offer.lastProvider else None,
             stock_id=stock.id,
             thumb_url=offer.thumbUrl,
+            timezone=repository.get_offer_timezone(offer),
             movie_data=serializers.ScreeningMovieData(
                 duration=offer.product.durationMinutes if offer.product else None,
                 genres=offer.extraData.get("genres") or [] if offer.extraData else [],
@@ -199,6 +202,7 @@ def get_movie_screenings_by_venue_for_user(
             provider_class=offer.lastProvider.localClass if offer.lastProvider else None,
             stock_id=stock.id,
             thumb_url=offer.thumbUrl,
+            timezone=repository.get_offer_timezone(offer),
             movie_data=serializers.ScreeningMovieData(
                 duration=offer.product.durationMinutes if offer.product else None,
                 genres=offer.extraData.get("genres") or [] if offer.extraData else [],
