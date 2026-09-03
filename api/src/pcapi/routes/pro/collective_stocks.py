@@ -3,7 +3,6 @@ import logging
 from flask_login import current_user
 from flask_login import login_required
 
-import pcapi.utils.rest as rest_utils
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository
 from pcapi.core.educational.api import stock as educational_api_stock
@@ -37,11 +36,10 @@ def create_collective_stock(
     body: collective_stock_serialize.CollectiveStockCreationBodyModel,
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
     try:
-        venue = offerers_repository.get_venue_by_collective_offer_id(body.offerId)
+        offerer = offerers_repository.get_by_collective_offer_id(body.offerId)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, venue.managingOfferer.id)
-    rest_utils.check_venue_is_opened(venue)
+    check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         collective_stock = educational_api_stock.create_collective_stock(body)
@@ -76,11 +74,10 @@ def edit_collective_stock(
         raise resource_not_found_error()
 
     try:
-        venue = offerers_repository.get_venue_by_collective_stock_id(collective_stock.id)
+        offerer = offerers_repository.get_by_collective_stock_id(collective_stock.id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, venue.managingOfferer.id)
-    rest_utils.check_venue_is_opened(venue)
+    check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         educational_api_stock.edit_collective_stock(
