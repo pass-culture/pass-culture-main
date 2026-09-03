@@ -236,3 +236,19 @@ class GetSettlementsTest:
 
         assert response.status_code == 400
         assert response.json == {"offererId": ["Ce champ est obligatoire"]}
+
+    def test_invalid_name_search(self, client: TestClient):
+        user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+
+        params = {"offererId": offerer.id, "nameSearch": ""}
+        client = client.with_session_auth(user.email)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # rollback
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params=params)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "nameSearch": ["Cette chaîne de caractères doit avoir une taille minimum de 1 caractères"]
+        }
