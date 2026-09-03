@@ -3524,15 +3524,14 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
     nullify_venue_emails(venue, author)
     history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
 
-    payload = tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
+    _update_external_offerer(venue.managingOfferer)
+
     on_commit(
         functools.partial(
             tasks.deactivate_venue_offers_task.delay,
-            payload.model_dump(),
+            tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id).model_dump(),
         )
     )
-
-    db.session.flush()
 
 
 def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
