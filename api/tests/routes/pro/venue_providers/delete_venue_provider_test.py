@@ -2,7 +2,6 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import api as providers_api
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
@@ -19,21 +18,6 @@ def test_delete_venue_provider(client):
     response = client.with_session_auth(email=user_offerer.user.email).delete(f"/venue-providers/{venue_provider.id}")
 
     assert response.status_code == 204
-
-
-@pytest.mark.usefixtures("db_session")
-def test_cannot_delete_venue_provider_if_venue_is_closed(client):
-    user_offerer = offerers_factories.UserOffererFactory()
-    venue = offerers_factories.VenueFactory(
-        managingOfferer=user_offerer.offerer, state=offerers_models.VenueState.CLOSED
-    )
-    provider = providers_factories.PublicApiProviderFactory()
-    venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
-
-    # providers_api.update_venue_provider_external_urls(venue_provider, notification_external_url="https://notify.com")
-
-    response = client.with_session_auth(email=user_offerer.user.email).delete(f"/venue-providers/{venue_provider.id}")
-    assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")

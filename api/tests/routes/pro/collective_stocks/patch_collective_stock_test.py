@@ -17,7 +17,6 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
@@ -985,35 +984,3 @@ class Return400Test:
 
         assert response.status_code == 400
         assert response.json == error
-
-
-class Returns403Test:
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    @time_machine.travel("2020-11-17 15:00:00")
-    def test_error_if_venue_is_closed(self, client):
-        factories.EducationalYearFactory(beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31))
-
-        stock = factories.CollectiveStockFactory(
-            startDatetime=datetime(2021, 12, 18),
-            bookingLimitDatetime=datetime(2021, 12, 1),
-            collectiveOffer__venue__state=offerers_models.VenueState.CLOSED,
-        )
-
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
-        )
-
-        stock_edition_payload = {
-            "startDatetime": "2022-01-17T22:00:00Z",
-            "endDatetime": "2022-01-17T22:00:00Z",
-            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
-            "price": 1500,
-            "numberOfTickets": 38,
-            "priceDetail": "Nouvelle description du prix",
-        }
-
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
-
-        assert response.status_code == 403

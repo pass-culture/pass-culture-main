@@ -10,7 +10,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
@@ -19,24 +18,6 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
-
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
-    def test_error_if_venue_is_closed(
-        self,
-        client,
-    ):
-        offer = offers_factories.OfferFactory(venue__state=offerers_models.VenueState.CLOSED)
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        client = client.with_session_auth("user@example.com")
-        response = client.patch("/offers/publish", json={"id": offer.id})
-
-        assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")

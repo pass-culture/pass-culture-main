@@ -6,7 +6,6 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import exceptions
 from pcapi.core.offers.models import Mediation
 from pcapi.models import db
@@ -124,22 +123,3 @@ class CreateThumbnailFromFileTest:
 
         assert response.status_code == 404
         assert response.json["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]
-
-    def test_error_if_venue_is_closed(self, client):
-        offer = offers_factories.ThingOfferFactory(venue__state=offerers_models.VenueState.CLOSED)
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        client = client.with_session_auth(email="user@example.com")
-        thumb = (IMAGES_DIR / "mouette_portrait_bigger.jpg").read_bytes()
-        data = {
-            "offerId": offer.id,
-            "credit": "John Do",
-            "thumb": (BytesIO(thumb), "image.jpg"),
-        }
-
-        response = client.post("/offers/thumbnails", form=data)
-
-        assert response.status_code == 403

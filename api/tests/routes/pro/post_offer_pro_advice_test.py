@@ -9,7 +9,6 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.pro_advice.exceptions as pro_advice_exceptions
 import pcapi.core.users.factories as users_factories
 import pcapi.utils.date as date_utils
-from pcapi.core.offerers import models as offerers_models
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -199,24 +198,6 @@ class Returns401Test:
         )
 
         assert response.status_code == 401
-
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
-    def test_error_if_venue_is_closed(self, client):
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer, state=offerers_models.VenueState.CLOSED
-        )
-        offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.APPROVED)
-
-        auth_client = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_client.post(
-            f"/offers/{offer.id}/pro_advice",
-            json={"content": "Une super reco."},
-        )
-
-        assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")

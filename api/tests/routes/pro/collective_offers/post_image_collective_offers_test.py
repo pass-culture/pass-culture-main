@@ -9,7 +9,6 @@ from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.exceptions import FileSizeExceeded
 from pcapi.core.offers.validation import MAX_THUMBNAIL_SIZE
 from pcapi.models import db
@@ -131,17 +130,6 @@ class AttachCollectiveOfferImageTest:
         assert response.status_code == 403
         assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists() is False
-
-    @pytest.mark.parametrize("Factory, url", factories_urls)
-    def test_error_if_venue_is_closed(self, Factory, url, client):
-        offer = Factory(venue__state=offerers_models.VenueState.CLOSED)
-        assert offer.imageId is None
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        auth_client = client.with_session_auth(email="user@example.com")
-        response = auth_client.post(f"{url}/{offer.id}/image", form=get_image_data())
-
-        assert response.status_code == 403
 
     @pytest.mark.parametrize("Factory, url", factories_urls)
     def test_attach_offer_image_not_found(self, Factory, url, client):

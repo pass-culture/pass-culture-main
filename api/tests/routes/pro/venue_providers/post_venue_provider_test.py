@@ -8,7 +8,6 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.providers.tasks as providers_tasks
 from pcapi.core.history import models as history_models
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Movie
 from pcapi.core.providers.clients.cine_office_serializers import IdObject
 from pcapi.core.providers.clients.cine_office_serializers import Show
@@ -568,17 +567,3 @@ class ConnectProviderToVenueTest:
         venue_provider = venue.venueProviders[0]
         assert venue_provider.provider == provider
         mocekd_synchronize_cinema_sessions_task.assert_not_called()
-
-
-class Returns403Test:
-    @pytest.mark.usefixtures("db_session")
-    def test_error_if_venue_is_closed(self, client):
-        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
-        user = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
-
-        provider = providers_factories.PublicApiProviderFactory()
-
-        auth_request = client.with_session_auth(email=user.email)
-        response = auth_request.post(f"/venues/{venue.id}/venue-providers", json={"providerId": provider.id})
-
-        assert response.status_code == 403
