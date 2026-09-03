@@ -15,6 +15,7 @@ from pcapi.core.educational.api import export as api_export
 from pcapi.core.educational.api import offer as api_offer
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
@@ -25,8 +26,8 @@ from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
+from pcapi.utils import rest as rest_utils
 from pcapi.utils.image_conversion import CropParams
-from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
@@ -194,10 +195,10 @@ def _get_collective_offers_export(
 )
 def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
+        venue = offerers_repository.get_venue_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     try:
         offer = repository.get_collective_offer_by_id(offer_id)
@@ -215,10 +216,10 @@ def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollec
 )
 def get_collective_offer_template(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_template_id(offer_id)
+        venue = offerers_repository.get_venue_by_collective_offer_template_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         offer = repository.get_collective_offer_template_by_id(offer_id)
     except exceptions.CollectiveOfferTemplateNotFound:
@@ -240,7 +241,7 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
         raise resource_not_found_error()
 
     offerer_id = collective_offer_request.collectiveOfferTemplate.venue.managingOffererId
-    check_user_has_access_to_offerer(current_user, offerer_id)
+    rest_utils.check_user_has_access_to_offerer(current_user, offerer_id)
 
     return collective_offers_serialize.GetCollectiveOfferRequestResponseModel.model_validate(collective_offer_request)
 
@@ -299,12 +300,13 @@ def edit_collective_offer(
     offer_id: int, body: collective_offers_serialize.PatchCollectiveOfferBodyModel
 ) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
+        venue = offerers_repository.get_venue_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_venue_is_opened(venue)
 
-    if not offerers_api.can_offerer_create_educational_offer(offerer.id):
+    if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
@@ -351,12 +353,13 @@ def edit_collective_offer_template(
     offer_id: int, body: collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel
 ) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_template_id(offer_id)
+        venue = offerers_repository.get_venue_by_collective_offer_template_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_venue_is_opened(venue)
 
-    if not offerers_api.can_offerer_create_educational_offer(offerer.id):
+    if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
@@ -399,6 +402,12 @@ def patch_collective_offers_archive(
     body: collective_offers_serialize.PatchCollectiveOfferArchiveBodyModel,
 ) -> None:
     collective_offers = repository.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids).all()
+    venues = {collective_offer.venue for collective_offer in collective_offers}
+    offerer_ids = {venue.managingOffererId for venue in venues}
+    for offerer_id in offerer_ids:
+        rest_utils.check_user_has_access_to_offerer(current_user, offerer_id)
+    for venue in venues:
+        rest_utils.check_venue_is_opened(venue)
 
     try:
         api_offer.archive_collective_offers(offers=collective_offers, date_archived=date_utils.get_naive_utc_now())
@@ -417,11 +426,13 @@ def patch_collective_offers_template_active_status(
     body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
 ) -> None:
     if body.is_active:
-        offerers_ids = repository.get_offerer_ids_from_collective_offers_template_ids(body.ids)
-        for offerer_id in offerers_ids:
+        venue_ids, offerer_ids = repository.get_offerer_and_venue_ids_from_collective_offers_template_ids(body.ids)
+        for offerer_id in offerer_ids:
             if not offerers_api.can_offerer_create_educational_offer(offerer_id):
                 raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
-
+        venues = offerers_repository.get_venues_by_ids(venue_ids)
+        for venue in venues:
+            rest_utils.check_venue_is_opened(venue)
     collective_offer_templates = repository.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
     ).all()
@@ -447,6 +458,12 @@ def patch_collective_offers_template_archive(
     collective_offer_templates = repository.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
     ).all()
+    venues = {collective_offer.venue for collective_offer in collective_offer_templates}
+    offerer_ids = {venue.managingOffererId for venue in venues}
+    for offerer_id in offerer_ids:
+        rest_utils.check_user_has_access_to_offerer(current_user, offerer_id)
+    for venue in venues:
+        rest_utils.check_venue_is_opened(venue)
 
     try:
         api_offer.archive_collective_offers_template(
@@ -469,10 +486,11 @@ def patch_collective_offers_educational_institution(
     offer_id: int, body: collective_offers_serialize.PatchCollectiveOfferEducationalInstitution
 ) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
+        venue = offerers_repository.get_venue_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_venue_is_opened(venue)
 
     try:
         offer = api_offer.update_collective_offer_educational_institution(
@@ -506,7 +524,8 @@ def patch_collective_offer_publication(offer_id: int) -> collective_offers_seria
     if offer is None:
         raise resource_not_found_error()
 
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_venue_is_opened(offer.venue)
 
     offer = api_offer.publish_collective_offer(offer=offer, user=current_user)
 
@@ -530,7 +549,8 @@ def patch_collective_offer_template_publication(
     except exceptions.CollectiveOfferTemplateNotFound:
         raise resource_not_found_error()
 
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_venue_is_opened(offer.venue)
 
     offer = api_offer.publish_collective_offer_template(offer_template=offer, user=current_user)
 
@@ -643,7 +663,8 @@ def attach_offer_image(
     except exceptions.CollectiveOfferNotFound:
         raise resource_not_found_error()
 
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_venue_is_opened(offer.venue)
 
     try:
         validation.check_collective_offer_action_is_allowed(offer, models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS)
@@ -684,7 +705,8 @@ def attach_offer_template_image(
     except exceptions.CollectiveOfferTemplateNotFound:
         raise resource_not_found_error()
 
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_venue_is_opened(offer.venue)
 
     image_as_bytes = _get_image_as_bytes()
 
@@ -717,7 +739,8 @@ def delete_offer_image(offer_id: int) -> None:
     except exceptions.CollectiveOfferNotFound:
         raise resource_not_found_error()
 
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_venue_is_opened(offer.venue)
 
     try:
         validation.check_collective_offer_action_is_allowed(offer, models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS)
@@ -740,7 +763,8 @@ def delete_offer_template_image(offer_id: int) -> None:
     except exceptions.CollectiveOfferTemplateNotFound:
         raise resource_not_found_error()
 
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest_utils.check_venue_is_opened(offer.venue)
 
     api_offer.delete_image(obj=offer)
 
@@ -784,10 +808,11 @@ def duplicate_collective_offer(
     offer_id: int,
 ) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
+        venue = offerers_repository.get_venue_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_venue_is_opened(venue)
 
     try:
         original_offer = repository.get_collective_offer_by_id(offer_id)

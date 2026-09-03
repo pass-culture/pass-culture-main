@@ -4,6 +4,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as provider_models
 import pcapi.core.users.factories as user_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
@@ -122,6 +123,23 @@ class Returns401Test:
     def test_user_is_not_logged_in(self, client):
         response = client.put("/venue-providers/1")
         assert response.status_code == 401
+
+
+class Returns403Test:
+    @pytest.mark.usefixtures("db_session")
+    def test_error_if_venue_is_closed(self, client):
+        venue_provider = providers_factories.AllocineVenueProviderFactory(
+            venue__state=offerers_models.VenueState.CLOSED,
+        )
+
+        user = offerers_factories.UserOffererFactory(offerer=venue_provider.venue.managingOfferer).user
+
+        auth_request = client.with_session_auth(email=user.email)
+        response = auth_request.put(
+            f"/venue-providers/{venue_provider.id}", json={"isDuo": True, "quantity": 77, "isActive": False}
+        )
+
+        assert response.status_code == 403
 
 
 class Returns404Test:

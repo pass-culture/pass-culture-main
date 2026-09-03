@@ -6,6 +6,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational import testing
 from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
@@ -154,3 +155,15 @@ class Returns403Test:
             "code": "CANCEL_NOT_ALLOWED",
             "message": "This collective offer status does not allow cancellation",
         }
+
+    def test_error_if_venue_is_closed(self, client):
+        collective_booking = factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__state=offerers_models.VenueState.CLOSED,
+        )
+        user = offerers_factories.UserOffererFactory(offerer=collective_booking.offerer).user
+
+        offer_id = collective_booking.collectiveStock.collectiveOffer.id
+        client = client.with_session_auth(user.email)
+        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
+
+        assert response.status_code == 403

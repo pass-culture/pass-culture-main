@@ -16,7 +16,7 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.rest import check_user_has_access_to_offerer
+from pcapi.utils import rest as rest_utils
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -36,10 +36,11 @@ def create_collective_stock(
     body: collective_stock_serialize.CollectiveStockCreationBodyModel,
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
     try:
-        offerer = offerers_repository.get_by_collective_offer_id(body.offerId)
+        venue = offerers_repository.get_venue_by_collective_offer_id(body.offerId)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_venue_is_opened(venue)
 
     try:
         collective_stock = educational_api_stock.create_collective_stock(body)
@@ -74,10 +75,11 @@ def edit_collective_stock(
         raise resource_not_found_error()
 
     try:
-        offerer = offerers_repository.get_by_collective_stock_id(collective_stock.id)
+        venue = offerers_repository.get_venue_by_collective_stock_id(collective_stock.id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_venue_is_opened(venue)
 
     try:
         educational_api_stock.edit_collective_stock(
