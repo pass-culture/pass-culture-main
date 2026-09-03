@@ -9,6 +9,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import CantGetImageFromUrl
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import factories as user_factories
 from pcapi.models import db
@@ -346,3 +347,25 @@ class Returns200Test:
         duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert duplicate.domains == []
         assert duplicate.nationalProgramId is None
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns403Test:
+    def test_error_if_venue_is_closed(self, client):
+        offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__venue__state=offerers_models.VenueState.CLOSED,
+            collectiveOffer__imageId="00000125999998",
+            collectiveOffer__imageCredit="vision d'horreur selon Hitchcock",
+            collectiveOffer__imageCrop={"gnagna": "Non"},
+            collectiveOffer__imageHasOriginal=False,
+        ).collectiveOffer
+
+        offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer, user__email="user@example.com")
+
+        offer_id = offer.id
+
+        image_oiseau_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        with mock.patch("pcapi.core.educational.api.offer.get_image_from_url", return_value=image_oiseau_bytes):
+            response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
+
+        assert response.status_code == 403

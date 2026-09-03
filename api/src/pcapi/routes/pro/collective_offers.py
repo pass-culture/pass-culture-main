@@ -196,10 +196,10 @@ def _get_collective_offers_export(
 )
 def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
+        venue = offerers_repository.get_venue_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, venue.managingOfferer.id)
 
     try:
         offer = repository.get_collective_offer_by_id(offer_id)
@@ -217,10 +217,10 @@ def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollec
 )
 def get_collective_offer_template(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_template_id(offer_id)
+        venue = offerers_repository.get_venue_by_collective_offer_template_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, venue.managingOfferer.id)
     try:
         offer = repository.get_collective_offer_template_by_id(offer_id)
     except exceptions.CollectiveOfferTemplateNotFound:

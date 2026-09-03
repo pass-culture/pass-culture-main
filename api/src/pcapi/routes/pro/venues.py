@@ -34,6 +34,7 @@ from pcapi.routes.serialization import venue_finance_serialize
 from pcapi.routes.serialization import venue_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
+from pcapi.utils import rest
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
@@ -50,7 +51,7 @@ def close_venue(venue_id: int) -> None:
         raise ApiErrors(status_code=404)
 
     venue = get_or_404(Venue, venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     offerers_api.close_venue(venue, author=current_user)
 
 

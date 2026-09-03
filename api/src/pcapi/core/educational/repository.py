@@ -1138,17 +1138,6 @@ def get_collective_offer_request_by_id(request_id: int) -> models.CollectiveOffe
         raise exceptions.CollectiveOfferRequestNotFound()
 
 
-# todo: check if it's still used
-def get_offerer_ids_from_collective_offers_template_ids(offers_ids: list[int]) -> set[int]:
-    query = (
-        db.session.query(offerers_models.Offerer.id)
-        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-        .join(models.CollectiveOfferTemplate, offerers_models.Venue.collectiveOfferTemplates)
-        .filter(models.CollectiveOfferTemplate.id.in_(offers_ids))
-    )
-    return {result[0] for result in query.all()}
-
-
 def get_offerer_and_venue_ids_from_collective_offers_template_ids(offers_ids: list[int]) -> tuple[set[int], set[int]]:
     results = (
         db.session.query(offerers_models.Venue.id, offerers_models.Offerer.id)

@@ -2809,6 +2809,29 @@ class Returns401Test:
         assert db.session.get(Offer, offer.id).name == "Old name"
 
 
+class Returns403Test:
+    endpoint = "/offers/{offer_id}"
+
+    def test_error_if_venue_is_closed(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, state=offerers_models.VenueState.CLOSED
+        )
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            name="L'amie prodigieuse",
+            description="Un livre sur l'italie des années 60",
+        )
+
+        data = {
+            "name": "Notre part de nuit",
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+
+        assert response.status_code == 403, response.json
+
+
 class Returns404Test:
     endpoint = "/offers/{offer_id}"
 

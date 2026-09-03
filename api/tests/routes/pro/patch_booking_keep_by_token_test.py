@@ -4,6 +4,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 
@@ -39,6 +40,16 @@ class Returns401Test:
         booking = bookings_factories.BookingFactory()
         response = client.patch(f"/bookings/keep/token/{booking.token}")
         assert response.status_code == 401
+
+
+class Returns403Test:
+    @pytest.mark.usefixtures("db_session")
+    def test_error_if_venue_is_closed(self, client):
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue__state=offerers_models.VenueState.CLOSED)
+        pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
+
+        response = client.with_session_auth(pro_user.email).patch(f"/bookings/keep/token/{booking.token}")
+        assert response.status_code == 403
 
 
 class Returns404Test:

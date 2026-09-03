@@ -1900,14 +1900,6 @@ def get_venues_by_batch(
     yield from query.yield_per(1_000)
 
 
-def get_offerer_by_collective_offer_id(collective_offer_id: int) -> models.Offerer:
-    return offerers_repository.get_by_collective_offer_id(collective_offer_id)
-
-
-def get_offerer_by_collective_offer_template_id(collective_offer_id: int) -> models.Offerer:
-    return offerers_repository.get_by_collective_offer_template_id(collective_offer_id)
-
-
 def has_venue_at_least_one_bookable_offer(venue: models.Venue) -> bool:
     if not feature.FeatureToggle.ENABLE_VENUE_STRICT_SEARCH.is_active():
         return True
