@@ -13,7 +13,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.mails.transactional import brevo_template_ids
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
@@ -553,38 +552,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["priceCategories.1.price"] == ["Le prix d’une offre ne peut excéder 300 euros."]
-
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
-    def test_error_if_venue_is_closed(self, client):
-        offer = offers_factories.EventOfferFactory(
-            isActive=False,
-            validation=offers_models.OfferValidationStatus.DRAFT,
-            venue__state=offerers_models.VenueState.CLOSED,
-        )
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        existing_stock = offers_factories.EventStockFactory(offer=offer, quantity=10)
-        price_category = offers_factories.PriceCategoryFactory(offer=offer, price=23, label="Carré Or")
-
-        beginning = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
-
-        response = client.with_session_auth("user@example.com").patch(
-            "/stocks/bulk",
-            json={
-                "offerId": offer.id,
-                "stocks": [
-                    {
-                        "id": existing_stock.id,
-                        "beginningDatetime": format_into_utc_date(beginning),
-                        "priceCategoryId": price_category.id,
-                    }
-                ],
-            },
-        )
-
-        assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")

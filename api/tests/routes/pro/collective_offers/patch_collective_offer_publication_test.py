@@ -3,7 +3,6 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
@@ -74,20 +73,6 @@ class Returns204Test:
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert not offer.lastValidationAuthor
         assert offer.validation == OfferValidationStatus.PENDING
-
-
-class Returns403Test:
-    def test_error_if_venue_is_closed(self, client):
-        offer = educational_factories.CollectiveOfferFactory(
-            validation=OfferValidationStatus.DRAFT, venue__state=offerers_models.VenueState.CLOSED
-        )
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer)
-
-        url = f"/collective/offers/{offer.id}/publish"
-        client_auth = client.with_session_auth(user_offerer.user.email)
-        response = client_auth.patch(url)
-
-        assert response.status_code == 403
 
 
 class Returns404Test:

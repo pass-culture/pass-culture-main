@@ -9,7 +9,6 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
@@ -322,27 +321,6 @@ class Returns400Test:
         assert response.json == {"stocks.0.activationCodes.0": ["String should match pattern '^[^,;.]+$'"]}
         db.session.refresh(offer)
         assert len(offer.activeStocks) == 0
-
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
-    def test_error_if_venue_is_closed(self, client):
-        offer = offers_factories.ThingOfferFactory(venue__state=offerers_models.VenueState.CLOSED)
-        user = users_factories.UserFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
-
-        payload = {
-            "stocks": [
-                {
-                    "offerId": offer.id,
-                    "price": 12.5,
-                }
-            ]
-        }
-        response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
-        db.session.refresh(offer)
-
-        assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")

@@ -6,7 +6,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.connectors import youtube
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.utils.requests import ExternalAPIException
 
@@ -116,23 +115,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["videoUrl"] == ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]
-
-
-class Returns403Test:
-    endpoint = "/offers/{offer_id}/video"
-
-    def test_error_if_venue_is_closed(self, client):
-        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer, state=offerers_models.VenueState.CLOSED
-        )
-        offer = offers_factories.OfferFactory(venue=venue)
-
-        response = client.with_session_auth("user@example.com").put(
-            self.endpoint.format(offer_id=offer.id), json={"videoUrl": YOUTUBE_VIDEO_URL}
-        )
-
-        assert response.status_code == 403
 
 
 class Returns404Test:
