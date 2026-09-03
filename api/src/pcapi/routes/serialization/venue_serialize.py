@@ -97,6 +97,7 @@ class GetVenueResponseModel(HttpBodyModel):
     comment: str | None
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: venue_finance_serialize.GetVenuePricingPointResponseModel | None
+    isPricingPoint: bool
     siret: str | None
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
@@ -184,6 +185,7 @@ class GetVenueResponseModel(HttpBodyModel):
             comment=venue.comment,
             managingOfferer=venue.managingOfferer,
             pricingPoint=get_current_pricing_point(venue),
+            isPricingPoint=venue.is_pricing_point,
             siret=venue.siret,
             collectiveDescription=venue.collectiveDescription,
             collectiveStudents=venue.collectiveStudents,

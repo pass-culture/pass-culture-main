@@ -3611,6 +3611,10 @@ export type GetVenueResponseModel = {
      */
     isPermanent: boolean | null;
     /**
+     * Ispricingpoint
+     */
+    isPricingPoint: boolean;
+    /**
      * Isvalidated
      */
     isValidated: boolean;

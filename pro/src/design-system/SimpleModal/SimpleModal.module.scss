@@ -10,6 +10,8 @@
   flex-direction: column;
   will-change: transform, opacity;
   width: 100vw;
+  max-height: 100dvh;
+  overflow-y: auto;
   position: fixed;
   bottom: 0;
 

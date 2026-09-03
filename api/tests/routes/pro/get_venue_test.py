@@ -35,6 +35,7 @@ class Returns200Test:
     num_queries += 1  # venue.canDisplayHighlights
     num_queries += 1  # venue.hasNonDraftOffers
     num_queries += 1  # get_offerer_is_onboarded
+    num_queries += 1  # check whether the venue is a pricing point
 
     # venue_has_non_free_offers short-circuits the second query via an `or` condition
     # when the venue has a non-free individual offer, generating (in this case) a single query instead of two
@@ -142,6 +143,7 @@ class Returns200Test:
                 "venueName": venue_currently_used_for_pricing.publicName,
                 "siret": venue_currently_used_for_pricing.siret,
             },
+            "isPricingPoint": False,
             "dateCreated": format_into_utc_date(venue.dateCreated),
             "description": venue.description,
             "externalAccessibilityData": {
@@ -738,6 +740,33 @@ class Returns200Test:
         assert response.status_code == 200
 
         assert response.json["hasNonDraftOffers"] is True
+
+    def test_is_pricing_point_only_for_venues_of_the_same_offerer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        pricing_point = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        linked_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offerers_factories.VenuePricingPointLinkFactory(venue=linked_venue, pricingPoint=pricing_point)
+
+        other_offerer = offerers_factories.OffererFactory()
+        other_linked_venue = offerers_factories.VenueFactory(managingOfferer=other_offerer)
+        offerers_factories.VenuePricingPointLinkFactory(venue=other_linked_venue, pricingPoint=pricing_point)
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get(f"/venues/{pricing_point.id}")
+
+        assert response.status_code == 200
+        assert response.json["isPricingPoint"] is True
+
+    def test_is_not_pricing_point_when_only_linked_to_itself(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get(f"/venues/{venue.id}")
+
+        assert response.status_code == 200
+        assert response.json["isPricingPoint"] is False
 
 
 @pytest.mark.usefixtures("db_session")

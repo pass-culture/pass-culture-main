@@ -89,6 +89,7 @@ export const makeGetVenueResponseModel = <
     isOnboarded: false,
     isOpenToPublic: false,
     isPermanent: false,
+    isPricingPoint: false,
     isValidated: false,
     location: location,
     managingOfferer: offerer,
