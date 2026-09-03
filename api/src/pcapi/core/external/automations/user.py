@@ -31,7 +31,7 @@ def get_users_ex_beneficiary() -> sa_orm.query.RowReturningQuery[tuple[str]]:
                 finance_models.Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
                 sa.and_(
                     finance_models.Deposit.expirationDate > datetime.combine(date.today(), datetime.min.time()),
-                    sa.func.get_wallet_balance(User.id, False) <= 0,
+                    sa.func.coalesce(sa.func.get_wallet_balance(User.id), 0) <= 0,
                 ),
             ),
         )

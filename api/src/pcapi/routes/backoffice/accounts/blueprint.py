@@ -346,19 +346,15 @@ def _load_suspension_info(query: sa_orm.Query) -> sa_orm.Query:
     )
 
 
-def _load_current_deposit_data(query: sa_orm.Query, join_needed: bool = True) -> sa_orm.Query:
-    # partial joined load with Deposit and Recredit to avoid N+1, show the version of the current
-    # deposit and not mess with the pagination as a beneficiary cannot have multiple deposits active
-    # at the same time
-    if join_needed:
-        query = query.outerjoin(
-            finance_models.Deposit,
-            sa.and_(
-                users_models.User.id == finance_models.Deposit.userId,
-                finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
-            ),
+def _load_birth_date_modification_actions(query: sa_orm.Query) -> sa_orm.Query:
+    """Preload only the actions read by eligibility_api.get_known_birthday_at_date(), instead of the full history."""
+    return query.options(
+        sa_orm.selectinload(
+            users_models.User.action_history.and_(
+                history_models.ActionHistory.actionType == history_models.ActionType.INFO_MODIFIED
+            )
         )
-    return query.options(sa_orm.contains_eager(users_models.User.deposits))
+    )
 
 
 @public_accounts_blueprint.route("<int:user_id>/tags", methods=["POST"])
@@ -469,7 +465,9 @@ def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> N
 
 
 def _get_user_ids_with_search_scores_query(
-    advanced_form: account_forms.GetAccountsListSearchForm, base_query: sa_orm.Query, search_score_col: sa.ColumnElement
+    advanced_form: account_forms.GetAccountsListSearchForm,
+    base_query: sa_orm.Query,
+    search_score_col: sa.ColumnElement,
 ) -> sa_orm.Query:
     query, _, _, warnings = advanced_search.generate_search_query(
         query=base_query,
@@ -485,18 +483,26 @@ def _get_user_ids_with_search_scores_query(
     return query.with_entities(users_models.User.id, search_score_col).limit(advanced_form.limit.data + 1)
 
 
-def _get_and_sort_users(user_ids_with_search_scores_query: sa_orm.Query) -> list[users_models.User]:
+def _get_and_sort_users(
+    user_ids_with_search_scores_query: sa_orm.Query,
+) -> list[users_models.User]:
     user_ids_subquery = user_ids_with_search_scores_query.subquery()
 
     query = db.session.query(users_models.User).join(user_ids_subquery, users_models.User.id == user_ids_subquery.c.id)
     query = _load_suspension_info(query)
-    query = _load_current_deposit_data(query, join_needed=True)
+    query = _load_birth_date_modification_actions(query)
 
     return (
         query.options(
+            sa_orm.with_expression(
+                users_models.User.wallet_balance_expression,
+                users_models.User.wallet_balance.expression,
+            ),
+            sa_orm.selectinload(users_models.User.beneficiaryFraudChecks),
+            sa_orm.selectinload(users_models.User.deposits).joinedload(finance_models.Deposit.recredits),
             sa_orm.joinedload(users_models.User.tags).load_only(
                 users_models.UserTag.id, users_models.UserTag.name, users_models.UserTag.label
-            )
+            ),
         )
         .order_by(user_ids_subquery.c.search_score)
         .all()
@@ -549,8 +555,29 @@ def list_public_accounts() -> response_utils.BackofficeResponse:
         advanced_form=advanced_form,
         search_dst=url_for(".list_public_accounts"),
         get_link_to_detail=_get_public_account_link,
+        get_registration_step_description=_get_current_registration_step_description,
         rows=rows,
     )
+
+
+def _get_current_registration_step_description(
+    user: users_models.User,
+) -> str | None:
+    """Get the last active registration step description.
+
+    Even though it looks overkill to build the entire tunnel to only pick its last active step label,
+    it's acceptable in comparison with rewriting the full verbose resolution.
+    """
+    eligibility_history = get_eligibility_history(user)
+    tunnel = _get_tunnel(user, eligibility_history)
+    if tunnel["type"] is TunnelType.NOT_ELIGIBLE:
+        return TunnelType.NOT_ELIGIBLE.value
+
+    current_active_step = next((step for step in tunnel["steps"] if step.status["active"]), None)
+    if current_active_step and current_active_step.description in subscription_schemas.SubscriptionStep:
+        return current_active_step.description
+
+    return None
 
 
 def _convert_fraud_review_to_fraud_action_dict(fraud_review: subscription_models.BeneficiaryFraudReview) -> dict:
@@ -2638,6 +2665,7 @@ def _render_public_account_rows(user_ids: list[int]) -> response_utils.Backoffic
     return render_template(
         "accounts/list_rows.html",
         get_link_to_detail=_get_public_account_link,
+        get_registration_step_description=_get_current_registration_step_description,
         rows=users,
     )
 
