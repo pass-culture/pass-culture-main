@@ -1,9 +1,9 @@
-import cn from 'classnames'
 import { format } from 'date-fns'
 
-import type {
-  SettlementListResponseModel,
-  SettlementResponseModel,
+import {
+  type SettlementListResponseModel,
+  type SettlementResponseModel,
+  SettlementStatus,
 } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
@@ -27,6 +27,7 @@ import fullNextIcon from '@/icons/full-next.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
+import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
 import { SETTLEMENT_STATUS_LABELS } from './constants'
 import styles from './SettlementTable.module.scss'
@@ -91,14 +92,20 @@ const columns: Column<ExtendedSettlementResponseModel>[] = [
     label: 'N° de virement',
     sortable: true,
     ordererField: 'label',
-    render: (settlement) => settlement.label,
+    render: (settlement) => (
+      <p className={styles['cell-label']}>{settlement.label}</p>
+    ),
   },
   {
     id: 'date',
     label: "Date d'émission",
     sortable: true,
     ordererField: 'date',
-    render: (settlement) => getSettlementDateLabel(settlement),
+    render: (settlement) => (
+      <p className={styles['cell-date']}>
+        {getSettlementDateLabel(settlement)}
+      </p>
+    ),
   },
   {
     id: 'bankAccount',
@@ -106,17 +113,23 @@ const columns: Column<ExtendedSettlementResponseModel>[] = [
     sortable: true,
     ordererField: 'bankAccount',
     render: (settlement) => (
-      <p className={styles['cell-bank-account']}>{settlement.bankAccount}</p>
+      <Tooltip content={settlement.bankAccount}>
+        <p className={styles['cell-bank-account']}>{settlement.bankAccount}</p>
+      </Tooltip>
     ),
   },
   {
     id: 'status',
-    label: 'Statut du virement',
+    label: 'Statut',
     sortable: true,
     ordererField: 'status',
     render: (settlement) => {
       const { label, variant } = SETTLEMENT_STATUS_LABELS[settlement.status]
-      return <Tag label={label} variant={variant} />
+      return (
+        <div className={styles['cell-status']}>
+          <Tag label={label} variant={variant} />
+        </div>
+      )
     },
   },
   {
@@ -125,39 +138,44 @@ const columns: Column<ExtendedSettlementResponseModel>[] = [
     sortable: true,
     ordererField: 'amount',
     render: (settlement: ExtendedSettlementResponseModel) => (
-      <div
-        className={cn({
-          [styles['negative-amount']]: settlement.amount < 0,
-          [styles['positive-amount']]: settlement.amount > 0,
-        })}
-      >
+      <p className={styles['cell-amount']}>
         {settlement.isCaledonian
           ? formatPacificFranc(convertEuroToPacificFranc(settlement.amount))
           : formatPrice(settlement.amount)}
-      </div>
+      </p>
     ),
   },
   {
     id: 'invoicesCount',
-    label: 'Nombre de justificatifs',
+    label: 'Justificatifs',
     sortable: true,
     ordererField: 'invoicesCount',
-    render: (settlement) => settlement.invoicesCount,
+    render: (settlement) =>
+      settlement.status === SettlementStatus.EXECUTED &&
+      settlement.invoicesCount,
   },
   {
     id: 'actions',
     label: 'Actions',
-    render: () => (
+    render: (settlement) => (
       <div className={styles['cell-actions']}>
-        <Button
-          label="Voir plus"
-          variant={ButtonVariant.TERTIARY}
-          size={ButtonSize.SMALL}
-          color={ButtonColor.NEUTRAL}
-          iconPosition={IconPositionEnum.RIGHT}
-          icon={fullDownIcon}
-          disabled // TODO(mdesquilbet, 19/08/2026): to remove when creating the accordeon
-        />
+        {settlement.status === SettlementStatus.EXECUTED ? (
+          <Button
+            label="Voir plus"
+            variant={ButtonVariant.TERTIARY}
+            size={ButtonSize.SMALL}
+            color={ButtonColor.NEUTRAL}
+            iconPosition={IconPositionEnum.RIGHT}
+            icon={fullDownIcon}
+            disabled // TODO(mdesquilbet, 19/08/2026): to remove when creating the accordeon
+          />
+        ) : (
+          <Button
+            label="Remplacer le compte"
+            size={ButtonSize.SMALL}
+            disabled // TODO(mdesquilbet, 02/09/2026): to remove when resolving incidents
+          />
+        )}
       </div>
     ),
     header: <div className={styles['cell-actions']}>Actions</div>,

@@ -52,12 +52,33 @@ describe('<SettlementTable />', () => {
   it('renders the settlement row with formatted data', () => {
     renderSettlementTable()
 
-    expect(screen.getByText('VIR001')).toBeVisible()
-    expect(screen.getByText('01/06/2024')).toBeVisible()
-    expect(screen.getByText('Compte principal')).toBeVisible()
-    expect(screen.getByText('3')).toBeVisible()
-    expect(screen.getByText('Virement émis')).toBeVisible()
-    expect(screen.getByText('150,00 €')).toBeVisible()
+    expect(screen.getByRole('cell', { name: 'VIR001' })).toBeVisible()
+    expect(screen.getByRole('cell', { name: '01/06/2024' })).toBeVisible()
+    expect(screen.getByRole('cell', { name: 'Compte principal' })).toBeVisible()
+    expect(screen.getByRole('cell', { name: '3' })).toBeVisible()
+    expect(screen.getByRole('cell', { name: 'Virement émis' })).toBeVisible()
+    expect(screen.getByRole('cell', { name: /^150,00\s€$/ })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Voir plus' })).toBeVisible()
+    const tooltips = screen.getAllByRole('tooltip', { hidden: true })
+    expect(tooltips).toHaveLength(2)
+    expect(tooltips[0]).toHaveTextContent('Tout sélectionner')
+    expect(tooltips[1]).toHaveTextContent('Compte principal')
+  })
+
+  it('renders the rejected settlement differently', () => {
+    renderSettlementTable({
+      settlements: [
+        { ...baseSettlement, status: SettlementStatus.REJECTED },
+      ] as never,
+    })
+
+    expect(screen.queryByRole('cell', { name: '3' })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Voir plus' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Remplacer le compte' })
+    ).toBeVisible()
   })
 
   it('displays a dash when the settlement has no date', () => {
