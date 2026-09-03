@@ -109,6 +109,7 @@ export const renderWithProviders = (
 
   return {
     ...otherRenderResult,
+    router,
     rerender: (newChildren: ReactNode) => {
       const router = createRouterFromOverrides(newChildren, overrides)
 

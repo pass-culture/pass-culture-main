@@ -1,4 +1,9 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
@@ -16,6 +21,11 @@ import {
 } from '@/commons/utils/renderWithProviders'
 
 import { Settlements } from './Settlements'
+
+vi.mock('@/commons/utils/date', async () => ({
+  ...(await vi.importActual('@/commons/utils/date')),
+  getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
+}))
 
 const BASE_SETTLEMENTS = [
   {
@@ -41,6 +51,7 @@ const BASE_BANK_ACCOUNTS: Array<BankAccountResponseModel> = [
     label: 'My second bank account',
   },
 ]
+
 const renderSettlements = (options?: RenderWithProvidersOptions) => {
   const user = sharedCurrentUserFactory()
 
@@ -86,7 +97,11 @@ describe('<Settlements />', () => {
       query: { offererId: defaultGetOffererResponseModel.id },
     })
     expect(api.getSettlements).toHaveBeenCalledWith({
-      query: { offererId: defaultGetOffererResponseModel.id },
+      query: {
+        offererId: defaultGetOffererResponseModel.id,
+        periodBeginningDate: '2020-11-15',
+        periodEndingDate: '2020-12-15',
+      },
     })
     expect(screen.getByText('VIR001')).toBeInTheDocument()
   })
@@ -141,5 +156,89 @@ describe('<Settlements />', () => {
       path: { offerer_id: defaultGetOffererResponseModel.id },
     })
     expect(screen.getByText('Rattacher un compte bancaire')).toBeInTheDocument()
+  })
+
+  it('should initialize searchParams with default filters if query params are empty', async () => {
+    const { router } = renderSettlements()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    await waitFor(() => {
+      expect(router.state.location.search).toBe(
+        '?periodBeginningDate=2020-11-15&periodEndingDate=2020-12-15'
+      )
+    })
+  })
+
+  it('should fetch settlements with custom filters from searchParams', async () => {
+    renderSettlements({
+      initialRouterEntries: [
+        '/?nameSearch=VIR001&bankAccountId=1&periodBeginningDate=2020-10-01&periodEndingDate=2020-10-31',
+      ],
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(api.getSettlements).toHaveBeenCalledWith({
+      query: {
+        offererId: defaultGetOffererResponseModel.id,
+        nameSearch: 'VIR001',
+        bankAccountId: 1,
+        periodBeginningDate: '2020-10-01',
+        periodEndingDate: '2020-10-31',
+      },
+    })
+  })
+
+  it('should allow filtering settlements using the filter form', async () => {
+    const user = userEvent.setup()
+    renderSettlements({
+      initialRouterEntries: [
+        '/?periodBeginningDate=2020-11-15&periodEndingDate=2020-12-15',
+      ],
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const nameInput = screen.getByLabelText('N° de virement')
+    await user.type(nameInput, 'VIR001')
+
+    const searchButton = screen.getByRole('button', {
+      name: 'Lancer la recherche',
+    })
+    await user.click(searchButton)
+
+    await waitFor(() => {
+      expect(api.getSettlements).toHaveBeenLastCalledWith({
+        query: {
+          offererId: defaultGetOffererResponseModel.id,
+          nameSearch: 'VIR001',
+          periodBeginningDate: '2020-11-15',
+          periodEndingDate: '2020-12-15',
+        },
+      })
+    })
+  })
+
+  it('should reset filters when clicking reset button', async () => {
+    const user = userEvent.setup()
+    const { router } = renderSettlements({
+      initialRouterEntries: [
+        '/?nameSearch=VIR001&bankAccountId=1&periodBeginningDate=2020-10-01&periodEndingDate=2020-10-31',
+      ],
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const resetButton = screen.getByRole('button', {
+      name: 'Réinitialiser les filtres',
+    })
+    await user.click(resetButton)
+
+    await waitFor(() => {
+      expect(router.state.location.search).toBe(
+        '?periodBeginningDate=2020-11-15&periodEndingDate=2020-12-15'
+      )
+    })
   })
 })
