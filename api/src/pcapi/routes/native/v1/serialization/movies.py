@@ -16,10 +16,12 @@ from pcapi.core.users.young_status import SubscriptionStatus
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.utils import date as date_utils
-from pcapi.utils.date import format_into_utc_date
 
 
 logger = logging.getLogger(__name__)
+
+
+DEFAULT_DAYS_RANGE = 15
 
 
 class MovieScreeningsRequest(HttpQueryParamsModel):
@@ -30,15 +32,17 @@ class MovieScreeningsRequest(HttpQueryParamsModel):
     around_radius: int = 50_000  # meters
     from_datetime: datetime = pydantic_v2.Field(alias="from", default_factory=date_utils.get_naive_utc_now)
     to_datetime: datetime = pydantic_v2.Field(
-        alias="to", default_factory=lambda: datetime.combine(date.today(), time.max) + timedelta(days=15)
+        alias="to",
+        default_factory=lambda: datetime.combine(date.today(), time.max) + timedelta(days=DEFAULT_DAYS_RANGE),
     )
-
-    _datetime_serializer = pydantic_v2.field_serializer("from_datetime", "to_datetime")(format_into_utc_date)
 
     @pydantic_v2.model_validator(mode="after")
     def validate_params(self) -> typing.Self:
         if (not self.allocine_id and not self.visa) or (self.allocine_id and self.visa):
             raise ValueError("Only one of allocine_id and visa must be provided")
+
+        # In case `to` field's value is earlier than `from`, return empty query
+        self.to_datetime = max(self.from_datetime, self.to_datetime)
 
         return self
 
@@ -49,6 +53,18 @@ class MovieScreeningsRequest(HttpQueryParamsModel):
             return value.lstrip("0") or "0"
         return value
 
+    @pydantic_v2.field_validator("from_datetime", mode="after")
+    @classmethod
+    def limit_from_datetime(cls, from_datetime: datetime) -> datetime:
+        tz_naive_from_datetime = date_utils.to_naive_utc_datetime(from_datetime)
+        # Limit the allowed start datetime to prevent sending screenings from the past
+        return max(tz_naive_from_datetime, date_utils.get_naive_utc_now())
+
+    @pydantic_v2.field_validator("to_datetime", mode="after")
+    @classmethod
+    def make_to_datetime_tz_naive(cls, to_datetime: datetime) -> datetime:
+        return date_utils.to_naive_utc_datetime(to_datetime)
+
 
 class VenueMovieScreeningsRequest(HttpBodyModel):
     from_datetime: datetime = pydantic_v2.Field(alias="from", default_factory=date_utils.get_naive_utc_now)
@@ -56,7 +72,17 @@ class VenueMovieScreeningsRequest(HttpBodyModel):
         alias="to", default_factory=lambda: datetime.combine(date.today(), time.max) + timedelta(days=15)
     )
 
-    _datetime_serializer = pydantic_v2.field_serializer("from_datetime", "to_datetime")(format_into_utc_date)
+    @pydantic_v2.field_validator("from_datetime", mode="after")
+    @classmethod
+    def limit_from_datetime(cls, from_datetime: datetime) -> datetime:
+        tz_naive_from_datetime = date_utils.to_naive_utc_datetime(from_datetime)
+        # Limit the allowed start datetime to prevent sending screenings from the past
+        return max(tz_naive_from_datetime, date_utils.get_naive_utc_now())
+
+    @pydantic_v2.field_validator("to_datetime", mode="after")
+    @classmethod
+    def make_to_datetime_tz_naive(cls, to_datetime: datetime) -> datetime:
+        return date_utils.to_naive_utc_datetime(to_datetime)
 
 
 class Bookability(enum.Enum):
@@ -102,7 +128,7 @@ class ScreeningUserData:
 
 @dataclass
 class RawScreening:
-    beginning_datetime: datetime
+    beginning_datetime: datetime  # ⚠ Timezone-naive datetime supposed to be in UTC offset
     features: list[str]
     is_sold_out: bool
     offer_id: int
@@ -113,10 +139,11 @@ class RawScreening:
     movie_data: ScreeningMovieData | None = None
     user_data: ScreeningUserData | None = None
     venue_data: ScreeningVenueData | None = None
+    timezone: str | None = None
 
 
 class Screening(HttpBodyModel):
-    beginning_datetime: datetime
+    beginning_datetime: pydantic_v2.AwareDatetime  # ⚠ Timezone-aware datetime in offerer address offset
     bookability: Bookability
     features: list[str]
     price: float
@@ -152,7 +179,10 @@ class Screening(HttpBodyModel):
     @classmethod
     def from_raw_screening(cls, raw_screening: RawScreening) -> typing.Self:
         return cls(
-            beginning_datetime=raw_screening.beginning_datetime,
+            beginning_datetime=date_utils.default_timezone_to_local_datetime(
+                dt=raw_screening.beginning_datetime,
+                local_tz=raw_screening.timezone or date_utils.METROPOLE_TIMEZONE,
+            ),
             bookability=cls._get_screening_bookability(raw_screening),
             features=raw_screening.features,
             price=float(raw_screening.price),
@@ -220,7 +250,10 @@ class MovieCalendarResponse(HttpBodyModel):
 
     @classmethod
     def from_raw_screenings(
-        cls, raw_screenings: list[RawScreening], start_date: datetime, end_date: datetime
+        cls,
+        raw_screenings: list[RawScreening],
+        start_date: datetime,  # ⚠ Timezone-naive
+        end_date: datetime,  # ⚠ Timezone-naive
     ) -> typing.Self:
         def get_venue_id(raw_screening: RawScreening) -> int:
             assert raw_screening.venue_data
@@ -229,10 +262,15 @@ class MovieCalendarResponse(HttpBodyModel):
         def sort_venues_by_distance(venues: list[VenueScreenings]) -> list[VenueScreenings]:
             return sorted(venues, key=lambda venue: (len(venue.day_screenings) == 0, venue.distance))
 
+        # Consider that all of the screenings belong to the same timezone
+        raw_screening = raw_screenings[0] if raw_screenings else None
+        raw_screening_timezone = raw_screening.timezone if raw_screening else None
+        timezone = raw_screening_timezone or date_utils.METROPOLE_TIMEZONE
+
         calendar_list = serialize_calendar(
             raw_screenings,
-            start_date,
-            end_date,
+            date_utils.default_timezone_to_local_datetime(start_date, timezone),
+            date_utils.default_timezone_to_local_datetime(end_date, timezone),
             block_serializer=VenueScreenings.from_raw_screening,
             block_id_getter=get_venue_id,
             sort_blocks=sort_venues_by_distance,
@@ -251,16 +289,24 @@ class VenueMovieCalendarResponse(HttpBodyModel):
 
     @classmethod
     def from_raw_venue_screenings(
-        cls, raw_screenings: list[RawScreening], start_date: datetime, end_date: datetime
+        cls,
+        raw_screenings: list[RawScreening],
+        start_date: datetime,  # ⚠ Timezone-naive
+        end_date: datetime,  # ⚠ Timezone-naive
     ) -> typing.Self:
         def sort_movies_by_popularity(movies: list[MovieScreenings]) -> list[MovieScreenings]:
             return sorted(movies, key=lambda movie: (len(movie.day_screenings) == 0, -movie.last_30_days_bookings))
 
+        # Consider that all of the screenings belong to the same timezone
+        raw_screening = raw_screenings[0] if raw_screenings else None
+        raw_screening_timezone = raw_screening.timezone if raw_screening else None
+        timezone = raw_screening_timezone or date_utils.METROPOLE_TIMEZONE
+
         return cls(
             calendar=serialize_calendar(
                 raw_screenings,
-                start_date,
-                end_date,
+                date_utils.default_timezone_to_local_datetime(start_date, timezone),
+                date_utils.default_timezone_to_local_datetime(end_date, timezone),
                 block_serializer=MovieScreenings.from_raw_screening,
                 block_id_getter=lambda raw_screening: raw_screening.offer_id,
                 sort_blocks=sort_movies_by_popularity,
@@ -282,14 +328,14 @@ def _get_best_next_screening(current_best: Screening, candidate: Screening, day:
 
 def serialize_calendar(
     raw_screenings: list[RawScreening],
-    start_date: datetime,
-    end_date: datetime,
+    start_date: datetime,  # ⚠ Timezone-aware
+    end_date: datetime,  # ⚠ Timezone-aware
     block_serializer: typing.Callable[[RawScreening], T],
     block_id_getter: typing.Callable[[RawScreening], int],
     sort_blocks: typing.Callable[[list[T]], list[T]],
 ) -> list[dict]:
     calendar = {}
-    for day_delta in range((end_date - start_date).days + 1):
+    for day_delta in range((end_date.date() - start_date.date()).days + 1):
         day = (start_date + timedelta(days=day_delta)).date()
         blocks: dict[int, T] = {}
         for raw_screening in raw_screenings:

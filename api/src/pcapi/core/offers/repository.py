@@ -180,6 +180,12 @@ def get_capped_offers_for_filters(
     return offers
 
 
+def get_offer_timezone(offer: models.Offer) -> str:
+    offerer_address = offer.offererAddress or offer.venue.offererAddress
+    address = offerer_address.address
+    return address.timezone
+
+
 def _get_offer_home_score(offer: models.Offer, date_limit: datetime.datetime) -> tuple[int, datetime.datetime | None]:
     # Event under review > Thing under review > Event sold out > Thing sold out > Event (by date) > Thing
 
@@ -456,13 +462,18 @@ def get_nearby_bookable_screenings_from_product(
     from_datetime: datetime.datetime,
     to_datetime: datetime.datetime,
 ) -> list[dict[str, typing.Any]]:
+    OfferOA = sa_orm.aliased(offerers_models.OffererAddress, name="stock_oa")
+    OfferAddress = sa_orm.aliased(geography_models.Address, name="stock_address")
+    VenueOA = sa_orm.aliased(offerers_models.OffererAddress, name="venue_oa")
+    VenueAddress = sa_orm.aliased(geography_models.Address, name="venue_address")
+
     request_location = sa.cast(
         ST_MakePoint(longitude, latitude), Geography(None)
     )  # `None` is used not to have to specify SRID
     offer_location = sa.cast(
         ST_MakePoint(
-            sa.cast(geography_models.Address.longitude, sa.DOUBLE_PRECISION),
-            sa.cast(geography_models.Address.latitude, sa.DOUBLE_PRECISION),
+            sa.cast(OfferAddress.longitude, sa.DOUBLE_PRECISION),
+            sa.cast(OfferAddress.latitude, sa.DOUBLE_PRECISION),
         ),
         Geography(None),
     )
@@ -472,8 +483,8 @@ def get_nearby_bookable_screenings_from_product(
     # It cannot be a keyword argument since kwargs, except special ones, are not taken into account by `ST_DWithin`.
     stock_ids = db.session.scalars(
         sa.select(models.Stock.id)
-        .select_from(geography_models.Address)
-        .join(offerers_models.OffererAddress)
+        .select_from(OfferAddress)
+        .join(OfferOA)
         .join(models.Offer)
         .join(models.Stock)
         .where(
@@ -495,19 +506,28 @@ def get_nearby_bookable_screenings_from_product(
             models.Stock.features,
             models.Stock.isSoldOut.label("is_sold_out"),
             models.Stock.price,
-            geography_models.Address.city,
-            geography_models.Address.postalCode.label("postal_code"),
-            geography_models.Address.street.label("street"),
-            sa.func.coalesce(offerers_models.OffererAddress.label, offerers_models.Venue.publicName).label("label"),
+            sa.func.coalesce(OfferAddress.city, VenueAddress.city).label("city"),
+            sa.func.coalesce(OfferAddress.postalCode, VenueAddress.postalCode).label("postal_code"),
+            sa.func.coalesce(OfferAddress.street, VenueAddress.street).label("street"),
+            sa.func.coalesce(OfferAddress.timezone, VenueAddress.timezone).label("timezone"),
+            sa.func.coalesce(OfferOA.label, offerers_models.Venue.publicName).label("label"),
             offerers_models.Venue.id.label("venue_id"),
             offerers_models.Venue.bannerUrl.label("thumb_url"),
         )
         .select_from(models.Stock)
-        .join(models.Offer)
+        .join(models.Offer, models.Stock.offerId == models.Offer.id)
+        .join(OfferOA, models.Offer.offererAddressId == OfferOA.id)
+        .join(OfferAddress, OfferOA.addressId == OfferAddress.id)
         .outerjoin(providers_models.Provider, models.Offer.lastProviderId == providers_models.Provider.id)
-        .join(offerers_models.Venue)
-        .join(offerers_models.OffererAddress, models.Offer.offererAddressId == offerers_models.OffererAddress.id)
-        .join(geography_models.Address)
+        .join(offerers_models.Venue, models.Offer.venueId == offerers_models.Venue.id)
+        .outerjoin(
+            VenueOA,
+            sa.and_(
+                offerers_models.Venue.id == VenueOA.venueId,
+                VenueOA.type == offerers_models.LocationType.VENUE_LOCATION,
+            ),
+        )
+        .outerjoin(VenueAddress, VenueOA.addressId == VenueAddress.id)
         .where(models.Stock.id.in_(stock_ids))
         .order_by("distance")
     )
@@ -557,6 +577,12 @@ def get_bookable_screenings_from_venue(
                 .load_only(models.ProductMediation.imageType, models.ProductMediation.uuid)
             )
             .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
+            .options(
+                sa_orm.joinedload(models.Offer.venue)
+                .joinedload(offerers_models.Venue.offererAddress)
+                .joinedload(offerers_models.OffererAddress.address)
+            )
+            .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
             .where(
                 models.Offer.venueId == venue_id,
                 models.Offer.subcategoryId == subcategories.SEANCE_CINE.id,
