@@ -1,8 +1,29 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
 
 .cell-bank-account {
   max-width: rem.torem(116px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @media (max-width: size.$tablet) {
+    max-width: 100%;
+    text-align: end;
+    white-space: initial;
+    overflow: initial;
+    text-overflow: initial;
+  }
+}
+
+.cell-label,
+.cell-date,
+.cell-status,
+.cell-amount {
+  white-space: nowrap;
+}
+
+.cell-actions {
+  text-align: right;
+  white-space: nowrap;
 }
