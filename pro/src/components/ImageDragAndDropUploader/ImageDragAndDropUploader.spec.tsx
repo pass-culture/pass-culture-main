@@ -100,6 +100,38 @@ describe('ImageDragAndDropUploader', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should clear the displayed credit when the image credit is cleared', () => {
+    const { rerender } = renderImageUploader({
+      onImageUpload: () => {},
+      onImageDelete: () => {},
+      mode: UploaderModeEnum.VENUE,
+      initialValues: {
+        croppedImageUrl: 'image.jpg',
+        credit: 'Ancien crédit',
+      },
+    })
+
+    expect(screen.getByText('Crédit image : Ancien crédit')).toBeVisible()
+
+    rerender(
+      <ImageDragAndDropUploader
+        onImageUpload={() => {}}
+        onImageDelete={() => {}}
+        mode={UploaderModeEnum.VENUE}
+        initialValues={{
+          croppedImageUrl: 'new-image.jpg',
+          credit: '',
+        }}
+      />
+    )
+
+    expect(screen.getByAltText('Prévisualisation de l’image')).toHaveAttribute(
+      'src',
+      'new-image.jpg'
+    )
+    expect(screen.queryByText(/Crédit image :/)).not.toBeInTheDocument()
+  })
+
   it('should render a drag and drop input when there is no existing / prev. uploaded img file', () => {
     renderImageUploader({
       onImageUpload: () => {},

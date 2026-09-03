@@ -58,7 +58,7 @@ class Returns201Test:
                 "height_crop_percent": 0.6,
                 "width_crop_percent": 0.9,
             },
-            "image_credit": None,
+            "image_credit": "Perceval",
             "original_image_url": str(url_prefix / f"{humanize(venue.id)}_{original_banner_url_timestamp}"),
         }
 
