@@ -3,11 +3,11 @@ revision = 3
 requires-python = "==3.13.*"
 
 [options]
-exclude-newer = "2026-08-21T12:45:58.254469Z"
+exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
 exclude-newer-span = "P7D"
 
 [options.exclude-newer-package]
-pgcli = { timestamp = "2026-08-26T12:45:58.254808Z", span = "P2D" }
+pgcli = { timestamp = "0001-01-01T00:00:00Z", span = "P2D" }
 
 [manifest]
 overrides = [{ name = "pyopenssl", specifier = ">=26.0.0" }]
@@ -2121,7 +2121,7 @@ dev = [
     { name = "requests-mock", specifier = "==1.12.1" },
     { name = "ruff", specifier = "==0.16.4" },
     { name = "squawk-cli", specifier = "==2.63.0" },
-    { name = "types-protobuf", specifier = "==7.35.1.20260821" },
+    { name = "types-protobuf", specifier = "==7.35.1.20260826" },
     { name = "types-python-dateutil", specifier = "==2.9.0.20260807" },
     { name = "types-pytz", specifier = "==2026.3.1.20260727" },
     { name = "types-pyyaml", specifier = "==6.0.12.20260815" },
@@ -3356,11 +3356,11 @@ wheels = [
 
 [[package]]
 name = "types-protobuf"
-version = "7.35.1.20260821"
+version = "7.35.1.20260826"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/14/58/8013cfe1a9665ad36a000897054bfd499f56e89a56b7542838c2f4e6c737/types_protobuf-7.35.1.20260821.tar.gz", hash = "sha256:abc85e9271f9774f4899201dbfb731ef4a453f302454fdb66091a557b2adb2ac", size = 69632, upload-time = "2026-08-21T02:52:33.913Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5a/8d/63939858680cda558e43de17822e1bcdf74fb3d1cdf5a80ce7a90a0c2a0f/types_protobuf-7.35.1.20260826.tar.gz", hash = "sha256:e7083f061500bcbf6d1f32eb83dfff0983d1583b028ae7a791dbe33f47e8bf3a", size = 69626, upload-time = "2026-08-26T02:54:39.711Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b8/e7/18a03d8e31f3d90af5bf6c622fef3cd7b246773b11fdebb6c801c7a9fdd9/types_protobuf-7.35.1.20260821-py3-none-any.whl", hash = "sha256:a99b71356e153e53cc7bc3c8c0e22d8aa54d92f02bf02486f7a19a3a947caf03", size = 86413, upload-time = "2026-08-21T02:52:33.016Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/a8/24fa08c2b9307ead7e9c3565de007e47315ca396c78e9cc1350643737052/types_protobuf-7.35.1.20260826-py3-none-any.whl", hash = "sha256:49adc6d989e146b7b2ba4498aeae36937619d4b95a21cd20025fc88b2cd29b62", size = 86412, upload-time = "2026-08-26T02:54:38.673Z" },
 ]
 
 [[package]]
