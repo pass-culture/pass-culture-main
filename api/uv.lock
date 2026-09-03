@@ -3,11 +3,11 @@ revision = 3
 requires-python = "==3.13.*"
 
 [options]
-exclude-newer = "2026-08-21T12:45:58.254469Z"
+exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
 exclude-newer-span = "P7D"
 
 [options.exclude-newer-package]
-pgcli = { timestamp = "2026-08-26T12:45:58.254808Z", span = "P2D" }
+pgcli = { timestamp = "0001-01-01T00:00:00Z", span = "P2D" }
 
 [manifest]
 overrides = [{ name = "pyopenssl", specifier = ">=26.0.0" }]
@@ -1167,7 +1167,7 @@ wheels = [
 
 [[package]]
 name = "google-cloud-iam"
-version = "2.24.1"
+version = "2.25.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "google-api-core", extra = ["grpc"] },
@@ -1177,9 +1177,9 @@ dependencies = [
     { name = "proto-plus" },
     { name = "protobuf" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/16/d8/ebea2eb4423ee467a50ed7b91ab0a1a0e0749f869151598891456a117a8f/google_cloud_iam-2.24.1.tar.gz", hash = "sha256:2d7edfe48fd24a181f55473a77584c0c947cf52915fc7af835d9ae0408fccae0", size = 561397, upload-time = "2026-08-06T06:24:26.45Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b1/41/41bc40a72a095feb7b21483b68c40e336314bc4a4d8067442c64fcbdb78f/google_cloud_iam-2.25.0.tar.gz", hash = "sha256:af311f839cb7791e582093940ec114323fc6a92110e9807844026eb09704c479", size = 621407, upload-time = "2026-08-25T19:18:53.051Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/98/11d466009ffdf7abc987d9db8d6a59bbbb2c08543fd9ee4d98514bafbdc4/google_cloud_iam-2.24.1-py3-none-any.whl", hash = "sha256:7122aca0f5e2aa5bac889ff8136629054e9eef761d14dc5111ac1d109f68052a", size = 515093, upload-time = "2026-08-06T06:23:18.659Z" },
+    { url = "https://files.pythonhosted.org/packages/50/df/c6a837dc04bd1ce95f20a41c6a9470fda78f83074704ddc00ec8a7409f0f/google_cloud_iam-2.25.0-py3-none-any.whl", hash = "sha256:adaa7e9a44d48f521e5be7bce7d52f74f9f097885f641865d50caaacc79abf86", size = 567102, upload-time = "2026-08-24T21:55:38.53Z" },
 ]
 
 [[package]]
@@ -2050,7 +2050,7 @@ requires-dist = [
     { name = "google-api-python-client", specifier = "==2.199.0" },
     { name = "google-auth", specifier = "==2.56.3" },
     { name = "google-cloud-bigquery", specifier = "==3.43.0" },
-    { name = "google-cloud-iam", specifier = "==2.24.1" },
+    { name = "google-cloud-iam", specifier = "==2.25.0" },
     { name = "google-cloud-secret-manager", specifier = ">=2.30.0" },
     { name = "google-cloud-storage", specifier = "==3.13.1" },
     { name = "googleapis-common-protos", specifier = "==1.75.1" },
