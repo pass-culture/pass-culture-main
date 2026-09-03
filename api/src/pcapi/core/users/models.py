@@ -318,6 +318,7 @@ class User(PcObject, Model, DeactivableMixin):
         "BookingFinanceIncident", back_populates="beneficiary", uselist=True
     )
 
+    wallet_balance_expression: sa_orm.Mapped[Decimal | None] = sa_orm.query_expression()
     suspension_reason_expression: sa_orm.Mapped[str | None] = sa_orm.query_expression()
     suspension_date_expression: sa_orm.Mapped[datetime | None] = sa_orm.query_expression()
 
@@ -611,10 +612,14 @@ class User(PcObject, Model, DeactivableMixin):
     def latest_birthday(self) -> date | None:
         return _get_latest_birthday(self.birth_date)
 
-    @property
-    def wallet_balance(self) -> Decimal:
-        balance = db.session.query(sa.func.get_wallet_balance(self.id, False)).scalar()
-        return max(0, balance)
+    @hybrid_property
+    def wallet_balance(self) -> Decimal | None:
+        return db.session.query(sa.func.get_wallet_balance(self.id)).scalar()
+
+    @wallet_balance.inplace.expression
+    @classmethod
+    def _wallet_balance_expression(cls) -> sa.ColumnElement[Decimal | None]:
+        return sa.func.get_wallet_balance(cls.id)
 
     @property
     def has_changed_email(self) -> bool:
