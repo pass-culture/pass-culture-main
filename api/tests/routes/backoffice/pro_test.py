@@ -386,6 +386,25 @@ class SearchOffererTest:
             total_items=1,
         )
 
+    def test_can_search_offerer_by_invoice_reference(self, authenticated_client):
+        self._create_offerers()
+        bank_account = finance_factories.BankAccountFactory()
+        reference = finance_factories.InvoiceFactory(bankAccount=bank_account).reference
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=reference, pro_type=TypeOptions.OFFERER.name))
+            assert response.status_code == 303
+
+        # Redirected to single result
+        assert_response_location(
+            response,
+            "backoffice_web.offerer.get",
+            offerer_id=bank_account.offerer.id,
+            q=reference,
+            search_rank=1,
+            total_items=1,
+        )
+
     def test_can_search_offerer_by_name_without_similarity(self, authenticated_client):
         self._create_offerers()
 
