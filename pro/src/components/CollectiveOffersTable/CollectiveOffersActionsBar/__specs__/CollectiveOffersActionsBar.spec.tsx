@@ -185,8 +185,8 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
 
     expect(
-      screen.getByText('2 offres ont bien été mises en pause')
-    ).toBeInTheDocument()
+      screen.getAllByText('2 offres ont bien été mises en pause').length
+    ).toBeGreaterThan(0)
   })
 
   it('should unselect offers and hide action bar on click on "Annuler" button', async () => {
@@ -217,8 +217,10 @@ describe('ActionsBar', () => {
     await userEvent.click(modalArchiveButton)
 
     expect(
-      screen.getByText('Une erreur est survenue lors de l’archivage de l’offre')
-    ).toBeInTheDocument()
+      screen.getAllByText(
+        'Une erreur est survenue lors de l’archivage de l’offre'
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should only make one call if the ids all come from template offer', async () => {
@@ -324,8 +326,8 @@ describe('ActionsBar', () => {
     })
 
     expect(
-      screen.getByText('2 offres ont bien été archivées')
-    ).toBeInTheDocument()
+      screen.getAllByText('2 offres ont bien été archivées').length
+    ).toBeGreaterThan(0)
   })
 
   it('should not archive offers on click on "Archiver" when at least one offer cannot be archived', async () => {
@@ -351,10 +353,10 @@ describe('ActionsBar', () => {
     await userEvent.click(archivingButton)
 
     expect(
-      screen.getByText(
+      screen.getAllByText(
         'Les offres déjà archivées ou liées à des réservations ne peuvent pas être archivées'
-      )
-    ).toBeInTheDocument()
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should refresh the bookable offers list when the offer status is modified', async () => {
@@ -415,7 +417,9 @@ describe('ActionsBar', () => {
       1
     )
 
-    expect(screen.getByText('1 offre a bien été publiée')).toBeInTheDocument()
+    expect(
+      screen.getAllByText('1 offre a bien été publiée').length
+    ).toBeGreaterThan(0)
   })
 
   it('should display error message when trying to publish offer and CAN_PUBLISH action is not allowed', async () => {
@@ -433,10 +437,10 @@ describe('ActionsBar', () => {
     await userEvent.click(screen.getByText('Publier'))
 
     expect(
-      screen.getByText(
+      screen.getAllByText(
         'Seules les offres vitrines au statut en pause peuvent être publiées.'
-      )
-    ).toBeInTheDocument()
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should archive template offers using patchCollectiveOffersTemplateArchive when offers are template', async () => {
@@ -465,6 +469,8 @@ describe('ActionsBar', () => {
       body: { ids: [10, 20] },
     })
     expect(api.patchCollectiveOffersArchive).not.toHaveBeenCalled()
-    expect(screen.getByText('2 offres ont bien été archivées')).toBeVisible()
+    expect(
+      screen.getAllByText('2 offres ont bien été archivées').length
+    ).toBeGreaterThan(0)
   })
 })

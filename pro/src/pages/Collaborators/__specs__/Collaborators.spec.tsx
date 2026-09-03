@@ -134,8 +134,8 @@ describe('Collaborators', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/L'invitation a bien été envoyée/)
-      ).toBeInTheDocument()
+        screen.getAllByText(/L'invitation a bien été envoyée/).length
+      ).toBeGreaterThan(0)
     })
 
     expect(mockLogEvent).toHaveBeenCalledWith('hasSentInvitation')
@@ -193,10 +193,10 @@ describe('Collaborators', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(
+        screen.getAllByText(
           'Une erreur est survenue lors de l’envoi de l’invitation.'
-        )
-      ).toBeInTheDocument()
+        ).length
+      ).toBeGreaterThan(0)
     })
   })
 

@@ -324,8 +324,9 @@ describe('IndividualOfferLayout', () => {
       })
 
       expect(
-        await screen.findByText('Votre brouillon a bien été supprimé')
-      ).toBeInTheDocument()
+        (await screen.findAllByText('Votre brouillon a bien été supprimé'))
+          .length
+      ).toBeGreaterThan(0)
     })
 
     it('should not remove the draft offer if the offer does not exist', async () => {
@@ -362,10 +363,12 @@ describe('IndividualOfferLayout', () => {
         screen.getByRole('button', { name: 'Supprimer ce brouillon' })
       )
       expect(
-        await screen.findByText(
-          'Une erreur s’est produite lors de la suppression de l’offre'
-        )
-      ).toBeInTheDocument()
+        (
+          await screen.findAllByText(
+            'Une erreur s’est produite lors de la suppression de l’offre'
+          )
+        ).length
+      ).toBeGreaterThan(0)
     })
 
     it('should not show the update publication button when the offer is not published, inactive or scheduled', () => {

@@ -163,7 +163,9 @@ describe('CollectiveActivityData', () => {
       screen.getByRole('menuitem', { name: LABEL.button.downloadCsv })
     )
 
-    expect(await screen.findByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
+    expect(
+      (await screen.findAllByText(GET_DATA_ERROR_MESSAGE)).length
+    ).toBeGreaterThan(0)
   })
 
   it('should reset filters when clicking reset button', async () => {

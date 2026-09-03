@@ -58,7 +58,9 @@ describe('ShareLink Component', () => {
     renderShareLink({ link, label, notifySuccessMessage, offerId })
     const button = screen.getByRole('button', { name: /Copier/i })
     await userEvent.click(button)
-    expect(await screen.findByText(notifySuccessMessage)).toBeInTheDocument()
+    expect(
+      (await screen.findAllByText(notifySuccessMessage)).length
+    ).toBeGreaterThan(0)
   })
 
   it('should copy the link to clipboard', async () => {

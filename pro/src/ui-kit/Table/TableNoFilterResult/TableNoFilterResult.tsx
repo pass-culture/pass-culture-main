@@ -1,3 +1,5 @@
+import cn from 'classnames'
+
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullRefresh from '@/icons/full-refresh.svg'
@@ -24,9 +26,13 @@ export const TableNoFilterResult = ({
   hasNoResult = false,
 }: NoResultsProps): JSX.Element => (
   <tr>
-    <td colSpan={colSpan} role="status">
+    <td
+      colSpan={colSpan}
+      className={cn({ [styles['search-no-results']]: hasNoResult })}
+      role="status"
+    >
       {hasNoResult ? (
-        <div className={styles['search-no-results']}>
+        <>
           <SvgIcon
             src={strokeSearchIcon}
             alt=""
@@ -45,7 +51,7 @@ export const TableNoFilterResult = ({
               label={resetMessage}
             />
           </div>
-        </div>
+        </>
       ) : (
         <span>&nbsp;</span>
       )}

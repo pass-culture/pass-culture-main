@@ -171,7 +171,9 @@ describe('LostPassword', () => {
 
       // then
       await waitFor(() => {
-        expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
+        expect(
+          screen.getAllByText('Une erreur est survenue').length
+        ).toBeGreaterThan(0)
       })
     })
   })
@@ -207,7 +209,7 @@ describe('LostPassword', () => {
       )
 
       await waitFor(() => {
-        expect(screen.getByText('Email envoyé.')).toBeInTheDocument()
+        expect(screen.getAllByText('Email envoyé.').length).toBeGreaterThan(0)
       })
     })
   })

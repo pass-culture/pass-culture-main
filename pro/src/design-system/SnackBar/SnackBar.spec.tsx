@@ -53,30 +53,6 @@ describe('SnackBar', () => {
     ).toBeInTheDocument()
   })
 
-  it('should have role="status" and aria-live="polite" for success variant', () => {
-    renderSnackBar({
-      ...defaultProps,
-      variant: SnackBarVariant.SUCCESS,
-      testId: 'snackbar',
-    })
-
-    const snackbar = screen.getByTestId('snackbar')
-    expect(snackbar).toHaveAttribute('role', 'status')
-    expect(snackbar).toHaveAttribute('aria-live', 'polite')
-  })
-
-  it('should have role="alert" and aria-live="assertive" for error variant', () => {
-    renderSnackBar({
-      ...defaultProps,
-      variant: SnackBarVariant.ERROR,
-      testId: 'snackbar',
-    })
-
-    const snackbar = screen.getByTestId('snackbar')
-    expect(snackbar).toHaveAttribute('role', 'alert')
-    expect(snackbar).toHaveAttribute('aria-live', 'assertive')
-  })
-
   it('should call onClose when close button is clicked after animation', async () => {
     vi.useRealTimers()
     renderSnackBar(defaultProps)

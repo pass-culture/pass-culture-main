@@ -40,7 +40,7 @@ test.describe('Desk (Guichet)', () => {
 
     await page.getByRole('button', { name: 'Valider la contremarque' }).click()
 
-    await expect(page.getByText('Contremarque validée')).toBeVisible()
+    await expect(page.getByText('Contremarque validée').first()).toBeVisible()
 
     await checkAccessibility(page)
   })
@@ -99,7 +99,7 @@ test.describe('Desk (Guichet)', () => {
       .click()
     await page.getByRole('button', { name: 'Continuer' }).click()
 
-    await expect(page.getByText('Contremarque invalidée')).toBeVisible()
+    await expect(page.getByText('Contremarque invalidée').first()).toBeVisible()
   })
 
   test('should not validate another pro countermark', async ({

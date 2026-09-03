@@ -465,3 +465,25 @@ Implémenter le tableau comme un tableau de données complexe en définissant ex
 TBD
 
 </details>
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.5 - RGAA - Dans chaque page web, les messages de statut sont-ils correctement restitués par les technologies d'assistance ?</summary>
+
+**RAWeb** : [Critère 7.5](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-5)
+**Ticket** : [PC-42853](https://passculture.atlassian.net/browse/PC-42853)  
+**PR** : [#24158](https://github.com/pass-culture/pass-culture-main/pull/24158)
+
+**Problème** 😱  
+Au moins un message de statut n'est pas correctement restitué aux technologies d'assistance.
+
+
+**Correction** 💡  
+- Les blocs avec les rôles status sont maintenant toujours visibles, et le contenu change en fonction de l'alerte ou status à afficher.
+- Ajout du rôle status aux blocs représentant des résultats de tableaux vides.
+
+**Retours audit** 🔥  
+TBD
+
+</details>

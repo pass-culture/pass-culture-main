@@ -93,10 +93,10 @@ describe('OfferPublicationEdition', () => {
     )
 
     expect(
-      screen.getByText(
+      screen.getAllByText(
         'Une erreur est survenue lors de la modification de l’offre'
-      )
-    ).toBeInTheDocument()
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should format the payload to patch the offer', () => {

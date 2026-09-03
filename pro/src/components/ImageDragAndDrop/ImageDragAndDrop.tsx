@@ -167,6 +167,27 @@ export const ImageDragAndDrop = forwardRef(
 
     const ariaId = useId()
 
+    const errorMessage = (
+      <>
+        {hasInput && (
+          <>
+            <p>Erreurs: </p>
+            {errors.hasWrongType && 'Le format de l’image n’est pas valide'}
+            {errors.hasWrongSize && 'Le poids du fichier est trop lourd'}
+            {errors.hasWrongDimensions &&
+              "Image trop volumineuse. La résolution maximale acceptée est d'environ 80 millions de pixels (9000 x 9000 pixels)"}
+            {minSizes?.height &&
+              errors.hasWrongHeight &&
+              `L’image doit faire au moins ${minSizes.height} pixels de haut`}
+            {minSizes?.width &&
+              errors.hasWrongWidth &&
+              `L’image doit faire au moins ${minSizes.width} pixels de large`}
+            {!hasError && <span>&nbsp;</span>}
+          </>
+        )}
+        {!hasInput && <span>&nbsp;</span>}
+      </>
+    )
     return (
       <div className={cn(styles['image-drag-and-drop-container'])}>
         <div
@@ -226,6 +247,7 @@ export const ImageDragAndDrop = forwardRef(
                     data-testid="file-input"
                     onClick={(e) => {
                       e.stopPropagation()
+                      setHasInput(false)
 
                       // Clear the input value to allow re-uploading the same file.
                       if (
@@ -250,30 +272,33 @@ export const ImageDragAndDrop = forwardRef(
         <div
           id={`drag-and-drop-description-${ariaId}`}
           className={styles['image-drag-and-drop-description']}
-          role="alert"
-          aria-relevant="additions"
         >
+          <div
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+            className={styles['visually-hidden']}
+          >
+            {hasError ? errorMessage : <span>&nbsp;</span>}
+          </div>
           <div className={styles['image-drag-and-drop-description']}>
             <ImageConstraintCheck
               label="Formats acceptés"
               constraint="JPG, JPEG, PNG, mpo, webP"
               hasInput={hasInput}
               hasError={errors.hasWrongType}
-              errorMessage="Le format de l’image n’est pas valide"
             />
             <ImageConstraintCheck
               label="Poids maximal du fichier"
               constraint="10 Mo"
               hasInput={hasInput}
               hasError={errors.hasWrongSize}
-              errorMessage="Le poids du fichier est trop lourd"
             />
             <ImageConstraintCheck
               label="Résolution maximale de l’image"
               constraint="80 Mégapixels"
               hasInput={hasInput}
               hasError={errors.hasWrongDimensions}
-              errorMessage="Image trop volumineuse. La résolution maximale acceptée est d'environ 80 millions de pixels (9000 x 9000 pixels)"
             />
             {minSizes?.height && (
               <ImageConstraintCheck
@@ -281,7 +306,6 @@ export const ImageDragAndDrop = forwardRef(
                 constraint={`${minSizes.height} px`}
                 hasInput={hasInput}
                 hasError={errors.hasWrongHeight}
-                errorMessage={`L’image doit faire au moins ${minSizes.height} pixels de haut`}
               />
             )}
             {minSizes?.width && (
@@ -290,7 +314,6 @@ export const ImageDragAndDrop = forwardRef(
                 constraint={`${minSizes.width} px`}
                 hasInput={hasInput}
                 hasError={errors.hasWrongWidth}
-                errorMessage={`L’image doit faire au moins ${minSizes.width} pixels de large`}
               />
             )}
           </div>

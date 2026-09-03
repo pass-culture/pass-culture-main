@@ -105,10 +105,12 @@ describe('SignIn', () => {
       ])
       renderSignIn()
       expect(
-        await screen.findByText(
-          'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
-        )
-      ).toBeInTheDocument()
+        (
+          await screen.findAllByText(
+            'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
+          )
+        ).length
+      ).toBeGreaterThan(0)
     })
 
     it('should display error', async () => {
@@ -120,7 +122,9 @@ describe('SignIn', () => {
         vi.fn(),
       ])
       renderSignIn()
-      expect(await screen.findByText('Erreur invalide')).toBeInTheDocument()
+      expect(
+        (await screen.findAllByText('Erreur invalide')).length
+      ).toBeGreaterThan(0)
     })
   })
 })

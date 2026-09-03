@@ -79,6 +79,6 @@ describe('components:UserIdentityForm', () => {
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(screen.getByText('oh no')).toBeInTheDocument()
+    expect(screen.getAllByText('oh no').length).toBeGreaterThan(0)
   })
 })

@@ -152,6 +152,7 @@ export const Stepper = ({
               hasButton={hasButton}
               onClick={step.onClick}
               voiceOverText={voiceOverText}
+              isActive={state === 'current'}
             >
               {visualContent}
             </StepTrigger>
@@ -169,12 +170,14 @@ function StepTrigger({
   hasButton,
   onClick,
   voiceOverText,
+  isActive,
   children,
 }: {
   linkUrl?: string
   hasButton: boolean
   onClick?: () => void
   voiceOverText: string
+  isActive: boolean
   children: React.ReactNode
 }): JSX.Element {
   if (linkUrl) {
@@ -205,6 +208,9 @@ function StepTrigger({
 
   return (
     <div className={styles.wrapper}>
+      <div role="log" className={styles['visually-hidden']}>
+        {isActive ? voiceOverText : <span>&nbsp;</span>}
+      </div>
       <span className={styles['visually-hidden']}>{voiceOverText}</span>
       {children}
     </div>
