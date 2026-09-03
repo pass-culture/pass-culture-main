@@ -148,7 +148,6 @@ jobs:
       ENV: testing
       CHANNEL: "live"
       REF: ${{ github.ref }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
       continue_on_error: ${{ inputs.continue_on_error }}
       version: "${{ github.sha }}"
     secrets:
