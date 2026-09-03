@@ -272,10 +272,12 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
                 {"offerStatus": "BLOUP"},
                 {
                     "offerStatus": [
-                        "value is not a valid enumeration member; permitted: "
-                        "'PUBLISHED', 'UNDER_REVIEW', 'REJECTED', 'PREBOOKED', "
-                        "'BOOKED', 'HIDDEN', 'EXPIRED', 'ENDED', 'CANCELLED', "
-                        "'REIMBURSED', 'ARCHIVED', 'DRAFT'"
+                        (
+                            "value is not a valid enumeration member; permitted: "
+                            "'PUBLISHED', 'UNDER_REVIEW', 'REJECTED', 'PREBOOKED', "
+                            "'BOOKED', 'HIDDEN', 'EXPIRED', 'ENDED', 'CANCELLED', "
+                            "'REIMBURSED', 'ARCHIVED', 'DRAFT'"
+                        )
                     ]
                 },
             ),

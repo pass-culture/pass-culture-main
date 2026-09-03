@@ -177,8 +177,7 @@ def get_current_post_head() -> str:
     command = "alembic show post@head"
     result = subprocess.run(
         command.split(" "),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=False,
     )
     encoding = "utf-8"

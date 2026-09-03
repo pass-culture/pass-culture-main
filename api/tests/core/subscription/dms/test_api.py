@@ -256,9 +256,9 @@ class HandleDmsApplicationTest:
         dms_response = fixtures.make_parsed_graphql_application(
             application_number=1, state=dms_models.GraphQLApplicationStates.draft, email=user.email
         )
-        mocked_parse_beneficiary_information.side_effect = [Exception()]
+        mocked_parse_beneficiary_information.side_effect = [ValueError()]
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             dms_subscription_api.handle_dms_application(dms_response)
 
         assert db.session.query(subscription_models.BeneficiaryFraudCheck).first() is None

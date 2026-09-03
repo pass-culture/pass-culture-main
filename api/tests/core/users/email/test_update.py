@@ -14,6 +14,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.jwt import encode_jwt_payload
 
 
@@ -149,7 +150,7 @@ class EmailUpdateWithNewMailConfirmationTest:
         email_update_request = users_factories.EmailUpdateEntryFactory(user=user)
         token = _initialize_token(user, email_update_request.newEmail, app)
 
-        with pytest.raises(Exception):
+        with pytest.raises(ApiErrors):
             with patch(
                 "pcapi.core.users.models.UserEmailHistory.build_confirmation",
                 side_effect=IntegrityError(statement="", params=(), orig=None),
@@ -222,10 +223,10 @@ class EmailUpdateCancellationTest:
         email_update_request = users_factories.EmailUpdateEntryFactory(user=user)
         token = _initialize_token(user, email_update_request.newEmail, app)
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             with patch(
                 "pcapi.core.users.api.suspend_account",
-                side_effect=Exception("Something went wrong"),
+                side_effect=ValueError("Something went wrong"),
             ):
                 email_update.cancel_email_update_request(token)
 

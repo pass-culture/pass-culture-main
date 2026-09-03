@@ -70,7 +70,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
     def test_should_raise_404_because_of_missing_token(self):
         with testing.assert_num_queries(0):
-            response = self.make_request(path_params=dict(token=""))
+            response = self.make_request(path_params={"token": ""})
             assert response.status_code == 404
 
     def test_key_has_rights_and_regular_product_offer(self):
@@ -83,7 +83,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # check pricing exists
         num_queries += 1  # select user
         with testing.assert_num_queries(num_queries):
-            response = self.make_request(plain_api_key, path_params=dict(token=token))
+            response = self.make_request(plain_api_key, path_params={"token": token})
             assert response.status_code == 200
 
         assert response.json == {

@@ -40,9 +40,6 @@ class TokenType(enum.Enum):
     CONNECT_AS = "connect_as"
 
 
-T = typing.TypeVar("T", bound="AbstractToken")
-
-
 @dataclasses.dataclass(frozen=True)
 class AbstractToken(abc.ABC):
     type_: TokenType
@@ -57,28 +54,28 @@ class AbstractToken(abc.ABC):
         CREATE = "create"
 
     @classmethod
-    def load_and_check(cls: typing.Type[T], encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> T:
+    def load_and_check(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> typing.Self:
         token = cls.load_without_checking(encoded_token, *args, **kwargs)
         token.check(*args, **kwargs)
         return token
 
     @classmethod
-    def get_redis_key(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> str:
+    def get_redis_key(cls, type_: TokenType, key_suffix: int | str | None) -> str:
         return f"pcapi:token:{type_.value}_{key_suffix}"
 
     @classmethod
-    def get_token(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> "T | None":
+    def get_token(cls, type_: TokenType, key_suffix: int | str | None) -> typing.Self | None:
         encoded_token = get_redis_client().get(cls.get_redis_key(type_, key_suffix))
         if encoded_token is None:
             return None
         return cls.load_without_checking(encoded_token)
 
     @classmethod
-    def token_exists(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> bool:
+    def token_exists(cls, type_: TokenType, key_suffix: int | str | None) -> bool:
         return bool(get_redis_client().exists(cls.get_redis_key(type_, key_suffix)))
 
     @classmethod
-    def get_expiration_date(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> datetime | None:
+    def get_expiration_date(cls, type_: TokenType, key_suffix: int | str | None) -> datetime | None:
         key = cls.get_redis_key(type_, key_suffix)
         ttl = get_redis_client().ttl(key)
         if ttl < 0:
@@ -87,17 +84,17 @@ class AbstractToken(abc.ABC):
         return date_utils.get_naive_utc_now() + timedelta(seconds=ttl)
 
     @classmethod
-    def delete(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> None:
+    def delete(cls, type_: TokenType, key_suffix: int | str | None) -> None:
         get_redis_client().delete(cls.get_redis_key(type_, key_suffix))
 
     @classmethod
     @abc.abstractmethod
-    def load_without_checking(cls: typing.Type[T], encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> T:
+    def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> typing.Self:
         raise NotImplementedError()
 
     @classmethod
     @abc.abstractmethod
-    def create(cls: typing.Type[T], type_: TokenType, *args: typing.Any, **kwargs: typing.Any) -> T:
+    def create(cls, type_: TokenType, *args: typing.Any, **kwargs: typing.Any) -> typing.Self:
         raise NotImplementedError()
 
     def get_expiration_date_from_token(self) -> datetime | None:
@@ -129,18 +126,13 @@ class Token(AbstractToken):
         return int(self.key_suffix)
 
     @classmethod
-    def load_and_check(
-        cls: typing.Type[T],
-        encoded_token: str,
-        type_: TokenType,
-        user_id: int | None = None,
-    ) -> T:
+    def load_and_check(cls, encoded_token: str, type_: TokenType, user_id: int | None = None) -> typing.Self:
         token = cls.load_without_checking(encoded_token, type_=type_, user_id=user_id)
         token.check(type_, user_id)
         return token
 
     @classmethod
-    def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> "Token":
+    def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> typing.Self:
         try:
             payload = jwt_utils.decode_jwt_token(encoded_token)
             type_ = TokenType(payload["token_type"])

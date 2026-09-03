@@ -2273,7 +2273,7 @@ class ExtractBeneficiaryDataCommandTest(StorageFolderManager):
         assert (self.storage_folder / f"{extract.id}.zip").exists()
         assert extract.dateProcessed is not None
 
-    @mock.patch("pcapi.core.users.gdpr_api.generate_pdf_from_html", side_effect=Exception)
+    @mock.patch("pcapi.core.users.gdpr_api.generate_pdf_from_html", side_effect=ValueError)
     def test_extract_failed(self, clear_redis):
         redis = current_app.redis_client
         redis.set(users_constants.GDPR_EXTRACT_DATA_COUNTER, "3")
@@ -2282,7 +2282,7 @@ class ExtractBeneficiaryDataCommandTest(StorageFolderManager):
         with time_machine.travel("2023-12-15 10:11:00"):
             # crashes before writing the log history
             with assert_num_queries(self.expected_queries - 1):
-                with pytest.raises(Exception):
+                with pytest.raises(ValueError):
                     gdpr_api.extract_beneficiary_data_command()
 
         assert not redis.exists(users_constants.GDPR_EXTRACT_DATA_LOCK)

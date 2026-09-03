@@ -905,7 +905,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
+        assert rows[0]["Règles de conformité"] == f"{rule_1.name}, {rule_2.name}"
 
     # === Error cases ===
 

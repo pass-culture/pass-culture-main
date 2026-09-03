@@ -92,8 +92,10 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
         raise ApiErrors(
             errors={
                 "pricingPointId": [
-                    "Ce lieu ne peut pas être utilisé comme base de calcul du barème de "
-                    "remboursement, car il n'a pas de SIRET."
+                    (
+                        "Ce lieu ne peut pas être utilisé comme base de calcul du barème de "
+                        "remboursement, car il n'a pas de SIRET."
+                    )
                 ]
             }
         )
@@ -101,9 +103,11 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
         raise ApiErrors(
             errors={
                 "pricingPointId": [
-                    f"Le SIRET {pricing_point.siret} ne peut pas être utilisé pour calculer"
-                    f"le barème de remboursement de ce lieu, "
-                    f"car il n'appartient pas à la même structure."
+                    (
+                        f"Le SIRET {pricing_point.siret} ne peut pas être utilisé pour calculer"
+                        f"le barème de remboursement de ce lieu, "
+                        f"car il n'appartient pas à la même structure."
+                    )
                 ]
             }
         )

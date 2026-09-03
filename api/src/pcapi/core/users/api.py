@@ -45,7 +45,6 @@ from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import schemas as users_schemas
 from pcapi.core.users import sessions
-from pcapi.core.users.email.update import check_email_address_does_not_exist
 from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.password_utils import random_password
 from pcapi.models import db
@@ -553,6 +552,11 @@ def unsuspend_account(
 
     if suspension_reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
         request_password_reset(user, constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER)
+
+
+def check_email_address_does_not_exist(email: str) -> None:
+    if users_repository.find_user_by_email(email):
+        raise exceptions.EmailExistsError()
 
 
 def change_email(

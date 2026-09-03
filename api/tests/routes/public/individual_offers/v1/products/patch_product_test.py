@@ -1571,8 +1571,10 @@ class Returns400Test(PatchProductEndpointHelper):
         assert response.status_code == 400
         assert response.json == {
             "location": [
-                "No match for discriminator 'type' and value 'hologram' "
-                "(allowed values: 'physical', 'digital', 'address')"
+                (
+                    "No match for discriminator 'type' and value 'hologram' "
+                    "(allowed values: 'physical', 'digital', 'address')"
+                )
             ]
         }
 
@@ -1922,13 +1924,17 @@ class Returns400Test(PatchProductEndpointHelper):
         [
             (
                 "publicationDatetime",
-                "the stock will not be published before its `bookingLimitDatetime`. Either change "
-                "`bookingLimitDatetime` to a later date, or update the offer `publicationDatetime`",
+                (
+                    "the stock will not be published before its `bookingLimitDatetime`. Either change "
+                    "`bookingLimitDatetime` to a later date, or update the offer `publicationDatetime`"
+                ),
             ),
             (
                 "bookingAllowedDatetime",
-                "the stock will not be bookable before its `bookingLimitDatetime`. Either change "
-                "`bookingLimitDatetime` to a later date, or update the offer `bookingAllowedDatetime`",
+                (
+                    "the stock will not be bookable before its `bookingLimitDatetime`. Either change "
+                    "`bookingLimitDatetime` to a later date, or update the offer `bookingAllowedDatetime`"
+                ),
             ),
         ],
         ids=["published after", "bookable after"],

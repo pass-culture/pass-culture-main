@@ -71,16 +71,20 @@ class CreateTagTest(PostEndpointHelper):
                 True,
                 False,
                 True,
-                f"Les données envoyées comportent des erreurs. Valorisation thématique : "
-                f"La sélection d'une valorisation thématique est obligatoire pour les tags de la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;",
+                (
+                    f"Les données envoyées comportent des erreurs. Valorisation thématique : "
+                    f"La sélection d'une valorisation thématique est obligatoire pour les tags de la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;"
+                ),
             ),
             (False, False, False, "Le nouveau tag offres et partenaires culturels a été créé"),
             (
                 False,
                 True,
                 True,
-                f"Les données envoyées comportent des erreurs. Valorisation thématique : "
-                f"La sélection d'une valorisation thématique est impossible pour les tags qui ne sont pas dans la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;",
+                (
+                    f"Les données envoyées comportent des erreurs. Valorisation thématique : "
+                    f"La sélection d'une valorisation thématique est impossible pour les tags qui ne sont pas dans la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;"
+                ),
             ),
         ],
     )
@@ -152,16 +156,20 @@ class UpdateTagTest(PostEndpointHelper):
                 True,
                 False,
                 True,
-                f"Les données envoyées comportent des erreurs. Valorisation thématique : "
-                f"La sélection d'une valorisation thématique est obligatoire pour les tags de la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;",
+                (
+                    f"Les données envoyées comportent des erreurs. Valorisation thématique : "
+                    f"La sélection d'une valorisation thématique est obligatoire pour les tags de la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;"
+                ),
             ),
             (False, False, False, "Informations mises à jour"),
             (
                 False,
                 True,
                 True,
-                f"Les données envoyées comportent des erreurs. Valorisation thématique : "
-                f"La sélection d'une valorisation thématique est impossible pour les tags qui ne sont pas dans la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;",
+                (
+                    f"Les données envoyées comportent des erreurs. Valorisation thématique : "
+                    f"La sélection d'une valorisation thématique est impossible pour les tags qui ne sont pas dans la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;"
+                ),
             ),
         ],
     )

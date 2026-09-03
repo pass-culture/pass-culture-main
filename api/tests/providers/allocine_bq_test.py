@@ -125,9 +125,9 @@ class AllocineSynchronizeProductsWithBigQueryTest:
     @patch("pcapi.core.providers.allocine.AllocineMovieQuery")
     def test_logs_sync_error_on_failure(self, MockAllocineMovieQuery):
         mock_query_instance = MockAllocineMovieQuery.return_value
-        mock_query_instance.execute.side_effect = Exception("BQ Error")
+        mock_query_instance.execute.side_effect = ValueError("BQ Error")
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             synchronize_products_with_bigquery()
 
         events = (
@@ -139,7 +139,7 @@ class AllocineSynchronizeProductsWithBigQueryTest:
         assert len(events) == 2
         assert events[0].type == LocalProviderEventType.SyncStart
         assert events[1].type == LocalProviderEventType.SyncError
-        assert events[1].payload == "Exception"
+        assert events[1].payload == "ValueError"
 
     @patch("pcapi.core.providers.allocine.AllocineMovieQuery")
     def test_handles_invalid_release_date(self, MockAllocineMovieQuery):

@@ -117,7 +117,7 @@ def confirm_email_update_request_and_send_mail(encoded_token: str) -> None:
     if not user:
         raise exceptions.InvalidToken()
     new_email = token.data["new_email"]
-    check_email_address_does_not_exist(new_email)
+    api.check_email_address_does_not_exist(new_email)
     try:
         generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
         with transaction():
@@ -138,7 +138,7 @@ def confirm_new_email_selection_and_send_mail(user: models.User, encoded_new_mai
     if user.id != new_mail_token.user_id:
         raise exceptions.InvalidToken()
 
-    check_email_address_does_not_exist(new_email)
+    api.check_email_address_does_not_exist(new_email)
     generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
 
     email_history = models.UserEmailHistory.build_new_email_selection(user, new_email)
@@ -193,7 +193,7 @@ def validate_email_update_request(
     if old_email == new_email:
         return
 
-    check_email_address_does_not_exist(new_email)
+    api.check_email_address_does_not_exist(new_email)
     api.change_email(user, new_email)
 
     external_contacts.update_contact_email(user=user, old_email=old_email, new_email=new_email)
@@ -207,7 +207,7 @@ def validate_email_update_request(
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
     check_user_password(user, password)
     check_pro_email_update_attempts(user)
-    check_email_address_does_not_exist(email)
+    api.check_email_address_does_not_exist(email)
 
     token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
@@ -260,7 +260,7 @@ def request_email_update_from_admin(user: models.User, email: str) -> None:
     When email is changed by admin, it is immediately changed in the user profile.
     User can no longer login with his former email, and must confirm new email.
     """
-    check_email_address_does_not_exist(email)
+    api.check_email_address_does_not_exist(email)
 
     email_history = models.UserEmailHistory.build_update_request(user=user, new_email=email, by_admin=True)
 
@@ -281,7 +281,7 @@ def full_email_update_by_admin(user: models.User, email: str, commit: bool = Fal
     confirmation email: log update history, update user's email and
     mark it as validated.
     """
-    check_email_address_does_not_exist(email)
+    api.check_email_address_does_not_exist(email)
 
     admin_update_event = models.UserEmailHistory.build_admin_update(user=user, new_email=email)
     db.session.add(admin_update_event)
@@ -345,11 +345,6 @@ def check_user_password(user: models.User, password: str) -> None:
         # can't guess what happened.
         logger.error("Unvalidated account tried to change their email", extra={"user": user.id})
         raise exceptions.EmailUpdateInvalidPassword() from exc
-
-
-def check_email_address_does_not_exist(email: str) -> None:
-    if users_repository.find_user_by_email(email):
-        raise exceptions.EmailExistsError()
 
 
 def check_no_ongoing_email_update_request(user: models.User) -> None:

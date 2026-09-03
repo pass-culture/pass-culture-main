@@ -131,8 +131,10 @@ MOCK_DESCRIPTIONS = [
     "Un fleuve me recueille, il m'emporte, et je coule Comme une veine au cœur des continents profonds. Sur les longs pays plats ma nappe se déroule, Ou s'engouffre à travers les monts.",
     "Rien ne m'arrête plus ; dans mon élan rapide J'obéis au courant, par le désir poussé, Et je vole à mon but comme un grand trait liquide Qu'un bras invisible a lancé.",
     "Océan, ô mon père ! Ouvre ton sein, j'arrive ! Tes flots tumultueux m'ont déjà répondu ; Ils accourent ; mon onde a reculé, craintive, Devant leur accueil éperdu.",
-    "En ton lit mugissant ton amour nous rassemble. Autour des noirs écueils ou sur le sable fin Nous allons, confondus, recommencer ensemble Nos fureurs et nos jeux sans fin."
-    "Mais le soleil, baissant vers toi son œil splendide, M'a découvert bientôt dans tes gouffres amers. Son rayon tout puissant baise mon front limpide : J'ai repris le chemin des airs !",
+    (
+        "En ton lit mugissant ton amour nous rassemble. Autour des noirs écueils ou sur le sable fin Nous allons, confondus, recommencer ensemble Nos fureurs et nos jeux sans fin."
+        "Mais le soleil, baissant vers toi son œil splendide, M'a découvert bientôt dans tes gouffres amers. Son rayon tout puissant baise mon front limpide : J'ai repris le chemin des airs !"
+    ),
     "Ainsi, jamais d'arrêt. L'immortelle matière Un seul instant encor n'a pu se reposer. La Nature ne fait, patiente ouvrière, Que dissoudre et recomposer.",
     "Tout se métamorphose entre ses mains actives ; Partout le mouvement incessant et divers, Dans le cercle éternel des formes fugitives, Agitant l'immense univers.",
     "Le duc, sans regarder à rien, y poussa, toujours suivi du comte de Charolais. Tous deux avaient de bons chevaux ; ils sautèrent le fossé, enfoncèrent la haie, et se trouvèrent au milieu des Gantois.",
@@ -141,8 +143,10 @@ MOCK_DESCRIPTIONS = [
     "Le théâtre représente un atelier de Sculpteur. Sur les côtés on voit des blocs de marbre, des groupes, des statues ébauchées. Dans le fond est une autre statue cachée, sous un pavillon, d’une étoffe légere & brillante, orné de crépines & de guirlandes.",
     "Pas de spoils, pas de spoils",
     "Maintenant, oui",
-    "La mollesse et la volupté naissent avec l'homme, et ne finissent qu'avec lui ; ni les heureux ni les tristes évènements ne l'en peuvent séparer : c'est pour lui ou le fruit de la bonne fortune, ou un dédommagement de la mauvaise."
-    "Peu de gens se souviennent d'avoir été jeunes, et combien il leur était difficile d'être chastes et tempérans. La première chose qui arrive aux hommes après avoir renoncé aux plaisirs, ou par bienséance, ou par lassitude, ou par régime, c'est de les condamner dans les autres. Il entre dans cette conduite une sorte d'attachement pour les choses mêmes que l'on vient de quitter : l'on aimerait qu'un bien qui n'est plus pour nous ne fût plus aussi pour le reste du monde : c'est un sentiment de jalousie.",
+    (
+        "La mollesse et la volupté naissent avec l'homme, et ne finissent qu'avec lui ; ni les heureux ni les tristes évènements ne l'en peuvent séparer : c'est pour lui ou le fruit de la bonne fortune, ou un dédommagement de la mauvaise."
+        "Peu de gens se souviennent d'avoir été jeunes, et combien il leur était difficile d'être chastes et tempérans. La première chose qui arrive aux hommes après avoir renoncé aux plaisirs, ou par bienséance, ou par lassitude, ou par régime, c'est de les condamner dans les autres. Il entre dans cette conduite une sorte d'attachement pour les choses mêmes que l'on vient de quitter : l'on aimerait qu'un bien qui n'est plus pour nous ne fût plus aussi pour le reste du monde : c'est un sentiment de jalousie."
+    ),
     "Ce n'est pas le besoin d'argent où les vieillards peuvent appréhender de tomber un jour qui les rend avares, car il y en a de tels qui ont de si grands fonds, qu'ils ne peuvent guère avoir cette inquiétude : et d'ailleurs comment pourraient-ils craindre de manquer dans leur caducité des commodités de la vie, puisqu'ils s'en privent eux-mêmes volontairement pour satisfaire à leur avarice ?",
     "Ce n'est point aussi l'envie de laisser de plus grandes richesses à leurs enfans, car il n'est pas naturel d'aimer quelque autre chose plus que soi-même, outre qu'il se trouve des avares qui n'ont point d'héritiers.",
     "Ce vice est plutôt l'effet de l'âge et de la complexion des vieillards, qui s'y abandonnent aussi naturellement qu'ils suivaient leurs plaisirs dans leur jeunesse, ou leur ambition dans l'âge viril. Il ne faut ni vigueur, ni jeunesse, ni santé, pour être avare ; l'on a aussi nul besoin de s'empresser, ou de se donner le moindre mouvement pour épargner ses revenus : il faut laisser seulement son bien dans ses coffres, et se priver de tout.",

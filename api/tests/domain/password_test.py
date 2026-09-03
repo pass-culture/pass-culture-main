@@ -38,11 +38,13 @@ class CheckPasswordValidityTest:
 
         # then
         assert api_errors.value.errors["newPassword"] == [
-            "Le mot de passe doit contenir au moins :\n"
-            "- Entre 12 et 72 caractères\n"
-            "- Un chiffre\n"
-            "- Une majuscule et une minuscule\n"
-            "- Un caractère spécial",
+            (
+                "Le mot de passe doit contenir au moins :\n"
+                "- Entre 12 et 72 caractères\n"
+                "- Un chiffre\n"
+                "- Une majuscule et une minuscule\n"
+                "- Un caractère spécial"
+            ),
             "Le nouveau mot de passe est identique à l’ancien.",
         ]
 
@@ -120,11 +122,13 @@ class EnsureNewPasswordIsStrongEnoughTest:
 
         # then
         assert api_errors.errors["newPassword"] == [
-            "Le mot de passe doit contenir au moins :\n"
-            "- Entre 12 et 72 caractères\n"
-            "- Un chiffre\n"
-            "- Une majuscule et une minuscule\n"
-            "- Un caractère spécial"
+            (
+                "Le mot de passe doit contenir au moins :\n"
+                "- Entre 12 et 72 caractères\n"
+                "- Un chiffre\n"
+                "- Une majuscule et une minuscule\n"
+                "- Un caractère spécial"
+            )
         ]
 
 

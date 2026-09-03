@@ -168,11 +168,13 @@ class Returns400Test:
         assert response.status_code == 400
         response = response.json
         assert response["password"] == [
-            "Le mot de passe doit contenir au moins :\n"
-            "- Entre 12 et 72 caractères\n"
-            "- Un chiffre\n"
-            "- Une majuscule et une minuscule\n"
-            "- Un caractère spécial"
+            (
+                "Le mot de passe doit contenir au moins :\n"
+                "- Entre 12 et 72 caractères\n"
+                "- Un chiffre\n"
+                "- Une majuscule et une minuscule\n"
+                "- Un caractère spécial"
+            )
         ]
 
     def test_when_extra_data_is_given(self, client):

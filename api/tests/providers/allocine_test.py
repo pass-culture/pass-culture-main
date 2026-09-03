@@ -148,14 +148,14 @@ class AllocineMovieListTest:
 
     @patch("pcapi.core.providers.allocine.get_movie_list")
     def test_logs_sync_error_on_failure(self, mock_get_movie_list):
-        mock_get_movie_list.side_effect = Exception("Some error")
+        mock_get_movie_list.side_effect = AllocineException("Some error")
         allocine_provider = (
             db.session.query(Provider)
             .filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME)
             .one()
         )
 
-        with pytest.raises(Exception):
+        with pytest.raises(AllocineException):
             synchronize_products()
 
         events = (
@@ -167,7 +167,7 @@ class AllocineMovieListTest:
         assert len(events) == 2
         assert events[0].type == LocalProviderEventType.SyncStart
         assert events[1].type == LocalProviderEventType.SyncError
-        assert events[1].payload == "Exception"
+        assert events[1].payload == "AllocineException"
 
 
 class GetMovieListFromAllocineTest:

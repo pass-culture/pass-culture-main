@@ -140,7 +140,7 @@ def format_q(address: str, city: str) -> str:
         city = s
     city = city.capitalize()
 
-    q = " ".join([address, city])
+    q = f"{address} {city}"
     return q
 
 

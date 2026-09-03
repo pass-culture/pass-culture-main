@@ -63,9 +63,11 @@ MOCK_DESCRIPTIONS = [
     "Il n’y a pas d’opinion, si absurde soit-elle, que les hommes ne sont pas prêts à embrasser dès qu’ils peuvent pourvu qu’on puisse les convaincre que c’est une vue généralement admise. L’exemple affecte leur pensée et leurs actions. Ils sont comme des moutons, suivant celui qui porte le grelot où qu’il les mène : il est pour eux plus facile de mourir que de réfléchir.",
     "Persuader consciemment l'inconscient, puis devenir ensuite inconscient de l'acte d'hypnose que l'on vient de perpétrer. La compréhension même du mot \"double pensée\" impliquait l'emploi de la double pensée.",
     "Si jeune et accablé de ses richesses, que de tentations n'aura-t-il pas à subir ! Si l'on me demandait ce que je désirerais le plus au monde, ce serait d'être plus pauvre que le plus pauvre des mendiants.",
-    "Quand une lecture vous élève l'esprit, et qu'elle vous inspire des sentiments nobles et courageux, ne cherchez pas une autre règle pour juger l'ouvrage ; il est bon, et fait de main d'ouvrier."
-    "Je n'ai jamais imaginé qu'on pût être à ce point hanté par une voix, par un cou, par des épaules, par des mains. Ce que je veux dire, c'est qu'elle avait des yeux où il faisait si bon vivre que je n'ai jamais su où aller depuis."
-    "Il y en a qui ont le coeur si large qu'on y rentre sans frapper. Il y en a qui ont le coeur si frêle qu'on le brise d'un doigt.",
+    (
+        "Quand une lecture vous élève l'esprit, et qu'elle vous inspire des sentiments nobles et courageux, ne cherchez pas une autre règle pour juger l'ouvrage ; il est bon, et fait de main d'ouvrier."
+        "Je n'ai jamais imaginé qu'on pût être à ce point hanté par une voix, par un cou, par des épaules, par des mains. Ce que je veux dire, c'est qu'elle avait des yeux où il faisait si bon vivre que je n'ai jamais su où aller depuis."
+        "Il y en a qui ont le coeur si large qu'on y rentre sans frapper. Il y en a qui ont le coeur si frêle qu'on le brise d'un doigt."
+    ),
     "Les vieux ne meurent pas, ils s'endorment un jour et dorment trop longtemps.",
     "Il nous fallut bien du talent Pour être vieux sans être adultes",
     "C'est le tango des récompenses. Qui allaient à ceux qui ont la chance d'apprendre, dès leur enfance, tout ce qui ne leur servira pas.",

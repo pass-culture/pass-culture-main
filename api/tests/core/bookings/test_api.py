@@ -1000,7 +1000,7 @@ class BookOfferTest:
             mocked_book_cinema_ticket,
         ):
             # Given
-            mocked_book_cinema_ticket.side_effect = Exception("Something wrong happened")
+            mocked_book_cinema_ticket.side_effect = ValueError("Something wrong happened")
             cds_provider = get_provider_by_local_class("CDSStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
             providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue, provider=cds_provider)
@@ -1015,7 +1015,7 @@ class BookOfferTest:
             stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
 
             # When
-            with pytest.raises(Exception):
+            with pytest.raises(ValueError):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
 
             assert db.session.query(Booking).count() == 0
@@ -1264,8 +1264,10 @@ class CancelByBeneficiaryTest:
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir "
-            "réservée et moins de 48h avant le début de l'évènement"
+            (
+                "Impossible d'annuler une réservation plus de 48h après l'avoir "
+                "réservée et moins de 48h avant le début de l'évènement"
+            )
         ]
 
     def test_raise_if_booking_created_too_long_ago_to_cancel_booking(self):
@@ -1280,8 +1282,10 @@ class CancelByBeneficiaryTest:
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée"
-            " et moins de 48h avant le début de l'évènement"
+            (
+                "Impossible d'annuler une réservation plus de 48h après l'avoir réservée"
+                " et moins de 48h avant le début de l'évènement"
+            )
         ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
@@ -1296,8 +1300,10 @@ class CancelByBeneficiaryTest:
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir "
-            "réservée et moins de 48h avant le début de l'évènement"
+            (
+                "Impossible d'annuler une réservation plus de 48h après l'avoir "
+                "réservée et moins de 48h avant le début de l'évènement"
+            )
         ]
 
     def test_raise_external_booking_error_if_trying_to_cancel_with_external_server_error(self, requests_mock):

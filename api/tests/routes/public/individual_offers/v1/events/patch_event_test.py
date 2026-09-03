@@ -1561,8 +1561,10 @@ class Returns400Test(PatchEventEndpointHelper):
         assert response.status_code == 400
         assert response.json == {
             "location": [
-                "No match for discriminator 'type' and value 'hologram' "
-                "(allowed values: 'physical', 'digital', 'address')"
+                (
+                    "No match for discriminator 'type' and value 'hologram' "
+                    "(allowed values: 'physical', 'digital', 'address')"
+                )
             ]
         }
 
@@ -1857,8 +1859,10 @@ class Returns400Test(PatchEventEndpointHelper):
         assert response.status_code == 400
         assert response.json == {
             "eventDuration": [
-                "The duration must be under 1440 minutes (24 hours). For events lasting 24 hours or more "
-                "(e.g., a 3-day festival pass), please leave this field empty."
+                (
+                    "The duration must be under 1440 minutes (24 hours). For events lasting 24 hours or more "
+                    "(e.g., a 3-day festival pass), please leave this field empty."
+                )
             ]
         }
 

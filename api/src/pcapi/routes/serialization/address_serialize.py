@@ -117,16 +117,16 @@ class VenueAddressInfoGetter(pydantic_v1.utils.GetterDict):
 
 def retrieve_address_info_from_oa(offerer_address: OffererAddress) -> dict:
     """Utility function that retrieves the location information from the offerer_address"""
-    return dict(
-        id=offerer_address.addressId,
-        id_oa=offerer_address.id,
-        banId=offerer_address.address.banId,
-        inseeCode=offerer_address.address.inseeCode,
-        postalCode=offerer_address.address.postalCode,
-        street=offerer_address.address.street,
-        departmentCode=offerer_address.address.departmentCode,
-        city=offerer_address.address.city,
-        longitude=offerer_address.address.longitude,
-        latitude=offerer_address.address.latitude,
-        isManualEdition=offerer_address.address.isManualEdition,
-    )
+    return {
+        "id": offerer_address.addressId,
+        "id_oa": offerer_address.id,
+        "banId": offerer_address.address.banId,
+        "inseeCode": offerer_address.address.inseeCode,
+        "postalCode": offerer_address.address.postalCode,
+        "street": offerer_address.address.street,
+        "departmentCode": offerer_address.address.departmentCode,
+        "city": offerer_address.address.city,
+        "longitude": offerer_address.address.longitude,
+        "latitude": offerer_address.address.latitude,
+        "isManualEdition": offerer_address.address.isManualEdition,
+    }

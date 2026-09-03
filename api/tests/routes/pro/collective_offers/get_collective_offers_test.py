@@ -333,8 +333,10 @@ class Return400Test:
 
         assert response.json == {
             "status.0": [
-                "Input should be 'PUBLISHED', 'UNDER_REVIEW', 'REJECTED', 'PREBOOKED', 'BOOKED', 'HIDDEN', "
-                "'EXPIRED', 'ENDED', 'CANCELLED', 'REIMBURSED', 'ARCHIVED' or 'DRAFT'"
+                (
+                    "Input should be 'PUBLISHED', 'UNDER_REVIEW', 'REJECTED', 'PREBOOKED', 'BOOKED', 'HIDDEN', "
+                    "'EXPIRED', 'ENDED', 'CANCELLED', 'REIMBURSED', 'ARCHIVED' or 'DRAFT'"
+                )
             ]
         }
 

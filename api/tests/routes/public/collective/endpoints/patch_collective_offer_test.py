@@ -346,8 +346,10 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {
             "__root__": [
-                "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusifs. "
-                "Vous ne pouvez pas remplir les deux en même temps"
+                (
+                    "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusifs. "
+                    "Vous ne pouvez pas remplir les deux en même temps"
+                )
             ]
         }
 

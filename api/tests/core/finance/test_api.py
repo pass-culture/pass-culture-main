@@ -3462,7 +3462,7 @@ class GenerateInvoicesTest:
         finance_events = db.session.query(models.FinanceEvent).all()
         assert len(finance_events) == 3
 
-        booking_pricing_dict = dict()
+        booking_pricing_dict = {}
         for fe in finance_events:
             booking_pricing_dict[fe.bookingId] = api.price_event(fe)
 
