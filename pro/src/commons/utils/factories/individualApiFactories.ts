@@ -395,6 +395,7 @@ export const defaultGetVenueResponseModel: GetVenueResponseModel = {
   isOnboarded: false,
   isOpenToPublic: false,
   isPermanent: false,
+  isPricingPoint: false,
   publicName: 'Venue',
   withdrawalDetails: null,
   activity: null,

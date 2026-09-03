@@ -325,6 +325,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   hasAtLeastOneBookableOffer: true,
   isOnboarded: false,
   isOpenToPublic: true,
+  isPricingPoint: false,
   location: {
     id: 2,
     banId: null,

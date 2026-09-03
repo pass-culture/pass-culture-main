@@ -796,6 +796,21 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         return link.pricingPoint if link else None
 
     @property
+    def is_pricing_point(self) -> bool:
+        now = date_utils.get_naive_utc_now()
+        return db.session.query(
+            db.session.query(VenuePricingPointLink)
+            .join(Venue, Venue.id == VenuePricingPointLink.venueId)
+            .filter(
+                VenuePricingPointLink.pricingPointId == self.id,
+                VenuePricingPointLink.venueId != self.id,
+                Venue.managingOffererId == self.managingOffererId,
+                VenuePricingPointLink.timespan.contains(now),
+            )
+            .exists()
+        ).scalar()
+
+    @property
     def current_bank_account_link(self) -> "VenueBankAccountLink | None":
         now = date_utils.get_naive_utc_now()
 

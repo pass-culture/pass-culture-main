@@ -11,20 +11,20 @@
   border-radius: var(--size-border-radius-m);
   border: 1px solid var(--color-border-error);
   gap: var(--size-spacing-l);
-}
 
-.title {
-  @include fonts.title3;
+  &-title {
+    @include fonts.title3;
 
-  color: var(--color-text-error);
-}
+    color: var(--color-text-error);
+  }
 
-.description {
-  @include fonts.body-s;
-}
+  &-description {
+    @include fonts.body-s;
+  }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--size-spacing-xs);
+  &-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-spacing-xs);
+  }
 }

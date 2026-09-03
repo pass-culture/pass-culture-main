@@ -1,4 +1,5 @@
 import {
+  type GetOffererVenueResponseModel,
   type GetVenueResponseModel,
   type VenueListItemLiteResponseModel,
   VenueState,
@@ -17,8 +18,26 @@ export function withVenueHelpers(
   fullAddressAsString: string
 }
 export function withVenueHelpers(
-  venue: GetVenueResponseModel | VenueListItemLiteResponseModel
+  venue: GetOffererVenueResponseModel
+): GetOffererVenueResponseModel & {
+  isClosed: boolean
+}
+export function withVenueHelpers(
+  venue:
+    | GetVenueResponseModel
+    | VenueListItemLiteResponseModel
+    | GetOffererVenueResponseModel
 ) {
+  const isClosed =
+    venue.state === VenueState.CLOSING || venue.state === VenueState.CLOSED
+
+  if (!('location' in venue)) {
+    return {
+      ...venue,
+      isClosed,
+    }
+  }
+
   return {
     ...venue,
 
@@ -33,9 +52,7 @@ export function withVenueHelpers(
     },
 
     get isClosed() {
-      return (
-        venue.state === VenueState.CLOSING || venue.state === VenueState.CLOSED
-      )
+      return isClosed
     },
   }
 }
