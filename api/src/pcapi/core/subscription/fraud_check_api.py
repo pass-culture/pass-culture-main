@@ -157,16 +157,9 @@ def validate_id_piece_number_format_fraud_item(
 
     # Outil de test de regex: https://regex101.com/ FTW
     # Doc des formats acceptés: https://www.notion.so/passcultureapp/Tableau-des-ID-trang-res-sur-FA-440ab8cbb31d4ae9a16debe3eb5aab24
-    regexp = "|".join(
-        (
-            # --- ID Européenne (dont française) ---
-            r"^[A-Z0-9]{12}$",
-            # --- Nouvelle carte d'identité française ---
-            r"^[A-Z0-9]{9}$",
-            # --- Passeport Français ---
-            r"^\d{2}[a-zA-Z]{2}\d{5}$",
-        )
-    )
+
+    # regexp = "ID Européenne (dont française) | Nouvelle carte d'identité française | Passeport Français"
+    regexp = r"^[A-Z0-9]{12}$|^[A-Z0-9]{9}$|^\d{2}[a-zA-Z]{2}\d{5}$"
 
     match = re.match(regexp, format_id_piece_number(id_piece_number))
     if not match:

@@ -478,7 +478,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-        path_params = dict(offer_id=offer.id, stock_id=stock.id)
+        path_params = {"offer_id": offer.id, "stock_id": stock.id}
         path_params.update(**partial_path_params)
 
         payload = {"quantity": 10}

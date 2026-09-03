@@ -22,17 +22,19 @@ from pcapi.utils import date as date_utils
 def build_user_with_ko_retryable_ubble_fraud_check(
     user: users_models.User | None = None,
     user_age: int = 18,
-    ubble_date_created: datetime.datetime = date_utils.get_naive_utc_now() - relativedelta(days=7),
+    ubble_date_created: datetime.datetime | None = None,
     ubble_eligibility: users_models.EligibilityType = users_models.EligibilityType.AGE17_18,
-    reasonCodes: list[subscription_models.FraudReasonCode] = [
-        subscription_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
-    ],
+    reasonCodes: list[subscription_models.FraudReasonCode] | None = None,
 ) -> users_models.User:
     """
     Generates a user and a fraud check with a retryable ubble status
     By default, the user is 18 years old and the fraud check is 7 days old
     If a user is provided, it will be used instead of generating a new one
     """
+    if ubble_date_created is None:
+        ubble_date_created = date_utils.get_naive_utc_now() - relativedelta(days=7)
+    if reasonCodes is None:
+        reasonCodes = [subscription_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC]
     if user is None:
         user = users_factories.UserFactory(
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=user_age),

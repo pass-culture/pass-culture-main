@@ -150,8 +150,7 @@ def get_revision_files(git_root: pathlib.Path) -> dict[str, RevisionFile]:
     try:
         res = subprocess.run(
             ("git", "diff", "--name-only", "--staged"),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             check=True,
         )
     except subprocess.CalledProcessError as exc:
@@ -218,8 +217,7 @@ def get_alembic_heads_on_master() -> dict[str, str]:
     try:
         res = subprocess.run(
             ("git", "show", f"origin/master:{ALEMBIC_VERSION_CONFLICT_DETECTION_PATH}"),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             check=True,
         )
     except subprocess.CalledProcessError as exc:

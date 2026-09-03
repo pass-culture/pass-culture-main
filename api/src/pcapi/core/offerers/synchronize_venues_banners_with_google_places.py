@@ -84,9 +84,7 @@ def get_place_id(name: str, address: str | None, city: str | None, postal_code: 
     city = city or ""
     postal_code = postal_code or ""
     result = FindPlaceResponse.model_validate(
-        gmaps.find_place(
-            input=" ".join([name, address, postal_code, city]), input_type="textquery", fields=["place_id"]
-        )
+        gmaps.find_place(input=f"{name} {address} {postal_code} {city}", input_type="textquery", fields=["place_id"])
     )
     if result.status != "OK" or not result.candidates:
         return None

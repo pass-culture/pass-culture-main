@@ -626,26 +626,26 @@ class PricingLog(PcObject, Model):
 
 
 class RuleGroup(enum.Enum):
-    STANDARD = dict(
-        label="Barème général",
-        position=1,
-    )
-    BOOK = dict(
-        label="Barème livres",
-        position=2,
-    )
-    NOT_REIMBURSED = dict(
-        label="Barème non remboursé",
-        position=3,
-    )
-    CUSTOM = dict(
-        label="Barème dérogatoire",
-        position=4,
-    )
-    DEPRECATED = dict(
-        label="Barème désuet",
-        position=5,
-    )
+    STANDARD = {
+        "label": "Barème général",
+        "position": 1,
+    }
+    BOOK = {
+        "label": "Barème livres",
+        "position": 2,
+    }
+    NOT_REIMBURSED = {
+        "label": "Barème non remboursé",
+        "position": 3,
+    }
+    CUSTOM = {
+        "label": "Barème dérogatoire",
+        "position": 4,
+    }
+    DEPRECATED = {
+        "label": "Barème désuet",
+        "position": 5,
+    }
 
 
 class ReimbursementRule:

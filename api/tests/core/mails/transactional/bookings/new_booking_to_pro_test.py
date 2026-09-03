@@ -18,23 +18,23 @@ from pcapi.core.testing import assert_num_queries
 
 
 def make_booking(**kwargs):
-    attributes = dict(
-        dateCreated=datetime(2019, 10, 3, 13, 24, 6, tzinfo=UTC),
-        token="ABC123",
-        user__firstName="John",
-        user__lastName="Doe",
-        user__email="john@example.com",
-        stock__beginningDatetime=datetime(2019, 11, 6, 14, 59, 5, tzinfo=UTC),
-        stock__price=10,
-        stock__offer__name="Super évènement",
-        stock__offer__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
-        stock__offer__venue__managingOfferer__name="Théâtre du coin",
-        stock__offer__venue__name="Lieu de l'offreur",
-        stock__offer__venue__offererAddress__address__street="25 avenue du lieu",
-        stock__offer__venue__offererAddress__address__postalCode="75010",
-        stock__offer__venue__offererAddress__address__city="Paris",
-        stock__offer__venue__offererAddress__address__departmentCode="75",
-    )
+    attributes = {
+        "dateCreated": datetime(2019, 10, 3, 13, 24, 6, tzinfo=UTC),
+        "token": "ABC123",
+        "user__firstName": "John",
+        "user__lastName": "Doe",
+        "user__email": "john@example.com",
+        "stock__beginningDatetime": datetime(2019, 11, 6, 14, 59, 5, tzinfo=UTC),
+        "stock__price": 10,
+        "stock__offer__name": "Super évènement",
+        "stock__offer__subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+        "stock__offer__venue__managingOfferer__name": "Théâtre du coin",
+        "stock__offer__venue__name": "Lieu de l'offreur",
+        "stock__offer__venue__offererAddress__address__street": "25 avenue du lieu",
+        "stock__offer__venue__offererAddress__address__postalCode": "75010",
+        "stock__offer__venue__offererAddress__address__city": "Paris",
+        "stock__offer__venue__offererAddress__address__departmentCode": "75",
+    }
     attributes.update(kwargs)
     return bookings_factories.BookingFactory(**attributes)
 

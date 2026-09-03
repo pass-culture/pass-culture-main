@@ -168,9 +168,11 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
         assert html_parser.extract_alerts(authenticated_client.get(response.location).data) == [
-            "Attention : Plusieurs entités juridiques parentes possibles ont été trouvées pour ce partenaire culturel dans Zendesk Sell. "
-            f"Identifiant Zendesk Sell : 123, Produit Offerer ID : {venue.managingOffererId}, SIREN : {venue.managingOfferer.siren} "
-            f"Identifiant Zendesk Sell : 456, Produit Offerer ID : {venue.managingOffererId}, SIREN :",
+            (
+                "Attention : Plusieurs entités juridiques parentes possibles ont été trouvées pour ce partenaire culturel dans Zendesk Sell. "
+                f"Identifiant Zendesk Sell : 123, Produit Offerer ID : {venue.managingOffererId}, SIREN : {venue.managingOfferer.siren} "
+                f"Identifiant Zendesk Sell : 456, Produit Offerer ID : {venue.managingOffererId}, SIREN :"
+            ),
             "Le partenaire culturel a été mis à jour sur Zendesk Sell",
         ]
 

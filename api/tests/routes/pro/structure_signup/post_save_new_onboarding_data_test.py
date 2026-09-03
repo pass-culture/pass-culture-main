@@ -348,18 +348,22 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {
             "activity.enum[ActivityNotOpenToPublic]": [
-                "Input should be 'ARTISTIC_COMPANY', 'ARTISTIC_PRACTICE', "
-                "'CULTURAL_MEDIATION', 'FESTIVAL', 'HERITAGE_SITE', 'HIGHER_EDUCATION_INSTITUTION', 'MUNICIPALITY_CULTURAL_DEPARTMENT', 'OTHER', 'PRESS_OR_MEDIA', "
-                "'PRODUCTION_OR_PROMOTION_COMPANY', 'PUBLISHING_HOUSE', 'RADIO_OR_MUSIC_STREAMING', 'SCIENTIFIC_CULTURE', "
-                "'TELEVISION_OR_VIDEO_STREAMING' or 'TRAVELLING_CINEMA'",
+                (
+                    "Input should be 'ARTISTIC_COMPANY', 'ARTISTIC_PRACTICE', "
+                    "'CULTURAL_MEDIATION', 'FESTIVAL', 'HERITAGE_SITE', 'HIGHER_EDUCATION_INSTITUTION', 'MUNICIPALITY_CULTURAL_DEPARTMENT', 'OTHER', 'PRESS_OR_MEDIA', "
+                    "'PRODUCTION_OR_PROMOTION_COMPANY', 'PUBLISHING_HOUSE', 'RADIO_OR_MUSIC_STREAMING', 'SCIENTIFIC_CULTURE', "
+                    "'TELEVISION_OR_VIDEO_STREAMING' or 'TRAVELLING_CINEMA'"
+                ),
             ],
             "activity.enum[ActivityOpenToPublic]": [
-                "Input should be 'ART_GALLERY', 'ARTISTIC_PRACTICE', 'ARTS_CENTRE', "
-                "'BOOKSTORE', 'CINEMA', 'COMMUNITY_CENTRE', 'CREATIVE_ARTS_STORE', "
-                "'CULTURAL_CENTRE', 'DISTRIBUTION_STORE', 'FESTIVAL', 'HERITAGE_SITE', 'HIGHER_EDUCATION_INSTITUTION', "
-                "'LIBRARY', 'MUSEUM', 'MUSIC_INSTRUMENT_STORE', 'OTHER', "
-                "'PERFORMANCE_HALL', 'PUBLISHING_HOUSE', 'RECORD_STORE', 'SCIENTIFIC_CULTURE' or "
-                "'TOURIST_INFORMATION_CENTRE'",
+                (
+                    "Input should be 'ART_GALLERY', 'ARTISTIC_PRACTICE', 'ARTS_CENTRE', "
+                    "'BOOKSTORE', 'CINEMA', 'COMMUNITY_CENTRE', 'CREATIVE_ARTS_STORE', "
+                    "'CULTURAL_CENTRE', 'DISTRIBUTION_STORE', 'FESTIVAL', 'HERITAGE_SITE', 'HIGHER_EDUCATION_INSTITUTION', "
+                    "'LIBRARY', 'MUSEUM', 'MUSIC_INSTRUMENT_STORE', 'OTHER', "
+                    "'PERFORMANCE_HALL', 'PUBLISHING_HOUSE', 'RECORD_STORE', 'SCIENTIFIC_CULTURE' or "
+                    "'TOURIST_INFORMATION_CENTRE'"
+                ),
             ],
         }
 

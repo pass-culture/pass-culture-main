@@ -37,7 +37,7 @@ def create_venue_provider(
     provider: providers_models.Provider,
     venue: offerers_models.Venue,
     current_user: users_models.User,
-    payload: providers_models.VenueProviderCreationPayload = providers_models.VenueProviderCreationPayload(),
+    payload: providers_models.VenueProviderCreationPayload,
 ) -> providers_models.VenueProvider:
     existing_venue_provider = (
         db.session.query(providers_models.VenueProvider)

@@ -85,7 +85,7 @@ def unauthorized_handler() -> tuple[flask.Response, int]:
 
 
 def get_user_from_session(
-    user_id: str | None, session_uuid: str | None, session_type: Origin, options: tuple = tuple()
+    user_id: str | None, session_uuid: str | None, session_type: Origin, options: tuple = ()
 ) -> users_models.User | None:
     if not user_id or not session_uuid:
         return None

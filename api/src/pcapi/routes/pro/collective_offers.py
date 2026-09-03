@@ -609,8 +609,10 @@ def _check_image(image_as_bytes: bytes) -> None:
         raise ApiErrors(
             errors={
                 "imageFile": [
-                    f"L'image doit faire au moins {offers_validation.STANDARD_THUMBNAIL_WIDTH} x "
-                    f"{offers_validation.STANDARD_THUMBNAIL_HEIGHT} pixels"
+                    (
+                        f"L'image doit faire au moins {offers_validation.STANDARD_THUMBNAIL_WIDTH} x "
+                        f"{offers_validation.STANDARD_THUMBNAIL_HEIGHT} pixels"
+                    )
                 ]
             }
         )

@@ -19,7 +19,7 @@ from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
 
 class EncodeJWTPayloadTest:
     def test_encode_jwt_payload(self):
-        payload = dict(data="value")
+        payload = {"data": "value"}
         expiration_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         start = int(time.time())
         jwt_token = encode_jwt_payload(payload, expiration_date)
@@ -77,7 +77,7 @@ class DecodeJWTTokenTest:
 
 class DecodeJWTPayloadRS256Test:
     def test_decode_jwt_payload_rs256_algorithm(self):
-        payload = dict(data="value")
+        payload = {"data": "value"}
         with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
             valid_encoded_token = jwt.encode(payload, key=reader.read(), algorithm=ALGORITHM_RS_256)
         with open(JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
@@ -87,7 +87,7 @@ class DecodeJWTPayloadRS256Test:
         assert decoded["data"] == "value"
 
     def test_decode_jwt_payload_rs256_algorithm_corrupted(self):
-        payload = dict(data="value")
+        payload = {"data": "value"}
         with open(INVALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
             corrupted_token = jwt.encode(payload, key=reader.read(), algorithm=ALGORITHM_RS_256)
 

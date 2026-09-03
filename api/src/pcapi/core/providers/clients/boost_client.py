@@ -389,7 +389,7 @@ class BoostAPIClient(cinema_client.CinemaAPIClient):
     def get_showtimes(
         self,
         *,
-        start_date: datetime.date = datetime.date.today(),
+        start_date: datetime.date = datetime.date.today(),  # noqa: B008
         interval_days: int = BOOST_SHOWS_INTERVAL_DAYS,
         per_page: int = 30,  # `per_page` max value seems to be 200
         film: int | None = None,

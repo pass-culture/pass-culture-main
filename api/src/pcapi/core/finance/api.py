@@ -2368,27 +2368,27 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
     period_start, period_end = get_invoice_period(batch.cutoff)
 
     # TODO (vroullier 16/01/2026) remove unused entries when legacy files are dropped
-    return dict(
-        invoice=invoice,
-        is_caledonian_invoice=is_caledonian_invoice,
-        cashflows=cashflows,  # legacy
-        groups=groups,
-        bank_account=bank_account,
-        bank_account_label=bank_account_label,
-        bank_account_iban=bank_account_iban,  # legacy
-        total_used_bookings_amount=total_used_bookings_amount,
-        total_contribution_amount=total_contribution_amount,
-        total_reimbursed_amount=total_reimbursed_amount,
-        invoice_date=invoice_date,
-        period_start=period_start,
-        period_end=period_end,
-        reimbursements_by_venue=reimbursements_by_venue,
-        including_finance_incident=any(
+    return {
+        "invoice": invoice,
+        "is_caledonian_invoice": is_caledonian_invoice,
+        "cashflows": cashflows,  # legacy
+        "groups": groups,
+        "bank_account": bank_account,
+        "bank_account_label": bank_account_label,
+        "bank_account_iban": bank_account_iban,  # legacy
+        "total_used_bookings_amount": total_used_bookings_amount,
+        "total_contribution_amount": total_contribution_amount,
+        "total_reimbursed_amount": total_reimbursed_amount,
+        "invoice_date": invoice_date,
+        "period_start": period_start,
+        "period_end": period_end,
+        "reimbursements_by_venue": reimbursements_by_venue,
+        "including_finance_incident": any(
             cashflow
             for cashflow in cashflows
             if any(pricing.event.bookingFinanceIncidentId for pricing in cashflow.pricings)
         ),
-    )
+    }
 
 
 def get_reimbursements_by_venue(invoice: models.Invoice) -> typing.ValuesView:

@@ -1,3 +1,4 @@
+import builtins
 import random
 import string
 import typing
@@ -234,13 +235,13 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     @classmethod
     def generate_content_from_user(
         cls,
-        factory_class: typing.Type[factory.Factory],
+        factory_class: builtins.type[factory.Factory],
         user: users_models.User,
         date_created: datetime | None = None,
     ) -> dict:
         identification_id = str(uuid.uuid4())
         identification_url = urllib.parse.urljoin(settings.UBBLE_API_URL, f"/identifications/{identification_id}")
-        kwargs = dict(identification_id=identification_id, identification_url=identification_url)
+        kwargs = {"identification_id": identification_id, "identification_url": identification_url}
         if user.firstName:
             kwargs.update(first_name=user.firstName)
         if user.lastName:

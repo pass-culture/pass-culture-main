@@ -45,7 +45,9 @@ class CreateVenueProviderTest:
             localClass=None,
         )
         author = users_factories.UserFactory()
-        api.create_venue_provider(provider, venue, current_user=author)
+        api.create_venue_provider(
+            provider, venue, current_user=author, payload=providers_models.VenueProviderCreationPayload()
+        )
 
         assert venue.isPermanent is False
 

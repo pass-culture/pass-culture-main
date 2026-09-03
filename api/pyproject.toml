@@ -183,38 +183,39 @@ ignore = [
 
   # a lot of rules have been added in 0.16.0, we ignore the following for now and will decide later for each rule if we fix it or leave it ignored
   # TODO : delete following rules from this list, and fix each case (check if you need to add them to extend-select by comparing to https://docs.astral.sh/ruff/default-rules/)
-  "B006",  # mutable-argument-default : Do not use mutable data structures for argument defaults
-  "B008",  # function-call-in-default-argument : Do not perform function calls in argument defaults
-  "B017",  # assert-raises-exception : `pytest.raises(Exception)` should be considered evil
-  "B019",  # cached-instance-method : Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
-  "C408",  # unnecessary-collection-call : Unnecessary collection call (rewrite as a literal)
+
+  # These are stylistic rules that implies many modifications
   "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy;
   "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert);
-  "FLY002",  # static-join-to-f-string : Consider f-string instead of string join
-  "ISC004",  # implicit-string-concatenation-in-collection-literal : Implicitly concatenated string literals on one line
-  "PGH005",  # invalid-mock-access : Mock objects have no attribute
+  "SIM102",  # nested-if : Use a single `if` statement instead of nested `if` statements
+  "SIM117",  # multiple-with-statements : Use a single `with` statement with multiple contexts
+  "UP031",  # printf-string-formatting : Use format specifiers instead of percent format
+
+  # Do we really want that ?
+  "RUF012",  # mutable-class-default : Mutable class attributes should be annotated with `typing.ClassVar`
+  "RUF010",  # explicit-f-string-type-conversion : Use explicit conversion flag
+  "RUF015",  # unnecessary-iterable-allocation-for-first-element : Prefer `next(iter(...))` over single element slice
+
+  # This implies a choice from the code's owner
+  "B019",  # cached-instance-method : Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
   "PIE794",  # duplicate-class-field-definition : Class field is defined multiple times
   "PIE796",  # non-unique-enums : Enum contains duplicate value
-  "PYI036",  # bad-exit-annotation : Star-args in `__exit__` should be annotated with `object`
-  "RUF010",  # explicit-f-string-type-conversion : Use explicit conversion flag
-  "RUF012",  # mutable-class-default : Mutable class attributes should be annotated with `typing.ClassVar`
-  "RUF015",  # unnecessary-iterable-allocation-for-first-element : Prefer `next(iter(...))` over single element slice
-  "RUF017",  # quadratic-list-summation : Avoid quadratic list summation
   "S110",  # try-except-pass : `try`-`except`-`pass` detected, consider logging the exception
-  "SIM102",  # nested-if : Use a single `if` statement instead of nested `if` statements
   "SIM115",  # open-file-with-context-handler : Use context handler for opening files
-  "SIM117",  # multiple-with-statements : Use a single `with` statement with multiple contexts
   "T100",  # debugger : Trace found: `breakpoint` used
   "TRY002",  # raise-vanilla-class : Create your own exception
   "TRY004",  # type-check-without-type-error : Prefer `TypeError` exception for invalid type
   "TRY201",  # verbose-raise : Use `raise` without specifying exception name
   "TRY401",  # verbose-log-message : Redundant exception object included in `logging.exception` call
+  "UP047",  # non-pep695-generic-function : Generic function uses `TypeVar` instead of the `type` keyword
+
+  # These seem doable
+  "PGH005",  # invalid-mock-access : Mock objects have no attribute
+  "PYI036",  # bad-exit-annotation : Star-args in `__exit__` should be annotated with `object`
+  "RUF017",  # quadratic-list-summation : Avoid quadratic list summation
   "UP006",  # non-pep585-annotation : Use standard library generic types instead of typing module
   "UP007",  # non-pep604-annotation : Use `X | Y` for type annotations
-  "UP022",  # replace-stdout-stderr : Sending stdout and stderr to `PIPE` is deprecated, use `capture_output`
-  "UP028",  # yield-in-for-loop : Replace `yield` over `for` loop with `yield from`
-  "UP031",  # printf-string-formatting : Use format specifiers instead of percent format
-  "UP047",  # non-pep695-generic-function : Generic function uses `TypeVar` instead of the `type` keyword
+  "UP028",  # yield-in-for-loop : Replace `yield` over `for` loop with `yield from` 
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]

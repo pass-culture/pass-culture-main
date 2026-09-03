@@ -24,7 +24,7 @@ def create_show(
     is_empty_seatmap: str | bool = False,
     remaining_place: int = 88,
     internet_remaining_place: int = 100,
-    showtime: datetime.datetime = date_utils.get_naive_utc_now(),
+    showtime: datetime.datetime | None = None,
     shows_tariff_pos_type_ids=(),
     screen_id: int = 50,
     media_id: int = 52,
@@ -38,7 +38,7 @@ def create_show(
         is_empty_seatmap=is_empty_seatmap,
         remaining_place=remaining_place,
         internet_remaining_place=internet_remaining_place,
-        showtime=showtime,
+        showtime=showtime or date_utils.get_naive_utc_now(),
         shows_tariff_pos_type_collection=[
             cine_office_serializers.ShowTariff(tariff=cine_office_serializers.IdObject(id=show_tariff_id))
             for show_tariff_id in shows_tariff_pos_type_ids

@@ -825,17 +825,21 @@ def link_venue_to_pricing_point(
     for from_tables, where_clauses, stock_datetime in (
         (
             "booking, stock",
-            'finance_event."bookingId" is not null '
-            'and booking.id = finance_event."bookingId" '
-            'and stock.id = booking."stockId"',
+            (
+                'finance_event."bookingId" is not null '
+                'and booking.id = finance_event."bookingId" '
+                'and stock.id = booking."stockId"'
+            ),
             "beginningDatetime",
         ),
         (
             # use aliases to have the same `set` clause
             "collective_booking as booking, collective_stock as stock",
-            'finance_event."collectiveBookingId" is not null '
-            'and booking.id = finance_event."collectiveBookingId" '
-            'and stock.id = booking."collectiveStockId"',
+            (
+                'finance_event."collectiveBookingId" is not null '
+                'and booking.id = finance_event."collectiveBookingId" '
+                'and stock.id = booking."collectiveStockId"'
+            ),
             collective_stock_datetime,
         ),
     ):
@@ -2281,34 +2285,34 @@ def create_from_onboarding_data(
         address = onboarding_data.address
         if not address.street:
             address = address.copy(update={"street": "n/d"})
-        common_kwargs = dict(
-            activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
-            address=address,
-            booking_email=user.email,
-            cultural_domains=onboarding_data.cultural_domains,
-            contact=None,
-            description=None,
-            is_open_to_public=onboarding_data.is_open_to_public,
-            managing_offerer_id=user_offerer.offererId,
-            name=name,
-            public_name=onboarding_data.public_name,
-            venue_label_id=None,
-            withdrawal_details=None,
-            audio_disability_compliant=None,
-            mental_disability_compliant=None,
-            motor_disability_compliant=None,
-            visual_disability_compliant=None,
-        )
+        common_kwargs = {
+            "activity": offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
+            "address": address,
+            "booking_email": user.email,
+            "cultural_domains": onboarding_data.cultural_domains,
+            "contact": None,
+            "description": None,
+            "is_open_to_public": onboarding_data.is_open_to_public,
+            "managing_offerer_id": user_offerer.offererId,
+            "name": name,
+            "public_name": onboarding_data.public_name,
+            "venue_label_id": None,
+            "withdrawal_details": None,
+            "audio_disability_compliant": None,
+            "mental_disability_compliant": None,
+            "motor_disability_compliant": None,
+            "visual_disability_compliant": None,
+        }
         if onboarding_data.create_venue_without_siret:
-            comment_and_siret = dict(
-                comment="Lieu sans SIRET car dépend du SIRET d'un autre lieu",
-                siret=None,
-            )
+            comment_and_siret = {
+                "comment": "Lieu sans SIRET car dépend du SIRET d'un autre lieu",
+                "siret": None,
+            }
         else:
-            comment_and_siret = dict(
-                comment=None,
-                siret=onboarding_data.siret,
-            )
+            comment_and_siret = {
+                "comment": None,
+                "siret": onboarding_data.siret,
+            }
         venue_kwargs = common_kwargs | comment_and_siret
         venue_creation_info = venue_serialize.PostVenueBodyModel(**venue_kwargs)
         pricing_point_id = venue.id if venue else None

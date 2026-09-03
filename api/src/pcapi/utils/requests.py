@@ -61,23 +61,13 @@ class ExternalAPIException(Exception):
 def _redact_url(url: str | None) -> str | None:
     if not url:
         return url
-    fields_to_redact = "|".join(  # Fields used in Particulier API queries
-        [
-            "recipient",
-            "Naissance",
-            "prenoms%5B%5D",  # prenoms%5B%5D unquoted ⇒ prenoms[]
-            "nomUsage",
-            "sexeEtatCivil",
-            "annee",
-            "mois",
-            # Allociné and Ciné Office (ex-CDS) want authentication token to appear in GET
-            # requests. We don't want to log them.
-            # For Allociné, the query param name is 'token'. For Ciné Office, the name is 'api_token'
-            "token",
-            # YouTube
-            "key",
-        ]
-    )
+
+    # prenoms%5B%5D unquoted ⇒ prenoms[]
+    # Allociné and Ciné Office (ex-CDS) want authentication token to appear in GET requests. We don't want to log them.
+    # For Allociné, the query param name is 'token'. For Ciné Office, the name is 'api_token'
+    # key ⇒ YouTube
+    fields_to_redact = "recipient|Naissance|prenoms%5B%5D|nomUsage|sexeEtatCivil|annee|mois|token|key"
+
     return re.sub(f"((?:{fields_to_redact})=)[^&]+", r"\1[REDACTED]", url)
 
 
