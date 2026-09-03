@@ -221,6 +221,7 @@ def handle_dms_application(
 
     # Used by instructors to force sending ID check link even if application has an error
     force_ubble = any(label.name == ApplicationLabel.FORCE_UBBLE.value for label in dms_application.labels)
+    log_extra_data["force_ubble"] = force_ubble
 
     user = find_user_by_email(user_email)
     if not user:
