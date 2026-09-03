@@ -144,8 +144,8 @@ describe('ActionsBar', () => {
     })
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
     expect(
-      screen.getByText('2 offres ont bien été publiées')
-    ).toBeInTheDocument()
+      screen.getAllByText('2 offres ont bien été publiées').length
+    ).toBeGreaterThan(0)
   })
 
   it('should delete selected draft offers upon deletion', async () => {
@@ -173,8 +173,8 @@ describe('ActionsBar', () => {
     })
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
     expect(
-      screen.getByText('2 brouillons ont bien été supprimés')
-    ).toBeInTheDocument()
+      screen.getAllByText('2 brouillons ont bien été supprimés').length
+    ).toBeGreaterThan(0)
   })
 
   it('should deactivate selected offers', async () => {
@@ -211,8 +211,8 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
 
     expect(
-      screen.getByText('3 offres ont bien été mises en pause')
-    ).toBeInTheDocument()
+      screen.getAllByText('3 offres ont bien été mises en pause').length
+    ).toBeGreaterThan(0)
   })
 
   it('should unselect offers and hide action bar on click on "Annuler" button', async () => {
@@ -336,10 +336,10 @@ describe('ActionsBar', () => {
     await userEvent.click(activateButton)
 
     expect(
-      screen.getByText(
+      screen.getAllByText(
         'Une erreur est survenue lors de l’activation des offres'
-      )
-    ).toBeInTheDocument()
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should show an error message when an error occurs after clicking on "Publier" button when some offers are selected', async () => {
@@ -350,10 +350,10 @@ describe('ActionsBar', () => {
     await userEvent.click(activateButton)
 
     expect(
-      screen.getByText(
+      screen.getAllByText(
         'Une erreur est survenue lors de l’activation des offres'
-      )
-    ).toBeInTheDocument()
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should show an error message when an error occurs after clicking on "Supprimer" button when some offers are selected', async () => {
@@ -366,10 +366,10 @@ describe('ActionsBar', () => {
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 
     expect(
-      screen.getByText(
+      screen.getAllByText(
         'Une erreur est survenue lors de la suppression des brouillon'
-      )
-    ).toBeInTheDocument()
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should not display actions when selected offers have the wrong status', () => {

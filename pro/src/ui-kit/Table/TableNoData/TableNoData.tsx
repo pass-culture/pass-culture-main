@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import type { EmptyStateProps } from 'ui-kit/Table/Table'
 
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -11,7 +12,12 @@ export const TableNoData = ({
 }): JSX.Element => {
   const { icon, title, subtitle, cta } = noData.message
   return (
-    <div className={styles['no-data']} role="status">
+    <div
+      className={cn({
+        [styles['no-data']]: noData.hasNoData,
+      })}
+      role="status"
+    >
       {noData.hasNoData ? (
         <>
           <SvgIcon

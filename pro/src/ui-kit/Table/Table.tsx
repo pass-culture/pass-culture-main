@@ -208,7 +208,6 @@ export function Table<
 
   return (
     <>
-      <TableNoData noData={noData} />
       <div className={classNames(styles.wrapper, className)}>
         <table
           className={classNames(styles['table'], {
@@ -419,6 +418,7 @@ export function Table<
           </div>
         )}
       </div>
+      <TableNoData noData={noData} />
     </>
   )
 }

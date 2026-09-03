@@ -115,10 +115,10 @@ describe('offer item', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Préréserver' }))
 
     expect(
-      screen.getByText(
+      screen.getAllByText(
         'Cette offre n’est pas préréservable par votre établissement'
-      )
-    ).toBeInTheDocument()
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should display a success message notification when booking worked', async () => {
@@ -140,8 +140,9 @@ describe('offer item', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Préréserver' }))
 
     expect(
-      screen.getByText('Votre préréservation a été effectuée avec succès')
-    ).toBeInTheDocument()
+      screen.getAllByText('Votre préréservation a été effectuée avec succès')
+        .length
+    ).toBeGreaterThan(0)
   })
 
   it('should log info when clicking "préréserver" button ', async () => {

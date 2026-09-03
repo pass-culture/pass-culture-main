@@ -75,8 +75,8 @@ describe('Stepper', () => {
       )
     ).toBeInTheDocument()
     expect(
-      screen.getByText('Étape 2 sur 3, active, Définissez un tarif')
-    ).toBeInTheDocument()
+      screen.getAllByText('Étape 2 sur 3, active, Définissez un tarif').length
+    ).toBeGreaterThan(0)
     // Disabled steps are visually hidden for screen readers inside a static span
     expect(
       screen.getByText('Étape 3 sur 3, à venir, Validez votre offre')

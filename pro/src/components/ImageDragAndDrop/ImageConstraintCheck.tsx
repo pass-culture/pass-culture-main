@@ -1,3 +1,5 @@
+import cn from 'classnames'
+
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -9,13 +11,11 @@ export const ImageConstraintCheck = ({
   constraint,
   hasInput,
   hasError,
-  errorMessage,
 }: {
   label: string
   constraint: string
   hasInput?: boolean
   hasError: boolean
-  errorMessage: string
 }) => {
   const imageConstraint = (
     <>
@@ -26,25 +26,23 @@ export const ImageConstraintCheck = ({
     </>
   )
 
-  if (!hasInput) {
-    return (
-      <p className={styles['image-drag-and-drop-description-neutral']}>
+  return (
+    <div
+      className={cn({
+        [styles['image-drag-and-drop-description-error']]: hasError,
+        [styles['image-drag-and-drop-description-validate']]: !hasError,
+      })}
+    >
+      {hasInput && (
+        <SvgIcon src={hasError ? fullClearIcon : fullValidateIcon} width="16" />
+      )}
+      <p
+        className={cn({
+          [styles['image-drag-and-drop-description-neutral']]: !hasInput,
+        })}
+      >
         {imageConstraint}
       </p>
-    )
-  }
-
-  return hasError ? (
-    <div className={styles['image-drag-and-drop-description-error']}>
-      <SvgIcon src={fullClearIcon} width="16" />
-      <span className={styles['visually-hidden']}>{errorMessage}</span>
-      <p>{imageConstraint}</p>
-    </div>
-  ) : (
-    <div className={styles['image-drag-and-drop-description-validate']}>
-      <SvgIcon src={fullValidateIcon} width="16" />
-      <span className={styles['visually-hidden']}>Valide : </span>
-      <p>{imageConstraint}</p>
     </div>
   )
 }

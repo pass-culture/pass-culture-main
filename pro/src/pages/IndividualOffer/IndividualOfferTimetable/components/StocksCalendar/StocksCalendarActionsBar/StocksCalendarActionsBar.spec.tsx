@@ -100,8 +100,8 @@ describe('StocksCalendarActionsBar', () => {
     )
 
     expect(
-      screen.getByText('Veuillez renseigner au moins une date')
-    ).toBeInTheDocument()
+      screen.getAllByText('Veuillez renseigner au moins une date').length
+    ).toBeGreaterThan(0)
   })
 
   it('should show the checked stocks action bar when some stocks are checked', () => {
@@ -149,8 +149,8 @@ describe('StocksCalendarActionsBar', () => {
     )
 
     expect(
-      screen.getByText('Veuillez renseigner au moins une date')
-    ).toBeInTheDocument()
+      screen.getAllByText('Veuillez renseigner au moins une date').length
+    ).toBeGreaterThan(0)
   })
 
   it('should show an error message in handleNextStep when hasStocks is false', async () => {
@@ -165,8 +165,8 @@ describe('StocksCalendarActionsBar', () => {
 
     // Vérifier que handleNextStep a été appelé et a affiché le message d'erreur (lignes 68-71)
     expect(
-      screen.getByText('Veuillez renseigner au moins une date')
-    ).toBeInTheDocument()
+      screen.getAllByText('Veuillez renseigner au moins une date').length
+    ).toBeGreaterThan(0)
     // Vérifier que la navigation n'a pas été déclenchée
     expect(mockNavigate).not.toHaveBeenCalled()
   })

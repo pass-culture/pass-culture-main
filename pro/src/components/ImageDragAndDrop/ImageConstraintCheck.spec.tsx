@@ -11,7 +11,6 @@ describe('ImageConstraintCheck', () => {
         label="Format"
         constraint="JPG, PNG"
         hasError={false}
-        errorMessage="Le format n'est pas valide"
         hasInput={true}
       />
     )
@@ -21,13 +20,12 @@ describe('ImageConstraintCheck', () => {
     expect(screen.getByText('JPG, PNG')).toBeInTheDocument()
   })
 
-  it('should render error message when hasError is true', () => {
+  it('should render in error state when hasError is true', () => {
     render(
       <ImageConstraintCheck
         label="Size"
         constraint="10MB"
         hasError={true}
-        errorMessage="Le fichier est trop lourd"
         hasInput={true}
       />
     )
@@ -42,10 +40,6 @@ describe('ImageConstraintCheck', () => {
     expect(errorContainer).toHaveClass(
       styles['image-drag-and-drop-description-error']
     )
-
-    // Ensure the error message text is visually hidden (for accessibility)
-    const visuallyHiddenMessage = screen.getByText('Le fichier est trop lourd')
-    expect(visuallyHiddenMessage).toHaveClass(styles['visually-hidden'])
   })
 
   it('should not render error message when hasError is false', () => {
@@ -54,7 +48,6 @@ describe('ImageConstraintCheck', () => {
         label="Dimensions"
         constraint="500px by 500px"
         hasError={false}
-        errorMessage="Les dimensions sont incorrectes"
         hasInput={true}
       />
     )
@@ -72,13 +65,12 @@ describe('ImageConstraintCheck', () => {
     expect(visuallyHiddenMessage).not.toBeInTheDocument()
   })
 
-  it('should render validate state with visually hidden success indicator when hasInput is true and hasError is false', () => {
+  it('should render in valid state with hasInput is true and hasError is false', () => {
     render(
       <ImageConstraintCheck
         label="Format"
         constraint="JPG, PNG"
         hasError={false}
-        errorMessage="Le format n'est pas valide"
         hasInput={true}
       />
     )
@@ -87,8 +79,6 @@ describe('ImageConstraintCheck', () => {
     expect(validateContainer).toHaveClass(
       styles['image-drag-and-drop-description-validate']
     )
-
-    expect(screen.getByText('Valide :')).toHaveClass(styles['visually-hidden'])
   })
 
   it('should render neutral state when hasInput is false', () => {
@@ -97,7 +87,6 @@ describe('ImageConstraintCheck', () => {
         label="Format"
         constraint="JPG, PNG"
         hasError={false}
-        errorMessage="Le format n'est pas valide"
         hasInput={false}
       />
     )

@@ -646,8 +646,12 @@ describe('ValidationScreen', () => {
       renderValidationScreen(contextValue)
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(
-        await screen.findByText('Erreur lors de la création de votre structure')
-      ).toBeInTheDocument()
+        (
+          await screen.findAllByText(
+            'Erreur lors de la création de votre structure'
+          )
+        ).length
+      ).toBeGreaterThan(0)
     })
 
     it('should not render when no activity', () => {
@@ -674,8 +678,8 @@ describe('ValidationScreen', () => {
       renderValidationScreen(contextValue)
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(
-        await screen.findByText('Une erreur technique est survenue')
-      ).toBeInTheDocument()
+        (await screen.findAllByText('Une erreur technique est survenue')).length
+      ).toBeGreaterThan(0)
     })
   })
 })

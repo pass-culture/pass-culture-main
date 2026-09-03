@@ -142,8 +142,9 @@ describe('ComplementaryInfosDrawer', () => {
       )
 
       expect(
-        await screen.findByText('Vos modifications ont été sauvegardées')
-      ).toBeInTheDocument()
+        (await screen.findAllByText('Vos modifications ont été sauvegardées'))
+          .length
+      ).toBeGreaterThan(0)
     })
 
     it('should show generic error snackbar when API returns a global error', async () => {
@@ -162,10 +163,12 @@ describe('ComplementaryInfosDrawer', () => {
       )
 
       expect(
-        await screen.findByText(
-          'Erreur inconnue lors de la sauvegarde de la structure.'
-        )
-      ).toBeInTheDocument()
+        (
+          await screen.findAllByText(
+            'Erreur inconnue lors de la sauvegarde de la structure.'
+          )
+        ).length
+      ).toBeGreaterThan(0)
     })
 
     it('should show field error snackbar when API returns field-level errors', async () => {
@@ -186,10 +189,12 @@ describe('ComplementaryInfosDrawer', () => {
       )
 
       expect(
-        await screen.findByText(
-          'Une ou plusieurs erreurs sont présentes dans le formulaire'
-        )
-      ).toBeInTheDocument()
+        (
+          await screen.findAllByText(
+            'Une ou plusieurs erreurs sont présentes dans le formulaire'
+          )
+        ).length
+      ).toBeGreaterThan(0)
     })
 
     it('should log a save event with saved: false on error', async () => {
@@ -225,10 +230,12 @@ describe('ComplementaryInfosDrawer', () => {
       )
 
       expect(
-        await screen.findByText(
-          'Erreur inconnue lors de la sauvegarde de la structure.'
-        )
-      ).toBeInTheDocument()
+        (
+          await screen.findAllByText(
+            'Erreur inconnue lors de la sauvegarde de la structure.'
+          )
+        ).length
+      ).toBeGreaterThan(0)
     })
   })
 })

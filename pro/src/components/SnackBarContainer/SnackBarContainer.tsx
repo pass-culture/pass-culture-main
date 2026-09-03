@@ -51,7 +51,8 @@ export const SnackBarContainer = (): JSX.Element => {
   )
 
   return createPortal(
-    <div
+    <aside
+      aria-label="Zone de notifications"
       className={cn(
         styles['snack-bar-container'],
         isStickyBarOpen && styles['with-sticky-action-bar']
@@ -95,7 +96,7 @@ export const SnackBarContainer = (): JSX.Element => {
           testId={`global-snack-bar-${snackBar.variant}-${index}`}
         />
       ))}
-    </div>,
+    </aside>,
     portalTarget
   )
 }

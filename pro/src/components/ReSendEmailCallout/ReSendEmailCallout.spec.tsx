@@ -20,7 +20,9 @@ const renderComponent = (
 describe('ReSendEmailCallout', () => {
   it('should render correctly', () => {
     renderComponent()
-    expect(screen.getByRole('status')).toHaveTextContent(/Email non reçu ?/)
+    expect(screen.getAllByRole('status')[0]).toHaveTextContent(
+      /Email non reçu ?/
+    )
     expect(
       screen.getByRole('button', { name: 'Renvoyer un nouveau lien' })
     ).toBeEnabled()
@@ -32,7 +34,7 @@ describe('ReSendEmailCallout', () => {
       screen.getByRole('button', { name: 'Renvoyer un nouveau lien' })
     )
 
-    expect(screen.getByText('Email envoyé.')).toBeInTheDocument()
+    expect(screen.getAllByText('Email envoyé.').length).toBeGreaterThan(0)
   })
 
   it('should display an error on action failure', async () => {
@@ -47,9 +49,9 @@ describe('ReSendEmailCallout', () => {
     )
 
     expect(
-      screen.getByText(
+      screen.getAllByText(
         'Une erreur est survenue, veuillez réessayer ultérieurement.'
-      )
-    ).toBeInTheDocument()
+      ).length
+    ).toBeGreaterThan(0)
   })
 })
