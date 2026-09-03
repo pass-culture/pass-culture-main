@@ -22,7 +22,6 @@ export const reimbursementsRouteGroup: CustomRouteGroup = {
       },
     },
     {
-      // TODO(mdesquilbet, 19/08/2026): handle the fact that it is index under the FF
       path: 'virements',
       lazy: () => import('@/pages/Reimbursements/Settlements/Settlements'),
       handle: {
