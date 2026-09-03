@@ -101,10 +101,10 @@ def anonymize_user(
     except ExternalAPIException as exc:
         # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
         if exc.is_retryable:
-            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
+            logger.warning("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
             return False
     except Exception as exc:
-        logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
+        logger.warning("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
         return False
 
     for beneficiary_fraud_check in user.beneficiaryFraudChecks:
