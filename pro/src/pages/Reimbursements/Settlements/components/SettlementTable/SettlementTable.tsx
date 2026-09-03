@@ -189,7 +189,6 @@ export const SettlementTable = ({
   hasBankAccount,
 }: SettlementTableProps): JSX.Element => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
-  // const [checkedSettlements, setCheckedSettlements] = useState<string[]>([])
 
   return (
     <div className={styles[`settlement-table`]}>
@@ -203,9 +202,6 @@ export const SettlementTable = ({
         selectable={true}
         getRowSelectionDateTime={getSettlementDateLabel}
         isLoading={isLoading}
-        // onSelectionChange={(rows) => {
-        //   setCheckedSettlements(rows.map((row) => row.id.toString()))
-        // }}
         variant={TableVariant.COLLAPSE}
         noResult={{
           message: 'Aucun virement ne correspond à votre recherche',
