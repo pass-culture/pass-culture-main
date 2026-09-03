@@ -8,7 +8,6 @@ from functools import partial
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-import pcapi.utils.rest as rest_utils
 from pcapi import settings
 from pcapi.core import search
 from pcapi.core.educational import exceptions
@@ -150,7 +149,6 @@ def create_collective_offer_template(
     offer_data: "collective_offers_serialize.PostCollectiveOfferTemplateBodyModel", user: User
 ) -> models.CollectiveOfferTemplate:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
-    rest_utils.check_venue_is_opened(venue)
 
     # check domains and national program
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
@@ -209,7 +207,6 @@ def create_collective_offer(
     offer_data: "collective_offers_serialize.PostCollectiveOfferBodyModel", user: User, offer_id: int | None = None
 ) -> models.CollectiveOffer:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
-    rest_utils.check_venue_is_opened(venue)
 
     if offer_data.template_id is not None:
         template = repository.get_collective_offer_template_by_id(offer_data.template_id)

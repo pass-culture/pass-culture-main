@@ -37,7 +37,6 @@ def upsert_headline_offer(
     offerer_id = offer.venue.managingOffererId
 
     rest.check_user_has_access_to_offerer(current_user, offerer_id)
-    rest.check_venue_is_opened(offer.venue)
     try:
         headline_offer = offers_api.upsert_headline_offer(offer)
     except exceptions.OfferHasAlreadyAnActiveHeadlineOffer:
