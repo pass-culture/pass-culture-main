@@ -1,7 +1,7 @@
 name: 3 [CD] Deploy front PRO
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       ENV:
         type: string
@@ -19,7 +19,38 @@ on:
       REF:
         type: string
         required: true
-      CACHE_BUCKET_NAME:
+      resource_label:
+        type: string
+        # TODO check if a default is needed
+        default: ""
+      continue_on_error:
+        type: boolean
+        required: false
+        default: false
+      version:
+        type: string
+        required: true
+      firebase_cli_version:
+        description: "Version of firebase-tools to use for deployment"
+        type: string
+        required: false
+        default: 15.18.0
+  workflow_call:
+    inputs:
+      ENV:
+        type: string
+        required: true
+      PUSH_RELEASE_TO_SENTRY:
+        description: "If true, creates a release in Sentry and uploads sourcemaps"
+        type: boolean
+        default: false
+      CHANNEL:
+        type: string
+        required: true
+      EXPIRES:
+        type: string
+        default: "2d"
+      REF:
         type: string
         required: true
       resource_label:
@@ -140,7 +171,7 @@ jobs:
         run: |
           npm install -g "firebase-tools@$FIREBASE_CLI_VERSION"
 
-      - name: Deploy pro 
+      - name: Deploy pro on specific channel
         working-directory: pro
         id: deploy
         env:
