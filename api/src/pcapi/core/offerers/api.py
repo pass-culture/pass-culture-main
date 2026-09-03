@@ -106,6 +106,7 @@ VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "lat
 API_KEY_SEPARATOR = "_"
 APE_TAG_MAPPING = {"8411Z": "Collectivité"}
 DMS_TOKEN_REGEX = r"^(?:PRO-)?([a-fA-F0-9]{12})$"
+INVOICE_REFERENCE_REGEX = r"^[AF]\d{9}$"
 
 
 def link_cultural_domains_to_venue(
@@ -1941,7 +1942,7 @@ def get_venues_educational_statuses() -> list[offerers_models.VenueEducationalSt
     return offerers_repository.get_venues_educational_statuses()
 
 
-def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) -> sa_orm.Query:
+def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) -> sa_orm.Query[models.Offerer]:
     offerers = db.session.query(models.Offerer).options(
         sa_orm.with_expression(
             offerers_models.Offerer.department_codes, offerers_models.Offerer.department_codes_expression()
@@ -1972,6 +1973,12 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
         elif len(search_query) == siren_utils.RID7_LENGTH:
             numeric_filter = sa.or_(numeric_filter, models.Offerer.siren == siren_utils.rid7_to_siren(search_query))
         offerers = offerers.filter(numeric_filter)
+    elif re.fullmatch(INVOICE_REFERENCE_REGEX, search_query):
+        offerers = (
+            offerers.join(finance_models.BankAccount)
+            .join(finance_models.Invoice)
+            .filter(finance_models.Invoice.reference == search_query)
+        )
     else:
         search_words = f"%{clean_accents(search_query).replace(' ', '%').replace('-', '%')}%"
         offerers = offerers.filter(sa.func.immutable_unaccent(offerers_models.Offerer.name).ilike(search_words))
@@ -2089,7 +2096,7 @@ def search_bank_account(search_query: str, *_: typing.Any) -> sa_orm.Query:
     else:
         filters.append(finance_models.BankAccount.iban == iban.compact)
 
-    if re.match(r"^[AF]\d{9}$", search_query):
+    if re.match(INVOICE_REFERENCE_REGEX, search_query):
         bank_accounts_query = bank_accounts_query.join(finance_models.Invoice)
         filters.append(finance_models.Invoice.reference == search_query)
 
