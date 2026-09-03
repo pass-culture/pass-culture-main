@@ -25,7 +25,7 @@ export const reimbursementsRouteGroup: CustomRouteGroup = {
       path: 'virements',
       lazy: () => import('@/pages/Reimbursements/Settlements/Settlements'),
       handle: {
-        title: 'Virements',
+        title: 'Gestion financière',
       },
       featureName: 'WIP_ENABLE_FINANCE_SETTLEMENTS',
     },
