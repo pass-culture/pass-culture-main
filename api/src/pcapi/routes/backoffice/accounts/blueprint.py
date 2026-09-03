@@ -350,20 +350,10 @@ def _load_bookings_for_domains_credit(query: sa_orm.Query) -> sa_orm.Query:
 
     The offer table is a wide table, thus the load_only trimming.
     """
-    active_deposit_id = (
-        sa.select(finance_models.Deposit.id)
-        .where(finance_models.Deposit.userId == bookings_models.Booking.userId)
-        .order_by(finance_models.Deposit.expirationDate.desc())
-        .limit(1)
-        .correlate(bookings_models.Booking)
-        .scalar_subquery()
-    )
-
     return query.options(
         sa_orm.selectinload(
             users_models.User.userBookings.and_(
-                bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
-                bookings_models.Booking.depositId == active_deposit_id,
+                bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED
             )
         ).options(
             sa_orm.joinedload(bookings_models.Booking.stock)
