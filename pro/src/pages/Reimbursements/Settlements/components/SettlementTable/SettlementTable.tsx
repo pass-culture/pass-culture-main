@@ -13,7 +13,6 @@ import {
 } from '@/commons/utils/convertEuroToPacificFranc'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
-import { noop } from '@/commons/utils/noop'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -37,6 +36,7 @@ type SettlementTableProps = {
   isLoading: boolean
   hasSettlement: boolean
   hasBankAccount: boolean
+  onFilterReset: () => void
 }
 
 type ExtendedSettlementResponseModel = SettlementResponseModel & {
@@ -187,6 +187,7 @@ export const SettlementTable = ({
   isLoading,
   hasSettlement,
   hasBankAccount,
+  onFilterReset,
 }: SettlementTableProps): JSX.Element => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
 
@@ -207,7 +208,7 @@ export const SettlementTable = ({
           message: 'Aucun virement ne correspond à votre recherche',
           subtitle: 'Essayez de modifier vos critères de recherche.',
           resetMessage: 'Réinitialiser les filtres',
-          onFilterReset: noop, // TODO(mdesquilbet, 19/08/2026): to change when handeling settlements filters
+          onFilterReset,
         }}
         noData={{
           hasNoData: !hasBankAccount || !hasSettlement,
