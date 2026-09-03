@@ -205,8 +205,15 @@ class ListPublicAccountsTest(GetEndpointHelper):
     # session + user tags, fetched once to fill in the choices of every advanced filter sub-form
     expected_num_queries_when_no_query = 2
 
-    # + results, including tags, suspension info and current deposit
-    expected_num_queries = expected_num_queries_when_no_query + 1
+    # + results, including tags and suspension info
+    expected_num_queries_when_no_results = expected_num_queries_when_no_query + 1
+
+    # selectinloaded:
+    # - fraud checks
+    # - deposits (with recredits)
+    # - bookings (non-cancelled, with stock, offer and incidents),
+    # - actions history (only birth date modifications)
+    expected_num_queries = expected_num_queries_when_no_results + 4
 
     # + results looked up a second time, in the email history
     expected_num_queries_when_old_email = expected_num_queries + 1
@@ -277,6 +284,45 @@ class ListPublicAccountsTest(GetEndpointHelper):
         assert rows[1]["Ville"] == f"{searched_user2.city}"
         assert rows[1]["Type de crédit"] == "Pass 18 Suspendu"
 
+    def test_display_remaining_credit(self, authenticated_client):
+        beneficiary = users_factories.BeneficiaryFactory(age=18)
+        bookings_factories.BookingFactory(user=beneficiary, stock__price=decimal.Decimal(20))
+        bookings_factories.CancelledBookingFactory(user=beneficiary, stock__price=decimal.Decimal(30))
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock__price=decimal.Decimal(50)),
+            incident__status=finance_models.IncidentStatus.VALIDATED,
+            newTotalAmount=35_00,
+        )
+        expired_beneficiary = users_factories.BeneficiaryFactory(
+            age=18, deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(days=1)
+        )
+        public_user = users_factories.UserFactory()
+
+        user_ids = f"{beneficiary.id}, {expired_beneficiary.id}, {public_user.id}"
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=user_ids))
+            assert response.status_code == 200
+
+        rows = {row["ID"]: row for row in html_parser.extract_table_rows(response.data)}
+        assert rows[str(beneficiary.id)]["Crédit restant"] == "95,00 €"
+        assert rows[str(expired_beneficiary.id)]["Crédit restant"] == ""
+        assert rows[str(public_user.id)]["Crédit restant"] == ""
+
+    def test_display_registration_step(self, authenticated_client):
+        beneficiary = users_factories.BeneficiaryFactory(age=18)
+        email_validated_user = users_factories.UserFactory(age=18)
+        not_eligible_user = users_factories.UserFactory()
+
+        user_ids = f"{beneficiary.id}, {email_validated_user.id}, {not_eligible_user.id}"
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=user_ids))
+            assert response.status_code == 200
+
+        rows = {row["ID"]: row for row in html_parser.extract_table_rows(response.data)}
+        assert rows[str(beneficiary.id)]["Étape d'inscription"] == ""
+        assert rows[str(email_validated_user.id)]["Étape d'inscription"] == "Email"
+        assert rows[str(not_eligible_user.id)]["Étape d'inscription"] == "Non éligible"
+
     def test_can_search_public_account_by_multiple_ids(self, authenticated_client):
         searched_user1, _, _, _, searched_user2, _ = create_bunch_of_accounts()
         search_query = f" {searched_user1.id}, {searched_user2.id}"
@@ -289,7 +335,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
         assert {row["Nom"] for row in rows} == {searched_user1.full_name, searched_user2.full_name}
 
     def test_can_search_public_account_by_small_id(self, authenticated_client):
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_when_no_results):
             response = authenticated_client.get(url_for(self.endpoint, q="2"))
             assert response.status_code == 200
 
@@ -476,7 +522,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
     def test_can_search_public_account_names_which_do_not_match(self, authenticated_client, query):
         create_bunch_of_accounts()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_when_no_results):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 200
 
@@ -495,7 +541,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
     def test_can_search_public_account_unexpected(self, authenticated_client, query):
         create_bunch_of_accounts()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_when_no_results):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 200
 
@@ -6751,6 +6797,7 @@ class BatchSendPublicAccountResetPasswordEmailTest(PostEndpointHelper):
         expected_num_queries = 1  # session + current user
         expected_num_queries += 1  # select users
         expected_num_queries += 1  # select users to render the updated rows
+        expected_num_queries += 4  # + selectinloaded: fraud checks, deposits, bookings, actions history
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": ",".join(str(user.id) for user in users)},
@@ -6841,6 +6888,7 @@ class BatchInvalidatePublicAccountPasswordTest(PostEndpointHelper):
         expected_num_queries += len(users) * 2  # for each user: delete native sessions + update password
         expected_num_queries += len(users)  # for each user: insert action history
         expected_num_queries += 1  # select users to render the updated rows
+        expected_num_queries += 4  # + selectinloaded: fraud checks, deposits, bookings, actions history
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": ",".join(str(user.id) for user in users)},
@@ -6918,6 +6966,7 @@ class BatchSuspendPublicAccountTest(PostEndpointHelper):
         expected_num_queries += len(users)  # for each user: select confirmed bookings to cancel
         expected_num_queries += len(users)  # for each user: check email not used as venue booking email (Brevo cleanup)
         expected_num_queries += 1  # select users to render the updated rows
+        expected_num_queries += 4  # + selectinloaded: fraud checks, deposits, bookings, actions history
         response = self.post_to_endpoint(
             authenticated_client,
             form={
@@ -6952,6 +7001,7 @@ class BatchSuspendPublicAccountTest(PostEndpointHelper):
         expected_num_queries += len(users)  # for each user: update email with a dummy one
         expected_num_queries += len(users)  # for each user: insert email history
         expected_num_queries += 1  # select users to render the updated rows
+        expected_num_queries += 4  # + selectinloaded: fraud checks, deposits, bookings, actions history
         response = self.post_to_endpoint(
             authenticated_client,
             form={
@@ -7122,6 +7172,7 @@ class BatchTagPublicAccountTest(PostEndpointHelper):
         expected_num_queries += 1  # delete user tags
         expected_num_queries += 1  # insert user tags
         expected_num_queries += 1  # select users to render the updated rows
+        expected_num_queries += 4  # + selectinloaded: fraud checks, deposits, bookings, actions history
         response = self.post_to_endpoint(
             authenticated_client,
             form={

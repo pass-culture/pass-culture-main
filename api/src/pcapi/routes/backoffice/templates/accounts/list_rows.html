@@ -15,7 +15,7 @@
     </td>
     <td data-pc-sort-table-value="{{ user.lastName }} {{ user.firstName }}">{{ user.firstName ~ " " ~ user.lastName }}</td>
     <td data-pc-sort-table-value="{% if user.birth_date %}{{ user.birth_date }}{% endif %}">
-      {{ user.birth_date | format_date }} ({{ user.age }} ans)
+      {{ user.birth_date | format_date }} <span class="text-nowrap">({{ user.age }} ans)</span>
     </td>
     <td>{{ user.email }}</td>
     <td>
@@ -28,8 +28,18 @@
       {% endfor %}
       {% if not user.isActive %}{{ user.isActive | format_state | format_badge("danger") }}{% endif %}
     </td>
+    <td class="text-nowrap text-end">
+      {% set remaining_credit = get_remaining_credit(user) %}
+      {% if remaining_credit is not none %}{{ remaining_credit | format_amount(target=user) }}{% endif %}
+    </td>
     <td data-pc-sort-table-value="{% if user.deposit.expirationDate %}{{ user.deposit.expirationDate }}{% endif %}">
       {{ user.deposit.expirationDate | format_date_time }}
+    </td>
+    <td>
+      {% set registration_step_description = get_registration_step_description(user) %}
+      {% if registration_step_description %}
+        {{ registration_step_description | format_registration_step_description | format_badge("primary") }}
+      {% endif %}
     </td>
     <td>{{ user.tags | map("string") | format_as_badges }}</td>
     <td>
