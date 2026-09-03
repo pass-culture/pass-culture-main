@@ -123,7 +123,18 @@ class ListIncidentsTest(GetEndpointHelper):
 
     def test_list_incident_by_offer_id(self, authenticated_client):
         booking_finance_incident1 = finance_factories.IndividualBookingFinanceIncidentFactory()
-        finance_factories.IndividualBookingFinanceIncidentFactory()
+        # Ensure that incident2.id, booking2.id and offer2.id != incident1.id, booking1.id or offer1.id
+        # whatever the current db sequences are, since the search is a big OR on all these columns
+        max_id = max(
+            booking_finance_incident1.incidentId,
+            booking_finance_incident1.bookingId,
+            booking_finance_incident1.booking.stock.offerId,
+        )
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__id=max_id + 1,
+            booking__id=max_id + 1,
+            booking__stock__offer__id=max_id + 1,
+        )
 
         offer_id = str(booking_finance_incident1.booking.stock.offerId)
 
