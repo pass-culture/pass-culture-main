@@ -25,7 +25,6 @@ jobs:
       ENV: testing
       CHANNEL: test-ci-cd
       REF: "${{ inputs.branch }}"
-      CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
       continue_on_error: false
       version: "${{ inputs.sha }}"
     secrets:
