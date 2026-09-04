@@ -10,13 +10,13 @@
   @include fonts.title3;
 }
 
-.body-accent {
-  @include fonts.body-accent;
+.heading4 {
+  @include fonts.title4;
 }
 
 .heading2,
 .heading3,
-.body-accent,
+.heading4,
 .paragraph {
   margin-bottom: var(--size-spacing-l);
 }
