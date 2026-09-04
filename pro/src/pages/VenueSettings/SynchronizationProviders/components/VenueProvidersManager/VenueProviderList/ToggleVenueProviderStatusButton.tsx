@@ -9,7 +9,7 @@ import type {
 } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullPauseIcon from '@/icons/full-pause.svg'
@@ -30,6 +30,7 @@ export const ToggleVenueProviderStatusButton = ({
   const [isLoading, setIsLoading] = useState(false)
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
+  const isClosed = isSelectedPartnerOrOffererClosed(venue)
 
   const updateVenueProviderStatus = async () => {
     setIsLoading(true)
@@ -72,7 +73,7 @@ export const ToggleVenueProviderStatusButton = ({
             icon={fullPauseIcon}
             iconAlt="Mettre en pause la synchronisation"
             label="Mettre en pause"
-            disabled={withVenueHelpers(venue).isClosed}
+            disabled={isClosed}
           />
         ) : (
           <Button
@@ -82,7 +83,7 @@ export const ToggleVenueProviderStatusButton = ({
             icon={fullPlayIcon}
             iconAlt="Réactiver la synchronisation"
             label="Réactiver"
-            disabled={withVenueHelpers(venue).isClosed}
+            disabled={isClosed}
           />
         )
       }

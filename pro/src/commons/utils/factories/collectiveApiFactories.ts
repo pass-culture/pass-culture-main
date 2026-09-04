@@ -343,6 +343,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   managingOfferer: {
     id: 1,
     isValidated: true,
+    isClosed: false,
     name: 'Ma super structure',
     siren: '',
   },

@@ -114,7 +114,7 @@ describe('utils', () => {
     it('should return true when user is onboarded with an associated and active venue', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isSelectedPartnerVenueActive: true,
+        isSelectedPartnerVenueAndOffererActive: true,
         isSelectedPartnerVenueAssociated: true,
         isSelectedPartnerVenueOnboarded: true,
       })
@@ -127,7 +127,7 @@ describe('utils', () => {
     it('should return false when venue is not active', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isSelectedPartnerVenueActive: false,
+        isSelectedPartnerVenueAndOffererActive: false,
         isSelectedPartnerVenueAssociated: true,
         isSelectedPartnerVenueOnboarded: true,
       })
@@ -140,7 +140,7 @@ describe('utils', () => {
     it('should return false when user is not onboarded', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isSelectedPartnerVenueActive: true,
+        isSelectedPartnerVenueAndOffererActive: true,
         isSelectedPartnerVenueAssociated: true,
         isSelectedPartnerVenueOnboarded: false,
       })
@@ -155,7 +155,7 @@ describe('utils', () => {
     it('should return true when user is authenticated with an active venue but not onboarded', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isSelectedPartnerVenueActive: true,
+        isSelectedPartnerVenueAndOffererActive: true,
         isSelectedPartnerVenueOnboarded: false,
       })
 
@@ -165,7 +165,7 @@ describe('utils', () => {
     it('should return false when user is not authenticated', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: false,
-        isSelectedPartnerVenueActive: true,
+        isSelectedPartnerVenueAndOffererActive: true,
         isSelectedPartnerVenueOnboarded: false,
       })
 
@@ -177,7 +177,7 @@ describe('utils', () => {
     it('should return false when user is onboarded', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isSelectedPartnerVenueActive: true,
+        isSelectedPartnerVenueAndOffererActive: true,
         isSelectedPartnerVenueOnboarded: true,
       })
 
@@ -189,7 +189,7 @@ describe('utils', () => {
     it('should return false when venue is not active', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isSelectedPartnerVenueActive: false,
+        isSelectedPartnerVenueAndOffererActive: false,
         isSelectedPartnerVenueOnboarded: false,
       })
 

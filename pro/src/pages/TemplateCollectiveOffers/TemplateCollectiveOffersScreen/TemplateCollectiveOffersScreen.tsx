@@ -18,8 +18,8 @@ import { usePagination } from '@/commons/hooks/usePagination'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
@@ -53,6 +53,7 @@ export const TemplateCollectiveOffersScreen = ({
   offers,
 }: TemplateCollectiveOffersScreenProps): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('template')
 
   const [selectedOffers, setSelectedOffers] = useState<
@@ -136,7 +137,7 @@ export const TemplateCollectiveOffersScreen = ({
 
   const columns = getCollectiveOfferColumns({
     isBookableTable: false,
-    isReadOnly: withVenueHelpers(selectedPartnerVenue).isClosed,
+    isReadOnly: isClosed,
   })
 
   const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
@@ -185,7 +186,7 @@ export const TemplateCollectiveOffersScreen = ({
           data={currentPageItems}
           allData={sortedOffers}
           isLoading={isLoading}
-          selectable={!withVenueHelpers(selectedPartnerVenue).isClosed}
+          selectable={!isClosed}
           selectedIds={selectedOfferIds}
           onSelectionChange={(rows) => {
             setSelectedOffers(rows)

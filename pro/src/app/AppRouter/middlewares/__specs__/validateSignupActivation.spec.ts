@@ -207,7 +207,7 @@ describe('validateSignupActivation', () => {
       hasSelectedAdminOfferer: false,
       hasVenues: false,
       isAuthenticated: true,
-      isSelectedPartnerVenueActive: false,
+      isSelectedPartnerVenueAndOffererActive: false,
       isSelectedAdminOffererAssociated: false,
       isSelectedPartnerVenueAssociated: false,
       isSelectedPartnerVenueOnboarded: false,

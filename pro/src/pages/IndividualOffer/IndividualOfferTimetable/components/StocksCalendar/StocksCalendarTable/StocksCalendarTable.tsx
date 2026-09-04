@@ -17,8 +17,8 @@ import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '@/commons/utils/date'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -88,7 +88,7 @@ export function StocksCalendarTable({
   const [warningModalState, setWarningModalState] =
     useState<WarningModalState | null>(null)
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   const isCaledonian = useIsCaledonian()
 
@@ -294,7 +294,7 @@ export function StocksCalendarTable({
       label: 'Actions',
       render: (stock) => {
         const canDeleteStock =
-          !isOfferDisabled(offer) && stock.isEventDeletable && !isVenueClosed
+          !isOfferDisabled(offer) && stock.isEventDeletable && !isClosed
 
         const canEditStock =
           mode === OFFER_WIZARD_MODE.EDITION &&
@@ -302,7 +302,7 @@ export function StocksCalendarTable({
           stock.beginningDatetime &&
           !isBefore(stock.beginningDatetime, new Date()) &&
           (!isOfferSynchronized(offer) || isOfferAllocineSynchronized(offer)) &&
-          !isVenueClosed
+          !isClosed
 
         if (!canEditStock && !canDeleteStock) {
           return null

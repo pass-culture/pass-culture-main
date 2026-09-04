@@ -4,7 +4,7 @@ import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
 import { OfferHighlightCard } from '@/components/IndividualOfferLayout/components/OfferHighlightCard/OfferHighlightCard'
@@ -33,7 +33,7 @@ export const IndividualOfferExposureScreen = ({
 }: Readonly<IndividualOfferExposureScreenProps>) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const {
     shouldDisplayRecommendationAction,
     shouldDisplayHighlightAction,
@@ -49,21 +49,18 @@ export const IndividualOfferExposureScreen = ({
         )}
         <div className={styles['cards-container']}>
           {shouldDisplayRecommendationAction && (
-            <OfferRecommendationCard
-              isReadOnly={isVenueClosed}
-              offerId={offer.id}
-            />
+            <OfferRecommendationCard isReadOnly={isClosed} offerId={offer.id} />
           )}
           {shouldDisplayHighlightAction && (
             <OfferHighlightCard
               offerId={offer.id}
               highlightRequests={offer.highlightRequests}
-              isReadOnly={isVenueClosed}
+              isReadOnly={isClosed}
             />
           )}
           {shouldDisplayHeadlineAction && (
             <OfferHeadlineCard
-              isReadOnly={isVenueClosed}
+              isReadOnly={isClosed}
               offerId={offer.id}
               hasThumb={!!offer.thumbUrl}
             />
@@ -86,7 +83,7 @@ export const IndividualOfferExposureScreen = ({
             iconPosition={IconPositionEnum.LEFT}
             size={ButtonSize.SMALL}
             icon={fullLinkIcon}
-            disabled={withVenueHelpers(selectedPartnerVenue).isClosed}
+            disabled={isClosed}
           />
         </div>
         <OfferAppPreview offer={offer} />

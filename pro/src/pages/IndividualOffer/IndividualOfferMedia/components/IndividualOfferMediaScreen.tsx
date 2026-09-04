@@ -23,7 +23,7 @@ import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { VideoUploader } from '@/components/VideoUploader/VideoUploader'
@@ -53,7 +53,7 @@ export const IndividualOfferMediaScreen = ({
   const mode = useOfferWizardMode()
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const tipsVideoUploaderId = useId()
 
   const initialImageOffer = getIndividualOfferImage(offer)
@@ -228,9 +228,9 @@ export const IndividualOfferMediaScreen = ({
                     initialValues={buildInitialValues(displayedImage)}
                     mode={UploaderModeEnum.OFFER}
                     onImageDropOrSelected={logOnImageDropOrSelected}
-                    hideActionButtons={isProductBased || isVenueClosed}
+                    hideActionButtons={isProductBased || isClosed}
                     warnBeforeDeleting={offer.isHeadlineOffer}
-                    disabled={isProductBased || isVenueClosed}
+                    disabled={isProductBased || isClosed}
                   />
                 </FormLayout.SubSection>
                 <Divider

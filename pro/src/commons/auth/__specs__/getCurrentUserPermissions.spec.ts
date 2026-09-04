@@ -36,7 +36,7 @@ describe('getCurrentUserPermissions', () => {
         hasSelectedPartnerVenue: false,
         hasVenues: false,
         isAuthenticated: false,
-        isSelectedPartnerVenueActive: false,
+        isSelectedPartnerVenueAndOffererActive: false,
         isSelectedPartnerVenueAssociated: false,
         isSelectedPartnerVenueOnboarded: false,
       })
@@ -127,7 +127,7 @@ describe('getCurrentUserPermissions', () => {
             hasSelectedPartnerVenue: false,
             hasVenues: true,
             isAuthenticated: true,
-            isSelectedPartnerVenueActive: false,
+            isSelectedPartnerVenueAndOffererActive: false,
             isSelectedPartnerVenueAssociated: false,
             isSelectedPartnerVenueOnboarded: false,
           })
@@ -152,7 +152,7 @@ describe('getCurrentUserPermissions', () => {
             hasSelectedPartnerVenue: true,
             hasVenues: true,
             isAuthenticated: true,
-            isSelectedPartnerVenueActive: true,
+            isSelectedPartnerVenueAndOffererActive: true,
             isSelectedPartnerVenueAssociated: true,
             isSelectedPartnerVenueOnboarded: false,
           })
@@ -184,7 +184,7 @@ describe('getCurrentUserPermissions', () => {
 
         describe('when venue is closed', () => {
           it.each([VenueState.CLOSED, VenueState.CLOSING])(
-            'should return isSelectedPartnerVenueActive as false when venue state is %s',
+            'should return isSelectedPartnerVenueAndOffererActive as false when venue state is %s',
             (venueState) => {
               const userSliceState = makeUserSliceState({
                 currentUser: fakeCurrentUser,
@@ -201,7 +201,7 @@ describe('getCurrentUserPermissions', () => {
 
               expect(result).toMatchObject({
                 hasSelectedPartnerVenue: true,
-                isSelectedPartnerVenueActive: false,
+                isSelectedPartnerVenueAndOffererActive: false,
               })
             }
           )
@@ -271,7 +271,7 @@ describe('getCurrentUserPermissions', () => {
               hasSelectedPartnerVenue: true,
               hasVenues: true,
               isAuthenticated: true,
-              isSelectedPartnerVenueActive: true,
+              isSelectedPartnerVenueAndOffererActive: true,
               isSelectedPartnerVenueAssociated: true,
               isSelectedPartnerVenueOnboarded: true,
             })

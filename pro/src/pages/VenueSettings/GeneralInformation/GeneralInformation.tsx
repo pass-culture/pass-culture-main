@@ -15,8 +15,8 @@ import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenTo
 import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
 import { getMapKeys } from '@/commons/mappings/helpers'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
@@ -43,7 +43,7 @@ import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrC
 
 const GeneralInformation = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosedVenue = withVenueHelpers(venue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(venue)
   const addressFieldKey = useKey()
 
   const formContext: VenueSettingsFormContext = {
@@ -210,7 +210,7 @@ const GeneralInformation = () => {
                 <SiretOrCommentFields
                   formContext={formContext}
                   onAddressUpdate={addressFieldKey.update}
-                  disabled={isClosedVenue}
+                  disabled={isClosed}
                 />
               </FormLayout.Row>
 
@@ -228,7 +228,7 @@ const GeneralInformation = () => {
                   {...register('publicName')}
                   label="Nom public"
                   description="À remplir si différent de la raison sociale. En le remplissant, c'est ce dernier qui sera visible du public."
-                  disabled={isClosedVenue}
+                  disabled={isClosed}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
@@ -238,7 +238,7 @@ const GeneralInformation = () => {
                 <OpenToPublicToggle
                   onChange={toggleOpenToPublic}
                   isOpenToPublic={isOpenToPublic}
-                  disabled={isClosedVenue}
+                  disabled={isClosed}
                 />
               </FormLayout.Row>
               {isOpenToPublic === 'true' && (
@@ -246,7 +246,7 @@ const GeneralInformation = () => {
                   key={addressFieldKey.value}
                   description="Indiquez ici l'adresse où vous recevez votre public."
                   addressRegister={register('addressAutocomplete')}
-                  disabled={disabled || isClosedVenue}
+                  disabled={disabled || isClosed}
                   onAddressChosen={onAddressSelect}
                   error={errors.addressAutocomplete?.message}
                   renderManual={() => <AddressManual />}
@@ -269,7 +269,7 @@ const GeneralInformation = () => {
             )}
           </FormLayout>
           <VenueFormActionBar
-            disableFormSubmission={isClosedVenue}
+            disableFormSubmission={isClosed}
             isSubmitting={isSubmitting}
             onCancel={onCancel}
           />

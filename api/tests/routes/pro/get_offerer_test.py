@@ -15,6 +15,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -73,6 +74,7 @@ class GetOffererTest:
             "hasValidBankAccount": False,
             "id": offerer.id,
             "isActive": offerer.isActive,
+            "isClosed": False,
             "isOnboarded": True,
             "isValidated": offerer.isValidated,
             "managedVenues": [
@@ -127,6 +129,16 @@ class GetOffererTest:
 
         db.session.refresh(offerer)
         assert len(offerer.managedVenues) == 3
+
+    def test_closed_offerer_is_closed(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        user_offerer.offerer.validationStatus = ValidationStatus.CLOSED
+        client = client.with_session_auth(user_offerer.user.email)
+
+        response = client.get(f"/offerers/{user_offerer.offerer.id}")
+
+        assert response.status_code == 200
+        assert response.json["isClosed"] is True
 
     def test_wrong_offerer_id_format(self, client):
         pro = users_factories.ProFactory()

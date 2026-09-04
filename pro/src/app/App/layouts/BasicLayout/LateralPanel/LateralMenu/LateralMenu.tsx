@@ -9,7 +9,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -138,6 +138,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   if (!selectedPartnerVenue) {
     return null
   }
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   const navItems = generateNavItems()
 
@@ -175,7 +176,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </div>
 
         <div className={styles['nav-section-create-button-wrapper']}>
-          {!withVenueHelpers(selectedPartnerVenue).isClosed && (
+          {!isClosed && (
             <Dropdown
               label="Créer une offre"
               open={isOpen}
@@ -214,9 +215,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               ]}
             />
           )}
-          {withVenueHelpers(selectedPartnerVenue).isClosed && (
-            <Button disabled fullWidth label="Créer une offre" />
-          )}
+          {isClosed && <Button disabled fullWidth label="Créer une offre" />}
         </div>
       </div>
 

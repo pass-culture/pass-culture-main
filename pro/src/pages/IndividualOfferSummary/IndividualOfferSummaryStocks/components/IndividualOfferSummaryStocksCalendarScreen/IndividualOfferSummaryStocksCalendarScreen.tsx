@@ -6,7 +6,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { StocksCalendar } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/StocksCalendar'
 import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
@@ -19,6 +19,7 @@ export function IndividualOfferSummaryStocksCalendarScreen({
   offer,
 }: Readonly<StocksCalendarSummaryScreenProps>) {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
@@ -31,7 +32,7 @@ export function IndividualOfferSummaryStocksCalendarScreen({
       title="Horaires et stocks"
       editLink={editLink}
       aria-label="Modifier le calendrier"
-      isReadOnly={withVenueHelpers(selectedPartnerVenue).isClosed}
+      isReadOnly={isClosed}
     >
       {getStockWarningText(offer)}
 

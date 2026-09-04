@@ -11,7 +11,7 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
 import { PriceCategoriesSection } from '@/pages/IndividualOfferSummary/components/PriceCategoriesSection/PriceCategoriesSection'
 import { StockThingSection } from '@/pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
@@ -27,6 +27,7 @@ export const IndividualOfferSummaryPriceTableScreen = ({
   offerStocks,
 }: IndividualOfferSummaryPriceTableScreenProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const { subCategories } = useIndividualOfferContext()
 
   const offerSubcategory = subCategories.find(
@@ -58,7 +59,7 @@ export const IndividualOfferSummaryPriceTableScreen = ({
       title="Tarifs"
       editLink={editLink}
       aria-label="Modifier les tarifs"
-      isReadOnly={withVenueHelpers(selectedPartnerVenue).isClosed}
+      isReadOnly={isClosed}
     >
       {stockWarningText && (
         <SummaryDescriptionList descriptions={[{ text: stockWarningText }]} />
