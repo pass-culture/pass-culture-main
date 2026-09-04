@@ -250,6 +250,26 @@ class HandleDmsApplicationTest:
             == dms_response.latest_modification_datetime
         )
 
+    @patch("pcapi.core.subscription.dms.api.create_ubble_identification")
+    @patch("pcapi.core.subscription.dms.api._is_fraud_check_up_to_date", return_value=True)
+    @patch("pcapi.core.subscription.dms.fraud_check_api.get_fraud_check", return_value="not None")
+    def test_when_fraud_check_is_up_to_date(
+        self, mock_get_fraud_check, mock_is_fraud_check_up_to_date, create_ubble_identification, db_session
+    ):
+        users_factories.UserFactory(email="john.stiles@example.com")
+        dms_response = fixtures.make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email="john.stiles@example.com",
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        mock_get_fraud_check.assert_called_once()
+        mock_is_fraud_check_up_to_date.assert_called_once()
+        # ensure that we create Ubble link if application does not already have one
+        create_ubble_identification.assert_called_once()
+
     @patch("pcapi.connectors.dms.serializer.parse_beneficiary_information_graphql")
     def test_field_error(self, mocked_parse_beneficiary_information):
         user = users_factories.UserFactory()

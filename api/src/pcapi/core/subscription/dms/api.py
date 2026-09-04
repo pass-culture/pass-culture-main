@@ -258,8 +258,7 @@ def handle_dms_application(
     else:
         if _is_fraud_check_up_to_date(fraud_check, application_content):
             logger.info("[DMS] FraudCheck already up to date", extra=log_extra_data)
-            if force_ubble:
-                create_ubble_identification(application_scalar_id, application_content, is_forced=True)
+            create_ubble_identification(application_scalar_id, application_content, is_forced=force_ubble)
             return fraud_check
 
         if fraud_check.status == subscription_models.FraudCheckStatus.OK:
