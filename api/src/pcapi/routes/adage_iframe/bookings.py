@@ -47,8 +47,7 @@ def book_collective_offer(
 
     except exceptions.MissingRequiredRedactorInformation:
         logger.info(
-            "Could not book offer: missing information in adage jwt",
-            extra={"authenticated_information": authenticated_information.dict()},
+            "Could not book offer: missing information in adage jwt", extra={"uai": authenticated_information.uai}
         )
         raise ApiErrors(
             {
