@@ -147,10 +147,20 @@ class GetSettlementsTest:
             bankAccount=bank_account,
             batch__dateValidated=datetime.datetime.fromisoformat("2021-06-01"),
         )
-        settlement_within = factories.SettlementFactory(
+        settlement_lower_bound = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
             bankAccount=bank_account,
             batch__dateValidated=datetime.datetime.fromisoformat("2021-07-01"),
+        )
+        settlement_within = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__dateValidated=datetime.datetime.fromisoformat("2021-07-15"),
+        )
+        settlement_upper_bound = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__dateValidated=datetime.datetime.fromisoformat("2021-07-31"),
         )
         _settlement_after = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
@@ -167,8 +177,12 @@ class GetSettlementsTest:
             )
 
         assert response.status_code == 200
-        assert len(response.json) == 1
-        assert response.json[0]["id"] == settlement_within.id
+        assert len(response.json) == 3
+        assert {result["id"] for result in response.json} == {
+            settlement_lower_bound.id,
+            settlement_within.id,
+            settlement_upper_bound.id,
+        }
 
     def test_get_settlements_name_filter(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
