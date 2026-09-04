@@ -39,6 +39,7 @@ class GetSettlementsTest:
         batch_3 = factories.SettlementBatchFactory(
             name="VIR3-1", dateValidated=get_naive_utc_now() - datetime.timedelta(days=3)
         )
+
         executed_settlement_1 = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
             amount=10000,
@@ -50,7 +51,21 @@ class GetSettlementsTest:
             amount=20000,
             bankAccount=bank_account_2,
             batch=batch_1,
-            invoices=[factories.InvoiceFactory(bankAccount=bank_account_2)],
+        )
+        # add invoices to the settlement
+        paid_invoice = factories.InvoiceFactory(
+            status=models.InvoiceStatus.PAID,
+            reference="F301234567",
+            amount=-20000,
+            bankAccount=bank_account_2,
+            settlements=[executed_settlement_2],
+        )
+        # these two non-paid invoices will no appear in the result
+        factories.InvoiceFactory(
+            status=models.InvoiceStatus.PENDING, bankAccount=bank_account_2, settlements=[executed_settlement_2]
+        )
+        factories.InvoiceFactory(
+            status=models.InvoiceStatus.PENDING_PAYMENT, bankAccount=bank_account_2, settlements=[executed_settlement_2]
         )
         rejected_settlement = factories.SettlementFactory(
             status=models.SettlementStatus.REJECTED,
@@ -79,7 +94,15 @@ class GetSettlementsTest:
                 "amount": 200,
                 "bankAccount": "account 2",
                 "status": "executed",
-                "invoicesCount": 1,
+                "invoices": [
+                    {
+                        "reference": "F301234567",
+                        "date": paid_invoice.date.date().isoformat(),
+                        "amount": 200,
+                        "url": paid_invoice.url,
+                        "status": "paid",
+                    }
+                ],
             },
             {
                 "id": executed_settlement_1.id,
@@ -88,7 +111,7 @@ class GetSettlementsTest:
                 "amount": 100,
                 "bankAccount": "account 1",
                 "status": "executed",
-                "invoicesCount": 0,
+                "invoices": [],
             },
             {
                 "id": rejected_settlement.id,
@@ -97,7 +120,7 @@ class GetSettlementsTest:
                 "amount": 300,
                 "bankAccount": "account 1",
                 "status": "rejected",
-                "invoicesCount": 0,
+                "invoices": [],
             },
         ]
 

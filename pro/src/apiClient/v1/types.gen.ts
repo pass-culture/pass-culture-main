@@ -6221,9 +6221,9 @@ export type SettlementResponseModel = {
      */
     id: number;
     /**
-     * Invoicescount
+     * Invoices
      */
-    invoicesCount: number;
+    invoices: Array<InvoiceResponseV2Model>;
     /**
      * Label
      */

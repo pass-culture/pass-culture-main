@@ -87,10 +87,17 @@ class SettlementResponseModel(HttpBodyModel):
     amount: float
     bank_account: str
     status: models.SettlementStatus
-    invoices_count: int
+    invoices: list[InvoiceResponseV2Model]
 
     @classmethod
     def build(cls, settlement: models.Settlement) -> typing.Self:
+        # show paid invoices only, in sync with the GET invoices route
+        invoices = [
+            InvoiceResponseV2Model.build(invoice)
+            for invoice in settlement.invoices
+            if invoice.status == models.InvoiceStatus.PAID
+        ]
+
         return cls(
             id=settlement.id,
             label=settlement.batch.get_displayed_name(),
@@ -98,7 +105,7 @@ class SettlementResponseModel(HttpBodyModel):
             amount=float(cents_to_full_unit(settlement.amount)),
             bank_account=settlement.bankAccount.label,
             status=settlement.status,
-            invoices_count=len(settlement.invoices),
+            invoices=invoices,
         )
 
 
