@@ -603,11 +603,6 @@ def get_paid_invoices_query(
     amount_lower_than: int | None = None,
     amount_greater_than_equal: int | None = None,
 ) -> sa_orm.Query[models.Invoice]:
-    """Return invoices for the requested offerer.
-
-    If given, ``date_from`` is **inclusive**, ``date_until`` is
-    **exclusive**.
-    """
     bank_account_subquery = db.session.query(models.BankAccount)
 
     if not user.has_admin_role:
@@ -635,18 +630,25 @@ def get_paid_invoices_query(
             models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id)),
             models.Invoice.status == models.InvoiceStatus.PAID,
         )
-        .options(sa_orm.joinedload(models.Invoice.bankAccount).load_only(models.BankAccount.label))
+        .options(
+            sa_orm.joinedload(models.Invoice.bankAccount).load_only(models.BankAccount.label),
+            sa_orm.joinedload(models.Invoice.cashflows).joinedload(models.Cashflow.batch),
+        )
+        .order_by(models.Invoice.date.desc())
     )
 
     if date_from:
         datetime_from = convert_to_datetime(date_from)
         invoices = invoices.filter(models.Invoice.date >= datetime_from)
+
     if date_until:
-        datetime_until = convert_to_datetime(date_until)
+        # add one day to get all settlements until the day date_until included
+        datetime_until = convert_to_datetime(date_until) + datetime.timedelta(days=1)
         invoices = invoices.filter(models.Invoice.date < datetime_until)
 
     if amount_lower_than is not None:
         invoices = invoices.filter(models.Invoice.amount < amount_lower_than)
+
     if amount_greater_than_equal is not None:
         invoices = invoices.filter(models.Invoice.amount >= amount_greater_than_equal)
 
