@@ -18,6 +18,35 @@ Texte
 </details>
 
 <br>
+
+<details>
+
+<summary> ⏳ Critères 9.1 - RGAA - Dans chaque page web, l'information est-elle structurée par l'utilisation appropriée de titres ?</summary>
+
+**RAWeb/RGAA** : [Critère 9.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-1)
+**Ticket** : [PC-42855](https://passculture.atlassian.net/browse/PC-42855)  
+**PR** : [#24214](https://github.com/pass-culture/pass-culture-main/pull/24214)
+
+**Problème** 😱
+
+[P11 → Contenus téléchargables](https://integration.passculture.pro/ecoconception/declaration)
+
+La hiérarchie des titres n'est pas pertinente.
+
+Par exemple : 
+
+Plusieurs sections du contenu sont identifiées uniquement par une mise en forme visuelle (texte en gras), sans utiliser de titre HTML adapté. C'est notamment le cas des intitulés « Évaluation de l’utilité du service, en tenant compte de ses impacts environnementaux », « Cibles utilisatrices de l'espace partenaire du pass Culture », etc.
+
+**Correction** 💡 
+
+Transformation des textes servant d’intitulés de sections en véritables titres HTML avec le niveau de hiérarchie adapté (`<h4>` dans ces cas).
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
 <details>
 
 <summary> ⏳ Critère 8.9 - RGAA - Dans chaque page web, les balises ne doivent pas être utilisées uniquement à des fins de présentation ?</summary>
