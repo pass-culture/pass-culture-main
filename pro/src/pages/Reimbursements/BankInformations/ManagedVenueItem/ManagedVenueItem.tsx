@@ -6,6 +6,8 @@ import {
   type ManagedVenue,
   VenueState,
 } from '@/apiClient/v1'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -35,6 +37,7 @@ export function ManadgedVenueItem({
   hasError,
 }: Readonly<ManadgedVenueItemProps>) {
   const [selectedVenue, setSelectedVenue] = useState<ManagedVenue | null>(null)
+  const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const [isPricingPointDialogOpen, setIsPricingPointDialogOpen] =
     useState<boolean>(false)
 
@@ -67,8 +70,12 @@ export function ManadgedVenueItem({
           hasError={hasError}
         />
         {(venue.state === VenueState.CLOSED ||
-          venue.state === VenueState.CLOSING) && (
-          <Tag variant={TagVariant.ERROR} label="Structure fermée" />
+          venue.state === VenueState.CLOSING) &&
+          !selectedAdminOfferer.isClosed && (
+            <Tag variant={TagVariant.ERROR} label="Structure fermée" />
+          )}
+        {selectedAdminOfferer.isClosed && (
+          <Tag variant={TagVariant.ERROR} label="Entité juridique fermée" />
         )}
       </div>
       {!venue.hasPricingPoint && (

@@ -128,9 +128,21 @@ export const Hub = () => {
                 onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
                 type="button"
               >
-                {withVenueHelpers(venue).isClosed && (
+                {withVenueHelpers(venue).isClosed &&
+                  !venue.managingOffererIsClosed && (
+                    <div className={styles['venue-item-state']}>
+                      <Tag
+                        variant={TagVariant.ERROR}
+                        label="Structure fermée"
+                      />
+                    </div>
+                  )}
+                {venue.managingOffererIsClosed && (
                   <div className={styles['venue-item-state']}>
-                    <Tag variant={TagVariant.ERROR} label="Structure fermée" />
+                    <Tag
+                      variant={TagVariant.ERROR}
+                      label="Entité juridique fermée"
+                    />
                   </div>
                 )}
                 <span

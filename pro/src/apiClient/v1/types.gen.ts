@@ -3203,6 +3203,10 @@ export type GetOffererResponseModel = {
      */
     isCaledonian: boolean;
     /**
+     * Isclosed
+     */
+    isClosed: boolean;
+    /**
      * Isonboarded
      */
     isOnboarded: boolean;
@@ -3456,6 +3460,10 @@ export type GetVenueManagingOffererResponseModel = {
      * Id
      */
     id: number;
+    /**
+     * Isclosed
+     */
+    isClosed: boolean;
     /**
      * Isvalidated
      */
@@ -7174,6 +7182,10 @@ export type VenueListItemLiteResponseModel = {
      * Managingoffererid
      */
     managingOffererId: number;
+    /**
+     * Managingoffererisclosed
+     */
+    managingOffererIsClosed: boolean;
     /**
      * Publicname
      */

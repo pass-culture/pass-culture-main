@@ -16,6 +16,7 @@ export const makeGetVenueManagingOffererResponseModel = <
 ): Omit<GetVenueManagingOffererResponseModel, keyof T> & T => {
   const fake: GetVenueManagingOffererResponseModel = {
     id: override.id,
+    isClosed: false,
     isValidated: false,
     name: `Entité ${override.id}`,
     siren: '123456789',
@@ -162,6 +163,7 @@ export const makeVenueListItemLiteResponseModel = <
     id: override.id,
     location: location,
     managingOffererId: offererId,
+    managingOffererIsClosed: false,
     publicName: `Nom public de la structure ${override.id}`,
     state: null,
   }

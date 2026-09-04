@@ -15,7 +15,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -76,7 +76,7 @@ export const IndividualOfferLayout = ({
   const snackBar = useSnackBar()
   const navigate = useNavigate()
 
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const shouldDisplayOfferName = isOfferExposureEnabled
     ? mode === OFFER_WIZARD_MODE.CREATION
     : mode !== OFFER_WIZARD_MODE.READ_ONLY
@@ -162,20 +162,20 @@ export const IndividualOfferLayout = ({
             <div className={styles['cards-container']}>
               {shouldDisplayRecommendationAction && (
                 <OfferRecommendationCard
-                  isReadOnly={isVenueClosed}
+                  isReadOnly={isClosed}
                   offerId={offer.id}
                 />
               )}
               {shouldDisplayHighlightAction && (
                 <OfferHighlightCard
-                  isReadOnly={isVenueClosed}
+                  isReadOnly={isClosed}
                   offerId={offer.id}
                   highlightRequests={offer.highlightRequests}
                 />
               )}
               {shouldDisplayHeadlineAction && (
                 <OfferHeadlineCard
-                  isReadOnly={isVenueClosed}
+                  isReadOnly={isClosed}
                   offerId={offer.id}
                   hasThumb={!!offer.thumbUrl}
                 />

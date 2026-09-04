@@ -10,8 +10,8 @@ import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { noop } from '@/commons/utils/noop'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { ButtonImageEdit } from '@/components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
 import { Button } from '@/design-system/Button/Button'
@@ -40,7 +40,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
       selectedPartnerVenue.bannerMeta
     )
 
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   const handleOnImageDelete = async () => {
     try {
@@ -78,7 +78,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
         mode={UploaderModeEnum.VENUE}
         hideActionButtons
         onImageDropOrSelected={logButtonAddClick}
-        disabled={isVenueClosed}
+        disabled={isClosed}
       />
 
       <div className={styles['venue-details']}>
@@ -95,7 +95,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
         <div className={styles['venue-details-links']}>
           {selectedPartnerVenue.isPermanent &&
             context === 'partnerPage' &&
-            !isVenueClosed && (
+            !isClosed && (
               <Button
                 as="a"
                 variant={ButtonVariant.SECONDARY}
@@ -106,7 +106,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
                 label="Visualiser votre page"
               />
             )}
-          {imageValues.croppedImageUrl && !isVenueClosed && (
+          {imageValues.croppedImageUrl && !isClosed && (
             <ButtonImageEdit
               mode={UploaderModeEnum.VENUE}
               initialValues={imageValues}

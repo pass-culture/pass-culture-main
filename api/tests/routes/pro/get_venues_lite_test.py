@@ -38,6 +38,7 @@ def test_loads_all_venues_ids_and_names(client):
         {
             "id": venue.id,
             "managingOffererId": venue.managingOffererId,
+            "managingOffererIsClosed": False,
             "publicName": venue.publicName,
             "state": None,
             "location": {
@@ -63,6 +64,7 @@ def test_loads_all_venues_ids_and_names(client):
         {
             "id": with_pending_validation.id,
             "managingOffererId": with_pending_validation.managingOffererId,
+            "managingOffererIsClosed": False,
             "publicName": with_pending_validation.publicName,
             "state": None,
             "location": {
@@ -112,16 +114,31 @@ def test_only_return_non_softdeleted_venues(client):
 
 def test_closed_venues_are_returned_last(client):
     user_offerer = offerers_factories.UserOffererFactory()
-    open_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, publicName="AAA", state=None)
+    open_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, publicName="CCC", state=None)
     closed_venue = offerers_factories.VenueFactory(
         managingOfferer=user_offerer.offerer,
-        publicName="AAA closed",
+        publicName="BBB",
         state=offerers_models.VenueState.CLOSED,
     )
+    closed_offerer = offerers_factories.OffererFactory(validationStatus=offerers_models.ValidationStatus.CLOSED)
+    offerers_factories.UserOffererFactory(user=user_offerer.user, offerer=closed_offerer)
+    venue_with_closed_offerer = offerers_factories.VenueFactory(managingOfferer=closed_offerer, publicName="AAA")
 
     client = client.with_session_auth(user_offerer.user.email)
     response = client.get("/lite/venues")
 
     assert response.status_code == 200
     ids = [v["id"] for v in response.json["venues"]]
-    assert ids == [open_venue.id, closed_venue.id]
+    assert ids == [open_venue.id, venue_with_closed_offerer.id, closed_venue.id]
+
+
+def test_return_managing_offerer_closure_status(client):
+    user_offerer = offerers_factories.UserOffererFactory()
+    user_offerer.offerer.validationStatus = offerers_models.ValidationStatus.CLOSED
+    offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+    client = client.with_session_auth(user_offerer.user.email)
+    response = client.get("/lite/venues")
+
+    assert response.status_code == 200
+    assert response.json["venues"][0]["managingOffererIsClosed"] is True

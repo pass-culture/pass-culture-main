@@ -16,7 +16,7 @@ import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { deSerializeDurationMinutes } from './serializers'
@@ -184,13 +184,14 @@ export function getFormReadOnlyFields(
   hasSelectedProduct: boolean,
   venue: GetVenueResponseModel
 ): string[] {
+  const isClosed = isSelectedPartnerOrOffererClosed(venue)
   const isNewOfferDraft = offer === null
 
   const allFieldsExceptAccessibility: string[] = Object.keys(
     DEFAULT_DETAILS_FORM_VALUES
   )
 
-  if (withVenueHelpers(venue).isClosed) {
+  if (isClosed) {
     return [...allFieldsExceptAccessibility, 'accessibility']
   }
 

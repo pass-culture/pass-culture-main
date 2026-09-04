@@ -39,7 +39,8 @@ import styles from './Homepage.module.scss'
 
 export const Homepage = (): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isOffererClosed = selectedPartnerVenue.managingOfferer.isClosed
   const collectiveDmsApplication =
     selectedPartnerVenue.lastCollectiveDmsApplication
 
@@ -64,7 +65,6 @@ export const Homepage = (): JSX.Element => {
     )
   }
 
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const tabs: TabItem<TabKey>[] = [
     {
       key: TABS.INDIVIDUAL,
@@ -111,9 +111,17 @@ export const Homepage = (): JSX.Element => {
       <MainHeading
         mainHeading={`Votre espace ${selectedPartnerVenue.publicName}`}
       />
-      {withVenueHelpers(selectedPartnerVenue).isClosed && (
+      {isVenueClosed && !isOffererClosed && (
         <div className={styles['venue-banner']}>
           <Banner variant={BannerVariants.ERROR} title="Structure fermée" />
+        </div>
+      )}
+      {isOffererClosed && (
+        <div className={styles['venue-banner']}>
+          <Banner
+            variant={BannerVariants.ERROR}
+            title="Entité juridique fermée"
+          />
         </div>
       )}
       {shouldDisplayVenueValidationBanner && (

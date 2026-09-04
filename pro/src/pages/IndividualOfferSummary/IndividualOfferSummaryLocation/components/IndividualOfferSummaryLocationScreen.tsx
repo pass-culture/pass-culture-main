@@ -8,7 +8,7 @@ import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferAppPreview } from '@/components/OfferAppPreview/OfferAppPreview'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -30,6 +30,7 @@ export function IndividualOfferSummaryLocationScreen({
   offer,
 }: Readonly<IndividualOfferSummaryLocationScreenProps>) {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const mode = useOfferWizardMode()
 
   return (
@@ -43,7 +44,7 @@ export function IndividualOfferSummaryLocationScreen({
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
           aria-label="Modifier la localisation de l’offre"
-          isReadOnly={withVenueHelpers(selectedPartnerVenue).isClosed}
+          isReadOnly={isClosed}
         >
           {!offer.isDigital && (
             <SummarySubSection title="Où profiter de l’offre ?">

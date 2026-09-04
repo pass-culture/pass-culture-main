@@ -24,7 +24,7 @@ import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/u
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
@@ -52,7 +52,7 @@ export const IndividualOfferPracticalInfosScreen = ({
   const mode = useOfferWizardMode()
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   const snackBar = useSnackBar()
 
@@ -199,7 +199,7 @@ export const IndividualOfferPracticalInfosScreen = ({
               isOfferDisabled(offer) ||
               (!form.formState.isDirty &&
                 mode !== OFFER_WIZARD_MODE.CREATION) ||
-              isVenueClosed
+              isClosed
             }
           />
         </form>

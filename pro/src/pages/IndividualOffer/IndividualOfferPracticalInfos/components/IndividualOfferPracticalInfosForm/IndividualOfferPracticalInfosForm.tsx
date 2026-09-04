@@ -18,7 +18,7 @@ import {
   ensureCurrentUser,
   ensureSelectedPartnerVenue,
 } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -44,7 +44,7 @@ export function IndividualOfferPracticalInfosForm({
   stocks,
 }: Readonly<IndividualOfferPracticalInfosFormProps>) {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   const form = useFormContext<IndividualOfferPracticalInfosFormValues>()
 
@@ -54,7 +54,7 @@ export function IndividualOfferPracticalInfosForm({
   const bookingEmail = form.watch('bookingEmail')
 
   const isOfferDisabledOrSynchronized =
-    isOfferDisabled(offer) || isOfferSynchronized(offer) || isVenueClosed
+    isOfferDisabled(offer) || isOfferSynchronized(offer) || isClosed
 
   const hasNonFreeStock = stocks.some((s) => Boolean(s.price))
 
@@ -136,7 +136,7 @@ export function IndividualOfferPracticalInfosForm({
               {...form.register('externalTicketOfficeUrl')}
               label="URL de votre site ou billetterie"
               type="url"
-              disabled={isOfferDisabled(offer) || isVenueClosed}
+              disabled={isOfferDisabled(offer) || isClosed}
               description="Format : https://exemple.com"
               error={form.formState.errors.externalTicketOfficeUrl?.message}
             />

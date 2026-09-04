@@ -325,6 +325,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   hasBankAccountWithPendingCorrections: false,
   venuesWithNonFreeOffersWithoutBankAccounts: [],
   isActive: false,
+  isClosed: false,
   isValidated: false,
   managedVenues: [],
   siren: '123456789',
@@ -406,6 +407,7 @@ export const defaultGetVenueResponseModel: GetVenueResponseModel = {
   comment: 'No SIRET',
   managingOfferer: {
     id: 878,
+    isClosed: false,
     isValidated: true,
     name: 'Venue Entreprise',
     siren: '123456789',
