@@ -72,7 +72,10 @@ class ApiParticulierPerson(BaseModel):
     @classmethod
     def parse_gender(cls, gender: typing.Any) -> users_models.GenderEnum | None:
         if isinstance(gender, str):
-            return users_models.GenderEnum[gender]
+            try:
+                return users_models.GenderEnum[gender]
+            except KeyError:
+                return users_models.GenderEnum(gender)
         if isinstance(gender, users_models.GenderEnum):
             return gender
         if gender is None:
