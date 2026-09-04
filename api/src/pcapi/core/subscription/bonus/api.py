@@ -1,9 +1,9 @@
-import dataclasses
 import datetime
 import logging
 import typing
 
 from dateutil.relativedelta import relativedelta
+from pydantic import BaseModel
 
 from pcapi import settings
 from pcapi.connectors import api_particulier
@@ -20,20 +20,22 @@ from pcapi.core.subscription.bonus import staging_api
 from pcapi.core.subscription.bonus import statistics_api
 from pcapi.core.users import models as users_models
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
 
+_QF_CACHE_KEY = "pcapi:cache:bonus_credit:quotient_familial"
 
-@dataclasses.dataclass
+
 class _ApiParticulierResult[
     ResponseT: (
         api_particulier.QuotientFamilialResponse,
         api_particulier.DisabledAdultAllowanceResponse,
         api_particulier.DisabledChildEducationAllowanceResponse,
     )
-]:
+](BaseModel):
     response: ResponseT | None
     status: subscription_models.FraudCheckStatus
     reason_codes: list[subscription_models.FraudReasonCode]
@@ -52,12 +54,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
         return
 
     most_relevant_result: _ApiParticulierResult[api_particulier.QuotientFamilialResponse] | None = None
-    for qf_result in _get_user_quotient_familial_responses(quotient_familial_fraud_check, user):
-        if qf_result.response:
-            qf_result.status, qf_result.reason_codes = _get_quotient_familial_bonus_status(
-                user, qf_result.response.data
-            )
-
+    for qf_result in _yield_quotient_familial_responses(quotient_familial_fraud_check):
         if not most_relevant_result:
             most_relevant_result = qf_result
         else:
@@ -99,38 +96,60 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     )
 
 
-def _get_user_quotient_familial_responses(
-    quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck, user: users_models.User
+def _yield_quotient_familial_responses(
+    quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck,
 ) -> typing.Generator[_ApiParticulierResult[api_particulier.QuotientFamilialResponse]]:
     """
     Calls the Quotient Familial API twelve times, returning the lowest one.
     """
+    user = quotient_familial_fraud_check.user
     birth_date = user.validatedBirthDate
     if not birth_date:
         raise ValueError("Beneficiaries applying for the bonus are expected to have a non-null birth date")
 
-    seventeenth_birthday = birth_date + relativedelta(years=17)
-
-    source_data = quotient_familial_fraud_check.source_data()
-    if not isinstance(source_data, bonus_schemas.QuotientFamilialBonusCreditContent):
-        raise ValueError(f"QuotientFamilialBonusCreditContent was expected while {type(source_data)} was given")
-
     MONTHS_IN_A_YEAR = 12
     api_particulier_cutoff_date = datetime.date.today() - relativedelta(years=2)
     cutoff_month = api_particulier_cutoff_date.replace(month=1, day=1)
+    seventeenth_birthday = birth_date + relativedelta(years=17)
     for month_offset in range(MONTHS_IN_A_YEAR):
         at_date = seventeenth_birthday + relativedelta(months=month_offset)
         if at_date < cutoff_month:
             continue
 
-        # freeze at_date loop variable to satisfy the B023 ruff rule and a named function is needed to satisfy mypy
-        def _get_quotient_familial(at: datetime.date = at_date) -> api_particulier.QuotientFamilialResponse:
-            if settings.ENABLE_PARTICULIER_API_MOCK:
-                return staging_api.get_and_mock_quotient_familial(source_data.custodian, at, user)
-            else:
-                return api_particulier.get_quotient_familial(source_data.custodian, at)
+        yield _get_and_cache_quotient_familial_result(quotient_familial_fraud_check, at_date)
 
-        yield _call_api_particulier(quotient_familial_fraud_check, _get_quotient_familial)
+
+def _get_and_cache_quotient_familial_result(
+    quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck,
+    at_date: datetime.date,
+) -> _ApiParticulierResult[api_particulier.QuotientFamilialResponse]:
+    source_data = quotient_familial_fraud_check.source_data()
+    if not isinstance(source_data, bonus_schemas.QuotientFamilialBonusCreditContent):
+        raise TypeError(f"QuotientFamilialBonusCreditContent was expected while {type(source_data)} was given")
+
+    cache_key = f"{_QF_CACHE_KEY}:{quotient_familial_fraud_check.id}:{at_date.isoformat()}"
+    redis_client = get_redis_client()
+    cached_result = redis_client.get(cache_key)
+    if cached_result:
+        return _ApiParticulierResult[api_particulier.QuotientFamilialResponse].model_validate_json(cached_result)
+
+    user = quotient_familial_fraud_check.user
+    if settings.ENABLE_PARTICULIER_API_MOCK:
+        qf_result = _call_api_particulier(
+            quotient_familial_fraud_check,
+            lambda: staging_api.get_and_mock_quotient_familial(source_data.custodian, at_date, user),
+        )
+    else:
+        qf_result = _call_api_particulier(
+            quotient_familial_fraud_check, lambda: api_particulier.get_quotient_familial(source_data.custodian, at_date)
+        )
+
+    if qf_result.response:
+        qf_result.status, qf_result.reason_codes = _get_quotient_familial_bonus_status(user, qf_result.response.data)
+
+    redis_client.set(cache_key, qf_result.model_dump_json(), ex=bonus_constants.QUOTIENT_FAMILIAL_CACHE_TTL)
+
+    return qf_result
 
 
 def _get_quotient_familial_bonus_status(
@@ -418,7 +437,13 @@ def _call_api_particulier[
         status = subscription_models.FraudCheckStatus.SUSPICIOUS
         http_status_code = 200
 
-    return _ApiParticulierResult(response, status, reason_codes, http_status_code, error_code)
+    return _ApiParticulierResult(
+        response=response,
+        status=status,
+        reason_codes=reason_codes,
+        http_status_code=http_status_code,
+        error_code=error_code,
+    )
 
 
 def _decline_bonus(
