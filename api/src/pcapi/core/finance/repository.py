@@ -695,7 +695,8 @@ def get_settlements_query(
         settlements_query = settlements_query.filter(models.SettlementBatch.dateValidated >= datetime_from)
 
     if date_until is not None:
-        datetime_until = convert_to_datetime(date_until)
+        # add one day to get all settlements until the day date_until included
+        datetime_until = convert_to_datetime(date_until) + datetime.timedelta(days=1)
         settlements_query = settlements_query.filter(models.SettlementBatch.dateValidated < datetime_until)
 
     if name_search is not None:
