@@ -16,15 +16,15 @@ def upgrade() -> None:
     op.create_table(
         "user_cultural_survey",
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
-        sa.Column("user_id", sa.BigInteger(), nullable=False),
+        sa.Column("userId", sa.BigInteger(), nullable=False),
         sa.Column("answers", sa.JSON(), nullable=False),
-        sa.Column("created_at", sa.DateTime, server_default=sa.func.now()),
+        sa.Column("createdAt", sa.DateTime, server_default=sa.func.now()),
     )
     op.create_foreign_key(
         "user_cultural_survey_fkey",
         "user_cultural_survey",
         "user",
-        ["user_id"],
+        ["userId"],
         ["id"],
         ondelete="CASCADE",
     )

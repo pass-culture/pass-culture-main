@@ -3,11 +3,10 @@ from datetime import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from sqlalchemy import JSON
-from sqlalchemy import func
 
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils.date import get_naive_utc_now
 
 
 class CulturalSurveyQuestionEnum(enum.Enum):
@@ -86,19 +85,20 @@ class CulturalSurveyAnswerEnum(enum.Enum):
 class UserCulturalSurvey(PcObject, Model):
     __tablename__ = "user_cultural_survey"
 
-    user_id: sa_orm.Mapped[str] = sa_orm.mapped_column(
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger,
         sa.ForeignKey("user.id", ondelete="CASCADE"),
         nullable=False,
         unique=True,
     )
 
-    answers: sa_orm.Mapped[JSON] = sa_orm.mapped_column(
+    answers: sa_orm.Mapped[sa.JSON] = sa_orm.mapped_column(
         sa.JSON,
         nullable=False,
     )
 
     created_at: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime,
-        server_default=func.utcnow(),
+        nullable=False,
+        default=get_naive_utc_now(),
     )
