@@ -25,8 +25,8 @@ from pcapi import settings
 from pcapi.connectors import ems
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
+from pcapi.core.bookings import exports as bookings_exports
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
@@ -295,7 +295,7 @@ def get_individual_booking_csv_download() -> response_utils.BackofficeResponse:
     if not form.validate():
         raise BadRequest()
 
-    export_data = booking_repository.get_export(
+    export_data = bookings_exports.get_export(
         pro_user_id=current_user.id,
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
         venue_ids=[form.venue.data],
@@ -311,7 +311,7 @@ def get_individual_booking_xlsx_download() -> response_utils.BackofficeResponse:
     if not form.validate():
         raise BadRequest()
 
-    export_data = booking_repository.get_export(
+    export_data = bookings_exports.get_export(
         pro_user_id=current_user.id,
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
         venue_ids=[form.venue.data],
