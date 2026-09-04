@@ -172,10 +172,10 @@ describe('RequestFormDialog', () => {
     expect(apiAdage.createCollectiveRequest).toHaveBeenNthCalledWith(1, {
       body: {
         comment: 'Test description',
-        phoneNumber: undefined,
+        phoneNumber: null,
         requestedDate: today,
-        totalTeachers: undefined,
-        totalStudents: undefined,
+        totalTeachers: null,
+        totalStudents: null,
       },
       path: { offer_id: 1 },
     })

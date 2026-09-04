@@ -8,6 +8,9 @@ from pcapi.core.educational import models
 from pcapi.core.educational import testing
 from pcapi.core.educational import utils
 from pcapi.models import db
+from pcapi.utils.date import get_naive_utc_now
+
+from tests.conftest import TestClient
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -19,13 +22,14 @@ def base_body():
         "totalStudents": 30,
         "totalTeachers": 2,
         "comment": "Un commentaire sublime que nous avons là",
+        "requestedDate": get_naive_utc_now().date().isoformat(),
     }
 
 
 class CreateCollectiveRequestTest:
     endpoint = "adage_iframe.create_collective_request"
 
-    def test_post_collective_request(self, client, caplog):
+    def test_post_collective_request(self, client: TestClient, caplog):
         educational_institution = factories.EducationalInstitutionFactory()
         educational_redactor = factories.EducationalRedactorFactory()
         offer = factories.CollectiveOfferTemplateFactory()
@@ -40,7 +44,7 @@ class CreateCollectiveRequestTest:
 
         collective_request = db.session.query(models.CollectiveOfferRequest).filter_by(id=request_id).one()
         assert collective_request.phoneNumber == "+33139980101"
-        assert collective_request.requestedDate is None
+        assert collective_request.requestedDate.isoformat() == body["requestedDate"]
         assert collective_request.totalStudents == 30
         assert collective_request.totalTeachers == 2
         assert collective_request.comment == "Un commentaire sublime que nous avons là"
@@ -49,7 +53,7 @@ class CreateCollectiveRequestTest:
         assert record.extra == {
             "id": response.json["id"],
             "collective_offer_template_id": offer.id,
-            "requested_date": None,
+            "requested_date": collective_request.requestedDate,
             "total_students": body["totalStudents"],
             "total_teachers": body["totalTeachers"],
             "comment": body["comment"],
@@ -71,9 +75,34 @@ class CreateCollectiveRequestTest:
         assert request.venueName == offer.venue.name
         assert request.offerName == offer.name
         assert request.comment == body["comment"]
-        assert not request.requestedDate
+        assert request.requestedDate == collective_request.requestedDate
 
-    def test_post_collective_request_no_offer_template(self, client):
+    def test_post_collective_request_null_data(self, client: TestClient):
+        educational_institution = factories.EducationalInstitutionFactory()
+        educational_redactor = factories.EducationalRedactorFactory()
+        offer = factories.CollectiveOfferTemplateFactory()
+
+        body = {
+            "phoneNumber": None,
+            "totalStudents": None,
+            "totalTeachers": None,
+            "comment": "hello",
+            "requestedDate": None,
+        }
+        client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
+        response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
+
+        assert response.status_code == 201
+        request_id = response.json["id"]
+
+        collective_request = db.session.query(models.CollectiveOfferRequest).filter_by(id=request_id).one()
+        assert collective_request.phoneNumber is None
+        assert collective_request.requestedDate is None
+        assert collective_request.totalStudents is None
+        assert collective_request.totalTeachers is None
+        assert collective_request.comment == "hello"
+
+    def test_post_collective_request_no_offer_template(self, client: TestClient):
         educational_institution = factories.EducationalInstitutionFactory()
         educational_redactor = factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
 
@@ -84,7 +113,7 @@ class CreateCollectiveRequestTest:
         assert response.status_code == 404
         assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}
 
-    def test_post_collective_request_no_institution_found(self, client):
+    def test_post_collective_request_no_institution_found(self, client: TestClient):
         educational_redactor = factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
         offer = factories.CollectiveOfferTemplateFactory()
 
@@ -96,7 +125,7 @@ class CreateCollectiveRequestTest:
         assert response.json == {"code": "INSTITUTION_NOT_FOUND"}
         assert not testing.adage_requests
 
-    def test_missing_redactor_is_created(self, client):
+    def test_missing_redactor_is_created(self, client: TestClient):
         """
         Test that if the redactor is missing from the database:
           1. it is created with its authenticated information;
@@ -131,7 +160,7 @@ class CreateCollectiveRequestTest:
         assert found_redactor.firstName == educational_redactor.firstName
         assert found_redactor.lastName == educational_redactor.lastName
 
-    def test_invalid_phone_number(self, client):
+    def test_invalid_phone_number(self, client: TestClient):
         educational_institution = factories.EducationalInstitutionFactory()
         educational_redactor = factories.EducationalRedactorFactory()
         offer = factories.CollectiveOfferTemplateFactory()
@@ -142,4 +171,17 @@ class CreateCollectiveRequestTest:
         response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
 
         assert response.status_code == 400
-        assert "phoneNumber" in response.json
+        assert response.json == {"phoneNumber": ["Numéro de téléphone invalide"]}
+
+    def test_invalid_comment(self, client: TestClient):
+        educational_institution = factories.EducationalInstitutionFactory()
+        educational_redactor = factories.EducationalRedactorFactory()
+        offer = factories.CollectiveOfferTemplateFactory()
+
+        body = {**base_body(), "comment": None}
+
+        client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
+        response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
+
+        assert response.status_code == 400
+        assert response.json == {"comment": ["Saisissez une chaîne de caractères valide"]}
