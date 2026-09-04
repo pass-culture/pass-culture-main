@@ -21,6 +21,35 @@ Texte
 
 <details>
 
+<summary> ⏳ Critères 9.3 - RGAA - Dans chaque page web, chaque liste est-elle correctement structurée ?</summary>
+
+**RAWeb/RGAA** : [Critère 9.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-3)
+**Ticket** : [PC-42855](https://passculture.atlassian.net/browse/PC-42855)  
+**PR** : [#24214](https://github.com/pass-culture/pass-culture-main/pull/24214)
+
+**Problème** 😱
+
+[P11 → Contenus téléchargables](https://integration.passculture.pro/ecoconception/declaration)
+
+Au moins un contenu présenté sous forme de liste n'est pas structuré correctement.
+
+Par exemple :
+
+Les contenus présentés sous forme de listes à puces dans le bloc « 6. Frontend – 7 Backend » sont uniquement mis en forme visuellement et ne sont pas structurés comme des listes.
+
+**Correction** 💡 
+
+On restructure tous le document pour que les critères soient sous forme de liste (`<ul>/<li>`). 
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critères 9.1 - RGAA - Dans chaque page web, l'information est-elle structurée par l'utilisation appropriée de titres ?</summary>
 
 **RAWeb/RGAA** : [Critère 9.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-1)
