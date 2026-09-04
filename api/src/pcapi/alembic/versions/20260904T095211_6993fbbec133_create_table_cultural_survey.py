@@ -26,7 +26,6 @@ def upgrade() -> None:
         "user",
         ["userId"],
         ["id"],
-        ondelete="CASCADE",
     )
 
 

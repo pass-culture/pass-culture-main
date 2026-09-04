@@ -87,7 +87,7 @@ class UserCulturalSurvey(PcObject, Model):
 
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger,
-        sa.ForeignKey("user.id", ondelete="CASCADE"),
+        sa.ForeignKey("user.id"),
         nullable=False,
         unique=True,
     )
@@ -100,5 +100,6 @@ class UserCulturalSurvey(PcObject, Model):
     created_at: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime,
         nullable=False,
-        default=get_naive_utc_now(),
+        default=get_naive_utc_now,
+        server_default=sa.func.utcnow(),
     )
