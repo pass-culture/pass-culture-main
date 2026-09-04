@@ -684,7 +684,7 @@ def get_settlements_query(
             sa_orm.contains_eager(models.Settlement.batch).load_only(
                 models.SettlementBatch.name, models.SettlementBatch.dateValidated
             ),
-            sa_orm.selectinload(models.Settlement.invoices).load_only(models.Invoice.id),
+            sa_orm.selectinload(models.Settlement.invoices),
         )
         .order_by(models.SettlementBatch.dateValidated.desc())
     )

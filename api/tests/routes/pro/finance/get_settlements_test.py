@@ -39,6 +39,7 @@ class GetSettlementsTest:
         batch_3 = factories.SettlementBatchFactory(
             name="VIR3-1", dateValidated=get_naive_utc_now() - datetime.timedelta(days=3)
         )
+
         executed_settlement_1 = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
             amount=10000,
@@ -50,7 +51,30 @@ class GetSettlementsTest:
             amount=20000,
             bankAccount=bank_account_2,
             batch=batch_1,
-            invoices=[factories.InvoiceFactory(bankAccount=bank_account_2)],
+        )
+        # add invoices to the settlement
+        paid_invoice_1 = factories.InvoiceFactory(
+            status=models.InvoiceStatus.PAID,
+            reference="F301234567",
+            amount=-10000,
+            date=get_naive_utc_now() - datetime.timedelta(days=2),
+            bankAccount=bank_account_2,
+            settlements=[executed_settlement_2],
+        )
+        paid_invoice_2 = factories.InvoiceFactory(
+            status=models.InvoiceStatus.PAID,
+            reference="F301234568",
+            amount=-10000,
+            date=get_naive_utc_now() - datetime.timedelta(days=1),
+            bankAccount=bank_account_2,
+            settlements=[executed_settlement_2],
+        )
+        # these two non-paid invoices will no appear in the result
+        factories.InvoiceFactory(
+            status=models.InvoiceStatus.PENDING, bankAccount=bank_account_2, settlements=[executed_settlement_2]
+        )
+        factories.InvoiceFactory(
+            status=models.InvoiceStatus.PENDING_PAYMENT, bankAccount=bank_account_2, settlements=[executed_settlement_2]
         )
         rejected_settlement = factories.SettlementFactory(
             status=models.SettlementStatus.REJECTED,
@@ -70,7 +94,7 @@ class GetSettlementsTest:
             response = client.get(URL, params={"offererId": offerer_id})
 
         assert response.status_code == 200
-        # result is sorted by descending date
+        # settlements and invoices are sorted by descending date
         assert response.json == [
             {
                 "id": executed_settlement_2.id,
@@ -79,7 +103,22 @@ class GetSettlementsTest:
                 "amount": 200,
                 "bankAccount": "account 2",
                 "status": "executed",
-                "invoicesCount": 1,
+                "invoices": [
+                    {
+                        "reference": "F301234568",
+                        "date": paid_invoice_2.date.date().isoformat(),
+                        "amount": 100,
+                        "url": paid_invoice_2.url,
+                        "status": "paid",
+                    },
+                    {
+                        "reference": "F301234567",
+                        "date": paid_invoice_1.date.date().isoformat(),
+                        "amount": 100,
+                        "url": paid_invoice_1.url,
+                        "status": "paid",
+                    },
+                ],
             },
             {
                 "id": executed_settlement_1.id,
@@ -88,7 +127,7 @@ class GetSettlementsTest:
                 "amount": 100,
                 "bankAccount": "account 1",
                 "status": "executed",
-                "invoicesCount": 0,
+                "invoices": [],
             },
             {
                 "id": rejected_settlement.id,
@@ -97,7 +136,7 @@ class GetSettlementsTest:
                 "amount": 300,
                 "bankAccount": "account 1",
                 "status": "rejected",
-                "invoicesCount": 0,
+                "invoices": [],
             },
         ]
 

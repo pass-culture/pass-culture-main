@@ -41,7 +41,8 @@ type SettlementTableProps = {
 
 type ExtendedSettlementResponseModel = SettlementResponseModel & {
   id: number
-  isCaledonian?: boolean
+  isCaledonian: boolean
+  invoicesCount: number
 }
 
 function getEmptyStateMessage(hasBankAccount: boolean) {
@@ -199,6 +200,7 @@ export const SettlementTable = ({
         data={settlements.map((s) => ({
           ...s,
           isCaledonian: selectedAdminOfferer.isCaledonian,
+          invoicesCount: s.invoices.length,
         }))}
         selectable={true}
         getRowSelectionDateTime={getSettlementDateLabel}
