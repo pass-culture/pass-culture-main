@@ -1,3 +1,4 @@
+from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import time
@@ -27,11 +28,16 @@ class MovieCalendarTest:
     def test_get_movie_shows_with_allocine_id(self, client):
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
         address = AddressFactory(latitude=48.85, longitude=2.35)
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        tz_aware_beginning_datetime = date_utils.default_timezone_to_local_datetime(
+            tz_naive_beginning_datetime, address.timezone
+        )
         stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=tz_naive_beginning_datetime,
         )
+
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
         params = {
@@ -58,7 +64,7 @@ class MovieCalendarTest:
                         "distance": 0.0,
                         "dayScreenings": [
                             {
-                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "AUTHENTICATION_REQUIRED",
                                 "features": [],
                                 "price": float(stock.price),
@@ -67,7 +73,7 @@ class MovieCalendarTest:
                         ],
                         "label": stock.offer.venue.publicName,
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
                             "features": [],
                             "price": float(stock.price),
@@ -88,7 +94,7 @@ class MovieCalendarTest:
                         "dayScreenings": [],
                         "label": stock.offer.venue.publicName,
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
                             "features": [],
                             "price": 10.1,
@@ -108,7 +114,7 @@ class MovieCalendarTest:
         offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
 
         today = date.today()
@@ -207,22 +213,22 @@ class MovieCalendarTest:
         today_closest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=closest_address_for_today,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today_furthest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=furthest_address_for_today,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         tomorrow_closest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=closest_address_for_tomorrow,
-            beginningDatetime=datetime.now() + timedelta(hours=23),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=23),
         )
         tomorrow_furthest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=furthest_address_for_tomorrow,
-            beginningDatetime=datetime.now() + timedelta(hours=23),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=23),
         )
 
         today = date.today()
@@ -261,12 +267,12 @@ class MovieCalendarTest:
         first_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue=venue,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         last_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue=venue,
-            beginningDatetime=datetime.now() + timedelta(hours=2),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=2),
         )
 
         today = date.today()
@@ -296,12 +302,12 @@ class MovieCalendarTest:
         closest_stock_from_tomorrow = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue=venue,
-            beginningDatetime=datetime.now() + timedelta(hours=2),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=2),
         )
         _furthest_stock_from_tomorrow = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue=venue,
-            beginningDatetime=datetime.now() + timedelta(days=3, hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=3, hours=1),
         )
 
         today = date.today()
@@ -333,12 +339,12 @@ class MovieCalendarTest:
         _closest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=closest_address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         _furthest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=furthest_address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
 
         start_of_day = datetime.combine(date.today(), time.min)
@@ -373,7 +379,7 @@ class MovieCalendarTest:
             dnBookedQuantity=1,
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -405,7 +411,7 @@ class MovieCalendarTest:
             offer__lastProvider=disabled_provider,
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -469,16 +475,112 @@ class MovieCalendarTest:
         response = client.get("/native/v1/movie/calendar", params=params)
         assert response.status_code == 404
 
+    def test_timezone_aware_query_params(self, client):
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345}, durationMinutes=113)
+        address = AddressFactory(latitude=48.85, longitude=2.35, timezone="Europe/Paris")
+        start_date = datetime.now(UTC)
+        end_date = start_date + timedelta(days=1)
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        tz_aware_beginning_datetime = date_utils.default_timezone_to_local_datetime(
+            tz_naive_beginning_datetime, address.timezone
+        )
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=tz_naive_beginning_datetime,
+            offer__venue__offererAddress__address=address,
+        )
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": start_date.isoformat(),
+            "to": end_date.isoformat(),
+        }
+        expected_num_queries = 1  # product
+        expected_num_queries += 1  # stocks
+        expected_num_queries += 1  # screenings
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar", params=params)
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert len(calendar) == 2
+        assert [start_date.date().isoformat(), end_date.date().isoformat()] == [e["date"] for e in calendar]
+        today_screenings = [e for e in calendar if e["date"] == start_date.date().isoformat()][0]["screenings"]
+        assert len(today_screenings) == 1
+        today_day_screenings = today_screenings[0]["dayScreenings"]
+        assert len(today_day_screenings) == 1
+        today_day_screening = today_day_screenings[0]
+        assert today_day_screening["stockId"] == stock.id
+        assert today_day_screening["beginningDatetime"] == tz_aware_beginning_datetime.isoformat()
+
+        tomorrow_screenings = [e for e in calendar if e["date"] == end_date.date().isoformat()][0]["screenings"]
+        assert len(tomorrow_screenings) == 1
+        tomorrow_day_screenings = tomorrow_screenings[0]["dayScreenings"]
+        assert len(tomorrow_day_screenings) == 0
+
+    def test_filter_screenings_from_the_past(self, client):
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345}, durationMinutes=113)
+        address = AddressFactory(latitude=48.85, longitude=2.35, timezone="Europe/Paris")
+        start_date = datetime.now(UTC) - timedelta(days=1)
+        end_date = datetime.now(UTC) + timedelta(days=1)
+
+        offers_factories.EventStockFactory(  # past stock
+            offer__product=product,
+            beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1) + timedelta(hours=1),
+            offer__venue__offererAddress__address=address,
+        )
+
+        future_stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
+            offer__venue__offererAddress__address=address,
+        )
+
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": start_date.isoformat(),
+            "to": end_date.isoformat(),
+        }
+        expected_num_queries = 1  # product
+        expected_num_queries += 1  # stocks
+        expected_num_queries += 1  # screenings
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar", params=params)
+            assert response.status_code == 200, response.json
+
+        calendar = response.json["calendar"]
+        assert len(calendar) == 2
+        assert [date.today().isoformat(), end_date.date().isoformat()] == [e["date"] for e in calendar]
+
+        today_screenings = [e for e in calendar if e["date"] == date.today().isoformat()][0]["screenings"]
+        assert len(today_screenings) == 1
+        today_day_screenings = today_screenings[0]["dayScreenings"]
+        assert len(today_day_screenings) == 1
+        today_day_screening = today_day_screenings[0]
+        assert today_day_screening["stockId"] == future_stock.id
+
+        tomorrow_screenings = [e for e in calendar if e["date"] == end_date.date().isoformat()][0]["screenings"]
+        assert len(tomorrow_screenings) == 1
+        tomorrow_day_screenings = tomorrow_screenings[0]["dayScreenings"]
+        assert len(tomorrow_day_screenings) == 0
+
 
 class MovieCalendarForUserTest:
     def test_get_movie_shows_for_user(self, client):
         user = users_factories.BeneficiaryFactory()
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
         address = AddressFactory(latitude=48.85, longitude=2.35)
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        tz_aware_beginning_datetime = date_utils.default_timezone_to_local_datetime(
+            tz_naive_beginning_datetime, address.timezone
+        )
         stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=tz_naive_beginning_datetime,
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -510,7 +612,7 @@ class MovieCalendarForUserTest:
                             "distance": 0.0,
                             "dayScreenings": [
                                 {
-                                    "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                    "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                     "bookability": "BOOKABLE",
                                     "features": [],
                                     "price": float(stock.price),
@@ -519,7 +621,7 @@ class MovieCalendarForUserTest:
                             ],
                             "label": stock.offer.venue.publicName,
                             "nextScreening": {
-                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "BOOKABLE",
                                 "features": [],
                                 "price": float(stock.price),
@@ -540,7 +642,7 @@ class MovieCalendarForUserTest:
                             "dayScreenings": [],
                             "label": stock.offer.venue.publicName,
                             "nextScreening": {
-                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "BOOKABLE",
                                 "features": [],
                                 "price": 10.1,
@@ -563,7 +665,7 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
             quantity=0,
         )
         today = date.today()
@@ -599,7 +701,7 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
             quantity=0,
         )
         today = date.today()
@@ -632,7 +734,7 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -665,7 +767,7 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -698,7 +800,7 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         offers_factories.StockFactory(offer=stock.offer)
         _user_booking = BookingFactory(user=user, stock=stock)
@@ -733,7 +835,7 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         another_stock = offers_factories.StockFactory(offer=stock.offer)
         _user_booking = BookingFactory(user=user, stock=another_stock)
@@ -767,7 +869,7 @@ class MovieCalendarForUserTest:
         offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today = date.today()
         expected_num_queries = 1  # user
@@ -820,7 +922,7 @@ class MovieCalendarForUserTest:
         offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today = date.today()
         expected_num_queries = 1  # user
@@ -875,7 +977,7 @@ class MovieCalendarForUserTest:
         offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today = date.today()
         expected_num_queries = 1  # user
@@ -959,8 +1061,15 @@ class MovieCalendarForUserTest:
 class VenueMovieCalendarTest:
     def test_get_venue_movie_calendar(self, client):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        address = AddressFactory(timezone="Europe/Paris")
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        tz_aware_beginning_datetime = date_utils.default_timezone_to_local_datetime(
+            tz_naive_beginning_datetime, address.timezone
+        )
         stock = offers_factories.EventStockFactory(
-            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=tz_naive_beginning_datetime,
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -985,7 +1094,7 @@ class VenueMovieCalendarTest:
                         "thumbUrl": None,
                         "dayScreenings": [
                             {
-                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "AUTHENTICATION_REQUIRED",
                                 "features": [],
                                 "price": 10.1,
@@ -993,7 +1102,7 @@ class VenueMovieCalendarTest:
                             }
                         ],
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
                             "features": [],
                             "price": 10.1,
@@ -1014,7 +1123,7 @@ class VenueMovieCalendarTest:
                         "thumbUrl": None,
                         "dayScreenings": [],
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
                             "features": [],
                             "price": 10.1,
@@ -1138,7 +1247,7 @@ class VenueMovieCalendarTest:
     def test_sold_out_screening(self, client):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
-            quantity=0, offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            quantity=0, offer__product=product, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1)
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -1161,7 +1270,7 @@ class VenueMovieCalendarTest:
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=disabled_provider,
             offer__product=product,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -1183,13 +1292,99 @@ class VenueMovieCalendarTest:
             response = client.get("/native/v1/venue/999999999/movie/calendar")
             assert response.status_code == 404
 
+    def test_timezone_aware_query_params(self, client):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        address = AddressFactory(timezone="Europe/Paris")
+        start_date = datetime.now(UTC)
+        end_date = start_date + timedelta(days=1)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
+            offer__venue__offererAddress__address=address,
+        )
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar",
+                params={"from": start_date.isoformat(), "to": end_date.isoformat()},
+            )
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert len(calendar) == 2
+        assert [start_date.date().isoformat(), end_date.date().isoformat()] == [e["date"] for e in calendar]
+        today_screenings = [e for e in calendar if e["date"] == start_date.date().isoformat()][0]["screenings"]
+        assert len(today_screenings) == 1
+        today_day_screenings = today_screenings[0]["dayScreenings"]
+        assert len(today_day_screenings) == 1
+        today_day_screening = today_day_screenings[0]
+        assert today_day_screening["stockId"] == stock.id
+
+        tomorrow_screenings = [e for e in calendar if e["date"] == end_date.date().isoformat()][0]["screenings"]
+        assert len(tomorrow_screenings) == 1
+        tomorrow_day_screenings = tomorrow_screenings[0]["dayScreenings"]
+        assert len(tomorrow_day_screenings) == 0
+
+    def test_filter_screenings_from_the_past(self, client):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=113)
+        address = AddressFactory(timezone="Europe/Paris")
+        start_date = datetime.now(UTC) - timedelta(days=1)
+        end_date = datetime.now(UTC) + timedelta(days=1)
+
+        past_stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1) + timedelta(hours=1),
+            offer__venue__offererAddress__address=address,
+        )
+
+        future_stock = offers_factories.EventStockFactory(
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
+            offer=past_stock.offer,
+        )
+
+        venue_id = past_stock.offer.venueId
+        params = {
+            "from": start_date.isoformat(),
+            "to": end_date.isoformat(),
+        }
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params=params)
+            assert response.status_code == 200, response.json
+
+        calendar = response.json["calendar"]
+        assert len(calendar) == 2
+        assert [date.today().isoformat(), end_date.date().isoformat()] == [e["date"] for e in calendar]
+
+        today_screenings = [e for e in calendar if e["date"] == date.today().isoformat()][0]["screenings"]
+        assert len(today_screenings) == 1
+        today_day_screenings = today_screenings[0]["dayScreenings"]
+        assert len(today_day_screenings) == 1
+        today_day_screening = today_day_screenings[0]
+        assert today_day_screening["stockId"] == future_stock.id
+
+        tomorrow_screenings = [e for e in calendar if e["date"] == end_date.date().isoformat()][0]["screenings"]
+        assert len(tomorrow_screenings) == 1
+        tomorrow_day_screenings = tomorrow_screenings[0]["dayScreenings"]
+        assert len(tomorrow_day_screenings) == 0
+
 
 class VenueMovieCalendarForUserTest:
     def test_get_venue_movie_calendar(self, client):
         user = users_factories.BeneficiaryFactory()
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        address = AddressFactory(timezone="Europe/Paris")
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        tz_aware_beginning_datetime = date_utils.default_timezone_to_local_datetime(
+            tz_naive_beginning_datetime, address.timezone
+        )
         stock = offers_factories.EventStockFactory(
-            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            offer__product=product,
+            beginningDatetime=tz_naive_beginning_datetime,
+            offer__venue__offererAddress__address=address,
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -1220,7 +1415,7 @@ class VenueMovieCalendarForUserTest:
                         "thumbUrl": None,
                         "dayScreenings": [
                             {
-                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "BOOKABLE",
                                 "features": [],
                                 "price": 10.1,
@@ -1228,7 +1423,7 @@ class VenueMovieCalendarForUserTest:
                             }
                         ],
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "BOOKABLE",
                             "features": [],
                             "price": 10.1,
@@ -1249,7 +1444,7 @@ class VenueMovieCalendarForUserTest:
                         "thumbUrl": None,
                         "dayScreenings": [],
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "BOOKABLE",
                             "features": [],
                             "price": 10.1,
@@ -1264,7 +1459,7 @@ class VenueMovieCalendarForUserTest:
         user = users_factories.BeneficiaryFactory()
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
-            quantity=0, offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            quantity=0, offer__product=product, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1)
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -1294,7 +1489,7 @@ class VenueMovieCalendarForUserTest:
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=disabled_provider,
             offer__product=product,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -1323,7 +1518,7 @@ class VenueMovieCalendarForUserTest:
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=disabled_provider,
             offer__product=product,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -1348,7 +1543,7 @@ class VenueMovieCalendarForUserTest:
         user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18))
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
-            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            offer__product=product, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1)
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -1393,7 +1588,7 @@ class VenueMovieCalendarForUserTest:
 
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
-            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            offer__product=product, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1)
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -1438,7 +1633,7 @@ class VenueMovieCalendarForUserTest:
         )
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
-            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            offer__product=product, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1)
         )
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
@@ -1465,7 +1660,7 @@ class VenueMovieCalendarForUserTest:
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
             offer__product=product,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         offers_factories.EventStockFactory(offer=stock.offer)
         _user_booking = BookingFactory(user=user, stock=stock)
@@ -1493,7 +1688,7 @@ class VenueMovieCalendarForUserTest:
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
             offer__product=product,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         another_stock = offers_factories.EventStockFactory(offer=stock.offer)
         _user_booking = BookingFactory(user=user, stock=another_stock)
@@ -1524,3 +1719,43 @@ class VenueMovieCalendarForUserTest:
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/venue/999999999/movie/calendar/me")
             assert response.status_code == 404
+
+    def test_timezone_aware_query_params(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        address = AddressFactory(timezone="Europe/Paris")
+        start_date = datetime.now(UTC)
+        end_date = start_date + timedelta(days=1)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
+            offer__venue__offererAddress__address=address,
+        )
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me",
+                params={"from": start_date.isoformat(), "to": end_date.isoformat()},
+            )
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert len(calendar) == 2
+        assert [start_date.date().isoformat(), end_date.date().isoformat()] == [e["date"] for e in calendar]
+        today_screenings = [e for e in calendar if e["date"] == start_date.date().isoformat()][0]["screenings"]
+        assert len(today_screenings) == 1
+        today_day_screenings = today_screenings[0]["dayScreenings"]
+        assert len(today_day_screenings) == 1
+        today_day_screening = today_day_screenings[0]
+        assert today_day_screening["stockId"] == stock.id
+
+        tomorrow_screenings = [e for e in calendar if e["date"] == end_date.date().isoformat()][0]["screenings"]
+        assert len(tomorrow_screenings) == 1
+        tomorrow_day_screenings = tomorrow_screenings[0]["dayScreenings"]
+        assert len(tomorrow_day_screenings) == 0
