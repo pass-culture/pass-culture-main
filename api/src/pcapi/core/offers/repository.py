@@ -1529,7 +1529,7 @@ def get_stock_by_movie_stock_uuid(stock_uuid: str) -> models.Stock | None:
     return db.session.query(models.Stock).filter(models.Stock.idAtProviders == stock_uuid).one_or_none()
 
 
-def exclude_offers_from_inactive_venue_provider(query: sa_orm.Query) -> sa_orm.Query:
+def exclude_offers_from_inactive_venue_provider(query: sa_orm.Query[models.Offer]) -> sa_orm.Query[models.Offer]:
     return (
         query.outerjoin(models.Offer.lastProvider)
         .outerjoin(
@@ -1547,6 +1547,10 @@ def exclude_offers_from_inactive_venue_provider(query: sa_orm.Query) -> sa_orm.Q
             )
         )
     )
+
+
+def exclude_offers_from_closed_venues(query: sa_orm.Query[models.Offer]) -> sa_orm.Query[models.Offer]:
+    return query.filter(offerers_models.Venue.state.is_(None))  # VenueState == ACTIVE
 
 
 def get_next_offer_id_from_database() -> int:

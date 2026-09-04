@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 
@@ -360,3 +361,17 @@ class Returns400Test:
                 "Saisissez un nombre avec au maximum 12 chiffres au total",
             ],
         }
+
+
+class Returns403Test:
+    def test_error_if_venue_is_closed(self, client):
+        offer = offers_factories.EventOfferFactory(venue__state=offerers_models.VenueState.CLOSED)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        data = {"priceCategories": [{"id": None, "price": 20.34, "label": "Behind a post"}]}
+
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
+        assert response.status_code == 403

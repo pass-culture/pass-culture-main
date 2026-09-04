@@ -8,6 +8,7 @@ from flask_login import login_required
 from pydantic import ValidationError
 
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
+import pcapi.utils.rest as rest_utils
 from pcapi import settings
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.core.educational import models as educational_models
@@ -33,9 +34,8 @@ from pcapi.routes.serialization import venue_finance_serialize
 from pcapi.routes.serialization import venue_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
+from pcapi.utils import rest
 from pcapi.utils import siren as siren_utils
-from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.utils.rest import check_user_has_access_to_venues
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
 
@@ -51,7 +51,7 @@ def close_venue(venue_id: int) -> None:
         raise ApiErrors(status_code=404)
 
     venue = get_or_404(Venue, venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     offerers_api.close_venue(venue, author=current_user)
 
 
@@ -94,7 +94,7 @@ def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     if not venue:
         raise resource_not_found_error()
 
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     return _build_venue_response(venue)
 
@@ -114,8 +114,9 @@ def get_venues_lite() -> venue_serialize.GetVenueListLiteResponseModel:
 @spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
 def edit_venue(venue_id: int, body: venue_serialize.EditVenueBodyModel) -> venue_serialize.GetVenueResponseModel:
     venue = get_or_404(Venue, venue_id)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_venue_is_opened(venue)
 
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         is_valid_ridet = venue.is_caledonian and body.siret and siren_utils.is_ridet(body.siret)
         if body.siret and not is_valid_ridet and not entreprise_api.get_siret_open_data(body.siret).active:
@@ -202,8 +203,8 @@ def edit_venue_collective_data(
     venue_id: int, body: venue_collective_serialize.EditVenueCollectiveDataBodyModel
 ) -> venue_serialize.GetVenueResponseModel:
     venue = get_or_404(Venue, venue_id)
-
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_venue_is_opened(venue)
 
     update_venue_attrs = body.dict(exclude_unset=True)
     venue = offerers_api.update_venue_collective_data(venue, **update_venue_attrs)
@@ -217,7 +218,9 @@ def edit_venue_collective_data(
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def link_venue_to_pricing_point(venue_id: int, body: venue_finance_serialize.LinkVenueToPricingPointBodyModel) -> None:
     venue = get_or_404(Venue, venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_venue_is_opened(venue)
+
     try:
         offerers_api.link_venue_to_pricing_point(venue, body.pricingPointId)
     except exceptions.CannotLinkVenueToPricingPoint as exc:
@@ -230,8 +233,8 @@ def link_venue_to_pricing_point(venue_id: int, body: venue_finance_serialize.Lin
 @spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, on_success_status=201)
 def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     venue = get_or_404(Venue, venue_id)
-
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_venue_is_opened(venue)
 
     try:
         venue_banner = venue_banners_serialize.VenueBannerContentModel.from_request(request)
@@ -263,7 +266,7 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def delete_venue_banner(venue_id: int) -> None:
     venue = get_or_404(Venue, venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     offerers_api.delete_venue_banner(venue)
 
@@ -292,7 +295,7 @@ def get_venues_educational_statuses() -> venue_collective_serialize.VenuesEducat
 def get_venue_addresses(
     venue_id: int, query: venue_serialize.GetVenueAddressesQueryModel
 ) -> venue_serialize.GetVenueAddressesResponseModel:
-    check_user_has_access_to_venues(current_user, [venue_id])
+    rest_utils.check_user_has_access_to_venues(current_user, [venue_id])
 
     model: type[educational_models.CollectiveOfferTemplate | educational_models.CollectiveOffer | offers_models.Offer]
     if query.withOffersOption == venue_serialize.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY:

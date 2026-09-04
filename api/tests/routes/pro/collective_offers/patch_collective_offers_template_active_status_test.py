@@ -8,6 +8,7 @@ from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models import db
 
@@ -98,3 +99,17 @@ class Returns403Test:
         assert approved_offer.isActive
         assert not pending_offer.isActive
         assert not rejected_offer.isActive
+
+    def test_error_if_venue_is_closed(self, client):
+        offer = CollectiveOfferTemplateFactory(isActive=False, venue__state=offerers_models.VenueState.CLOSED)
+        venue = offer.venue
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+
+        data = {"ids": [offer.id], "isActive": True}
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            client = client.with_session_auth("pro@example.com")
+            response = client.patch("/collective/offers-template/active-status", json=data)
+
+        assert response.status_code == 403
