@@ -3524,19 +3524,19 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
     if venue.is_closed:
         return
 
-    venue.state = models.VenueState.CLOSING
-    nullify_venue_emails(venue, author)
-    history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
+    with atomic():
+        venue.state = models.VenueState.CLOSING
+        nullify_venue_emails(venue, author)
+        history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
 
-    payload = tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
+    _update_external_offerer(venue.managingOfferer)
+
     on_commit(
         functools.partial(
-            tasks.finalize_closing_venue_task.delay,
-            payload.model_dump(),
+            tasks.deactivate_venue_offers_task.delay,
+            tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id).model_dump(),
         )
     )
-
-    db.session.flush()
 
 
 def nullify_venue_emails(venue: models.Venue, author: users_models.User) -> None:
@@ -3593,38 +3593,6 @@ def delete_venue_pivots(venue_id: int) -> None:
     db.session.query(providers_models.AllocinePivot).filter(
         providers_models.CinemaProviderPivot.venueId == venue_id
     ).delete(synchronize_session=False)
-
-
-def deactivate_venue_offers(venue: models.Venue) -> None:
-    _BATCH_LIMIT = 100
-    continue_deactivation_process = True
-    while continue_deactivation_process:
-        query = (
-            db.session.query(offers_models.Offer)
-            .filter(
-                offers_models.Offer.venueId == venue.id,
-                offers_models.Offer.publicationDatetime.is_not(None),
-            )
-            .limit(_BATCH_LIMIT)
-        )
-
-        offers = query.all()
-        continue_deactivation_process = len(offers) == _BATCH_LIMIT
-
-        backup_data = {offer.id: {"publicationDatetime": offer.publicationDatetime} for offer in offers}
-
-        with atomic():
-            offer_ids = [offer.id for offer in offers]
-            db.session.execute(
-                sa.update(offers_models.Offer)
-                .where(offers_models.Offer.id.in_(offer_ids))
-                .values(publicationDatetime=None)
-            )
-
-        search.unindex_offer_ids([offer.id for offer in offers])
-        log_extra = {"venue_id": venue.id, "offers_backup": backup_data}
-        log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
-        logger.info(log_msg, extra=log_extra)
 
 
 def venue_has_ongoing_bookings(venue: models.Venue) -> bool:
