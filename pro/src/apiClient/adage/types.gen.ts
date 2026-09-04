@@ -1093,19 +1093,19 @@ export type PostCollectiveRequestBodyModel = {
     /**
      * Phonenumber
      */
-    phoneNumber?: string;
+    phoneNumber: string | null;
     /**
      * Requesteddate
      */
-    requestedDate?: string;
+    requestedDate: string | null;
     /**
      * Totalstudents
      */
-    totalStudents?: number;
+    totalStudents: number | null;
     /**
      * Totalteachers
      */
-    totalTeachers?: number;
+    totalTeachers: number | null;
 };
 
 /**
