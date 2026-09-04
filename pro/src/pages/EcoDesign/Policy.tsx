@@ -1,7 +1,6 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Link } from '@/design-system/Link/Link'
-import { LinkColor } from '@/design-system/Link/types'
 import fullBackIcon from '@/icons/full-back.svg'
 
 import styles from './Declaration.module.scss'
@@ -22,14 +21,7 @@ export const EcoDesignPolicy = () => {
       </div>
       <h2 className={styles['heading2']}>Objectifs</h2>
       <p className={styles['paragraph']}>
-        Le service{' '}
-        <Button
-          as="a"
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-          to="https://passculture.pro"
-          label="passculture.pro"
-        />{' '}
+        Le service <Link to="https://passculture.pro" label="passculture.pro" />{' '}
         s'inscrit dans une démarche d'écoconception visant à réduire ses impacts
         environnementaux. À cette fin, cette déclaration a été rédigée le 31
         décembre 2025, dans le cadre de la mise en œuvre du référentiel général
@@ -40,7 +32,6 @@ export const EcoDesignPolicy = () => {
         document réalisé par l’Arcep et l’Arcom, en collaboration avec l’ADEME,
         la DINUM, la CNIL et l’Inria, est disponible sur le{' '}
         <Link
-          color={LinkColor.NEUTRAL}
           shouldOpenNewTab
           isExternalLink
           to="https://www.arcep.fr/demarches-et-services/professionnels/referentiel-general-ecoconception-services-numeriques.html"
@@ -52,7 +43,8 @@ export const EcoDesignPolicy = () => {
       </p>
       <ol>
         <li className={styles['list-item']}>
-          Concevoir des services numériques plus durables permettant d'
+          Concevoir des services numériques plus durables permettant d'{/*
+           */}
           <strong>allonger la durée de vie des terminaux</strong>
         </li>
         <li className={styles['list-item']}>
@@ -73,21 +65,12 @@ export const EcoDesignPolicy = () => {
       </ol>
       <p className={styles['paragraph']}>
         Le travail autour de l'écoconception du site{' '}
-        <Button
-          as="a"
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-          to="https://passculture.pro"
-          label="passculture.pro"
-        />{' '}
-        s'inscrit dans la continuité de tout le travail qui a été fait et qui
-        continue à être fait autour des questions d'accessibilité. Les éléments
-        relatifs à ceux-ci sont disponibles dans la déclaration d'accessibilité,
-        disponible via le lien{' '}
-        <Button
-          as="a"
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
+        <Link to="https://passculture.pro" label="passculture.pro" /> s'inscrit
+        dans la continuité de tout le travail qui a été fait et qui continue à
+        être fait autour des questions d'accessibilité. Les éléments relatifs à
+        ceux-ci sont disponibles dans la déclaration d'accessibilité, disponible
+        via le lien{' '}
+        <Link
           to="https://passculture.pro/accessibilite/declaration"
           label="https://passculture.pro/accessibilite/declaration"
         />
@@ -97,12 +80,10 @@ export const EcoDesignPolicy = () => {
         Nous avons procédé à un audit interne. Nous sommes bien entendu à
         l’écoute de vos retours, remarques ou critiques concernant ce travail.
         Pour ce faire vous pouvez nous contacter directement à l'adresse mail{' '}
-        <Button
-          as="a"
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
+        <Link
           to="mailto:eco-conception@passculture.app"
           label="eco-conception@passculture.app"
+          isExternalLink
         />
         .
       </p>
@@ -113,15 +94,9 @@ export const EcoDesignPolicy = () => {
       <p>Score d’avancement précédent : première publication.</p>
       <p className={styles['paragraph']}>
         Le service numérique{' '}
-        <Button
-          as="a"
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-          to="https://passculture.pro"
-          label="passculture.pro"
-        />{' '}
-        vise une amélioration de ce score sur les prochaines années. Pour ce
-        faire, des revues et audits seront réalisés tous les ans.
+        <Link to="https://passculture.pro" label="passculture.pro" /> vise une
+        amélioration de ce score sur les prochaines années. Pour ce faire, des
+        revues et audits seront réalisés tous les ans.
       </p>
       <h2 className={styles['heading2']}>
         Plan d'avancement dans la démarche d'écoconception du service numérique
@@ -186,12 +161,10 @@ export const EcoDesignPolicy = () => {
       <p className={styles['paragraph']}>
         Une personne est nommée référente écoconception numérique en interne.
         Vous pouvez la contacter à l’adresse suivante{' '}
-        <Button
-          as="a"
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
+        <Link
           to="mailto:eco-conception@passculture.app"
           label="eco-conception@passculture.app"
+          isExternalLink
         />
       </p>
     </EcoDesignLayout>

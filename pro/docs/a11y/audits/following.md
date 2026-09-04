@@ -21,6 +21,37 @@ Texte
 
 <details>
 
+<summary> ⏳ Critères 10.6 - RGAA - Dans chaque page web, chaque lien dont la nature n'est pas évidente est-il visible par rapport au texte environnant ?</summary>
+
+**RAWeb/RGAA** : [Critère 10.6](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-6)
+**Ticket** : [PC-42855](https://passculture.atlassian.net/browse/PC-42855)  
+**PR** : [#24214](https://github.com/pass-culture/pass-culture-main/pull/24214)
+
+**Problème** 😱
+
+[P11 → Contenus téléchargables](https://integration.passculture.pro/ecoconception/declaration)
+
+Au moins un lien en environnement de texte n'est pas visible par rapport au texte environnant.
+
+Par exemple :
+
+La couleur des liens "passculture.pro " a un rapport de contraste insuffisant par rapport à la couleur du texte environnant.
+
+**Correction** 💡 
+
+Dans les pages https://integration.passculture.pro/ecoconception/declaration et https://integration.passculture.pro/ecoconception/politique :
+
+- On change les liens inline `Button` en `Link`, ce qui ajoute un soulignement et une couleur.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critères 9.3 - RGAA - Dans chaque page web, chaque liste est-elle correctement structurée ?</summary>
 
 **RAWeb/RGAA** : [Critère 9.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-3)
@@ -39,7 +70,9 @@ Les contenus présentés sous forme de listes à puces dans le bloc « 6. Fronte
 
 **Correction** 💡 
 
-On restructure tous le document pour que les critères soient sous forme de liste (`<ul>/<li>`). 
+Dans la page https://integration.passculture.pro/ecoconception/declaration : 
+
+- On restructure tous le document pour que les critères soient sous forme de liste (`<ul>/<li>`). 
 
 **Retours audit** 🔥  
 Texte
@@ -68,7 +101,9 @@ Plusieurs sections du contenu sont identifiées uniquement par une mise en forme
 
 **Correction** 💡 
 
-Transformation des textes servant d’intitulés de sections en véritables titres HTML avec le niveau de hiérarchie adapté (`<h4>` dans ces cas).
+Dans la page https://integration.passculture.pro/ecoconception/declaration : 
+
+- Transformation des textes servant d’intitulés de sections en véritables titres HTML avec le niveau de hiérarchie adapté (`<h4>` dans ces cas).
 
 **Retours audit** 🔥  
 Texte
