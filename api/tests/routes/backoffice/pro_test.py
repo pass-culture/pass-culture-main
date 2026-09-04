@@ -814,7 +814,7 @@ class LogsTest:
             "searchType": "ProSearch",
             "searchQuery": "rythme",
             "searchDepartments": "02,30",
-            "searchNbResults": 1,
+            "nbResults": 1,
             "searchProType": "offerer",
         }
 

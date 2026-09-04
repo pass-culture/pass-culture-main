@@ -431,7 +431,7 @@ def get(venue_id: int) -> response_utils.BackofficeResponse:
                 "searchQuery": request.args.get("q"),
                 "searchDepartments": ",".join(request.args.get("departments", [])),
                 "searchRank": request.args.get("search_rank"),
-                "searchNbResults": request.args.get("total_items"),
+                "nbResults": request.args.get("total_items"),
             },
         )
 
