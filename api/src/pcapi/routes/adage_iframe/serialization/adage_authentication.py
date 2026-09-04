@@ -1,20 +1,18 @@
 import logging
 
-from pydantic.v1 import ValidationError
+import pydantic
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
-from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferencesV2
-from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 
 
 logger = logging.getLogger(__name__)
 
 
-class AuthenticatedInformation(BaseModel):
+class AuthenticatedInformation(pydantic.BaseModel):
     civility: str | None
     lastname: str | None
     firstname: str | None
@@ -32,7 +30,7 @@ class EducationalInstitutionProgramModel(HttpBodyModel):
 
 
 class AuthenticatedResponse(HttpBodyModel):
-    role: AdageFrontRoles
+    role: educational_models.AdageFrontRoles
     uai: str | None
     department_code: str | None
     institution_name: str | None
@@ -52,7 +50,8 @@ def get_redactor_information_from_adage_authentication(
     authenticated_information: AuthenticatedInformation,
 ) -> RedactorInformation:
     try:
-        redactor_information: RedactorInformation = RedactorInformation(**authenticated_information.dict())
-    except ValidationError:
+        redactor_information = RedactorInformation(**authenticated_information.model_dump())
+    except pydantic.ValidationError:
         raise MissingRequiredRedactorInformation()
+
     return redactor_information

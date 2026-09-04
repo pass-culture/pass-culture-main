@@ -3,6 +3,7 @@ import datetime
 import decimal
 import typing
 
+import pydantic as pydantic_v2
 from pydantic.v1 import PositiveInt
 from pydantic.v1.fields import Field
 
@@ -132,7 +133,7 @@ class AdageReimbursementNotification(EducationalBookingResponse):
     reimbursementDetails: str
 
 
-class RedactorInformation(BaseModel):
+class RedactorInformation(pydantic_v2.BaseModel):
     civility: str | None
     lastname: str | None
     firstname: str | None
