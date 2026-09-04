@@ -28,11 +28,15 @@ logger = logging.getLogger(__name__)
 @authentication.require_dms_token
 @spectree_serialize(on_success_status=204)
 def dms_webhook_update_application_status(form: dms_serializers.DMSWebhookRequest) -> None:
-    # Ensure that the same application is not handled twice at the same time.
-    # Webhook may be called twice in the same second when instructor makes two changes quickly.
-    with dms_utils.lock_ds_application(form.dossier_id):
-        dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(form.dossier_id)
-        dms_subscription_api.handle_dms_application(dms_application)
+    try:
+        # Ensure that the same application is not handled twice at the same time.
+        # Webhook may be called twice in the same second when instructor makes two changes quickly.
+        with dms_utils.lock_ds_application(form.dossier_id):
+            dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(form.dossier_id)
+            dms_subscription_api.handle_dms_application(dms_application)
+    except Exception:
+        # Log error but always return 204 (e.g. in case of dossier_id not found)
+        logger.exception("Error while updating application status", extra=form.model_dump())
 
 
 @public_api.route("/webhooks/ubble/dummy", methods=["POST"])
