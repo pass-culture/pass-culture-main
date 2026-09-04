@@ -2,7 +2,11 @@ import { screen } from '@testing-library/react'
 import type { ComponentProps } from 'react'
 import { axe } from 'vitest-axe'
 
-import { type SettlementResponseModel, SettlementStatus } from '@/apiClient/v1'
+import {
+  InvoiceStatus,
+  type SettlementResponseModel,
+  SettlementStatus,
+} from '@/apiClient/v1'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -15,7 +19,29 @@ const baseSettlement = {
   bankAccount: 'Compte principal',
   status: SettlementStatus.EXECUTED,
   amount: 150,
-  invoicesCount: 3,
+  invoices: [
+    {
+      reference: 'J123456789',
+      date: '2024-06-01',
+      amount: 100,
+      url: 'J123456789.invoice',
+      status: InvoiceStatus.PAID,
+    },
+    {
+      reference: 'J666666666',
+      date: '2024-06-01',
+      amount: -50,
+      url: 'J666666666.invoice',
+      status: InvoiceStatus.PAID,
+    },
+    {
+      reference: 'J987654321',
+      date: '2024-06-01',
+      amount: 100,
+      url: 'J987654321.invoice',
+      status: InvoiceStatus.PAID,
+    },
+  ],
 } as SettlementResponseModel
 
 const renderSettlementTable = (

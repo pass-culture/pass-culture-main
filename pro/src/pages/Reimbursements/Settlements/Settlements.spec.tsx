@@ -3,7 +3,12 @@ import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import { type BankAccountResponseModel, SettlementStatus } from '@/apiClient/v1'
+import {
+  type BankAccountResponseModel,
+  InvoiceStatus,
+  type SettlementResponseModel,
+  SettlementStatus,
+} from '@/apiClient/v1'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   defaultBankAccount,
@@ -25,9 +30,31 @@ const BASE_SETTLEMENTS = [
     bankAccount: 'Compte principal',
     status: SettlementStatus.EXECUTED,
     amount: 150,
-    invoicesCount: 3,
+    invoices: [
+      {
+        reference: 'J123456789',
+        date: '2024-06-01',
+        amount: 100,
+        url: 'J123456789.invoice',
+        status: InvoiceStatus.PAID,
+      },
+      {
+        reference: 'J666666666',
+        date: '2024-06-01',
+        amount: -50,
+        url: 'J666666666.invoice',
+        status: InvoiceStatus.PAID,
+      },
+      {
+        reference: 'J987654321',
+        date: '2024-06-01',
+        amount: 100,
+        url: 'J987654321.invoice',
+        status: InvoiceStatus.PAID,
+      },
+    ],
   },
-] as never
+] as SettlementResponseModel[]
 
 const BASE_BANK_ACCOUNTS: Array<BankAccountResponseModel> = [
   {

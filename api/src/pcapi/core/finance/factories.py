@@ -253,7 +253,7 @@ class CustomReimbursementRuleFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
-class InvoiceFactory(BaseFactory):
+class InvoiceFactory(BaseFactory[models.Invoice]):
     class Meta:
         model = models.Invoice
 
