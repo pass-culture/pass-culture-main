@@ -1,12 +1,8 @@
-import datetime
-
-import sqlalchemy.orm as sa_orm
 from flask_login import current_user
 from flask_login import login_required
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
-import pcapi.core.finance.utils as finance_utils
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -51,11 +47,6 @@ def get_settlements(query: finance_serialize.SettlementListQueryModel) -> financ
 @login_required
 @spectree_serialize(response_model=finance_serialize.InvoiceListV2ResponseModel, api=blueprint.pro_private_schema)
 def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance_serialize.InvoiceListV2ResponseModel:
-    # Frontend sends a period with *inclusive* bounds, but
-    # `get_paid_invoices_query` expects the upper bound to be *exclusive*.
-    if query.period_ending_date:
-        query.period_ending_date += datetime.timedelta(days=1)
-
     invoices = finance_repository.get_paid_invoices_query(
         current_user,
         bank_account_id=query.bank_account_id,
@@ -66,22 +57,9 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
         amount_lower_than=0 if query.amount_positive_only else None,
         amount_greater_than_equal=0 if query.amount_negative_only else None,
     )
-    invoices = invoices.options(
-        sa_orm.joinedload(finance_models.Invoice.cashflows).joinedload(finance_models.Cashflow.batch)
-    )
-    invoices = invoices.order_by(finance_models.Invoice.date.desc())
 
     return finance_serialize.InvoiceListV2ResponseModel(
-        [
-            finance_serialize.InvoiceResponseV2Model(
-                reference=invoice.reference,
-                date=invoice.date.date(),
-                amount=float(-finance_utils.cents_to_full_unit(invoice.amount)),
-                url=invoice.url,
-                status=invoice.status,
-            )
-            for invoice in invoices
-        ]
+        [finance_serialize.InvoiceResponseV2Model.build(invoice) for invoice in invoices]
     )
 
 

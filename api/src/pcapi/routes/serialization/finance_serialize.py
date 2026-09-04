@@ -65,6 +65,16 @@ class InvoiceResponseV2Model(HttpBodyModel):
     url: str
     status: models.InvoiceStatus
 
+    @classmethod
+    def build(cls, invoice: models.Invoice) -> typing.Self:
+        return cls(
+            reference=invoice.reference,
+            date=invoice.date.date(),
+            amount=float(-cents_to_full_unit(invoice.amount)),
+            url=invoice.url,
+            status=invoice.status,
+        )
+
 
 class InvoiceListV2ResponseModel(RootModel):
     root: list[InvoiceResponseV2Model]
