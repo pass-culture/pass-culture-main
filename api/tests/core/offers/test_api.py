@@ -34,6 +34,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offerers.schemas as offerers_schemas
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.reactions.factories as reactions_factories
@@ -1722,7 +1723,7 @@ class CreateOfferTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class UpdateOfferTest:
+class OldUpdateOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_basics(self, mocked_async_index_offer_ids, caplog):
         offer = factories.OfferFactory(
@@ -1731,7 +1732,7 @@ class UpdateOfferTest:
 
         body = offers_schemas.UpdateOffer(isDuo=True, bookingEmail="new@example.com")
         with caplog.at_level(logging.DEBUG):
-            offer = api.update_offer(offer, body)
+            offer = api.old_update_offer(offer, body)
         db.session.flush()
 
         assert offer.isDuo
@@ -1760,7 +1761,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
         body = offers_schemas.UpdateOffer(extraData={"author": "Asimov"})
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {
             "showType": ["Ce champ est obligatoire"],
@@ -1773,7 +1774,7 @@ class UpdateOfferTest:
         )
         body = offers_schemas.UpdateOffer(extraData=None)
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
         assert error.value.errors == {
             "showType": ["Ce champ est obligatoire"],
             "showSubType": ["Ce champ est obligatoire"],
@@ -1787,7 +1788,7 @@ class UpdateOfferTest:
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
         body = offers_schemas.UpdateOffer(name="New name", description="new Description")
-        offer = api.update_offer(offer, body)
+        offer = api.old_update_offer(offer, body)
         db.session.flush()
 
         assert offer.name == "New name"
@@ -1797,7 +1798,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(name="Old name", ean="1234567890124")
         body = offers_schemas.UpdateOffer(name="Luftballons 1234567890124")
         with pytest.raises(exceptions.OfferException) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {"name": ["Le titre d'une offre ne peut contenir l'EAN"]}
         assert db.session.query(models.Offer).one().name == "Old name"
@@ -1808,7 +1809,7 @@ class UpdateOfferTest:
             lastProvider=provider, name="Old name", subcategoryId=subcategories.SEANCE_CINE.id
         )
         body = offers_schemas.UpdateOffer(name="Old name", isDuo=True)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
@@ -1821,7 +1822,7 @@ class UpdateOfferTest:
         )
         body = offers_schemas.UpdateOffer(durationMinutes=120, isDuo=True)
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {"durationMinutes": ["Vous ne pouvez pas modifier ce champ"]}
         offer = db.session.query(models.Offer).one()
@@ -1837,7 +1838,7 @@ class UpdateOfferTest:
             ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(externalTicketOfficeUrl="https://example.com")
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
@@ -1860,7 +1861,7 @@ class UpdateOfferTest:
             motorDisabilityCompliant=True,
             mentalDisabilityCompliant=False,
         )
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
@@ -1892,7 +1893,7 @@ class UpdateOfferTest:
             motorDisabilityCompliant=True,
             mentalDisabilityCompliant=False,
         )
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
@@ -1916,7 +1917,7 @@ class UpdateOfferTest:
             audioDisabilityCompliant=False,
         )
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {
             "durationMinutes": ["Vous ne pouvez pas modifier ce champ"],
@@ -1935,7 +1936,7 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(name="Monologue")
 
         with pytest.raises(exceptions.OfferException) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -1953,7 +1954,7 @@ class UpdateOfferTest:
             ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.name == "Offer linked to a provider"
@@ -1969,7 +1970,7 @@ class UpdateOfferTest:
             ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(ean="1234567890125")
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.ean == "1234567890125"
@@ -1980,7 +1981,7 @@ class UpdateOfferTest:
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
         offer = factories.EventOfferFactory(lastProvider=provider, name="Offer linked to a provider", ean=None)
         body = offers_schemas.UpdateOffer(ean=None)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         offer = db.session.query(models.Offer).one()
         assert offer.ean == None
@@ -1993,7 +1994,7 @@ class UpdateOfferTest:
         )
         body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
         with pytest.raises(exceptions.OfferException) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors["idAtProvider"] == [
             "Une offre ne peut être créée ou éditée avec un idAtProvider si elle n'a pas de provider"
@@ -2022,7 +2023,7 @@ class UpdateOfferTest:
 
         body = offers_schemas.UpdateOffer(idAtProvider=id_at_provider)
         with pytest.raises(exceptions.OfferException) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
 
@@ -2043,10 +2044,10 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(name="New name", offererAddress=offerer_address)
         if hasUrl:
             with pytest.raises(api_errors.ApiErrors) as error:
-                api.update_offer(offer, body)
+                api.old_update_offer(offer, body)
                 assert error.value.errors["offerUrl"] == ["Une offre numérique ne peut pas avoir d'adresse"]
         else:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
             offer = db.session.query(models.Offer).one()
             assert offer.offererAddress == offerer_address
 
@@ -2060,7 +2061,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory()
         body = offers_schemas.UpdateOffer()
 
-        updated_offer = api.update_offer(offer, body, offerer_address=new_offerer_address)
+        updated_offer = api.old_update_offer(offer, body, offerer_address=new_offerer_address)
 
         db.session.commit()
         db.session.refresh(updated_offer)
@@ -2081,7 +2082,7 @@ class UpdateOfferTest:
         )
         body = offers_schemas.UpdateOffer()
 
-        updated_offer = api.update_offer(offer, body, venue=new_venue, offerer_address=new_offerer_address)
+        updated_offer = api.old_update_offer(offer, body, venue=new_venue, offerer_address=new_offerer_address)
 
         db.session.commit()
         db.session.refresh(updated_offer)
@@ -2106,7 +2107,7 @@ class UpdateOfferTest:
 
         body = offers_schemas.UpdateOffer(bookingAllowedDatetime=bookingAllowedDatetime)
 
-        updated_offer = api.update_offer(offer, body)
+        updated_offer = api.old_update_offer(offer, body)
         assert len(notify_users_offer_is_bookable_mock.mock_calls) == expected_calls_count
         assert updated_offer.bookingAllowedDatetime == bookingAllowedDatetime
 
@@ -2128,7 +2129,7 @@ class UpdateOfferTest:
             withdrawalType=models.WithdrawalTypeEnum.IN_APP,
         )
 
-        api.update_offer(draft_offer, body)
+        api.old_update_offer(draft_offer, body)
 
         mock_check_is_duo.assert_called_once()
         call_args = mock_check_is_duo.call_args
@@ -2147,7 +2148,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory()
         body = offers_schemas.UpdateOffer(name="Updated Name")
 
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mock_upsert_artist_offer_links.assert_not_called()
 
@@ -2164,7 +2165,7 @@ class UpdateOfferTest:
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
 
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mock_upsert_artist_offer_links.assert_called_once_with(
             [
@@ -2188,7 +2189,7 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
 
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         assert error.value.errors == {
             "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
@@ -2209,10 +2210,10 @@ class UpdateOfferTest:
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         with caplog.at_level(logging.INFO):
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         deletion_logs = [
             record for record in caplog.records if "Artist offer links have been deleted" in record.message
@@ -2243,10 +2244,10 @@ class UpdateOfferTest:
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         with caplog.at_level(logging.INFO):
-            api.update_offer(offer, body)
+            api.old_update_offer(offer, body)
 
         creation_logs = [
             record for record in caplog.records if "Artist offer links have been created" in record.message
@@ -2269,7 +2270,7 @@ class UpdateOfferTest:
         cultural_outreach_factories.CulturalOutreachFactory(offer=offer)
 
         body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=True)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mocked_update_claim.assert_called_once_with(datetime(2026, 4, 21, 12, 0, 0), offer)
 
@@ -2280,7 +2281,7 @@ class UpdateOfferTest:
         cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
 
         body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=True)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mocked_update_claim.assert_not_called()
 
@@ -2290,7 +2291,7 @@ class UpdateOfferTest:
         cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
 
         body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=False)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mocked_update_claim.assert_called_once_with(None, offer)
 
@@ -2299,9 +2300,265 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id)
 
         body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=True)
-        api.update_offer(offer, body)
+        api.old_update_offer(offer, body)
 
         mocked_create_claim.assert_called_once_with(offer)
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateOfferTest:
+    FROZEN_NOW = datetime(2026, 8, 11, 12, 0, tzinfo=UTC)
+
+    @pytest.fixture(name="venue_provider")
+    def venue_provider_fixture(self):
+        return providers_factories.VenueProviderFactory()
+
+    def build_offer(self, **overrides):
+        """approved, provider-less, physical offer that passes every check."""
+        defaults = {
+            "subcategoryId": subcategories.ESCAPE_GAME.id,
+            "name": "Les Quatre Cents Coups",
+            "bookingEmail": "old@example.com",
+            "isDuo": False,
+        }
+        # `overrides` always win including when it passes `None`
+        return factories.OfferFactory(**{**defaults, **overrides})
+
+    # --- Delegated validation
+
+    @mock.patch("pcapi.core.offers.validation.check_offer_update")
+    def test_should_delegate_the_validation(self, check_offer_update, venue_provider):
+        offer = self.build_offer()
+
+        api.update_offer(
+            offer,
+            name="Jules et Jim",
+            booking_email="new@example.com",
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+
+        check_offer_update.assert_called_once_with(
+            offer,
+            {"bookingEmail": "new@example.com", "name": "Jules et Jim"},
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+
+    # --- Writing
+
+    def test_should_write_the_fields_that_change(self, venue_provider):
+        offer = self.build_offer()
+
+        api.update_offer(
+            offer,
+            name="Jules et Jim",
+            booking_email="new@example.com",
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+        db.session.flush()
+
+        assert offer.name == "Jules et Jim"
+        assert offer.bookingEmail == "new@example.com"
+
+    def test_should_write_a_field_explicitly_set_to_none(self, venue_provider):
+        offer = self.build_offer(withdrawalDetails="À retirer à la caisse")
+
+        api.update_offer(
+            offer, withdrawal_details=None, mandatory_extra_data_fields=set(), venue_provider=venue_provider
+        )
+        db.session.flush()
+
+        assert offer.withdrawalDetails is None
+
+    @pytest.mark.parametrize("is_duo,expected", [(False, False), (None, False)])
+    def test_should_coerce_is_duo_to_a_boolean(self, venue_provider, is_duo, expected):
+        # `null` disables double bookings rather than clearing the column
+        offer = self.build_offer(isDuo=True)
+
+        api.update_offer(offer, is_duo=is_duo, mandatory_extra_data_fields=set(), venue_provider=venue_provider)
+        db.session.flush()
+
+        assert offer.isDuo is expected
+
+    def test_should_move_the_offer_to_another_venue(self, venue_provider):
+        offer = self.build_offer()
+        other_venue = offerers_factories.VenueFactory()
+
+        api.update_offer(offer, venue=other_venue, mandatory_extra_data_fields=set(), venue_provider=venue_provider)
+        db.session.flush()
+
+        assert offer.venueId == other_venue.id
+
+    def test_should_not_clear_venue_and_offerer_address(self, venue_provider):
+        offer = self.build_offer()
+        venue_id = offer.venueId
+
+        api.update_offer(
+            offer,
+            venue=None,
+            offerer_address=None,
+            name="Jules et Jim",
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+        db.session.flush()
+
+        assert offer.venueId == venue_id
+        assert offer.offererAddress is not None
+
+    # --- Nothing to update
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_return_early_when_no_field_changes(self, mocked_async_index_offer_ids, venue_provider, caplog):
+        offer = self.build_offer()
+        date_updated = offer.dateUpdated
+
+        with caplog.at_level(logging.INFO):
+            api.update_offer(offer, name=offer.name, mandatory_extra_data_fields=set(), venue_provider=venue_provider)
+        db.session.flush()
+
+        assert offer.dateUpdated == date_updated
+        mocked_async_index_offer_ids.assert_not_called()
+        update_logs = [
+            record for record in caplog.records if getattr(record, "technical_message_id", None) == "offer.updated"
+        ]
+        assert not update_logs
+
+    # --- `bookingAllowedDatetime`
+
+    @pytest.mark.parametrize(
+        "booking_allowed_datetime",
+        [None, FROZEN_NOW - timedelta(days=1)],
+        ids=["cleared", "in the past"],
+    )
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
+    def test_should_notify_users_when_bookings_open_immediately(
+        self, notify_users, venue_provider, booking_allowed_datetime
+    ):
+        offer = self.build_offer(bookingAllowedDatetime=self.FROZEN_NOW.replace(tzinfo=None) + timedelta(days=1))
+
+        api.update_offer(
+            offer,
+            booking_allowed_datetime=booking_allowed_datetime,
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+
+        notify_users.assert_called_once_with(offer)
+
+    @time_machine.travel(FROZEN_NOW, tick=False)
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
+    def test_should_not_notify_users_when_bookings_open_later(self, notify_users, venue_provider):
+        offer = self.build_offer()
+
+        api.update_offer(
+            offer,
+            booking_allowed_datetime=self.FROZEN_NOW + timedelta(days=1),
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+
+        notify_users.assert_not_called()
+
+    # --- EAN carried in `extraData`
+
+    def test_should_move_an_ean_found_in_extra_data_to_its_own_column(self, venue_provider):
+        offer = self.build_offer(subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"author": "Truffaut"})
+
+        api.update_offer(
+            offer,
+            extra_data={"author": "Truffaut", "ean": "9782070100002"},
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+        db.session.flush()
+
+        assert offer.ean == "9782070100002"
+        assert "ean" not in offer.extraData
+
+    # --- Analytics log
+
+    def test_should_log_the_changed_fields(self, venue_provider, caplog):
+        offer = self.build_offer()
+
+        with caplog.at_level(logging.INFO):
+            api.update_offer(
+                offer,
+                name="Jules et Jim",
+                booking_email="new@example.com",
+                mandatory_extra_data_fields=set(),
+                venue_provider=venue_provider,
+            )
+
+        [update_log] = [
+            record for record in caplog.records if getattr(record, "technical_message_id", None) == "offer.updated"
+        ]
+        assert update_log.extra["changes"] == {
+            "name": {"oldValue": "Les Quatre Cents Coups", "newValue": "Jules et Jim"},
+            "bookingEmail": {"oldValue": "old@example.com", "newValue": "new@example.com"},
+        }
+
+    # --- Side effects
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_reindex_the_offer(self, mocked_async_index_offer_ids, venue_provider):
+        offer = self.build_offer()
+
+        api.update_offer(
+            offer,
+            name="Jules et Jim",
+            booking_email="new@example.com",
+            mandatory_extra_data_fields=set(),
+            venue_provider=venue_provider,
+        )
+
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": {"name", "bookingEmail"}},
+        )
+
+
+@pytest.mark.usefixtures("db_session")
+class GetOrCreateOffererAddressFromAddressBodyTest:
+    @mock.patch("pcapi.core.offerers.api.get_or_create_offer_location")
+    def test_should_reuse_the_venue_address_when_the_offer_is_located_on_the_venue(self, get_or_create_offer_location):
+        venue = offerers_factories.VenueFactory()
+
+        offerer_address = api.get_or_create_offerer_address_from_address_body(
+            offerers_schemas.LocationOnlyOnVenueModel(), venue
+        )
+
+        # no label, so the offer is not tied to the venue location itself
+        get_or_create_offer_location.assert_called_once_with(
+            offerer_id=venue.managingOffererId,
+            venue_id=venue.id,
+            address_id=venue.offererAddress.addressId,
+            label=None,
+        )
+        assert offerer_address == get_or_create_offer_location.return_value
+
+    @mock.patch("pcapi.core.offerers.api.get_offer_location_from_address")
+    def test_should_build_a_location_from_the_address_when_one_is_sent(self, get_offer_location_from_address):
+        venue = offerers_factories.VenueFactory()
+        address_body = offerers_schemas.LocationModel(
+            street="1 rue de la Paix",
+            city="Paris",
+            postalCode="75002",
+            latitude=48.8691,
+            longitude=2.3316,
+            label="Salle Jean Vilar",
+        )
+
+        offerer_address = api.get_or_create_offerer_address_from_address_body(address_body, venue)
+
+        get_offer_location_from_address.assert_called_once_with(
+            venue.managingOffererId, address_body, venue_id=venue.id
+        )
+        assert offerer_address == get_offer_location_from_address.return_value
 
 
 now_datetime_with_tz = datetime.now(UTC)
@@ -3969,22 +4226,6 @@ class DeleteStocksTest:
         # This call should not have modified the stock deletion because another process should
         # have updated them already.
         assert all(not stock.isSoftDeleted for stock in stocks)
-
-
-class FormatExtraDataTest:
-    def test_format_extra_data(self):
-        extra_data = {
-            "musicType": "-1",  # applicable and filled
-            "musicSubType": "100",  # applicable and filled
-            "gtl_id": "19000000",  # applicable and filled in deserializer
-            "other": "value",  # not applicable field
-            "performer": "",  # applicable but empty
-        }
-        assert api._format_extra_data(subcategories.FESTIVAL_MUSIQUE.id, extra_data) == {
-            "musicType": "-1",
-            "musicSubType": "100",
-            "gtl_id": "19000000",
-        }
 
 
 @pytest.mark.usefixtures("db_session")

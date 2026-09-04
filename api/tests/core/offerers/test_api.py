@@ -4,6 +4,7 @@ import decimal
 import logging
 import os
 import pathlib
+from unittest.mock import Mock
 from unittest.mock import call as mock_call
 from unittest.mock import patch
 
@@ -14,6 +15,7 @@ import time_machine
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.search.testing as search_testing
 from pcapi.connectors import acceslibre as acceslibre_connector
+from pcapi.connectors import api_adresse
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
@@ -3826,46 +3828,6 @@ class GetOffererConfidenceLevelTest:
 
 
 class OffererAddressTest:
-    @pytest.mark.parametrize(
-        "same_label,same_address, same_venue,",
-        [
-            [True, False, True],
-            [True, False, False],
-            [False, True, True],
-            [False, True, False],
-            [True, True, True],
-            [True, True, False],
-            [False, False, True],
-            [False, False, False],
-        ],
-    )
-    def test_get_or_create_offer_location(self, same_label, same_address, same_venue):
-        venue = offerers_factories.VenueFactory()
-        oa_1 = offerers_factories.OfferLocationFactory(
-            offerer=venue.managingOfferer, venue=venue, address=venue.offererAddress.address
-        )
-        other_address = geography_factories.AddressFactory(
-            street="1 rue de la paix",
-        )
-        other_venue = offerers_factories.VenueFactory()
-
-        oa_doppleganger = offerers_factories.OfferLocationFactory(
-            offerer=venue.managingOfferer, address=other_address, label="somethingdifferent"
-        )
-
-        oa_return = offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOfferer.id,
-            venue_id=venue.id if same_venue else other_venue.id,
-            address_id=oa_1.address.id if same_address else other_address.id,
-            label=oa_1.label if same_label else "somethingdifferent",
-        )
-        if same_label and same_address and same_venue:
-            assert oa_return == oa_1
-        else:
-            assert oa_return.offerer == venue.managingOfferer
-            assert oa_return != oa_1
-        assert oa_return not in (venue.offererAddress, oa_doppleganger)
-
     @pytest.mark.parametrize("existant_address", [True, False])
     def test_get_or_create_address(self, existant_address):
         if existant_address:
@@ -3915,6 +3877,233 @@ class OffererAddressTest:
         offerers_factories.OfferLocationFactory(venue=venue, address=address, label=label)
         with pytest.raises(sa.exc.IntegrityError):
             offerers_factories.OfferLocationFactory(venue=venue, address=address, label=label)
+
+
+class GetOrCreateOfferLocationTest:
+    LABEL = "Salle Jean Vilar"
+
+    def create_offer_location(self, venue, **overrides):
+        defaults = {
+            "offerer": venue.managingOfferer,
+            "venue": venue,
+            "address": venue.offererAddress.address,
+            "label": self.LABEL,
+        }
+        return offerers_factories.OfferLocationFactory(**{**defaults, **overrides})
+
+    # --- An existing offer location is reused
+
+    def test_should_reuse_the_location_matching_the_venue_the_address_and_the_label(self):
+        venue = offerers_factories.VenueFactory()
+        offer_location = self.create_offer_location(venue)
+
+        offerer_address = offerers_api.get_or_create_offer_location(
+            offerer_id=venue.managingOffererId,
+            venue_id=venue.id,
+            address_id=offer_location.addressId,
+            label=self.LABEL,
+        )
+
+        assert offerer_address == offer_location
+
+    def test_should_reuse_the_location_that_has_no_label(self):
+        venue = offerers_factories.VenueFactory()
+        offer_location = self.create_offer_location(venue, label=None)
+
+        offerer_address = offerers_api.get_or_create_offer_location(
+            offerer_id=venue.managingOffererId,
+            venue_id=venue.id,
+            address_id=offer_location.addressId,
+            label=None,
+        )
+
+        assert offerer_address == offer_location
+
+    def test_should_never_reuse_the_location_of_the_venue_itself(self):
+        venue = offerers_factories.VenueFactory()
+        assert venue.offererAddress.label is None
+
+        offerer_address = offerers_api.get_or_create_offer_location(
+            offerer_id=venue.managingOffererId,
+            venue_id=venue.id,
+            address_id=venue.offererAddress.addressId,
+            label=None,
+        )
+
+        assert offerer_address != venue.offererAddress
+        assert offerer_address.type == offerers_models.LocationType.OFFER_LOCATION
+
+    # --- A new offer location is created
+
+    @pytest.mark.parametrize("differing_field", ["label", "address", "venue"])
+    def test_should_create_a_location_when_one_field_differs(self, differing_field):
+        venue = offerers_factories.VenueFactory()
+        offer_location = self.create_offer_location(venue)
+        kwargs = {
+            "offerer_id": venue.managingOffererId,
+            "venue_id": venue.id,
+            "address_id": offer_location.addressId,
+            "label": self.LABEL,
+        }
+
+        if differing_field == "label":
+            kwargs["label"] = "Petite salle"
+            expected_attr, expected_value = "label", "Petite salle"
+        elif differing_field == "address":
+            other_address = geography_factories.AddressFactory()
+            kwargs["address_id"] = other_address.id
+            expected_attr, expected_value = "addressId", other_address.id
+        else:
+            other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+            kwargs["venue_id"] = other_venue.id
+            expected_attr, expected_value = "venueId", other_venue.id
+
+        offerer_address = offerers_api.get_or_create_offer_location(**kwargs)
+
+        assert offerer_address != offer_location
+        assert getattr(offerer_address, expected_attr) == expected_value
+
+    def test_should_create_the_location_with_the_requested_attributes(self):
+        venue = offerers_factories.VenueFactory()
+        address = geography_factories.AddressFactory()
+
+        offerer_address = offerers_api.get_or_create_offer_location(
+            offerer_id=venue.managingOffererId, venue_id=venue.id, address_id=address.id, label=self.LABEL
+        )
+
+        assert offerer_address.id
+        assert offerer_address.offererId == venue.managingOffererId
+        assert offerer_address.venueId == venue.id
+        assert offerer_address.addressId == address.id
+        assert offerer_address.label == self.LABEL
+        assert offerer_address.type == offerers_models.LocationType.OFFER_LOCATION
+
+
+class CreateOffererAddressFromAddressApiTest:
+    def build_address_body(self, **overrides):
+        defaults = {
+            "street": "1 rue de la Paix",
+            "city": "Paris",
+            "postalCode": "75002",
+            "inseeCode": "75102",
+            "banId": "75102_7560_00001",
+            "latitude": "48.8691",
+            "longitude": "2.3316",
+        }
+        return offerers_schemas.LocationModel(**{**defaults, **overrides})
+
+    @patch("pcapi.core.offerers.api.get_or_create_address")
+    def test_should_build_the_location_data_from_the_body(self, get_or_create_address):
+        address = offerers_api.create_offerer_address_from_address_api(self.build_address_body())
+
+        get_or_create_address.assert_called_once_with(
+            {
+                "city": "Paris",
+                "postal_code": "75002",
+                # the body carries them as strings, the address stores them as floats
+                "latitude": 48.8691,
+                "longitude": 2.3316,
+                "street": "1 rue de la Paix",
+                "insee_code": "75102",
+                "ban_id": "75102_7560_00001",
+            },
+            is_manual_edition=False,
+        )
+        assert address == get_or_create_address.return_value
+
+    @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
+    @patch("pcapi.core.offerers.api.get_or_create_address")
+    def test_should_look_the_insee_code_up_when_the_address_is_manually_edited(
+        self, get_or_create_address, get_municipality_centroid
+    ):
+        get_municipality_centroid.return_value = Mock(citycode="75102")
+
+        offerers_api.create_offerer_address_from_address_api(
+            self.build_address_body(isManualEdition=True, inseeCode=None)
+        )
+
+        get_municipality_centroid.assert_called_once_with(city="Paris", postcode="75002")
+        assert get_or_create_address.call_args.args[0]["insee_code"] == "75102"
+
+    @patch("pcapi.core.offerers.api.get_or_create_address")
+    def test_should_drop_the_ban_id_when_the_address_is_manually_edited(self, get_or_create_address):
+        offerers_api.create_offerer_address_from_address_api(self.build_address_body(isManualEdition=True))
+
+        assert get_or_create_address.call_args.args[0]["ban_id"] is None
+        assert get_or_create_address.call_args.kwargs["is_manual_edition"] is True
+
+    @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
+    @patch("pcapi.core.offerers.api.get_or_create_address")
+    def test_should_leave_the_insee_code_empty_when_the_municipality_cannot_be_found(
+        self, get_or_create_address, get_municipality_centroid
+    ):
+        get_municipality_centroid.side_effect = api_adresse.NoResultException()
+
+        offerers_api.create_offerer_address_from_address_api(self.build_address_body(isManualEdition=True))
+
+        assert get_or_create_address.call_args.args[0]["insee_code"] is None
+
+
+class GetOfferLocationFromAddressTest:
+    def build_address_body(self, **overrides):
+        defaults = {
+            "street": "1 rue de la Paix",
+            "city": "Paris",
+            "postalCode": "75002",
+            "latitude": 48.8691,
+            "longitude": 2.3316,
+            "label": "Salle Jean Vilar",
+        }
+
+        return offerers_schemas.LocationModel(**{**defaults, **overrides})
+
+    @patch("pcapi.core.offerers.api.create_offerer_address_from_address_api")
+    def test_should_create_the_address_from_the_body(self, create_offerer_address_from_address_api):
+        venue = offerers_factories.VenueFactory()
+        address_body = self.build_address_body()
+        create_offerer_address_from_address_api.return_value = geography_factories.AddressFactory()
+
+        offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body, venue_id=venue.id)
+
+        create_offerer_address_from_address_api.assert_called_once_with(address_body)
+
+    @patch("pcapi.core.offerers.api.get_or_create_offer_location")
+    @patch("pcapi.core.offerers.api.create_offerer_address_from_address_api")
+    def test_should_create_an_offer_location_for_the_created_address(
+        self, create_offerer_address_from_address_api, get_or_create_offer_location
+    ):
+        venue = offerers_factories.VenueFactory()
+        address = geography_factories.AddressFactory()
+        create_offerer_address_from_address_api.return_value = address
+
+        offerer_address = offerers_api.get_offer_location_from_address(
+            venue.managingOffererId, self.build_address_body(), venue_id=venue.id
+        )
+
+        get_or_create_offer_location.assert_called_once_with(
+            offerer_id=venue.managingOffererId,
+            venue_id=venue.id,
+            address_id=address.id,
+            label="Salle Jean Vilar",
+        )
+        assert offerer_address == get_or_create_offer_location.return_value
+
+    @patch("pcapi.core.offerers.api.get_or_create_offer_location")
+    def test_should_turn_an_empty_label_into_no_label(self, get_or_create_offer_location):
+        venue = offerers_factories.VenueFactory()
+        address_body = self.build_address_body(label="")
+
+        offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body, venue_id=venue.id)
+
+        assert get_or_create_offer_location.call_args.kwargs["label"] is None
+        # the body is edited in place, not copied
+        assert address_body.label is None
+
+    def test_should_refuse_a_missing_offerer(self):
+        venue = offerers_factories.VenueFactory()
+
+        with pytest.raises(AssertionError):
+            offerers_api.get_offer_location_from_address(0, self.build_address_body(), venue_id=venue.id)
 
 
 class SendReminderEmailToIndividualOfferersTest:
