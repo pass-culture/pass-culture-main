@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import time
 import typing
 from functools import partial
 from itertools import groupby
@@ -28,6 +29,7 @@ import pcapi.serialization.utils as serialization_utils
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.achievements import api as achievements_api
+from pcapi.core.bookings.metrics import external_bookings_execution_time_histogram
 from pcapi.core.categories.subcategories import NUMBER_SECONDS_HIDE_QR_CODE
 from pcapi.core.categories.subcategories import SEANCE_CINE
 from pcapi.core.educational import models as educational_models
@@ -361,12 +363,19 @@ def _book_offer(
         if is_cinema_external_ticket_applicable:
             offers_validation.check_offer_is_from_current_cinema_provider(stock.offer)
             try:
+                start_time = time.time()
                 tickets = external_bookings_api.book_cinema_ticket(
                     venue_id=stock.offer.venueId,
                     stock_id_at_providers=stock.idAtProviders,
                     booking=booking,
                     beneficiary=beneficiary,
                 )
+                elapsedseconds = time.time() - start_time
+                external_bookings_execution_time_histogram.labels(
+                    provider_id=stock.offer.lastProviderId,
+                    provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
+                    subcategory_id=stock.offer.subcategoryId,
+                ).observe(elapsedseconds)
                 logger.info(
                     "Cinema tickets successfully booked",
                     extra={
@@ -407,7 +416,15 @@ def _book_offer(
             ]
 
         if stock.offer.isEventLinkedToTicketingService:
+            start_time = time.time()
             tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
+            elapsedseconds = time.time() - start_time
+            external_bookings_execution_time_histogram.labels(
+                provider_id=stock.offer.lastProviderId,
+                provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
+                subcategory_id=stock.offer.subcategoryId,
+            ).observe(elapsedseconds)
+
             booking.externalBookings = [
                 models.ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
             ]
