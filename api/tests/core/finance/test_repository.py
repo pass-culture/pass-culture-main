@@ -45,13 +45,17 @@ class GetInvoicesQueryTest:
             bankAccount=bank_account,
             date=datetime.date(2021, 6, 15),
         )
-        invoice_within = factories.InvoiceFactory(
+        invoice_within_1 = factories.InvoiceFactory(
             bankAccount=bank_account,
             date=datetime.date(2021, 7, 1),
         )
-        _invoice_after = factories.InvoiceFactory(
+        invoice_within_2 = factories.InvoiceFactory(
             bankAccount=bank_account,
             date=datetime.date(2021, 8, 1),
+        )
+        _invoice_after = factories.InvoiceFactory(
+            bankAccount=bank_account,
+            date=datetime.date(2021, 8, 2),
         )
 
         invoices = repository.get_paid_invoices_query(
@@ -59,7 +63,7 @@ class GetInvoicesQueryTest:
             date_from=datetime.date(2021, 7, 1),
             date_until=datetime.date(2021, 8, 1),
         )
-        assert list(invoices) == [invoice_within]
+        assert list(invoices) == [invoice_within_2, invoice_within_1]
 
     def test_filter_on_amount_gte(self):
         offerer = offerers_factories.OffererFactory()

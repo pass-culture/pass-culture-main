@@ -1,12 +1,8 @@
-import datetime
-
-import sqlalchemy.orm as sa_orm
 from flask_login import current_user
 from flask_login import login_required
 
-import pcapi.core.finance.models as finance_models
-import pcapi.core.finance.repository as finance_repository
-import pcapi.core.finance.utils as finance_utils
+from pcapi.core.finance import models
+from pcapi.core.finance import repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -20,18 +16,6 @@ from pcapi.utils.transaction_manager import atomic
 from . import blueprint
 
 
-@private_api.route("/finance/has-settlement", methods=["GET"])
-@atomic()
-@login_required
-@spectree_serialize(response_model=finance_serialize.HasSettlementResponseModel, api=blueprint.pro_private_schema)
-def has_settlement(query: finance_serialize.HasSettlementQueryModel) -> finance_serialize.HasSettlementResponseModel:
-    rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
-
-    offerer_has_settlement = finance_repository.has_settlement(offerer_id=query.offerer_id)
-
-    return finance_serialize.HasSettlementResponseModel(has_settlement=offerer_has_settlement)
-
-
 @private_api.route("/finance/settlements", methods=["GET"])
 @atomic()
 @login_required
@@ -39,7 +23,7 @@ def has_settlement(query: finance_serialize.HasSettlementQueryModel) -> finance_
 def get_settlements(query: finance_serialize.SettlementListQueryModel) -> finance_serialize.SettlementListResponseModel:
     rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
 
-    settlements_query = finance_repository.get_settlements_query(
+    settlements_query = repository.get_settlements_query(
         offerer_id=query.offerer_id,
         bank_account_id=query.bank_account_id,
         date_from=query.period_beginning_date,
@@ -52,17 +36,24 @@ def get_settlements(query: finance_serialize.SettlementListQueryModel) -> financ
     )
 
 
+@private_api.route("/finance/has-settlement", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(response_model=finance_serialize.HasSettlementResponseModel, api=blueprint.pro_private_schema)
+def has_settlement(query: finance_serialize.HasSettlementQueryModel) -> finance_serialize.HasSettlementResponseModel:
+    rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
+
+    offerer_has_settlement = repository.has_settlement(offerer_id=query.offerer_id)
+
+    return finance_serialize.HasSettlementResponseModel(has_settlement=offerer_has_settlement)
+
+
 @private_api.route("/v2/finance/invoices", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(response_model=finance_serialize.InvoiceListV2ResponseModel, api=blueprint.pro_private_schema)
 def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance_serialize.InvoiceListV2ResponseModel:
-    # Frontend sends a period with *inclusive* bounds, but
-    # `get_paid_invoices_query` expects the upper bound to be *exclusive*.
-    if query.period_ending_date:
-        query.period_ending_date += datetime.timedelta(days=1)
-
-    invoices = finance_repository.get_paid_invoices_query(
+    invoices = repository.get_paid_invoices_query(
         current_user,
         bank_account_id=query.bank_account_id,
         date_from=query.period_beginning_date,
@@ -72,22 +63,9 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
         amount_lower_than=0 if query.amount_positive_only else None,
         amount_greater_than_equal=0 if query.amount_negative_only else None,
     )
-    invoices = invoices.options(
-        sa_orm.joinedload(finance_models.Invoice.cashflows).joinedload(finance_models.Cashflow.batch)
-    )
-    invoices = invoices.order_by(finance_models.Invoice.date.desc())
 
     return finance_serialize.InvoiceListV2ResponseModel(
-        [
-            finance_serialize.InvoiceResponseV2Model(
-                reference=invoice.reference,
-                date=invoice.date.date(),
-                amount=float(-finance_utils.cents_to_full_unit(invoice.amount)),
-                url=invoice.url,
-                status=invoice.status,
-            )
-            for invoice in invoices
-        ]
+        [finance_serialize.InvoiceResponseV2Model.build(invoice) for invoice in invoices]
     )
 
 
@@ -97,7 +75,8 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
 @spectree_serialize(response_model=finance_serialize.HasInvoiceResponseModel, api=blueprint.pro_private_schema)
 def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serialize.HasInvoiceResponseModel:
     rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
-    offerer_has_invoice = finance_repository.has_invoice(query.offerer_id)
+
+    offerer_has_invoice = repository.has_invoice(query.offerer_id)
 
     return finance_serialize.HasInvoiceResponseModel(has_invoice=offerer_has_invoice)
 
@@ -116,19 +95,19 @@ def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serial
 )
 def get_combined_invoices(query: finance_serialize.GetCombinedInvoicesQueryModel) -> bytes:
     invoices = (
-        db.session.query(finance_models.Invoice)
-        .filter(finance_models.Invoice.reference.in_(query.invoice_references))
-        .order_by(finance_models.Invoice.date)
+        db.session.query(models.Invoice)
+        .filter(models.Invoice.reference.in_(query.invoice_references))
+        .order_by(models.Invoice.date)
         .all()
     )
     if not invoices:
         raise ApiErrors({"invoice": "Invoice not found"}, status_code=404)
 
     bank_accounts = (
-        db.session.query(finance_models.Invoice)
-        .join(finance_models.Invoice.bankAccount)
-        .filter(finance_models.Invoice.reference.in_(query.invoice_references))
-        .with_entities(finance_models.BankAccount.offererId)
+        db.session.query(models.Invoice)
+        .join(models.Invoice.bankAccount)
+        .filter(models.Invoice.reference.in_(query.invoice_references))
+        .with_entities(models.BankAccount.offererId)
         .all()
     )
     offerer_ids = {bank_account.offererId for bank_account in bank_accounts}
@@ -161,8 +140,9 @@ def get_combined_invoices(query: finance_serialize.GetCombinedInvoicesQueryModel
     response_model=finance_serialize.FinanceBankAccountListResponseModel, api=blueprint.pro_private_schema
 )
 def get_bank_accounts() -> finance_serialize.FinanceBankAccountListResponseModel:
-    bank_accounts = finance_repository.get_bank_accounts_query(user=current_user)
-    bank_accounts = bank_accounts.order_by(finance_models.BankAccount.label)
+    bank_accounts = repository.get_bank_accounts_query(user=current_user)
+    bank_accounts = bank_accounts.order_by(models.BankAccount.label)
+
     return finance_serialize.FinanceBankAccountListResponseModel(
         [
             finance_serialize.FinanceBankAccountResponseModel.model_validate(bank_account)

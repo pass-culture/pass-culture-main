@@ -127,9 +127,17 @@ class GetInvoicesTest:
             bankAccount=bank_account,
             date=datetime.datetime(2021, 6, 1),
         )
-        invoice_within = finance_factories.InvoiceFactory(
+        invoice_lower_bound = finance_factories.InvoiceFactory(
             bankAccount=bank_account,
             date=datetime.datetime(2021, 7, 1),
+        )
+        invoice_within = finance_factories.InvoiceFactory(
+            bankAccount=bank_account,
+            date=datetime.datetime(2021, 7, 15),
+        )
+        invoice_upper_bound = finance_factories.InvoiceFactory(
+            bankAccount=bank_account,
+            date=datetime.datetime(2021, 7, 31),
         )
         _invoice_after = finance_factories.InvoiceFactory(
             bankAccount=bank_account,
@@ -145,8 +153,12 @@ class GetInvoicesTest:
             assert response.status_code == 200
 
         invoices = response.json
-        assert len(invoices) == 1
-        assert invoices[0]["reference"] == invoice_within.reference
+        assert len(invoices) == 3
+        assert {result["reference"] for result in response.json} == {
+            invoice_lower_bound.reference,
+            invoice_within.reference,
+            invoice_upper_bound.reference,
+        }
 
     def test_get_invoices_positive_amount(self, client):
         offerer = offerers_factories.OffererFactory()
