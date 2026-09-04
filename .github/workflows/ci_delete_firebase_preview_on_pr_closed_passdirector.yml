@@ -16,7 +16,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@6483091347df28b22c7b10d39bb6e3e058d7278a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@aeb09c2a8b4dde6291cd1f8b986c1fe3f3c0655c
 
       - name: "Authentification to Google"
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
