@@ -65,8 +65,12 @@ describe('OffersInstantSearch', () => {
     renderOffersInstantSearch()
 
     expect(
-      await screen.findByText('Lieu inconnu. Tous les résultats sont affichés.')
-    ).toBeInTheDocument()
+      (
+        await screen.findAllByText(
+          'Lieu inconnu. Tous les résultats sont affichés.'
+        )
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should show an error message when the siret is invalid', async () => {
@@ -81,8 +85,12 @@ describe('OffersInstantSearch', () => {
     renderOffersInstantSearch()
 
     expect(
-      await screen.findByText('Lieu inconnu. Tous les résultats sont affichés.')
-    ).toBeInTheDocument()
+      (
+        await screen.findAllByText(
+          'Lieu inconnu. Tous les résultats sont affichés.'
+        )
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should filter on the venue specified in the url', async () => {

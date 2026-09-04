@@ -346,10 +346,12 @@ describe('SignIn', () => {
     )
 
     expect(
-      await screen.findByText(
-        'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
-      )
-    ).toBeInTheDocument()
+      (
+        await screen.findAllByText(
+          'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
+        )
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should display an error message when reCAPTCHA fails', async () => {
@@ -368,7 +370,9 @@ describe('SignIn', () => {
       })
     )
 
-    expect(await screen.findByText(RECAPTCHA_ERROR_MESSAGE)).toBeInTheDocument()
+    expect(
+      (await screen.findAllByText(RECAPTCHA_ERROR_MESSAGE)).length
+    ).toBeGreaterThan(0)
   })
 
   it('should clear errors when clicking after an API error', async () => {

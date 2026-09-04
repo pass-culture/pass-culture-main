@@ -467,7 +467,9 @@ describe('Offerer', () => {
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
     await waitFor(() => {
-      expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
+      expect(
+        screen.getAllByText('Une erreur est survenue').length
+      ).toBeGreaterThan(0)
     })
   })
 
@@ -583,7 +585,9 @@ describe('Offerer', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
+      expect(
+        screen.getAllByText('Une erreur est survenue').length
+      ).toBeGreaterThan(0)
     })
   })
 
@@ -605,10 +609,10 @@ describe('Offerer', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(
+        screen.getAllByText(
           'Nous avons rencontré un problème lors de la récupération des données.'
-        )
-      ).toBeInTheDocument()
+        ).length
+      ).toBeGreaterThan(0)
     })
   })
   it('should navigate to /hub when clicking previous button', async () => {

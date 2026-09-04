@@ -969,8 +969,8 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('Votre offre a bien été modifiée.')
-        ).toBeInTheDocument()
+          screen.getAllByText('Votre offre a bien été modifiée.').length
+        ).toBeGreaterThan(0)
       })
 
       expect(mockNavigate).not.toHaveBeenCalled()

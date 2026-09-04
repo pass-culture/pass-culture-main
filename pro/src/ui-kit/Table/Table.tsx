@@ -28,7 +28,7 @@ type NoResultProps = {
   onFilterReset: () => void
 }
 
-type EmptyStateProps = {
+export type EmptyStateProps = {
   hasNoData: boolean
   message: {
     icon: string
@@ -206,176 +206,139 @@ export function Table<
     ? 'Tout désélectionner'
     : 'Tout sélectionner'
 
-  if (noData.hasNoData) {
-    return <TableNoData noData={noData.message} />
-  }
-
   return (
-    <div className={classNames(styles.wrapper, className)}>
-      <table
-        className={classNames(styles['table'], {
-          [styles['table-separate']]: variant === TableVariant.SEPARATE,
-          [styles['table-collapse']]: variant === TableVariant.COLLAPSE,
-        })}
-        role={tableRole}
-      >
-        {!isTabletOrSmaller && sortedData.length > 0 && (
-          <>
-            <caption className={styles['table-caption-no-display']}>
-              {title}
-            </caption>
-            <thead>
-              <tr
-                className={classNames(styles['table-header'], {
-                  [styles['table-header-sticky']]: isSticky,
-                })}
-              >
-                {selectable && (
-                  <th scope="col" className={styles['table-header-th']}>
-                    <div className={styles['table-select-all']}>
-                      <Tooltip
-                        content="Tout sélectionner"
-                        className={styles['table-select-all-tooltip']}
-                      >
-                        <Checkbox
-                          label={headerLabel}
-                          title={headerLabel}
-                          ariaLabel="Sélectionner toutes les lignes"
-                          checked={headerChecked}
-                          indeterminate={headerIndeterminate}
-                          onChange={toggleSelectAll}
-                          className={styles['table-checkbox-label']}
-                        />
-                      </Tooltip>
-                      <span className={styles['visually-hidden']}>
-                        Sélectionner toutes les lignes
-                      </span>
-                      <div>{selectedNumber}</div>
-                    </div>
-                  </th>
-                )}
-                {columns.map((col) => {
-                  if (col.headerHidden) {
-                    return null
-                  }
-                  const headerContent = col.header ?? col.label ?? ''
-
-                  return (
-                    <th
-                      scope="col"
-                      id={col.id}
-                      colSpan={col.headerColSpan || 1}
-                      key={`col-${col.id}`}
-                      className={classNames(styles['table-header-th'], {
-                        [styles['table-header-sortable-th']]: col.sortable,
-                        [styles['table-header-center-th']]: col.centerHeader,
-                        [styles['table-header-full-row']]:
-                          col.headerForFullRowOnly,
-                      })}
-                    >
-                      {col.sortable ? (
-                        <SortColumn
-                          onClick={() => sortTableColumn(col.id)}
-                          sortingMode={
-                            currentSortingColumn === col.id
-                              ? currentSortingMode
-                              : SortingMode.NONE
-                          }
+    <>
+      <div className={classNames(styles.wrapper, className)}>
+        <table
+          className={classNames(styles['table'], {
+            [styles['table-separate']]: variant === TableVariant.SEPARATE,
+            [styles['table-collapse']]: variant === TableVariant.COLLAPSE,
+          })}
+          role={tableRole}
+        >
+          {!isTabletOrSmaller && sortedData.length > 0 && (
+            <>
+              <caption className={styles['table-caption-no-display']}>
+                {title}
+              </caption>
+              <thead>
+                <tr
+                  className={classNames(styles['table-header'], {
+                    [styles['table-header-sticky']]: isSticky,
+                  })}
+                >
+                  {selectable && (
+                    <th scope="col" className={styles['table-header-th']}>
+                      <div className={styles['table-select-all']}>
+                        <Tooltip
+                          content="Tout sélectionner"
+                          className={styles['table-select-all-tooltip']}
                         >
-                          {headerContent}
-                        </SortColumn>
-                      ) : (
-                        headerContent
-                      )}
+                          <Checkbox
+                            label={headerLabel}
+                            title={headerLabel}
+                            ariaLabel="Sélectionner toutes les lignes"
+                            checked={headerChecked}
+                            indeterminate={headerIndeterminate}
+                            onChange={toggleSelectAll}
+                            className={styles['table-checkbox-label']}
+                          />
+                        </Tooltip>
+                        <span className={styles['visually-hidden']}>
+                          Sélectionner toutes les lignes
+                        </span>
+                        <div>{selectedNumber}</div>
+                      </div>
                     </th>
-                  )
-                })}
-              </tr>
-            </thead>
-          </>
-        )}
+                  )}
+                  {columns.map((col) => {
+                    if (col.headerHidden) {
+                      return null
+                    }
+                    const headerContent = col.header ?? col.label ?? ''
 
-        <tbody>
-          {isLoading &&
-            Array.from({ length: 8 }).map((_, index) => (
-              <tr
-                key={`loading-row-${columns.length}-${
-                  // biome-ignore lint/suspicious/noArrayIndexKey: ignore for Skeleton
-                  index
-                }`}
-              >
-                <td colSpan={columns.length + 1}>
-                  <Skeleton height="7rem" width="100%" />
-                </td>
-              </tr>
-            ))}
+                    return (
+                      <th
+                        scope="col"
+                        id={col.id}
+                        colSpan={col.headerColSpan || 1}
+                        key={`col-${col.id}`}
+                        className={classNames(styles['table-header-th'], {
+                          [styles['table-header-sortable-th']]: col.sortable,
+                          [styles['table-header-center-th']]: col.centerHeader,
+                          [styles['table-header-full-row']]:
+                            col.headerForFullRowOnly,
+                        })}
+                      >
+                        {col.sortable ? (
+                          <SortColumn
+                            onClick={() => sortTableColumn(col.id)}
+                            sortingMode={
+                              currentSortingColumn === col.id
+                                ? currentSortingMode
+                                : SortingMode.NONE
+                            }
+                          >
+                            {headerContent}
+                          </SortColumn>
+                        ) : (
+                          headerContent
+                        )}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+            </>
+          )}
 
-          {!sortedData.length && (
+          <tbody>
+            {isLoading &&
+              Array.from({ length: 8 }).map((_, index) => (
+                <tr
+                  key={`loading-row-${columns.length}-${
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ignore for Skeleton
+                    index
+                  }`}
+                >
+                  <td colSpan={columns.length + 1}>
+                    <Skeleton height="7rem" width="100%" />
+                  </td>
+                </tr>
+              ))}
+
             <TableNoFilterResult
               colSpan={columns.length + (selectable ? 1 : 0)}
               message={noResult.message}
               subtitle={noResult.subtitle}
               resetMessage={noResult.resetMessage}
               resetFilters={noResult.onFilterReset}
+              hasNoResult={!noData.hasNoData && !sortedData.length}
             />
-          )}
 
-          {sortedData.map((row) => {
-            const isSelected = selectedIds.has(row.id)
-            const tableFullRow = getFullRow?.(row)
-            const rowDateTime = getRowSelectionDateTime?.(row)
-            const hasDateTimeSelectionLabel = rowDateTime !== undefined
+            {sortedData.map((row) => {
+              const isSelected = selectedIds.has(row.id)
+              const tableFullRow = getFullRow?.(row)
+              const rowDateTime = getRowSelectionDateTime?.(row)
+              const hasDateTimeSelectionLabel = rowDateTime !== undefined
 
-            const rowSelectionLabel = hasDateTimeSelectionLabel
-              ? `Sélectionner la ligne du ${rowDateTime}`
-              : `Sélectionner la ligne ${row.name || row.id}`
+              const rowSelectionLabel = hasDateTimeSelectionLabel
+                ? `Sélectionner la ligne du ${rowDateTime}`
+                : `Sélectionner la ligne ${row.name || row.id}`
 
-            const rowCheckboxLabel = hasDateTimeSelectionLabel
-              ? rowSelectionLabel
-              : (row.name ?? `ligne ${row.id}`)
+              const rowCheckboxLabel = hasDateTimeSelectionLabel
+                ? rowSelectionLabel
+                : (row.name ?? `ligne ${row.id}`)
 
-            return (
-              <React.Fragment key={row.id}>
-                <tr
-                  data-testid="table-row"
-                  className={classNames({
-                    [styles['table-row']]: !tableFullRow?.content,
-                  })}
-                >
-                  {selectable && (
-                    <td
-                      className={classNames({
-                        [styles['table-separate-cell']]:
-                          variant === TableVariant.SEPARATE,
-                        [styles['table-collapse-cell']]:
-                          variant === TableVariant.COLLAPSE,
-                      })}
-                    >
-                      <Checkbox
-                        label={rowCheckboxLabel}
-                        title={rowSelectionLabel}
-                        checked={isSelected}
-                        onChange={() => toggleSelectRow(row)}
-                        className={styles['table-checkbox-label']}
-                        disabled={
-                          isRowSelectable ? !isRowSelectable(row) : false
-                        }
-                      />
-                      <span className={styles['visually-hidden']}>
-                        {rowSelectionLabel}
-                      </span>
-                    </td>
-                  )}
-
-                  {columns.map((col) => {
-                    if (col.bodyHidden || col.headerForFullRowOnly) {
-                      return null
-                    }
-                    const value = col.render
-                      ? col.render(row)
-                      : getValue(row, col.ordererField)
-
-                    return (
+              return (
+                <React.Fragment key={row.id}>
+                  <tr
+                    data-testid="table-row"
+                    className={classNames({
+                      [styles['table-row']]: !tableFullRow?.content,
+                    })}
+                  >
+                    {selectable && (
                       <td
                         className={classNames({
                           [styles['table-separate-cell']]:
@@ -383,44 +346,79 @@ export function Table<
                           [styles['table-collapse-cell']]:
                             variant === TableVariant.COLLAPSE,
                         })}
-                        key={`col-${col.id}-${col.label}`}
-                        data-label={col.label}
-                        headers={isTabletOrSmaller ? undefined : col.id}
                       >
-                        {value}
+                        <Checkbox
+                          label={rowCheckboxLabel}
+                          title={rowSelectionLabel}
+                          checked={isSelected}
+                          onChange={() => toggleSelectRow(row)}
+                          className={styles['table-checkbox-label']}
+                          disabled={
+                            isRowSelectable ? !isRowSelectable(row) : false
+                          }
+                        />
+                        <span className={styles['visually-hidden']}>
+                          {rowSelectionLabel}
+                        </span>
                       </td>
-                    )
-                  })}
-                </tr>
-                {tableFullRow?.content && (
-                  <tr className={classNames(styles['table-row'])}>
-                    <td
-                      colSpan={columns.length + (selectable ? 1 : 0)}
-                      headers={
-                        isTabletOrSmaller ? undefined : tableFullRow.headerId
+                    )}
+
+                    {columns.map((col) => {
+                      if (col.bodyHidden || col.headerForFullRowOnly) {
+                        return null
                       }
-                    >
-                      <div className={styles['table-fullrow-content']}>
-                        {tableFullRow?.content}
-                      </div>
-                    </td>
+                      const value = col.render
+                        ? col.render(row)
+                        : getValue(row, col.ordererField)
+
+                      return (
+                        <td
+                          className={classNames({
+                            [styles['table-separate-cell']]:
+                              variant === TableVariant.SEPARATE,
+                            [styles['table-collapse-cell']]:
+                              variant === TableVariant.COLLAPSE,
+                          })}
+                          key={`col-${col.id}-${col.label}`}
+                          data-label={col.label}
+                          headers={isTabletOrSmaller ? undefined : col.id}
+                        >
+                          {value}
+                        </td>
+                      )
+                    })}
                   </tr>
-                )}
-              </React.Fragment>
-            )
-          })}
-        </tbody>
-      </table>
-      {children}
-      {pagination && (
-        <div className={styles['table-pagination']}>
-          <Pagination
-            currentPage={pagination.currentPage}
-            pageCount={pagination.pageCount}
-            onPageClick={pagination.onPageClick}
-          />
-        </div>
-      )}
-    </div>
+                  {tableFullRow?.content && (
+                    <tr className={classNames(styles['table-row'])}>
+                      <td
+                        colSpan={columns.length + (selectable ? 1 : 0)}
+                        headers={
+                          isTabletOrSmaller ? undefined : tableFullRow.headerId
+                        }
+                      >
+                        <div className={styles['table-fullrow-content']}>
+                          {tableFullRow?.content}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              )
+            })}
+          </tbody>
+        </table>
+        {children}
+        {pagination && (
+          <div className={styles['table-pagination']}>
+            <Pagination
+              currentPage={pagination.currentPage}
+              pageCount={pagination.pageCount}
+              onPageClick={pagination.onPageClick}
+            />
+          </div>
+        )}
+      </div>
+      <TableNoData noData={noData} />
+    </>
   )
 }

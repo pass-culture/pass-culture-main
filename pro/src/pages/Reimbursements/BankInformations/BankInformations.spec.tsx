@@ -248,10 +248,10 @@ describe('BankInformations page', () => {
 
     expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledTimes(1)
     expect(
-      screen.getByText(
+      screen.getAllByText(
         'Impossible de récupérer les informations relatives à vos comptes bancaires.'
-      )
-    ).toBeInTheDocument()
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('should render with default offerer select ', async () => {

@@ -1,32 +1,39 @@
-import type { ReactNode } from 'react'
+import cn from 'classnames'
+import type { EmptyStateProps } from 'ui-kit/Table/Table'
 
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './TableNoData.module.scss'
 
-interface TableNoDataProps {
-  noData: {
-    icon: string
-    title: string
-    subtitle?: string
-    cta?: ReactNode
-  }
-}
-
 export const TableNoData = ({
-  noData: { icon, title, subtitle, cta },
-}: TableNoDataProps): JSX.Element => {
+  noData,
+}: {
+  noData: EmptyStateProps
+}): JSX.Element => {
+  const { icon, title, subtitle, cta } = noData.message
   return (
-    <div className={styles['no-data']}>
-      <SvgIcon
-        src={icon}
-        alt=""
-        width="80"
-        className={styles['no-data-icon']}
-      />
-      <p className={styles['no-data-title']}>{title}</p>
-      {subtitle && <p className={styles['no-data-subtitle']}>{subtitle}</p>}
-      <div className={styles['no-data-cta']}>{cta}</div>
+    <div
+      className={cn({
+        [styles['no-data']]: noData.hasNoData,
+      })}
+      role="status"
+    >
+      {noData.hasNoData ? (
+        <>
+          <SvgIcon
+            src={icon}
+            alt=""
+            width="80"
+            className={styles['no-data-icon']}
+            aria-hidden={true}
+          />
+          <p className={styles['no-data-title']}>{title}</p>
+          {subtitle && <p className={styles['no-data-subtitle']}>{subtitle}</p>}
+          <div className={styles['no-data-cta']}>{cta}</div>
+        </>
+      ) : (
+        <span>&nbsp;</span>
+      )}
     </div>
   )
 }

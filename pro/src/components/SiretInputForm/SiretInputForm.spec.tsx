@@ -72,7 +72,7 @@ describe('<SiretInputForm />', () => {
   it('should render component', async () => {
     renderInputForm()
 
-    expect(await screen.findByRole('status')).toHaveTextContent(
+    expect((await screen.findAllByRole('status'))[0]).toHaveTextContent(
       'Renseignez le SIRET de la structure à laquelle vous êtes rattaché.'
     )
     expect(
@@ -85,7 +85,7 @@ describe('<SiretInputForm />', () => {
       })
     ).not.toBeInTheDocument()
 
-    expect(screen.getByRole('status')).toHaveTextContent(
+    expect(screen.getAllByRole('status')[0]).toHaveTextContent(
       /Vous êtes un équipement d’une collectivité ou d’un établissement public \?/
     )
 
@@ -119,7 +119,7 @@ describe('<SiretInputForm />', () => {
 
     expect(api.getStructureData).toHaveBeenCalledOnce()
 
-    expect(screen.getByRole('alert')).not.toHaveTextContent(
+    expect(screen.getAllByRole('alert')[0]).not.toHaveTextContent(
       "Le SIRET n'existe pas"
     )
     expect(mockHandleSiretData).toHaveBeenCalled()
@@ -150,7 +150,7 @@ describe('<SiretInputForm />', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
-    expect(screen.getByRole('alert')).not.toHaveTextContent(
+    expect(screen.getAllByRole('alert')[0]).not.toHaveTextContent(
       "Le SIRET n'existe pas"
     )
 
@@ -185,7 +185,7 @@ describe('<SiretInputForm />', () => {
     expect(api.getStructureData).toHaveBeenCalledOnce()
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(
+      expect(screen.getAllByRole('alert')[0]).toHaveTextContent(
         "Le SIRET n'existe pas"
       )
     })
@@ -262,7 +262,9 @@ describe('<SiretInputForm />', () => {
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
+      expect(
+        screen.getAllByText('Une erreur est survenue').length
+      ).toBeGreaterThan(0)
     })
   })
 
@@ -276,7 +278,7 @@ describe('<SiretInputForm />', () => {
     )
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(
+      expect(screen.getAllByRole('alert')[0]).toHaveTextContent(
         'Le SIRET doit comporter 14 caractères'
       )
     })

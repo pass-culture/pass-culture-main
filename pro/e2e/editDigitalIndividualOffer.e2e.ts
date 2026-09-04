@@ -70,7 +70,7 @@ test.describe('Edit digital individual offers', () => {
       await loginAndNavigate(page, userData.user.email, '/offres')
 
       // OFFER EXPOSURE PAGE
-      const firstRow = page.locator('tbody').getByRole('row').first()
+      const firstRow = page.locator('tbody').getByRole('row').nth(1)
       await firstRow.getByRole('button', { name: 'Voir les actions' }).click()
       await page.getByRole('menuitem', { name: 'Voir l’offre' }).click()
       await expect(page).toHaveURL(/\/visibilite/)
@@ -81,7 +81,7 @@ test.describe('Edit digital individual offers', () => {
       await page.getByLabel(/Description/).fill('Une description modifiée')
       await page.getByText('Enregistrer les modifications').click()
       await expect(
-        page.getByText('Votre offre a bien été modifiée.')
+        page.getByText('Votre offre a bien été modifiée.').first()
       ).toBeVisible()
 
       // LOCATION EDITION
@@ -92,7 +92,7 @@ test.describe('Edit digital individual offers', () => {
       await page.getByLabel(/URL d’accès à l’offre/).fill(randomUrl)
       await page.getByText('Enregistrer les modifications').click()
       await expect(
-        page.getByText('Votre offre a bien été modifiée.')
+        page.getByText('Votre offre a bien été modifiée.').first()
       ).toBeVisible()
       await expect(page.getByLabel(/URL d’accès à l’offre/)).toHaveValue(
         randomUrl

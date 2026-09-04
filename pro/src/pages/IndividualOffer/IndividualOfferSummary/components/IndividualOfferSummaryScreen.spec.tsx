@@ -548,8 +548,12 @@ describe('IndividualOfferSummaryScreen', () => {
         })
       )
       expect(
-        await screen.findByText('Une erreur s’est produite, veuillez réessayer')
-      ).toBeInTheDocument()
+        (
+          await screen.findAllByText(
+            'Une erreur s’est produite, veuillez réessayer'
+          )
+        ).length
+      ).toBeGreaterThan(0)
     })
 
     it('should display redirect modal when the partner venue has no bank account and the offer is non-free', async () => {
@@ -785,8 +789,9 @@ describe('IndividualOfferSummaryScreen', () => {
         await screen.findByText('Sauvegarder le brouillon et quitter')
       )
       expect(
-        screen.getByText('Brouillon sauvegardé dans la liste des offres')
-      ).toBeInTheDocument()
+        screen.getAllByText('Brouillon sauvegardé dans la liste des offres')
+          .length
+      ).toBeGreaterThan(0)
     })
 
     it("should validate publication date and time when it's a scheduled publication", async () => {

@@ -1,3 +1,5 @@
+import cn from 'classnames'
+
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullRefresh from '@/icons/full-refresh.svg'
@@ -12,6 +14,7 @@ interface NoResultsProps {
   subtitle?: string
   resetMessage?: string
   resetFilters: () => void
+  hasNoResult?: boolean
 }
 
 export const TableNoFilterResult = ({
@@ -20,28 +23,38 @@ export const TableNoFilterResult = ({
   subtitle = 'Vous pouvez modifier votre recherche ou',
   resetMessage = 'Réinitialiser les filtres',
   resetFilters,
+  hasNoResult = false,
 }: NoResultsProps): JSX.Element => (
   <tr>
-    <td colSpan={colSpan}>
-      <div className={styles['search-no-results']}>
-        <SvgIcon
-          src={strokeSearchIcon}
-          alt="Illustration de recherche"
-          className={styles['search-no-results-icon']}
-          width="80"
-        />
-        <p className={styles['search-no-results-title']}>{message}</p>
-        <p className={styles['search-no-results-subtitle']}>{subtitle}</p>
-        <div className={styles['search-no-results-cta']}>
-          <Button
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            icon={fullRefresh}
-            onClick={resetFilters}
-            label={resetMessage}
+    <td
+      colSpan={colSpan}
+      className={cn({ [styles['search-no-results']]: hasNoResult })}
+      role="status"
+    >
+      {hasNoResult ? (
+        <>
+          <SvgIcon
+            src={strokeSearchIcon}
+            alt=""
+            className={styles['search-no-results-icon']}
+            width="80"
+            aria-hidden={true}
           />
-        </div>
-      </div>
+          <p className={styles['search-no-results-title']}>{message}</p>
+          <p className={styles['search-no-results-subtitle']}>{subtitle}</p>
+          <div className={styles['search-no-results-cta']}>
+            <Button
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              icon={fullRefresh}
+              onClick={resetFilters}
+              label={resetMessage}
+            />
+          </div>
+        </>
+      ) : (
+        <span>&nbsp;</span>
+      )}
     </td>
   </tr>
 )

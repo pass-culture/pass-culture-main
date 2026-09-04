@@ -15,6 +15,7 @@ describe('<TableNoFilterResult />', () => {
             colSpan={3}
             resetFilters={resetFilters}
             message="Aucun résultat trouvé"
+            hasNoResult={true}
           />
         </tbody>
       </table>
@@ -26,9 +27,6 @@ describe('<TableNoFilterResult />', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: /Réinitialiser les filtres/i })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByLabelText(/Illustration de recherche/i)
     ).toBeInTheDocument()
   })
 
@@ -43,6 +41,7 @@ describe('<TableNoFilterResult />', () => {
             colSpan={3}
             resetFilters={resetFilters}
             message="Aucun résultat trouvé"
+            hasNoResult={true}
           />
         </tbody>
       </table>

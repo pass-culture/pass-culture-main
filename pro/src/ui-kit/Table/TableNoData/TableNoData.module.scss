@@ -2,10 +2,10 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .no-data {
+  margin: var(--size-spacing-xxl);
   display: flex;
   align-items: center;
   flex-direction: column;
-  margin: var(--size-spacing-xxl);
   text-align: center;
 
   &-icon {

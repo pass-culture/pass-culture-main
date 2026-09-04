@@ -547,8 +547,8 @@ describe('IndividualOfferMediaScreen', () => {
 
         await waitFor(() => {
           expect(
-            screen.getByText('Votre offre a bien été modifiée.')
-          ).toBeInTheDocument()
+            screen.getAllByText('Votre offre a bien été modifiée.').length
+          ).toBeGreaterThan(0)
         })
         expect(mockNavigate).not.toHaveBeenCalled()
       })
@@ -566,10 +566,10 @@ describe('IndividualOfferMediaScreen', () => {
 
         await waitFor(() => {
           expect(
-            screen.getByText(
+            screen.getAllByText(
               'Une erreur est survenue lors de l’enregistrement de votre vidéo'
-            )
-          ).toBeInTheDocument()
+            ).length
+          ).toBeGreaterThan(0)
         })
       })
 
@@ -588,10 +588,10 @@ describe('IndividualOfferMediaScreen', () => {
         expect(mockHandleImageOnSubmit).toHaveBeenCalled()
         await waitFor(() => {
           expect(
-            screen.getByText(
+            screen.getAllByText(
               'Une erreur est survenue lors de l’enregistrement de votre image'
-            )
-          ).toBeInTheDocument()
+            ).length
+          ).toBeGreaterThan(0)
         })
       })
     })
