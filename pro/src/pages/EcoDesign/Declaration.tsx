@@ -102,10 +102,10 @@ export const EcoDesignDeclaration = () => {
 
       <h3 className={styles['heading3']}>1. Stratégie</h3>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Évaluation de l’utilité du service, en tenant compte de ses impacts
         environnementaux
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 1.1 - Validé</em>
       </p>
@@ -118,9 +118,9 @@ export const EcoDesignDeclaration = () => {
         d’apprentissage tout au long de la vie.
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Cibles utilisatrices de l'espace partenaire du pass Culture
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 1.2 - Validé</em>
       </p>
@@ -140,9 +140,9 @@ export const EcoDesignDeclaration = () => {
         proposer des actions de médiation.
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Référent en écoconception numérique
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 1.3 - Validé</em>
       </p>
@@ -158,9 +158,9 @@ export const EcoDesignDeclaration = () => {
         />
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Empreinte environnementale du service
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 1.4, 1.5 - En cours</em>
       </p>
@@ -172,7 +172,7 @@ export const EcoDesignDeclaration = () => {
         une certification NR.
       </p>
 
-      <p className={styles['body-accent']}>Données et licence</p>
+      <h4 className={styles['heading4']}>Données et licence</h4>
       <p className={styles['paragraph']}>
         <em>• critère 1.6, 1.7, 1.8, 1.9, 1.10 - Validé</em>
       </p>
@@ -206,9 +206,9 @@ export const EcoDesignDeclaration = () => {
 
       <h3 className={styles['heading3']}>2. Spécifications</h3>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Configuration matérielle minimum pour accéder au service
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 2.1, 2.2 - Validé</em>
       </p>
@@ -252,9 +252,9 @@ export const EcoDesignDeclaration = () => {
         Détail des tests réalisés : cf. la déclaration d’accessibilité.
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Stratégie de conception, maintenance et décommissionnement
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 2.6 - Non validé</em>
       </p>
@@ -284,7 +284,7 @@ export const EcoDesignDeclaration = () => {
         utilisées ou pas assez largement adoptées.
       </p>
 
-      <p className={styles['body-accent']}>Fournisseurs</p>
+      <h4 className={styles['heading4']}>Fournisseurs</h4>
       <p className={styles['paragraph']}>
         <em>• critère 2.8 - En cours</em>
       </p>
@@ -296,9 +296,9 @@ export const EcoDesignDeclaration = () => {
         ces engagements peuvent par exemple être sociaux.
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Composants d’interface prêts à l’emploi utilisés
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 2.9 - Non validé</em>
       </p>
@@ -308,9 +308,9 @@ export const EcoDesignDeclaration = () => {
         l’analyse de ce Design System au regard des enjeux environnementaux.
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Liste des services tiers utilisés par le service
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 2.10 - Validé</em>
       </p>
@@ -331,9 +331,9 @@ export const EcoDesignDeclaration = () => {
 
       <h3 className={styles['heading3']}>3. Architecture</h3>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Choix d’architecture et de composants
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 3.1 - Non applicable</em>
       </p>
@@ -365,7 +365,7 @@ export const EcoDesignDeclaration = () => {
         ressources ou d’erreurs que pouvaient rencontrer les utilisateurs.
       </p>
 
-      <p className={styles['body-accent']}>Protocoles d’échange utilisés</p>
+      <h4 className={styles['heading4']}>Protocoles d’échange utilisés</h4>
       <p className={styles['paragraph']}>
         <em>• critère 3.3 - Validé</em>
       </p>
@@ -387,7 +387,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <p className={styles['body-accent']}>Mise à jour</p>
+      <h4 className={styles['heading4']}>Mise à jour</h4>
       <p className={styles['paragraph']}>
         <em>• critère 3.4, 3.5, 3.6 - Non applicable</em>
       </p>
@@ -396,9 +396,9 @@ export const EcoDesignDeclaration = () => {
         et nous ne sommes pas liés à des configurations d’OS mobile ou PC.
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Environnements de développement, de préproduction ou de test
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 3.7 - Validé</em>
       </p>
@@ -413,7 +413,7 @@ export const EcoDesignDeclaration = () => {
         4. Expérience et interface utilisateur
       </h3>
 
-      <p className={styles['body-accent']}>UX/UI</p>
+      <h4 className={styles['heading4']}>UX/UI</h4>
       <p className={styles['paragraph']}>
         <em>• critère 4.1 - Validé</em>
       </p>
@@ -445,7 +445,7 @@ export const EcoDesignDeclaration = () => {
         Oui, tel que décrit dans la politique de gestion des cookies.
       </p>
 
-      <p className={styles['body-accent']}>Composants</p>
+      <h4 className={styles['heading4']}>Composants</h4>
       <p className={styles['paragraph']}>
         <em>• critère 4.5 - Validé</em>
       </p>
@@ -453,7 +453,7 @@ export const EcoDesignDeclaration = () => {
         Utilisation du framework React, surcouche de Typescript.
       </p>
 
-      <p className={styles['body-accent']}>Contenus audiovisuels et animés</p>
+      <h4 className={styles['heading4']}>Contenus audiovisuels et animés</h4>
       <p className={styles['paragraph']}>
         <em>• critère 4.6 - Validé</em>
       </p>
@@ -542,7 +542,7 @@ export const EcoDesignDeclaration = () => {
         et de l’audio sur lequel repose le service.
       </p>
 
-      <p className={styles['body-accent']}>Images</p>
+      <h4 className={styles['heading4']}>Images</h4>
       <p className={styles['paragraph']}>
         <em>• critère 5.2 - Validé</em>
       </p>
@@ -553,7 +553,7 @@ export const EcoDesignDeclaration = () => {
         de 10 Mo.
       </p>
 
-      <p className={styles['body-accent']}>Contenus vidéo</p>
+      <h4 className={styles['heading4']}>Contenus vidéo</h4>
       <p className={styles['paragraph']}>
         <em>• critère 5.3, 5.4 - Validé</em>
       </p>
@@ -568,12 +568,12 @@ export const EcoDesignDeclaration = () => {
         Pas de fonctionnement "écoute seule".
       </p>
 
-      <p className={styles['body-accent']}>Audio - non applicable</p>
+      <h4 className={styles['heading4']}>Audio - non applicable</h4>
       <p className={styles['paragraph']}>
         <em>• critère 5.6 - Non applicable</em>
       </p>
 
-      <p className={styles['body-accent']}>Documents</p>
+      <h4 className={styles['heading4']}>Documents</h4>
       <p className={styles['paragraph']}>
         <em>• critère 5.7 - Validé</em>
       </p>
@@ -593,7 +593,7 @@ export const EcoDesignDeclaration = () => {
 
       <h3 className={styles['heading3']}>6. Frontend – 7 Backend</h3>
 
-      <p className={styles['body-accent']}>Limites de poids et de requêtes</p>
+      <h4 className={styles['heading4']}>Limites de poids et de requêtes</h4>
       <p className={styles['paragraph']}>
         <em>• critère 6.1 - Non validé</em>
       </p>
@@ -603,7 +603,7 @@ export const EcoDesignDeclaration = () => {
         matière.
       </p>
 
-      <p className={styles['body-accent']}>Stratégie de mise en cache</p>
+      <h4 className={styles['heading4']}>Stratégie de mise en cache</h4>
       <p className={styles['paragraph']}>
         <em>• critère 6.2, 7.1 - Validé</em>
       </p>
@@ -621,9 +621,9 @@ export const EcoDesignDeclaration = () => {
         asynchrones.
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Compression des ressources transférées
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 6.3 - Non validé</em>
       </p>
@@ -668,9 +668,9 @@ export const EcoDesignDeclaration = () => {
         Saint-Ghislain/Mons, en Belgique.
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Engagements écologiques de l'hébergeur
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 8.1 - Validé</em>
       </p>
@@ -738,9 +738,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Efficacité environnementale de l’hébergement du service
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 8.3 - Validé</em>
       </p>
@@ -763,9 +763,9 @@ export const EcoDesignDeclaration = () => {
         la donnée la plus précise disponible pour Saint-Ghislain.
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Documentation sur l’origine de l’électricité consommée
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 8.5 - Validé</em>
       </p>
@@ -808,7 +808,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <p className={styles['body-accent']}>Localisation de l’hébergement</p>
+      <h4 className={styles['heading4']}>Localisation de l’hébergement</h4>
       <p className={styles['paragraph']}>
         <em>• critère 8.6 - Validé</em>
       </p>
@@ -824,9 +824,7 @@ export const EcoDesignDeclaration = () => {
         à horizon 2026.
       </p>
 
-      <p className={styles['body-accent']}>
-        Réutilisation de la chaleur fatale
-      </p>
+      <h4 className={styles['heading4']}>Réutilisation de la chaleur fatale</h4>
       <p className={styles['paragraph']}>
         <em>• critère 8.7 - Validé</em>
       </p>
@@ -835,25 +833,25 @@ export const EcoDesignDeclaration = () => {
         1,2 (1,08)
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Données "chaudes" et "froides" hébergées distinctement
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 8.8 - Non validé</em>
       </p>
       <p className={styles['paragraph']}>Non.</p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Duplication des données lorsque nécessaire
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 8.9 - Non validé</em>
       </p>
       <p className={styles['paragraph']}>Non.</p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Décalage des calculs et mises à jour asynchrones
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 8.10 - Non validé</em>
       </p>
@@ -861,9 +859,9 @@ export const EcoDesignDeclaration = () => {
 
       <h3 className={styles['heading3']}>9. Algorithmie - Non applicable</h3>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Justification de la phase d’entraînement
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 9.1 - Validé</em>
       </p>
@@ -879,9 +877,9 @@ export const EcoDesignDeclaration = () => {
         a été envisagée et n'a pas été jugée nécessaire.
       </p>
 
-      <p className={styles['body-accent']}>
+      <h4 className={styles['heading4']}>
         Phase d’entraînement - Non applicable
-      </p>
+      </h4>
       <p className={styles['paragraph']}>
         <em>• critère 9.2, 9.3, 9.4, 9.5, 9.6, 9.7 - Non applicable</em>
       </p>
