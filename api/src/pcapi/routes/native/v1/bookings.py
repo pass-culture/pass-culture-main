@@ -5,6 +5,8 @@ from flask_login import current_user
 
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
+from pcapi.core.bookings.metrics import bookings_failed_counter
+from pcapi.core.bookings.metrics import bookings_succeeded_counter
 from pcapi.core.bookings.models import Booking
 from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
@@ -87,6 +89,11 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
             },
             technical_message_id="native.bookings.book",
         )
+        bookings_succeeded_counter.labels(
+            provider_id=stock.offer.lastProviderId,
+            provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
+            subcategory_id=stock.offer.subcategoryId,
+        ).inc()
         return BookOfferResponse(booking_id=booking.id)
     except _EXPECTED_BOOKING_EXCEPTIONS as e:
         code, log_message = _BOOKING_EXCEPTION_TO_CODE_MAPPING.get(e.__class__, ("BOOKING FAILED", "booking failed"))
@@ -104,6 +111,13 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
             },
             technical_message_id="native.bookings.book",
         )
+        bookings_failed_counter.labels(
+            provider_id=stock.offer.lastProviderId,
+            provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
+            subcategory_id=stock.offer.subcategoryId,
+            error_code=code,
+            error_message=log_message,
+        ).inc()
         raise ApiErrors({"code": code})
 
 

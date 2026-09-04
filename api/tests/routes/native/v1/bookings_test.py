@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 import pytest
 import time_machine
+from prometheus_client import REGISTRY
 from pytest import approx
 
 import pcapi.core.mails.testing as mails_testing
@@ -939,6 +940,86 @@ class PostBookingTest:
         assert booking.userId == user.id
         assert response.json["bookingId"] == booking.id
         assert booking.status == BookingStatus.CONFIRMED
+
+    def test_increment_bookings_succeeded_counter_metric(self, client):
+        stock = offers_factories.StockFactory(offer__subcategoryId=subcategories.CONCERT.id)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+
+        client = client.with_token(user)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 200
+        bookings_succeeded_counter_value = REGISTRY.get_sample_value(
+            "bookings_succeeded_total",
+            labels={"provider_id": "None", "provider_label": "None", "subcategory_id": str(subcategories.CONCERT.id)},
+        )
+        assert bookings_succeeded_counter_value == 1
+
+    def test_increment_bookings_failed_counter_metric(self, client):
+        later = datetime.now(UTC) + timedelta(days=64)
+        stock = offers_factories.StockFactory(
+            offer__bookingAllowedDatetime=later, offer__subcategoryId=subcategories.CONCERT.id
+        )
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+
+        client = client.with_token(user)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 400
+        bookings_failed_counter_value = REGISTRY.get_sample_value(
+            "bookings_failed_total",
+            labels={
+                "provider_id": "None",
+                "provider_label": "None",
+                "subcategory_id": str(subcategories.CONCERT.id),
+                "error_code": "STOCK_NOT_BOOKABLE",
+                "error_message": "stock is not bookable",
+            },
+        )
+        assert bookings_failed_counter_value == 1
+
+    def test_external_bookings_execution_time_metric(self, client, requests_mock):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        external_booking_url = "https://book_my_offer.com/confirm"
+        cancel_booking_url = "https://book_my_offer.com/cancel"
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            localClass=None,
+            bookingExternalUrl=external_booking_url,
+            cancelExternalUrl=cancel_booking_url,
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__lastProvider=provider,
+            offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
+            dnBookedQuantity=10,
+            idAtProviders="",
+        )
+
+        requests_mock.post(
+            external_booking_url,
+            json={
+                "tickets": [{"barcode": "12123932898127", "seat": "A12"}, {"barcode": "12123932898117", "seat": "A13"}],
+                "remainingQuantity": 50,
+            },
+            status_code=201,
+        )
+
+        client = client.with_token(user)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 200
+        execution_time_metric_count_value = REGISTRY.get_sample_value(
+            "external_bookings_execution_time_count",
+            labels={
+                "provider_id": str(provider.id),
+                "provider_label": provider.name,
+                "subcategory_id": str(subcategories.CONCERT.id),
+            },
+        )
+        assert execution_time_metric_count_value == 1
 
 
 class GetBookingsTest:
