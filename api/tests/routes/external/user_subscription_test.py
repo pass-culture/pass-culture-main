@@ -15,6 +15,7 @@ from dateutil import relativedelta
 import pcapi.core.mails.testing as mails_testing
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
+from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.subscription import api as subscription_api
@@ -968,6 +969,30 @@ class DmsWebhookApplicationTest:
         assert execute_query.call_count == 1
         assert fraud_check.type == subscription_models.FraudCheckType.DMS
         assert fraud_check.status == subscription_models.FraudCheckStatus.PENDING
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_dossier_not_found(self, execute_query, client, caplog):
+        execute_query.side_effect = dms_exceptions.DmsGraphQLApiError(
+            [{"message": "Dossier not found", "extensions": {"code": "not_found"}}]
+        )
+
+        form_data = {
+            "procedure_id": 48860,
+            "dossier_id": 1,
+            "state": dms_models.GraphQLApplicationStates.on_going.value,
+            "updated_at": "2026-09-04 16:57:00 +0200",
+        }
+
+        with caplog.at_level(logging.ERROR):
+            response = client.post(
+                f"/webhooks/dms/application_status?token={self.token}",
+                form=form_data,
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+        assert len(caplog.records) == 1
 
 
 class CheckUbbleV2Signature:
