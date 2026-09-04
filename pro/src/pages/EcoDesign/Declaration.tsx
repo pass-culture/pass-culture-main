@@ -4,9 +4,11 @@ import { useState } from 'react'
 import { ASSETS_BUCKET_URL } from '@/commons/utils/config'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Link } from '@/design-system/Link/Link'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullDownloadIcon from '@/icons/full-download.svg'
+import fullMailIcon from '@/icons/full-mail.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 
 import styles from './Declaration.module.scss'
@@ -160,12 +162,10 @@ export const EcoDesignDeclaration = () => {
           <p className={styles['paragraph']}>
             Une personne est nommée référente écoconception numérique en
             interne. Vous pouvez la contacter à l’adresse suivante{' '}
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
+            <Link
               to="mailto:eco-conception@passculture.app" //gitleaks:allow
               label="eco-conception@passculture.app" //gitleaks:allow
+              icon={fullMailIcon}
             />
           </p>
         </li>
@@ -208,12 +208,10 @@ export const EcoDesignDeclaration = () => {
           <p className={styles['paragraph']}>
             Le service numérique publie une partie de son code en opensource,
             sous la licence MPL-2.0 :{' '}
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
+            <Link
+              isExternalLink
+              shouldOpenNewTab
               to="https://github.com/pass-culture/pass-culture-main"
-              opensInNewTab
               label="https://github.com/pass-culture/pass-culture-main"
             />
           </p>
@@ -292,14 +290,8 @@ export const EcoDesignDeclaration = () => {
           </p>
           <p className={styles['paragraph']}>
             Le service numérique{' '}
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              to="https://passculture.pro"
-              label="passculture.pro"
-            />{' '}
-            n'a pas procédé à une revue de code et de conception pour réduire le
+            <Link to="https://passculture.pro" label="passculture.pro" /> n'a
+            pas procédé à une revue de code et de conception pour réduire le
             coût environnemental du service.
           </p>
         </li>
@@ -606,14 +598,8 @@ export const EcoDesignDeclaration = () => {
             Le service par défaut prévoit des notifications rédigées par notre
             service marketing à travers des newsletters ciblées ou des contenus
             proposé directement dans le service{' '}
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              to="https://passculture.pro"
-              label="passculture.pro"
-            />{' '}
-            à raison de 2 ou 3 informations mensuelles.
+            <Link to="https://passculture.pro" label="passculture.pro" /> à
+            raison de 2 ou 3 informations mensuelles.
           </p>
           <p className={styles['paragraph']}>
             L’utilisateur a bien la possibilité de désactiver ou de réduire les
@@ -843,12 +829,10 @@ export const EcoDesignDeclaration = () => {
           <p className={styles['paragraph']}>
             Il a par ailleurs pris les engagements suivants pour diminuer son
             empreinte environnementale :{' '}
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
+            <Link
+              isExternalLink
+              shouldOpenNewTab
               to="https://sustainability.google/intl/fr_fr/operations/net-zero-carbon/"
-              opensInNewTab
               label="https://sustainability.google/intl/fr_fr/operations/net-zero-carbon/"
             />
           </p>
@@ -1068,14 +1052,8 @@ export const EcoDesignDeclaration = () => {
           </p>
           <p className={styles['paragraph']}>
             L'inclusion d'une phase d'entraînement pour le service numérique{' '}
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              to="https://passculture.pro"
-              label="passculture.pro"
-            />{' '}
-            a été envisagée et n'a pas été jugée nécessaire.
+            <Link to="https://passculture.pro" label="passculture.pro" /> a été
+            envisagée et n'a pas été jugée nécessaire.
           </p>
         </li>
       </ul>
