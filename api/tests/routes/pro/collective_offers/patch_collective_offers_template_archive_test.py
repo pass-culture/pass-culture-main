@@ -28,8 +28,9 @@ class Returns204Test:
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             # 1. authentication + user
             # 2. retrieve all collective_offer_template
-            # 3. update dateArchive on collective_offer
-            with assert_num_queries(3):
+            # 3. check the user can access the offerer
+            # 4. update dateArchive on collective_offer
+            with assert_num_queries(4):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -86,8 +87,9 @@ class Returns204Test:
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             # 1. authentication + user
             # 2. retrieve all collective_offer_template.ids to batch them in pool for update
-            # 3. update dateArchive on collective_offer
-            with assert_num_queries(3):
+            # 3. check the user can access the offerer
+            # 4. update dateArchive on collective_offer
+            with assert_num_queries(4):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -112,9 +114,10 @@ class Returns204Test:
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             # 1. authentication + user
             # 2. retrieve all collective_offer_template.ids to batch them in pool for update
-            # 3. update dateArchive on collective_offer
+            # 3. check the user can access the offerer
             # 4. update dateArchive on collective_offer
-            with assert_num_queries(4):
+            # 5. update dateArchive on collective_offer
+            with assert_num_queries(5):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 

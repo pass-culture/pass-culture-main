@@ -360,6 +360,17 @@ def get_venue_by_offer_id(offer_id: int) -> models.Venue:
     return venue
 
 
+def get_venues_by_offer_ids(offer_ids: list[int]) -> list[models.Venue]:
+    venues = (
+        db.session.query(models.Venue)
+        .join(models.Venue.offers)
+        .filter(models.Venue.id.in_(offer_ids))
+        .options(sa_orm.joinedload(models.Venue.managingOfferer))
+        .all()
+    )
+    return venues
+
+
 def get_venue_by_collective_offer_id(collective_offer_id: int) -> models.Venue:
     venue = (
         db.session.query(models.Venue)

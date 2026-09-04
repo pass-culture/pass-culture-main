@@ -402,9 +402,13 @@ def edit_collective_offer_template(
 def patch_collective_offers_archive(
     body: collective_offers_serialize.PatchCollectiveOfferArchiveBodyModel,
 ) -> None:
-    # TODO: Check whether a user has the rights to archive the offers !!!
-    # TODO: don't archive if any venue is closed
     collective_offers = repository.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids).all()
+    venues = {collective_offer.venue for collective_offer in collective_offers}
+    offerer_ids = {venue.managingOffererId for venue in venues}
+    for offerer_id in offerer_ids:
+        check_user_has_access_to_offerer(current_user, offerer_id)
+    for venue in venues:
+        rest_utils.check_venue_is_opened(venue)
 
     try:
         api_offer.archive_collective_offers(offers=collective_offers, date_archived=date_utils.get_naive_utc_now())
@@ -452,10 +456,15 @@ def patch_collective_offers_template_active_status(
 def patch_collective_offers_template_archive(
     body: collective_offers_serialize.PatchCollectiveOfferArchiveBodyModel,
 ) -> None:
-    # TODO: bloquer l'action pour les venues closed (rest_utils.check_venue_is_opened(venue))
     collective_offer_templates = repository.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
     ).all()
+    venues = {collective_offer.venue for collective_offer in collective_offer_templates}
+    offerer_ids = {venue.managingOffererId for venue in venues}
+    for offerer_id in offerer_ids:
+        check_user_has_access_to_offerer(current_user, offerer_id)
+    for venue in venues:
+        rest_utils.check_venue_is_opened(venue)
 
     try:
         api_offer.archive_collective_offers_template(

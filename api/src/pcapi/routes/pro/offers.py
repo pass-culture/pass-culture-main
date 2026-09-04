@@ -447,10 +447,12 @@ def patch_publish_offer(
 )
 @atomic()
 def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
-    # TODO: not sure what to do here
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
     if body.is_active:
         query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
+    venues = offerers_repository.get_venues_by_offer_ids(body.ids)
+    for venue in venues:
+        rest.check_venue_is_opened(venue)
 
     offers_api.batch_activate_offers(query, activate=body.is_active)
 
@@ -466,7 +468,6 @@ def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBody
 def patch_all_offers_active_status(
     body: offers_serialize.PatchAllOffersActiveStatusBodyModel,
 ) -> offers_serialize.PatchAllOffersActiveStatusResponseModel:
-    # TODO: not sure what to do here
     filters = {
         "user_id": current_user.id,
         "offerer_id": body.offerer_id,

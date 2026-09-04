@@ -1303,7 +1303,8 @@ def get_query_for_collective_offers_by_ids_for_user(
 
     query = query.filter(models.CollectiveOffer.id.in_(ids))
     query = query.options(
-        sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(models.CollectiveStock.collectiveBookings)
+        sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(models.CollectiveStock.collectiveBookings),
+        sa_orm.contains_eager(models.CollectiveOffer.venue),
     )
     return query
 
@@ -1319,7 +1320,9 @@ def get_query_for_collective_offers_template_by_ids_for_user(
             .join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
             .filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
         )
-    query = query.filter(models.CollectiveOfferTemplate.id.in_(ids))
+    query = query.filter(models.CollectiveOfferTemplate.id.in_(ids)).options(
+        sa_orm.contains_eager(models.CollectiveOfferTemplate.venue)
+    )
     return query
 
 
