@@ -101,6 +101,126 @@ class GetSettlementsTest:
             },
         ]
 
+    def test_get_settlements_bank_account_filter(self, client: TestClient):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        bank_account_1 = factories.BankAccountFactory(offerer=user_offerer.offerer)
+        bank_account_2 = factories.BankAccountFactory(offerer=user_offerer.offerer)
+        settlement_1 = factories.SettlementFactory(status=models.SettlementStatus.EXECUTED, bankAccount=bank_account_1)
+        # linked to other bank account, should not appear in the result
+        factories.SettlementFactory(status=models.SettlementStatus.EXECUTED, bankAccount=bank_account_2)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+        bank_account_id = bank_account_1.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(URL, params={"offererId": offerer_id, "bankAccountId": bank_account_id})
+
+        assert response.status_code == 200
+        assert len(response.json) == 1
+        assert response.json[0]["id"] == settlement_1.id
+
+    def test_get_settlements_bank_account_filter_other_offerer(self, client: TestClient):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        # the bank account is not linked to the user offerer
+        bank_account = factories.BankAccountFactory()
+        factories.SettlementFactory(status=models.SettlementStatus.EXECUTED, bankAccount=bank_account)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+        bank_account_id = bank_account.id
+        num_queries = self.num_queries
+        num_queries -= 1  # no selectinload
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params={"offererId": offerer_id, "bankAccountId": bank_account_id})
+
+        assert response.status_code == 200
+        assert len(response.json) == 0
+
+    def test_get_settlements_dates_filter(self, client: TestClient):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        bank_account = factories.BankAccountFactory(offerer=user_offerer.offerer)
+        _settlement_before = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__dateValidated=datetime.datetime.fromisoformat("2021-06-01"),
+        )
+        settlement_lower_bound = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__dateValidated=datetime.datetime.fromisoformat("2021-07-01"),
+        )
+        settlement_within = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__dateValidated=datetime.datetime.fromisoformat("2021-07-15"),
+        )
+        settlement_upper_bound = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__dateValidated=datetime.datetime.fromisoformat("2021-07-31"),
+        )
+        _settlement_after = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__dateValidated=datetime.datetime.fromisoformat("2021-08-01"),
+        )
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(
+                URL,
+                params={"offererId": offerer_id, "periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"},
+            )
+
+        assert response.status_code == 200
+        assert len(response.json) == 3
+        assert {result["id"] for result in response.json} == {
+            settlement_lower_bound.id,
+            settlement_within.id,
+            settlement_upper_bound.id,
+        }
+
+    def test_get_settlements_name_filter(self, client: TestClient):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        bank_account = factories.BankAccountFactory(offerer=user_offerer.offerer)
+        settlement_match_1 = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__name="VIR123",
+        )
+        settlement_match_2 = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__name="VIR123",
+        )
+        _settlement_no_match_1 = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__name="VIR1",
+        )
+        _settlement_no_match_2 = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            batch__name="VIR212",
+        )
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(
+                URL,
+                params={"offererId": offerer_id, "nameSearch": "VIR12"},
+            )
+
+        assert response.status_code == 200
+        assert len(response.json) == 2
+        assert {result["id"] for result in response.json} == {settlement_match_1.id, settlement_match_2.id}
+
     def test_no_access_to_offerer(self, client: TestClient):
         user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -130,3 +250,19 @@ class GetSettlementsTest:
 
         assert response.status_code == 400
         assert response.json == {"offererId": ["Ce champ est obligatoire"]}
+
+    def test_invalid_name_search(self, client: TestClient):
+        user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+
+        params = {"offererId": offerer.id, "nameSearch": ""}
+        client = client.with_session_auth(user.email)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # rollback
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params=params)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "nameSearch": ["Cette chaîne de caractères doit avoir une taille minimum de 1 caractères"]
+        }

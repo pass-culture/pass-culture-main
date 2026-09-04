@@ -6190,9 +6190,25 @@ export type SaveNewOnboardingDataQueryModel = {
  */
 export type SettlementListQueryModel = {
     /**
+     * Bankaccountid
+     */
+    bankAccountId?: number | null;
+    /**
+     * Namesearch
+     */
+    nameSearch?: string | null;
+    /**
      * Offererid
      */
     offererId: number;
+    /**
+     * Periodbeginningdate
+     */
+    periodBeginningDate?: string | null;
+    /**
+     * Periodendingdate
+     */
+    periodEndingDate?: string | null;
 };
 
 /**
@@ -9090,6 +9106,22 @@ export type getFinanceSettlementsData = {
          * Offererid
          */
         offererId: number;
+        /**
+         * Periodbeginningdate
+         */
+        periodBeginningDate?: string | null;
+        /**
+         * Periodendingdate
+         */
+        periodEndingDate?: string | null;
+        /**
+         * Bankaccountid
+         */
+        bankAccountId?: number | null;
+        /**
+         * Namesearch
+         */
+        nameSearch?: string | null;
     };
     url: '/finance/settlements';
 };

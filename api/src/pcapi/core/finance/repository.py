@@ -662,7 +662,13 @@ def has_invoice(offerer_id: int) -> bool:
     ).scalar()
 
 
-def get_settlements_query(offerer_id: int) -> sa_orm.Query[models.Settlement]:
+def get_settlements_query(
+    offerer_id: int,
+    bank_account_id: int | None = None,
+    date_from: datetime.date | None = None,
+    date_until: datetime.date | None = None,
+    name_search: str | None = None,
+) -> sa_orm.Query[models.Settlement]:
     settlements_query = (
         db.session.query(models.Settlement)
         .join(models.Settlement.bankAccount)
@@ -680,6 +686,21 @@ def get_settlements_query(offerer_id: int) -> sa_orm.Query[models.Settlement]:
         )
         .order_by(models.SettlementBatch.dateValidated.desc())
     )
+
+    if bank_account_id is not None:
+        settlements_query = settlements_query.filter(models.BankAccount.id == bank_account_id)
+
+    if date_from is not None:
+        datetime_from = convert_to_datetime(date_from)
+        settlements_query = settlements_query.filter(models.SettlementBatch.dateValidated >= datetime_from)
+
+    if date_until is not None:
+        # add one day to get all settlements until the day date_until included
+        datetime_until = convert_to_datetime(date_until) + datetime.timedelta(days=1)
+        settlements_query = settlements_query.filter(models.SettlementBatch.dateValidated < datetime_until)
+
+    if name_search is not None:
+        settlements_query = settlements_query.filter(models.SettlementBatch.name.ilike(f"%{name_search}%"))
 
     return settlements_query
 

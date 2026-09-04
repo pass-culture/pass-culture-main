@@ -4,6 +4,7 @@ import { axe } from 'vitest-axe'
 
 import { type SettlementResponseModel, SettlementStatus } from '@/apiClient/v1'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SettlementTable } from './SettlementTable'
@@ -28,6 +29,7 @@ const renderSettlementTable = (
       isLoading={false}
       hasSettlement={true}
       hasBankAccount={true}
+      onFilterReset={noop}
       {...props}
     />,
     {
