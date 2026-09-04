@@ -242,6 +242,35 @@ class QuotientFamilialApplicationTest:
 
         assert len(mocked_get_quotient_familial.mock_calls) == 2
 
+    @patch("pcapi.connectors.api_particulier.get_quotient_familial")
+    @patch("pcapi.core.subscription.bonus.api._get_result_relevance")
+    def test_get_quotient_familial_caches_calls(self, mocked_get_result_relevance, mocked_get_quotient_familial):
+        custodian = subscription_factories.BonusCreditPersonFactory()
+        fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+                custodian=custodian
+            ).model_dump(),
+        )
+        mocked_get_quotient_familial.side_effect = (
+            bonus_fixtures.QF_DESERIALIZED_RESPONSE,
+            bonus_fixtures.QF_DESERIALIZED_RESPONSE,
+            bonus_fixtures.QF_DESERIALIZED_RESPONSE,
+            api_particulier.ParticulierApiUnavailable(status_code=500),
+            api_particulier.ParticulierApiUnavailable(status_code=500),
+        )
+        mocked_get_result_relevance.return_value = (1, 1)
+
+        with pytest.raises(api_particulier.ParticulierApiUnavailable):
+            bonus_api.apply_for_quotient_familial_bonus(fraud_check)
+
+        with pytest.raises(api_particulier.ParticulierApiUnavailable):
+            bonus_api.apply_for_quotient_familial_bonus(fraud_check)
+
+        assert len(mocked_get_quotient_familial.mock_calls) == 5
+        # sorting results more than 4 times mean that there were 3 cache hits during the second call
+        assert len(mocked_get_result_relevance.mock_calls) == 8
+
     def test_application_not_found(self, caplog):
         user = users_factories.BeneficiaryFactory()
         custodian = subscription_factories.BonusCreditPersonFactory()
