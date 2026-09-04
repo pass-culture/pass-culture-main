@@ -6,7 +6,7 @@ import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeadin
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { CollectiveDmsTimelineVariant } from '@/components/CollectiveDmsTimeline/types'
 import { OnboardingOffersChoice } from '@/components/OnboardingOffersChoice/OnboardingOffersChoice'
@@ -39,7 +39,8 @@ import styles from './Homepage.module.scss'
 
 export const Homepage = (): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isOffererClosed = selectedPartnerVenue.managingOfferer.isClosed
   const collectiveDmsApplication =
     selectedPartnerVenue.lastCollectiveDmsApplication
 
@@ -64,7 +65,6 @@ export const Homepage = (): JSX.Element => {
     )
   }
 
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const tabs: TabItem<TabKey>[] = [
     {
       key: TABS.INDIVIDUAL,
@@ -111,9 +111,17 @@ export const Homepage = (): JSX.Element => {
       <MainHeading
         mainHeading={`Votre espace ${selectedPartnerVenue.publicName}`}
       />
-      {withVenueHelpers(selectedPartnerVenue).isClosed && (
+      {isClosed && !isOffererClosed && (
         <div className={styles['venue-banner']}>
           <Banner variant={BannerVariants.ERROR} title="Structure fermée" />
+        </div>
+      )}
+      {isOffererClosed && (
+        <div className={styles['venue-banner']}>
+          <Banner
+            variant={BannerVariants.ERROR}
+            title="Entité juridique fermée"
+          />
         </div>
       )}
       {shouldDisplayVenueValidationBanner && (
@@ -148,7 +156,7 @@ export const Homepage = (): JSX.Element => {
 
           <div className={styles['main']}>
             <IndividualOffersCard
-              isReadOnly={isVenueClosed}
+              isReadOnly={isClosed}
               venueId={selectedPartnerVenue.id}
               venueDepartmentCode={
                 selectedPartnerVenue.location?.departmentCode
@@ -157,7 +165,7 @@ export const Homepage = (): JSX.Element => {
             <StatsCard venue={selectedPartnerVenue} />
             <EditoCard
               canDisplayHighlights={selectedPartnerVenue.canDisplayHighlights}
-              isReadOnly={isVenueClosed}
+              isReadOnly={isClosed}
             />
           </div>
 
@@ -171,7 +179,7 @@ export const Homepage = (): JSX.Element => {
               />
             )}
             <PartnerPageCard
-              isReadOnly={isVenueClosed}
+              isReadOnly={isClosed}
               venueId={selectedPartnerVenue.id}
               venueName={selectedPartnerVenue.publicName}
               venueBannerUrl={selectedPartnerVenue.bannerUrl}
@@ -216,13 +224,13 @@ export const Homepage = (): JSX.Element => {
           <div className={styles['main']}>
             {hasRefusedDmsApplication && (
               <OffersEmptyStateCard
-                isReadOnly={isVenueClosed}
+                isReadOnly={isClosed}
                 variant={OffersCardVariant.INDIVIDUAL}
               />
             )}
             {selectedPartnerVenue.allowedOnAdage && (
               <CollectiveOffersCardsContainer
-                isReadOnly={isVenueClosed}
+                isReadOnly={isClosed}
                 venueId={selectedPartnerVenue.id}
               />
             )}
@@ -240,7 +248,7 @@ export const Homepage = (): JSX.Element => {
                   />
                 )}
                 <PartnerPageCard
-                  isReadOnly={isVenueClosed}
+                  isReadOnly={isClosed}
                   venueId={selectedPartnerVenue.id}
                   venueName={selectedPartnerVenue.publicName}
                   venueBannerUrl={selectedPartnerVenue.bannerUrl}

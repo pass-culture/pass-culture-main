@@ -9,7 +9,7 @@ import type {
 } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
@@ -36,6 +36,7 @@ export const GenericCinemaProviderEdit = ({
   const { mutate } = useSWRConfig()
   const cinemaProviderFormId = useId()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const isClosed = isSelectedPartnerOrOffererClosed(venue)
 
   const editVenueProvider = async (
     payload: PostVenueProviderBody
@@ -91,7 +92,7 @@ export const GenericCinemaProviderEdit = ({
         color={ButtonColor.NEUTRAL}
         icon={fullEditIcon}
         label="Paramétrer"
-        disabled={withVenueHelpers(venue).isClosed}
+        disabled={isClosed}
         onClick={() => setIsDialogOpen(true)}
       />
 

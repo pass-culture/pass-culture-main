@@ -3203,6 +3203,10 @@ export type GetOffererResponseModel = {
      */
     isCaledonian: boolean;
     /**
+     * Isclosed
+     */
+    isClosed: boolean;
+    /**
      * Isonboarded
      */
     isOnboarded: boolean;
@@ -3456,6 +3460,10 @@ export type GetVenueManagingOffererResponseModel = {
      * Id
      */
     id: number;
+    /**
+     * Isclosed
+     */
+    isClosed: boolean;
     /**
      * Isvalidated
      */
@@ -7178,6 +7186,20 @@ export type VenueLabelResponseModel = {
 };
 
 /**
+ * VenueListItemLiteManagingOffererResponseModel
+ */
+export type VenueListItemLiteManagingOffererResponseModel = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Isclosed
+     */
+    isClosed: boolean;
+};
+
+/**
  * VenueListItemLiteResponseModel
  */
 export type VenueListItemLiteResponseModel = {
@@ -7186,10 +7208,7 @@ export type VenueListItemLiteResponseModel = {
      */
     id: number;
     location: LocationResponseModelV2;
-    /**
-     * Managingoffererid
-     */
-    managingOffererId: number;
+    managingOfferer: VenueListItemLiteManagingOffererResponseModel;
     /**
      * Publicname
      */

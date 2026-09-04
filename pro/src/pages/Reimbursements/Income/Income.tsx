@@ -24,7 +24,7 @@ const Income = () => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
 
   const venueValues = (venues ?? [])
-    .filter((venue) => venue.managingOffererId === selectedAdminOfferer?.id)
+    .filter((venue) => venue.managingOfferer.id === selectedAdminOfferer?.id)
     .map((venue) => ({
       id: String(venue.id),
       label: venue.publicName,

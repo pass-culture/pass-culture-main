@@ -8,6 +8,7 @@ import {
   ensureSelectedAdminOfferer,
   ensureSelectedPartnerVenue,
 } from '@/commons/store/user/selectors'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -19,7 +20,10 @@ import styles from './VenueManagement.module.scss'
 const VenueManagement = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const selectedOfferer = useAppSelector(ensureSelectedAdminOfferer)
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(
+    selectedPartnerVenue,
+    selectedOfferer
+  )
   const snackBar = useSnackBar()
   const { syncVenue } = useSyncVenueCache()
   const isLastOpenedVenue =
@@ -60,7 +64,7 @@ const VenueManagement = () => {
         <Button
           variant={ButtonVariant.PRIMARY}
           color={ButtonColor.DANGER}
-          disabled={isVenueClosed}
+          disabled={isClosed}
           label="Fermer la structure"
           onClick={() => setIsCloseVenueModalOpen(true)}
         />

@@ -19,8 +19,8 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { pluralizeFr } from '@/commons/utils/pluralize'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Banner } from '@/design-system/Banner/Banner'
@@ -58,6 +58,7 @@ export const IndividualOffersContainer = ({
   offers = [],
 }: IndividualOffersContainerProps): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('individual')
 
   const [selectedOfferIds, setSelectedOfferIds] = useState<
@@ -141,7 +142,7 @@ export const IndividualOffersContainer = ({
   const columns = getIndividualOfferColumns({
     headlineOffer,
     isOfferExposureEnabled,
-    isReadOnly: withVenueHelpers(selectedPartnerVenue).isClosed,
+    isReadOnly: isClosed,
   })
 
   const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
@@ -196,7 +197,7 @@ export const IndividualOffersContainer = ({
           allData={offers}
           isLoading={isLoading}
           variant={TableVariant.COLLAPSE}
-          selectable={!withVenueHelpers(selectedPartnerVenue).isClosed}
+          selectable={!isClosed}
           selectedIds={selectedOfferIds}
           onSelectionChange={(offers) =>
             setSelectedOfferIds(new Set(offers.map((r) => r.id)))

@@ -165,6 +165,20 @@ describe('Homepage', () => {
     })
   })
 
+  describe('closed offerer banner', () => {
+    it('should be displayed when offerer is closed', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        managingOfferer: {
+          ...defaultGetVenueResponseModel.managingOfferer,
+          isClosed: true,
+        },
+      })
+
+      expect(screen.getByText('Entité juridique fermée')).toBeVisible()
+    })
+  })
+
   describe('Tabs', () => {
     it.each`
       scenario | allowedOnAdage | hasNonDraftOffers | hasCollectiveDMS | shouldDisplayTabs

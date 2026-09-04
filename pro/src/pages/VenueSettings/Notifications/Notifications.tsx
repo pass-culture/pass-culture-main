@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { VenueFormActionBar } from '@/components/VenueEdition/VenueFormActionBar/VenueFormActionBar'
@@ -21,7 +21,7 @@ import {
 
 const Notifications = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   const form = useForm<VenueSettingsNotificationsFormValues>({
     defaultValues: {
@@ -75,7 +75,7 @@ const Notifications = () => {
                   type="email"
                   description="Format : email@exemple.com"
                   error={errors.bookingEmail?.message}
-                  disabled={isVenueClosed}
+                  disabled={isClosed}
                   describedBy={notificationId}
                 />
               </FormLayout.Row>
@@ -90,7 +90,7 @@ const Notifications = () => {
             </FormLayout.Section>
           </FormLayout>
           <VenueFormActionBar
-            disableFormSubmission={isVenueClosed}
+            disableFormSubmission={isClosed}
             isSubmitting={isSubmitting}
             onCancel={onCancel}
           />

@@ -24,7 +24,8 @@ export const venuePageRouteSubgroup: CustomRouteGroup = {
         {
           path: 'edition',
           loader: withUserPermissions(
-            (userPermissions) => userPermissions.isSelectedPartnerVenueActive
+            (userPermissions) =>
+              userPermissions.isSelectedPartnerVenueAndOffererActive
           ),
           lazy: () =>
             import(
@@ -49,7 +50,8 @@ export const venuePageRouteSubgroup: CustomRouteGroup = {
         {
           path: 'edition',
           loader: withUserPermissions(
-            (userPermissions) => userPermissions.isSelectedPartnerVenueActive
+            (userPermissions) =>
+              userPermissions.isSelectedPartnerVenueAndOffererActive
           ),
           lazy: () =>
             import(

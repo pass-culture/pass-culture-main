@@ -30,7 +30,7 @@ export const getInitialPartnerVenueId = (
 
   if (newOffererId) {
     const newOffererVenues = venues.filter(
-      (venue) => venue.managingOffererId === newOffererId
+      (venue) => venue.managingOfferer.id === newOffererId
     )
 
     return newOffererVenues.length === 1 ? newOffererVenues[0].id : null

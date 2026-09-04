@@ -75,6 +75,7 @@ class GetOffererVenueResponseModel(HttpBodyModel):
 class GetOffererResponseModel(HttpBodyModel):
     is_validated: bool
     is_active: bool
+    is_closed: bool
     managed_venues: list[GetOffererVenueResponseModel]
     name: str
     id: int
@@ -107,6 +108,7 @@ class GetOffererResponseModel(HttpBodyModel):
             has_valid_bank_account=row.hasValidBankAccount,
             id=offerer.id,
             is_active=offerer.isActive and not offerer.isClosed,
+            is_closed=offerer.isClosed,
             is_caledonian=offerer.is_caledonian,
             is_onboarded=row.isOnboarded,
             # Behavior in PC Pro for a closed offerer should be the same as for a suspended validated offerer

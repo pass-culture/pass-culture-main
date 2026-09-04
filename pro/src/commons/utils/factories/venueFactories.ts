@@ -16,6 +16,7 @@ export const makeGetVenueManagingOffererResponseModel = <
 ): Omit<GetVenueManagingOffererResponseModel, keyof T> & T => {
   const fake: GetVenueManagingOffererResponseModel = {
     id: override.id,
+    isClosed: false,
     isValidated: false,
     name: `Entité ${override.id}`,
     siren: '123456789',
@@ -142,7 +143,7 @@ export const makeVenueListItemLiteResponseModel = <
 >(
   override: T
 ): Omit<VenueListItemLiteResponseModel, keyof T> & T => {
-  const offererId = override.managingOffererId ?? 1
+  const offererId = override.managingOfferer?.id ?? 1
   const location: LocationResponseModelV2 = {
     id: 2,
     banId: null,
@@ -161,7 +162,10 @@ export const makeVenueListItemLiteResponseModel = <
   const fake: VenueListItemLiteResponseModel = {
     id: override.id,
     location: location,
-    managingOffererId: offererId,
+    managingOfferer: {
+      id: offererId,
+      isClosed: false,
+    },
     publicName: `Nom public de la structure ${override.id}`,
     state: null,
   }

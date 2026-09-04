@@ -67,7 +67,7 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         )
         nextSelectedPartnerVenue = {
           id: nextSelectedPartnerVenueId,
-          managingOfferer: { id: venue?.managingOffererId },
+          managingOfferer: { id: venue?.managingOfferer.id },
         } as GetVenueResponseModel
       } else {
         nextSelectedPartnerVenue = await api.getVenue({

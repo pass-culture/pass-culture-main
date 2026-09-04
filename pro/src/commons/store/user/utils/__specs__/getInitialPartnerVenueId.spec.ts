@@ -14,8 +14,14 @@ describe('getInitialPartnerVenueId', () => {
       window.history.pushState({}, '', '/?venue=10')
 
       const venues = [
-        makeVenueListItemLiteResponseModel({ id: 10, managingOffererId: 1 }),
-        makeVenueListItemLiteResponseModel({ id: 20, managingOffererId: 2 }),
+        makeVenueListItemLiteResponseModel({
+          id: 10,
+          managingOfferer: { id: 1, isClosed: false },
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 20,
+          managingOfferer: { id: 2, isClosed: false },
+        }),
       ]
 
       const result = getInitialPartnerVenueId(venues)
@@ -26,8 +32,14 @@ describe('getInitialPartnerVenueId', () => {
   describe('Priority 2: first venue of a newly associated offerer', () => {
     it('should return the venue ID when new offerer has exactly one venue', () => {
       const venues = [
-        makeVenueListItemLiteResponseModel({ id: 10, managingOffererId: 1 }),
-        makeVenueListItemLiteResponseModel({ id: 20, managingOffererId: 2 }),
+        makeVenueListItemLiteResponseModel({
+          id: 10,
+          managingOfferer: { id: 1, isClosed: false },
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 20,
+          managingOfferer: { id: 2, isClosed: false },
+        }),
       ]
 
       const result = getInitialPartnerVenueId(venues, 2)
@@ -37,9 +49,18 @@ describe('getInitialPartnerVenueId', () => {
 
     it('should return null when new offerer has multiple venues', () => {
       const venues = [
-        makeVenueListItemLiteResponseModel({ id: 10, managingOffererId: 1 }),
-        makeVenueListItemLiteResponseModel({ id: 20, managingOffererId: 2 }),
-        makeVenueListItemLiteResponseModel({ id: 30, managingOffererId: 2 }),
+        makeVenueListItemLiteResponseModel({
+          id: 10,
+          managingOfferer: { id: 1, isClosed: false },
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 20,
+          managingOfferer: { id: 2, isClosed: false },
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 30,
+          managingOfferer: { id: 2, isClosed: false },
+        }),
       ]
 
       const result = getInitialPartnerVenueId(venues, 2)
@@ -49,7 +70,10 @@ describe('getInitialPartnerVenueId', () => {
 
     it('should return null when no venue matches the new offerer', () => {
       const venues = [
-        makeVenueListItemLiteResponseModel({ id: 10, managingOffererId: 1 }),
+        makeVenueListItemLiteResponseModel({
+          id: 10,
+          managingOfferer: { id: 1, isClosed: false },
+        }),
       ]
 
       const result = getInitialPartnerVenueId(venues, 999)
@@ -61,8 +85,14 @@ describe('getInitialPartnerVenueId', () => {
       localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '10')
 
       const venues = [
-        makeVenueListItemLiteResponseModel({ id: 10, managingOffererId: 1 }),
-        makeVenueListItemLiteResponseModel({ id: 20, managingOffererId: 2 }),
+        makeVenueListItemLiteResponseModel({
+          id: 10,
+          managingOfferer: { id: 1, isClosed: false },
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 20,
+          managingOfferer: { id: 2, isClosed: false },
+        }),
       ]
 
       const result = getInitialPartnerVenueId(venues, 2)
@@ -74,9 +104,18 @@ describe('getInitialPartnerVenueId', () => {
       localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '10')
 
       const venues = [
-        makeVenueListItemLiteResponseModel({ id: 10, managingOffererId: 1 }),
-        makeVenueListItemLiteResponseModel({ id: 20, managingOffererId: 2 }),
-        makeVenueListItemLiteResponseModel({ id: 30, managingOffererId: 2 }),
+        makeVenueListItemLiteResponseModel({
+          id: 10,
+          managingOfferer: { id: 1, isClosed: false },
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 20,
+          managingOfferer: { id: 2, isClosed: false },
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 30,
+          managingOfferer: { id: 2, isClosed: false },
+        }),
       ]
 
       const result = getInitialPartnerVenueId(venues, 2)

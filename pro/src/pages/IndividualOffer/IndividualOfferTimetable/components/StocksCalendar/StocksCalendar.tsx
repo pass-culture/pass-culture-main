@@ -21,9 +21,9 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
@@ -355,7 +355,7 @@ function RecurrenceModalButton({
   ) => Promise<void>
 }>) {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   return (
     <>
@@ -363,7 +363,7 @@ function RecurrenceModalButton({
         variant={triggerVariant}
         label={triggerLabel}
         onClick={() => setIsDialogOpen(true)}
-        disabled={isVenueClosed}
+        disabled={isClosed}
       />
       <DetailedModal
         isOpen={isDialogOpen}
