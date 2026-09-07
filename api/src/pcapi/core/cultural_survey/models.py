@@ -4,6 +4,7 @@ from datetime import datetime
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.ext.mutable import MutableList
 
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -93,8 +94,9 @@ class UserCulturalSurvey(PcObject, Model):
         unique=True,
     )
 
-    answers: sa_orm.Mapped[postgresql.JSONB] = sa_orm.mapped_column(
-        postgresql.JSONB,
+    answers: sa_orm.Mapped[list[dict]] = sa_orm.mapped_column(
+        MutableList.as_mutable(postgresql.JSONB),
+        default=list,
         nullable=False,
     )
 
