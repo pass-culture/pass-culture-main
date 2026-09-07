@@ -35,7 +35,7 @@ describe('<IndividualOffersLine />', () => {
       <IndividualOffersLine offer={offer} venueDepartmentCode={null} />
     )
 
-    expect(screen.getByRole('img')).toBeVisible()
+    expect(screen.getByTestId('thumb-icon')).toBeVisible()
     expect(screen.getByText(offer.name)).toBeVisible()
     expect(screen.getByText('Le 01/02/2026 11:00')).toBeVisible()
     expect(screen.getByText('publiée')).toBeVisible()
@@ -168,7 +168,7 @@ describe('<IndividualOffersLine />', () => {
 
     it('should have the line clickable', async () => {
       const { user, offer } = renderIndividualOffersLineWithRouter()
-      expect(screen.getByRole('img')).toBeVisible()
+      expect(screen.getByTestId('thumb-icon')).toBeVisible()
 
       await user.click(
         screen.getByRole('link', {

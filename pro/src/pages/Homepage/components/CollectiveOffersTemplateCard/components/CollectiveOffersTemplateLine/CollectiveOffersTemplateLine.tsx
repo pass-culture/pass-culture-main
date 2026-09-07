@@ -63,7 +63,7 @@ export const CollectiveOffersTemplateLine = ({
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
-      <Thumb url={offer.imageUrl} alt={`Thumbnail for ${offer.name}`} />
+      <Thumb url={offer.imageUrl} />
       <div className={styles['offer-line-content']}>
         <h3 className={styles['offer-line-content-primary']}>
           <Link

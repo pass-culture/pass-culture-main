@@ -21,6 +21,45 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 1.2 - RGAA - Chaque image de décoration sans légende est-elle correctement ignorée par les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 1.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-1-2)
+**Ticket** : [PC-42844](https://passculture.atlassian.net/browse/PC-42844)
+**PR** : [#24226](https://github.com/pass-culture/pass-culture-main/pull/24226)
+
+**Problème** 😱  
+TexteP08 → Page d'accueil 
+
+Au moins une image de décoration n'est pas correctement identifiée.
+
+Par exemple : 
+
+- Les images <img alt="Thumbnail for + [IntituleDeLOffre]> du bloc "Offres réservables"
+- L’image du logo Adage dans AdagePreviewLayout
+- L’image de téléphone dans OfferRecommendationForm
+
+Corrections :
+
+- Pour les images , laisser l'attribut alt vide : alt="".
+- Pour toutes les autres images (<svg> notamment) : utiliser une propriété aria-hidden="true".
+- Faire un tour général des images et svg de l’application pour voir si toutes les images de décoration sont conformes. 
+
+**Correction** 💡  
+
+- Dans l'aperçu Adage des offres collectives : renommage du `alt` sur le logo ADAGE pour coller au texte de l'image.
+- Dans les listes d'offres sur la page d'accueil (offres collectives et individuelles) : les thumbnails ont maintenant un `alt="" aria-hidden="true"`
+- Dans toute l'app : ajout de `aria-hidden="true"` sur les `<img alt="" />`
+
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critères 10.6 - RGAA - Dans chaque page web, chaque lien dont la nature n'est pas évidente est-il visible par rapport au texte environnant ?</summary>
 
 **RAWeb/RGAA** : [Critère 10.6](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-6)

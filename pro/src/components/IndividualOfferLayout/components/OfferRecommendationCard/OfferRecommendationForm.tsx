@@ -147,7 +147,8 @@ export function OfferRecommendationForm({
                   width="200px"
                   height="208px"
                   src={phoneImg}
-                  alt="Affichage sur l’offre"
+                  alt=""
+                  aria-hidden
                 />
                 <span
                   aria-hidden={true}

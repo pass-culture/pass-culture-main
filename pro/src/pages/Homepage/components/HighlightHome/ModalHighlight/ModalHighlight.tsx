@@ -163,7 +163,12 @@ const HighlightCard = ({
   return (
     <div className={styles['card']}>
       <div className={styles['card-content']}>
-        <img src={imageSrc} alt="" className={styles['card-image']} />
+        <img
+          src={imageSrc}
+          alt=""
+          aria-hidden
+          className={styles['card-image']}
+        />
         <Tag
           label={<HighlightDatespanTag highlightDatespan={highlightDatespan} />}
         />

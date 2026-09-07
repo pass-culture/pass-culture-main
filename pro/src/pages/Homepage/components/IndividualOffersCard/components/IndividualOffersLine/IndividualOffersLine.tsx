@@ -69,11 +69,7 @@ export const IndividualOffersLine = ({
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
-      <Thumb
-        className={styles['offer-line-thumb']}
-        url={offer.thumbUrl}
-        alt={`Thumbnail for ${offer.name}`}
-      />
+      <Thumb className={styles['offer-line-thumb']} url={offer.thumbUrl} />
       <div className={styles['offer-line-content']}>
         <IndividualOffersTag
           offer={offer}

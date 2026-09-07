@@ -50,11 +50,7 @@ export const CollectiveOffersBookableLine = ({
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
-      <Thumb
-        className={styles['offer-line-thumb']}
-        url={offer.imageUrl}
-        alt={`Thumbnail for ${offer.name}`}
-      />
+      <Thumb className={styles['offer-line-thumb']} url={offer.imageUrl} />
       <div className={styles['offer-line-content']}>
         {offer.collectiveStock && (
           <CollectiveOffersBookableTag

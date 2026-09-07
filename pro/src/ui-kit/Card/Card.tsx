@@ -76,7 +76,12 @@ const CardFooter = ({ children, className }: CardFooterProps) => (
 )
 
 const CardImage = ({ src, alt, className }: CardImageProps) => (
-  <img src={src} alt={alt} className={cn(styles['card-image'], className)} />
+  <img
+    src={src}
+    alt={alt}
+    className={cn(styles['card-image'], className)}
+    aria-hidden={!alt}
+  />
 )
 
 export const Card = ({

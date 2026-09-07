@@ -125,13 +125,13 @@ export const AdagePreviewLayout = ({
     <div className={styles['fake-adage-page']}>
       <div className={styles['fake-adage-page-header']}>
         <div className={styles['fake-adage-page-header-logo']}>
-          <img src={adageLogo} alt="Plateforme ADAGE" />
+          <img src={adageLogo} alt="ADAGE" />
         </div>
         <img
           src={adageBurger}
           alt=""
           className={styles['fake-adage-page-header-burger']}
-          aria-hidden="true"
+          aria-hidden
         />
       </div>
       <div>

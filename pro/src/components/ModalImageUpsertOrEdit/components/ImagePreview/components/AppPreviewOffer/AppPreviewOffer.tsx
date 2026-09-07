@@ -16,12 +16,14 @@ export const AppPreviewOffer = ({
     <ImagePreview title="Page d’accueil">
       <img
         alt=""
+        aria-hidden
         className={homeStyle['image-preview-shell']}
         src={homeShell}
       />
       <img
         data-testid="app-preview-offer-img-home"
         alt=""
+        aria-hidden
         className={homeStyle['image-preview-home-preview']}
         src={imageUrl}
       />
@@ -29,17 +31,20 @@ export const AppPreviewOffer = ({
     <ImagePreview title="Détails de l’offre">
       <img
         alt=""
+        aria-hidden
         className={offerStyle['image-preview-blur-offer-preview']}
         src={imageUrl}
       />
       <img
         alt=""
+        aria-hidden
         className={offerStyle['image-preview-shell']}
         src={offerShell}
       />
       <img
         data-testid="app-preview-offer-img"
         alt=""
+        aria-hidden
         className={offerStyle['image-preview-offer-preview']}
         src={imageUrl}
       />
