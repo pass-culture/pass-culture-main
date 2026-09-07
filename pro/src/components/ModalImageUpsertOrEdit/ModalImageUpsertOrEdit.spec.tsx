@@ -140,6 +140,22 @@ describe('ModalImageUpsertOrEdit', () => {
     })
   })
 
+  it('should display the image editor with the picked file instead of reloading it from its url', async () => {
+    const mockImageUrl = 'http://example.com/image.jpg'
+    renderModalImageCrop({
+      initialValues: {
+        draftImage: imageFileFactory(),
+        croppedImageUrl: mockImageUrl,
+      },
+    })
+    await waitForRender()
+
+    expect(await screen.findByLabelText("Editeur d'image")).toBeInTheDocument()
+    expect(screen.queryByTestId('spinner-img-load')).not.toBeInTheDocument()
+
+    expect(fetchMock).not.toHaveBeenCalledWith(mockImageUrl)
+  })
+
   describe('when an image is loaded', () => {
     it('should render an image editor & a preview with the loaded image', async () => {
       vi.spyOn(imageUtils, 'getImageBitmap').mockResolvedValue({

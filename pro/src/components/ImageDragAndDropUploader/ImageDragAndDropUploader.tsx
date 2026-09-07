@@ -63,6 +63,7 @@ export const ImageDragAndDropUploader = ({
   const [draftCredit, setDraftCredit] = useState<string | undefined>(credit)
   const [dragDropResetKey, setDragDropResetKey] = useState(0)
   const previousDraftImage = usePrevious(draftImage)
+  const previousIsModalImageOpen = usePrevious(isModalImageOpen)
 
   const imageUrl = croppedImageUrl || originalImageUrl
   const hasImage = !!imageUrl
@@ -76,10 +77,18 @@ export const ImageDragAndDropUploader = ({
     // This is to manage the focus when ImageDragAndDropUploader is re-rendered
     // after an image deletion (after a button action click, not as a result
     // of a deletion from the modal options)
-    if (previousDraftImage && !draftImage) {
+    const hasDeletedImage = previousDraftImage && !draftImage
+    const hasClosedEditor = previousIsModalImageOpen && !isModalImageOpen
+
+    if (hasDeletedImage || hasClosedEditor) {
       inputDragAndDropRef.current?.focus()
     }
-  }, [draftImage, previousDraftImage])
+  }, [
+    draftImage,
+    previousDraftImage,
+    isModalImageOpen,
+    previousIsModalImageOpen,
+  ])
 
   const onImageDeleteHandler = () => {
     if (warnBeforeDeleting && !isDeleteImageOpen) {
@@ -165,7 +174,6 @@ export const ImageDragAndDropUploader = ({
           }}
           onOpenChange={(open) => {
             if (!open) {
-              setDraftImage(undefined)
               setDragDropResetKey((prev) => prev + 1)
             }
             setIsModalImageOpen(open)

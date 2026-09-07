@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { forwardRef } from 'react'
+import { forwardRef, useState } from 'react'
 
 import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -295,6 +295,53 @@ describe('ImageDragAndDropUploader', () => {
     await waitFor(() => {
       expect(screen.getByText('Modifier une image')).toBeInTheDocument()
     })
+  })
+
+  it('should keep the picked file when the editor is closed without importing', async () => {
+    // The "Modifier" button only shows once the parent displays the imported image
+    const StatefulImageUploader = () => {
+      const [croppedImageUrl, setCroppedImageUrl] = useState('')
+
+      return (
+        <ImageDragAndDropUploader
+          mode={UploaderModeEnum.OFFER}
+          onImageDelete={() => {}}
+          initialValues={{ croppedImageUrl }}
+          onImageUpload={(values) =>
+            setCroppedImageUrl(values.imageCroppedDataUrl ?? '')
+          }
+        />
+      )
+    }
+
+    renderWithProviders(<StatefulImageUploader />)
+
+    await userEvent.upload(
+      screen.getByLabelText('Importez une image'),
+      mockImageFile
+    )
+    await waitFor(() => {
+      expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+    })
+    await userEvent.click(screen.getByText('Importer'))
+
+    // Reopen the editor, then close it without importing.
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Modifier l’image' })
+    )
+    await waitFor(() => {
+      expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+    })
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Modifier l’image' })
+    )
+    await waitFor(() => {
+      expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+    })
+
+    expect(fetchMock).not.toHaveBeenCalledWith('my img')
   })
 
   it('should display a toaster and call onImageDelete, as soon as a file is delete successfully', async () => {
