@@ -144,6 +144,8 @@ def unsuspend_user(user_id: int) -> response_utils.BackofficeResponse:
     form = forms.UnsuspendUserForm()
     if form.validate():
         users_api.unsuspend_account(user, current_user, comment=form.comment.data)
+        if getattr(form, "reset_password", None) and form.reset_password.data:
+            users_api.request_password_reset(user)
         flash(
             Markup("Le compte de l'utilisateur <b>{email}</b> ({user_id}) a été réactivé").format(
                 email=user.email, user_id=user.id
