@@ -17,6 +17,7 @@ from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
@@ -124,9 +125,6 @@ def create_provider() -> response_utils.BackofficeResponse:
             },
         )
 
-    def generate_hmac_key() -> str:
-        return token_urlsafe(64)
-
     try:
         provider = providers_models.Provider(
             name=form.name.data,
@@ -136,7 +134,7 @@ def create_provider() -> response_utils.BackofficeResponse:
             bookingExternalUrl=form.booking_external_url.data,
             cancelExternalUrl=form.cancel_external_url.data,
             notificationExternalUrl=form.notification_external_url.data,
-            hmacKey=generate_hmac_key(),
+            hmacKey=token_urlsafe(64),
         )
         offerer, is_offerer_new = _get_or_create_offerer(form)
         offerer_provider = offerers_models.OffererProvider(offerer=offerer, provider=provider)
@@ -205,24 +203,30 @@ def _get_or_create_offerer(form: forms.CreateProviderForm) -> tuple[offerers_mod
 def _render_provider_details(
     provider: providers_models.Provider, edit_form: forms.EditProviderForm | None = None
 ) -> str:
-    if not edit_form and access_control.has_current_user_permission(perm_models.Permissions.MANAGE_TECH_PARTNERS):
-        edit_form = forms.EditProviderForm(
-            name=provider.name,
-            logo_url=provider.logoUrl,
-            enabled_for_pro=provider.enabledForPro,
-            is_active=provider.isActive,
-            booking_external_url=provider.bookingExternalUrl,
-            cancel_external_url=provider.cancelExternalUrl,
-            notification_external_url=provider.notificationExternalUrl,
-            provider_hmac_key=provider.hmacKey,
-        )
-
-        edit_form.provider_hmac_key.flags.copy_button = provider.hmacKey is not None
+    delete_key_form = None
+    create_key_form = None
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_TECH_PARTNERS):
+        delete_key_form = empty_forms.EmptyForm()
+        create_key_form = empty_forms.EmptyForm()
+        if not edit_form:
+            edit_form = forms.EditProviderForm(
+                name=provider.name,
+                logo_url=provider.logoUrl,
+                enabled_for_pro=provider.enabledForPro,
+                is_active=provider.isActive,
+                booking_external_url=provider.bookingExternalUrl,
+                cancel_external_url=provider.cancelExternalUrl,
+                notification_external_url=provider.notificationExternalUrl,
+                provider_hmac_key=provider.hmacKey,
+            )
+            edit_form.provider_hmac_key.flags.copy_button = provider.hmacKey is not None
 
     return render_template(
         "providers/get.html",
         provider=provider,
         active_tab=request.args.get("active_tab", "venues"),
+        create_key_form=create_key_form,
+        delete_key_form=delete_key_form,
         edit_form=edit_form,
     )
 
@@ -237,7 +241,7 @@ def get_provider(provider_id: int) -> response_utils.BackofficeResponse:
             .joinedload(offerers_models.OffererProvider.offerer)
             .load_only(offerers_models.Offerer.siren)
         )
-        .options(sa_orm.joinedload(providers_models.Provider.apiKeys).load_only(offerers_models.ApiKey.id))
+        .options(sa_orm.joinedload(providers_models.Provider.apiKeys))
         .one_or_none()
     )
 
@@ -266,6 +270,74 @@ def _get_active_venue_providers_stats(provider_id: int) -> dict[str, int]:
         "active": data.get("active", 0) if data else 0,
         "inactive": data.get("inactive", 0) if data else 0,
     }
+
+
+@providers_blueprint.route("/<int:provider_id>/create-api-key", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
+def create_api_key(provider_id: int) -> response_utils.BackofficeResponse:
+    form = empty_forms.EmptyForm()
+
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return redirect(url_for("backoffice_web.providers.get_provider", provider_id=provider_id), code=303)
+
+    provider = (
+        db.session.query(providers_models.Provider).filter(providers_models.Provider.id == provider_id).one_or_none()
+    )
+
+    if not provider:
+        raise NotFound()
+
+    try:
+        api_key, clear_secret = offerers_api.generate_provider_api_key(provider)
+    except offerers_exceptions.CannotFindProviderOfferer:
+        flash(
+            "Ce partenaire technique n'est pas lié à une entité juridique. Impossible de lui créer une clé d'API. ",
+            "warning",
+        )
+        return Response(
+            response="redirecting",
+            status=303,
+            headers={
+                "HX-Redirect": url_for("backoffice_web.providers.get_provider", provider_id=provider_id),
+            },
+        )
+    db.session.add(api_key)
+
+    return render_template(
+        "providers/list/api_key.html",
+        clear_secret=clear_secret,
+    )
+
+
+@providers_blueprint.route("/<int:provider_id>/delete-api-key/<int:key_id>", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
+def delete_api_key(provider_id: int, key_id: int) -> response_utils.BackofficeResponse:
+    form = empty_forms.EmptyForm()
+
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return redirect(url_for("backoffice_web.providers.get_provider", provider_id=provider_id), code=303)
+
+    deleted = (
+        db.session.query(offerers_models.ApiKey)
+        .filter(
+            offerers_models.ApiKey.id == key_id,
+            offerers_models.ApiKey.providerId == provider_id,
+        )
+        .delete(synchronize_session=False)
+    )
+
+    if deleted:
+        flash("La clé a été supprimée", "info")
+    else:
+        flash("La clé n'a pas été trouvée pour ce provider", "warning")
+
+    return redirect(
+        url_for("backoffice_web.providers.get_provider", provider_id=provider_id, active_tab="keys"), code=303
+    )
 
 
 @providers_blueprint.route("/<int:provider_id>/stats", methods=["GET"])

@@ -1,0 +1,4 @@
+{% import "components/clipboard.html" as clipboard %}
+<div class="p-3">
+  La clé d'API ne peut être ni régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : <pre class="d-inline">{{clear_secret}}</pre><span class="ms-1">{{ clipboard.copy_to_clipboard(clear_secret, "Copier la clé d'API") }}</span>
+</div>

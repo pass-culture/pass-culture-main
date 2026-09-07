@@ -1,5 +1,6 @@
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
+{% from "components/generic_modal.html" import build_simple_modal_form with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tab %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
@@ -77,12 +78,95 @@
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
           {{ build_details_tab("venues", "Partenaires culturels synchronisés", active_tab == 'venues') }}
+          {{ build_details_tab("keys", "Clés d'API", active_tab == 'keys') }}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("venues", active_tab == 'venues') %}
             <div id="provider_venues_frame"
                  hx-trigger="intersect once"
                  hx-get="{{ url_for('backoffice_web.providers.get_venues', provider_id=provider.id) }}">{{ build_loading_spinner() }}</div>
+          {% endcall %}
+          {% call build_details_tab_content("keys", active_tab == 'keys') %}
+            {% if create_key_form %}
+              <button class="btn btn-outline-primary-subtle-bg mt-2 col-2"
+                      data-bs-toggle="modal"
+                      data-bs-target="#create-key-modal">Créer une clé d'API</button>
+            {% endif %}
+            <table class="table table-hover my-4">
+              <thead>
+                <tr>
+                  {% if delete_key_form %}
+                    <th scope="col">Actions</th>
+                  {% endif %}
+                  <th scope="col">ID</th>
+                  <th scope="col">Date de création</th>
+                  <th scope="col">prefix</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for key in provider.apiKeys %}
+                  <tr>
+                    {% if has_permission("MANAGE_TECH_PARTNERS") %}
+                      <td class="fw-bolder">
+                        <div class="dropdown">
+                          <button type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  class="btn p-0">
+                            <i class="bi bi-three-dots-vertical"></i>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li class="dropdown-item">
+                              <a class="btn btn-sm d-block w-100 text-start px-3"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#delete-key-{{ key.id }}-modal">Supprimer</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    {% endif %}
+                    <td>{{ key.id }}</td>
+                    <td>{{ key.dateCreated | format_date_time }}</td>
+                    <td>{{ key.prefix | empty_string_if_null }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% if delete_key_form %}
+              {% for key in provider.apiKeys %}
+                {{ build_simple_modal_form("delete-key-" ~ key.id , url_for("backoffice_web.providers.delete_api_key", provider_id=provider.id, key_id=key.id) , delete_key_form, "Supprimer le clef d'api commençant par " + key.prefix, "Supprimer", "La clef d'api ne sera plus utilisable. Cette opération est irréversible.") }}
+              {% endfor %}
+            {% endif %}
+            {# modal to display the api key #}
+            {% if create_key_form %}
+              <div class="modal modal-xl fade"
+                   id="create-key-modal"
+                   tabindex="-1"
+                   aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header fs-5">La nouvelle clé d'api a été générée</div>
+                    <form class="d-none"
+                          id="create-key-form">
+                      {% for form_field in create_key_form %}
+                        {{ form_field }}
+                      {% endfor %}
+                    </form>
+                    <div id="create-key-modal-body"
+                         class="modal-body"
+                         hx-post="{{ url_for('backoffice_web.providers.create_api_key', provider_id=provider.id) }}"
+                         hx-swap="outerHTML"
+                         hx-trigger="intersect"
+                         hx-include="#create-key-form"></div>
+                    <div class="modal-footer">
+                      <a class="btn btn-outline-primary-subtle-bg"
+                         href="{{ url_for('backoffice_web.providers.get_provider', provider_id=provider.id, active_tab='keys') }}">valider</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            {# end modal #}
           {% endcall %}
         {% endcall %}
       </div>
