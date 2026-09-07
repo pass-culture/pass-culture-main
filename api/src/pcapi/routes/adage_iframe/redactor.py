@@ -13,14 +13,11 @@ from pcapi.utils.transaction_manager import atomic
 @atomic()
 @adage_jwt_required
 @spectree_serialize(api=blueprint.api, on_success_status=204)
-def save_redactor_preferences(
-    body: RedactorPreferences,
-    authenticated_information: AuthenticatedInformation,
-) -> None:
+def save_redactor_preferences(body: RedactorPreferences, authenticated_information: AuthenticatedInformation) -> None:
     redactor = educational_repository.find_redactor_by_email(authenticated_information.email)
     if not redactor:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
-    redactor.preferences = {**redactor.preferences, **body.dict()}
+    redactor.preferences = {**redactor.preferences, **body.model_dump(exclude_unset=True)}
     db.session.add(redactor)
     db.session.flush()
