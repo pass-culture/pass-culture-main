@@ -20,7 +20,7 @@ import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
 
-import { ManadgedVenueItem } from '../ManagedVenueItem/ManagedVenueItem'
+import { ManagedVenueItem } from '../ManagedVenueItem/ManagedVenueItem'
 import styles from './LinkVenuesDialog.module.scss'
 
 interface LinkVenuesDialogProps {
@@ -209,7 +209,7 @@ export const LinkVenuesDialog = ({
 
                 {managedVenues.map((venue) => {
                   return (
-                    <ManadgedVenueItem
+                    <ManagedVenueItem
                       venue={venue}
                       key={venue.id}
                       updateBankAccountVenuePricingPoint={

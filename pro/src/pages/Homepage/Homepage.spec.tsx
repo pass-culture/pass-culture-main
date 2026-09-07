@@ -163,6 +163,43 @@ describe('Homepage', () => {
 
       expect(screen.getByText('Structure fermée')).toBeVisible()
     })
+
+    it('should be displayed when venue state is closing', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        state: VenueState.CLOSING,
+      })
+
+      expect(
+        screen.getByText('Demande de fermeture de structure en cours')
+      ).toBeVisible()
+    })
+  })
+
+  describe('onboarding venue banner', () => {
+    it('should be displayed when venue state is closed and no tab is available', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        state: VenueState.CLOSED,
+        allowedOnAdage: false,
+        hasNonDraftOffers: false,
+      })
+
+      expect(screen.getByText('Structure fermée')).toBeVisible()
+    })
+
+    it('should be displayed when venue state is closing and no tab is available', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        state: VenueState.CLOSING,
+        allowedOnAdage: false,
+        hasNonDraftOffers: false,
+      })
+
+      expect(
+        screen.getByText('Demande de fermeture de structure en cours')
+      ).toBeVisible()
+    })
   })
 
   describe('closed offerer banner', () => {

@@ -1,7 +1,7 @@
 import { type ChangeEvent, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
+import { type VenueListItemLiteResponseModel, VenueState } from '@/apiClient/v1'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
@@ -135,7 +135,7 @@ export const Hub = () => {
                 onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
                 type="button"
               >
-                {withVenueHelpers(venue).isClosed &&
+                {venue.state === VenueState.CLOSED &&
                   !venue.managingOfferer.isClosed && (
                     <div className={styles['venue-item-state']}>
                       <Tag
@@ -144,6 +144,16 @@ export const Hub = () => {
                       />
                     </div>
                   )}
+                {venue.state === VenueState.CLOSING &&
+                  !venue.managingOfferer.isClosed && (
+                    <div className={styles['venue-item-state']}>
+                      <Tag
+                        variant={TagVariant.WARNING}
+                        label="Fermeture en cours"
+                      />
+                    </div>
+                  )}
+
                 {venue.managingOfferer.isClosed && (
                   <div className={styles['venue-item-state']}>
                     <Tag
@@ -152,6 +162,7 @@ export const Hub = () => {
                     />
                   </div>
                 )}
+
                 <span
                   className={styles['venue-item-name']}
                   id={`venue-${venue.id}-name`}

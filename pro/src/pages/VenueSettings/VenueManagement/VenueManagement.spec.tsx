@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
+import { VenueState } from '@/apiClient/v1'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -20,11 +21,11 @@ const offerer = {
   managedVenues: [],
 }
 
-const renderVenueManagement = () =>
+const renderVenueManagement = (venueOverride = venue) =>
   renderWithProviders(<VenueManagement />, {
     storeOverrides: {
       user: {
-        selectedPartnerVenue: venue,
+        selectedPartnerVenue: venueOverride,
         selectedAdminOfferer: offerer,
       },
     },
@@ -47,6 +48,19 @@ describe('VenueManagement', () => {
     ).toBeVisible()
     expect(
       screen.getByRole('button', { name: /Fermer la structure/ })
+    ).toBeVisible()
+  })
+
+  it('should display a pending wording when venue closure is already requested', () => {
+    renderVenueManagement(
+      makeGetVenueResponseModel({
+        id: 1,
+        state: VenueState.CLOSING,
+      })
+    )
+
+    expect(
+      screen.getByRole('button', { name: 'Demande en cours' })
     ).toBeVisible()
   })
 

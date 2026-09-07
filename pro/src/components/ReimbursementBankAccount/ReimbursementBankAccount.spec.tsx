@@ -274,6 +274,21 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText('Structure fermée')).toBeInTheDocument()
   })
 
+  it('should display closing in progress tag', () => {
+    bankAccount.linkedVenues = [
+      {
+        id: 315,
+        commonName: 'Le Petit Rintintin',
+        state: VenueState.CLOSING,
+      },
+    ]
+    renderReimbursementBankAccount(bankAccount, managedVenues)
+
+    expect(
+      screen.getByText('Demande de fermeture de structure en cours')
+    ).toBeInTheDocument()
+  })
+
   it('should call the onUpdateButtonClick function when clicking the action button', async () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,

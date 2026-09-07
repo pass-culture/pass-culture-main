@@ -270,11 +270,13 @@ test.describe('Settings page', () => {
       .click()
 
     await expect(
-      page.getByRole('button', { name: 'Fermer la structure' })
+      page.getByRole('button', { name: 'Demande en cours' })
     ).toBeDisabled()
 
     await navBar.getByRole('link', { name: 'Accueil' }).click()
     await expect(page).toHaveURL(/\/accueil$/)
-    await expect(page.getByText('Structure fermée')).toBeVisible()
+    await expect(
+      page.getByText('Demande de fermeture de structure en cours')
+    ).toBeVisible()
   })
 })

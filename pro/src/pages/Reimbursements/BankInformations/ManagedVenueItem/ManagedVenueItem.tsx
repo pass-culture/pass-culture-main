@@ -17,7 +17,7 @@ import fullEditIcon from '@/icons/full-edit.svg'
 import { PricingPointDialog } from '../PricingPointDialog/PricingPointDialog'
 import styles from './ManagedVenueItem.module.scss'
 
-type ManadgedVenueItemProps = {
+type ManagedVenueItemProps = {
   venue: ManagedVenue
   updateBankAccountVenuePricingPoint: (venueId: number) => void
   selectedBankAccount: BankAccountResponseModel
@@ -27,7 +27,7 @@ type ManadgedVenueItemProps = {
   hasError?: boolean
 }
 
-export function ManadgedVenueItem({
+export function ManagedVenueItem({
   venue,
   updateBankAccountVenuePricingPoint,
   selectedBankAccount,
@@ -35,7 +35,7 @@ export function ManadgedVenueItem({
   setSelectedVenuesIds,
   venuesForPricingPoint,
   hasError,
-}: Readonly<ManadgedVenueItemProps>) {
+}: Readonly<ManagedVenueItemProps>) {
   const [selectedVenue, setSelectedVenue] = useState<ManagedVenue | null>(null)
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const [isPricingPointDialogOpen, setIsPricingPointDialogOpen] =
@@ -69,10 +69,16 @@ export function ManadgedVenueItem({
           onChange={(e) => handleVenueChange(e, venue.id)}
           hasError={hasError}
         />
-        {(venue.state === VenueState.CLOSED ||
-          venue.state === VenueState.CLOSING) &&
+        {venue.state === VenueState.CLOSED &&
           !selectedAdminOfferer.isClosed && (
             <Tag variant={TagVariant.ERROR} label="Structure fermée" />
+          )}
+        {venue.state === VenueState.CLOSING &&
+          !selectedAdminOfferer.isClosed && (
+            <Tag
+              variant={TagVariant.WARNING}
+              label="Demande de fermeture de structure en cours"
+            />
           )}
         {selectedAdminOfferer.isClosed && (
           <Tag variant={TagVariant.ERROR} label="Entité juridique fermée" />
