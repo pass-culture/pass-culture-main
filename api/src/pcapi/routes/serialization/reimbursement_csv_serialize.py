@@ -12,7 +12,7 @@ import pytz
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.finance.utils as finance_utils
-from pcapi.core.bookings.repository import serialize_offer_type_educational_or_individual
+from pcapi.core.bookings.exports import serialize_offer_type_educational_or_individual
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.utils.date import MONTHS_IN_FRENCH

@@ -6,10 +6,10 @@ from enum import Enum
 import pydantic as pydantic_v2
 
 from pcapi.core.bookings import schemas
+from pcapi.core.bookings.exports import get_booking_token
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
-from pcapi.core.bookings.repository import get_booking_token
 from pcapi.core.bookings.utils import _apply_departement_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.models.api_errors import ApiErrors

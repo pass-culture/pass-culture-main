@@ -12,6 +12,7 @@ import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import constants as bookings_constants
 from pcapi.core.bookings import exceptions as bookings_exceptions
+from pcapi.core.bookings import exports as bookings_exports
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.bookings import validation as bookings_validation
@@ -110,13 +111,13 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
     if query.status == BookingsExportStatusFilter.VALIDATED:
         return cast(
             str,
-            booking_repository.export_validated_bookings_by_offer_id(
+            bookings_exports.export_validated_bookings_by_offer_id(
                 offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.CSV
             ),
         ).encode("utf-8-sig")
     return cast(
         str,
-        booking_repository.export_bookings_by_offer_id(
+        bookings_exports.export_bookings_by_offer_id(
             offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.CSV
         ),
     ).encode("utf-8-sig")
@@ -142,13 +143,13 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
     if query.status == BookingsExportStatusFilter.VALIDATED:
         return cast(
             bytes,
-            booking_repository.export_validated_bookings_by_offer_id(
+            bookings_exports.export_validated_bookings_by_offer_id(
                 offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.EXCEL
             ),
         )
     return cast(
         bytes,
-        booking_repository.export_bookings_by_offer_id(
+        bookings_exports.export_bookings_by_offer_id(
             offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.EXCEL
         ),
     )
@@ -252,7 +253,7 @@ def _create_booking_export_file(query: DownloadBookingsQueryModel, export_type: 
         )
     booking_status = query.booking_status_filter
 
-    export_data = booking_repository.get_export(
+    export_data = bookings_exports.get_export(
         pro_user_id=user.id,
         venue_ids=venue_ids,
         booking_period=booking_period,

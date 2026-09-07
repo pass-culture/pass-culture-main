@@ -26,8 +26,8 @@ from werkzeug.exceptions import NotFound
 from pcapi.core import search
 from pcapi.core.artist import models as artist_models
 from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings import exports as bookings_export
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.cultural_outreach import api as cultural_outreach_api
@@ -2123,7 +2123,7 @@ def download_bookings_csv(offer_id: int) -> response_utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    export_data = booking_repository.get_export(
+    export_data = bookings_export.get_export(
         pro_user_id=current_user.id,
         venue_ids=[offer.venueId],
         offer_id=offer_id,
@@ -2145,7 +2145,7 @@ def download_bookings_xlsx(offer_id: int) -> response_utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    export_data = booking_repository.get_export(
+    export_data = bookings_export.get_export(
         pro_user_id=current_user.id,
         venue_ids=[offer.venueId],
         offer_id=offer_id,
