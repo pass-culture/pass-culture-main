@@ -5,6 +5,7 @@ import { addDays } from 'date-fns'
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { makeApiError } from '@/commons/utils/factories/errorFactories'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
@@ -214,6 +215,36 @@ describe('StocksCalendar', () => {
 
     expect(
       screen.getAllByText(/Une date a été supprimée/).length
+    ).toBeGreaterThan(0)
+  })
+
+  it('should show the backend error message when deleting a stock fails', async () => {
+    renderStocksCalendar()
+
+    vi.spyOn(api, 'deleteStocks').mockRejectedValueOnce(
+      makeApiError({
+        body: {
+          global: [
+            "L'évènement s'est terminé il y a plus de deux jours, la suppression est impossible.",
+          ],
+        },
+      })
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer la date' })[0]
+    )
+
+    expect(
+      (
+        await screen.findAllByText(
+          "L'évènement s'est terminé il y a plus de deux jours, la suppression est impossible."
+        )
+      ).length
     ).toBeGreaterThan(0)
   })
 
