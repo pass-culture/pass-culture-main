@@ -94,13 +94,19 @@
     flex-direction: column;
     gap: var(--size-spacing-xs);
 
-    &-neutral,
     &-error,
     &-validate {
       display: flex;
       align-items: center;
       gap: var(--size-spacing-xs);
-      flex-wrap: wrap;
+    }
+
+    &-icon {
+      align-self: flex-start;
+      flex-shrink: 0;
+      margin-top: calc(
+        (var(--typography-body-accent-s-line-height) - #{rem.torem(16px)}) / 2
+      );
     }
 
     &-neutral {

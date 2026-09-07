@@ -34,7 +34,11 @@ export const ImageConstraintCheck = ({
       })}
     >
       {hasInput && (
-        <SvgIcon src={hasError ? fullClearIcon : fullValidateIcon} width="16" />
+        <SvgIcon
+          className={styles['image-drag-and-drop-description-icon']}
+          src={hasError ? fullClearIcon : fullValidateIcon}
+          width="16"
+        />
       )}
       <p
         className={cn({
