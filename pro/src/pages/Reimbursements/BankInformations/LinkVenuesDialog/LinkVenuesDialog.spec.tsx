@@ -100,6 +100,23 @@ describe('LinkVenueDialog', () => {
     expect(screen.getByText('Structure fermée')).toBeInTheDocument()
   })
 
+  it('should display closing in progress tag for venue with closure request', () => {
+    const managedVenues = [
+      {
+        ...defaultManagedVenue,
+        id: 1,
+        commonName: 'Lieu 1',
+        state: VenueState.CLOSING,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
+
+    expect(
+      screen.getByText('Demande de fermeture de structure en cours')
+    ).toBeInTheDocument()
+  })
+
   it('should display select siret button if venue does not have pricing point', () => {
     const managedVenues = [
       defaultManagedVenue,
