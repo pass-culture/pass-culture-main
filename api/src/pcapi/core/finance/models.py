@@ -1154,7 +1154,6 @@ class Payment(PcObject, Model):
             """,
             name="reimbursement_constraint_check",
         ),
-        # TODO(alembic): this constraint does not exist in DB (and some rows may not be valid)
         sa.CheckConstraint(
             "(iban IS NULL AND bic IS NULL) OR (iban IS NOT NULL AND bic IS NOT NULL)",
             name="check_iban_and_bic_xor_not_iban_and_not_bic",
