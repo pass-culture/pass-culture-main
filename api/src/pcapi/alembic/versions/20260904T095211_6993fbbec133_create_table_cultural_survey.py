@@ -2,6 +2,7 @@
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 
 # pre/post deployment: pre
@@ -17,7 +18,7 @@ def upgrade() -> None:
         "user_cultural_survey",
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column("userId", sa.BigInteger(), nullable=False),
-        sa.Column("answers", sa.JSON(), nullable=False),
+        sa.Column("answers", postgresql.JSONB, nullable=False),
         sa.Column("createdAt", sa.DateTime, server_default=sa.func.now()),
     )
     op.create_foreign_key(

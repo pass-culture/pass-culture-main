@@ -3,6 +3,7 @@ from datetime import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.dialects import postgresql
 
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -92,8 +93,8 @@ class UserCulturalSurvey(PcObject, Model):
         unique=True,
     )
 
-    answers: sa_orm.Mapped[sa.JSON] = sa_orm.mapped_column(
-        sa.JSON,
+    answers: sa_orm.Mapped[postgresql.JSONB] = sa_orm.mapped_column(
+        postgresql.JSONB,
         nullable=False,
     )
 
