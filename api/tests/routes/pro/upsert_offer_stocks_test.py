@@ -165,6 +165,92 @@ class Returns200Test:
         assert created_stock.quantity == len(activation_codes)
         assert {ac.code for ac in created_stock.activationCodes} == set(activation_codes)
 
+    @pytest.mark.parametrize(
+        "initial_validation_price, final_validation_price",
+        [
+            (decimal.Decimal(100), decimal.Decimal(100)),
+            (None, decimal.Decimal(120)),
+        ],
+    )
+    def test_creating_stock_with_limitation_rule(self, client, initial_validation_price, final_validation_price):
+        offers_factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            rate=decimal.Decimal("0.5"),
+        )
+        offer = offers_factories.ThingOfferFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            validation=offers_models.OfferValidationStatus.APPROVED,
+            lastValidationPrice=initial_validation_price,
+        )
+        offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal(120))
+        offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal(140))
+        user = users_factories.UserFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+
+        payload = {
+            "stocks": [
+                {
+                    "id": None,
+                    "offerId": offer.id,
+                    "activationCodes": None,
+                    "activationCodesExpirationDatetime": None,
+                    "bookingLimitDatetime": None,
+                    "price": 149,
+                    "quantity": 1,
+                }
+            ]
+        }
+
+        response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
+
+        assert response.status_code == 200
+        db.session.refresh(offer)
+        assert offer.lastValidationPrice == final_validation_price
+
+    @pytest.mark.parametrize(
+        "initial_validation_price, final_validation_price",
+        [
+            (decimal.Decimal(100), decimal.Decimal(100)),
+            (None, decimal.Decimal(120)),
+        ],
+    )
+    def test_updating_stock_with_limitation_rule(self, client, initial_validation_price, final_validation_price):
+        offers_factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            rate=decimal.Decimal("0.5"),
+        )
+        offer = offers_factories.ThingOfferFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            validation=offers_models.OfferValidationStatus.APPROVED,
+            lastValidationPrice=initial_validation_price,
+        )
+        existing_stock = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal(120), quantity=1)
+        user = users_factories.UserFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+
+        payload = {
+            "stocks": [
+                {
+                    "id": existing_stock.id,
+                    "offerId": offer.id,
+                    "activationCodes": None,
+                    "activationCodesExpirationDatetime": None,
+                    "bookingLimitDatetime": None,
+                    "price": 60,
+                    "quantity": 1,
+                }
+            ]
+        }
+
+        response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
+
+        assert response.status_code == 200
+        db.session.refresh(offer)
+        assert offer.lastValidationPrice == final_validation_price
+        assert len(offer.activeStocks) == 1
+        assert existing_stock.price == decimal.Decimal(60)
+        assert offer.lastValidationPrice == final_validation_price
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -202,7 +288,8 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"global": "Trying to update a non-existing stock."}
 
-    def test_creating_stock_with_invalid_price(self, client):
+    @pytest.mark.parametrize("last_validation_price", [None, decimal.Decimal(100)])
+    def test_creating_stock_with_invalid_price(self, client, last_validation_price):
         offers_factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
             rate=decimal.Decimal("0.5"),
@@ -210,8 +297,9 @@ class Returns400Test:
         offer = offers_factories.ThingOfferFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
             validation=offers_models.OfferValidationStatus.APPROVED,
-            lastValidationPrice=decimal.Decimal(100),
+            lastValidationPrice=last_validation_price,
         )
+        offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal(100))
         user = users_factories.UserFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
 
@@ -234,7 +322,8 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"priceCategories.0.price": ["Prix invalide"]}
 
-    def test_updating_stock_with_invalid_price(self, client):
+    @pytest.mark.parametrize("last_validation_price", [None, decimal.Decimal(100)])
+    def test_updating_stock_with_invalid_price(self, client, last_validation_price):
         offers_factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
             rate=decimal.Decimal("0.5"),
@@ -242,7 +331,7 @@ class Returns400Test:
         offer = offers_factories.ThingOfferFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
             validation=offers_models.OfferValidationStatus.APPROVED,
-            lastValidationPrice=decimal.Decimal(100),
+            lastValidationPrice=last_validation_price,
         )
         existing_stock = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal(100), quantity=1)
         user = users_factories.UserFactory()
