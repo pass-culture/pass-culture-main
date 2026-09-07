@@ -1,5 +1,6 @@
 import DOMPurify from 'dompurify'
 
+import { EMAIL_REGEXP } from '@/commons/utils/isValidEmail'
 import { truncateAtWord } from '@/commons/utils/string'
 
 import styles from './Markdown.module.scss'
@@ -7,8 +8,6 @@ import styles from './Markdown.module.scss'
 const BOLD_REGEXP = /\*\*(.*?)\*\*/gim
 const ITALIC_REGEXP = /_(.*?)_/gim
 const URL_REGEXP = /((https?:\/\/)|(www\.))[^\s/$.?#"].[^\s]*/gim
-const EMAIL_REGEXP =
-  /(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gim
 
 function markdownToHtml(markdown: string) {
   markdown = markdown.replace(BOLD_REGEXP, '<strong>$1</strong>')

@@ -1,11 +1,12 @@
 const INVALID_EMAIL_MESSAGE =
   'Veuillez renseigner un email valide, exemple : mail@exemple.com'
 
-export function isValidEmail(email: string) {
-  const re = new RegExp(
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  )
-  return re.test(email.trim())
+export const EMAIL_REGEXP =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9-]{1,61})*\.[a-zA-Z]{2,}$/
+
+export function isValidEmail(email: string): boolean {
+  // Regex officielle du standard WHATWG (HTML5)
+  return EMAIL_REGEXP.test(email.trim())
 }
 
 //  Yup shema to be used instead of yup.email
