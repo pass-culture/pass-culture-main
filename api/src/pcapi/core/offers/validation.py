@@ -182,11 +182,15 @@ def check_stock_price(
         and not offer.ean
         and (offer.lastValidationPrice is not None or offer.stocks)
     ):
-        reference_price = (
-            offer.lastValidationPrice
-            if offer.lastValidationPrice is not None
-            else min(offer.stocks, key=lambda s: s.id).price
-        )
+        if offer.lastValidationPrice is not None:
+            reference_price = offer.lastValidationPrice
+        else:
+            reference_price = min(offer.stocks, key=lambda s: s.id).price
+            # Save reference price to ensure that it cannot be changed beyond limit step by step
+            # (saved only when check is ok, otherwise rollback)
+            offer.lastValidationPrice = reference_price
+            db.session.add(offer)
+
         if (
             price < (1 - offer_price_limitation_rule.rate) * reference_price
             or price > (1 + offer_price_limitation_rule.rate) * reference_price

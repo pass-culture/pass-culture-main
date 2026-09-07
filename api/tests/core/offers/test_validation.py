@@ -205,6 +205,8 @@ class CheckPricesForStockTest:
             validation.check_stock_price(39, offer)
         assert error.value.errors["price"] == ["Prix invalide"]
 
+        assert offer.lastValidationPrice == Decimal(80)
+
     def test_price_limitation_rule_ok_with_draft_offer(self):
         offers_factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=Decimal("0.5")
@@ -216,7 +218,10 @@ class CheckPricesForStockTest:
             offer__validation=OfferValidationStatus.DRAFT,
         ).offer
         validation.check_stock_price(90, offer)
+        validation.check_stock_price(130, offer)
         validation.check_stock_price(15, offer)
+
+        assert offer.lastValidationPrice == Decimal(80)
 
     def test_price_limitation_rule_with_no_last_validation_price(self):
         offers_factories.OfferPriceLimitationRuleFactory(
@@ -230,6 +235,8 @@ class CheckPricesForStockTest:
 
         validation.check_stock_price(119, offer)
         validation.check_stock_price(41, offer)
+
+        assert offer.lastValidationPrice == Decimal(80)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(121, offer)
