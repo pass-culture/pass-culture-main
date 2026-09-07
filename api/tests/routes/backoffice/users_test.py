@@ -7,6 +7,8 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.history import models as history_models
+from pcapi.core.mails import testing as mails_testing
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
@@ -385,7 +387,9 @@ class UnsuspendUserTest(PostEndpointHelper):
     def test_unsuspend_beneficiary_user(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory(isActive=False)
 
-        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form={"comment": ""})
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=user.id, form={"comment": "", "reset_password": ""}
+        )
 
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
@@ -399,18 +403,45 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].venueId is None
         assert user.action_history[0].comment is None
 
+        assert len(mails_testing.outbox) == 0
+
+    def test_unsuspend_beneficiary_user_and_reset_password(self, authenticated_client, legit_user):
+        user = users_factories.BeneficiaryFactory(isActive=False)
+
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=user.id, form={"comment": "", "reset_password": "on"}
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+
+        assert user.isActive
+        assert len(user.action_history) == 1
+        assert user.action_history[0].actionType == history_models.ActionType.USER_UNSUSPENDED
+        assert user.action_history[0].authorUser == legit_user
+        assert user.action_history[0].user == user
+        assert user.action_history[0].offererId is None
+        assert user.action_history[0].venueId is None
+        assert user.action_history[0].comment is None
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == user.email
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.NEW_PASSWORD_REQUEST.value.__dict__
+        assert "mot-de-passe-perdu" in mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
+
     def test_unsuspend_beneficiary_to_anonymize(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory(isActive=False)
         users_factories.GdprUserAnonymizationFactory(user=user)
 
         response = self.post_to_endpoint(
-            authenticated_client, user_id=user.id, form={"comment": ""}, follow_redirects=True
+            authenticated_client, user_id=user.id, form={"comment": "", "reset_password": ""}, follow_redirects=True
         )
 
         assert response.status_code == 200
         assert user.isActive
         assert len(user.action_history) == 1
         assert db.session.query(users_models.GdprUserAnonymization).count() == 0
+        assert len(mails_testing.outbox) == 0
 
     def test_unsuspend_pro_user(self, authenticated_client, legit_user):
         user = users_factories.ProFactory(isActive=False)
@@ -432,6 +463,8 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].venueId is None
         assert user.action_history[0].comment == "Réactivé suite à contact avec l'AC"
 
+        assert len(mails_testing.outbox) == 0
+
     @pytest.mark.parametrize(
         "roles",
         [
@@ -447,7 +480,7 @@ class UnsuspendUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             client.with_bo_session_auth(fraude_jeunes_admin),
             user_id=user.id,
-            form={"comment": "Réactivé par la fraude jeunes"},
+            form={"comment": "Réactivé par la fraude jeunes", "reset_password": ""},
         )
 
         assert response.status_code == 303
@@ -459,7 +492,7 @@ class UnsuspendUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             client.with_bo_session_auth(support_n2_admin),
             user_id=user.id,
-            form={"comment": "Réactivé par le support N2"},
+            form={"comment": "Réactivé par le support N2", "reset_password": ""},
         )
 
         assert response.status_code == 403
@@ -488,6 +521,8 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].authorUser == super_admin
         assert user.action_history[0].user == user
         assert user.action_history[0].comment == "Test"
+
+        assert len(mails_testing.outbox) == 0
 
 
 class GetBatchSuspendUsersFormTest(GetEndpointHelper):

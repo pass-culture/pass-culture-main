@@ -59,6 +59,15 @@ class SuspendUserForm(FlaskForm):
 
 class UnsuspendUserForm(FlaskForm):
     comment = fields.PCOptCommentField("Commentaire interne optionnel")
+    reset_password = fields.PCSwitchBooleanField(
+        "Réinitialiser le mot de passe (Envoyer le mail de changement de mot de passe)", full_row=True
+    )
+
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        if suspension_type := kwargs.get("suspension_type"):
+            if suspension_type != SuspensionUserType.PUBLIC:
+                del self.reset_password
 
 
 def get_toggle_suspension_args(
@@ -78,7 +87,7 @@ def get_toggle_suspension_args(
         }
     if not user.isActive and has_current_user_permission(required_permission or perm_models.Permissions.UNSUSPEND_USER):
         return {
-            "suspension_form": UnsuspendUserForm(),
+            "suspension_form": UnsuspendUserForm(suspension_type=suspension_type),
             "suspension_dst": url_for("backoffice_web.users.unsuspend_user", user_id=user.id),
         }
     return {}
