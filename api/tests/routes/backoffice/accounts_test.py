@@ -1182,6 +1182,16 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = users_factories.UserFactory()
             return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
 
+        def test_no_button_when_user_is_suspended(self, authenticated_client):
+            user = users_factories.UserFactory(isActive=False)
+
+            response = authenticated_client.get(
+                url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            )
+
+            assert response.status_code == 200
+            assert self.button_label not in response.data.decode("utf-8")
+
         @pytest.mark.parametrize(
             "email", [f"1{users_constants.DELETED_USER_EMAIL}", f"anonymous_1{users_constants.ANONYMIZED_USER_EMAIL}"]
         )

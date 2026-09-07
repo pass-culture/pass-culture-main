@@ -271,9 +271,11 @@ class AccountDetailsActionType(enum.StrEnum):
 def _get_account_details_actions(user: users_models.User) -> DetailsActions:
     account_details_actions = DetailsActions(AccountDetailsActionType)
 
-    if access_control.has_current_user_permission(
-        perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
-    ) and not user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL)):
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+        and user.isActive
+        and not user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL))
+    ):
         if not user.isEmailValidated:
             account_details_actions.add_action(AccountDetailsActionType.SEND_VALIDATION)
         account_details_actions.add_action(AccountDetailsActionType.RESET_PASSWORD)
