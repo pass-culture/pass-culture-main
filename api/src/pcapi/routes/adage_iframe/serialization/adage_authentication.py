@@ -5,7 +5,7 @@ import pydantic
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.core.educational.schemas import RedactorInformation
-from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferencesV2
+from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
 from pcapi.routes.serialization import HttpBodyModel
 
 
@@ -36,7 +36,7 @@ class AuthenticatedResponse(HttpBodyModel):
     institution_name: str | None
     institution_city: str | None
     email: str | None
-    preferences: RedactorPreferencesV2 | None
+    preferences: RedactorPreferences | None
     lat: float | None
     lon: float | None
     favorites_count: int

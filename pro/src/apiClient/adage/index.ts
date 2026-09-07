@@ -95,7 +95,6 @@ export {
   type PlaylistBody,
   type PostCollectiveRequestBodyModel,
   type RedactorPreferences,
-  type RedactorPreferencesV2,
   type SearchBody,
   type StockIdBody,
   StudentLevels,

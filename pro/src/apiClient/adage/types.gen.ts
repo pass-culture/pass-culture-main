@@ -115,7 +115,7 @@ export type AuthenticatedResponse = {
      * Offerscount
      */
     offersCount: number;
-    preferences: RedactorPreferencesV2 | null;
+    preferences: RedactorPreferences | null;
     /**
      * Programs
      */
@@ -1112,20 +1112,6 @@ export type PostCollectiveRequestBodyModel = {
  * RedactorPreferences
  */
 export type RedactorPreferences = {
-    /**
-     * Broadcast Help Closed
-     */
-    broadcast_help_closed?: boolean;
-    /**
-     * Feedback Form Closed
-     */
-    feedback_form_closed?: boolean;
-};
-
-/**
- * RedactorPreferencesV2
- */
-export type RedactorPreferencesV2 = {
     /**
      * Broadcast Help Closed
      */

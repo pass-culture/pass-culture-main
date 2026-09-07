@@ -14,7 +14,7 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import Educati
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
 )
-from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferencesV2
+from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
@@ -33,7 +33,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
         institution_full_name = institution.full_name if institution else None
 
         redactor = _get_redactor(authenticated_information)
-        preferences = RedactorPreferencesV2(**redactor.preferences) if redactor else None
+        preferences = RedactorPreferences.model_validate(redactor.preferences) if redactor else None
         favorites_count = educational_api_adage.get_redactor_favorites_count(redactor.id) if redactor else 0
         offer_count = get_offers_count_for_my_institution(authenticated_information.uai)
         programs = _get_programs(institution)
