@@ -18,6 +18,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 
 from .helpers import button as button_helpers
+from .helpers import flash
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -446,3 +447,127 @@ class UpdateProviderTest(PostEndpointHelper):
         assert collective_offer_1_1.isActive == False
         assert collective_offer_1_2.isActive == False
         assert collective_offer_2_1.isActive == False
+
+
+class CreateApiKeyButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    button_label = "Créer une clé d'API"
+
+    @property
+    def path(self):
+        provider = providers_factories.OffererProviderFactory().provider
+        return url_for("backoffice_web.providers.get_provider", provider_id=provider.id)
+
+
+class CreateApiKeyTest(PostEndpointHelper):
+    endpoint = "backoffice_web.providers.create_api_key"
+    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    endpoint_kwargs = {"provider_id": 1}
+
+    def test_nominal(self, authenticated_client):
+        provider = providers_factories.OffererProviderFactory().provider
+        response = self.post_to_endpoint(
+            client=authenticated_client,
+            form={},
+            provider_id=provider.id,
+        )
+        assert response.status_code == 200
+
+        assert re.search(rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", response.data.decode("utf-8"))
+        assert db.session.query(offerers_models.ApiKey).filter(offerers_models.ApiKey.providerId == provider.id).one()
+
+    def test_no_provider(self, authenticated_client):
+        response = self.post_to_endpoint(
+            client=authenticated_client,
+            form={},
+            provider_id=0,
+        )
+        assert response.status_code == 404
+
+    def test_no_offerer(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        response = self.post_to_endpoint(
+            client=authenticated_client,
+            form={},
+            provider_id=provider.id,
+        )
+        assert response.status_code == 303
+
+        assert (
+            not db.session.query(offerers_models.ApiKey)
+            .filter(offerers_models.ApiKey.providerId == provider.id)
+            .count()
+        )
+
+
+class DeleteApiKeyTest(PostEndpointHelper):
+    endpoint = "backoffice_web.providers.delete_api_key"
+    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    endpoint_kwargs = {
+        "provider_id": 1,
+        "key_id": 1,
+    }
+
+    def test_nominal(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        key = offerers_factories.ApiKeyFactory(provider=provider)
+        key_id = key.id
+
+        response = self.post_to_endpoint(
+            client=authenticated_client,
+            form={},
+            provider_id=provider.id,
+            key_id=key_id,
+        )
+
+        assert response.status_code == 303
+        assert (
+            url_for("backoffice_web.providers.get_provider", provider_id=provider.id, active_tab="keys")
+            == response.headers["location"]
+        )
+        assert db.session.query(offerers_models.ApiKey).filter(offerers_models.ApiKey.id == key_id).count() == 0
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert next(iter(alerts["info"])) == "La clé a été supprimée"
+
+    def test_wrong_provider(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        wrong_provider = providers_factories.ProviderFactory()
+        key = offerers_factories.ApiKeyFactory(provider=provider)
+        key_id = key.id
+
+        response = self.post_to_endpoint(
+            client=authenticated_client,
+            form={},
+            provider_id=wrong_provider.id,
+            key_id=key_id,
+        )
+
+        assert response.status_code == 303
+        assert (
+            url_for("backoffice_web.providers.get_provider", provider_id=wrong_provider.id, active_tab="keys")
+            == response.headers["location"]
+        )
+        assert db.session.query(offerers_models.ApiKey).filter(offerers_models.ApiKey.id == key_id).count() == 1
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert next(iter(alerts["warning"])) == "La clé n'a pas été trouvée pour ce provider"
+
+    def test_no_key(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        key = offerers_factories.ApiKeyFactory(provider=provider)
+        key_id = key.id
+
+        response = self.post_to_endpoint(
+            client=authenticated_client,
+            form={},
+            provider_id=provider.id,
+            key_id=0,
+        )
+
+        assert response.status_code == 303
+        assert (
+            url_for("backoffice_web.providers.get_provider", provider_id=provider.id, active_tab="keys")
+            == response.headers["location"]
+        )
+        assert db.session.query(offerers_models.ApiKey).filter(offerers_models.ApiKey.id == key_id).count() == 1
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert next(iter(alerts["warning"])) == "La clé n'a pas été trouvée pour ce provider"
