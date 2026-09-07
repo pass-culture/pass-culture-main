@@ -96,7 +96,6 @@ class UserCulturalSurvey(PcObject, Model):
 
     answers: sa_orm.Mapped[list[dict]] = sa_orm.mapped_column(
         MutableList.as_mutable(postgresql.JSONB),
-        default=list,
         nullable=False,
     )
 
