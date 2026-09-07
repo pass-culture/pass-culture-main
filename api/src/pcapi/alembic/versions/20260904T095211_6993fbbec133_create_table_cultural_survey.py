@@ -21,6 +21,7 @@ def upgrade() -> None:
         sa.Column("answers", postgresql.JSONB, nullable=False),
         sa.Column("createdAt", sa.DateTime, server_default=sa.func.now()),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("userId", name=op.f("user_cultural_survey_userId_unique")),
         sa.ForeignKeyConstraint(["userId"], ["user.id"], name=op.f("user_cultural_survey_userId_fkey")),
     )
 
