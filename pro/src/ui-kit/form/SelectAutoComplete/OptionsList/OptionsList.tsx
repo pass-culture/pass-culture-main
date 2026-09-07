@@ -199,7 +199,7 @@ const ThumbWithPlaceholder = ({
           className={styles['options-img']}
           alt=""
           src={thumbPlaceholder}
-          aria-hidden={true}
+          aria-hidden
         />
       )}
       {thumbUrl && (
@@ -211,7 +211,7 @@ const ThumbWithPlaceholder = ({
           )}
           alt=""
           src={thumbUrl}
-          aria-hidden={true}
+          aria-hidden
           onLoad={() => setIsLoaded(true)}
           onError={() => setIsLoaded(false)}
         />

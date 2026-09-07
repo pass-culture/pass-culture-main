@@ -53,7 +53,7 @@ describe('OfferNameCell', () => {
       offer,
     })
 
-    expect(screen.getByRole('presentation')).toHaveAttribute(
+    expect(screen.getByTestId('thumb-icon')).toHaveAttribute(
       'src',
       '/thumb.jpg'
     )

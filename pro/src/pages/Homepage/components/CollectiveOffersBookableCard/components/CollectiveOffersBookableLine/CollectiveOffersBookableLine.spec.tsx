@@ -40,7 +40,7 @@ describe('<CollectiveOffersBookableLine />', () => {
       addDays(new Date(), 11).toISOString()
     )
     expect(screen.getByText(collectiveOfferHome.name)).toBeVisible()
-    expect(screen.getByRole('img')).toBeVisible()
+    expect(screen.getByTestId('thumb-icon')).toBeVisible()
     expect(
       screen.getByText(`Prévu le ${expectedDisplayedDate} - 105 participants`)
     ).toBeVisible()
@@ -66,7 +66,7 @@ describe('<CollectiveOffersBookableLine />', () => {
       addDays(new Date(), 11).toISOString()
     )
     expect(screen.getByText(collectiveOfferHome.name)).toBeVisible()
-    expect(screen.getByRole('img')).toBeVisible()
+    expect(screen.getByTestId('thumb-icon')).toBeVisible()
     expect(
       screen.getByText(`Prévu le ${expectedDisplayedDate} - 105 participants`)
     ).toBeVisible()
@@ -140,7 +140,7 @@ describe('<CollectiveOffersBookableLine />', () => {
     it('should have the line clickable', async () => {
       const { user, collectiveOfferHome } =
         renderCollectiveOffersBookableLineWithRouter()
-      expect(screen.getByRole('img')).toBeVisible()
+      expect(screen.getByTestId('thumb-icon')).toBeVisible()
 
       const { date: expectedDate } = formatDateTimeParts(
         addDays(new Date(), 11).toISOString()

@@ -43,7 +43,9 @@ describe('Checkbox', () => {
       },
     })
     expect(screen.getByText('Lorem ipsum')).toBeInTheDocument()
-    expect(screen.getByRole('presentation')).toBeInTheDocument()
+    expect(
+      screen.getByRole('presentation', { hidden: true })
+    ).toBeInTheDocument()
   })
 
   it('should display text on the right', () => {

@@ -58,7 +58,13 @@ export const ModalVideo = ({
     >
       <div className={styles['modal-video']}>
         <div className={styles['modal-video-content']}>
-          <img alt={''} width="70px" height="17px" src={youtubeLogo} />
+          <img
+            alt=""
+            aria-hidden
+            width="70px"
+            height="17px"
+            src={youtubeLogo}
+          />
           <TextInput
             name="videoUrl"
             label="Lien URL Youtube"

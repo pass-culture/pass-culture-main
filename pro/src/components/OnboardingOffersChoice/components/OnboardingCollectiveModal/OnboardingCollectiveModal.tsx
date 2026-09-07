@@ -164,6 +164,7 @@ function ModalStep({ icon, text }: Readonly<{ icon: string; text: string }>) {
       <img
         src={icon}
         alt=""
+        aria-hidden
         className={styles['onboarding-collective-step-icon']}
       />
       <p className={styles['onboarding-collective-step-text']}>{text}</p>

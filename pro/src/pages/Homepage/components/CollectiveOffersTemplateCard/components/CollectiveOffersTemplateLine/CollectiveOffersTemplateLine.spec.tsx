@@ -56,7 +56,7 @@ describe('<CollectiveOffersTemplateLine />', () => {
     )
 
     expect(screen.getByText(offer.name)).toBeVisible()
-    expect(screen.getByRole('img')).toBeVisible()
+    expect(screen.getByTestId('thumb-icon')).toBeVisible()
     expect(
       screen.getByText(`Du ${expectedStartDate} au ${expectedEndDate}`)
     ).toBeVisible()
@@ -144,7 +144,7 @@ describe('<CollectiveOffersTemplateLine />', () => {
 
     it('should have the line clickable', async () => {
       const { user, offer } = renderCollectiveOffersTemplateLineWithRouter()
-      expect(screen.getByRole('img')).toBeVisible()
+      expect(screen.getByTestId('thumb-icon')).toBeVisible()
 
       const { date: start } = formatDateTimeParts(new Date().toISOString())
       const { date: end } = formatDateTimeParts(

@@ -108,6 +108,7 @@ export function AdageOfferListCard({
           {offer.imageUrl ? (
             <img
               alt=""
+              aria-hidden
               className={styles['offer-card-image-img']}
               loading="lazy"
               src={offer.imageUrl}

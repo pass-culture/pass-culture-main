@@ -65,6 +65,7 @@ export function AdageOfferPartnerPanel({
           <img
             src={venue.imgUrl}
             alt=""
+            aria-hidden
             className={styles['partner-panel-info-image']}
           />
         ) : (

@@ -57,7 +57,7 @@ export function Asset({
 
     return (
       <div className={classNames(styles['image'], styles[size], className)}>
-        <img src={sanitizedSrc} alt="" className={styles['img']} />
+        <img src={sanitizedSrc} alt="" aria-hidden className={styles['img']} />
       </div>
     )
   }

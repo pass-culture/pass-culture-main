@@ -128,12 +128,7 @@ export const Banner = ({
             )}
           </div>
           {imageSrc && (
-            <img
-              src={imageSrc}
-              className={styles.image}
-              alt=""
-              aria-hidden="true"
-            />
+            <img src={imageSrc} className={styles.image} alt="" aria-hidden />
           )}
           {closable && (
             <button

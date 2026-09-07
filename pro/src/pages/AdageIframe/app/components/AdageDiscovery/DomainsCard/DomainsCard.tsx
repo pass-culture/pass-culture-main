@@ -25,7 +25,7 @@ export const DomainsCard = ({
       to={href}
       onClick={handlePlaylistElementTracking}
     >
-      <img src={src} alt="" className={styles['container-img']} />
+      <img src={src} alt="" aria-hidden className={styles['container-img']} />
       <div className={styles['container-title']}>{title}</div>
     </Link>
   )

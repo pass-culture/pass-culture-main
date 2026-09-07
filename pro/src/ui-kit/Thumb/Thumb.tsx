@@ -44,6 +44,8 @@ export const Thumb = ({
           loading="lazy"
           src={url}
           alt={alt}
+          aria-hidden={!alt}
+          data-testid="thumb-icon"
         />
       ) : (
         <SvgIcon

@@ -17,6 +17,7 @@ export const ImagePreview: FunctionComponent<ImagePreviewScreenProps> = ({
     <img
       src={mobileShell}
       alt=""
+      aria-hidden
       className={styles['image-preview-previews-shell']}
     />
     <div className={styles['image-preview-screen']}>{children}</div>

@@ -40,7 +40,10 @@ describe('AdageOfferListCard', () => {
       offer: { ...defaultCollectiveTemplateOffer, imageUrl: 'testUrl' },
     })
 
-    expect(screen.getByRole('presentation')).toHaveAttribute('src', 'testUrl')
+    expect(screen.getByRole('presentation', { hidden: true })).toHaveAttribute(
+      'src',
+      'testUrl'
+    )
   })
 
   it('should show the favorite button if the offer is template and the user has the right to use favorites', () => {

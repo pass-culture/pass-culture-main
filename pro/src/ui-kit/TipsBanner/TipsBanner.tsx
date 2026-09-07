@@ -44,6 +44,7 @@ export const TipsBanner = ({
           className={styles['tips-banner-illustration']}
           src={decorativeImage}
           alt=""
+          aria-hidden
         />
       )}
     </div>

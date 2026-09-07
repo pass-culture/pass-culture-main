@@ -41,7 +41,7 @@ export const WebinarCard = ({ variant }: Readonly<WebinarCardProps>) => {
         className={styles['webinar-image']}
         src={isCollective ? collective : individual}
         alt=""
-        aria-hidden="true"
+        aria-hidden
       />
       <Card.Header
         title={`Participer à nos webinaires sur la part ${

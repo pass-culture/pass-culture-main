@@ -24,7 +24,7 @@ export const NewsletterCard = () => {
         className={styles['newsletter-image']}
         src={newsletter}
         alt=""
-        aria-hidden="true"
+        aria-hidden
       />
       <Card.Header
         title="Suivez notre actualité !"

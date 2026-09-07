@@ -27,7 +27,7 @@ describe('TipsBanner', () => {
       </TipsBanner>
     )
 
-    const imgElement = screen.getByRole('presentation')
+    const imgElement = screen.getByRole('presentation', { hidden: true })
     expect(imgElement).toBeInTheDocument()
     expect(imgElement).toHaveAttribute('src', illustrationSrc)
   })

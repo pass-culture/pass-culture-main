@@ -75,6 +75,7 @@ export const SignUpLayout = ({ children, mainHeading }: SignUpLayoutProps) => {
               <img
                 src={macStudioImage}
                 alt=""
+                aria-hidden
                 className={styles['image-laptop-macstudio']}
               />
             </div>

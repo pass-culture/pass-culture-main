@@ -60,6 +60,7 @@ export const OfferCardComponent = ({
           {offer.imageUrl ? (
             <img
               alt=""
+              aria-hidden
               className={styles['offer-image']}
               loading="lazy"
               src={offer.imageUrl}
