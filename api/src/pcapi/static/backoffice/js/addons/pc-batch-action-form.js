@@ -87,6 +87,8 @@ addonList.push(
 
     initialize = () => {
       this.refreshState()
+
+      addEventListener('pcTableMultiSelect:change', this.#onBatchSelectionChange)
     }
 
     refreshState = () => {
@@ -104,11 +106,6 @@ addonList.push(
 
     bindEvents = () => {
       this.refreshState()
-      addEventListener('pcTableMultiSelect:change', this.#onBatchSelectionChange)
-    }
-
-    unbindEvents = () => {
-      removeEventListener('pcTableMultiSelect:change', this.#onBatchSelectionChange)
     }
 
     #onBatchSelectionChange = ({ detail }) => {
