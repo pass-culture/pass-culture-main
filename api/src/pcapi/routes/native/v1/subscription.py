@@ -211,14 +211,25 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.Quotient
     disability_fraud_checks = bonus_fraud_api.accelerate_automatic_disability_bonus_fraud_checks(
         current_user.beneficiaryFraudChecks, new_origin="/subscription/bonus/quotient_familial endpoint"
     )
-    for fraud_check in disability_fraud_checks:
+    for i, fraud_check in enumerate(disability_fraud_checks):
+        countdown = bonus_constants.DISABILITY_COUNTDOWN * i
         if fraud_check.type == subscription_models.FraudCheckType.AAH_BONUS_CREDIT:
             aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
-            on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.delay, aah_payload))
+            on_commit(
+                partial(
+                    bonus_tasks.apply_for_adult_disability_bonus_task.apply_async, (aah_payload,), countdown=countdown
+                )
+            )
 
         if fraud_check.type == subscription_models.FraudCheckType.AEEH_BONUS_CREDIT:
             aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
-            on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
+            on_commit(
+                partial(
+                    bonus_tasks.apply_for_disabled_child_education_bonus_task.apply_async,
+                    (aeeh_payload,),
+                    countdown=countdown,
+                )
+            )
 
 
 @feature_flag_required(FeatureToggle.ENABLE_BONUS_CREDIT)
@@ -244,10 +255,16 @@ def create_disability_bonus_credit_fraud_checks(body: serializers.DisabilityBonu
     )
 
     aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.delay, aah_payload))
+    on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.apply_async, (aah_payload,), countdown=0))
 
     aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
+    on_commit(
+        partial(
+            bonus_tasks.apply_for_disabled_child_education_bonus_task.apply_async,
+            (aeeh_payload,),
+            countdown=bonus_constants.DISABILITY_COUNTDOWN,
+        )
+    )
 
     if is_first_attempt:
         delay = bonus_fraud_api.get_attempt_delay_in_seconds(aah_fraud_check)

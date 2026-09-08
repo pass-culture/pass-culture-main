@@ -1,5 +1,6 @@
 import datetime
 import logging
+from unittest.mock import ANY
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -928,8 +929,8 @@ class HonorStatementTest:
 class QuotientFamilialBonusTest:
     @patch("pcapi.core.subscription.bonus.fraud_check_api._get_next_bonus_credit_retry_date")
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
     @patch("pcapi.core.subscription.bonus.statistics_api.record_first_bonus_attempt")
     def test_create_qf_bonus_fraud_check(
         self,
@@ -1038,8 +1039,8 @@ class QuotientFamilialBonusTest:
             == aeeh_fraud_check.resultContent["next_retry_at"]
             == tomorrow.isoformat()
         )
-        mocked_apply_for_aah_task.assert_called_once_with({"fraud_check_id": aah_fraud_check.id})
-        mocked_apply_for_aeeh_task.assert_called_once_with({"fraud_check_id": aeeh_fraud_check.id})
+        mocked_apply_for_aah_task.assert_called_once_with(({"fraud_check_id": aah_fraud_check.id},), countdown=0)
+        mocked_apply_for_aeeh_task.assert_called_once_with(({"fraud_check_id": aeeh_fraud_check.id},), countdown=5)
 
         route_call_record = caplog.records[0]
         assert route_call_record.deviceId == route_call_record.extra["deviceId"] == "[REDACTED]"
@@ -1273,8 +1274,8 @@ class QuotientFamilialBonusTest:
 
 
 class DisabilityBonusTest:
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
     @patch("pcapi.core.subscription.bonus.statistics_api.record_first_bonus_attempt")
     def test_create_disability_bonus_fraud_checks(
         self, mocked_record_first_attempt, mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, client, caplog
@@ -1336,8 +1337,8 @@ class DisabilityBonusTest:
                 "next_retry_at": tomorrow.isoformat(),
             }
         )
-        mocked_apply_for_aah_task.assert_called_once_with({"fraud_check_id": aah_fraud_check.id})
-        mocked_apply_for_aeeh_task.assert_called_once_with({"fraud_check_id": aeeh_fraud_check.id})
+        mocked_apply_for_aah_task.assert_called_once_with(({"fraud_check_id": aah_fraud_check.id},), countdown=ANY)
+        mocked_apply_for_aeeh_task.assert_called_once_with(({"fraud_check_id": aeeh_fraud_check.id},), countdown=ANY)
 
         route_call_record = caplog.records[0]
         assert route_call_record.deviceId == route_call_record.extra["deviceId"] == "[REDACTED]"
