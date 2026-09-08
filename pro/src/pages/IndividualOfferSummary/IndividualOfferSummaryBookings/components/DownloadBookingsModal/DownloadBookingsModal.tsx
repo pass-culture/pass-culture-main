@@ -161,6 +161,9 @@ export const DownloadBookingsModal = ({
             </div>
             <hr className={style['horizontal-line']} />
             <table className={style['date-select-table']}>
+              <caption className={style['table-caption-no-display']}>
+                Les dates, horaires et tarifs de l'offre
+              </caption>
               <thead className={style['date-select-table-header']}>
                 <tr>
                   <th scope="col" className={style['table-header']}>
