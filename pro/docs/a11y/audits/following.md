@@ -21,6 +21,39 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 5.4 - RGAA - Pour chaque tableau de données ayant un titre, le titre est-il correctement associé au tableau de données ?</summary>
+
+**RAWeb/RGAA** : [Critère 5.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-4)
+**Ticket** : [PC-42848](https://passculture.atlassian.net/browse/PC-42848)
+**PR** : [#24233](https://github.com/pass-culture/pass-culture-main/pull/24233)
+
+**Problème** 😱  
+
+P12 → Accessibilité
+
+Au moins un titre de tableau de données n'est pas correctement associé.
+
+Par exemple :
+
+- Le titre du tableau Pages du site ayant fait l’objet de la vérification de conformité
+
+
+**Correction** 💡  
+
+- Ajout d'une balise `<caption>` dans les tables : 
+  - de la page "Déclaration d’accessibilité"
+  - de `DownloadBookingModal`
+  - de `Collaborators`
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 1.2 - RGAA - Chaque image de décoration sans légende est-elle correctement ignorée par les technologies d'assistance ?</summary>
 
 **RAWeb/RGAA** : [Critère 1.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-1-2)
