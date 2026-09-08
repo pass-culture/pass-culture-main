@@ -6,6 +6,7 @@ from sqlalchemy import text
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.criteria.models as criteria_models
+import pcapi.core.cultural_survey.models as cultural_survey_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
@@ -172,6 +173,7 @@ tables_to_clean: list[type[Model]] = [
     operations_models.SpecialEventResponse,
     operations_models.SpecialEventQuestion,
     operations_models.SpecialEvent,
+    cultural_survey_models.UserCulturalSurvey,
     users_models.GdprUserAnonymization,
     users_models.GdprUserDataExtract,
     users_models.SingleSignOn,

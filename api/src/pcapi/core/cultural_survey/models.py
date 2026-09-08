@@ -1,4 +1,14 @@
 import enum
+from datetime import datetime
+
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.ext.mutable import MutableList
+
+from pcapi.models import Model
+from pcapi.models.pc_object import PcObject
+from pcapi.utils.date import get_naive_utc_now
 
 
 class CulturalSurveyQuestionEnum(enum.Enum):
@@ -72,3 +82,26 @@ class CulturalSurveyAnswerEnum(enum.Enum):
     JAZZ = "JAZZ"
     CLASSIQUE = "CLASSIQUE"
     MUSIQUES_AUCUN = "MUSIQUES_AUCUN"
+
+
+class UserCulturalSurvey(PcObject, Model):
+    __tablename__ = "user_cultural_survey"
+
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger,
+        sa.ForeignKey("user.id"),
+        nullable=False,
+        unique=True,
+    )
+
+    answers: sa_orm.Mapped[list[dict]] = sa_orm.mapped_column(
+        MutableList.as_mutable(postgresql.JSONB),
+        nullable=False,
+    )
+
+    createdAt: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime,
+        nullable=False,
+        default=get_naive_utc_now,
+        server_default=sa.func.utcnow(),
+    )
