@@ -50,6 +50,7 @@ class SynchronizeVenueProviderTest:
         mock_updateObjects.assert_called_once_with(10)
         mock_execute.assert_not_called()
 
+    @pytest.mark.features(WIP_ENABLE_ETL_SYNC=1)
     @pytest.mark.parametrize(
         "cinema_details_factory",
         [
@@ -67,7 +68,6 @@ class SynchronizeVenueProviderTest:
         pivot = cinema_details.cinemaProviderPivot
         venue_provider = providers_factories.VenueProviderFactory(
             provider=pivot.provider,
-            isNewEtlIntegrationEnabled=True,
             venueIdAtOfferProvider=pivot.idAtProvider,
         )
 

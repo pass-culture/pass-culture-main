@@ -15,6 +15,7 @@ from pcapi.local_providers.cinema_providers.cgr.cgr_stocks import CGRStocks
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import cron
 from pcapi.utils import logging as logging_utils
 from pcapi.utils import requests
@@ -82,7 +83,7 @@ def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, li
     )
     # new integration
     if (
-        venue_provider.isNewEtlIntegrationEnabled
+        FeatureToggle.WIP_ENABLE_ETL_SYNC.is_active()
         and venue_provider.provider.localClass in _LOCAL_CLASS_NAME_TO_ETL_CLASS
     ):
         execute_cinema_etl_process(venue_provider)
