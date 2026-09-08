@@ -2,6 +2,7 @@ import { type Dispatch, type SetStateAction, useState } from 'react'
 import useSWR, { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
+import { getHumanReadableApiError } from '@/apiClient/helpers'
 import {
   type EventStockUpdateBodyModel,
   type GetIndividualOfferWithAddressResponseModel,
@@ -116,32 +117,41 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   )
 
   async function deleteStocks(ids: number[]) {
-    await mutate(
-      stockQueryKeys,
-      api.deleteStocks({
-        path: { offer_id: offer.id },
-        body: { ids_to_delete: ids },
-      }),
-      { revalidate: true }
-    )
+    try {
+      await mutate(
+        stockQueryKeys,
+        api.deleteStocks({
+          path: { offer_id: offer.id },
+          body: { ids_to_delete: ids },
+        }),
+        { revalidate: true }
+      )
 
-    if (
-      page > 1 &&
-      data?.totalStockCount &&
-      data.totalStockCount - ids.length <= (page - 1) * STOCKS_PER_PAGE
-    ) {
-      //  Descrease the page number if deleting the ids would leave the user on an empty stocks page
-      setPage((p) => p - 1)
+      if (
+        page > 1 &&
+        data?.totalStockCount &&
+        data.totalStockCount - ids.length <= (page - 1) * STOCKS_PER_PAGE
+      ) {
+        //  Descrease the page number if deleting the ids would leave the user on an empty stocks page
+        setPage((p) => p - 1)
+      }
+
+      snackBar.success(
+        ids.length === 1
+          ? 'Une date a été supprimée'
+          : `${ids.length} dates ont été supprimées`
+      )
+
+      // Update offer price categories and status
+      await mutate([GET_OFFER_QUERY_KEY, offer.id])
+    } catch (error) {
+      snackBar.error(
+        getHumanReadableApiError(
+          error,
+          'Une erreur est survenue lors de la suppression des dates'
+        )
+      )
     }
-
-    snackBar.success(
-      ids.length === 1
-        ? 'Une date a été supprimée'
-        : `${ids.length} dates ont été supprimées`
-    )
-
-    // Update offer price categories and status
-    await mutate([GET_OFFER_QUERY_KEY, offer.id])
   }
 
   async function updateStock(stock: EventStockUpdateBodyModel) {

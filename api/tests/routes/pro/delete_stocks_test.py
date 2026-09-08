@@ -139,6 +139,22 @@ class Returns404Test:
         assert response.status_code == 404
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
+
+@pytest.mark.usefixtures("db_session")
+class Returns400Test:
+    def test_delete_stocks_when_offer_is_pending(self, client):
+        offer = offers_factories.OfferFactory(validation=offer_models.OfferValidationStatus.PENDING)
+        user = users_factories.UserFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+        stock = offers_factories.StockFactory(offer=offer)
+
+        response = client.with_session_auth(user.email).post(
+            f"/offers/{offer.id}/stocks/delete", json={"ids_to_delete": [stock.id]}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
+
     def test_delete_stocks_when_offer_not_found(self, client):
         pro = users_factories.ProFactory()
         response = client.with_session_auth(pro.email).post(

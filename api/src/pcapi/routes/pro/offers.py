@@ -231,6 +231,7 @@ def upsert_offer_stocks(
 @login_required
 @spectree_serialize(
     on_success_status=200,
+    on_error_statuses=[400, 404],
     response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
@@ -244,7 +245,10 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
     rest.check_venue_is_opened(offer.venue)
 
     stocks_to_delete = [stock for stock in offer.stocks if stock.id in body.ids_to_delete]
-    offers_api.batch_delete_stocks(stocks_to_delete, current_user.real_user.id, current_user.is_impersonated)
+    try:
+        offers_api.batch_delete_stocks(stocks_to_delete, current_user.real_user.id, current_user.is_impersonated)
+    except exceptions.OfferException as error:
+        raise api_errors.ApiErrors(error.errors)
 
     stocks, total_stock_count = get_stocks_with_count(offer)
 
