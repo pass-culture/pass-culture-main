@@ -173,6 +173,7 @@ tables_to_clean: list[type[Model]] = [
     operations_models.SpecialEventResponse,
     operations_models.SpecialEventQuestion,
     operations_models.SpecialEvent,
+    cultural_survey_models.UserCulturalSurvey,
     users_models.GdprUserAnonymization,
     users_models.GdprUserDataExtract,
     users_models.SingleSignOn,
@@ -199,7 +200,6 @@ tables_to_clean: list[type[Model]] = [
     history_models.ActionHistory,
     educational_models.NationalProgram,
     dms_models.LatestDmsImport,
-    cultural_survey_models.UserCulturalSurvey,
 ]
 
 
