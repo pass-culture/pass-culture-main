@@ -4,6 +4,7 @@ from flask_login import current_user
 
 from pcapi.core.cultural_survey import cultural_survey
 from pcapi.core.cultural_survey import tasks
+from pcapi.core.cultural_survey.api import save_cultural_survey_for_user
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -42,6 +43,7 @@ def post_cultural_survey_answers(body: serializers.CulturalSurveyAnswersRequest)
         tasks.CulturalSurveyTaskAnswer(question_id=answer.question_id, answer_ids=answer.answer_ids)
         for answer in body.answers
     ]
+
     payload = tasks.CulturalSurveyTaskAnswers(
         user_id=current_user.id,
         submitted_at=date_utils.get_naive_utc_now().isoformat(),
@@ -51,6 +53,10 @@ def post_cultural_survey_answers(body: serializers.CulturalSurveyAnswersRequest)
     tasks.upload_answers_task.delay(payload.model_dump())
 
     with transaction():
+        # Add survey data for user
+        survey_data = [answer.model_dump() for answer in answers]
+        save_cultural_survey_for_user(current_user, survey_data)
+
         current_user.needsToFillCulturalSurvey = False
         current_user.culturalSurveyFilledDate = date_utils.get_naive_utc_now()
 
