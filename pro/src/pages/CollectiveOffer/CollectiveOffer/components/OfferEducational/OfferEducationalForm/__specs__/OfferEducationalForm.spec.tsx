@@ -16,6 +16,7 @@ import {
   defaultGetVenue,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -280,7 +281,7 @@ describe('OfferEducationalForm', () => {
     const imageInput = screen.getByLabelText('Importez une image')
     await userEvent.upload(
       imageInput,
-      Object.assign(new File(['fake img'], 'fake_img.jpg'), {
+      Object.assign(imageFileFactory('fake_img.jpg'), {
         width: 500,
         height: 900,
       })

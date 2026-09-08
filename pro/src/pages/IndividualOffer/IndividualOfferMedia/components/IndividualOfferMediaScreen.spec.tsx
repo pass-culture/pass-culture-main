@@ -19,6 +19,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
@@ -225,7 +226,7 @@ describe('IndividualOfferMediaScreen', () => {
       const imageInput = screen.getByLabelText('Importez une image')
       await userEvent.upload(
         imageInput,
-        Object.assign(new File(['fake img'], 'fake_img.jpg'), {
+        Object.assign(imageFileFactory('fake_img.jpg'), {
           width: 100,
           height: 100,
         })

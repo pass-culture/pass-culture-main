@@ -100,7 +100,7 @@ export const ModalImageUpsertOrEdit = ({
   const editorRef = useRef<AvatarEditorRef>(null)
   const snackBar = useSnackBar()
   const [isLoadingImage, setIsLoadingImage] = useState(
-    !!previouslyUploadedImageUrl
+    !draftImage && !!previouslyUploadedImageUrl
   )
   const [isPaintingImage, setIsPaintingImage] = useState(true)
   const [image, setImage] = useState<File | undefined>(draftImage)
@@ -143,10 +143,10 @@ export const ModalImageUpsertOrEdit = ({
 
     // Waiting the dialog to be opened is a minor optimization to avoid loading an image that
     // might never be displayed since the dialog is always rendered.
-    if (open && previouslyUploadedImageUrl) {
+    if (open && !draftImage && previouslyUploadedImageUrl) {
       setImageFromUrl(previouslyUploadedImageUrl)
     }
-  }, [open, previouslyUploadedImageUrl, snackBar])
+  }, [open, draftImage, previouslyUploadedImageUrl, snackBar])
 
   useEffect(() => {
     setImage(draftImage)

@@ -12,6 +12,7 @@ import {
   UPLOAD_IMAGE_MAX_RESOLUTION,
 } from './constants'
 import { getImageDimensions } from './getImageDimensions'
+import { getImageFormat } from './getImageFormat'
 import { ImageConstraintCheck } from './ImageConstraintCheck'
 import styles from './ImageDragAndDrop.module.scss'
 
@@ -73,9 +74,16 @@ export const ImageDragAndDrop = forwardRef(
       }
 
       try {
+        const content = await file.arrayBuffer()
+        const image = new File([content], file.name, { type: file.type })
+
         const { width, height } = await getImageDimensions(file)
 
         const errors: string[] = []
+
+        if (getImageFormat(content) === null) {
+          errors.push('file-invalid-type')
+        }
 
         if (minSizes) {
           const { width: minWidth, height: minHeight } = minSizes
@@ -95,8 +103,7 @@ export const ImageDragAndDrop = forwardRef(
           setCustomErrors(errors)
           onError?.(errors)
         } else if (onDropOrSelected) {
-          const image = Object.assign(file, { width, height })
-          onDropOrSelected(image)
+          onDropOrSelected(Object.assign(image, { width, height }))
         }
       } catch {
         const error = ['file-invalid-type']

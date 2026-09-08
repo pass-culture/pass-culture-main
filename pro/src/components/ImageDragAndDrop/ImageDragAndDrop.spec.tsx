@@ -1,5 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
+
 import { MAX_FILE_SIZE } from './constants'
 import { ImageDragAndDrop } from './ImageDragAndDrop'
 
@@ -43,13 +45,10 @@ describe('ImageDragAndDrop', () => {
   })
 
   it('should display the correct text when dragging over', async () => {
-    const file = Object.assign(
-      new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
-      {
-        width: 800,
-        height: 600,
-      }
-    )
+    const file = Object.assign(imageFileFactory(), {
+      width: 800,
+      height: 600,
+    })
     const data = mockData([file])
 
     render(<ImageDragAndDrop />)
@@ -66,13 +65,10 @@ describe('ImageDragAndDrop', () => {
   })
 
   it('should call onDropOrSelected when a valid file is dropped', async () => {
-    const file = Object.assign(
-      new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
-      {
-        width: 800,
-        height: 600,
-      }
-    )
+    const file = Object.assign(imageFileFactory(), {
+      width: 800,
+      height: 600,
+    })
     const data = mockData([file])
 
     const onDropOrSelected = vi.fn()
@@ -83,7 +79,8 @@ describe('ImageDragAndDrop', () => {
     await waitFor(() => {
       expect(onDropOrSelected).toHaveBeenCalledWith(
         expect.objectContaining({
-          path: './test-image.jpg',
+          name: 'test-image.jpg',
+          type: 'image/jpeg',
           width: 800,
           height: 600,
         })
@@ -116,13 +113,10 @@ describe('ImageDragAndDrop', () => {
   })
 
   it('should display the appropriate err message when the file is too large & call onError', async () => {
-    const file = Object.assign(
-      new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
-      {
-        width: 800,
-        height: 600,
-      }
-    )
+    const file = Object.assign(imageFileFactory(), {
+      width: 800,
+      height: 600,
+    })
     Object.defineProperty(file, 'size', { value: MAX_FILE_SIZE + 1 })
     const data = mockData([file])
 
@@ -156,13 +150,10 @@ describe('ImageDragAndDrop', () => {
     })
 
     it('should display the appropriate error message when the image has too short dimensions', async () => {
-      const file = Object.assign(
-        new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
-        {
-          width: 10,
-          height: 10,
-        }
-      )
+      const file = Object.assign(imageFileFactory(), {
+        width: 10,
+        height: 10,
+      })
 
       const data = mockData([file])
 
@@ -192,13 +183,10 @@ describe('ImageDragAndDrop', () => {
     })
 
     it('should display the appropriate error message when the image has too large dimensions', async () => {
-      const file = Object.assign(
-        new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
-        {
-          width: 81,
-          height: 1_000_000,
-        }
-      )
+      const file = Object.assign(imageFileFactory(), {
+        width: 81,
+        height: 1_000_000,
+      })
 
       const data = mockData([file])
 
