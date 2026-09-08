@@ -12,6 +12,7 @@ import {
   UPLOAD_IMAGE_MAX_RESOLUTION,
 } from './constants'
 import { getImageDimensions } from './getImageDimensions'
+import { getImageFormat } from './getImageFormat'
 import { ImageConstraintCheck } from './ImageConstraintCheck'
 import styles from './ImageDragAndDrop.module.scss'
 
@@ -79,6 +80,10 @@ export const ImageDragAndDrop = forwardRef(
         const { width, height } = await getImageDimensions(file)
 
         const errors: string[] = []
+
+        if (getImageFormat(content) === null) {
+          errors.push('file-invalid-type')
+        }
 
         if (minSizes) {
           const { width: minWidth, height: minHeight } = minSizes

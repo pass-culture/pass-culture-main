@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React, { forwardRef } from 'react'
 
+import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import * as imageUtils from '@/commons/utils/image'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -53,7 +54,7 @@ const defaultProps: ModalImageUpsertOrEditProps = {
   onImageUpload,
   onImageDelete,
   initialValues: {
-    draftImage: new File(['content'], 'draftImage.png', { type: 'image/png' }),
+    draftImage: imageFileFactory('draftImage.png', 'png'),
   },
 }
 
@@ -109,13 +110,10 @@ describe('ModalImageUpsertOrEdit', () => {
 
     await waitForRender()
 
-    const imageFile = Object.assign(
-      new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
-      {
-        width: 500,
-        height: 500,
-      }
-    )
+    const imageFile = Object.assign(imageFileFactory(), {
+      width: 500,
+      height: 500,
+    })
 
     await userEvent.upload(screen.getByLabelText('Importez une image'), [
       imageFile,
@@ -321,13 +319,10 @@ describe('ModalImageUpsertOrEdit', () => {
         })
         await userEvent.click(replaceButton)
 
-        const imageFile = Object.assign(
-          new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
-          {
-            width: 10,
-            height: 10,
-          }
-        )
+        const imageFile = Object.assign(imageFileFactory(), {
+          width: 10,
+          height: 10,
+        })
         await userEvent.upload(screen.getByLabelText('Importez une image'), [
           imageFile,
         ])

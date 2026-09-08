@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { forwardRef } from 'react'
 
+import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -13,10 +14,10 @@ import {
 const snackBarSuccess = vi.fn()
 const snackBarError = vi.fn()
 
-const mockImageFile = Object.assign(
-  new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
-  { width: 10, height: 10 }
-)
+const mockImageFile = Object.assign(imageFileFactory(), {
+  width: 10,
+  height: 10,
+})
 
 vi.mock('@/commons/hooks/useSnackBar', () => ({
   useSnackBar: () => ({

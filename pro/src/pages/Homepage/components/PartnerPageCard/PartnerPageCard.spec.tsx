@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events, HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
+import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -89,7 +90,7 @@ describe('PartnerPageCard', () => {
 
   it('should log CLICKED_ADD_IMAGE on image upload', async () => {
     const user = userEvent.setup()
-    const mockFile = Object.assign(new File(['fake img'], 'fake_img.jpg'), {
+    const mockFile = Object.assign(imageFileFactory('fake_img.jpg'), {
       width: 100,
       height: 100,
     })

@@ -13,6 +13,7 @@ import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
+import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -131,7 +132,7 @@ describe('Header', () => {
       logEvent: mockLogEvent,
     }))
 
-    const mockFile = Object.assign(new File(['fake img'], 'fake_img.jpg'), {
+    const mockFile = Object.assign(imageFileFactory('fake_img.jpg'), {
       width: 100,
       height: 100,
     })
