@@ -1,12 +1,16 @@
+import csv
 import datetime
 import re
 from decimal import Decimal
+from io import BytesIO
+from io import StringIO
 from operator import attrgetter
 from unittest.mock import patch
 
 import pytest
 from flask import current_app
 from flask import url_for
+from pypdf import PdfReader
 
 from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
 from pcapi.connectors.dms.models import GraphQLApplicationStates
@@ -14,6 +18,7 @@ from pcapi.connectors.entreprise.backends.testing import TestingBackend
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
+from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
@@ -40,6 +45,8 @@ from pcapi.routes.backoffice.filters import format_date
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.utils import date as date_utils
+
+from tests.utils.pdf_creation_test import TEST_FILES_PATH
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -5012,6 +5019,250 @@ class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
         assert "À jour des obligations fiscales : Non" in content
         assert "Date de délivrance de l'attestation" not in content
         assert "Date de la période analysée" not in content
+
+
+class GetOffererInvoicesTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_invoices"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # get session and user with profile and permissions (1 query)
+    # get invoices (1 query)
+    expected_num_queries = 2
+
+    @pytest.mark.parametrize(
+        "factory,expected_invoice1_amount,expected_later_invoice1_amount,expected_invoice2_amount",
+        [
+            (offerers_factories.OffererFactory, "10,00 €", "12,50 €", "23,50 €"),
+            (
+                offerers_factories.CaledonianOffererFactory,
+                "10,00 € (1 195 CFP)",
+                "12,50 € (1 490 CFP)",
+                "23,50 € (2 805 CFP)",
+            ),
+        ],
+    )
+    def test_get_offerer_invoices(
+        self,
+        authenticated_client,
+        factory,
+        expected_invoice1_amount,
+        expected_later_invoice1_amount,
+        expected_invoice2_amount,
+    ):
+        offerer = factory()
+        offerer_id = offerer.id
+        bank_account1 = finance_factories.BankAccountFactory(offerer=offerer)
+        bank_account2 = finance_factories.BankAccountFactory(offerer=offerer)
+        invoice1 = finance_factories.InvoiceFactory(
+            bankAccount=bank_account1, date=datetime.datetime(2023, 4, 1), amount=-1000
+        )
+        later_invoice1 = finance_factories.InvoiceFactory(
+            bankAccount=bank_account1, date=datetime.datetime(2023, 5, 1), amount=-1250
+        )
+        invoice2 = finance_factories.InvoiceFactory(
+            bankAccount=bank_account2, date=datetime.datetime(2023, 4, 1), amount=-2350
+        )
+        cashflow = finance_factories.CashflowFactory(
+            invoices=[invoice1],
+            amount=-1000,
+            batch=finance_factories.CashflowBatchFactory(label="VIR991"),
+            bankAccount=bank_account1,
+        )
+        finance_factories.CashflowFactory(
+            invoices=[later_invoice1],
+            amount=-1250,
+            batch=finance_factories.CashflowBatchFactory(label="VIR992"),
+            bankAccount=bank_account1,
+        )
+        finance_factories.CashflowFactory(
+            invoices=[invoice2],
+            amount=-2350,
+            batch=cashflow.batch,
+            bankAccount=bank_account2,
+        )
+        finance_factories.InvoiceFactory(bankAccount=finance_factories.BankAccountFactory())
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 3
+
+        assert rows[0]["N° de virement"] == "VIR992"
+        assert rows[0]["N° du justificatif"] == later_invoice1.reference
+        assert rows[0]["Date du justificatif"] == "01/05/2023"
+        assert rows[0]["État du justificatif"] == "Payé"
+        assert rows[0]["Montant remboursé"] == expected_later_invoice1_amount
+        assert rows[0]["Compte bancaire d'origine"] == bank_account1.label
+
+        assert rows[1]["N° de virement"] == "VIR991"
+        assert rows[1]["N° du justificatif"] == invoice1.reference
+        assert rows[1]["Date du justificatif"] == "01/04/2023"
+        assert rows[1]["État du justificatif"] == "Payé"
+        assert rows[1]["Montant remboursé"] == expected_invoice1_amount
+        assert rows[1]["Compte bancaire d'origine"] == bank_account1.label
+
+        assert rows[2]["N° de virement"] == "VIR991"
+        assert rows[2]["N° du justificatif"] == invoice2.reference
+        assert rows[2]["Date du justificatif"] == "01/04/2023"
+        assert rows[2]["État du justificatif"] == "Payé"
+        assert rows[2]["Montant remboursé"] == expected_invoice2_amount
+        assert rows[2]["Compte bancaire d'origine"] == bank_account2.label
+
+
+class DownloadReimbursementDetailsTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.download_reimbursement_details"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    def test_download_reimbursement_details(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+
+        # Create partial overpayment on booking
+        booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking__stock__offer__venue=venue,
+            booking__amount=3,
+            newTotalAmount=200,
+        )
+        finance_factories.PricingFactory(
+            status=finance_models.PricingStatus.INVOICED, booking=booking_finance_incident.booking
+        )
+        incident_events = finance_api._create_finance_events_from_incident(
+            booking_finance_incident, date_utils.get_naive_utc_now()
+        )
+        incident_pricings = []
+        for event in incident_events:
+            pricing = finance_api.price_event(event)
+            pricing.status = finance_models.PricingStatus.INVOICED
+            incident_pricings.append(pricing)
+
+        # Create total overpayment on collective booking
+        collective_booking_finance_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now()
+            - datetime.timedelta(days=5),
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+            collectiveBooking__collectiveStock__price=7,
+            newTotalAmount=0,
+        )
+        finance_factories.CollectivePricingFactory(
+            status=finance_models.PricingStatus.INVOICED,
+            collectiveBooking=collective_booking_finance_incident.collectiveBooking,
+        )
+        collective_incident_events = finance_api._create_finance_events_from_incident(
+            collective_booking_finance_incident, date_utils.get_naive_utc_now()
+        )
+        for event in collective_incident_events:
+            pricing = finance_api.price_event(event)
+            pricing.status = finance_models.PricingStatus.INVOICED
+            incident_pricings.append(pricing)
+
+        pricing = finance_factories.PricingFactory(
+            booking=booking,
+            status=finance_models.PricingStatus.INVOICED,
+        )
+        cashflow = finance_factories.CashflowFactory(
+            bankAccount=bank_account, pricings=[pricing, *incident_pricings], amount=-210
+        )
+        invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
+
+        second_booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        second_pricing = finance_factories.PricingFactory(
+            booking=second_booking,
+            status=finance_models.PricingStatus.INVOICED,
+        )
+        second_cashflow = finance_factories.CashflowFactory(
+            bankAccount=bank_account, pricings=[second_pricing], amount=-1010
+        )
+        second_invoice = finance_factories.InvoiceFactory(cashflows=[second_cashflow], bankAccount=bank_account)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=bank_account.offerer.id,
+            form={"object_ids": f"{invoice.id}, {second_invoice.id}"},
+        )
+        assert response.status_code == 200
+
+        expected_length = 1  # headers
+        expected_length += 1  # first invoice booking
+        expected_length += 1  # first invoice booking price reversal (incident)
+        expected_length += 1  # first invoice booking new price (incident)
+        expected_length += 1  # first invoice collective booking reversal (incident)
+        expected_length += 1  # second_invoice
+        expected_length += 1  # empty line
+
+        assert len(response.data.split(b"\n")) == expected_length
+        assert len(response.data.split(b"\n")[0].split(b";")) == 22  # headers
+
+        reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
+        expected_header = [
+            "Réservations concernées par le remboursement",
+            "Date du justificatif",
+            "N° du justificatif",
+            "N° de virement",
+            "Intitulé du compte bancaire",
+            "IBAN",
+            "Raison sociale du lieu",
+            "Adresse du lieu",
+            "SIRET du lieu",
+            "Nom de l'offre",
+            "N° de réservation (offre collective)",
+            "Nom (offre collective)",
+            "Prénom (offre collective)",
+            "Nom de l'établissement (offre collective)",
+            "Date de l'évènement (offre collective)",
+            "Contremarque",
+            "Date de validation de la réservation",
+            "Intitulé du tarif",
+            "Montant de la réservation",
+            "Barème",
+            "Montant remboursé",
+            "Type d'offre",
+        ]
+        expected_header[6:10] = [
+            "SIRET de la structure",
+            "Raison sociale de la structure",
+            "Nom de l'offre",
+            "Adresse de l'offre",
+        ]
+        assert reader.fieldnames == expected_header
+
+        rows = list(reader)
+        assert rows[1]["Adresse de l'offre"] == booking.stock.offer.offererAddress.address.fullAddress
+
+        assert str(response.data).count("Incident") == 3
+
+
+class DownloadInvoicesTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.download_invoices"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    def test_download_invoices(self, authenticated_client, requests_mock):
+        bank_account = finance_factories.BankAccountFactory()
+        offerer = bank_account.offerer
+
+        invoice_1 = finance_factories.InvoiceFactory(reference="F260000123", bankAccount=bank_account)
+        invoice_2 = finance_factories.InvoiceFactory(reference="F260000456", bankAccount=bank_account)
+        finance_factories.InvoiceFactory(bankAccount=bank_account)
+
+        # 1 page PDF
+        requests_mock.get(invoice_1.url, content=(TEST_FILES_PATH / "pdf" / "invoice_1_example.pdf").read_bytes())
+        # 2 pages PDF
+        requests_mock.get(invoice_2.url, content=(TEST_FILES_PATH / "pdf" / "invoice_2_example.pdf").read_bytes())
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={"object_ids": f"{invoice_1.id}, {invoice_2.id}"},
+        )
+        assert response.status_code == 200
+
+        assert response.headers["Content-Type"] == "application/pdf; charset=utf-8;"
+        assert response.headers["Content-Disposition"] == f"attachment; filename=justificatifs_{offerer.id}.pdf"
+        assert PdfReader(BytesIO(response.data)).get_num_pages() == 3
 
 
 class GetCloseOffererFormTest(GetEndpointHelper):
