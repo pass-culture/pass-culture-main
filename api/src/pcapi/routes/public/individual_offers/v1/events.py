@@ -31,7 +31,6 @@ from pcapi.routes.public.services.authentication import api_key_required
 from pcapi.routes.public.services.authentication import current_api_key
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
-from pcapi.utils.custom_keys import get_field
 from pcapi.utils.transaction_manager import atomic
 
 from . import serialization
@@ -277,45 +276,39 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
 
     try:
         updates = body.dict(by_alias=True, exclude_unset=True)
-        dc = updates.get("accessibility", {})
+        accessibility = updates.get("accessibility", {})
         extra_data = copy.deepcopy(offer.extraData)
 
-        publication_datetime = get_field(offer, updates, "publicationDatetime")
-        is_active = get_field(offer, updates, "isActive")
-
+        publication_datetime = updates.get("publicationDatetime", offer.publicationDatetime)
         # TODO(jbaudet): remove this part, do not use isActive once
         # the public API does not allow it anymore
         if "publicationDatetime" not in updates and updates.get("isActive") is not None:
-            publication_datetime = datetime.now(UTC) if is_active else None
+            publication_datetime = datetime.now(UTC) if updates["isActive"] else None
 
         offer = offers_api.update_offer(
             offer,
-            offers_schemas.UpdateOffer(
-                audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
-                mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
-                motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
-                visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
-                bookingContact=get_field(offer, updates, "bookingContact"),
-                bookingEmail=get_field(offer, updates, "bookingEmail"),
-                description=get_field(offer, updates, "description"),
-                durationMinutes=get_field(offer, updates, "eventDuration", col="durationMinutes"),
-                externalTicketOfficeUrl=get_field(offer, updates, "externalTicketOfficeUrl"),
-                ean=get_field(offer, updates, "ean"),
-                extraData=(
-                    serialization.deserialize_extra_data(
-                        body.category_related_fields, extra_data, venue_id=offer.venueId
-                    )
-                    if "categoryRelatedFields" in updates
-                    else extra_data
-                ),
-                publicationDatetime=publication_datetime,
-                idAtProvider=get_field(offer, updates, "idAtProvider"),
-                isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
-                withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
-                name=get_field(offer, updates, "name"),
-                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-                bookingAllowedDatetime=get_field(offer, updates, "bookingAllowedDatetime"),
-            ),  # type: ignore[call-arg]
+            audio_disability_compliant=accessibility.get("audioDisabilityCompliant", offers_api.UNCHANGED),
+            mental_disability_compliant=accessibility.get("mentalDisabilityCompliant", offers_api.UNCHANGED),
+            motor_disability_compliant=accessibility.get("motorDisabilityCompliant", offers_api.UNCHANGED),
+            visual_disability_compliant=accessibility.get("visualDisabilityCompliant", offers_api.UNCHANGED),
+            booking_allowed_datetime=updates.get("bookingAllowedDatetime", offers_api.UNCHANGED),
+            booking_contact=updates.get("bookingContact", offers_api.UNCHANGED),
+            booking_email=updates.get("bookingEmail", offers_api.UNCHANGED),
+            description=updates.get("description", offers_api.UNCHANGED),
+            duration_minutes=updates.get("eventDuration", offers_api.UNCHANGED),
+            ean=offer.ean,
+            external_ticket_office_url=updates.get("externalTicketOfficeUrl", offers_api.UNCHANGED),
+            extra_data=(
+                serialization.deserialize_extra_data(body.category_related_fields, extra_data, venue_id=offer.venueId)
+                if "categoryRelatedFields" in updates
+                else extra_data
+            ),
+            id_at_provider=updates.get("idAtProvider", offers_api.UNCHANGED),
+            is_duo=updates.get("enableDoubleBookings", offers_api.UNCHANGED),
+            name=updates.get("name", offers_api.UNCHANGED),
+            publication_datetime=publication_datetime,
+            url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+            withdrawal_details=updates.get("itemCollectionDetails", offers_api.UNCHANGED),
             venue=venue,
             offerer_address=offerer_address,
         )
