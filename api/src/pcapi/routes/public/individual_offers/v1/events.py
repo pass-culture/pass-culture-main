@@ -269,8 +269,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
     utils.log_offer_edition_without_last_provider(offer, body)
 
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
-    if venue:
-        authorization.get_venue_provider_or_raise_404(venue.id)
+    venue_provider = authorization.get_venue_provider_or_raise_404(venue.id if venue else offer.venueId)
 
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
@@ -296,7 +295,6 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
             booking_email=updates.get("bookingEmail", offers_api.UNCHANGED),
             description=updates.get("description", offers_api.UNCHANGED),
             duration_minutes=updates.get("eventDuration", offers_api.UNCHANGED),
-            ean=offer.ean,
             external_ticket_office_url=updates.get("externalTicketOfficeUrl", offers_api.UNCHANGED),
             extra_data=(
                 serialization.deserialize_extra_data(body.category_related_fields, extra_data, venue_id=offer.venueId)
@@ -312,6 +310,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
             mandatory_extra_data_fields=utils.mandatory_extra_data_fields(offer.subcategoryId),
             venue=venue,
             offerer_address=offerer_address,
+            venue_provider=venue_provider,
         )
 
         if body.image:
