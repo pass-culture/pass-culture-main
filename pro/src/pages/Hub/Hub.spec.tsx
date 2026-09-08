@@ -44,6 +44,7 @@ const renderHub: RenderComponentFunction<
           getOffererNameFactory({ id: 100 }),
           getOffererNameFactory({ id: 200 }),
         ],
+        selectedAdminOfferer: getOffererNameFactory({ id: 100 }),
       },
     },
     initialRouterEntries: ['/hub'],
