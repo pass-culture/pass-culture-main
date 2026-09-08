@@ -66,6 +66,9 @@ class atomic:
     use on_commit
     """
 
+    def __init__(self, apply: bool = True) -> None:
+        self.__apply = apply
+
     def __enter__(self) -> typing.Self:
         # In that context g is local to the thread
         # use a list to make the context manager/decorator reentrant
@@ -96,7 +99,7 @@ class atomic:
 
             db.session.autoflush = context.autoflush
 
-            if context.invalid_transaction or exc_value is not None:
+            if context.invalid_transaction or exc_value is not None or not self.__apply:
                 context.transaction.rollback()
             else:
                 context.transaction.commit()
@@ -104,7 +107,7 @@ class atomic:
         else:
             db.session.autoflush = True
             # if there is an exception
-            if exc_value is not None:
+            if exc_value is not None or not self.__apply:
                 mark_transaction_as_invalid()
             _finalize_managed_session()
         # do not suppress the exception
@@ -114,7 +117,7 @@ class atomic:
     def __call__(self, func: typing.Callable) -> typing.Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
-            with atomic():
+            with atomic(apply=self.__apply):
                 return func(*args, **kwargs)
 
         return wrapper

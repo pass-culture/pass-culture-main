@@ -45,6 +45,14 @@ class AtomicTest:
         assert db.session.query(UserSession).count() == 0
 
     @pytest.mark.usefixtures("clean_database")
+    def test_atomic_rolls_back_when_not_apply(self):
+        with atomic(apply=False):
+            user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
+            db.session.add(user_session)
+
+        assert db.session.query(UserSession).count() == 0
+
+    @pytest.mark.usefixtures("clean_database")
     def test_atomic_is_reentrant(self):
         user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
 
@@ -97,6 +105,16 @@ class AtomicTest:
             user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
             db.session.add(user_session)
             mark_transaction_as_invalid()
+
+        view()
+        assert db.session.query(UserSession).count() == 0
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_atomic_decorator_rollback_when_not_apply(self):
+        @atomic(apply=False)
+        def view():
+            user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
+            db.session.add(user_session)
 
         view()
         assert db.session.query(UserSession).count() == 0
