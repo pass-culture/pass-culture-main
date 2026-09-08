@@ -9,6 +9,7 @@ from pcapi import settings
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors import api_particulier
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus.api import apply_for_adult_disability_bonus
 from pcapi.core.subscription.bonus.api import apply_for_disabled_child_education_bonus
 from pcapi.core.subscription.bonus.api import apply_for_quotient_familial_bonus
@@ -209,6 +210,7 @@ def recover_started_bonus_credit_applications(
     started_bonus_credit_fraud_checks = db.session.scalars(keyset_paginated_stmt).all()
 
     handled_fraud_checks: list[subscription_models.BeneficiaryFraudCheck] = []
+    disability_fraud_check_user_ids: set[int] = set()
     expected_api_particulier_calls = 0
     for fraud_check in started_bonus_credit_fraud_checks:
         match fraud_check.type:
@@ -228,8 +230,14 @@ def recover_started_bonus_credit_applications(
                 if expected_api_particulier_calls > page_size:
                     return handled_fraud_checks
 
+                is_other_disability_bonus_ongoing = fraud_check.userId in disability_fraud_check_user_ids
+                if is_other_disability_bonus_ongoing:
+                    countdown = bonus_constants.DISABILITY_COUNTDOWN
+                else:
+                    countdown = 0
+                disability_fraud_check_user_ids.add(fraud_check.userId)
                 payload = BonusTaskPayload(fraud_check_id=fraud_check.id)
-                apply_for_adult_disability_bonus_task.delay(payload=payload.model_dump())
+                apply_for_adult_disability_bonus_task.apply_async((payload.model_dump(),), countdown=countdown)
                 handled_fraud_checks.append(fraud_check)
 
             case subscription_models.FraudCheckType.AEEH_BONUS_CREDIT:
@@ -238,8 +246,14 @@ def recover_started_bonus_credit_applications(
                 if expected_api_particulier_calls > page_size:
                     return handled_fraud_checks
 
+                is_other_disability_bonus_ongoing = fraud_check.userId in disability_fraud_check_user_ids
+                if is_other_disability_bonus_ongoing:
+                    countdown = bonus_constants.DISABILITY_COUNTDOWN
+                else:
+                    countdown = 0
+                disability_fraud_check_user_ids.add(fraud_check.userId)
                 payload = BonusTaskPayload(fraud_check_id=fraud_check.id)
-                apply_for_disabled_child_education_bonus_task.delay(payload=payload.model_dump())
+                apply_for_disabled_child_education_bonus_task.apply_async((payload.model_dump(),), countdown=countdown)
                 handled_fraud_checks.append(fraud_check)
 
             case _:
