@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from pcapi.connectors import api_particulier
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import tasks
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -143,8 +144,8 @@ class DisabledChildEducationBonusTaskTest:
 
 class RecoverStartedBonusCreditApplicationsTest:
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
     def test_recover_started_bonus_credit_applications_full_page(
         self, mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, mocked_apply_for_qf_task
     ):
@@ -159,7 +160,9 @@ class RecoverStartedBonusCreditApplicationsTest:
             status=subscription_models.FraudCheckStatus.STARTED, resultContent={"next_retry_at": twelve_hours_ago}
         )
         aeeh_fraud_check = subscription_factories.AEEHBonusCreditFraudCheckFactory.create(
-            status=subscription_models.FraudCheckStatus.STARTED, resultContent={"next_retry_at": twelve_hours_ago}
+            user=aah_fraud_check.user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent={"next_retry_at": twelve_hours_ago},
         )
 
         tasks.recover_started_bonus_credit_applications(
@@ -173,8 +176,10 @@ class RecoverStartedBonusCreditApplicationsTest:
             ],
             any_order=True,
         )
-        mocked_apply_for_aah_task.assert_has_calls([call(payload={"fraud_check_id": aah_fraud_check.id})])
-        mocked_apply_for_aeeh_task.assert_has_calls([call(payload={"fraud_check_id": aeeh_fraud_check.id})])
+        mocked_apply_for_aah_task.assert_has_calls([call(({"fraud_check_id": aah_fraud_check.id},), countdown=0)])
+        mocked_apply_for_aeeh_task.assert_has_calls(
+            [call(({"fraud_check_id": aeeh_fraud_check.id},), countdown=bonus_constants.DISABILITY_COUNTDOWN)]
+        )
 
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
     def test_recover_started_bonus_credit_applications_for_a_user(self, mocked_apply_for_qf_task):
@@ -195,8 +200,8 @@ class RecoverStartedBonusCreditApplicationsTest:
         )
 
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
     def test_recovery_ignores_date_planned_too_late(
         self, mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, mocked_apply_for_qf_task
     ):
