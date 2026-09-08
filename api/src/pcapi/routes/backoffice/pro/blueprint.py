@@ -129,7 +129,7 @@ def search_pro() -> response_utils.BackofficeResponse:
             "searchType": "ProSearch",
             "searchQuery": form.q.data,
             "searchDepartments": ",".join(form.departments.data),
-            "searchNbResults": paginated_rows.total,
+            "nbResults": paginated_rows.total,
             "searchProType": form.pro_type.data.value,
         },
     )

@@ -85,7 +85,7 @@ def get(user_id: int) -> response_utils.BackofficeResponse:
                 "searchProType": pro_forms.TypeOptions.USER.name,
                 "searchQuery": request.args.get("q"),
                 "searchRank": request.args.get("search_rank"),
-                "searchNbResults": request.args.get("total_items"),
+                "nbResults": request.args.get("total_items"),
             },
         )
 
