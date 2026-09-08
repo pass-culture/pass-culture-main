@@ -1,9 +1,9 @@
 import { setUser } from '@sentry/browser'
-import { screen } from '@testing-library/react'
-import { Route, Routes } from 'react-router'
+import { act, screen } from '@testing-library/react'
+import { Link, Route, Routes } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { api, BACKEND_VERSION_MISMATCH_EVENT } from '@/apiClient/api'
 import { App } from '@/app/App/App'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as orejime from '@/app/App/analytics/orejime'
@@ -25,6 +25,12 @@ vi.mock('@/app/App/hook/useLogExtraProData', () => ({
 }))
 vi.mock('@/app/App/hook/usePageTitle', () => ({ usePageTitle: vi.fn() }))
 vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
+vi.mock('@/commons/utils/config', async () => ({
+  ...(await vi.importActual('@/commons/utils/config')),
+  API_URL: 'https://backend.example',
+  IS_DEV: false,
+  VITE_APP_VERSION: 'current-version',
+}))
 
 function TestBrokenCallComponent() {
   useSWR([GET_OFFER_QUERY_KEY], () => api.getOffer({ path: { offer_id: 17 } }))
@@ -39,7 +45,15 @@ const renderApp = (options?: RenderWithProvidersOptions) =>
 
       <Routes>
         <Route path="/" element={<App />}>
-          <Route path="/" element={<p>Sub component</p>} />
+          <Route
+            path="/"
+            element={
+              <>
+                <p>Sub component</p>
+                <Link to="/offres">Go to offers</Link>
+              </>
+            }
+          />
           <Route path="/adage-iframe" element={<p>ADAGE</p>} />
           <Route path="/offres" element={<p>Offres</p>} />
           <Route path="/connexion" element={<p>Login page</p>} />
@@ -95,6 +109,20 @@ describe('App', () => {
     expect(useAnalyticsSpy).not.toHaveBeenCalledWith(
       expect.objectContaining({ isCookieEnabled: true })
     )
+  })
+
+  it('should display the refresh page when the API detects a backend mismatch', async () => {
+    renderApp()
+
+    act(() => {
+      window.dispatchEvent(new Event(BACKEND_VERSION_MISMATCH_EVENT))
+    })
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Une mise à jour est disponible',
+      })
+    ).toBeInTheDocument()
   })
 
   it('should redirect to page 404 when api has not found', async () => {
