@@ -7,8 +7,32 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns403Test:
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select offer
+    num_queries += 1  # select venue
+    num_queries += 1  # check user has rights on venue
+    num_queries += 1  # rollback
+    num_queries += 1  # rollback
+
+    def test_error_if_venue_is_closed(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=user_offerer.offerer, venue__state=offerers_models.VenueState.CLOSED
+        )
+        offers_factories.StockFactory(offer=offer)
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}/stocks-stats")
+            assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")

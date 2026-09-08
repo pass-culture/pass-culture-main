@@ -964,6 +964,20 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
 
+    def test_error_if_venue_is_closed(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, state=offerers_models.VenueState.CLOSED
+        )
+        offer = factories.CollectiveOfferTemplateFactory(venue=venue)
+
+        payload_ctx = build_payload_context()
+
+        pro_client = build_pro_client(client, user_offerer.user)
+        response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=payload_ctx.payload)
+
+        assert response.status_code == 403
+
 
 class Returns404Test:
     def test_user_is_not_attached_to_offerer(self, client):

@@ -4,6 +4,7 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 
@@ -53,6 +54,14 @@ class Returns403Test:
         assert response.json["booking"] == ["Vous ne pouvez plus valider de contremarque sur une structure fermée"]
         booking = db.session.get(Booking, booking.id)
         assert booking.status == BookingStatus.CONFIRMED
+
+    def test_error_if_venue_is_closed(self, client):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        booking = bookings_factories.BookingFactory(token="ABCDEF", stock__offer__venue=venue)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=venue.managingOfferer)
+
+        response = client.with_session_auth("pro@example.com").patch(f"/bookings/use/token/{booking.token}")
+        assert response.status_code == 403
 
 
 class Returns404Test:

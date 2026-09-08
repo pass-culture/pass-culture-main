@@ -47,7 +47,7 @@ from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils import image_conversion
-from pcapi.utils import rest
+from pcapi.utils import rest as rest_utils
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import on_commit
 
@@ -149,6 +149,7 @@ def create_collective_offer_template(
     offer_data: "collective_offers_serialize.PostCollectiveOfferTemplateBodyModel", user: User
 ) -> models.CollectiveOfferTemplate:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
+    rest_utils.check_venue_is_opened(venue)
 
     # check domains and national program
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
@@ -207,6 +208,7 @@ def create_collective_offer(
     offer_data: "collective_offers_serialize.PostCollectiveOfferBodyModel", user: User, offer_id: int | None = None
 ) -> models.CollectiveOffer:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
+    rest_utils.check_venue_is_opened(venue)
 
     if offer_data.template_id is not None:
         template = repository.get_collective_offer_template_by_id(offer_data.template_id)
@@ -275,10 +277,10 @@ def get_venue_and_check_access_for_offer_creation(
 ) -> offerers_models.Venue:
     if offer_data.template_id is not None:
         template = repository.get_collective_offer_template_by_id(offer_data.template_id)
-        rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
+        rest_utils.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
     venue: offerers_models.Venue = get_or_404(offerers_models.Venue, offer_data.venue_id)
 
-    rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
+    rest_utils.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
 

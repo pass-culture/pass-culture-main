@@ -7,6 +7,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
@@ -232,3 +233,15 @@ class Returns400Test:
         assert response.json["global"] == ["Une offre doit avoir une image pour être mise à la une"]
 
         mocked_async_index_offer_ids.assert_not_called()
+
+
+class Returns403Test:
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_error_if_venue_is_closed(self, mocked_async_index_offer_ids, client):
+        offer = offers_factories.OfferFactory(venue__state=offerers_models.VenueState.CLOSED)
+        pro_user = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer).user
+
+        client = client.with_session_auth(pro_user.email)
+        response = client.post("/offers/upsert_headline", json={"offerId": offer.id})
+
+        assert response.status_code == 403
