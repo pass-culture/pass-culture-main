@@ -54,8 +54,7 @@ def post_cultural_survey_answers(body: serializers.CulturalSurveyAnswersRequest)
 
     with transaction():
         # Add survey data for user
-        survey_data = [answer.model_dump() for answer in answers]
-        save_cultural_survey_for_user(current_user, survey_data)
+        save_cultural_survey_for_user(payload)
 
         current_user.needsToFillCulturalSurvey = False
         current_user.culturalSurveyFilledDate = date_utils.get_naive_utc_now()

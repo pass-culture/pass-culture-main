@@ -21,5 +21,5 @@ class UserCulturalSurveyFactory(BaseFactory):
                 "answers_id": [FuzzyChoice(answers).fuzz() for _ in range(randrange(len(answers)))],
             }
             for question, answers in SURVEY_QUESTIONS_AND_ANSWERS
-        ]
+        ],
     )
