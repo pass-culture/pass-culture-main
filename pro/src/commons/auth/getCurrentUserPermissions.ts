@@ -26,7 +26,7 @@ export const getCurrentUserPermissions = (
       hasSelectedAdminOfferer: false,
       hasVenues: false,
       isAuthenticated: false,
-      isSelectedPartnerVenueActive: false,
+      isSelectedPartnerVenueAndOffererActive: false,
       isSelectedAdminOffererAssociated: false,
       isSelectedPartnerVenueAssociated: false,
       isSelectedPartnerVenueOnboarded: false,
@@ -35,8 +35,10 @@ export const getCurrentUserPermissions = (
 
   const hasSelectedAdminOfferer = !!selectedAdminOfferer
   const hasSelectedPartnerVenue = !!selectedPartnerVenue
-  const isSelectedPartnerVenueActive =
-    hasSelectedPartnerVenue && !withVenueHelpers(selectedPartnerVenue).isClosed
+  const isSelectedPartnerVenueAndOffererActive =
+    hasSelectedPartnerVenue &&
+    !withVenueHelpers(selectedPartnerVenue).isClosed &&
+    !selectedPartnerVenue.managingOfferer.isClosed
   const isSelectedAdminOffererAssociated =
     hasSelectedAdminOfferer &&
     !!offererNames?.some(
@@ -57,7 +59,7 @@ export const getCurrentUserPermissions = (
     hasSelectedPartnerVenue,
     hasVenues: !!venues?.length,
     isAuthenticated: true,
-    isSelectedPartnerVenueActive,
+    isSelectedPartnerVenueAndOffererActive,
     isSelectedAdminOffererAssociated,
     isSelectedPartnerVenueAssociated,
     isSelectedPartnerVenueOnboarded,

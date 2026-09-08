@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -26,7 +26,7 @@ export const VideoUploader = () => {
   const { videoData, onVideoDelete } = useVideoUploaderContext()
   const { videoDuration, videoTitle, videoThumbnailUrl } = videoData ?? {}
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   return (
     <div className={styles['video-uploader-container']}>
@@ -45,7 +45,7 @@ export const VideoUploader = () => {
               icon={fullEditIcon}
               label="Modifier"
               onClick={() => setIsOpen(true)}
-              disabled={isVenueClosed}
+              disabled={isClosed}
             />
             <ModalVideo isOpen={isOpen} onClose={() => setIsOpen(false)} />
             <Button
@@ -55,14 +55,14 @@ export const VideoUploader = () => {
               icon={fullTrashIcon}
               onClick={onVideoDelete}
               label="Supprimer"
-              disabled={isVenueClosed}
+              disabled={isClosed}
             />
           </div>
         </>
       ) : (
         <div
           className={cn(styles['video-uploader-no-video'], {
-            [styles['video-uploader-no-video-disabled']]: isVenueClosed,
+            [styles['video-uploader-no-video-disabled']]: isClosed,
           })}
         >
           <SvgIcon src={strokeVideoIcon} alt="" width="44" />
@@ -72,7 +72,7 @@ export const VideoUploader = () => {
             icon={fullMoreIcon}
             label="Ajouter une URL Youtube"
             onClick={() => setIsOpen(true)}
-            disabled={isVenueClosed}
+            disabled={isClosed}
           />
           <ModalVideo isOpen={isOpen} onClose={() => setIsOpen(false)} />
           <p className={styles['video-uploader-text-subtle']}>

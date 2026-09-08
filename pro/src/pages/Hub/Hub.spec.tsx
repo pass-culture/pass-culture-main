@@ -55,17 +55,26 @@ describe('Hub', () => {
     makeVenueListItemLiteResponseModel({
       id: 101,
       publicName: 'Théâtre du Soleil',
-      managingOffererId: 100,
+      managingOfferer: {
+        id: 100,
+        isClosed: false,
+      },
     }),
     makeVenueListItemLiteResponseModel({
       id: 102,
       publicName: 'Café des Arts',
-      managingOffererId: 100,
+      managingOfferer: {
+        id: 100,
+        isClosed: false,
+      },
     }),
     makeVenueListItemLiteResponseModel({
       id: 201,
       publicName: 'Cinéma Lumière',
-      managingOffererId: 200,
+      managingOfferer: {
+        id: 200,
+        isClosed: false,
+      },
     }),
   ]
 
@@ -74,12 +83,18 @@ describe('Hub', () => {
     makeVenueListItemLiteResponseModel({
       id: 202,
       publicName: 'Musée National',
-      managingOffererId: 200,
+      managingOfferer: {
+        id: 200,
+        isClosed: false,
+      },
     }),
     makeVenueListItemLiteResponseModel({
       id: 203,
       publicName: 'Galerie Moderne',
-      managingOffererId: 200,
+      managingOfferer: {
+        id: 200,
+        isClosed: false,
+      },
     }),
   ]
 
@@ -112,13 +127,19 @@ describe('Hub', () => {
         makeVenueListItemLiteResponseModel({
           id: 101,
           publicName: 'Venue ouverte 1',
-          managingOffererId: 100,
+          managingOfferer: {
+            id: 100,
+            isClosed: false,
+          },
           state: null,
         }),
         makeVenueListItemLiteResponseModel({
           id: 102,
           publicName: 'Venue fermée',
-          managingOffererId: 100,
+          managingOfferer: {
+            id: 100,
+            isClosed: false,
+          },
           state: VenueState.CLOSED,
         }),
       ],
@@ -127,12 +148,34 @@ describe('Hub', () => {
     expect(screen.getByText('Structure fermée')).toBeInTheDocument()
   })
 
+  it('should display venues with a closed managing offerer', () => {
+    renderHub({
+      venues: [
+        makeVenueListItemLiteResponseModel({
+          id: 101,
+          publicName: 'Lieu rattaché à une entité fermée',
+          managingOfferer: {
+            id: 100,
+            isClosed: true,
+          },
+          state: null,
+        }),
+      ],
+    })
+
+    expect(screen.getByText('Entité juridique fermée')).toBeInTheDocument()
+    expect(screen.queryByText('Structure fermée')).not.toBeInTheDocument()
+  })
+
   it('should display venue address', () => {
     const venuesWithLocation = [
       makeVenueListItemLiteResponseModel({
         id: 101,
         publicName: 'Nom public de la structure avec localisation',
-        managingOffererId: 100,
+        managingOfferer: {
+          id: 100,
+          isClosed: false,
+        },
         location: {
           id: 1,
           banId: null,
@@ -164,6 +207,7 @@ describe('Hub', () => {
           id: 100,
           allowedOnAdage: true,
           isValidated: true,
+          isClosed: false,
           name: 'Test Offerer',
           siren: '123456789',
         },
@@ -191,6 +235,7 @@ describe('Hub', () => {
         managingOfferer: {
           id: 100,
           allowedOnAdage: true,
+          isClosed: false,
           isValidated: true,
           name: 'Test Offerer',
           siren: '123456789',

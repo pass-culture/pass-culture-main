@@ -44,24 +44,24 @@ describe('setSelectedPartnerVenueById', () => {
         makeVenueListItemLiteResponseModel({
           id: 101,
           name: 'V1',
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
         makeVenueListItemLiteResponseModel({
           id: 201,
           name: 'V2',
-          managingOffererId: 200,
+          managingOfferer: { id: 200, isClosed: false },
         }),
         makeVenueListItemLiteResponseModel({
           id: 301,
           name: 'V3',
-          managingOffererId: 300,
+          managingOfferer: { id: 300, isClosed: false },
         }),
       ],
       venuesWithPendingValidation: [
         makeVenueListItemLiteResponseModel({
           id: 301,
           name: 'V3',
-          managingOffererId: 300,
+          managingOfferer: { id: 300, isClosed: false },
         }),
       ],
       offererNames: [
@@ -203,11 +203,11 @@ describe('setSelectedPartnerVenueById', () => {
         venues: [
           makeVenueListItemLiteResponseModel({
             id: 101,
-            managingOffererId: 999,
+            managingOfferer: { id: 999, isClosed: false },
           }),
           makeVenueListItemLiteResponseModel({
             id: 201,
-            managingOffererId: 200,
+            managingOfferer: { id: 200, isClosed: false },
           }),
         ],
         venuesWithPendingValidation: null,

@@ -6,7 +6,7 @@ import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -43,7 +43,7 @@ export const DetailsEanSearch = ({
   onEanReset,
 }: DetailsEanSearchProps): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const [wasCleared, setWasCleared] = useState(false)
   const [subcatError, setSubcatError] = useState<string | null>(null)
 
@@ -120,7 +120,7 @@ export const DetailsEanSearch = ({
   }
 
   const apiError = errors.eanSearch?.type === 'apiError'
-  const shouldInputBeDisabled = isProductBased || isLoading || isVenueClosed
+  const shouldInputBeDisabled = isProductBased || isLoading || isClosed
   const shouldInputBeRequired = !!subcatError
 
   const shouldButtonBeDisabled =

@@ -45,11 +45,11 @@ describe('initializeUser', () => {
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
         makeVenueListItemLiteResponseModel({
           id: 102,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
       ],
       venuesWithPendingValidation: [],
@@ -91,7 +91,7 @@ describe('initializeUser', () => {
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
       ],
       venuesWithPendingValidation: [],
@@ -126,11 +126,11 @@ describe('initializeUser', () => {
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
         makeVenueListItemLiteResponseModel({
           id: 102,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
       ],
       venuesWithPendingValidation: [],
@@ -211,7 +211,7 @@ describe('initializeUser', () => {
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
       ],
       venuesWithPendingValidation: [],
@@ -247,11 +247,11 @@ describe('initializeUser', () => {
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
         makeVenueListItemLiteResponseModel({
           id: 102,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
       ],
       venuesWithPendingValidation: [],
@@ -345,11 +345,11 @@ describe('initializeUser', () => {
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
         makeVenueListItemLiteResponseModel({
           id: 201,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
       ],
       venuesWithPendingValidation: [],
@@ -389,7 +389,7 @@ describe('initializeUser', () => {
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
-          managingOffererId: 100,
+          managingOfferer: { id: 100, isClosed: false },
         }),
       ],
       venuesWithPendingValidation: [],

@@ -10,7 +10,7 @@ import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeadin
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -29,6 +29,7 @@ interface FormValues {
 
 export const Desk = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   const [isTokenValidated, setIsTokenValidated] = useState(false)
   const [booking, setBooking] = useState<GetBookingResponse | undefined>(
@@ -174,10 +175,7 @@ export const Desk = () => {
               ) : (
                 <Button
                   type="submit"
-                  disabled={
-                    isSubmitting ||
-                    withVenueHelpers(selectedPartnerVenue).isClosed
-                  }
+                  disabled={isSubmitting || isClosed}
                   isLoading={isSubmitting}
                   label="Valider la contremarque"
                 />

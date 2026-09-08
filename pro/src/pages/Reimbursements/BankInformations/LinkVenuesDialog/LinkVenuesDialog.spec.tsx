@@ -13,8 +13,10 @@ import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   defaultBankAccount,
+  defaultGetOffererResponseModel,
   defaultManagedVenue,
 } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -23,6 +25,7 @@ import {
 import { LinkVenuesDialog } from './LinkVenuesDialog'
 
 const mockUpdateVenuePricingPoint = vi.fn()
+const user = sharedCurrentUserFactory()
 const renderLinkVenuesDialog = (
   offererId: number,
   selectedBankAccount: BankAccountResponseModel,
@@ -41,7 +44,19 @@ const renderLinkVenuesDialog = (
       closeDialog={closeDialog}
       updateBankAccountVenuePricingPoint={updateBankAccountVenuePricingPoint}
     />,
-    options
+    {
+      ...options,
+      storeOverrides: {
+        ...options.storeOverrides,
+        user: {
+          ...options.storeOverrides?.user,
+          currentUser: user,
+          selectedAdminOfferer: {
+            ...defaultGetOffererResponseModel,
+          },
+        },
+      },
+    }
   )
 }
 

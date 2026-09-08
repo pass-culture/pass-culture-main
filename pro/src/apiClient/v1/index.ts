@@ -424,6 +424,7 @@ export {
   type VenueDailyViewModel,
   type VenueLabelListResponseModel,
   type VenueLabelResponseModel,
+  type VenueListItemLiteManagingOffererResponseModel,
   type VenueListItemLiteResponseModel,
   type VenueOfOffererFromSiretResponseModel,
   type VenueProviderResponse,

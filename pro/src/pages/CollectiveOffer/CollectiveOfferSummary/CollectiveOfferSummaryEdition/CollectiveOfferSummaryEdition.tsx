@@ -7,7 +7,7 @@ import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/uti
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
 import { Button } from '@/design-system/Button/Button'
@@ -28,7 +28,7 @@ export const CollectiveOfferSummaryEdition = ({
   offer,
 }: CollectiveOfferSummaryEditionProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
@@ -54,7 +54,7 @@ export const CollectiveOfferSummaryEdition = ({
     >
       <OfferEducationalActions
         className={styles.actions}
-        isReadOnly={isVenueClosed}
+        isReadOnly={isClosed}
         offer={offer}
         mode={Mode.EDITION}
       />

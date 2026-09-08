@@ -14,7 +14,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { isDateValid } from '@/commons/utils/date'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
 import { OfferHighlightCard } from '@/components/IndividualOfferLayout/components/OfferHighlightCard/OfferHighlightCard'
@@ -72,7 +72,7 @@ export const IndividualOfferConfirmationScreen = ({
     shouldDisplayHeadlineAction,
   } = getOfferEnhancementActionsVisibility(offer)
 
-  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const shouldDisplayCardsSection =
     shouldDisplayRecommendationAction ||
     shouldDisplayHighlightAction ||
@@ -155,7 +155,7 @@ export const IndividualOfferConfirmationScreen = ({
           <div className={styles['enhancement-cards']}>
             {shouldDisplayRecommendationAction && (
               <OfferRecommendationCard
-                isReadOnly={isVenueClosed}
+                isReadOnly={isClosed}
                 offerId={offer.id}
                 onSubmit={goToOfferPage}
                 submitLabel="Enregistrer et accéder à l’offre"
@@ -163,7 +163,7 @@ export const IndividualOfferConfirmationScreen = ({
             )}
             {shouldDisplayHighlightAction && (
               <OfferHighlightCard
-                isReadOnly={isVenueClosed}
+                isReadOnly={isClosed}
                 offerId={offer.id}
                 highlightRequests={offer.highlightRequests}
                 onSubmit={goToOfferPage}
@@ -172,7 +172,7 @@ export const IndividualOfferConfirmationScreen = ({
             )}
             {shouldDisplayHeadlineAction && (
               <OfferHeadlineCard
-                isReadOnly={isVenueClosed}
+                isReadOnly={isClosed}
                 offerId={offer.id}
                 hasThumb={!!offer.thumbUrl}
               />

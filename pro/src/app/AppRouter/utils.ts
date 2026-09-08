@@ -16,7 +16,7 @@ export const mustBeOnboardedWithActiveSelectedPartnerVenue = (
   userPermissions: UserPermissions
 ) =>
   mustBeOnboardedWithSelectedPartnerVenue(userPermissions) &&
-  userPermissions.isSelectedPartnerVenueActive
+  userPermissions.isSelectedPartnerVenueAndOffererActive
 
 export const mustHaveSelectedPartnerVenue = (
   userPermissions: UserPermissions
@@ -33,4 +33,4 @@ export const mustNotBeOnboardedWithSelectedPartnerVenue = (
 ) =>
   userPermissions.isAuthenticated &&
   !userPermissions.isSelectedPartnerVenueOnboarded &&
-  userPermissions.isSelectedPartnerVenueActive
+  userPermissions.isSelectedPartnerVenueAndOffererActive

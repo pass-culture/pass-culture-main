@@ -26,13 +26,19 @@ const MOCK_DATA: {
   venues: [
     makeVenueListItemLiteResponseModel({
       id: 1,
-      managingOffererId: defaultGetOffererResponseModel.id,
+      managingOfferer: {
+        id: defaultGetOffererResponseModel.id,
+        isClosed: false,
+      },
       isPermanent: true,
       hasCreatedOffer: true,
     }),
     makeVenueListItemLiteResponseModel({
       id: 2,
-      managingOffererId: defaultGetOffererResponseModel.id,
+      managingOfferer: {
+        id: defaultGetOffererResponseModel.id,
+        isClosed: false,
+      },
       isPermanent: true,
       hasCreatedOffer: true,
     }),
