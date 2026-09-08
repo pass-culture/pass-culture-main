@@ -72,12 +72,28 @@ jobs:
         with:
           persist-credentials: true
 
+      # This is needed because tags are protected and the default GITHUB_TOKEN cannot be exempted
+      # from this ruleset
+      - name: Authenticate through github app ghactionci
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: github-token
+        with:
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          # Liste des repositories à cloner
+          repositories: |
+            pass-culture-main
+          permission-contents: write
+
       - name: Configure git author
         run: |
           git config --global user.email "$GIT_CONFIG_EMAIL"
           git config --global user.name "$GIT_CONFIG_NAME"
 
       - name: Push rc tag
+        env: 
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
         run: |
           git tag -f rc
           git push origin rc --force
