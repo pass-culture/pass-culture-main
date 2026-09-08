@@ -218,9 +218,7 @@ export function Table<
         >
           {!isTabletOrSmaller && sortedData.length > 0 && (
             <>
-              <caption className={styles['table-caption-no-display']}>
-                {title}
-              </caption>
+              <caption className={styles['visually-hidden']}>{title}</caption>
               <thead>
                 <tr
                   className={classNames(styles['table-header'], {

@@ -53,6 +53,10 @@
   }
 }
 
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
+
 .booking-type-section-multiple-dates {
   margin-top: var(--size-spacing-xl);
 }
