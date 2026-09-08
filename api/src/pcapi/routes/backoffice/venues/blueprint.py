@@ -594,25 +594,6 @@ def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> response
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
-# TODO (tcoudray-pass, 04/02/26): Remove when we get rid of old local providers integrations
-# See https://passculture.atlassian.net/browse/PC-40117
-@venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/cinema-integration", methods=["POST"])
-@access_control.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
-def toggle_new_cinema_integration_is_enabled(venue_id: int, provider_id: int) -> response_utils.BackofficeResponse:
-    venue_provider = _fetch_venue_provider(venue_id, provider_id)
-    venue_provider.isNewEtlIntegrationEnabled = not venue_provider.isNewEtlIntegrationEnabled
-    db.session.flush()
-
-    flash(
-        Markup("La nouvelle intégration cinéma a été {verb}.").format(
-            verb="activée" if venue_provider.isNewEtlIntegrationEnabled else "désactivée"
-        ),
-        "success",
-    )
-
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
-
-
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/synchronize-cinema", methods=["POST"])
 @access_control.permission_required_in(
     [perm_models.Permissions.ADVANCED_PRO_SUPPORT, perm_models.Permissions.MANAGE_TECH_PARTNERS]

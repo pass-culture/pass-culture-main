@@ -26,23 +26,6 @@
         {% endif %}
       </li>
       <li class="dropdown-item p-0">
-        {% if has_permission("MANAGE_TECH_PARTNERS") and new_etl_integration_can_be_enabled(venue_provider) %}
-          <form action="{{ url_for('backoffice_web.venue.toggle_new_cinema_integration_is_enabled', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
-                name="{{ url_for('backoffice_web.venue.toggle_new_cinema_integration_is_enabled', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
-                method="post">
-            {{ csrf_token }}
-            <button type="submit"
-                    class="btn btn-sm d-block w-100 text-start px-3">
-              {% if venue_provider.isNewEtlIntegrationEnabled %}
-                Désactiver la nouvelle intégration cinéma
-              {% else %}
-                Activer la nouvelle intégration cinéma
-              {% endif %}
-            </button>
-          </form>
-        {% endif %}
-      </li>
-      <li class="dropdown-item p-0">
         {% if venue_provider.isActive and (venue_provider.isFromCinemaProvider or venue_provider.isFromAllocineProvider) %}
           <form action="{{ url_for('backoffice_web.venue.add_cinema_sessions_synchronize_task', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
                 name="{{ url_for('backoffice_web.venue.add_cinema_sessions_synchronize_task', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"

@@ -3424,40 +3424,6 @@ class PostToggleVenueProviderIsActiveTest(PostEndpointHelper):
         assert db.session.query(history_models.ActionHistory).count() == 0
 
 
-class ToggleNewCinemaIntegrationIsEnabledTestPost(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.toggle_new_cinema_integration_is_enabled"
-    endpoint_kwargs = {"venue_id": 1, "provider_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
-
-    @pytest.mark.parametrize("is_enabled,verb", [(True, "désactivée"), (False, "activée")])
-    def test_toggle_new_cinema_integration_is_enabled(self, authenticated_client, legit_user, is_enabled, verb):
-        venue_provider = providers_factories.VenueProviderFactory(
-            provider__name="Test provider", isNewEtlIntegrationEnabled=is_enabled
-        )
-
-        response = self.post_to_endpoint(
-            authenticated_client, venue_id=venue_provider.venue.id, provider_id=venue_provider.provider.id
-        )
-        assert response.status_code == 303
-
-        db.session.refresh(venue_provider)
-        assert venue_provider.isNewEtlIntegrationEnabled is not is_enabled
-
-        response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(response.data) == f"La nouvelle intégration cinéma a été {verb}."
-
-    def test_toggle_wrong_provider(self, authenticated_client):
-        venue_provider = providers_factories.VenueProviderFactory()
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue_provider.venue.id, provider_id=0)
-        assert response.status_code == 404
-        assert (
-            db.session.query(providers_models.VenueProvider)
-            .filter(providers_models.VenueProvider.id == venue_provider.id)
-            .one()
-        )
-
-
 class AddCinemaSessionsSynchronizeTaskPostTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.add_cinema_sessions_synchronize_task"
     endpoint_kwargs = {"venue_id": 1, "provider_id": 1}

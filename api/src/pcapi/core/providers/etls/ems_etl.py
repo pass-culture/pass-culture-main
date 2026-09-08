@@ -39,14 +39,24 @@ class EMSExtractTransformLoadProcess(CinemaETLProcessTemplate[EMSScheduleConnect
         assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
         self.ems_cinema_details = repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
         self.target_version = 0
+        self._schedules: None | ems_serializers.ScheduleResponse = None
         if from_last_version:
             self.target_version = self.ems_cinema_details.lastVersion
+
+    def with_schedules_data(self, schedules: ems_serializers.ScheduleResponse) -> "EMSExtractTransformLoadProcess":
+        """
+        EMS does not have an endpoint to fetch the schedules for a given cinema.
+        In order to avoid fetching all the schedules each time we are executing the process for a cinema,
+        we add this helper to give the process the schedules data (fetched only once) and skip the extract step.
+        """
+        self._schedules = schedules
+        return self
 
     def _extract(self) -> EMSExtractResult:
         """
         Step 1: Fetch data from EMS API
         """
-        schedules = self.api_client.get_schedules(self.target_version)
+        schedules = self._schedules or self.api_client.get_schedules(self.target_version)
 
         site_with_events = None
         for site in schedules.sites:
