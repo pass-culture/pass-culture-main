@@ -148,6 +148,7 @@ def accelerate_automatic_disability_bonus_fraud_checks(
             fraud_check.type in disability_bonus_types
             and fraud_check.status == subscription_models.FraudCheckStatus.STARTED
             and fraud_check.reason.startswith(bonus_constants.AUTOMATIC_ORIGIN)
+            and not fraud_check.reason.endswith(new_origin)
         )
         if not is_pending_automatic_fraud_check:
             continue
