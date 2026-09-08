@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 
 import { api } from '@/apiClient/api'
+import { getHumanReadableApiError } from '@/apiClient/helpers'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -94,7 +95,10 @@ export const useCollectiveOfferImageUpload = (
         sendSentryCustomError(error)
 
         return snackBar.error(
-          'Une erreur est survenue lors de l’envoi de votre image'
+          getHumanReadableApiError(
+            error,
+            'Une erreur est survenue lors de l’envoi de votre image'
+          )
         )
       }
     },

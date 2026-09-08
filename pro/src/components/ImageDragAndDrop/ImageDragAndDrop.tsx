@@ -73,6 +73,9 @@ export const ImageDragAndDrop = forwardRef(
       }
 
       try {
+        const content = await file.arrayBuffer()
+        const image = new File([content], file.name, { type: file.type })
+
         const { width, height } = await getImageDimensions(file)
 
         const errors: string[] = []
@@ -95,8 +98,7 @@ export const ImageDragAndDrop = forwardRef(
           setCustomErrors(errors)
           onError?.(errors)
         } else if (onDropOrSelected) {
-          const image = Object.assign(file, { width, height })
-          onDropOrSelected(image)
+          onDropOrSelected(Object.assign(image, { width, height }))
         }
       } catch {
         const error = ['file-invalid-type']
