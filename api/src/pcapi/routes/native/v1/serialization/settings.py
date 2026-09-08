@@ -50,6 +50,7 @@ class SettingsResponse(HttpBodyModel):
     deposit_amounts_by_age: DepositAmountsByAge
     display_dms_redirection: bool
     enable_front_image_resizing: bool
+    image_resizing_url: str
     enable_native_cultural_survey: bool
     id_check_address_autocompletion: bool
     ineligible_postal_codes: list[str]
