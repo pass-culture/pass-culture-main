@@ -61,7 +61,7 @@ def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend
             if not access_control.has_current_user_permission(perm_models.Permissions.SUSPEND_USER):
                 raise Forbidden()
 
-    if user.has_admin_role or user.backoffice_profile:
+    if user.has_admin_role or user.backoffice_profile:#TODO bulle delete has admin role?
         if not access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
             raise Forbidden()
     elif user.has_any_pro_role:
@@ -196,7 +196,7 @@ def _check_users_to_suspend(ids_list: set[int]) -> tuple[list[users_models.User]
     if len(users) != len(ids_list):
         ids_not_found = ids_list - {user.id for user in users}
         errors.append(f"ID non trouvés : {', '.join(str(id_) for id_ in sorted(ids_not_found))}")
-
+#TODO bulle replace by is in backofficerole liaison table? user.backoffice_profile
     admins = [user for user in users if user.has_admin_role]
     if admins:
         data = ", ".join(f"{user.id} ({user.email})" for user in sorted(admins, key=attrgetter("id")))

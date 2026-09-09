@@ -52,7 +52,7 @@ def get_all_offerers_for_user(
     """
     query = db.session.query(models.Offerer).filter(models.Offerer.isActive.is_(True))
 
-    if not user.has_admin_role:
+    if not user.has_admin_role: #TODO bulle donc if admin = toutes les offres? check utilisation
         user_offerer_filters = [
             models.UserOfferer.userId == user.id,
             sa.not_(models.UserOfferer.isRejected) & sa.not_(models.UserOfferer.isDeleted),

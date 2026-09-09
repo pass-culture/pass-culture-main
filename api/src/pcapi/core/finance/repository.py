@@ -579,8 +579,15 @@ def get_bank_accounts_query(user: users_models.User) -> sa_orm.Query:
         models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
     )
 
-    if not user.has_admin_role:
-        query = query.join(
+    # if not user.has_admin_role:
+    #     query = query.join(
+    #         offerers_models.UserOfferer,
+    #         models.BankAccount.offererId == offerers_models.UserOfferer.offererId,
+    #     ).filter(
+    #         offerers_models.UserOfferer.userId == user.id,
+    #         offerers_models.UserOfferer.isValidated,
+    #     )
+    query = query.join(
             offerers_models.UserOfferer,
             models.BankAccount.offererId == offerers_models.UserOfferer.offererId,
         ).filter(
@@ -605,6 +612,7 @@ def get_paid_invoices_query(
 ) -> sa_orm.Query[models.Invoice]:
     bank_account_subquery = db.session.query(models.BankAccount)
 
+#TODO bulle
     if not user.has_admin_role:
         bank_account_subquery = bank_account_subquery.join(
             offerers_models.UserOfferer,

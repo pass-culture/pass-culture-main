@@ -113,6 +113,7 @@ def get_combined_invoices(query: finance_serialize.GetCombinedInvoicesQueryModel
     offerer_ids = {bank_account.offererId for bank_account in bank_accounts}
     if not offerer_ids:
         raise ApiErrors({"invoiceReferences": ["Aucune structure trouvée pour les factures fournies"]})
+#TODO bulle replace by is in backofficerole liaison table? or check why falesafe user.backoffice_profile
     if not current_user.has_admin_role:
         user_offerers_count = (
             db.session.query(offerers_models.UserOfferer)

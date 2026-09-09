@@ -46,28 +46,28 @@ def list_offerers_names() -> offerers_serialize.GetOfferersNamesResponseModel:
     )
 
 
-@private_api.route("/offerers/educational", methods=["GET"])
-@atomic()
-@login_required
-@spectree_serialize(
-    response_model=offerers_serialize.GetEducationalOfferersResponseModel, api=blueprint.pro_private_schema
-)
-def list_educational_offerers(
-    query: offerers_serialize.GetEducationalOfferersQueryModel,
-) -> offerers_serialize.GetEducationalOfferersResponseModel:
-    offerer_id = query.offerer_id
+# @private_api.route("/offerers/educational", methods=["GET"])
+# @atomic()
+# @login_required
+# @spectree_serialize(
+#     response_model=offerers_serialize.GetEducationalOfferersResponseModel, api=blueprint.pro_private_schema
+# )
+# def list_educational_offerers(
+#     query: offerers_serialize.GetEducationalOfferersQueryModel,
+# ) -> offerers_serialize.GetEducationalOfferersResponseModel:
+#     offerer_id = query.offerer_id
 
-    try:
-        offerers = api.get_educational_offerers(offerer_id, current_user)
+#     try:
+#         offerers = api.get_educational_offerers(offerer_id, current_user)
 
-        return offerers_serialize.GetEducationalOfferersResponseModel(
-            educational_offerers=[
-                offerers_serialize.GetEducationalOffererResponseModel.build(offerer) for offerer in offerers
-            ]
-        )
+#         return offerers_serialize.GetEducationalOfferersResponseModel(
+#             educational_offerers=[
+#                 offerers_serialize.GetEducationalOffererResponseModel.build(offerer) for offerer in offerers
+#             ]
+#         )
 
-    except offerers_exceptions.MissingOffererIdQueryParameter:
-        raise ApiErrors({"offerer_id": "Missing query parameter"})
+#     except offerers_exceptions.MissingOffererIdQueryParameter:
+#         raise ApiErrors({"offerer_id": "Missing query parameter"})
 
 
 @private_api.route("/offerers/<int:offerer_id>", methods=["GET"])

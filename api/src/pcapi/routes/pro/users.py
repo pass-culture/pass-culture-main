@@ -246,7 +246,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
         raise UnauthorizedError(errors={"identifier": ["Identifiant ou mot de passe incorrect"]})
     except users_exceptions.UnvalidatedAccount:
         raise UnauthorizedError(errors={"identifier": ["Ce compte n'est pas validé."]})
-
+#TODO bulle replace by is in backofficerole liaison table? user.backoffice_profile
     if user.has_admin_role:
         raise UnauthorizedError(errors={"identifier": ["Vous ne pouvez pas vous connecter avec un compte ADMIN."]})
 
@@ -339,6 +339,7 @@ def connect_as(token: str) -> Response:
     if not user.isActive:
         raise ForbiddenError({"user": "L'utilisateur est inactif"})
 
+#TODO bulle replace by is in backofficerole liaison table? user.backoffice_profile
     if user.has_admin_role:
         raise ForbiddenError({"user": "L'utilisateur est un admin"})
 

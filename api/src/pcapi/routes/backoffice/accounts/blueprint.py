@@ -1880,7 +1880,7 @@ def resend_validation_email(user_id: int) -> response_utils.BackofficeResponse:
     if not user:
         raise NotFound()
 
-    if user.has_admin_role or user.has_pro_role:
+    if user.has_admin_role or user.has_pro_role: #TODO bulle replace by backoffice_profile?
         flash("Cette action n'est pas supportée pour les utilisateurs admin ou pro", "warning")
     elif user.email.endswith((users_constants.DELETED_USER_EMAIL, users_constants.ANONYMIZED_USER_EMAIL)):
         flash("L'adresse email a été anonymisée ou supprimée", "warning")

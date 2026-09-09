@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 def create_gdpr_user_extract_data() -> None:
     logger.info("create_gdpr_user_extract_data")
 
+    #TODO bulle replace by is in backofficerole liaison table? user.backoffice_profile
     author = (
         db.session.query(users_models.User)
         .filter(users_models.User.has_admin_role)

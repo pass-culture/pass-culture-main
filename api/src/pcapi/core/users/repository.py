@@ -76,7 +76,7 @@ def find_pro_or_non_attached_pro_user_by_email_query(email: str) -> sa_orm.Query
 
 def has_access(user: models.User, offerer_id: int) -> bool:
     """Return whether the user has access to the requested offerer's data."""
-    if user.has_admin_role:
+    if user.has_admin_role: #TODO bulle replace by backoffice_profile?
         return True
     return db.session.query(
         db.session.query(offerers_models.UserOfferer)
@@ -126,7 +126,7 @@ def get_users_that_had_birthday_since(since: date, age: int) -> list[models.User
         db.session.query(models.User)
         .outerjoin(offerers_models.UserOfferer)
         .filter(
-            sa.not_(models.User.has_admin_role),  # not an admin
+            sa.not_(models.User.has_admin_role),  # not an admin #TODO bulle replace by backoffice_profile?
             offerers_models.UserOfferer.userId.is_(None),  # not a pro
             models.User.birth_date <= today - relativedelta(years=age),
             models.User.birth_date > since - relativedelta(years=age),

@@ -171,7 +171,7 @@ def _get_connect_as_base_query() -> sa_orm.Query:
         .join(users_models.User.UserOfferers)
         .filter(
             users_models.User.isActive.is_(True),
-            ~users_models.User.has_admin_role,
+            ~users_models.User.has_admin_role, #TODO bulle replace by backoffice_profile?
             ~users_models.User.has_anonymized_role,
             offerers_models.UserOfferer.isValidated,
         )
@@ -210,7 +210,7 @@ def _check_user_for_user_id(user_id: int) -> int:
     if not user.isActive:
         raise ValueError("L'utilisation du « connect as » n'est pas disponible pour les comptes inactifs")
 
-    if user.has_admin_role:
+    if user.has_admin_role: #TODO bulle replace by backoffice_profile?
         raise ValueError("L'utilisation du « connect as » n'est pas disponible pour les comptes admin")
 
     if user.has_anonymized_role:

@@ -19,7 +19,8 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
-from pcapi.core.users.models import User
+
+# from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import date as date_utils
@@ -1296,7 +1297,7 @@ def get_query_for_collective_offers_by_ids_for_user(
 ) -> sa_orm.Query[models.CollectiveOffer]:
     query = db.session.query(models.CollectiveOffer)
 
-    if not user.has_admin_role:
+    if not user.has_admin_role: #TODO bulle replace by backoffice_profile ?
         query = query.join(offerers_models.Venue, models.CollectiveOffer.venue)
         query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         query = query.join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
@@ -1314,13 +1315,15 @@ def get_query_for_collective_offers_template_by_ids_for_user(
     user: User, ids: typing.Iterable[int]
 ) -> sa_orm.Query[models.CollectiveOfferTemplate]:
     query = db.session.query(models.CollectiveOfferTemplate)
-    if not user.has_admin_role:
+    
+    if not user.has_admin_role: #TODO bulle replace by backoffice_profile ?
         query = (
             query.join(models.CollectiveOfferTemplate.venue)
             .join(offerers_models.Venue.managingOfferer)
             .join(offerers_models.Offerer.UserOfferers)
             .filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
         )
+    
     query = query.filter(models.CollectiveOfferTemplate.id.in_(ids)).options(
         sa_orm.contains_eager(models.CollectiveOfferTemplate.venue)
     )

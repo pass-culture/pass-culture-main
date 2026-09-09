@@ -311,7 +311,7 @@ def get_offers_by_booking_allowed_datetime(booking_allowed_datetime: datetime.da
 
 def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> sa_orm.Query:
     query = db.session.query(models.Offer)
-    if not user.has_admin_role:
+    if not user.has_admin_role: 
         query = (
             query.join(offerers_models.Venue)
             .join(offerers_models.Offerer)
@@ -321,7 +321,7 @@ def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> sa_orm.Q
                 offerers_models.UserOfferer.isValidated,
             )
         )
-    query = query.filter(models.Offer.id.in_(offer_ids))
+    query = query.filter(models.Offer.id.in_(offer_ids)) #TODO bulle donc if admin = toutes les offres? check utilisation
     return query
 
 
