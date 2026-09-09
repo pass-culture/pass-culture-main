@@ -1,6 +1,5 @@
-from datetime import date
+from datetime import UTC
 from datetime import datetime
-from datetime import time
 from datetime import timedelta
 
 import pytest
@@ -27,19 +26,24 @@ class MovieCalendarTest:
     def test_get_movie_shows_with_allocine_id(self, client):
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
         address = AddressFactory(latitude=48.85, longitude=2.35)
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        tz_aware_beginning_datetime = date_utils.default_timezone_to_local_datetime(
+            tz_naive_beginning_datetime, address.timezone
+        )
         stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=tz_naive_beginning_datetime,
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+
+        start = date_utils.get_naive_utc_now()
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # product
         expected_num_queries += 1  # stocks
@@ -49,6 +53,8 @@ class MovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(start, address.timezone).date()
+        tomorrow = date_utils.default_timezone_to_local_datetime(end, address.timezone).date()
         assert calendar == [
             {
                 "date": today.isoformat(),
@@ -58,7 +64,7 @@ class MovieCalendarTest:
                         "distance": 0.0,
                         "dayScreenings": [
                             {
-                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "AUTHENTICATION_REQUIRED",
                                 "features": [],
                                 "price": float(stock.price),
@@ -67,7 +73,7 @@ class MovieCalendarTest:
                         ],
                         "label": stock.offer.venue.publicName,
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
                             "features": [],
                             "price": float(stock.price),
@@ -88,7 +94,7 @@ class MovieCalendarTest:
                         "dayScreenings": [],
                         "label": stock.offer.venue.publicName,
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
                             "features": [],
                             "price": 10.1,
@@ -108,17 +114,17 @@ class MovieCalendarTest:
         offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
 
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now()
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         params = {
             "visa": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # product
         expected_num_queries += 1  # stocks
@@ -127,8 +133,10 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
-        assert len([e for e in response.json["calendar"] if e["date"] == today.isoformat()]) == 1
-        assert len([e for e in response.json["calendar"] if e["date"] == tomorrow.isoformat()]) == 1
+        today = date_utils.default_timezone_to_local_datetime(start, address.timezone).date()
+        tomorrow = date_utils.default_timezone_to_local_datetime(end, address.timezone).date()
+        assert len(response.json["calendar"]) == 2
+        assert [e["date"] for e in response.json["calendar"]] == [today.isoformat(), tomorrow.isoformat()]
 
     def test_requires_allocine_id_or_visa(self, client):
         params = {
@@ -175,14 +183,14 @@ class MovieCalendarTest:
 
     def test_on_no_screenings_found(self, client):
         offers_factories.ProductFactory(extraData={"allocineId": 12345})
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now()
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # product
         expected_num_queries += 1  # stocks
@@ -191,6 +199,8 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(start, "UTC").date()
+        tomorrow = date_utils.default_timezone_to_local_datetime(end, "UTC").date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings == []
         tomorrow_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == tomorrow.isoformat()][
@@ -200,39 +210,42 @@ class MovieCalendarTest:
 
     def test_screenings_are_sorted_by_distance_then_screening_day(self, client):
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
-        closest_address_for_today = AddressFactory(latitude=48.85, longitude=2.35)
-        closest_address_for_tomorrow = AddressFactory(latitude=48.85, longitude=2.35)
-        furthest_address_for_today = AddressFactory(latitude=48.84, longitude=2.35)
-        furthest_address_for_tomorrow = AddressFactory(latitude=48.84, longitude=2.35)
+        timezone = "Europe/Paris"
+        closest_address_for_today = AddressFactory(latitude=48.85, longitude=2.35, timezone=timezone)
+        closest_address_for_tomorrow = AddressFactory(latitude=48.85, longitude=2.35, timezone=timezone)
+        furthest_address_for_today = AddressFactory(latitude=48.84, longitude=2.35, timezone=timezone)
+        furthest_address_for_tomorrow = AddressFactory(latitude=48.84, longitude=2.35, timezone=timezone)
         today_closest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=closest_address_for_today,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
         today_furthest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=furthest_address_for_today,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
         tomorrow_closest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=closest_address_for_tomorrow,
-            beginningDatetime=datetime.now() + timedelta(hours=23),
+            beginningDatetime=(date_utils.get_naive_utc_now() + timedelta(days=1)).replace(hour=12),
         )
         tomorrow_furthest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=furthest_address_for_tomorrow,
-            beginningDatetime=datetime.now() + timedelta(hours=23),
+            beginningDatetime=(date_utils.get_naive_utc_now() + timedelta(days=1)).replace(hour=12),
         )
 
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = (date_utils.get_naive_utc_now() + timedelta(days=1)).replace(
+            hour=23, minute=59, second=59, microsecond=999
+        )
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": datetime.combine(today, time.min),
-            "to": datetime.combine(tomorrow, time.max),
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # product
         expected_num_queries += 1  # stocks
@@ -241,6 +254,10 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(start, timezone).date()
+        tomorrow = date_utils.default_timezone_to_local_datetime(
+            (date_utils.get_naive_utc_now() + timedelta(days=1)).replace(hour=12), timezone
+        ).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         tomorrow_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == tomorrow.isoformat()][
             0
@@ -261,22 +278,24 @@ class MovieCalendarTest:
         first_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue=venue,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
         last_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue=venue,
-            beginningDatetime=datetime.now() + timedelta(hours=2),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=2),
         )
 
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = (date_utils.get_naive_utc_now() + timedelta(days=1)).replace(
+            hour=23, minute=59, second=59, microsecond=999
+        )
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # product
         expected_num_queries += 1  # stocks
@@ -285,6 +304,7 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(start, address.timezone).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["stockId"] == first_stock.id
         assert today_screenings[0]["dayScreenings"][1]["stockId"] == last_stock.id
@@ -296,22 +316,21 @@ class MovieCalendarTest:
         closest_stock_from_tomorrow = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue=venue,
-            beginningDatetime=datetime.now() + timedelta(hours=2),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=2),
         )
         _furthest_stock_from_tomorrow = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue=venue,
-            beginningDatetime=datetime.now() + timedelta(days=3, hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=3, hours=1),
         )
 
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
-        in_three_days = date.today() + timedelta(days=3)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        in_three_days = (date_utils.get_naive_utc_now() + timedelta(days=3)).replace(hour=12)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
+            "from": start,
             "to": in_three_days,
         }
         expected_num_queries = 1  # product
@@ -321,6 +340,9 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
+        tomorrow = date_utils.default_timezone_to_local_datetime(
+            start + timedelta(days=1, hours=12), address.timezone
+        ).date()
         tomorrow_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == tomorrow.isoformat()][
             0
         ]
@@ -328,21 +350,22 @@ class MovieCalendarTest:
 
     def test_screenings_are_within_around_radius(self, client):
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
-        closest_address = AddressFactory(latitude=48.8, longitude=2.35)
-        furthest_address = AddressFactory(latitude=48.0, longitude=2.35)
+        timezone = "Europe/Paris"
+        closest_address = AddressFactory(latitude=48.8, longitude=2.35, timezone=timezone)
+        furthest_address = AddressFactory(latitude=48.0, longitude=2.35, timezone=timezone)
         _closest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=closest_address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
         _furthest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=furthest_address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
 
-        start_of_day = datetime.combine(date.today(), time.min)
-        end_of_day = datetime.combine(date.today(), time.max)
+        start_of_day = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         params = {
             "allocineId": "12345",
             "latitude": 48.8,
@@ -358,31 +381,33 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
-        today_screenings = [
-            e["screenings"] for e in response.json["calendar"] if e["date"] == start_of_day.date().isoformat()
-        ][0]
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now().replace(hour=12), timezone
+        ).date()
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert len(today_screenings) == 1
         assert len(today_screenings[0]["dayScreenings"]) == 1
         assert today_screenings[0]["distance"] < 10_000
 
     def test_sold_out_screening(self, client):
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
-        address = AddressFactory(latitude=48.85, longitude=2.35)
+        timezone = "Europe/Paris"
+        address = AddressFactory(latitude=48.85, longitude=2.35, timezone=timezone)
         _sold_out_stock = offers_factories.EventStockFactory(
             quantity=1,
             dnBookedQuantity=1,
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = (date_utils.get_naive_utc_now() + timedelta(days=1)).replace(hour=12)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # product
         expected_num_queries += 1  # stocks
@@ -392,6 +417,9 @@ class MovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now().replace(hour=12), timezone
+        ).date()
         today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
         assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_IS_SOLD_OUT"
@@ -405,16 +433,16 @@ class MovieCalendarTest:
             offer__lastProvider=disabled_provider,
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = (date_utils.get_naive_utc_now() + timedelta(days=1)).replace(hour=12)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # product
         expected_num_queries += 1  # stocks
@@ -424,6 +452,9 @@ class MovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now().replace(hour=12), address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
         assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
@@ -441,8 +472,8 @@ class MovieCalendarTest:
         params = {
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": date.today(),
-            "to": date.today() + timedelta(days=1),
+            "from": date_utils.get_naive_utc_now(),
+            "to": date_utils.get_naive_utc_now() + timedelta(days=1),
             field_name: value,
         }
         response = client.get("/native/v1/movie/calendar", params=params)
@@ -462,12 +493,117 @@ class MovieCalendarTest:
         params = {
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": date.today(),
-            "to": date.today() + timedelta(days=1),
+            "from": date_utils.get_naive_utc_now(),
+            "to": date_utils.get_naive_utc_now() + timedelta(days=1),
             field_name: value,
         }
         response = client.get("/native/v1/movie/calendar", params=params)
         assert response.status_code == 404
+
+    def test_timezone_aware_query_params(self, client):
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345}, durationMinutes=113)
+        address = AddressFactory(latitude=48.85, longitude=2.35, timezone="Europe/Paris")
+        start_date = datetime.now(UTC)
+        end_date = start_date + timedelta(days=1)
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        tz_aware_beginning_datetime = date_utils.default_timezone_to_local_datetime(
+            tz_naive_beginning_datetime, address.timezone
+        )
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=tz_naive_beginning_datetime,
+            offer__venue__offererAddress__address=address,
+        )
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": start_date.isoformat(),
+            "to": end_date.isoformat(),
+        }
+        expected_num_queries = 1  # product
+        expected_num_queries += 1  # stocks
+        expected_num_queries += 1  # screenings
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar", params=params)
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert len(calendar) == 2
+        start_date_day = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now().replace(hour=12), address.timezone
+        ).date()
+        end_date_day = date_utils.default_timezone_to_local_datetime(
+            (date_utils.get_naive_utc_now() + timedelta(days=1)).replace(hour=12), address.timezone
+        ).date()
+
+        assert [start_date_day.isoformat(), end_date_day.isoformat()] == [e["date"] for e in calendar]
+        today_screenings = [e for e in calendar if e["date"] == start_date_day.isoformat()][0]["screenings"]
+        assert len(today_screenings) == 1
+        today_day_screenings = today_screenings[0]["dayScreenings"]
+        assert len(today_day_screenings) == 1
+        today_day_screening = today_day_screenings[0]
+        assert today_day_screening["stockId"] == stock.id
+        assert today_day_screening["beginningDatetime"] == tz_aware_beginning_datetime.isoformat()
+
+        tomorrow_screenings = [e for e in calendar if e["date"] == end_date_day.isoformat()][0]["screenings"]
+        assert len(tomorrow_screenings) == 1
+        tomorrow_day_screenings = tomorrow_screenings[0]["dayScreenings"]
+        assert len(tomorrow_day_screenings) == 0
+
+    def test_filter_screenings_from_the_past(self, client):
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345}, durationMinutes=113)
+        address = AddressFactory(latitude=48.85, longitude=2.35, timezone="Europe/Paris")
+        start_date = datetime.now(UTC) - timedelta(days=1)
+        end_date = datetime.now(UTC) + timedelta(days=1)
+
+        offers_factories.EventStockFactory(  # past stock
+            offer__product=product,
+            beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1) + timedelta(hours=1),
+            offer__venue__offererAddress__address=address,
+        )
+
+        future_stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
+            offer__venue__offererAddress__address=address,
+        )
+
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": start_date.isoformat(),
+            "to": end_date.isoformat(),
+        }
+        expected_num_queries = 1  # product
+        expected_num_queries += 1  # stocks
+        expected_num_queries += 1  # screenings
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar", params=params)
+            assert response.status_code == 200, response.json
+
+        calendar = response.json["calendar"]
+        assert len(calendar) == 2
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now().replace(hour=12), address.timezone
+        ).date()
+        tomorrow = date_utils.default_timezone_to_local_datetime(
+            (date_utils.get_naive_utc_now() + timedelta(days=1)).replace(hour=12), address.timezone
+        ).date()
+        assert [today.isoformat(), tomorrow.isoformat()] == [e["date"] for e in calendar]
+
+        today_screenings = [e for e in calendar if e["date"] == today.isoformat()][0]["screenings"]
+        assert len(today_screenings) == 1
+        today_day_screenings = today_screenings[0]["dayScreenings"]
+        assert len(today_day_screenings) == 1
+        today_day_screening = today_day_screenings[0]
+        assert today_day_screening["stockId"] == future_stock.id
+
+        tomorrow_screenings = [e for e in calendar if e["date"] == tomorrow.isoformat()][0]["screenings"]
+        assert len(tomorrow_screenings) == 1
+        tomorrow_day_screenings = tomorrow_screenings[0]["dayScreenings"]
+        assert len(tomorrow_day_screenings) == 0
 
 
 class MovieCalendarForUserTest:
@@ -475,19 +611,23 @@ class MovieCalendarForUserTest:
         user = users_factories.BeneficiaryFactory()
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
         address = AddressFactory(latitude=48.85, longitude=2.35)
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        tz_aware_beginning_datetime = date_utils.default_timezone_to_local_datetime(
+            tz_naive_beginning_datetime, address.timezone
+        )
         stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=tz_naive_beginning_datetime,
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = datetime.now(UTC)
+        end = start + timedelta(days=1)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # user
         expected_num_queries += 1  # product
@@ -500,6 +640,10 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
+        tomorrow = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now() + timedelta(days=1), address.timezone
+        ).date()
         assert response.json == {
             "calendar": [
                 {
@@ -510,7 +654,7 @@ class MovieCalendarForUserTest:
                             "distance": 0.0,
                             "dayScreenings": [
                                 {
-                                    "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                    "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                     "bookability": "BOOKABLE",
                                     "features": [],
                                     "price": float(stock.price),
@@ -519,7 +663,7 @@ class MovieCalendarForUserTest:
                             ],
                             "label": stock.offer.venue.publicName,
                             "nextScreening": {
-                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "BOOKABLE",
                                 "features": [],
                                 "price": float(stock.price),
@@ -540,7 +684,7 @@ class MovieCalendarForUserTest:
                             "dayScreenings": [],
                             "label": stock.offer.venue.publicName,
                             "nextScreening": {
-                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "BOOKABLE",
                                 "features": [],
                                 "price": 10.1,
@@ -559,21 +703,21 @@ class MovieCalendarForUserTest:
         user = users_factories.UserFactory(age=100)
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
         address = AddressFactory(latitude=48.85, longitude=2.35)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         _stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
             quantity=0,
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # user
         expected_num_queries += 1  # product
@@ -585,6 +729,7 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
 
@@ -599,17 +744,17 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
             quantity=0,
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # user
         expected_num_queries += 1  # product
@@ -621,6 +766,7 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
 
@@ -632,16 +778,16 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # user
         expected_num_queries += 1  # product
@@ -653,6 +799,7 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_CANNOT_BOOK"
 
@@ -665,16 +812,16 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # user
         expected_num_queries += 1  # product
@@ -687,6 +834,7 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_INSUFFICIENT_CREDIT"
 
@@ -698,18 +846,18 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
         offers_factories.StockFactory(offer=stock.offer)
         _user_booking = BookingFactory(user=user, stock=stock)
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # user
         expected_num_queries += 1  # product
@@ -722,6 +870,7 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_OFFER"
 
@@ -733,18 +882,18 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             offer__venue__offererAddress__label="Cinéma Parisien",
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
         another_stock = offers_factories.StockFactory(offer=stock.offer)
         _user_booking = BookingFactory(user=user, stock=another_stock)
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": today,
-            "to": tomorrow,
+            "from": start,
+            "to": end,
         }
         expected_num_queries = 1  # user
         expected_num_queries += 1  # product
@@ -757,6 +906,7 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_RELATED_OFFER"
 
@@ -767,9 +917,10 @@ class MovieCalendarForUserTest:
         offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
-        today = date.today()
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         expected_num_queries = 1  # user
         expected_num_queries += 1  # product
         expected_num_queries += 1  # product stocks
@@ -785,12 +936,13 @@ class MovieCalendarForUserTest:
                     "allocineId": "12345",
                     "latitude": 48.85,
                     "longitude": 2.35,
-                    "from": today,
-                    "to": today + timedelta(days=1),
+                    "from": start,
+                    "to": end,
                 },
             )
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "FINISH_SUBSCRIPTION_REQUIRED"
 
@@ -820,9 +972,10 @@ class MovieCalendarForUserTest:
         offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
-        today = date.today()
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         expected_num_queries = 1  # user
         expected_num_queries += 1  # product
         expected_num_queries += 1  # product stocks
@@ -839,12 +992,13 @@ class MovieCalendarForUserTest:
                     "allocineId": "12345",
                     "latitude": 48.85,
                     "longitude": 2.35,
-                    "from": today,
-                    "to": today + timedelta(days=1),
+                    "from": start,
+                    "to": end,
                 },
             )
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_APPLICATION_STILL_PROCESSING"
 
@@ -875,9 +1029,10 @@ class MovieCalendarForUserTest:
         offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
-        today = date.today()
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         expected_num_queries = 1  # user
         expected_num_queries += 1  # product
         expected_num_queries += 1  # product stocks
@@ -894,12 +1049,13 @@ class MovieCalendarForUserTest:
                     "allocineId": "12345",
                     "latitude": 48.85,
                     "longitude": 2.35,
-                    "from": today,
-                    "to": today + timedelta(days=1),
+                    "from": start,
+                    "to": end,
                 },
             )
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_APPLICATION_ERROR"
 
@@ -921,8 +1077,8 @@ class MovieCalendarForUserTest:
         params = {
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": date.today(),
-            "to": date.today() + timedelta(days=1),
+            "from": date_utils.get_naive_utc_now(),
+            "to": date_utils.get_naive_utc_now() + timedelta(days=1),
             field_name: value,
         }
         client.with_token(user)
@@ -947,8 +1103,8 @@ class MovieCalendarForUserTest:
         params = {
             "latitude": 48.85,
             "longitude": 2.35,
-            "from": date.today(),
-            "to": date.today() + timedelta(days=1),
+            "from": date_utils.get_naive_utc_now(),
+            "to": date_utils.get_naive_utc_now() + timedelta(days=1),
             field_name: value,
         }
         client.with_token(user)
@@ -959,19 +1115,30 @@ class MovieCalendarForUserTest:
 class VenueMovieCalendarTest:
     def test_get_venue_movie_calendar(self, client):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
-        stock = offers_factories.EventStockFactory(
-            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+        address = AddressFactory(timezone="Europe/Paris")
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(minutes=10)
+        tz_aware_beginning_datetime = date_utils.default_timezone_to_local_datetime(
+            tz_naive_beginning_datetime, address.timezone
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=tz_naive_beginning_datetime,
+        )
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999) + timedelta(
+            minutes=10
+        )
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # venue
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": today, "to": tomorrow})
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(start.replace(hour=12), address.timezone).date()
+        tomorrow = date_utils.default_timezone_to_local_datetime(end.replace(hour=12), address.timezone).date()
         assert calendar == [
             {
                 "date": today.isoformat(),
@@ -985,7 +1152,7 @@ class VenueMovieCalendarTest:
                         "thumbUrl": None,
                         "dayScreenings": [
                             {
-                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "AUTHENTICATION_REQUIRED",
                                 "features": [],
                                 "price": 10.1,
@@ -993,7 +1160,7 @@ class VenueMovieCalendarTest:
                             }
                         ],
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
                             "features": [],
                             "price": 10.1,
@@ -1014,7 +1181,7 @@ class VenueMovieCalendarTest:
                         "thumbUrl": None,
                         "dayScreenings": [],
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
                             "features": [],
                             "price": 10.1,
@@ -1026,10 +1193,11 @@ class VenueMovieCalendarTest:
         ]
 
     def test_day_screenings_are_sorted_by_last_30_days_bookings(self, client):
-        tomorrow = datetime.today() + timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + timedelta(days=1)
         beginning_datetime = tomorrow.replace(hour=1)
-        movie_day = tomorrow.date()
-        day_after = movie_day + timedelta(days=1)
+
+        start = tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
+        end = start + timedelta(days=1)
         least_booked_product = offers_factories.ProductFactory(
             last_30_days_booking=1, subcategoryId=subcategories.SEANCE_CINE.id
         )
@@ -1047,11 +1215,12 @@ class VenueMovieCalendarTest:
         expected_num_queries = 1  # venue
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": movie_day, "to": day_after}
-            )
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
             assert response.status_code == 200
 
+        movie_day = date_utils.default_timezone_to_local_datetime(
+            beginning_datetime, venue.offererAddress.address.timezone
+        ).date()
         movie_day_screenings = [
             e["screenings"] for e in response.json["calendar"] if e["date"] == movie_day.isoformat()
         ][0]
@@ -1059,7 +1228,7 @@ class VenueMovieCalendarTest:
         assert movie_day_screenings[1]["dayScreenings"][0]["stockId"] == least_booked_stock.id
 
     def test_day_screenings_are_sorted_by_beginning_datetime(self, client):
-        tomorrow = datetime.today() + timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + timedelta(days=1)
         before_screenings = tomorrow.replace(hour=0)
         first_beginning_datetime = tomorrow.replace(hour=1)
         last_beginning_datetime = tomorrow.replace(hour=2)
@@ -1080,19 +1249,18 @@ class VenueMovieCalendarTest:
             )
             assert response.status_code == 200
 
-        tomorrow_screenings = [
-            e["screenings"] for e in response.json["calendar"] if e["date"] == tomorrow.date().isoformat()
-        ][0]
+        day = date_utils.default_timezone_to_local_datetime(tomorrow, offer.offererAddress.address.timezone).date()
+        tomorrow_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == day.isoformat()][0]
         assert tomorrow_screenings[0]["dayScreenings"][0]["stockId"] == first_screened_stock.id
         assert tomorrow_screenings[0]["dayScreenings"][1]["stockId"] == last_screened_stock.id
 
     def test_next_screening_is_closest_requested_day(self, client):
-        tomorrow = datetime.today() + timedelta(days=1)
-        in_two_days = datetime.today() + timedelta(days=2)
-        in_three_days = datetime.today() + timedelta(days=3)
-        in_four_days = datetime.today() + timedelta(days=4)
+        tomorrow = date_utils.get_naive_utc_now() + timedelta(days=1)
+        in_two_days = date_utils.get_naive_utc_now() + timedelta(days=2)
+        in_three_days = date_utils.get_naive_utc_now() + timedelta(days=3)
+        in_four_days = date_utils.get_naive_utc_now() + timedelta(days=4)
         before_screenings = tomorrow.replace(hour=0)
-        after_screenings = datetime.today() + timedelta(days=5)
+        after_screenings = date_utils.get_naive_utc_now() + timedelta(days=5)
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         offer = offers_factories.OfferFactory(product=product)
         tomorrow_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=tomorrow)
@@ -1109,16 +1277,20 @@ class VenueMovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        in_two_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_two_days.date().isoformat()][0]
-        in_three_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_three_days.date().isoformat()][
-            0
-        ]
+        in_two_days_day = date_utils.default_timezone_to_local_datetime(
+            in_two_days, offer.offererAddress.address.timezone
+        ).date()
+        in_three_days_day = date_utils.default_timezone_to_local_datetime(
+            in_three_days, offer.offererAddress.address.timezone
+        ).date()
+        in_two_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_two_days_day.isoformat()][0]
+        in_three_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_three_days_day.isoformat()][0]
         assert in_two_days_screenings[0]["nextScreening"]["stockId"] == tomorrow_stock.id
         assert in_three_days_screenings[0]["nextScreening"]["stockId"] == in_four_days_stock.id
 
     def test_calendar_is_empty_if_no_screenings_found(self, client):
-        tomorrow = (datetime.today() + timedelta(days=1)).date()
-        in_two_days = (datetime.today() + timedelta(days=2)).date()
+        tomorrow = (date_utils.get_naive_utc_now() + timedelta(days=1)).date()
+        in_two_days = (date_utils.get_naive_utc_now() + timedelta(days=2)).date()
         venue = offerers_factories.VenueFactory()
 
         venue_id = venue.id
@@ -1138,18 +1310,21 @@ class VenueMovieCalendarTest:
     def test_sold_out_screening(self, client):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
-            quantity=0, offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            quantity=0, offer__product=product, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10)
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # venue
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": today, "to": tomorrow})
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), stock.offer.offererAddress.address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
         assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_IS_SOLD_OUT"
@@ -1161,18 +1336,21 @@ class VenueMovieCalendarTest:
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=disabled_provider,
             offer__product=product,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # venue
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": today, "to": tomorrow})
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), stock.offer.offererAddress.address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
         assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
@@ -1183,16 +1361,108 @@ class VenueMovieCalendarTest:
             response = client.get("/native/v1/venue/999999999/movie/calendar")
             assert response.status_code == 404
 
+    def test_timezone_aware_query_params(self, client):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        address = AddressFactory(timezone="Europe/Paris")
+        start_date = datetime.now(UTC)
+        end_date = start_date + timedelta(days=1)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
+            offer__venue__offererAddress__address=address,
+        )
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar",
+                params={"from": start_date.isoformat(), "to": end_date.isoformat()},
+            )
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert len(calendar) == 2
+        start_date_day = date_utils.default_timezone_to_local_datetime(start_date, address.timezone).date()
+        end_date_day = date_utils.default_timezone_to_local_datetime(end_date, address.timezone).date()
+        assert [start_date_day.isoformat(), end_date_day.isoformat()] == [e["date"] for e in calendar]
+        today_screenings = [e for e in calendar if e["date"] == start_date.date().isoformat()][0]["screenings"]
+        assert len(today_screenings) == 1
+        today_day_screenings = today_screenings[0]["dayScreenings"]
+        assert len(today_day_screenings) == 1
+        today_day_screening = today_day_screenings[0]
+        assert today_day_screening["stockId"] == stock.id
+
+        tomorrow_screenings = [e for e in calendar if e["date"] == end_date.date().isoformat()][0]["screenings"]
+        assert len(tomorrow_screenings) == 1
+        tomorrow_day_screenings = tomorrow_screenings[0]["dayScreenings"]
+        assert len(tomorrow_day_screenings) == 0
+
+    def test_filter_screenings_from_the_past(self, client):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=113)
+        address = AddressFactory(timezone="Europe/Paris")
+        start_date = datetime.now(UTC) - timedelta(days=1)
+        end_date = datetime.now(UTC) + timedelta(days=1)
+
+        past_stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1) + timedelta(hours=1),
+            offer__venue__offererAddress__address=address,
+        )
+
+        future_stock = offers_factories.EventStockFactory(
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
+            offer=past_stock.offer,
+        )
+
+        venue_id = past_stock.offer.venueId
+        params = {
+            "from": start_date.isoformat(),
+            "to": end_date.isoformat(),
+        }
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params=params)
+            assert response.status_code == 200, response.json
+
+        calendar = response.json["calendar"]
+        assert len(calendar) == 2
+        today_date = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), address.timezone
+        ).date()
+        tomorrow_date = date_utils.default_timezone_to_local_datetime(end_date, address.timezone).date()
+        assert [today_date.isoformat(), tomorrow_date.isoformat()] == [e["date"] for e in calendar]
+
+        today_screenings = [e for e in calendar if e["date"] == today_date.isoformat()][0]["screenings"]
+        assert len(today_screenings) == 1
+        today_day_screenings = today_screenings[0]["dayScreenings"]
+        assert len(today_day_screenings) == 1
+        today_day_screening = today_day_screenings[0]
+        assert today_day_screening["stockId"] == future_stock.id
+
+        tomorrow_screenings = [e for e in calendar if e["date"] == tomorrow_date.isoformat()][0]["screenings"]
+        assert len(tomorrow_screenings) == 1
+        tomorrow_day_screenings = tomorrow_screenings[0]["dayScreenings"]
+        assert len(tomorrow_day_screenings) == 0
+
 
 class VenueMovieCalendarForUserTest:
     def test_get_venue_movie_calendar(self, client):
         user = users_factories.BeneficiaryFactory()
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
-        stock = offers_factories.EventStockFactory(
-            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+        address = AddressFactory(timezone="Europe/Paris")
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(minutes=10)
+        tz_aware_beginning_datetime = date_utils.default_timezone_to_local_datetime(
+            tz_naive_beginning_datetime, address.timezone
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=tz_naive_beginning_datetime,
+            offer__venue__offererAddress__address=address,
+        )
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = (start + timedelta(days=1)).replace(hour=12, minute=0, second=0, microsecond=0)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
         expected_num_queries += 1  # venue
@@ -1201,12 +1471,12 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
-            )
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(start, address.timezone).date()
+        tomorrow = date_utils.default_timezone_to_local_datetime(end, address.timezone).date()
         assert calendar == [
             {
                 "date": today.isoformat(),
@@ -1220,7 +1490,7 @@ class VenueMovieCalendarForUserTest:
                         "thumbUrl": None,
                         "dayScreenings": [
                             {
-                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "BOOKABLE",
                                 "features": [],
                                 "price": 10.1,
@@ -1228,7 +1498,7 @@ class VenueMovieCalendarForUserTest:
                             }
                         ],
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "BOOKABLE",
                             "features": [],
                             "price": 10.1,
@@ -1249,7 +1519,7 @@ class VenueMovieCalendarForUserTest:
                         "thumbUrl": None,
                         "dayScreenings": [],
                         "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "BOOKABLE",
                             "features": [],
                             "price": 10.1,
@@ -1264,10 +1534,10 @@ class VenueMovieCalendarForUserTest:
         user = users_factories.BeneficiaryFactory()
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
-            quantity=0, offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            quantity=0, offer__product=product, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10)
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
         expected_num_queries += 1  # venue
@@ -1276,12 +1546,13 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
-            )
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), stock.offer.offererAddress.address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
         assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_IS_SOLD_OUT"
@@ -1294,10 +1565,10 @@ class VenueMovieCalendarForUserTest:
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=disabled_provider,
             offer__product=product,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
         expected_num_queries += 1  # venue
@@ -1306,12 +1577,13 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
-            )
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), stock.offer.offererAddress.address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
         assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
@@ -1323,10 +1595,10 @@ class VenueMovieCalendarForUserTest:
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=disabled_provider,
             offer__product=product,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
         expected_num_queries += 1  # venue
@@ -1334,12 +1606,13 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # deposits
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
-            )
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), stock.offer.offererAddress.address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_CANNOT_BOOK"
         assert today_screenings[0]["nextScreening"]["bookability"] == "USER_CANNOT_BOOK"
@@ -1348,10 +1621,10 @@ class VenueMovieCalendarForUserTest:
         user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18))
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
-            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            offer__product=product, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10)
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
         expected_num_queries += 1  # venue
@@ -1361,12 +1634,13 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # beneficiary_fraud_check
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
-            )
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), stock.offer.offererAddress.address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "FINISH_SUBSCRIPTION_REQUIRED"
 
@@ -1393,10 +1667,10 @@ class VenueMovieCalendarForUserTest:
 
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
-            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            offer__product=product, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10)
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
         expected_num_queries += 1  # venue
@@ -1407,11 +1681,12 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # action_history
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
-            )
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), stock.offer.offererAddress.address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_APPLICATION_STILL_PROCESSING"
 
@@ -1438,10 +1713,10 @@ class VenueMovieCalendarForUserTest:
         )
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
-            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+            offer__product=product, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10)
         )
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         venue_id = stock.offer.venue.id
         expected_num_queries = 1  # user
         expected_num_queries += 1  # venue
@@ -1452,11 +1727,12 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # action_history
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
-            )
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), stock.offer.offererAddress.address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_APPLICATION_ERROR"
 
@@ -1465,12 +1741,12 @@ class VenueMovieCalendarForUserTest:
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
             offer__product=product,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
         offers_factories.EventStockFactory(offer=stock.offer)
         _user_booking = BookingFactory(user=user, stock=stock)
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         venue_id = stock.offer.venue.id
 
         expected_num_queries = 1  # user
@@ -1480,11 +1756,12 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
-            )
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), stock.offer.offererAddress.address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_OFFER"
 
@@ -1493,12 +1770,12 @@ class VenueMovieCalendarForUserTest:
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
             offer__product=product,
-            beginningDatetime=datetime.now() + timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=10),
         )
         another_stock = offers_factories.EventStockFactory(offer=stock.offer)
         _user_booking = BookingFactory(user=user, stock=another_stock)
-        today = date.today()
-        tomorrow = date.today() + timedelta(days=1)
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now() + timedelta(days=1)
         venue_id = stock.offer.venue.id
 
         expected_num_queries = 1  # user
@@ -1508,11 +1785,12 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
-            )
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
+        today = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), stock.offer.offererAddress.address.timezone
+        ).date()
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_RELATED_OFFER"
 
@@ -1524,3 +1802,49 @@ class VenueMovieCalendarForUserTest:
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/venue/999999999/movie/calendar/me")
             assert response.status_code == 404
+
+    def test_timezone_aware_query_params(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        address = AddressFactory(timezone="Europe/Paris")
+        start_date = datetime.now(UTC)
+        end_date = start_date + timedelta(days=1)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=1),
+            offer__venue__offererAddress__address=address,
+        )
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me",
+                params={"from": start_date.isoformat(), "to": end_date.isoformat()},
+            )
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        start_date_day = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now(), address.timezone
+        ).date()
+        end_date_day = date_utils.default_timezone_to_local_datetime(
+            date_utils.get_naive_utc_now() + timedelta(days=1), address.timezone
+        ).date()
+        assert len(calendar) == 2
+        assert [start_date_day.isoformat(), end_date_day.isoformat()] == [e["date"] for e in calendar]
+        today_screenings = [e for e in calendar if e["date"] == start_date_day.isoformat()][0]["screenings"]
+        assert len(today_screenings) == 1
+        today_day_screenings = today_screenings[0]["dayScreenings"]
+        assert len(today_day_screenings) == 1
+        today_day_screening = today_day_screenings[0]
+        assert today_day_screening["stockId"] == stock.id
+
+        tomorrow_screenings = [e for e in calendar if e["date"] == end_date_day.isoformat()][0]["screenings"]
+        assert len(tomorrow_screenings) == 1
+        tomorrow_day_screenings = tomorrow_screenings[0]["dayScreenings"]
+        assert len(tomorrow_day_screenings) == 0
