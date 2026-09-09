@@ -1717,7 +1717,7 @@ def revalidate_offers_after_product_whitelist(product: offers_models.Product, us
         offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
         offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
     )
-    offer_ids = [o.id for o in offers_query.with_entities(offers_models.Offer.id)]
+    offer_ids = {o.id for o in offers_query.with_entities(offers_models.Offer.id)}
 
     if offer_ids:
         offers_query.update(
