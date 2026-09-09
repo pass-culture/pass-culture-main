@@ -8,6 +8,7 @@ import {
 const props: GetCollectiveOffersSwrKeysProps = {
   isInTemplateOffersPage: false,
   selectedOffererId: 1,
+  selectedVenueId: 1,
   urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 }
 
@@ -43,7 +44,7 @@ describe('getCollectiveOffersSwrKeys', () => {
       })[1]
     ).toMatchObject({
       offererId: '1',
-      venueId: 'all',
+      venueId: '1',
     })
 
     expect(

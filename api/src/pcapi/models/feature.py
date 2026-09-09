@@ -146,7 +146,6 @@ class FeatureToggle(enum.Enum):
     WIP_PRE_SIGNUP_SIMULATION = (
         "Activer le parcours de simulation de documents avant inscription des partenaires culturels sur le portail pro"
     )
-    WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_ENABLE_NEW_OFFER_STATUS_FILTER = (
         "Génère les filtres en fonction du statut pour la liste des offres du portail pro"
