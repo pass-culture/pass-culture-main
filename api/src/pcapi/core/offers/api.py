@@ -275,7 +275,13 @@ def create_offer(
     # Otherwise, you will break some dashboards
     logger.info(
         "Offer has been created",
-        extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
+        extra={
+            "offer_id": offer.id,
+            "venue_id": venue.id,
+            "product_id": offer.productId,
+            "feature": "offer",
+            "action": "created",
+        },
         technical_message_id="offer.created",
     )
 
@@ -421,6 +427,8 @@ def update_offer(
                 "venue_id": offer.venueId,
                 "product_id": offer.productId,
                 "changes": {**changes},
+                "feature": "offer",
+                "action": "updated",
             },
             technical_message_id="offer.updated",
         )
@@ -459,7 +467,12 @@ def batch_activate_offers(
                     logger.info,
                     "Offers has been activated" if activate else "Offers has been deactivated",
                     technical_message_id="offers.activated" if activate else "offers.deactivated",
-                    extra={"offer_ids": offer_ids, "venue_ids": venue_ids},
+                    extra={
+                        "offer_ids": offer_ids,
+                        "venue_ids": venue_ids,
+                        "feature": "offers",
+                        "action": "activated" if activate else "deactivated",
+                    },
                 )
             )
 
@@ -563,6 +576,8 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
                 "analyticsSource": "app-pro",
                 "HeadlineOfferId": headline_offer.id,
                 "Reason": "Offer is not active anymore, or image has been removed",
+                "feature": "headline_offer",
+                "action": "deactivation",
             },
             technical_message_id="headline_offer_deactivation",
         )
@@ -584,6 +599,8 @@ def upsert_headline_offer(offer: models.Offer) -> models.HeadlineOffer:
                 "analyticsSource": "app-pro",
                 "HeadlineOfferId": headline_offer.id,
                 "Reason": "User chose to replace this headline offer by another offer",
+                "feature": "headline_offer",
+                "action": "deactivation",
             },
             technical_message_id="headline_offer_deactivation",
         )
@@ -745,6 +762,8 @@ def create_stock(
         "stock_id": created_stock.id,
         "provider_id": creating_provider.id if creating_provider else None,
         "price": str(created_stock.price),
+        "feature": "stock",
+        "action": "created",
     }
     logger.info("Successfully created stock", extra=log_extra_data, technical_message_id="stock.created")
 
@@ -859,6 +878,8 @@ def edit_stock(
         "stock_dnBookedQuantity": stock.dnBookedQuantity,
         "provider_id": editing_provider.id if editing_provider else None,
         "changes": {**changes},
+        "feature": "stock",
+        "action": "updated",
     }
     logger.info("Successfully updated stock", extra=log_extra_data, technical_message_id="stock.updated")
 
@@ -965,7 +986,13 @@ def finalize_offer(
         partial(
             logger.info,
             "Offer has been published",
-            extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "offer_status": offer.status,
+                "feature": "offer",
+                "action": "published",
+            },
             technical_message_id="offer.published",
         )
     )
@@ -1010,7 +1037,13 @@ def publish_offer(
         )
         logger.info(
             "Offer has been published",
-            extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "offer_status": offer.status,
+                "feature": "offer",
+                "action": "published",
+            },
             technical_message_id="offer.published",
         )
 
@@ -1088,6 +1121,8 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
                 "bookings": [b.id for b in cancelled_bookings],
                 "author_id": author_id,
                 "user_connect_as": bool(user_connect_as),
+                "feature": "stock",
+                "action": "deleted",
             },
             technical_message_id="stock.deleted",
         )
@@ -1969,6 +2004,8 @@ def move_event_offer(
                         "analyticsSource": "backoffice",
                         "HeadlineOfferId": headline_offer.id,
                         "Reason": "Offer venue was changed during regularization",
+                        "feature": "headline_offer",
+                        "action": "deactivation",
                     },
                     technical_message_id="headline_offer_deactivation",
                 )
@@ -1984,6 +2021,8 @@ def move_event_offer(
                     "offerId": offer.id,
                     "venueId": offer.venueId,
                     "Reason": "Offer venue was changed in backoffice",
+                    "feature": "pro_advice",
+                    "action": "deleted",
                 },
                 technical_message_id="pro_advice.deleted",
             )
@@ -2436,7 +2475,11 @@ def delete_unbookable_unbooked_old_offers(
         for offer_id in chunk:
             log_msg = "deleted unbookable unbooked offers ids"
             technical_id = "unbookable_unbooked_offers_deleted"
-            logger.info(log_msg, technical_message_id=technical_id, extra={"offer_id": offer_id})
+            logger.info(
+                log_msg,
+                technical_message_id=technical_id,
+                extra={"offer_id": offer_id, "feature": "offers", "action": "unbookable_unbooked_offers_deleted"},
+            )
 
     if max_id >= max_offer_id:
         # all offers have been scaned -> restart
@@ -2610,6 +2653,8 @@ def upsert_highlight_requests(
                     "offer_id": offer.id,
                     "venue_id": offer.venueId,
                     "highlight_ids": sorted(highlight_ids_to_delete),
+                    "feature": "offer",
+                    "action": "highlightRequests.deleted",
                 },
                 technical_message_id="offer.highlightRequests.deleted",
             )
@@ -2636,6 +2681,8 @@ def upsert_highlight_requests(
                     "offer_id": offer.id,
                     "venue_id": offer.venueId,
                     "highlight_ids": sorted(highlight_ids_of_highlight_requests_to_create),
+                    "feature": "offer",
+                    "action": "highlightRequests.created",
                 },
                 technical_message_id="offer.highlightRequests.created",
             )

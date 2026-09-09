@@ -42,6 +42,8 @@ class Returns200Test:
             "offer_id": offer.id,
             "venue_id": offer.venueId,
             "highlight_ids": [highlight.id],
+            "feature": "offer",
+            "action": "highlightRequests.created",
         }
 
         assert len([log for log in caplog.records if log.message == "Highlight requests have been deleted"]) == 0
@@ -80,6 +82,8 @@ class Returns200Test:
             "offer_id": offer.id,
             "venue_id": offer.venueId,
             "highlight_ids": [highlight.id, highlight2.id],
+            "feature": "offer",
+            "action": "highlightRequests.created",
         }
 
         assert log.technical_message_id == "offer.highlightRequests.created"
@@ -142,6 +146,8 @@ class Returns200Test:
             "offer_id": offer.id,
             "venue_id": offer.venueId,
             "highlight_ids": [highlight3.id, highlight4.id],
+            "feature": "offer",
+            "action": "highlightRequests.created",
         }
 
         assert log.technical_message_id == "offer.highlightRequests.created"
@@ -181,6 +187,8 @@ class Returns200Test:
             "offer_id": offer.id,
             "venue_id": offer.venueId,
             "highlight_ids": [highlight.id, highlight2.id],
+            "feature": "offer",
+            "action": "highlightRequests.deleted",
         }
 
         assert log.technical_message_id == "offer.highlightRequests.deleted"

@@ -69,7 +69,14 @@ def authorize() -> response_utils.BackofficeResponse:
     if user and not user.isActive:
         logger.info(
             "Failed authentication attempt",
-            extra={"identifier": google_email, "user": user.id, "avoid_current_user": True, "success": False},
+            extra={
+                "identifier": google_email,
+                "user": user.id,
+                "avoid_current_user": True,
+                "success": False,
+                "feature": "backoffice",
+                "action": "authorize",
+            },
             technical_message_id="backoffice.authorize",
         )
         return werkzeug.exceptions.Forbidden()
@@ -81,7 +88,14 @@ def authorize() -> response_utils.BackofficeResponse:
         if not user and len(roles) == 0:
             logger.info(
                 "Failed authentication attempt",
-                extra={"identifier": google_email, "user": None, "avoid_current_user": True, "success": False},
+                extra={
+                    "identifier": google_email,
+                    "user": None,
+                    "avoid_current_user": True,
+                    "success": False,
+                    "feature": "backoffice",
+                    "action": "authorize",
+                },
                 technical_message_id="backoffice.authorize",
             )
             return redirect(url_for(".user_not_found"))
@@ -100,7 +114,14 @@ def authorize() -> response_utils.BackofficeResponse:
 
     logger.info(
         "Successful authentication attempt",
-        extra={"identifier": google_email, "user": user.id, "avoid_current_user": True, "success": True},
+        extra={
+            "identifier": google_email,
+            "user": user.id,
+            "avoid_current_user": True,
+            "success": True,
+            "feature": "backoffice",
+            "action": "authorize",
+        },
         technical_message_id="backoffice.authorize",
     )
 

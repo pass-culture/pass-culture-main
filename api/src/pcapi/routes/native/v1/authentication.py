@@ -289,7 +289,12 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
     if not user:
         logger.info(
             "Successful SSO authentication but no matching email found, sending account creation token",
-            extra={"sso_provider": sso_provider, "avoid_current_user": True},
+            extra={
+                "sso_provider": sso_provider,
+                "avoid_current_user": True,
+                "feature": "users",
+                "action": f"login.sso.{sso_provider}",
+            },
             technical_message_id=f"users.login.sso.{sso_provider}",
         )
         encoded_account_creation_token = users_api.create_account_creation_token(sso_user)
@@ -334,7 +339,12 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
     users_api.update_last_connection_date(user)
     logger.info(
         "Successful authentication attempt",
-        extra={"sso_provider": sso_provider, "avoid_current_user": True},
+        extra={
+            "sso_provider": sso_provider,
+            "avoid_current_user": True,
+            "feature": "users",
+            "action": f"login.sso.{sso_provider}",
+        },
         technical_message_id=f"users.login.sso.{sso_provider}",
     )
     tokens = create_user_jwt_tokens(user=user, device_info=body.device_info)

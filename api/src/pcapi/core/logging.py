@@ -93,7 +93,7 @@ def _get_origin() -> str:
         blueprint = flask.request.blueprint or ""
     except RuntimeError:
         # werkzeug raises a basic RuntimeError when accessing to request outside an http request
-        if getattr(flask.g, "cron_command", None):  # TODO peupler g dans les decorateurs qui vont bien
+        if getattr(flask.g, "cron_command", None):
             return "cron"
         if "main.py" in " ".join(sys.argv):
             # entry point for scripts is a main.py file so it must be in argv
@@ -112,10 +112,8 @@ def _get_origin() -> str:
     return base_blueprint
 
 
-def get_technical_origin(technical_message_id: str, extra: dict) -> dict:
+def _get_technical_origin(extra: dict, feature: str, action: str) -> dict:
     technical_origin = {}
-    action: str = extra.pop("", "")
-    feature: str = extra.pop("", "")
     if feature and action:
         origin = _get_origin()
         technical_origin["origin"] = origin
@@ -123,6 +121,7 @@ def get_technical_origin(technical_message_id: str, extra: dict) -> dict:
             assert isinstance(flask.request.blueprint, str)  # helps mypy
             hierarchy = flask.request.blueprint.split(".")
             if len(hierarchy) > 2:
+                # native blueprint are build like `native.native_v1.route` we extract the `v1` part
                 technical_origin["version"] = hierarchy[1].split("_")[-1]
         if origin == "cron":
             technical_origin["cron"] = flask.g.cron_command
@@ -243,7 +242,10 @@ class JsonFormatter(logging.Formatter):
         if impersonator_id:
             json_record["impersonator_id"] = impersonator_id
 
-        if technical_origin := get_technical_origin(tech_msg_id, extra):
+        feature: str = extra.pop("feature", "")
+        action: str = extra.pop("action", "")
+
+        if technical_origin := _get_technical_origin(extra, feature, action):
             json_record["technical_origin"] = technical_origin
 
         try:

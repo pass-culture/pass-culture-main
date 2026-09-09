@@ -86,6 +86,8 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
                 "provider_id": stock.offer.lastProviderId,
                 "user_id": current_user.id,
                 "booking_quantity": booking.quantity,
+                "feature": "bookings",
+                "action": "book",
             },
             technical_message_id="native.bookings.book",
         )
@@ -108,6 +110,8 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
                 "user_id": current_user.id,
                 "exception_class": e.__class__.__name__,
                 "exception_message": str(e),
+                "feature": "bookings",
+                "action": "book",
             },
             technical_message_id="native.bookings.book",
         )
@@ -180,6 +184,8 @@ def cancel_booking(booking_id: int) -> None:
                 "user_id": current_user.id,
                 "exception_class": e.__class__.__name__,
                 "exception_message": str(e),
+                "feature": "bookings",
+                "action": "cancel",
             },
             technical_message_id="native.bookings.cancel",
         )

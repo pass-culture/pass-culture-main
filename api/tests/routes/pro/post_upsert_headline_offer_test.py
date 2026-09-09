@@ -116,6 +116,8 @@ class Returns200Test:
             "analyticsSource": "app-pro",
             "HeadlineOfferId": headline_offer.id,
             "Reason": "User chose to replace this headline offer by another offer",
+            "feature": "headline_offer",
+            "action": "deactivation",
         }
         assert log.technical_message_id == "headline_offer_deactivation"
 
@@ -157,6 +159,8 @@ class Returns200Test:
             "analyticsSource": "app-pro",
             "HeadlineOfferId": headline_offer.id,
             "Reason": "User chose to replace this headline offer by another offer",
+            "feature": "headline_offer",
+            "action": "deactivation",
         }
         assert log.technical_message_id == "headline_offer_deactivation"
 

@@ -76,6 +76,8 @@ def delete_headline_offer(body: headline_offer_serialize.HeadlineOfferDeleteBody
                 "analyticsSource": "app-pro",
                 "HeadlineOfferId": active_headline_offer.id,
                 "Reason": "Headline offer has been deactivated by user",
+                "feature": "headline_offer",
+                "action": "deactivation",
             },
             technical_message_id="headline_offer_deactivation",
         )

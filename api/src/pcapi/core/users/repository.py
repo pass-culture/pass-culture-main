@@ -36,7 +36,14 @@ def check_user_and_credentials(user: models.User | None, password: str, allow_in
     if not (user.checkPassword(password) and (user.isActive or allow_inactive)):
         logger.info(
             "Failed authentication attempt",
-            extra={"identifier": user.email, "user": user.id, "avoid_current_user": True, "success": False},
+            extra={
+                "identifier": user.email,
+                "user": user.id,
+                "avoid_current_user": True,
+                "success": False,
+                "feature": "users",
+                "action": "login",
+            },
             technical_message_id="users.login",
         )
         raise exceptions.InvalidIdentifier()
@@ -49,14 +56,28 @@ def get_user_with_credentials(identifier: str, password: str, allow_inactive: bo
     if not user:
         logger.info(
             "Failed authentication attempt",
-            extra={"identifier": identifier, "user": None, "avoid_current_user": True, "success": False},
+            extra={
+                "identifier": identifier,
+                "user": None,
+                "avoid_current_user": True,
+                "success": False,
+                "feature": "users",
+                "action": "login",
+            },
             technical_message_id="users.login",
         )
     check_user_and_credentials(user, password, allow_inactive)
     if user:
         logger.info(
             "Successful authentication attempt",
-            extra={"identifier": identifier, "user": user.id, "avoid_current_user": True, "success": True},
+            extra={
+                "identifier": identifier,
+                "user": user.id,
+                "avoid_current_user": True,
+                "success": True,
+                "feature": "users",
+                "action": "login",
+            },
             technical_message_id="users.login",
         )
     return typing.cast(models.User, user)
