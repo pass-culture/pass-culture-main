@@ -6,7 +6,6 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
-import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.constants as offers_constants
 import pcapi.core.offers.repository as offers_repository
@@ -17,7 +16,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
@@ -319,18 +317,6 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
             sa_orm.joinedload(offerers_models.Venue.managingOfferer),
         )
     )
-    offerer_address = (
-        offerers_api.get_offer_location_from_address(
-            venue.managingOffererId, offerers_schemas.LocationModel(**body.address.dict()), venue.id
-        )
-        if body.address
-        else offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
-            venue_id=venue.id,
-            address_id=venue.offererAddress.addressId,
-            label=None,
-        )
-    )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     rest.check_venue_is_opened(venue)
 
@@ -346,17 +332,13 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
 
     values["ean"] = ean_code
     values["idAtProvider"] = None
-    values["isDuo"] = None
 
     values.pop("productId", None)
-    values.pop("address", None)
     values.pop("venueId", None)
 
     create_offer_schema = offers_schemas.CreateOffer(**values)
 
-    offer = offers_api.create_offer(
-        create_offer_schema, offerer_address=offerer_address, venue=venue, product=product, is_from_private_api=True
-    )
+    offer = offers_api.create_offer(create_offer_schema, venue=venue, product=product, is_from_private_api=True)
     offer.hasPendingBookings = False
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 

@@ -698,38 +698,17 @@ class OfferVideo(ConfiguredBaseModel):
 class PostOfferBodyModel(HttpBodyModel):
     name: str = pydantic_v2.Field(max_length=offers_constants.MAX_OFFER_NAME_LENGTH)
     venue_id: int
-    has_cultural_outreach_claim: bool | None = None
-    description: str | None = None
+    has_cultural_outreach_claim: bool | None
+    description: str | None
     subcategory_id: str
-    duration_minutes: int | None = None
-    extra_data: OfferExtraDataV2 | None = None
-    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModelV2] | None = None
+    duration_minutes: int | None
+    extra_data: OfferExtraDataV2 | None
+    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModelV2] | None
     audio_disability_compliant: bool
     mental_disability_compliant: bool
     motor_disability_compliant: bool
     visual_disability_compliant: bool
-    address: address_serialize.LocationBodyModelV2 | address_serialize.LocationOnlyOnVenueBodyModelV2 | None = (
-        pydantic_v2.Field(default=None, discriminator="isVenueLocation")
-    )
-    url: ValidHttpUrlStr | None = None
-    booking_contact: pydantic_v2.EmailStr | None = None
-    booking_email: pydantic_v2.EmailStr | None = None
-    external_ticket_office_url: ValidHttpUrlStr | None = None
-    is_duo: bool | None = None
-    is_national: bool | None = None
-    product_id: int | None = None
-    withdrawal_delay: int | None = None
-    withdrawal_details: str | None = None
-    withdrawal_type: offers_models.WithdrawalTypeEnum | None = None
-
-    @pydantic_v2.field_validator("withdrawal_type")
-    @classmethod
-    def validate_withdrawal_type(
-        cls, withdrawal_type: offers_models.WithdrawalTypeEnum | None
-    ) -> offers_models.WithdrawalTypeEnum | None:
-        if withdrawal_type == offers_models.WithdrawalTypeEnum.IN_APP:
-            raise ValueError("Withdrawal type cannot be in_app for manually created offers")
-        return withdrawal_type
+    product_id: int | None
 
     @pydantic_v2.field_validator("extra_data")
     @classmethod
