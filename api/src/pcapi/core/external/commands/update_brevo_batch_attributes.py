@@ -43,7 +43,7 @@ def _collect_users_attributes(user_ids: list[int]) -> list[CollectedAttributes]:
                 sa.and_(
                     sa.not_(User.has_pro_role),
                     sa.not_(User.has_non_attached_pro_role),
-                    sa.not_(User.has_admin_role),
+                    # sa.not_(User.has_admin_role),
                 ),
                 User.is_beneficiary,
             ),

@@ -19,7 +19,8 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
-from pcapi.core.users.models import User
+
+# from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import date as date_utils
@@ -1291,40 +1292,51 @@ def get_collective_offer_templates_by_ids_for_adage(
     return query.filter(models.CollectiveOfferTemplate.id.in_(offer_ids)).populate_existing()
 
 
-def get_query_for_collective_offers_by_ids_for_user(
-    user: User, ids: typing.Iterable[int]
-) -> sa_orm.Query[models.CollectiveOffer]:
-    query = db.session.query(models.CollectiveOffer)
+# def get_query_for_collective_offers_by_ids_for_user(
+#     user: User, ids: typing.Iterable[int]
+# ) -> sa_orm.Query[models.CollectiveOffer]:
+#     query = db.session.query(models.CollectiveOffer)
 
-    if not user.has_admin_role:
-        query = query.join(offerers_models.Venue, models.CollectiveOffer.venue)
-        query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-        query = query.join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
-        query = query.filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
+#     # if not user.has_admin_role:
+#     #     query = query.join(offerers_models.Venue, models.CollectiveOffer.venue)
+#     #     query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+#     #     query = query.join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
+#     #     query = query.filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
 
-    query = query.filter(models.CollectiveOffer.id.in_(ids))
-    query = query.options(
-        sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(models.CollectiveStock.collectiveBookings),
-        sa_orm.contains_eager(models.CollectiveOffer.venue),
-    )
-    return query
+#     query = query.join(offerers_models.Venue, models.CollectiveOffer.venue)
+#     query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+#     query = query.join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
+#     query = query.filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
+
+#     query = query.filter(models.CollectiveOffer.id.in_(ids))
+#     query = query.options(
+#         sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(models.CollectiveStock.collectiveBookings),
+#         sa_orm.contains_eager(models.CollectiveOffer.venue),
+#     )
+#     return query
 
 
-def get_query_for_collective_offers_template_by_ids_for_user(
-    user: User, ids: typing.Iterable[int]
-) -> sa_orm.Query[models.CollectiveOfferTemplate]:
-    query = db.session.query(models.CollectiveOfferTemplate)
-    if not user.has_admin_role:
-        query = (
-            query.join(models.CollectiveOfferTemplate.venue)
-            .join(offerers_models.Venue.managingOfferer)
-            .join(offerers_models.Offerer.UserOfferers)
-            .filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
-        )
-    query = query.filter(models.CollectiveOfferTemplate.id.in_(ids)).options(
-        sa_orm.contains_eager(models.CollectiveOfferTemplate.venue)
-    )
-    return query
+# def get_query_for_collective_offers_template_by_ids_for_user(
+#     user: User, ids: typing.Iterable[int]
+# ) -> sa_orm.Query[models.CollectiveOfferTemplate]:
+#     query = db.session.query(models.CollectiveOfferTemplate)
+#     # if not user.has_admin_role:
+#     #     query = (
+#     #         query.join(models.CollectiveOfferTemplate.venue)
+#     #         .join(offerers_models.Venue.managingOfferer)
+#     #         .join(offerers_models.Offerer.UserOfferers)
+#     #         .filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
+#     #     )
+#     query = (
+#         query.join(models.CollectiveOfferTemplate.venue)
+#         .join(offerers_models.Venue.managingOfferer)
+#         .join(offerers_models.Offerer.UserOfferers)
+#         .filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
+#     )
+#     query = query.filter(models.CollectiveOfferTemplate.id.in_(ids)).options(
+#         sa_orm.contains_eager(models.CollectiveOfferTemplate.venue)
+#     )
+#     return query
 
 
 def get_educational_domains_from_ids(ids: typing.Iterable[int]) -> list[models.EducationalDomain]:
