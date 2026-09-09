@@ -3,7 +3,7 @@ import typing
 from datetime import date
 from datetime import datetime
 
-import pydantic as pydantic_v2
+import pydantic
 from pydantic.json_schema import SkipJsonSchema
 from spectree.models import BaseFile
 
@@ -41,7 +41,7 @@ class ListCollectiveOffersQueryModel(HttpQueryParamsModel):
     location_type: models.CollectiveLocationType | None = None
     offerer_address_id: int | None = None
 
-    @pydantic_v2.model_validator(mode="after")
+    @pydantic.model_validator(mode="after")
     def validate_location_filter(self) -> typing.Self:
         if self.offerer_address_id is not None and self.location_type != models.CollectiveLocationType.ADDRESS:
             raise PydanticError(
@@ -121,7 +121,7 @@ class CollectiveOfferResponseModel(HttpBodyModel):
         )
 
 
-class ListCollectiveOffersResponseModel(pydantic_v2.RootModel):
+class ListCollectiveOffersResponseModel(pydantic.RootModel):
     root: list[CollectiveOfferResponseModel]
 
 
@@ -154,7 +154,7 @@ class CollectiveOfferTemplateResponseModel(HttpBodyModel):
         )
 
 
-class ListCollectiveOfferTemplatesResponseModel(pydantic_v2.RootModel):
+class ListCollectiveOfferTemplatesResponseModel(pydantic.RootModel):
     root: list[CollectiveOfferTemplateResponseModel]
 
 
@@ -217,7 +217,7 @@ class GetCollectiveOfferVenueResponseModel(HttpBodyModel):
     managingOfferer: GetCollectiveOfferManagingOffererResponseModel
     name: str
     publicName: str
-    bannerUrl: str | None = pydantic_v2.Field(alias="imgUrl")
+    bannerUrl: str | None = pydantic.Field(alias="imgUrl")
 
     @classmethod
     def build(cls, venue: offerers_models.Venue) -> typing.Self:
@@ -345,7 +345,7 @@ class GetCollectiveOfferProviderResponseModel(HttpBodyModel):
 
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
-    lastBooking: GetCollectiveOfferBookingResponseModel | None = pydantic_v2.Field(alias="booking")
+    lastBooking: GetCollectiveOfferBookingResponseModel | None = pydantic.Field(alias="booking")
     institution: educational_institutions.EducationalInstitutionResponseModel | None
     templateId: int | None
     teacher: EducationalRedactorResponseModel | None
@@ -432,12 +432,12 @@ class PatchDateRangeModel(HttpBodyModel):
     start: datetime
     end: datetime
 
-    @pydantic_v2.field_validator("start", "end")
+    @pydantic.field_validator("start", "end")
     @classmethod
     def remove_timezone(cls, date_time: datetime) -> datetime:
         return utils.without_timezone(date_time)
 
-    @pydantic_v2.model_validator(mode="after")
+    @pydantic.model_validator(mode="after")
     def validate_end_before_start(self) -> typing.Self:
         if self.start > self.end:
             raise PydanticError("La date de début doit être avant la date de fin")
@@ -446,7 +446,7 @@ class PatchDateRangeModel(HttpBodyModel):
 
 
 class PostDateRangeModel(PatchDateRangeModel):
-    @pydantic_v2.field_validator("start")
+    @pydantic.field_validator("start")
     @classmethod
     def validate_start(cls, start: datetime) -> datetime:
         if start.date() < date.today():
@@ -459,10 +459,10 @@ class CollectiveOfferLocationModel(HttpBodyModel):
     location_type: models.CollectiveLocationType
     location_comment: str | None = None
     location: address_serialize.LocationBodyModelV2 | address_serialize.LocationOnlyOnVenueBodyModelV2 | None = (
-        pydantic_v2.Field(default=None, discriminator="isVenueLocation")
+        pydantic.Field(default=None, discriminator="isVenueLocation")
     )
 
-    @pydantic_v2.model_validator(mode="after")
+    @pydantic.model_validator(mode="after")
     def validate_location_comment(self) -> typing.Self:
         if self.location_type != models.CollectiveLocationType.TO_BE_DEFINED and self.location_comment is not None:
             raise_error_from_location(
@@ -471,7 +471,7 @@ class CollectiveOfferLocationModel(HttpBodyModel):
 
         return self
 
-    @pydantic_v2.model_validator(mode="after")
+    @pydantic.model_validator(mode="after")
     def validate_location(self) -> typing.Self:
         if (
             self.location_type
@@ -491,7 +491,7 @@ class CollectiveOfferLocationModel(HttpBodyModel):
         return self
 
 
-def validate_intervention_area(value: list[str] | None, info: pydantic_v2.ValidationInfo) -> list[str] | None:
+def validate_intervention_area(value: list[str] | None, info: pydantic.ValidationInfo) -> list[str] | None:
     location: CollectiveOfferLocationModel | None = info.data.get("location")
 
     if location is None:
@@ -526,34 +526,34 @@ def validate_students(students: list[models.StudentLevels]) -> list[models.Stude
 
 class PostCollectiveOfferBodyModel(HttpBodyModel):
     venue_id: int
-    name: str = pydantic_v2.Field(min_length=1, max_length=constants.MAX_COLLECTIVE_NAME_LENGTH)
-    booking_emails: list[pydantic_v2.EmailStr] | None = pydantic_v2.Field(min_length=1, max_length=6, default=None)
-    description: str = pydantic_v2.Field(max_length=constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH)
-    domains: list[int] = pydantic_v2.Field(min_length=1)
+    name: str = pydantic.Field(min_length=1, max_length=constants.MAX_COLLECTIVE_NAME_LENGTH)
+    booking_emails: list[pydantic.EmailStr] | None = pydantic.Field(min_length=1, max_length=6, default=None)
+    description: str = pydantic.Field(max_length=constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH)
+    domains: list[int] = pydantic.Field(min_length=1)
     duration_minutes: int | None = None
     audio_disability_compliant: bool
     mental_disability_compliant: bool
     motor_disability_compliant: bool
     visual_disability_compliant: bool
-    students: typing.Annotated[list[models.StudentLevels], pydantic_v2.AfterValidator(validate_students)] = (
-        pydantic_v2.Field(min_length=1)
+    students: typing.Annotated[list[models.StudentLevels], pydantic.AfterValidator(validate_students)] = pydantic.Field(
+        min_length=1
     )
     location: CollectiveOfferLocationModel
-    contact_email: pydantic_v2.EmailStr | None = None
+    contact_email: pydantic.EmailStr | None = None
     contact_phone: str | None = None
-    intervention_area: typing.Annotated[list[str] | None, pydantic_v2.AfterValidator(validate_intervention_area)]
+    intervention_area: typing.Annotated[list[str] | None, pydantic.AfterValidator(validate_intervention_area)]
     template_id: int | None = None
     national_program_id: int | None = None
-    formats: list[EacFormat] = pydantic_v2.Field(min_length=1)
-    additional_details: str | None = pydantic_v2.Field(
+    formats: list[EacFormat] = pydantic.Field(min_length=1)
+    additional_details: str | None = pydantic.Field(
         max_length=constants.MAX_COLLECTIVE_ADDITIONAL_DETAILS_LENGTH, default=None
     )
 
-    @pydantic_v2.field_validator("contact_phone", mode="after")
+    @pydantic.field_validator("contact_phone", mode="after")
     def validate_contact_phone(cls, phone_number: str | None) -> str | None:
         return utils.validate_phone_number_nullable(phone_number)
 
-    @pydantic_v2.model_validator(mode="after")
+    @pydantic.model_validator(mode="after")
     def validate_additional_details(self) -> typing.Self:
         if (
             not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
@@ -565,14 +565,14 @@ class PostCollectiveOfferBodyModel(HttpBodyModel):
 
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
-    price_detail: str | None = pydantic_v2.Field(default=None, max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH)
+    price_detail: str | None = pydantic.Field(default=None, max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH)
     contact_url: utils.ValidHttpUrl | None = None
     contact_form: models.OfferContactFormEnum | None = None
     dates: PostDateRangeModel | None = None
 
     # TODO (jcicurel-pass, 2026-06-05): decorrelate the two models to avoid an overlap like this one
-    additional_details: SkipJsonSchema[str | None] = pydantic_v2.Field(default=None, exclude=True)
-    booking_emails: list[pydantic_v2.EmailStr] = pydantic_v2.Field(min_length=1, max_length=6)
+    additional_details: SkipJsonSchema[str | None] = pydantic.Field(default=None, exclude=True)
+    booking_emails: list[pydantic.EmailStr] = pydantic.Field(min_length=1, max_length=6)
 
 
 class CollectiveOfferResponseIdModel(HttpBodyModel):
@@ -585,21 +585,21 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
     mental_disability_compliant: bool | None = None
     motor_disability_compliant: bool | None = None
     visual_disability_compliant: bool | None = None
-    booking_emails: list[pydantic_v2.EmailStr] | None = pydantic_v2.Field(min_length=1, max_length=6, default=None)
-    description: str | None = pydantic_v2.Field(max_length=constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH, default=None)
-    name: str | None = pydantic_v2.Field(min_length=1, max_length=constants.MAX_COLLECTIVE_NAME_LENGTH, default=None)
-    students: typing.Annotated[list[models.StudentLevels] | None, pydantic_v2.AfterValidator(validate_students)] = (
-        pydantic_v2.Field(min_length=1, default=None)
+    booking_emails: list[pydantic.EmailStr] | None = pydantic.Field(min_length=1, max_length=6, default=None)
+    description: str | None = pydantic.Field(max_length=constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH, default=None)
+    name: str | None = pydantic.Field(min_length=1, max_length=constants.MAX_COLLECTIVE_NAME_LENGTH, default=None)
+    students: typing.Annotated[list[models.StudentLevels] | None, pydantic.AfterValidator(validate_students)] = (
+        pydantic.Field(min_length=1, default=None)
     )
     location: CollectiveOfferLocationModel | None = None
-    contact_email: pydantic_v2.EmailStr | None = None
+    contact_email: pydantic.EmailStr | None = None
     contact_phone: str | None = None
     duration_minutes: int | None = None
-    domains: list[int] | None = pydantic_v2.Field(min_length=1, default=None)
-    intervention_area: typing.Annotated[list[str] | None, pydantic_v2.AfterValidator(validate_intervention_area)] = None
+    domains: list[int] | None = pydantic.Field(min_length=1, default=None)
+    intervention_area: typing.Annotated[list[str] | None, pydantic.AfterValidator(validate_intervention_area)] = None
     national_program_id: int | None = None
-    formats: list[EacFormat] | None = pydantic_v2.Field(min_length=1, default=None)
-    additional_details: str | None = pydantic_v2.Field(
+    formats: list[EacFormat] | None = pydantic.Field(min_length=1, default=None)
+    additional_details: str | None = pydantic.Field(
         max_length=constants.MAX_COLLECTIVE_ADDITIONAL_DETAILS_LENGTH, default=None
     )
 
@@ -614,7 +614,7 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
         "formats",
     )
 
-    @pydantic_v2.field_validator(*NON_NULLABLE_FIELDS, mode="before")
+    @pydantic.field_validator(*NON_NULLABLE_FIELDS, mode="before")
     @classmethod
     def validate_not_none(cls, value: typing.Any) -> typing.Any:
         if value is None:
@@ -622,11 +622,11 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
 
         return value
 
-    @pydantic_v2.field_validator("contact_phone", mode="after")
+    @pydantic.field_validator("contact_phone", mode="after")
     def validate_contact_phone(cls, phone_number: str | None) -> str | None:
         return utils.validate_phone_number_nullable(phone_number)
 
-    @pydantic_v2.model_validator(mode="after")
+    @pydantic.model_validator(mode="after")
     def validate_additional_details(self) -> typing.Self:
         if (
             not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
@@ -638,21 +638,21 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
 
 
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
-    price_detail: str | None = pydantic_v2.Field(max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH, default=None)
+    price_detail: str | None = pydantic.Field(max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH, default=None)
     dates: PatchDateRangeModel | None = None
     contact_url: str | None = None
     contact_form: models.OfferContactFormEnum | None = None
     # TODO (jcicurel-pass, 2026-06-05): this field will be added to the collective offer templates later on
-    additional_details: SkipJsonSchema[str | None] = pydantic_v2.Field(default=None, exclude=True)
+    additional_details: SkipJsonSchema[str | None] = pydantic.Field(default=None, exclude=True)
 
-    @pydantic_v2.model_validator(mode="after")
+    @pydantic.model_validator(mode="after")
     def validate_contact_fields(self) -> typing.Self:
         if self.contact_url is not None and self.contact_form is not None:
             raise PydanticError("contactUrl et contactForm ne peuvent pas être remplis en même temps")
 
         return self
 
-    @pydantic_v2.field_validator("contact_url", mode="after")
+    @pydantic.field_validator("contact_url", mode="after")
     @classmethod
     def validate_contact_url(cls, contact_url: str | None) -> str | None:
         utils.check_url(contact_url, "v2")
@@ -687,7 +687,7 @@ class AttachImageFormModel(HttpBodyModel):
     def model_validate(cls, *args: typing.Any, **kwargs: typing.Any) -> typing.Self:
         try:
             result = super().model_validate(*args, **kwargs)
-        except pydantic_v2.ValidationError:
+        except pydantic.ValidationError:
             logger.exception("Error during AttachImageFormModel validation")
             raise
 
@@ -713,11 +713,11 @@ class CollectiveOfferInstitutionModel(HttpBodyModel):
 
 
 class GetCollectiveOfferRequestResponseModel(HttpBodyModel):
-    educationalRedactor: CollectiveOfferRedactorModel = pydantic_v2.Field(alias="redactor")
+    educationalRedactor: CollectiveOfferRedactorModel = pydantic.Field(alias="redactor")
     requestedDate: date | None
     totalStudents: int | None
     totalTeachers: int | None
     phoneNumber: str | None
     comment: str
     dateCreated: date
-    educationalInstitution: CollectiveOfferInstitutionModel = pydantic_v2.Field(alias="institution")
+    educationalInstitution: CollectiveOfferInstitutionModel = pydantic.Field(alias="institution")
