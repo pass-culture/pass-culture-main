@@ -4,16 +4,8 @@ allowBuilds:
   esbuild: false
   storybook-addon-remix-react-router: false
 
-minimumReleaseAgeExclude:
-  - '@biomejs/biome@2.5.6'
-  - '@biomejs/cli-darwin-arm64@2.5.6'
-  - '@biomejs/cli-darwin-x64@2.5.6'
-  - '@biomejs/cli-linux-arm64-musl@2.5.6'
-  - '@biomejs/cli-linux-arm64@2.5.6'
-  - '@biomejs/cli-linux-x64-musl@2.5.6'
-  - '@biomejs/cli-linux-x64@2.5.6'
-  - '@biomejs/cli-win32-arm64@2.5.6'
-  - '@biomejs/cli-win32-x64@2.5.6'
+# 1 week, in minutes
+minimumReleaseAge: 10080
 
 overrides:
   esbuild@>=0.17.0 <0.28.1: '>=0.28.1'
