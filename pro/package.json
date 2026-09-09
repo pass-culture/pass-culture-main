@@ -129,6 +129,13 @@
   "engines": {
     "node": "24.8"
   },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.11.0",
+      "onFail": "download"
+    }
+  },
   "browserslist": [
     ">0.2%",
     "not dead",

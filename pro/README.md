@@ -73,18 +73,15 @@ nvm alias default 24.8
 
 Le projet utilise **pnpm** pour la gestion des dépendances.
 
-La méthode recommandée pour installer pnpm en local est la suivante :
+Si pnpm n'est **pas encore installé sur votre environnement**, installez-le simplement avec la commande suivante :
 
 ```bash
 npm install -g pnpm
 ```
 
-Assurez-vous ensuite d’utiliser la version 11 (ou supérieure) avec :
+**Si vous avez déjà pnpm installé (même dans une autre version), vous n'avez rien à faire !**
 
-```bash
-pnpm -v
-# Doit afficher 11.x.x
-```
+La version exacte requise est définie dans le champ `devEngines.packageManager` du fichier [`package.json`](./package.json) et sera téléchargée automatiquement au premier `pnpm install`.
 
 ## <img src="docs/docker-icon.svg" height="20" /> Docker
 
