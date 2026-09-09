@@ -83,6 +83,7 @@ class Permissions(enum.Enum):
     VALIDATE_OFFERER = "gérer la validation des entités juridiques et des rattachements"
     CLOSE_OFFERER = "fermer une entité juridique"
     CLOSE_VENUE = "fermer un partenaire culturel"
+    REOPEN_VENUE = "rouvrir un partenaire culturel"
 
     READ_TAGS = "visualiser les tags entités juridiques, offres, partenaires culturels et jeunes"
     MANAGE_OFFERER_TAG = "gérer les tags entité juridique, créer une catégorie"

@@ -7,10 +7,11 @@ import {
   type ApiRequestOptions,
   type ApiResult,
 } from '@/apiClient/compat'
-import { OffererMemberStatus } from '@/apiClient/v1'
+import { OffererMemberStatus, VenueState } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { defaultManagedVenue } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -253,6 +254,71 @@ describe('Collaborators', () => {
         )
       ).not.toBeVisible()
     })
+  })
+
+  it('should disable add collaborator button if venue is closed', async () => {
+    renderCollaborators({
+      storeOverrides: {
+        user: {
+          selectedAdminOfferer: {
+            id: 1,
+            managedVenues: [defaultManagedVenue],
+          },
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 2,
+            state: VenueState.CLOSED,
+          }),
+        },
+      },
+    })
+
+    const addButton = await screen.getByRole('button', {
+      name: 'Ajouter un collaborateur',
+    })
+
+    expect(addButton).toBeDisabled()
+  })
+  it('should disable add collaborator button if offerer is closed', () => {
+    renderCollaborators({
+      storeOverrides: {
+        user: {
+          selectedAdminOfferer: {
+            id: 1,
+            isClosed: true,
+            managedVenues: [defaultManagedVenue],
+          },
+        },
+      },
+    })
+
+    const addButton = screen.getByRole('button', {
+      name: 'Ajouter un collaborateur',
+    })
+
+    expect(addButton).toBeDisabled()
+  })
+  it('should disable add collaborator button if offerer has no venue opened', () => {
+    renderCollaborators({
+      storeOverrides: {
+        user: {
+          selectedAdminOfferer: {
+            id: 1,
+            managedVenues: [
+              {
+                id: 2,
+                state: VenueState.CLOSED,
+              },
+            ],
+          },
+        },
+      },
+    })
+
+    const addButton = screen.getByRole('button', {
+      name: 'Ajouter un collaborateur',
+    })
+
+    expect(addButton).toBeDisabled()
   })
 })
 

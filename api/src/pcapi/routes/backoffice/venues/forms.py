@@ -322,3 +322,7 @@ class RemoveSiretForm(RemovePricingPointForm, PricingPointForm):
 
 class CloseVenueForm(utils.PCForm):
     comment = fields.PCOptCommentField("Motif de la fermeture (optionnel)")
+
+
+class ReopenVenueForm(utils.PCForm):
+    comment = fields.PCOptCommentField("Motif de la réouverture (optionnel)")

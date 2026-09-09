@@ -274,6 +274,7 @@ class VenueDetailsActionType(enum.StrEnum):
     ERP_SYNCHRONISATION = enum.auto()
     DELETE = enum.auto()
     CLOSE = enum.auto()
+    REOPEN = enum.auto()
     BLOCK_REIMBURSEMENTS = enum.auto()
     UNBLOCK_REIMBURSEMENTS = enum.auto()
 
@@ -295,6 +296,12 @@ def _get_venue_details_actions(venue: offerers_models.Venue) -> DetailsActions:
         and not venue.is_closed
     ):
         venue_details_actions.add_action(VenueDetailsActionType.CLOSE)
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.REOPEN_VENUE)
+        and not venue.managingOfferer.isClosed
+        and venue.is_closed
+    ):
+        venue_details_actions.add_action(VenueDetailsActionType.REOPEN)
     if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION):
         if venue.isReimbursementSuspended:
             venue_details_actions.add_action(VenueDetailsActionType.UNBLOCK_REIMBURSEMENTS)
@@ -1483,6 +1490,51 @@ def close_venue(venue_id: int) -> response_utils.BackofficeResponse:
     offerers_api.close_venue(venue, author=current_user, comment=form.comment.data)
 
     flash(Markup("Le partenaire culturel <b>{name}</b> a été fermé").format(name=venue.name), "success")
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+
+
+@venue_blueprint.route("/<int:venue_id>/reopen", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.REOPEN_VENUE)
+def get_reopen_venue_form(venue_id: int) -> response_utils.BackofficeResponse:
+    venue = get_or_404(offerers_models.Venue, venue_id)
+
+    form = forms.ReopenVenueForm()
+    info = None
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        info=info,
+        form=form,
+        dst=url_for("backoffice_web.venue.reopen_venue", venue_id=venue.id),
+        div_id=f"reopen-modal-{venue.id}",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Rouvrir le partenaire culturel {venue.name.upper()}",
+        button_text="Rouvrir le partenaire culturel",
+        ajax_submit=False,
+    )
+
+
+@venue_blueprint.route("/<int:venue_id>/reopen", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.REOPEN_VENUE)
+def reopen_venue(venue_id: int) -> response_utils.BackofficeResponse:
+    venue = (
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=venue_id)
+        .populate_existing()
+        .with_for_update()
+        .one_or_none()
+    )
+    if not venue:
+        raise NotFound()
+
+    form = forms.ReopenVenueForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+
+    offerers_api.reopen_venue(venue, author=current_user, comment=form.comment.data)
+
+    flash(Markup("Le partenaire culturel <b>{name}</b> a été rouvert").format(name=venue.name), "success")
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
 
