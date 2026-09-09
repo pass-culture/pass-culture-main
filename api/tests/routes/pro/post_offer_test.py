@@ -378,7 +378,7 @@ class CreateDigitalEventTest(CreateOfferBase):
     def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "extraData": {"showType": 100, "showSubType": 101},
+            "extraData": {"showType": "100", "showSubType": "101"},
         }
 
         with assert_changes(Offer, 1):
@@ -413,7 +413,7 @@ class CreateActivitySubscriptionTest(CreateOfferBase):
     def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "extraData": {"showType": 100, "showSubType": 101},
+            "extraData": {"showType": "100", "showSubType": "101"},
         }
 
         with assert_changes(Offer, 1):
@@ -466,7 +466,7 @@ class CreateActivityOnlineTest(CreateOfferBase):
         activity_url = "https://activity.online.test.com"
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "extraData": {"showType": 100, "showSubType": 101},
+            "extraData": {"showType": "100", "showSubType": "101"},
             "url": activity_url,
         }
 
@@ -492,7 +492,7 @@ class CreateActivityOnlineEventTest(CreateOfferBase):
         activity_url = "https://activity.online.test.com"
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "extraData": {"showType": 100, "showSubType": 101},
+            "extraData": {"showType": "100", "showSubType": "101"},
             "url": activity_url,
         }
 
@@ -545,7 +545,7 @@ class CreateActivityRandomTest(CreateOfferBase):
     def test_create_offer_with_showtype_is_ok(self, auth_client, venue, subcategory_id):
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "extraData": {"showType": 100, "showSubType": 101},
+            "extraData": {"showType": "100", "showSubType": "101"},
         }
 
         with assert_changes(Offer, 1):
@@ -630,7 +630,7 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
         offer_id = response.json["id"]
         offer = db.session.get(Offer, offer_id)
         response_dict = response.json
@@ -651,13 +651,13 @@ class Returns200Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
+            "extraData": {"showType": "200", "showSubType": "201"},
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 201
         offer_id = response.json["id"]
@@ -666,7 +666,7 @@ class Returns200Test:
         assert offer.bookingEmail == None
         assert offer.publicationDatetime is None
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
-        assert offer.extraData == {"showType": 200, "showSubType": 201}
+        assert offer.extraData == {"showType": "200", "showSubType": "201"}
         assert offer.externalTicketOfficeUrl == None
         assert offer.venue == venue
         assert offer.motorDisabilityCompliant is False
@@ -693,7 +693,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 201
         offer_id = response.json["id"]
@@ -728,7 +728,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 201
         assert response.json["extraData"]["ean"] == ean
@@ -768,7 +768,7 @@ class Returns200Test:
                 },
             ],
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 201
 
@@ -796,7 +796,7 @@ class Returns200Test:
             "hasCulturalOutreachClaim": True,
         }
 
-        response = auth_client.post("/offers", json=data)
+        response = auth_client.post("/v2/offers", json=data)
 
         assert response.status_code == 201
         assert response.json["hasCulturalOutreachClaim"] is True
@@ -828,7 +828,7 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 404
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
@@ -836,7 +836,10 @@ class Returns400Test:
     @pytest.mark.parametrize(
         "input_json,expected_json",
         [
-            ({"name": "too long" * 30}, {"name": ["Le titre de l’offre doit faire au maximum 90 caractères."]}),
+            (
+                {"name": "too long" * 30},
+                {"name": ["Cette chaîne de caractères doit avoir une taille maximum de 90 caractères"]},
+            ),
             (
                 {
                     "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
@@ -859,31 +862,10 @@ class Returns400Test:
         data = self._get_default_json(venue.id, subcategories.SPECTACLE_REPRESENTATION.id)
         data.update(input_json)
 
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == expected_json
-
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
-    @pytest.mark.parametrize("endpoint", ["/offers", "/v2/offers"])
-    def test_error_if_venue_is_closed(self, client, endpoint):
-        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        data = {
-            "name": "Les lièvres pas malins",
-            "venueId": venue.id,
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post(endpoint, json=data)
-
-        assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")
@@ -901,7 +883,25 @@ class Returns404Test:
             "visualDisabilityCompliant": False,
             "name": "Les orphelins",
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 404
         assert response.json["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]
+
+    @pytest.mark.parametrize("endpoint", "/v2/offers")
+    def test_error_if_venue_is_closed(self, client, endpoint):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        data = {
+            "name": "Les lièvres pas malins",
+            "venueId": venue.id,
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+        }
+        response = client.with_session_auth("user@example.com").post(endpoint, json=data)
+
+        assert response.status_code == 404

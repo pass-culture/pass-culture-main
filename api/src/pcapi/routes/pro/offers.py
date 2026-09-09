@@ -342,70 +342,22 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
         .one_or_none()
     )
 
-    create_offer_schema = offers_schemas.CreateOffer(  # type: ignore[call-arg]
-        name=body.name,
-        subcategoryId=body.subcategory_id,
-        audioDisabilityCompliant=body.audio_disability_compliant,
-        mentalDisabilityCompliant=body.mental_disability_compliant,
-        motorDisabilityCompliant=body.motor_disability_compliant,
-        visualDisabilityCompliant=body.visual_disability_compliant,
-        bookingContact=body.booking_contact,
-        bookingEmail=body.booking_email,
-        hasCulturalOutreachClaim=body.has_cultural_outreach_claim,
-        description=body.description,
-        durationMinutes=body.duration_minutes,
-        externalTicketOfficeUrl=body.external_ticket_office_url,
-        ean=ean_code,
-        extraData=body.extra_data,
-        idAtProvider=None,
-        isDuo=None,
-        url=body.url,
-        withdrawalDelay=body.withdrawal_delay,
-        withdrawalDetails=body.withdrawal_details,
-        withdrawalType=body.withdrawal_type,
-        isNational=body.is_national,
-        artistOfferLinks=body.artist_offer_links,
-    )
+    values = body.model_dump(by_alias=True)
+
+    values["ean"] = ean_code
+    values["idAtProvider"] = None
+    values["isDuo"] = None
+
+    values.pop("productId", None)
+    values.pop("address", None)
+    values.pop("venueId", None)
+
+    create_offer_schema = offers_schemas.CreateOffer(**values)
 
     offer = offers_api.create_offer(
         create_offer_schema, offerer_address=offerer_address, venue=venue, product=product, is_from_private_api=True
     )
     offer.hasPendingBookings = False
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
-
-
-@private_api.route("/offers", methods=["POST"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
-    on_success_status=201,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def post_offer(
-    body: offers_serialize.MinimalPostOfferBodyModel,
-) -> offers_serialize.GetIndividualOfferResponseModel:
-    venue: offerers_models.Venue = first_or_404(
-        db.session.query(offerers_models.Venue)
-        .filter(offerers_models.Venue.id == body.venue_id)
-        .options(
-            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
-        )
-    )
-    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    rest.check_venue_is_opened(venue)
-
-    fields = body.dict(by_alias=True)
-    fields.pop("venueId")
-    fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
-
-    offer = offers_api.create_offer(
-        offers_schemas.CreateOffer(**fields),
-        venue=venue,
-        is_from_private_api=True,
-    )
-    offer.hasPendingBookings = False
-
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
