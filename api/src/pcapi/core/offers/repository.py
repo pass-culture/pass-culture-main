@@ -1338,6 +1338,13 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
             )
         )
         .options(sa_orm.joinedload(models.Offer.culturalOutreach))
+        .options(sa_orm.selectinload(models.Offer.headlineOffers))
+        .options(
+            sa_orm.with_expression(
+                models.Offer.hasPendingBookings,
+                get_pending_bookings_subquery(),
+            )
+        )
         .one_or_none()
     )
 

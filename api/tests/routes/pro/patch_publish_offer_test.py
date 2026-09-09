@@ -72,13 +72,14 @@ class Returns200Test:
     num_queries += 1  # 2 offerer
     num_queries += 1  # 3 user_offerer
     num_queries += 1  # 4 offer+stock+offererAddress+Address+mediaton+venue
-    num_queries += 1  # 5 artists
-    num_queries += 1  # 6 available stock (date comparison)
-    num_queries += 1  # 7 select offer
-    num_queries += 1  # 8 offerer_confidence
+    num_queries += 1  # 5 headline
+    num_queries += 1  # 6 artists
+    num_queries += 1  # 7 available stock (date comparison)
+    num_queries += 1  # 8 select offer
     num_queries += 1  # 9 offerer_confidence
-    num_queries += 1  # 10 offer_validation_rule + offer_validation_sub_rule
-    num_queries += 1  # 11 update offer
+    num_queries += 1  # 10 offerer_confidence
+    num_queries += 1  # 11 offer_validation_rule + offer_validation_sub_rule
+    num_queries += 1  # 12 update offer
 
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
@@ -102,8 +103,8 @@ class Returns200Test:
         offer_id = stock.offerId
         with assert_num_queries(self.num_queries):
             response = client.patch("/offers/publish", json={"id": offer_id})
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["isActive"] is True
         assert response.json["isNonFreeOffer"] is True
 
@@ -149,8 +150,8 @@ class Returns200Test:
                     "publicationDatetime": publication_date.isoformat(),
                 },
             )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["isActive"] is False
         assert response.json["isNonFreeOffer"] is True
         assert response.json["publicationDatetime"] == format_into_utc_date(publication_date)
@@ -198,9 +199,9 @@ class Returns200Test:
                     "publicationDatetime": publication_date.isoformat(),
                 },
             )
+            assert response.status_code == 200
 
         expected_publication_date = publication_date.astimezone(datetime.UTC)
-        assert response.status_code == 200
         assert response.json["publicationDatetime"] == format_into_utc_date(publication_date)
         assert response.json["status"] == OfferStatus.SCHEDULED.name
         assert response.json["isActive"] is False
@@ -251,9 +252,9 @@ class Returns200Test:
                     "bookingAllowedDatetime": booking_allowed_datetime.isoformat(),
                 },
             )
+            assert response.status_code == 200
 
         expected_booking_allowed_datetime = booking_allowed_datetime
-        assert response.status_code == 200
         assert response.json["bookingAllowedDatetime"] == format_into_utc_date(booking_allowed_datetime)
         assert response.json["status"] == OfferStatus.PUBLISHED.name
         assert response.json["isActive"] is True
@@ -304,10 +305,10 @@ class Returns200Test:
                     "bookingAllowedDatetime": format_into_utc_date(booking_allowed_datetime),
                 },
             )
+            assert response.status_code == 200
 
         expected_publication_datetime = publication_date
 
-        assert response.status_code == 200
         offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.publicationDatetime == expected_publication_datetime
         assert offer.bookingAllowedDatetime == booking_allowed_datetime
