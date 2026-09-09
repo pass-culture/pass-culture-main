@@ -571,25 +571,6 @@ def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id:
     )
 
 
-def get_bank_accounts_query(user: users_models.User) -> sa_orm.Query:
-    query = db.session.query(
-        models.BankAccount.id,
-        models.BankAccount.label,
-    ).filter(
-        models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
-    )
-
-    if not user.has_admin_role:
-        query = query.join(
-            offerers_models.UserOfferer,
-            models.BankAccount.offererId == offerers_models.UserOfferer.offererId,
-        ).filter(
-            offerers_models.UserOfferer.userId == user.id,
-            offerers_models.UserOfferer.isValidated,
-        )
-    return query
-
-
 def convert_to_datetime(date: datetime.date) -> datetime.datetime:
     return date_utils.get_day_start(date, utils.ACCOUNTING_TIMEZONE).astimezone(pytz.utc)
 

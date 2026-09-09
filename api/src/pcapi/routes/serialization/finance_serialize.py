@@ -53,13 +53,6 @@ class SettlementListQueryModel(HttpQueryParamsModel):
 
 
 # Response Models
-class FinanceBankAccountResponseModel(HttpBodyModel):
-    id: int
-    label: str
-
-
-class FinanceBankAccountListResponseModel(RootModel):
-    root: list[FinanceBankAccountResponseModel]
 
 
 class InvoiceResponseV2Model(HttpBodyModel):
