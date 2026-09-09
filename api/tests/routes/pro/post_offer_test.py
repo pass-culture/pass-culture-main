@@ -14,7 +14,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
-from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -62,6 +61,12 @@ def offer_minimal_shared_data(subcategory_id, venue):
         "mentalDisabilityCompliant": False,
         "motorDisabilityCompliant": False,
         "visualDisabilityCompliant": False,
+        "artistOfferLinks": None,
+        "description": None,
+        "durationMinutes": None,
+        "extraData": None,
+        "hasCulturalOutreachClaim": None,
+        "productId": None,
     }
 
 
@@ -378,7 +383,7 @@ class CreateDigitalEventTest(CreateOfferBase):
     def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "extraData": {"showType": 100, "showSubType": 101},
+            "extraData": {"showType": "100", "showSubType": "101"},
         }
 
         with assert_changes(Offer, 1):
@@ -413,7 +418,7 @@ class CreateActivitySubscriptionTest(CreateOfferBase):
     def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "extraData": {"showType": 100, "showSubType": 101},
+            "extraData": {"showType": "100", "showSubType": "101"},
         }
 
         with assert_changes(Offer, 1):
@@ -443,10 +448,8 @@ class CreateActivityOnlineTest(CreateOfferBase):
     endpoint = "/v2/offers"
 
     def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
-        activity_url = "https://activity.online.test.com"
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "url": activity_url,
         }
 
         with assert_changes(Offer, 1):
@@ -463,11 +466,9 @@ class CreateActivityOnlineTest(CreateOfferBase):
         assert offer.isEvent
 
     def test_create_offer_with_show_type_is_ok(self, auth_client, venue, subcategory_id):
-        activity_url = "https://activity.online.test.com"
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "extraData": {"showType": 100, "showSubType": 101},
-            "url": activity_url,
+            "extraData": {"showType": "100", "showSubType": "101"},
         }
 
         with assert_changes(Offer, 1):
@@ -489,11 +490,9 @@ class CreateActivityOnlineEventTest(CreateOfferBase):
     endpoint = "/v2/offers"
 
     def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
-        activity_url = "https://activity.online.test.com"
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "extraData": {"showType": 100, "showSubType": 101},
-            "url": activity_url,
+            "extraData": {"showType": "100", "showSubType": "101"},
         }
 
         with assert_changes(Offer, 1):
@@ -512,7 +511,6 @@ class CreateActivityOnlineEventTest(CreateOfferBase):
     def test_create_offer_without_show_type_is_not_ok(self, auth_client, venue, subcategory_id):
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "url": "https://some.url.test.com",
         }
 
         with assert_no_changes(Offer):
@@ -545,7 +543,7 @@ class CreateActivityRandomTest(CreateOfferBase):
     def test_create_offer_with_showtype_is_ok(self, auth_client, venue, subcategory_id):
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "extraData": {"showType": 100, "showSubType": 101},
+            "extraData": {"showType": "100", "showSubType": "101"},
         }
 
         with assert_changes(Offer, 1):
@@ -621,168 +619,27 @@ class Returns200Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        data = {
-            "venueId": venue.id,
-            "name": "Celeste",
-            "subcategoryId": subcategories.ABO_BIBLIOTHEQUE.id,
-            "mentalDisabilityCompliant": True,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        data = offer_minimal_shared_data(subcategories.ABO_BIBLIOTHEQUE.id, venue)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
         offer_id = response.json["id"]
         offer = db.session.get(Offer, offer_id)
-        response_dict = response.json
         assert offer.isActive is False
-        assert response_dict["venue"]["id"] == offer.venue.id
-        assert response.json["venue"]["street"] == offer.venue.offererAddress.address.street
-        assert response_dict["name"] == "Celeste"
-        assert response_dict["id"] == offer.id
-        assert not offer.product
-
-    def test_create_event_offer(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        data = {
-            "venueId": venue.id,
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        assert response.status_code == 201
-        offer_id = response.json["id"]
-        offer = db.session.get(Offer, offer_id)
-        assert offer.bookingContact == None
-        assert offer.bookingEmail == None
-        assert offer.publicationDatetime is None
-        assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
-        assert offer.extraData == {"showType": 200, "showSubType": 201}
-        assert offer.externalTicketOfficeUrl == None
-        assert offer.venue == venue
-        assert offer.motorDisabilityCompliant is False
-        assert offer.visualDisabilityCompliant is False
-        assert offer.audioDisabilityCompliant is False
-        assert offer.mentalDisabilityCompliant is True
-        assert offer.validation == OfferValidationStatus.DRAFT
-        assert offer.isActive is False
-        assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
-        assert offer.offererAddress.address == venue.offererAddress.address
 
     def test_create_digital_thing_offer(self, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        data = {
-            "venueId": venue.id,
-            "name": "Les lièvres pas malins",
-            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        data = offer_minimal_shared_data(subcategories.JEU_EN_LIGNE.id, venue)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 201
         offer_id = response.json["id"]
         offer = db.session.get(Offer, offer_id)
-        assert offer.bookingEmail == None
         assert offer.subcategoryId == subcategories.JEU_EN_LIGNE.id
         assert offer.venue == venue
-        assert offer.externalTicketOfficeUrl == None
-        assert offer.url == None
-        assert offer.hasUrl is False
         assert offer.isDigital
-        assert offer.isNational is False
-        assert offer.motorDisabilityCompliant is False
-        assert offer.visualDisabilityCompliant is False
-        assert offer.audioDisabilityCompliant is True
-        assert offer.mentalDisabilityCompliant is False
-
-    def test_create_offer_with_ean(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        ean = "1234567890112"
-        data = {
-            "venueId": venue.id,
-            "name": "Les lièvres pas malins",
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
-            "extraData": {
-                "ean": ean,
-            },
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        assert response.status_code == 201
-        assert response.json["extraData"]["ean"] == ean
-        assert "ean" not in response.json
-
-        offer_id = response.json["id"]
-        offer = db.session.get(Offer, offer_id)
-        assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert offer.venue == venue
-        assert offer.ean == "1234567890112"
-        assert "ean" not in offer.extraData
-
-    def test_create_offer_with_artist_links(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        artist = artist_factories.ArtistFactory()
-
-        data = {
-            "venueId": venue.id,
-            "name": "Concert symphonique",
-            "subcategoryId": subcategories.CONCERT.id,
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "artistOfferLinks": [
-                {
-                    "artistId": artist.id,
-                    "artistType": "performer",
-                    "artistName": artist.name,
-                },
-                {
-                    "artistId": None,
-                    "artistType": "author",
-                    "artistName": "Custom Artist Name",
-                },
-            ],
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        assert response.status_code == 201
-
-        assert "artistOfferLinks" in response.json
-        assert response.json["artistOfferLinks"][0] == {
-            "artistId": artist.id,
-            "artistName": artist.name,
-            "artistType": "performer",
-        }
-        assert response.json["artistOfferLinks"][1] == {
-            "artistId": None,
-            "artistName": "Custom Artist Name",
-            "artistType": "author",
-        }
+        assert not offer.isEvent
 
     @pytest.mark.parametrize("activity", CULTURAL_OUTREACH_ALLOWED_ACTIVITIES)
     @time_machine.travel("2026-04-20 12:00:00", tick=False)
@@ -796,7 +653,7 @@ class Returns200Test:
             "hasCulturalOutreachClaim": True,
         }
 
-        response = auth_client.post("/offers", json=data)
+        response = auth_client.post("/v2/offers", json=data)
 
         assert response.status_code == 201
         assert response.json["hasCulturalOutreachClaim"] is True
@@ -814,6 +671,12 @@ class Returns400Test:
             "audioDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
+            "artistOfferLinks": None,
+            "description": None,
+            "durationMinutes": None,
+            "extraData": None,
+            "hasCulturalOutreachClaim": None,
+            "productId": None,
         }
 
     def test_fail_if_venue_is_not_found(self, client):
@@ -827,8 +690,14 @@ class Returns400Test:
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "artistOfferLinks": None,
+            "description": None,
+            "durationMinutes": None,
+            "extraData": None,
+            "hasCulturalOutreachClaim": None,
+            "productId": None,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 404
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
@@ -836,7 +705,10 @@ class Returns400Test:
     @pytest.mark.parametrize(
         "input_json,expected_json",
         [
-            ({"name": "too long" * 30}, {"name": ["Le titre de l’offre doit faire au maximum 90 caractères."]}),
+            (
+                {"name": "too long" * 30},
+                {"name": ["Cette chaîne de caractères doit avoir une taille maximum de 90 caractères"]},
+            ),
             (
                 {
                     "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
@@ -845,10 +717,6 @@ class Returns400Test:
                 {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
             ),
             ({"subcategoryId": "ART_PRIMITIF"}, {"subcategory": ["La sous-catégorie de cette offre est inconnue"]}),
-            (
-                {"subcategoryId": "OEUVRE_ART"},
-                {"subcategory": ["Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"]},
-            ),
         ],
     )
     def test_fail_if_json_incorrect(self, client, input_json, expected_json):
@@ -859,31 +727,10 @@ class Returns400Test:
         data = self._get_default_json(venue.id, subcategories.SPECTACLE_REPRESENTATION.id)
         data.update(input_json)
 
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == expected_json
-
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
-    @pytest.mark.parametrize("endpoint", ["/offers", "/v2/offers"])
-    def test_error_if_venue_is_closed(self, client, endpoint):
-        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        data = {
-            "name": "Les lièvres pas malins",
-            "venueId": venue.id,
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post(endpoint, json=data)
-
-        assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")
@@ -892,16 +739,20 @@ class Returns404Test:
         users_factories.ProFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
 
-        data = {
-            "venueId": venue.id,
-            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "name": "Les orphelins",
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        data = offer_minimal_shared_data(subcategories.ESCAPE_GAME.id, venue)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
 
         assert response.status_code == 404
         assert response.json["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns403Test:
+    def test_error_if_venue_is_closed(self, client):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        data = offer_minimal_shared_data(subcategories.ESCAPE_GAME.id, venue)
+        response = client.with_session_auth("user@example.com").post("/v2/offers", json=data)
+
+        assert response.status_code == 403

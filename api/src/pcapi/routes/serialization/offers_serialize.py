@@ -5,7 +5,6 @@ import typing
 from typing import Any
 
 import pydantic as pydantic_v2
-from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import conlist
@@ -38,7 +37,6 @@ from pcapi.serialization.utils import future_tz_aware_datetime_keep_tz
 from pcapi.serialization.utils import future_tz_aware_datetime_or_now_keep_tz
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_timezoned_datetime
-from pcapi.serialization.utils import validate_url
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -697,52 +695,30 @@ class OfferVideo(ConfiguredBaseModel):
     duration: int | None
 
 
-class MinimalPostOfferBodyModel(ConfiguredBaseModel):
-    name: str
+class PostOfferBodyModel(HttpBodyModel):
+    name: str = pydantic_v2.Field(max_length=offers_constants.MAX_OFFER_NAME_LENGTH)
     venue_id: int
     has_cultural_outreach_claim: bool | None
     description: str | None
     subcategory_id: str
     duration_minutes: int | None
-    extra_data: dict[str, typing.Any] | None
-    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModel] | None
-
+    extra_data: OfferExtraDataV2 | None
+    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModelV2] | None
     audio_disability_compliant: bool
     mental_disability_compliant: bool
     motor_disability_compliant: bool
     visual_disability_compliant: bool
-
-    @validator("name", pre=True)
-    def validate_name(cls, name: str, values: dict) -> str:
-        offers_validation.check_offer_name_length_is_valid(name)
-        return name
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class PostOfferBodyModel(MinimalPostOfferBodyModel):
-    address: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
-    url: HttpUrl | None
-    booking_contact: EmailStr | None
-    booking_email: EmailStr | None
-    external_ticket_office_url: HttpUrl | None
-    is_duo: bool | None
-    is_national: bool | None
     product_id: int | None
-    withdrawal_delay: int | None
-    withdrawal_details: str | None
-    withdrawal_type: offers_models.WithdrawalTypeEnum | None
 
-    @validator("withdrawal_type")
-    def validate_withdrawal_type(cls, value: offers_models.WithdrawalTypeEnum) -> offers_models.WithdrawalTypeEnum:
-        if value == offers_models.WithdrawalTypeEnum.IN_APP:
-            raise ValueError("Withdrawal type cannot be in_app for manually created offers")
-        return value
+    @pydantic_v2.field_validator("extra_data")
+    @classmethod
+    def validate_extra_data(cls, extra_data: OfferExtraDataV2 | None) -> OfferExtraDataV2 | None:
+        if extra_data is None:
+            return None
 
-    _validation_external_ticket_office_url = validate_url("external_ticket_office_url")
-    _validation_url = validate_url("url")
+        validate_extra_data_size(extra_data)
+        validate_extra_data_content(extra_data)
+        return extra_data
 
 
 class ProAdviceModel(HttpBodyModel):

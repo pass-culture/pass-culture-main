@@ -918,15 +918,6 @@ def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
         raise exceptions.OfferWithoutImageCanNotBeHeadline()
 
 
-def check_offer_name_length_is_valid(offer_name: str) -> None:
-    if len(offer_name) > constants.MAX_OFFER_NAME_LENGTH:
-        api_error = api_errors.ApiErrors()
-        api_error.add_error(
-            "name", f"Le titre de l’offre doit faire au maximum {constants.MAX_OFFER_NAME_LENGTH} caractères."
-        )
-        raise api_error
-
-
 def check_video_url(video_url: HttpUrl | None) -> str | None:
     if not video_url:
         return None

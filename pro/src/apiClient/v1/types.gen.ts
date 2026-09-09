@@ -67,21 +67,6 @@ export type AggregatedRevenueModel = {
 };
 
 /**
- * ArtistOfferLinkBodyModel
- */
-export type ArtistOfferLinkBodyModel = {
-    /**
-     * Artistid
-     */
-    artistId: string;
-    /**
-     * Artistname
-     */
-    artistName: string;
-    artistType: ArtistType;
-};
-
-/**
  * ArtistOfferLinkBodyModelV2
  */
 export type ArtistOfferLinkBodyModelV2 = {
@@ -4022,52 +4007,6 @@ export type ListVenueProviderResponse = {
 };
 
 /**
- * LocationBodyModel
- */
-export type LocationBodyModel = {
-    /**
-     * Banid
-     */
-    banId?: string;
-    /**
-     * City
-     */
-    city: string;
-    /**
-     * Inseecode
-     */
-    inseeCode?: string;
-    /**
-     * Ismanualedition
-     */
-    isManualEdition?: boolean;
-    /**
-     * Isvenuelocation
-     */
-    isVenueLocation?: boolean;
-    /**
-     * Label
-     */
-    label?: string;
-    /**
-     * Latitude
-     */
-    latitude: number | string;
-    /**
-     * Longitude
-     */
-    longitude: number | string;
-    /**
-     * Postalcode
-     */
-    postalCode: string;
-    /**
-     * Street
-     */
-    street: string;
-};
-
-/**
  * LocationBodyModelV2
  */
 export type LocationBodyModelV2 = {
@@ -4157,16 +4096,6 @@ export type LocationModelV2 = {
      * Street
      */
     street: string;
-};
-
-/**
- * LocationOnlyOnVenueBodyModel
- */
-export type LocationOnlyOnVenueBodyModel = {
-    /**
-     * Isvenuelocation
-     */
-    isVenueLocation: boolean;
 };
 
 /**
@@ -4344,62 +4273,6 @@ export type MentalDisabilityModelV2 = {
      * Trainedpersonnel
      */
     trainedPersonnel?: string;
-};
-
-/**
- * MinimalPostOfferBodyModel
- */
-export type MinimalPostOfferBodyModel = {
-    /**
-     * Artistofferlinks
-     */
-    artistOfferLinks?: Array<ArtistOfferLinkBodyModel>;
-    /**
-     * Audiodisabilitycompliant
-     */
-    audioDisabilityCompliant: boolean;
-    /**
-     * Description
-     */
-    description?: string;
-    /**
-     * Durationminutes
-     */
-    durationMinutes?: number;
-    /**
-     * Extradata
-     */
-    extraData?: {
-        [key: string]: unknown;
-    };
-    /**
-     * Hasculturaloutreachclaim
-     */
-    hasCulturalOutreachClaim?: boolean;
-    /**
-     * Mentaldisabilitycompliant
-     */
-    mentalDisabilityCompliant: boolean;
-    /**
-     * Motordisabilitycompliant
-     */
-    motorDisabilityCompliant: boolean;
-    /**
-     * Name
-     */
-    name: string;
-    /**
-     * Subcategoryid
-     */
-    subcategoryId: string;
-    /**
-     * Venueid
-     */
-    venueId: number;
-    /**
-     * Visualdisabilitycompliant
-     */
-    visualDisabilityCompliant: boolean;
 };
 
 /**
@@ -5641,55 +5514,26 @@ export type PostDateRangeModel = {
  */
 export type PostOfferBodyModel = {
     /**
-     * Address
-     */
-    address?: LocationBodyModel | LocationOnlyOnVenueBodyModel;
-    /**
      * Artistofferlinks
      */
-    artistOfferLinks?: Array<ArtistOfferLinkBodyModel>;
+    artistOfferLinks: Array<ArtistOfferLinkBodyModelV2> | null;
     /**
      * Audiodisabilitycompliant
      */
     audioDisabilityCompliant: boolean;
     /**
-     * Bookingcontact
-     */
-    bookingContact?: string;
-    /**
-     * Bookingemail
-     */
-    bookingEmail?: string;
-    /**
      * Description
      */
-    description?: string;
+    description: string | null;
     /**
      * Durationminutes
      */
-    durationMinutes?: number;
-    /**
-     * Externalticketofficeurl
-     */
-    externalTicketOfficeUrl?: string;
-    /**
-     * Extradata
-     */
-    extraData?: {
-        [key: string]: unknown;
-    };
+    durationMinutes: number | null;
+    extraData: OfferExtraDataV2 | null;
     /**
      * Hasculturaloutreachclaim
      */
-    hasCulturalOutreachClaim?: boolean;
-    /**
-     * Isduo
-     */
-    isDuo?: boolean;
-    /**
-     * Isnational
-     */
-    isNational?: boolean;
+    hasCulturalOutreachClaim: boolean | null;
     /**
      * Mentaldisabilitycompliant
      */
@@ -5705,15 +5549,11 @@ export type PostOfferBodyModel = {
     /**
      * Productid
      */
-    productId?: number;
+    productId: number | null;
     /**
      * Subcategoryid
      */
     subcategoryId: string;
-    /**
-     * Url
-     */
-    url?: string;
     /**
      * Venueid
      */
@@ -5722,15 +5562,6 @@ export type PostOfferBodyModel = {
      * Visualdisabilitycompliant
      */
     visualDisabilityCompliant: boolean;
-    /**
-     * Withdrawaldelay
-     */
-    withdrawalDelay?: number;
-    /**
-     * Withdrawaldetails
-     */
-    withdrawalDetails?: string;
-    withdrawalType?: WithdrawalTypeEnum;
 };
 
 /**
@@ -9591,35 +9422,6 @@ export type getOffersResponses = {
 };
 
 export type getOffersResponse = getOffersResponses[keyof getOffersResponses];
-
-export type postOffersData = {
-    body: MinimalPostOfferBodyModel;
-    path?: never;
-    query?: never;
-    url: '/offers';
-};
-
-export type postOffersErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type postOffersError = postOffersErrors[keyof postOffersErrors];
-
-export type postOffersResponses = {
-    /**
-     * Created
-     */
-    201: GetIndividualOfferResponseModel;
-};
-
-export type postOffersResponse = postOffersResponses[keyof postOffersResponses];
 
 export type patchOffersActiveStatusData = {
     body: PatchOfferActiveStatusBodyModel;

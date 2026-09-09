@@ -542,8 +542,8 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         name: 'My super offer',
         subcategoryId: 'physical',
         venueId: 189,
-        url: undefined,
         visualDisabilityCompliant: true,
+        productId: null,
       },
     })
     expect(mockLogEvent).toHaveBeenCalledWith(

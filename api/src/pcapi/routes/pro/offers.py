@@ -6,7 +6,6 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
-import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.constants as offers_constants
 import pcapi.core.offers.repository as offers_repository
@@ -17,7 +16,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
@@ -319,18 +317,6 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
             sa_orm.joinedload(offerers_models.Venue.managingOfferer),
         )
     )
-    offerer_address = (
-        offerers_api.get_offer_location_from_address(
-            venue.managingOffererId, offerers_schemas.LocationModel(**body.address.dict()), venue.id
-        )
-        if body.address
-        else offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
-            venue_id=venue.id,
-            address_id=venue.offererAddress.addressId,
-            label=None,
-        )
-    )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     rest.check_venue_is_opened(venue)
 
@@ -342,70 +328,17 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
         .one_or_none()
     )
 
-    create_offer_schema = offers_schemas.CreateOffer(  # type: ignore[call-arg]
-        name=body.name,
-        subcategoryId=body.subcategory_id,
-        audioDisabilityCompliant=body.audio_disability_compliant,
-        mentalDisabilityCompliant=body.mental_disability_compliant,
-        motorDisabilityCompliant=body.motor_disability_compliant,
-        visualDisabilityCompliant=body.visual_disability_compliant,
-        bookingContact=body.booking_contact,
-        bookingEmail=body.booking_email,
-        hasCulturalOutreachClaim=body.has_cultural_outreach_claim,
-        description=body.description,
-        durationMinutes=body.duration_minutes,
-        externalTicketOfficeUrl=body.external_ticket_office_url,
-        ean=ean_code,
-        extraData=body.extra_data,
-        idAtProvider=None,
-        isDuo=None,
-        url=body.url,
-        withdrawalDelay=body.withdrawal_delay,
-        withdrawalDetails=body.withdrawal_details,
-        withdrawalType=body.withdrawal_type,
-        isNational=body.is_national,
-        artistOfferLinks=body.artist_offer_links,
-    )
+    values = body.model_dump(by_alias=True)
 
-    offer = offers_api.create_offer(
-        create_offer_schema, offerer_address=offerer_address, venue=venue, product=product, is_from_private_api=True
-    )
+    values["ean"] = ean_code
+
+    values.pop("productId", None)
+    values.pop("venueId", None)
+
+    create_offer_schema = offers_schemas.CreateOffer(**values)
+
+    offer = offers_api.create_offer(create_offer_schema, venue=venue, product=product, is_from_private_api=True)
     offer.hasPendingBookings = False
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
-
-
-@private_api.route("/offers", methods=["POST"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
-    on_success_status=201,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def post_offer(
-    body: offers_serialize.MinimalPostOfferBodyModel,
-) -> offers_serialize.GetIndividualOfferResponseModel:
-    venue: offerers_models.Venue = first_or_404(
-        db.session.query(offerers_models.Venue)
-        .filter(offerers_models.Venue.id == body.venue_id)
-        .options(
-            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
-        )
-    )
-    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    rest.check_venue_is_opened(venue)
-
-    fields = body.dict(by_alias=True)
-    fields.pop("venueId")
-    fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
-
-    offer = offers_api.create_offer(
-        offers_schemas.CreateOffer(**fields),
-        venue=venue,
-        is_from_private_api=True,
-    )
-    offer.hasPendingBookings = False
-
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
