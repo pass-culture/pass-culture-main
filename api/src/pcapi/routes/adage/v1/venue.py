@@ -39,7 +39,7 @@ def get_venues_from_siret(
     if not venues:
         raise ApiErrors({"code": "VENUES_NOT_FOUND"}, status_code=404)
     return venue_serialization.GetVenuesResponseModel(
-        venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]
+        venues=[venue_serialization.VenueModel.build(venue) for venue in venues]
     )
 
 
@@ -63,7 +63,7 @@ def get_venues_from_name(
         raise ApiErrors({"code": "VENUES_NOT_FOUND"}, status_code=404)
 
     return venue_serialization.GetVenuesResponseModel(
-        venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]
+        venues=[venue_serialization.VenueModel.build(venue) for venue in venues]
     )
 
 
@@ -82,7 +82,7 @@ def get_all_venues(
     venues = educational_api_venue.get_all_venues(query.page, query.per_page)
 
     return venue_serialization.GetVenuesResponseModel(
-        venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]
+        venues=[venue_serialization.VenueModel.build(venue) for venue in venues]
     )
 
 
@@ -99,7 +99,7 @@ def get_venue_by_id(venue_id: int) -> venue_serialization.VenueModel:
     venue = offerers_repository.find_venue_by_id(venue_id)
     if not venue:
         raise ApiErrors({"code": "VENUE_NOT_FOUND"}, status_code=404)
-    return venue_serialization.VenueModel.from_orm(venue)
+    return venue_serialization.VenueModel.build(venue)
 
 
 @blueprint.adage_v1.route("/venues/relative/id/<int:venue_id>", methods=["GET"])
@@ -117,7 +117,7 @@ def get_relative_venues_by_id(venue_id: int) -> venue_serialization.GetVenuesRes
         raise ApiErrors({"code": "VENUE_NOT_FOUND"}, status_code=404)
 
     return venue_serialization.GetVenuesResponseModel(
-        venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]
+        venues=[venue_serialization.VenueModel.build(venue) for venue in venues]
     )
 
 
