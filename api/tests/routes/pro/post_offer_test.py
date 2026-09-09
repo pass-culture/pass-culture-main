@@ -232,6 +232,7 @@ class CreateOfferBase:
     success_num_queries += 1  # fetch offer meta data
     success_num_queries += 1  # fetch highlight requests
     success_num_queries += 1  # fetch cultural outreach
+    success_num_queries += 1  # fetch headline offer
 
 
 class CreateThingsTest(CreateOfferBase):

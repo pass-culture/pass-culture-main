@@ -1,6 +1,6 @@
 import { useId } from 'react'
 
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { truncateAtWord } from '@/commons/utils/string'
 import { Markdown } from '@/components/Markdown/Markdown'
@@ -10,7 +10,7 @@ import { OptionsIcons } from './OptionsIcons/OptionsIcons'
 import { VenueDetails } from './VenueDetails/VenueDetails'
 
 interface OfferAppPreviewProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModel
 }
 
 export const OfferAppPreview = ({

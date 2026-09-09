@@ -717,7 +717,7 @@ describe('IndividualOfferSummaryScreen', () => {
         },
       }
 
-      // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+      // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
       // @ts-expect-error
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
@@ -743,7 +743,7 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should render component with new sections and empty address data', async () => {
       contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
-        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
         // @ts-expect-error
         location: null,
       })

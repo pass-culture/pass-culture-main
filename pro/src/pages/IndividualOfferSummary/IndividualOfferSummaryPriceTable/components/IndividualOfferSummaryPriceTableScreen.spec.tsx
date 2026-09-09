@@ -3,7 +3,7 @@ import { vi } from 'vitest'
 
 import type { GetOfferStockResponseModel } from '@/apiClient/v1'
 import {
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
 import {
@@ -42,7 +42,7 @@ const renderIndividualOfferSummaryPriceTableScreen: RenderComponentFunction<
   React.ComponentProps<typeof IndividualOfferSummaryPriceTableScreen>,
   IndividualOfferContextValues,
   {
-    offer: GetIndividualOfferWithAddressResponseModel
+    offer: GetIndividualOfferResponseModel
     offerStocks: GetOfferStockResponseModel[]
   }
 > = (params) => {

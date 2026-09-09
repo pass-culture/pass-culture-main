@@ -57,7 +57,7 @@ describe('getOfferEnhancementActionsVisibility', () => {
     const offer = getIndividualOfferFactory({
       status: OfferStatus.ACTIVE,
       productId: 12,
-      // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+      // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
       // @ts-expect-error
       thumbUrl: null,
     })

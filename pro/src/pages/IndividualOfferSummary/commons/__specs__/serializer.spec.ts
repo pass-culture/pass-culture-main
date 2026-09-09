@@ -1,7 +1,7 @@
 import {
   ArtistType,
   type CategoryResponseModel,
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
@@ -16,7 +16,7 @@ import {
 import { serializeArtist, serializeOfferSectionData } from '../serializer'
 
 describe('IndividualOfferSummary:serializer', () => {
-  let offer: GetIndividualOfferWithAddressResponseModel
+  let offer: GetIndividualOfferResponseModel
   let categories: CategoryResponseModel[]
   let subCategoryList: SubcategoryResponseModel[]
 

@@ -1,7 +1,7 @@
 import type { UseFormReturn } from 'react-hook-form'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -21,7 +21,7 @@ export const useSaveOfferPriceTable = ({
   offer,
 }: {
   form: UseFormReturn<PriceTableFormValues>
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModel
 }): {
   save: (formValues: PriceTableFormValues) => Promise<boolean>
 } => {

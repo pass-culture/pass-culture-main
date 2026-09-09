@@ -31,7 +31,7 @@ describe('isOfferSynchronizedViaAllocine', () => {
     expect(
       isOfferSynchronizedViaAllocine(
         getIndividualOfferFactory({
-          // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+          // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
           // @ts-expect-error
           lastProvider: null,
         })

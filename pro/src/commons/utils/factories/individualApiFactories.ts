@@ -9,7 +9,7 @@ import {
   type CategoryResponseModel,
   DisplayableActivity,
   type GetBookingResponse,
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModel,
   type GetOfferExposureResponseModel,
   type GetOffererNameResponseModel,
   type GetOffererResponseModel,
@@ -88,9 +88,9 @@ export const getOfferExposureFactory = (
 // TODO (igabriele, 2025-08-05): Factories shouldn't set sensitive domain boolean values to true by default or build children that are not guaranteed to be present.
 // This makes writing tests more difficult and increases the risk of false positives.
 export const getIndividualOfferFactory = (
-  customGetIndividualOffer: Partial<GetIndividualOfferWithAddressResponseModel> = {},
+  customGetIndividualOffer: Partial<GetIndividualOfferResponseModel> = {},
   venue: GetOfferVenueResponseModel = getOfferVenueFactory()
-): GetIndividualOfferWithAddressResponseModel => {
+): GetIndividualOfferResponseModel => {
   const id = customGetIndividualOffer.id ?? offerId++
 
   return {
@@ -111,7 +111,7 @@ export const getIndividualOfferFactory = (
     isDuo: true,
     isNational: true,
     subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-    // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+    // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
     // @ts-expect-error
     lastProvider: null,
     bookingsCount: 0,

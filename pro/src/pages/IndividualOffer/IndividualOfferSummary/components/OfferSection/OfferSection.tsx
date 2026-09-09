@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router'
 
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   CULTURAL_OUTREACH_ALLOWED_ACTIVITIES,
@@ -89,7 +89,7 @@ function buildArtisticInfoDescriptions(
 }
 
 interface OfferSummaryProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModel
   conditionalFields: string[]
 }
 

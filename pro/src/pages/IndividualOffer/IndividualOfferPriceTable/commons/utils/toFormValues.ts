@@ -2,7 +2,7 @@ import { format } from 'date-fns'
 import type { CastOptions } from 'yup'
 
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
   GetVenueResponseModel,
   PriceCategoryResponseModel,
@@ -26,19 +26,19 @@ const isGetOfferStockResponseModel = (
 }
 
 export function toFormValues(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModel,
   priceCategories: PriceCategoryResponseModel[],
   context: PriceTableFormContext,
   venue: GetVenueResponseModel
 ): PriceTableFormValues
 export function toFormValues(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModel,
   offerStocks: GetOfferStockResponseModel[],
   context: PriceTableFormContext,
   venue: GetVenueResponseModel
 ): PriceTableFormValues
 export function toFormValues(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModel,
   priceCategoriesOrOfferStocks:
     | PriceCategoryResponseModel[]
     | GetOfferStockResponseModel[],
@@ -47,7 +47,7 @@ export function toFormValues(
 ): PriceTableFormValues
 
 export function toFormValues(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModel,
   priceCategoriesOrOfferStocks:
     | PriceCategoryResponseModel[]
     | GetOfferStockResponseModel[],
