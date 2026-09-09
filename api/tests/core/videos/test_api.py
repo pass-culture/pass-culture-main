@@ -163,6 +163,8 @@ class UpsertVideoAndMetadataTest:
             "venue_id": offer.venueId,
             "video_url": self.VIDEO_URL,
             "provider_id": 12,
+            "feature": "offer",
+            "action": "video.added",
         }
 
     @mock.patch(GET_METADATA)
@@ -224,4 +226,6 @@ class RemoveVideoDataFromOfferMetadataTest:
             "venue_id": offer.venueId,
             "video_url": self.VIDEO_URL,
             "provider_id": 12,
+            "feature": "offer",
+            "action": "video.deleted",
         }

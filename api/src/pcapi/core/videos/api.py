@@ -92,6 +92,8 @@ def remove_video_data_from_offer_metadata(
             "venue_id": venue_id,
             "video_url": video_url,
             "provider_id": provider_id,
+            "feature": "offer",
+            "action": "video.deleted",
         },
         technical_message_id="offer.video.deleted",
     )
@@ -115,6 +117,8 @@ def upsert_video_and_metadata(
                 "venue_id": offer.venueId,
                 "video_url": video_url,
                 "provider_id": provider_id,
+                "feature": "offer",
+                "action": "video.added",
             },
             technical_message_id="offer.video.added",
         )
@@ -126,6 +130,8 @@ def upsert_video_and_metadata(
                 "venue_id": offer.venueId,
                 "video_url": video_url,
                 "provider_id": provider_id,
+                "feature": "offer",
+                "action": "video.added",
             },
             technical_message_id="offer.video.added",
         )
@@ -137,6 +143,8 @@ def upsert_video_and_metadata(
                 "venue_id": offer.venueId,
                 "video_url": video_url,
                 "provider_id": provider_id,
+                "feature": "offer",
+                "action": "video.updated",
             },
             technical_message_id="offer.video.updated",
         )

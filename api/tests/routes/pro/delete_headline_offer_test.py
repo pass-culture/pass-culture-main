@@ -42,6 +42,8 @@ class Returns204Test:
             "analyticsSource": "app-pro",
             "HeadlineOfferId": headline_offer.id,
             "Reason": "Headline offer has been deactivated by user",
+            "feature": "headline_offer",
+            "action": "deactivation",
         }
         assert log.technical_message_id == "headline_offer_deactivation"
 
@@ -69,6 +71,8 @@ class Returns204Test:
             "analyticsSource": "app-pro",
             "HeadlineOfferId": headline_offer.id,
             "Reason": "Headline offer has been deactivated by user",
+            "feature": "headline_offer",
+            "action": "deactivation",
         }
         assert log.technical_message_id == "headline_offer_deactivation"
 

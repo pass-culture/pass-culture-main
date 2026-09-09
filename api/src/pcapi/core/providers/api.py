@@ -67,7 +67,7 @@ def create_venue_provider(
 
     logger.info(
         "La synchronisation d'offre a été activée",
-        extra={"venue_id": venue.id, "provider_id": provider.id},
+        extra={"venue_id": venue.id, "provider_id": provider.id, "feature": "offer", "action": "sync.activated"},
         technical_message_id="offer.sync.activated",
     )
     return new_venue_provider
@@ -114,7 +114,7 @@ def delete_venue_provider(
     logger.info(
         "Deleted VenueProvider for venue %d",
         venue_id,
-        extra={"venue_id": venue_id, "provider_id": provider_id},
+        extra={"venue_id": venue_id, "provider_id": provider_id, "feature": "offer", "action": "sync.deleted"},
         technical_message_id="offer.sync.deleted",
     )
 
@@ -147,7 +147,12 @@ def activate_or_deactivate_venue_provider(
             "Updated VenueProvider %s isActive attribut to %s",
             venue_provider.id,
             venue_provider.isActive,
-            extra={"venue_id": venue_provider.venueId, "provider_id": venue_provider.providerId},
+            extra={
+                "venue_id": venue_provider.venueId,
+                "provider_id": venue_provider.providerId,
+                "feature": "offer",
+                "action": "sync.activated" if venue_provider.isActive else "sync.deactivated",
+            },
             technical_message_id="offer.sync.reactivated" if venue_provider.isActive else "offer.sync.deactivated",
         )
 

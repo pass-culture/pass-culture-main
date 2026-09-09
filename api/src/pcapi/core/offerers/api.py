@@ -205,6 +205,8 @@ def update_venue(
                     "venue_id": venue.id,
                     "acceslibre_slug": external_accessibility_id,
                     "update_message": "Manual update of acceslibre synchronisation",
+                    "feature": "acceslibre.synchronisation",
+                    "action": "manual",
                 },
                 technical_message_id="acceslibre.synchronisation.manual",
             )
@@ -216,6 +218,8 @@ def update_venue(
                     "analyticsSource": "app-pro",
                     "venue_id": venue.id,
                     "update_message": "Manually removed acceslibre for this Venue",
+                    "feature": "acceslibre.synchronisation",
+                    "action": "removed",
                 },
                 technical_message_id="acceslibre.synchronisation.removed",
             )
@@ -251,7 +255,12 @@ def update_venue(
                 partial(
                     logger.info,
                     "Volunteering URL has been added",
-                    extra={"venue_id": venue.id, "volunteeringUrl": modifications["volunteeringUrl"]},
+                    extra={
+                        "venue_id": venue.id,
+                        "volunteeringUrl": modifications["volunteeringUrl"],
+                        "feature": "venue",
+                        "action": "volunteering_add",
+                    },
                     technical_message_id="venue.volunteering_add",
                 )
             )
@@ -260,7 +269,7 @@ def update_venue(
                 partial(
                     logger.info,
                     "Volunteering URL has been removed",
-                    extra={"venue_id": venue.id},
+                    extra={"venue_id": venue.id, "feature": "venue", "action": "volunteering_delete"},
                     technical_message_id="venue.volunteering_delete",
                 )
             )
@@ -2323,6 +2332,8 @@ def create_from_onboarding_data(
                 "venue_id": venue.id,
                 "is_open_to_public": onboarding_data.is_open_to_public,
                 "user_input": onboarding_data.otherActivityComment,
+                "feature": "venue",
+                "action": "creation_with_other_activity",
             },
             technical_message_id="venue_creation_with_other_activity",
         )
@@ -2339,6 +2350,8 @@ def create_from_onboarding_data(
             "venue_id": venue.id,
             "siret": venue.siret,
             "is_diffusible": siret_info.diffusible,
+            "feature": "structure",
+            "action": "creation",
         },
         technical_message_id="structure_creation",
     )
@@ -2910,6 +2923,8 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
                         "venue_id": venue.id,
                         "acceslibre_slug": slug,
                         "update_message": "New slug found at acceslibre for already synchronized venue",
+                        "feature": "acceslibre",
+                        "action": "synchronisation.update",
                     },
                     technical_message_id="acceslibre.synchronisation.update",
                 )
@@ -2921,6 +2936,8 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
                     "venue_id": venue.id,
                     "acceslibre_slug": slug,
                     "update_message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
+                    "feature": "acceslibre",
+                    "action": "synchronisation.lost",
                 },
                 technical_message_id="acceslibre.synchronisation.lost",
             )
@@ -3009,6 +3026,8 @@ def match_acceslibre(venue: offerers_models.Venue) -> None:
             "venue_id": venue.id,
             "acceslibre_slug": venue.accessibilityProvider.externalAccessibilityId,
             "update_message": "New entry found at acceslibre for this venue",
+            "feature": "acceslibre",
+            "action": "synchronisation.created",
         },
         technical_message_id="acceslibre.synchronisation.created",
     )
