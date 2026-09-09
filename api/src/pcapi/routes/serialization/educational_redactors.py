@@ -1,6 +1,6 @@
 import typing
 
-import pydantic as pydantic_v2
+from pydantic import RootModel
 from pydantic.types import StringConstraints
 
 from pcapi.routes.serialization import HttpBodyModel
@@ -21,5 +21,5 @@ class EducationalRedactor(HttpBodyModel):
     email: str
 
 
-class EducationalRedactors(pydantic_v2.RootModel):
+class EducationalRedactors(RootModel):
     root: list[EducationalRedactor]

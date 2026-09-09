@@ -2,7 +2,7 @@ import datetime
 import logging
 import typing
 
-import pydantic as pydantic_v2
+import pydantic
 from pydantic import RootModel
 
 from pcapi.core.finance import models
@@ -36,7 +36,7 @@ class HasSettlementQueryModel(HttpQueryParamsModel):
 class GetCombinedInvoicesQueryModel(HttpQueryParamsModel):
     invoice_references: list[str]
 
-    @pydantic_v2.field_validator("invoice_references", mode="before")
+    @pydantic.field_validator("invoice_references", mode="before")
     @classmethod
     def validate_list(cls, v: list[str] | str) -> list[str]:
         if isinstance(v, str):
@@ -49,7 +49,7 @@ class SettlementListQueryModel(HttpQueryParamsModel):
     period_beginning_date: datetime.date | None = None
     period_ending_date: datetime.date | None = None
     bank_account_id: int | None = None
-    name_search: str | None = pydantic_v2.Field(default=None, min_length=1)
+    name_search: str | None = pydantic.Field(default=None, min_length=1)
 
 
 # Response Models
@@ -121,7 +121,7 @@ class LinkedVenue(HttpBodyModel):
     """A venue that is already linked to a bank account."""
 
     id: int
-    publicName: str = pydantic_v2.Field(alias="commonName")
+    publicName: str = pydantic.Field(alias="commonName")
     state: offerers_models.VenueState | None
 
 
@@ -139,13 +139,13 @@ class BankAccountResponseModel(HttpBodyModel):
     id: int
     is_active: bool
     label: str
-    iban: str = pydantic_v2.Field(alias="obfuscatedIban")
+    iban: str = pydantic.Field(alias="obfuscatedIban")
     ds_application_id: int | None
     status: models.BankAccountApplicationStatus
     date_created: datetime.datetime
     linked_venues: list[LinkedVenue]
 
-    @pydantic_v2.field_validator("iban", mode="after")
+    @pydantic.field_validator("iban", mode="after")
     @classmethod
     def obfuscate_iban(cls, iban: str) -> str:
         return f"XXXX XXXX XXXX {iban[-4:]}"

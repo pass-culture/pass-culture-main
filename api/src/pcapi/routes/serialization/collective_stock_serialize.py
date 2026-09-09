@@ -4,7 +4,7 @@ import typing
 from datetime import UTC
 from datetime import datetime
 
-import pydantic as pydantic_v2
+import pydantic
 
 from pcapi import settings
 from pcapi.core.educational import constants
@@ -16,7 +16,7 @@ from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import DecimalPrice
 
 
-def validate_booking_limit_datetime(booking_limit_datetime: datetime, info: pydantic_v2.ValidationInfo) -> datetime:
+def validate_booking_limit_datetime(booking_limit_datetime: datetime, info: pydantic.ValidationInfo) -> datetime:
     start_datetime = info.data.get("startDatetime")
     if start_datetime and booking_limit_datetime > start_datetime:
         raise PydanticError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
@@ -30,7 +30,7 @@ def validate_start_datetime(start_datetime: datetime) -> datetime:
     return start_datetime
 
 
-def validate_end_datetime(end_datetime: datetime, info: pydantic_v2.ValidationInfo) -> datetime:
+def validate_end_datetime(end_datetime: datetime, info: pydantic.ValidationInfo) -> datetime:
     if end_datetime < datetime.now(UTC):
         raise PydanticError("L'évènement ne peut se terminer dans le passé.")
 
@@ -52,9 +52,9 @@ def validate_price_detail(price_detail: str | None) -> str | None:
 class CollectiveAdditionalFeeModel(HttpBodyModel):
     type: models.CollectiveAdditionalFeeType
     label: str | None
-    amount: DecimalPrice = pydantic_v2.Field(ge=0)
+    amount: DecimalPrice = pydantic.Field(ge=0)
 
-    @pydantic_v2.model_validator(mode="after")
+    @pydantic.model_validator(mode="after")
     def validate_model(self) -> typing.Self:
         if self.label is not None and self.type != models.CollectiveAdditionalFeeType.OTHER:
             raise_error_from_location(None, loc="label", msg="Le label ne peut pas être rempli pour ce type")
@@ -97,19 +97,19 @@ def _validate_total_price(
 
 class CollectiveStockCreationBodyModel(HttpBodyModel):
     offerId: int
-    startDatetime: typing.Annotated[datetime, pydantic_v2.AfterValidator(validate_start_datetime)]
-    endDatetime: typing.Annotated[datetime, pydantic_v2.AfterValidator(validate_end_datetime)]
-    bookingLimitDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)]
-    price: DecimalPrice = pydantic_v2.Field(ge=0, le=settings.EAC_OFFER_PRICE_LIMIT)
-    servicePrice: DecimalPrice | None = pydantic_v2.Field(default=None, ge=0)
-    collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic_v2.Field(
+    startDatetime: typing.Annotated[datetime, pydantic.AfterValidator(validate_start_datetime)]
+    endDatetime: typing.Annotated[datetime, pydantic.AfterValidator(validate_end_datetime)]
+    bookingLimitDatetime: typing.Annotated[datetime | None, pydantic.AfterValidator(validate_booking_limit_datetime)]
+    price: DecimalPrice = pydantic.Field(ge=0, le=settings.EAC_OFFER_PRICE_LIMIT)
+    servicePrice: DecimalPrice | None = pydantic.Field(default=None, ge=0)
+    collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic.Field(
         default=None, max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
     )
-    numberOfTickets: int = pydantic_v2.Field(ge=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
-    numberOfTeachers: int | None = pydantic_v2.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
-    priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
+    numberOfTickets: int = pydantic.Field(ge=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
+    numberOfTeachers: int | None = pydantic.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
+    priceDetail: typing.Annotated[str | None, pydantic.AfterValidator(validate_price_detail)] = None
 
-    @pydantic_v2.model_validator(mode="after")
+    @pydantic.model_validator(mode="after")
     def validate_model(self) -> typing.Self:
         new_price_ff_is_active = feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
 
@@ -144,19 +144,19 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
 
 
 class CollectiveStockEditionBodyModel(HttpBodyModel):
-    startDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_start_datetime)] = None
-    endDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_end_datetime)] = None
+    startDatetime: typing.Annotated[datetime | None, pydantic.AfterValidator(validate_start_datetime)] = None
+    endDatetime: typing.Annotated[datetime | None, pydantic.AfterValidator(validate_end_datetime)] = None
     bookingLimitDatetime: typing.Annotated[
-        datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)
+        datetime | None, pydantic.AfterValidator(validate_booking_limit_datetime)
     ] = None
-    price: DecimalPrice | None = pydantic_v2.Field(default=None, ge=0, le=settings.EAC_OFFER_PRICE_LIMIT)
-    servicePrice: DecimalPrice | None = pydantic_v2.Field(default=None, ge=0)
-    collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic_v2.Field(
+    price: DecimalPrice | None = pydantic.Field(default=None, ge=0, le=settings.EAC_OFFER_PRICE_LIMIT)
+    servicePrice: DecimalPrice | None = pydantic.Field(default=None, ge=0)
+    collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic.Field(
         default=None, max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
     )
-    numberOfTickets: int | None = pydantic_v2.Field(default=None, ge=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
-    numberOfTeachers: int | None = pydantic_v2.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
-    priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
+    numberOfTickets: int | None = pydantic.Field(default=None, ge=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
+    numberOfTeachers: int | None = pydantic.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
+    priceDetail: typing.Annotated[str | None, pydantic.AfterValidator(validate_price_detail)] = None
 
     NON_NULLABLE_FIELDS: typing.ClassVar = (
         "startDatetime",
@@ -169,7 +169,7 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
         "numberOfTeachers",
     )
 
-    @pydantic_v2.field_validator(*NON_NULLABLE_FIELDS, mode="before")
+    @pydantic.field_validator(*NON_NULLABLE_FIELDS, mode="before")
     @classmethod
     def validate_not_none(cls, value: typing.Any) -> typing.Any:
         if value is None:
@@ -177,7 +177,7 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
 
         return value
 
-    @pydantic_v2.model_validator(mode="after")
+    @pydantic.model_validator(mode="after")
     def validate_model(self) -> typing.Self:
         new_price_ff_is_active = feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
 
