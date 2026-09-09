@@ -251,7 +251,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
             assert offer.lastValidationType != OfferValidationType.MANUAL
 
         mocked_async_index_offer_ids.assert_called_once_with(
-            [o.id for o in offers_to_restore],
+            {o.id for o in offers_to_restore},
             reason=IndexationReason.PRODUCT_WHITELIST_ADDITION,
             log_extra={"ean": "9782070455379"},
         )
@@ -374,7 +374,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
         assert offer.lastValidationType == OfferValidationType.MANUAL
         assert offer.lastValidationAuthor == legit_user
         mocked_async_index_offer_ids.assert_called_once_with(
-            [offer.id],
+            {offer.id},
             reason=IndexationReason.PRODUCT_WHITELIST_ADDITION,
             log_extra={"ean": "9782070455379"},
         )
