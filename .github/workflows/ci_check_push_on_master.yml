@@ -67,11 +67,6 @@ jobs:
       GIT_CONFIG_EMAIL: ${{ vars.GH_ACTIONS_BOT_EMAIL }}
       GIT_CONFIG_NAME: ${{ github.actor }}
     steps:
-      - name: Checkout ref
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: true
-
       # This is needed because tags are protected and the default GITHUB_TOKEN cannot be exempted
       # from this ruleset
       - name: Authenticate through github app ghactionci
@@ -86,14 +81,18 @@ jobs:
             pass-culture-main
           permission-contents: write
 
+      - name: Checkout ref
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+          token: ${{ steps.github-token.outputs.token }}
+
       - name: Configure git author
         run: |
           git config --global user.email "$GIT_CONFIG_EMAIL"
           git config --global user.name "$GIT_CONFIG_NAME"
 
       - name: Push rc tag
-        env: 
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
         run: |
           git tag -f rc
           git push origin rc --force
