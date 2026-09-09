@@ -1328,53 +1328,6 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
         raise exceptions.OfferNotFound(offer_id=offer_id)
 
 
-def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
-    return (
-        db.session.query(models.Offer)
-        .filter(models.Offer.id == offer_id)
-        .outerjoin(
-            models.Stock,
-            sa.and_(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted)),
-        )
-        .options(sa_orm.contains_eager(models.Offer.stocks))
-        .options(sa_orm.joinedload(models.Offer.mediations))
-        .options(sa_orm.joinedload(models.Offer.priceCategories))
-        .options(sa_orm.with_expression(models.Offer.isNonFreeOffer, is_non_free_offer_subquery()))
-        .options(sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery()))
-        .options(
-            sa_orm.joinedload(models.Offer.offererAddress)
-            .load_only(
-                offerers_models.OffererAddress.id,
-                offerers_models.OffererAddress.label,
-                offerers_models.OffererAddress.addressId,
-            )
-            .joinedload(offerers_models.OffererAddress.address),
-        )
-        .options(
-            sa_orm.joinedload(models.Offer.highlight_requests).joinedload(highlights_models.HighlightRequest.highlight)
-        )
-        .options(sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.offererAddress))
-        .options(sa_orm.joinedload(models.Offer.metaData))
-        .options(
-            sa_orm.selectinload(models.Offer.artistOfferLinks)
-            .joinedload(artist_models.ArtistOfferLink.artist)
-            .load_only(
-                artist_models.Artist.id,
-                artist_models.Artist.name,
-            )
-        )
-        .options(sa_orm.joinedload(models.Offer.culturalOutreach))
-        .options(sa_orm.selectinload(models.Offer.headlineOffers))
-        .options(
-            sa_orm.with_expression(
-                models.Offer.hasPendingBookings,
-                get_pending_bookings_subquery(),
-            )
-        )
-        .one_or_none()
-    )
-
-
 def offer_has_bookable_stocks(offer_id: int) -> bool:
     return db.session.query(
         db.session.query(models.Stock).filter(models.Stock.offerId == offer_id, models.Stock._bookable).exists()
