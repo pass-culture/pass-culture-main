@@ -132,6 +132,8 @@ def log_bonus_credit_counters() -> None:
             "published_at": now.isoformat(),
             "counters_since": counters_published_at,
             "counters": _build_counters_payload(counters) if can_publish_counters else None,
+            "feature": "bonus_credit",
+            "action": "statistics.counters",
         },
         technical_message_id=COUNTERS_TECHNICAL_MESSAGE_ID,
     )
@@ -161,6 +163,8 @@ def log_first_bonus_credit_attempt_delays() -> None:
             "published_at": now.isoformat(),
             "first_attempt_delays_since": delays_published_at,
             "first_attempt_delays": delays,
+            "feature": "bonus_credit",
+            "action": "statistics.first_attempt_delays",
         },
         technical_message_id=ATTEMPT_TECHNICAL_MESSAGE_ID,
     )

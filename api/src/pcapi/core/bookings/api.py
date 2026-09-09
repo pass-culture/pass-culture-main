@@ -377,6 +377,8 @@ def _book_offer(
                         "stock_id_at_providers": stock.idAtProviders,
                         "booking_quantity": booking.quantity,
                         "user_id": beneficiary.id,
+                        "feature": "external_providers",
+                        "action": "booking",
                     },
                     technical_message_id="providers.external.booking",
                 )
@@ -393,6 +395,8 @@ def _book_offer(
                         "user_id": beneficiary.id,
                         "exception_type": e.__class__.__name__,
                         "exception_message": str(e),
+                        "feature": "external_providers",
+                        "action": "booking",
                     },
                     technical_message_id="providers.external.booking",
                 )
@@ -556,6 +560,8 @@ def cancel_booking_for_finance_incident(booking: models.Booking) -> None:
             "reason": str(models.BookingCancellationReasons.FINANCE_INCIDENT),
             "booking_token": booking.token,
             "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
+            "feature": "booking",
+            "action": "cancelled",
         },
         technical_message_id="booking.cancelled",
     )
@@ -636,6 +642,8 @@ def _cancel_booking(
             "reason": str(reason),
             "booking_token": booking.token,
             "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
+            "feature": "booking",
+            "action": "cancelled",
         },
         technical_message_id="booking.cancelled",
     )
@@ -715,6 +723,8 @@ def _execute_cancel_booking(
                                 "offer_id": booking.stock.offerId,
                                 "provider_id": provider.id,
                                 "venue_id": booking.stock.offer.venueId,
+                                "feature": "external_providers",
+                                "action": "cancellation",
                             },
                             technical_message_id="providers.external.cancellation",
                         )
@@ -729,6 +739,8 @@ def _execute_cancel_booking(
                                 "venue_id": booking.stock.offer.venueId,
                                 "exception_class": exc.__class__.__name__,
                                 "exception_message": str(exc),
+                                "feature": "external_providers",
+                                "action": "cancellation",
                             },
                             technical_message_id="providers.external.cancellation",
                         )
@@ -964,7 +976,7 @@ def mark_as_used(booking: models.Booking, validation_author_type: models.Booking
 
     logger.info(
         "Booking was marked as used",
-        extra={"booking_id": booking.id},
+        extra={"booking_id": booking.id, "feature": "booking", "action": "used"},
         technical_message_id="booking.used",
     )
 
@@ -1087,7 +1099,7 @@ def mark_as_unused(booking: models.Booking) -> None:
 
     logger.info(
         "Booking was marked as unused",
-        extra={"booking_id": booking.id},
+        extra={"booking_id": booking.id, "feature": "booking", "action": "unused"},
         technical_message_id="booking.unused",
     )
 

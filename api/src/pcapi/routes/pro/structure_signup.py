@@ -83,7 +83,13 @@ def get_structure_data(search_input: str) -> sirene_serialize.StructureDataBodyM
         )
     logger.info(
         "Searching for structure",
-        extra={"user_id": current_user.id, "siret": data.siret, "is_diffusible": data.diffusible},
+        extra={
+            "user_id": current_user.id,
+            "siret": data.siret,
+            "is_diffusible": data.diffusible,
+            "feature": "structure_signup",
+            "action": "search",
+        },
         technical_message_id="structure_signup.search",
     )
 
@@ -122,6 +128,8 @@ def check_structure(search_input: str) -> None:
             "is_diffusible": data.diffusible,
             "legal_category": data.legal_category_code,
             "ape_code": data.ape_code,
+            "feature": "structure_signup",
+            "action": "check",
         },
         technical_message_id="structure_signup.check",
     )
@@ -213,6 +221,8 @@ def send_signup_simulation_summary(body: sirene_serialize.SignupSimulationSummar
             "targets": body.targets,
             "activity": body.activity,
             "number_of_documents": len(eligibility_documents),
+            "feature": "structure_signup",
+            "action": "sending_summary",
         },
         technical_message_id="structure_signup.sending_summary",
     )

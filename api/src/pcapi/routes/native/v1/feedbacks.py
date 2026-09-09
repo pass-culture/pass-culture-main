@@ -61,6 +61,8 @@ def post_feedback(body: serializers.PostFeedbackBody) -> None:
             "firstDepositActivationDate": current_user.first_deposit_activation_date,
             "bookings_count": not_cancelled_bookings_query.count(),
             "analyticsSource": "app-native",
+            "feature": "users",
+            "action": "feedback",
         },
         technical_message_id="user_feedback",
     )

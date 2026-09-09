@@ -1332,6 +1332,8 @@ class Returns200Test(PatchEventEndpointHelper):
                     "newValue": "nouvelle-adresse@cinema.example.com",
                 },
             },
+            "feature": "offer",
+            "action": "updated",
         }
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")

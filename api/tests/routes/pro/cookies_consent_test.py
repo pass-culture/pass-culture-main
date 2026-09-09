@@ -63,6 +63,8 @@ class CookiesConsentTest:
                 "device_id": DEVICE_ID,
                 "analyticsSource": "app-pro",
                 "user_id": None,
+                "feature": "cookies",
+                "action": "consent",
             }
             assert caplog.records[0].technical_message_id == "cookies_consent"
 

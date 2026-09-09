@@ -38,7 +38,13 @@ def create_pro_advice(
         functools.partial(
             logger.info,
             "Pro advice created",
-            extra={"offer_id": offer.id, "venue_id": offer.venueId, "user_id": user_id},
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "user_id": user_id,
+                "feature": "pro_advice",
+                "action": "created",
+            },
             technical_message_id="pro_advice.created",
         )
     )
@@ -69,7 +75,13 @@ def update_pro_advice(
         functools.partial(
             logger.info,
             "Pro advice updated",
-            extra={"offer_id": pro_advice.offerId, "venue_id": offer.venueId, "user_id": user_id},
+            extra={
+                "offer_id": pro_advice.offerId,
+                "venue_id": offer.venueId,
+                "user_id": user_id,
+                "feature": "pro_advice",
+                "action": "updated",
+            },
             technical_message_id="pro_advice.updated",
         )
     )
@@ -94,7 +106,13 @@ def delete_pro_advice(
         functools.partial(
             logger.info,
             "Pro advice deleted",
-            extra={"offer_id": offer.id, "venue_id": offer.venueId, "user_id": user_id},
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "user_id": user_id,
+                "feature": "pro_advice",
+                "action": "deleted",
+            },
             technical_message_id="pro_advice.deleted",
         )
     )

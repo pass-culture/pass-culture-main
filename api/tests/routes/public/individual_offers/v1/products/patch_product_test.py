@@ -1326,6 +1326,8 @@ class Returns200Test(PatchProductEndpointHelper):
                     "newValue": "nouvelle-adresse@salle-de-concert.example.com",
                 },
             },
+            "feature": "offer",
+            "action": "updated",
         }
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")

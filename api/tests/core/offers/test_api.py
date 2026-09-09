@@ -884,6 +884,8 @@ class EditStockTest:
             "changes": {
                 "price": {"old_value": Decimal("10.00"), "new_value": 12.5},
             },
+            "feature": "stock",
+            "action": "updated",
         }
 
     def test_unchanged_price_is_not_tracked(self, caplog):
@@ -909,6 +911,8 @@ class EditStockTest:
             "changes": {
                 "quantity": {"old_value": 15, "new_value": 7},
             },
+            "feature": "stock",
+            "action": "updated",
         }
 
 
@@ -958,6 +962,8 @@ class DeleteStockTest:
             "bookings": [],
             "author_id": None,
             "user_connect_as": False,
+            "feature": "stock",
+            "action": "deleted",
         }
 
     def test_delete_stock_cancel_bookings_and_send_emails(self):
@@ -1754,6 +1760,8 @@ class UpdateOfferTest:
                 "bookingEmail": {"oldValue": "old@example.com", "newValue": "new@example.com"},
                 "isDuo": {"oldValue": False, "newValue": True},
             },
+            "feature": "offer",
+            "action": "updated",
         }
 
     def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
@@ -2225,6 +2233,8 @@ class UpdateOfferTest:
             "offer_id": offer.id,
             "venue_id": offer.venueId,
             "links": [str(ArtistOfferLinkKey(artist_type="author", artist_id="artist-id", custom_name=None))],
+            "feature": "offer",
+            "action": "artistOfferLinks.deleted",
         }
         assert log_record.technical_message_id == "offer.artistOfferLinks.deleted"
 
@@ -2259,6 +2269,8 @@ class UpdateOfferTest:
             "offer_id": offer.id,
             "venue_id": offer.venueId,
             "links": [str(ArtistOfferLinkKey(artist_type="author", artist_id="artist-id", custom_name=None))],
+            "feature": "offer",
+            "action": "artistOfferLinks.created",
         }
         assert log_record.technical_message_id == "offer.artistOfferLinks.created"
 
@@ -2397,7 +2409,7 @@ class BatchActivateOffersTest:
         }
 
         assert second_record.message == "Offers has been activated"
-        assert second_record.extra.keys() == {"offer_ids", "venue_ids"}
+        assert second_record.extra.keys() == {"offer_ids", "venue_ids", "feature", "action"}
         assert set(second_record.extra["offer_ids"]) == {offer1.id, offer2.id}
         assert set(second_record.extra["venue_ids"]) == {offer1.venueId, offer2.venueId}
 
@@ -2448,7 +2460,7 @@ class BatchActivateOffersTest:
         assert first_record.extra == {"updated_fields": {"publicationDatetime": None}}
 
         assert second_record.message == "Offers has been deactivated"
-        assert second_record.extra.keys() == {"offer_ids", "venue_ids"}
+        assert second_record.extra.keys() == {"offer_ids", "venue_ids", "feature", "action"}
         assert set(second_record.extra["offer_ids"]) == {offer1.id, offer2.id}
         assert set(second_record.extra["venue_ids"]) == {offer1.venueId, offer2.venueId}
 
@@ -2812,6 +2824,8 @@ class HeadlineOfferTest:
             "analyticsSource": "app-pro",
             "HeadlineOfferId": headline_offer_without_product_mediation.id,
             "Reason": "Offer is not active anymore, or image has been removed",
+            "feature": "headline_offer",
+            "action": "deactivation",
         }
 
         assert headline_offer_with_product_mediation.isActive
@@ -2866,6 +2880,8 @@ class HeadlineOfferTest:
             "analyticsSource": "app-pro",
             "HeadlineOfferId": current_headline_offer.id,
             "Reason": "Offer is not active anymore, or image has been removed",
+            "action": "deactivation",
+            "feature": "headline_offer",
         }
         assert old_headline_offer.timespan.lower == creation_time_1
         assert old_headline_offer.timespan.upper == ending_time_1
@@ -2895,6 +2911,8 @@ class HeadlineOfferTest:
             "analyticsSource": "app-pro",
             "HeadlineOfferId": headline_offer.id,
             "Reason": "Offer is not active anymore, or image has been removed",
+            "action": "deactivation",
+            "feature": "headline_offer",
         }
 
         assert headline_offer.timespan.upper is not None
@@ -2922,6 +2940,8 @@ class HeadlineOfferTest:
             "analyticsSource": "app-pro",
             "HeadlineOfferId": headline_offer.id,
             "Reason": "User chose to replace this headline offer by another offer",
+            "action": "deactivation",
+            "feature": "headline_offer",
         }
 
         assert not offer.is_headline_offer

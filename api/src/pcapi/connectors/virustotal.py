@@ -91,7 +91,7 @@ class VirusTotalBackend(BaseBackend):
         except requests.exceptions.RequestException as exc:
             logger.exception(
                 "Network error on VirusTotal API",
-                extra={"exc": exc, "url": url},
+                extra={"exc": exc, "url": url, "feature": "virustotal", "action": "error"},
                 technical_message_id="virustotal.error",
             )
             raise VirusTotalApiException("Network error on VirusTotal API") from exc
@@ -100,7 +100,7 @@ class VirusTotalBackend(BaseBackend):
         if not response.ok:
             logger.error(
                 "Error from VirusTotal API",
-                extra={"url": url, "status_code": response.status_code},
+                extra={"url": url, "status_code": response.status_code, "feature": "virustotal", "action": "error"},
                 technical_message_id="virustotal.error",
             )
             raise VirusTotalApiException(f"Unexpected {response.status_code} response from VirusTotal API: {url}")
@@ -136,21 +136,25 @@ class VirusTotalBackend(BaseBackend):
             "last_analysis_stats": last_analysis_stats,
             "last_analysis_date": last_analysis_date,
             "last_submission_date": last_submission_date,
+            "feature": "virustotal",
         }
 
         try:
             if last_submission_date and not last_analysis_date:
+                log_extra_data["action"] = "pending"
                 logger.info(
                     "URL is still waiting for analysis", extra=log_extra_data, technical_message_id="virustotal.pending"
                 )
                 raise PendingAnalysisException()
 
             if last_analysis_stats.get("malicious", 0) > 0:
+                log_extra_data["action"] = "malicious"
                 logger.warning(
                     "Malicious URL detected", extra=log_extra_data, technical_message_id="virustotal.malicious"
                 )
                 raise MaliciousUrlException()
 
+            log_extra_data["action"] = "ok"
             logger.info("URL is safe", extra=log_extra_data, technical_message_id="virustotal.ok")
         finally:
             # rescan URL for next time
@@ -171,14 +175,22 @@ class VirusTotalBackend(BaseBackend):
         )
 
     def _request_url_rescan(self, url: str) -> None:
-        logger.info("Request URL scan", extra={"url": url}, technical_message_id="virustotal.rescan")
+        logger.info(
+            "Request URL scan",
+            extra={"url": url, "feature": "virustotal", "action": "rescan"},
+            technical_message_id="virustotal.rescan",
+        )
         try:
             self._post(f"/urls/{url_id(url)}/analyse")
         except VirusTotalApiException:
             pass  # error logged, do not make caller fail
 
     def _request_url_new_scan(self, url: str) -> None:
-        logger.info("Request URL scan", extra={"url": url}, technical_message_id="virustotal.scan")
+        logger.info(
+            "Request URL scan",
+            extra={"url": url, "feature": "virustotal", "action": "scan"},
+            technical_message_id="virustotal.scan",
+        )
         try:
             self._post("/urls/", form={"url": url})
         except VirusTotalApiException:

@@ -51,7 +51,12 @@ def create_cultural_outreach_claim(
         functools.partial(
             logger.info,
             "Create cultural outreach claim",
-            extra={"offer_id": offer.id, "venue_id": offer.venueId},
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "feature": "cultural_outreach",
+                "action": "claim_created",
+            },
             technical_message_id="cultural_outreach.claim_created",
         )
     )
@@ -81,7 +86,13 @@ def update_cultural_outreach_claim(
         functools.partial(
             logger.info,
             "Update cultural outreach claim",
-            extra={"offer_id": offer.id, "venue_id": offer.venueId, "claim_datetime": claim_datetime},
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "claim_datetime": claim_datetime,
+                "feature": "cultural_outreach",
+                "action": "claim_updated",
+            },
             technical_message_id="cultural_outreach.claim_updated",
         )
     )
