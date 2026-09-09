@@ -10,6 +10,7 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models
 from pcapi.core.educational.utils import format_collective_additional_fee_type
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -194,6 +195,11 @@ class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
 
 
 class EducationalDepositPeriodResponse(AdageBaseResponseModel):
+    start: datetime.datetime
+    end: datetime.datetime
+
+
+class EducationalDepositPeriodResponseV2(HttpBodyModel):
     start: datetime.datetime
     end: datetime.datetime
 

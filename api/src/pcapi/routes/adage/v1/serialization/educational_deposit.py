@@ -1,38 +1,42 @@
 import typing
 
+import pydantic
+
 from pcapi.core.educational import schemas
+from pcapi.routes.serialization import HttpBodyModel
 
 
 if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import EducationalDeposit
 
 
-class EducationalDepositResponse(schemas.AdageBaseResponseModel):
+class EducationalDepositResponse(HttpBodyModel):
     uai: str
     deposit: float
     isFinal: bool
-    period: schemas.EducationalDepositPeriodResponse
+    period: schemas.EducationalDepositPeriodResponseV2
+
+    @classmethod
+    def build(cls, educational_deposit: "EducationalDeposit") -> typing.Self:
+        return cls(
+            deposit=float(educational_deposit.amount),
+            uai=educational_deposit.educationalInstitution.institutionId,
+            isFinal=educational_deposit.isFinal,
+            period=schemas.EducationalDepositPeriodResponseV2(
+                start=educational_deposit.period.lower, end=educational_deposit.period.upper
+            ),
+        )
 
 
-class EducationalDepositsResponse(schemas.AdageBaseResponseModel):
+class EducationalDepositsResponse(HttpBodyModel):
     deposits: list[EducationalDepositResponse]
 
-    class Config:
-        title = "List of deposit"
+    model_config = pydantic.ConfigDict(title="List of deposit")
 
-
-def serialize_educational_deposits(
-    educational_deposits: list["EducationalDeposit"],
-) -> list[EducationalDepositResponse]:
-    return [serialize_educational_deposit(educational_deposit) for educational_deposit in educational_deposits]
-
-
-def serialize_educational_deposit(educational_deposit: "EducationalDeposit") -> EducationalDepositResponse:
-    return EducationalDepositResponse(
-        deposit=float(educational_deposit.amount),
-        uai=educational_deposit.educationalInstitution.institutionId,
-        isFinal=educational_deposit.isFinal,
-        period=schemas.EducationalDepositPeriodResponse(
-            start=educational_deposit.period.lower, end=educational_deposit.period.upper
-        ),
-    )
+    @classmethod
+    def build(cls, educational_deposits: list["EducationalDeposit"]) -> typing.Self:
+        return cls(
+            deposits=[
+                EducationalDepositResponse.build(educational_deposit) for educational_deposit in educational_deposits
+            ]
+        )
