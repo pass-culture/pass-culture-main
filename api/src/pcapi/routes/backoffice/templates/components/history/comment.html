@@ -1,7 +1,7 @@
 {# This macro must be imported with context because of has_permission() #}
-{% macro build_comment_modal(dst, form) %}
+{% macro build_comment_modal(dst, form, permission) %}
   {% set add_comment_modal_label_id = random_hash() %}
-  {% if has_permission("MANAGE_PRO_ENTITY") %}
+  {% if has_permission(permission) %}
     <button class="btn btn-outline-primary-subtle-bg mt-2"
             data-bs-toggle="modal"
             data-bs-target=".pc-add-comment-pro-user-modal"
