@@ -2,8 +2,6 @@
 import typing
 
 from flask import Response
-from flask import flash
-from flask import make_response
 from flask import render_template
 from flask import request
 from flask_wtf.csrf import CSRFError
@@ -27,6 +25,7 @@ app.config["REMEMBER_COOKIE_DURATION"] = 120 * 60
 app.config["REMEMBER_COOKIE_NAME"] = "bo_remember_me"
 app.config["PERMANENT_SESSION_LIFETIME"] = 120 * 60
 app.config["USE_GLOBAL_ATOMIC"] = True
+app.config["NAME"] = settings.BACKOFFICE_APP_NAME
 
 csrf.init_app(app)
 
@@ -47,25 +46,6 @@ def handle_csrf_error(error: typing.Any) -> tuple[str, int]:
     return render_template("errors/csrf.html"), 400
 
 
-def generate_error_response(errors: dict, backoffice_template_name: str = "errors/generic.html") -> Response:
-    from pcapi.routes.backoffice.utils import request as request_utils
-    from pcapi.routes.backoffice.utils import response as response_utils
-
-    # In case of a request coming from htmx, display errors as flash messages
-    if request_utils.is_request_from_htmx():
-        for error_line in response_utils.format_response_error_messages(errors):
-            flash(error_line, "danger")
-        return make_response()
-
-    return make_response(
-        render_template(
-            backoffice_template_name,
-            errors=errors,
-            static_hashes=static_utils.get_hashes(),
-        )
-    )
-
-
 with app.app_context():
     from pcapi.routes import error_handlers  # noqa F401
     from pcapi.routes.backoffice import install_routes
@@ -76,8 +56,6 @@ with app.app_context():
     install_backoffice_login()
     install_routes(app)
     app.register_blueprint(backoffice_web, url_prefix="/")
-
-    app.generate_error_response = generate_error_response
 
     setup_metrics(app)
 

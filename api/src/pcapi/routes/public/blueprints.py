@@ -13,8 +13,8 @@ from . import spectree_schemas
 
 def _is_route_reading_json() -> bool:
     endpoint_name = request.url_rule.endpoint if request.url_rule else None
-    endpoint_function = current_app.view_functions.get(endpoint_name)
-    return endpoint_function and "body" in endpoint_function.__annotations__
+    endpoint_function = current_app.view_functions.get(endpoint_name) if endpoint_name is not None else None
+    return endpoint_function is not None and "body" in endpoint_function.__annotations__
 
 
 def _check_api_is_enabled_and_json_valid() -> None:

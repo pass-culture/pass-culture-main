@@ -9,4 +9,4 @@ if typing.TYPE_CHECKING:
 
 def get_redis_client() -> "Redis[str]":
     # set in flask_app
-    return current_app.redis_client
+    return current_app.redis_client  # type: ignore [attr-defined]

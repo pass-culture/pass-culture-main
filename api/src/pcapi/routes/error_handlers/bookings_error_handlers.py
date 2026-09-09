@@ -4,6 +4,7 @@ from flask import current_app as app
 from pcapi.core.bookings import exceptions
 from pcapi.core.core_exception import ClientError
 from pcapi.models import api_errors
+from pcapi.routes.error_handlers.utils import generate_error_response
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
@@ -20,26 +21,26 @@ JsonResponse = tuple[Response, int]
 @app.errorhandler(exceptions.OfferCategoryNotBookableByUser)
 def handle_book_an_offer(exception: ClientError) -> JsonResponse:
     mark_transaction_as_invalid()
-    return app.generate_error_response(exception.errors), 400
+    return generate_error_response(exception.errors), 400
 
 
 @app.errorhandler(exceptions.CannotCancelConfirmedBooking)
 def handle_cancel_a_booking(exception: ClientError) -> JsonResponse:
     mark_transaction_as_invalid()
-    return app.generate_error_response(exception.errors), 400
+    return generate_error_response(exception.errors), 400
 
 
 @app.errorhandler(exceptions.BookingDoesntExist)
 def handle_cancel_a_booking_not_found(exception: exceptions.BookingDoesntExist) -> JsonResponse:
     mark_transaction_as_invalid()
-    return app.generate_error_response(exception.errors), 404
+    return generate_error_response(exception.errors), 404
 
 
 @app.errorhandler(exceptions.BookingIsAlreadyRefunded)
 def handle_booking_is_already_refunded(exception: exceptions.BookingIsAlreadyRefunded) -> JsonResponse:
     mark_transaction_as_invalid()
     error = {"payment": ["Cette réservation a été remboursée"]}
-    return app.generate_error_response(error), api_errors.ForbiddenError.status_code
+    return generate_error_response(error), api_errors.ForbiddenError.status_code
 
 
 @app.errorhandler(exceptions.BookingRefused)
@@ -50,32 +51,32 @@ def handle_booking_refused(exception: exceptions.BookingRefused) -> JsonResponse
             "Cette réservation pour une offre éducationnelle a été refusée par le chef d'établissement"
         )
     }
-    return app.generate_error_response(error), api_errors.ForbiddenError.status_code
+    return generate_error_response(error), api_errors.ForbiddenError.status_code
 
 
 @app.errorhandler(exceptions.BookingIsNotConfirmed)
 def handle_booking_is_not_confirmed(exception: exceptions.BookingIsNotConfirmed) -> JsonResponse:
     mark_transaction_as_invalid()
     error = {"booking": [str(exception)]}
-    return app.generate_error_response(error), api_errors.ForbiddenError.status_code
+    return generate_error_response(error), api_errors.ForbiddenError.status_code
 
 
 @app.errorhandler(exceptions.BookingIsAlreadyUsed)
 def handle_booking_is_already_used(exception: exceptions.BookingIsAlreadyUsed) -> JsonResponse:
     mark_transaction_as_invalid()
     error = {"booking": ["Cette réservation a déjà été validée"]}
-    return app.generate_error_response(error), api_errors.ResourceGoneError.status_code
+    return generate_error_response(error), api_errors.ResourceGoneError.status_code
 
 
 @app.errorhandler(exceptions.BookingIsAlreadyCancelled)
 def handle_booking_is_already_cancelled(exception: exceptions.BookingIsAlreadyCancelled) -> JsonResponse:
     mark_transaction_as_invalid()
     error = {"booking_cancelled": ["Cette réservation a été annulée"]}
-    return app.generate_error_response(error), api_errors.ResourceGoneError.status_code
+    return generate_error_response(error), api_errors.ResourceGoneError.status_code
 
 
 @app.errorhandler(exceptions.OffererIsClosed)
 def handle_offerer_is_closed(exception: exceptions.OffererIsClosed) -> JsonResponse:
     mark_transaction_as_invalid()
     error = {"booking": ["Vous ne pouvez plus valider de contremarque sur une structure fermée"]}
-    return app.generate_error_response(error), api_errors.ForbiddenError.status_code
+    return generate_error_response(error), api_errors.ForbiddenError.status_code

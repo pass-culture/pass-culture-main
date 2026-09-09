@@ -26,14 +26,3 @@ def build_form_error_msg(form: FlaskForm) -> str:
                 label=field.label.text, errors=", ".join(error for error in field_errors)
             )
     return error_msg
-
-
-def format_response_error_messages(errors: dict) -> list[str]:
-    """
-    Format unhandled errors. It's used in generate_error_response for htmx requests
-    """
-    lines = []
-    for error_key, error_details in errors.items():
-        for error_detail in error_details:
-            lines.append(f"[{error_key}] {error_detail}")
-    return lines

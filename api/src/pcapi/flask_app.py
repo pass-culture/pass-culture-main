@@ -12,9 +12,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
-from flask import Response
 from flask import g
-from flask import jsonify
 from flask import request
 from flask.logging import default_handler
 from flask_login import current_user
@@ -201,7 +199,11 @@ if settings.REMOVE_LOGGER_HANDLER:
 if settings.PROFILE_REQUESTS:
     profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
     app.config["PROFILE"] = True
-    app.wsgi_app = ProfilerMiddleware(
+
+    # assigning to a method is a type error, but from the docstring of wsgi_app:
+    # It's a better idea to do this instead::
+    #     app.wsgi_app = MyMiddleware(app.wsgi_app)
+    app.wsgi_app = ProfilerMiddleware(  # type: ignore [method-assign]
         app.wsgi_app,
         restrictions=profiling_restrictions,
     )
@@ -209,7 +211,7 @@ if settings.PROFILE_REQUESTS:
 
 # Our GCP L7 load balancer appends 2 IPs to the `X-Forwarded-For` HTTP
 # header: the client IP and the Google Front End IP. Hence `x_for=2`.
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2)  # type: ignore [method-assign]
 
 app.json_provider_class = EnumJSONEncoder
 app.json = EnumJSONEncoder(app)
@@ -255,15 +257,8 @@ native_app_oauth.register(
 app.url_map.strict_slashes = False
 
 
-# The argument `backoffice_template_name` is not used, but it is needed
-# to have the same signature as `backoffice_app.generate_error_response()`.
-def generate_error_response(errors: dict, backoffice_template_name: str = "not used") -> Response:
-    return jsonify(errors)
-
-
 with app.app_context():
-    app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
-    app.generate_error_response = generate_error_response
+    app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)  # type: ignore [attr-defined]
     jwt.setup_backend(app)
 
 
