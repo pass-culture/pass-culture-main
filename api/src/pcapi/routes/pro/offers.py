@@ -331,7 +331,6 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
     values = body.model_dump(by_alias=True)
 
     values["ean"] = ean_code
-    values["idAtProvider"] = None
 
     values.pop("productId", None)
     values.pop("venueId", None)
