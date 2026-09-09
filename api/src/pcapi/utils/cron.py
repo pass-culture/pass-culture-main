@@ -4,6 +4,8 @@ import typing
 from enum import Enum
 from functools import wraps
 
+import flask
+
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 
@@ -47,6 +49,7 @@ def log_cron_with_transaction(func: typing.Callable) -> typing.Callable:
     @wraps(func)
     def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         start_time = time.time()
+        flask.g.cron_command = func.__name__
         logger.info(build_cron_log_message(name=func.__name__, status=CronStatus.STARTED))
 
         status = None  # avoid "used-before-assignment" linter warning in `finally`
@@ -76,6 +79,7 @@ def log_cron(func: typing.Callable) -> typing.Callable:
     @wraps(func)
     def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         start_time = time.time()
+        flask.g.cron_command = func.__name__
         logger.info(build_cron_log_message(name=func.__name__, status=CronStatus.STARTED))
 
         status = None  # avoid "used-before-assignment" linter warning in `finally`
