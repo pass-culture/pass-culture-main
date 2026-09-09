@@ -1,11 +1,11 @@
 {% from "components/history/actions.html" import build_actions_table with context %}
 {% from "components/history/comment.html" import build_comment_modal with context %}
-{% macro build_history_view(dst, form, actions, show_venue) %}
+{% macro build_history_view(dst, form, actions, show_venue, permission) %}
   {% if form %}
     {% set modal_title %}
       {{ caller() }}
     {% endset %}
-    {% call build_comment_modal(dst, form) %}
+    {% call build_comment_modal(dst, form, permission) %}
       {{ modal_title }}
     {% endcall %}
   {% endif %}
