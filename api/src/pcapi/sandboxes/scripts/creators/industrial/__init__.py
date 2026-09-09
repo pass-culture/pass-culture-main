@@ -53,6 +53,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_confi
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers import create_industrial_offerers
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_finance import create_industrial_pro_finance
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import create_industrial_pro_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_products import create_industrial_products
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_settlements import create_industrial_settlements
@@ -208,6 +209,8 @@ def save_industrial_sandbox() -> None:
     build_many_extra_invoices()
 
     create_industrial_settlements()
+
+    create_industrial_pro_finance()
 
     # run this last as we fill out missing user offerers
     create_user_offerers()
