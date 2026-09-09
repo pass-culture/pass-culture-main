@@ -1,5 +1,5 @@
 import {
-  type ArtistOfferLinkBodyModel,
+  type ArtistOfferLinkBodyModelV2,
   type ArtistOfferLinkResponseModel,
   ArtistType,
   type PatchOfferBodyModel,
@@ -79,8 +79,8 @@ export const serializeExtraData = (formValues: DetailsFormValues) => {
 
 const serializeArtistOfferLinks = (
   artistOfferLinks: ArtistOfferLinkResponseModel[]
-): ArtistOfferLinkBodyModel[] | undefined => {
-  const links: ArtistOfferLinkBodyModel[] = []
+): ArtistOfferLinkBodyModelV2[] => {
+  const links: ArtistOfferLinkBodyModelV2[] = []
   const validArtistOfferLinks = artistOfferLinks.filter((artist) =>
     artist.artistName?.trim()
   )
@@ -103,17 +103,15 @@ export function serializeDetailsPostData(
     '`formValues.accessibility` is undefined'
   )
 
-  // TODO (rchaffal) to remove once PostOfferBodyModel is migrated to Pydantic V2
-  // @ts-expect-error
   return trimStringsInObject({
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
     venueId: Number(formValues.venueId),
-    description: formValues.description,
+    description: formValues.description ?? null,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
-    hasCulturalOutreachClaim: formValues.hasCulturalOutreachClaim,
-    productId: formValues.productId ? Number(formValues.productId) : undefined,
+    hasCulturalOutreachClaim: formValues.hasCulturalOutreachClaim ?? null,
+    productId: formValues.productId ? Number(formValues.productId) : null,
     audioDisabilityCompliant: formValues.accessibility.audio,
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
