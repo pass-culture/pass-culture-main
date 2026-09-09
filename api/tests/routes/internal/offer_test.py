@@ -29,11 +29,44 @@ class E2EOfferTest:
         assert offer.publicationDatetime is not None
         assert offer.name == "Test Offer"
         assert offer.subcategoryId == "SEANCE_CINE"
+        assert offer.offererAddress.address.timezone == "Europe/Paris"
 
         assert response.json["id"] == offer.id
         assert response.json["name"] == "Test Offer"
         assert response.json["subcategoryId"] == "SEANCE_CINE"
         assert response.json["venueId"] == offer.venueId
+        assert response.json["timezone"] == "Europe/Paris"
+
+    @pytest.mark.parametrize(
+        "timezone",
+        [
+            "America/Cayenne",
+            "America/Guadeloupe",
+            "America/Martinique",
+            "America/Miquelon",
+            "America/St_Barthelemy",
+            "Europe/Paris",
+            "Indian/Mayotte",
+            "Indian/Reunion",
+            "Pacific/Noumea",
+            "Pacific/Pitcairn",
+            "Pacific/Tahiti",
+            "Pacific/Wallis",
+        ],
+    )
+    def test_create_offer_timezone(self, auth_client, timezone):
+        response = auth_client.post(
+            "/e2e/offer", {"name": "Test Offer", "subcategory_id": "SEANCE_CINE", "price": 8.2, "timezone": timezone}
+        )
+        assert response.status_code == 200
+
+        offers = db.session.query(offers_models.Offer).all()
+
+        assert len(offers) == 1
+        offer = offers[0]
+        assert offer.offererAddress.address.timezone == timezone
+
+        assert response.json["timezone"] == timezone
 
     @pytest.mark.parametrize("is_duo", [True, False])
     def test_create_offer_duo(self, auth_client, is_duo):
@@ -61,6 +94,15 @@ class E2EOfferTest:
 
         assert response.status_code == 400
         assert response.json == {"subcategory_id": ["Not a valid choice."]}
+
+    def test_create_offer_invalid_timezone(self, auth_client):
+        response = auth_client.post(
+            "/e2e/offer",
+            {"name": "Test Offer", "subcategory_id": "SEANCE_CINE", "price": 8.2, "timezone": "Nowhere/Lost"},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"timezone": ["Not a valid choice."]}
 
 
 class E2EOfferDeactivateTest:

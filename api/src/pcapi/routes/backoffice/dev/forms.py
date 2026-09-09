@@ -7,11 +7,13 @@ from flask_wtf import FlaskForm
 
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.conf import GRANTED_DEPOSIT_AMOUNT_18_v2
+from pcapi.core.geography.constants import TIME_ZONE_COUNTRY_CODE
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users.generator import GeneratedIdProvider
 from pcapi.core.users.generator import GeneratedSubscriptionStep
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
+from pcapi.utils import date as date_utils
 
 
 class SimpleComponentsForm(FlaskForm):
@@ -239,5 +241,11 @@ class OfferGeneratorForm(utils.PCForm):
         "Sous-catégorie",
         choices=[(subcategories.SEANCE_CINE.id, subcategories.SEANCE_CINE.app_label)],
         default=subcategories.SEANCE_CINE.id,
+    )
+    timezone = fields.PCSelectField(
+        "Fuseau horaire",
+        choices=[(e, e) for e in TIME_ZONE_COUNTRY_CODE],
+        default=date_utils.METROPOLE_TIMEZONE,
+        validators=[wtforms.validators.Optional()],
     )
     is_duo = fields.PCSwitchBooleanField("Offre Duo", default=False)

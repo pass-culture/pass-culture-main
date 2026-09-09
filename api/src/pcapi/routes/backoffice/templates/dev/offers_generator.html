@@ -37,6 +37,9 @@
               <div class="mb-1">
                 <span class="fw-bold">Partenaire culturel :</span> {{ offer.venue.name }}
               </div>
+              <div class="mb-1">
+                <span class="fw-bold">Fuseau horaire :</span> {{ offer.offererAddress.address.timezone }}
+              </div>
               {{ build_modal_form("deactivate-offer", url_for("backoffice_web.dev.deactivate_offer", offer_id=offer.id) , deactivate_offer_form, "Désactiver l'offre", "Désactiver l'offre", "Valider") }}
             </div>
             <hr>
