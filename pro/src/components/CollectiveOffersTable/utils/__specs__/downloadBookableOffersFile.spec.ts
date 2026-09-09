@@ -28,7 +28,6 @@ const serializedFilters = {
 
 const baseFilters = {
   name: '',
-  venueId: 'all' as const,
   status: [],
   periodBeginningDate: '',
   periodEndingDate: '',

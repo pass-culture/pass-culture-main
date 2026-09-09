@@ -39,7 +39,6 @@ export const OFFER_WITHDRAWAL_TYPE_LABELS = {
 }
 
 const ALL_OFFERS = ''
-const ALL_VENUES = 'all'
 export const ALL_OFFERER_ADDRESSES = 'all'
 export const ALL_FORMATS = 'all'
 const ALL_EVENT_PERIODS = ''
@@ -63,8 +62,6 @@ export const DEFAULT_SEARCH_FILTERS: IndividualOffersFilters = {
 export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
   {
     name: ALL_OFFERS,
-    offererId: 'all',
-    venueId: ALL_VENUES,
     format: ALL_FORMATS,
     periodBeginningDate: ALL_EVENT_PERIODS,
     periodEndingDate: ALL_EVENT_PERIODS,

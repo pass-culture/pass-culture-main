@@ -127,13 +127,4 @@ describe('useCollectiveOffersSwrKeys', () => {
       CollectiveOfferDisplayedStatus.PUBLISHED,
     ])
   })
-
-  it('should use venueId in the key when WIP_SWITCH_VENUE is active', () => {
-    const { result } = renderUseCollectiveOffersSwrKeys(false, [
-      'WIP_SWITCH_VENUE',
-    ])
-
-    expect(result.current[1].venueId).toEqual(String(defaultGetVenue.id))
-    expect(result.current[1].offererId).toBeUndefined()
-  })
 })

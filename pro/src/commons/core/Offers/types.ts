@@ -26,10 +26,9 @@ export type OfferExtraData = {
 
 export type CollectiveSearchFiltersParams = Pagination & {
   name: string
-  // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that never happens since there is always a `currentOfferer` in the store.
-  offererId?: string | 'all'
-  // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that will disappear once `WIP_SWITCH_VENUE` is enabled in production.
-  venueId: string | 'all'
+  // TODO (igabriele, 2026-09-09): Both should be numbers, which requires splitting the request scope (`venueId` in the partner space, `offererId` in the admin export) from the user filters.
+  offererId?: string
+  venueId?: string
   status: CollectiveOfferDisplayedStatus[]
   periodBeginningDate: string
   periodEndingDate: string
