@@ -131,21 +131,3 @@ def get_combined_invoices(query: finance_serialize.GetCombinedInvoicesQueryModel
         return pdf.merge_pdf_files(invoice_pdf_urls)
     except FileNotFoundError as exc:
         raise ApiErrors({"invoice": f"Failed to fetch invoice PDF from url: {exc}"}, status_code=424)
-
-
-@private_api.route("/finance/bank-accounts", methods=["GET"])
-@atomic()
-@login_required
-@spectree_serialize(
-    response_model=finance_serialize.FinanceBankAccountListResponseModel, api=blueprint.pro_private_schema
-)
-def get_bank_accounts() -> finance_serialize.FinanceBankAccountListResponseModel:
-    bank_accounts = repository.get_bank_accounts_query(user=current_user)
-    bank_accounts = bank_accounts.order_by(models.BankAccount.label)
-
-    return finance_serialize.FinanceBankAccountListResponseModel(
-        [
-            finance_serialize.FinanceBankAccountResponseModel.model_validate(bank_account)
-            for bank_account in bank_accounts
-        ]
-    )

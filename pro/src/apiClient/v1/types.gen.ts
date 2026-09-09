@@ -1842,25 +1842,6 @@ export type FeatureResponseModel = {
 };
 
 /**
- * FinanceBankAccountListResponseModel
- */
-export type FinanceBankAccountListResponseModel = Array<FinanceBankAccountResponseModel>;
-
-/**
- * FinanceBankAccountResponseModel
- */
-export type FinanceBankAccountResponseModel = {
-    /**
-     * Id
-     */
-    id: number;
-    /**
-     * Label
-     */
-    label: string;
-};
-
-/**
  * GetActiveEANOfferResponseModel
  */
 export type GetActiveEANOfferResponseModel = {
@@ -8688,35 +8669,6 @@ export type getFeaturesResponses = {
 };
 
 export type getFeaturesResponse = getFeaturesResponses[keyof getFeaturesResponses];
-
-export type getFinanceBankAccountsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/finance/bank-accounts';
-};
-
-export type getFinanceBankAccountsErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getFinanceBankAccountsError = getFinanceBankAccountsErrors[keyof getFinanceBankAccountsErrors];
-
-export type getFinanceBankAccountsResponses = {
-    /**
-     * OK
-     */
-    200: FinanceBankAccountListResponseModel;
-};
-
-export type getFinanceBankAccountsResponse = getFinanceBankAccountsResponses[keyof getFinanceBankAccountsResponses];
 
 export type getFinanceCombinedInvoicesData = {
     body?: never;
