@@ -22,6 +22,7 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = settings.JWT_ACCESS_TOKEN_EXPIRES
 # cf. pcapi.routes.auth.forms.forms.SigninForm used by this endpoint : `/auth/discord/signin`
 app.config["WTF_CSRF_ENABLED"] = False
 app.config["USE_GLOBAL_ATOMIC"] = False
+app.config["NAME"] = settings.BACKEND_APP_NAME
 
 jwt = JWTManager(app)
 # The csrf is configured here to be able to perform the check in discord's signin form, the single form where it's needed

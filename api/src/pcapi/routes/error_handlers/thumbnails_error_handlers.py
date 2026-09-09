@@ -4,6 +4,7 @@ from flask import Response
 from flask import current_app as app
 
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.routes.error_handlers.utils import generate_error_response
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
@@ -19,4 +20,4 @@ def handle_create_a_thumbnail(exception: Exception) -> tuple[Response, int]:
         exception.__class__.__name__,
         error_message,
     )
-    return app.generate_error_response({"errors": [error_message]}), 400
+    return generate_error_response({"errors": [error_message]}), 400
