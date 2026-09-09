@@ -109,11 +109,27 @@ jobs:
     needs: [create-release, compute-major-version-variables]
     runs-on: ubuntu-22.04
     steps:
+      # This is needed because tags are protected and the default GITHUB_TOKEN cannot be exempted
+      # from this ruleset
+      - name: Authenticate through github app ghactionci
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: github-token
+        with:
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          # Liste des repositories à cloner
+          repositories: |
+            pass-culture-main
+          permission-contents: write
+
       - name: Checkout new tag
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: v${{ needs.compute-major-version-variables.outputs.release-number }}.0.0
           persist-credentials: true
+          token: ${{ steps.github-token.outputs.token }}
+
       - name: Create new maintenance branch (v${{ needs.compute-major-version-variables.outputs.release-number }}.0.0)
         env:
           NEW_MAINTENANCE_BRANCH: maint/v${{ needs.compute-major-version-variables.outputs.release-number }}
