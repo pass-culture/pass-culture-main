@@ -1,5 +1,5 @@
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -19,7 +19,7 @@ import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptio
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 interface IndividualOfferSummaryPriceTableScreenProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModel
   offerStocks: GetOfferStockResponseModel[]
 }
 export const IndividualOfferSummaryPriceTableScreen = ({

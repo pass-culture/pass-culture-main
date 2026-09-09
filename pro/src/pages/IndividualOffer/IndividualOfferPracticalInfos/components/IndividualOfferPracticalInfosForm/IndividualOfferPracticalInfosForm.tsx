@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 
 import {
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModel,
   type GetOfferStockResponseModel,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
@@ -33,7 +33,7 @@ import styles from './IndividualOfferPracticalInfosForm.module.scss'
 import { IndividualOfferPracticalInfosFormWithdrawal } from './IndividualOfferPracticalInfosFormWithdrawal/IndividualOfferPracticalInfosFormWithdrawal'
 
 export type IndividualOfferPracticalInfosFormProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModel
   subCategory?: SubcategoryResponseModel
   stocks: GetOfferStockResponseModel[]
 }

@@ -256,7 +256,6 @@ export {
   type GetEducationalOfferersQueryModel,
   type GetEducationalOfferersResponseModel,
   type GetIndividualOfferResponseModel,
-  type GetIndividualOfferWithAddressResponseModel,
   type GetMusicTypesResponse,
   type GetOfferExposureResponseModel,
   type GetOfferLastProviderResponseModel,

@@ -345,7 +345,7 @@ describe('<IndividualOfferLocationScreen />', () => {
       it('should render without error even when url is null', async () => {
         const props = { offer: { ...onlineOffer, url: null } }
 
-        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
         // @ts-expect-error
         renderIndividualOfferLocationScreen({ props })
 

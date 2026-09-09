@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -39,7 +39,7 @@ import styles from './IndividualOfferMediaScreen.module.scss'
 import { VideoUploaderTips } from './VideoUploaderOfferTips/VideoUploaderOfferTips'
 
 type IndividualOfferMediaScreenProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModel
 }
 
 export const IndividualOfferMediaScreen = ({

@@ -6,7 +6,7 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import {
   BookingExportType,
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModel,
 } from '@/apiClient/v1'
 import {
   GET_BOOKINGS_QUERY_KEY,
@@ -30,7 +30,7 @@ import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsM
 import styles from './IndividualOfferSummaryBookingsScreen.module.scss'
 
 interface IndividualOfferSummaryBookingsScreenProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModel
 }
 
 export const IndividualOfferSummaryBookingsScreen = ({

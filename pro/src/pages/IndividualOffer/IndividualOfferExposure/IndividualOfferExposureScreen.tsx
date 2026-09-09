@@ -1,6 +1,6 @@
 import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
 
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -26,7 +26,7 @@ import { OfferExposureTimeline } from './components/OfferExposureTimeline/OfferE
 import styles from './IndividualOfferExposureScreen.module.scss'
 
 export type IndividualOfferExposureScreenProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModel
 }
 export const IndividualOfferExposureScreen = ({
   offer,

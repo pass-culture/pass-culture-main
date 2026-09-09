@@ -2610,170 +2610,6 @@ export type GetIndividualOfferResponseModel = {
      */
     hasCulturalOutreachClaim: boolean;
     /**
-     * Hasstocks
-     */
-    hasStocks: boolean;
-    /**
-     * Highlightrequests
-     */
-    highlightRequests: Array<ShortHighlightResponseModel>;
-    /**
-     * Id
-     */
-    id: number;
-    /**
-     * Isactive
-     */
-    isActive: boolean;
-    /**
-     * Isdigital
-     */
-    isDigital: boolean;
-    /**
-     * Isduo
-     */
-    isDuo: boolean;
-    /**
-     * Iseditable
-     */
-    isEditable: boolean;
-    /**
-     * Isevent
-     */
-    isEvent: boolean;
-    /**
-     * Isnational
-     */
-    isNational: boolean;
-    /**
-     * Isnonfreeoffer
-     */
-    isNonFreeOffer?: boolean;
-    /**
-     * Isthing
-     */
-    isThing: boolean;
-    /**
-     * GetOfferLastProviderResponseModel
-     */
-    lastProvider?: GetOfferLastProviderResponseModel;
-    /**
-     * Mentaldisabilitycompliant
-     */
-    mentalDisabilityCompliant?: boolean;
-    /**
-     * Motordisabilitycompliant
-     */
-    motorDisabilityCompliant?: boolean;
-    /**
-     * Name
-     */
-    name: string;
-    /**
-     * Pricecategories
-     */
-    priceCategories?: Array<PriceCategoryResponseModel>;
-    /**
-     * Productid
-     */
-    productId?: number;
-    /**
-     * Publicationdate
-     */
-    publicationDate?: string;
-    /**
-     * Publicationdatetime
-     */
-    publicationDatetime?: string;
-    status: OfferStatus;
-    subcategoryId: SubcategoryIdEnum;
-    /**
-     * Thumburl
-     */
-    thumbUrl?: string;
-    /**
-     * Url
-     */
-    url?: string;
-    venue: GetOfferVenueResponseModel;
-    videoData: VideoData;
-    /**
-     * Visualdisabilitycompliant
-     */
-    visualDisabilityCompliant?: boolean;
-    /**
-     * Withdrawaldelay
-     */
-    withdrawalDelay?: number;
-    /**
-     * Withdrawaldetails
-     */
-    withdrawalDetails?: string;
-    withdrawalType?: WithdrawalTypeEnum;
-};
-
-/**
- * GetIndividualOfferWithAddressResponseModel
- */
-export type GetIndividualOfferWithAddressResponseModel = {
-    /**
-     * GetOfferMediationResponseModel
-     */
-    activeMediation?: GetOfferMediationResponseModel;
-    /**
-     * Artistofferlinks
-     */
-    artistOfferLinks: Array<ArtistOfferLinkResponseModel>;
-    /**
-     * Audiodisabilitycompliant
-     */
-    audioDisabilityCompliant?: boolean;
-    /**
-     * Bookingalloweddatetime
-     */
-    bookingAllowedDatetime?: string;
-    /**
-     * Bookingcontact
-     */
-    bookingContact?: string;
-    /**
-     * Bookingemail
-     */
-    bookingEmail?: string;
-    /**
-     * Bookingscount
-     */
-    bookingsCount?: number;
-    /**
-     * Canbeevent
-     */
-    canBeEvent: boolean;
-    /**
-     * Datecreated
-     */
-    dateCreated: string;
-    /**
-     * Description
-     */
-    description?: string;
-    /**
-     * Durationminutes
-     */
-    durationMinutes?: number;
-    /**
-     * Externalticketofficeurl
-     */
-    externalTicketOfficeUrl?: string;
-    extraData?: OfferExtraData;
-    /**
-     * Hasbookinglimitdatetimespassed
-     */
-    hasBookingLimitDatetimesPassed: boolean;
-    /**
-     * Hasculturaloutreachclaim
-     */
-    hasCulturalOutreachClaim: boolean;
-    /**
      * Haspendingbookings
      */
     hasPendingBookings: boolean;
@@ -10139,7 +9975,7 @@ export type getOffersByOfferIdResponses = {
     /**
      * OK
      */
-    200: GetIndividualOfferWithAddressResponseModel;
+    200: GetIndividualOfferResponseModel;
 };
 
 export type getOffersByOfferIdResponse = getOffersByOfferIdResponses[keyof getOffersByOfferIdResponses];
@@ -10170,7 +10006,7 @@ export type patchOffersByOfferIdResponses = {
     /**
      * OK
      */
-    200: GetIndividualOfferWithAddressResponseModel;
+    200: GetIndividualOfferResponseModel;
 };
 
 export type patchOffersByOfferIdResponse = patchOffersByOfferIdResponses[keyof patchOffersByOfferIdResponses];
@@ -10232,7 +10068,7 @@ export type postOffersByOfferIdHighlightRequestsResponses = {
     /**
      * Created
      */
-    201: GetIndividualOfferWithAddressResponseModel;
+    201: GetIndividualOfferResponseModel;
 };
 
 export type postOffersByOfferIdHighlightRequestsResponse = postOffersByOfferIdHighlightRequestsResponses[keyof postOffersByOfferIdHighlightRequestsResponses];
@@ -10263,7 +10099,7 @@ export type putOffersByOfferIdPriceCategoriesResponses = {
     /**
      * OK
      */
-    200: GetIndividualOfferWithAddressResponseModel;
+    200: GetIndividualOfferResponseModel;
 };
 
 export type putOffersByOfferIdPriceCategoriesResponse = putOffersByOfferIdPriceCategoriesResponses[keyof putOffersByOfferIdPriceCategoriesResponses];

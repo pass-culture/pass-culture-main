@@ -1,5 +1,5 @@
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModel,
   GetVenueResponseModel,
 } from '@/apiClient/v1'
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
@@ -9,7 +9,7 @@ import type { LocationFormValues, PhysicalAddressSubformValues } from '../types'
 
 // TODO (igabriele, 2025-08-25): Integrate the last rules in Yup schema and use schema.cast() here instead.
 function getPhysicalAddressSubformInitialValuesFromOffer(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModel,
   {
     offerVenue,
   }: {
@@ -72,7 +72,7 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
 }
 
 export function getInitialValuesFromOffer(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModel,
   {
     offerVenue,
   }: {

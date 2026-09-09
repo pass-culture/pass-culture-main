@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -66,9 +66,7 @@ const TestComponent = () => {
   )
 }
 
-const renderVideoUploaderContext = (
-  offer: GetIndividualOfferWithAddressResponseModel
-) => {
+const renderVideoUploaderContext = (offer: GetIndividualOfferResponseModel) => {
   return renderWithProviders(
     <VideoUploaderContextProvider
       initialVideoData={offer.videoData}

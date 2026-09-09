@@ -491,11 +491,6 @@ class IndividualOfferResponseGetterDict(GetterDict):
                 PriceCategoryResponseModel.build(price_category, price_category.id in price_category_ids_with_stocks)
                 for price_category in self._obj.priceCategories
             ]
-        return super().get(key, default)
-
-
-class IndividualOfferWithAddressResponseGetterDict(IndividualOfferResponseGetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
         if key == "location":
             return offer_location_getter_dict_helper(self._obj)
         if key == "isHeadlineOffer":
@@ -552,6 +547,9 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     videoData: VideoData
     highlightRequests: list[highlight_serialize.ShortHighlightResponseModel]
     hasCulturalOutreachClaim: bool
+    location: LocationResponseModel | None
+    hasPendingBookings: bool
+    isHeadlineOffer: bool
 
     class Config:
         orm_mode = True
@@ -573,18 +571,6 @@ class GetActiveEANOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
-
-
-class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
-    location: LocationResponseModel | None
-    hasPendingBookings: bool
-    isHeadlineOffer: bool
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        use_enum_values = True
-        getter_dict = IndividualOfferWithAddressResponseGetterDict
 
 
 class GetStocksResponseModel(ConfiguredBaseModel):
