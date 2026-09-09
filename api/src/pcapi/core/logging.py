@@ -88,6 +88,49 @@ def get_logged_impersonator_id() -> int | None:
     return current_user.impersonator.id
 
 
+def _get_origin() -> str:
+    try:
+        blueprint = flask.request.blueprint or ""
+    except RuntimeError:
+        # werkzeug raises a basic RuntimeError when accessing to request outside an http request
+        if getattr(flask.g, "cron_command", None):  # TODO peupler g dans les decorateurs qui vont bien
+            return "cron"
+        if "main.py" in " ".join(sys.argv):
+            # entry point for scripts is a main.py file so it must be in argv
+            return "script"
+        if "celery" in " ".join(sys.argv).lower():
+            # celery is the name of the command and in multiple arguments
+            return "celery"
+        # the only unidentifed and legitimate source is a click command
+        return "command"
+
+    if not blueprint:
+        # Health api endpoint are not in blueprints
+        return "base_app"
+
+    base_blueprint = blueprint.split(".")[0]
+    return base_blueprint
+
+
+def get_technical_origin(technical_message_id: str, extra: dict) -> dict:
+    technical_origin = {}
+    action: str = extra.pop("", "")
+    feature: str = extra.pop("", "")
+    if feature and action:
+        origin = _get_origin()
+        technical_origin["origin"] = origin
+        if origin == "native":
+            assert isinstance(flask.request.blueprint, str)  # helps mypy
+            hierarchy = flask.request.blueprint.split(".")
+            if len(hierarchy) > 2:
+                technical_origin["version"] = hierarchy[1].split("_")[-1]
+        if origin == "cron":
+            technical_origin["cron"] = flask.g.cron_command
+        technical_origin["feature"] = feature
+        technical_origin["action"] = action
+    return technical_origin
+
+
 def monkey_patch_logger_makeRecord() -> None:
     def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):  # type: ignore[no-untyped-def]
         """Make a record but store ``extra`` arguments in an ``extra``
@@ -195,6 +238,10 @@ class JsonFormatter(logging.Formatter):
         }
         if impersonator_id:
             json_record["impersonator_id"] = impersonator_id
+
+        if technical_origin := get_technical_origin(tech_msg_id, extra):
+            json_record["technical_origin"] = technical_origin
+
         try:
             return json.dumps(json_record, cls=JsonLogEncoder)
         except TypeError:
