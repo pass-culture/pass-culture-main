@@ -9,6 +9,7 @@ import {
 } from '@/apiClient/compat'
 import { OffererMemberStatus } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
+import { defaultManagedVenue } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
@@ -45,7 +46,17 @@ const renderCollaborators = (options?: RenderWithProvidersOptions) => {
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory(),
-          selectedAdminOfferer: { id: 1 },
+          selectedAdminOfferer: {
+            id: 1,
+            managedVenues: [
+              defaultManagedVenue,
+              {
+                ...defaultManagedVenue,
+                id: 2,
+                name: 'Venue 2',
+              },
+            ],
+          },
           offererNames: offererNames,
         },
       },

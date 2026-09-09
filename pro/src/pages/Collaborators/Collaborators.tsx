@@ -41,6 +41,9 @@ const Collaborators = () => {
   const formId = useId()
 
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
+  const hasOpenedVenues = selectedAdminOfferer?.managedVenues.some(
+    (venue) => !venue.state
+  )
   const userPermissions = useCurrentUserPermissions()
 
   const offererId = selectedAdminOfferer.id
@@ -178,6 +181,7 @@ const Collaborators = () => {
           setIsDialogOpen(true)
         }}
         label="Ajouter un collaborateur"
+        disabled={selectedAdminOfferer.isClosed || !hasOpenedVenues}
       />
 
       <DetailedModal
