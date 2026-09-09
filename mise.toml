@@ -1,0 +1,9 @@
+[settings]
+lockfile = true
+experimental = true
+
+[tools]
+pipx = "latest"
+python = { version = "latest", install_env = { CONFIGURE_OPTS = "--enable-optimizations" } }
+"github:argoproj/argo-workflows" = "4.0.5"
+"pipx:pass-culture/passdirector" = "v0.7.0"

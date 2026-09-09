@@ -136,8 +136,26 @@ jobs:
           fetch-tags: false
           persist-credentials: false
 
-      - name: Install Argo Workflows CLI
-        uses: pass-culture/common-workflows/actions/setup-argo@66d0c45fd010bce5b0e7873e862eb54a2d564f39 # v1.0.0
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        id: cache
+        with:
+          path: ~/.cache/mise
+          key: ${{ runner.os }}-mise
+
+      - name: Authenticate through github app ghactionci
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: github-token
+        with:
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            passdirector
+          permission-contents: read
+      
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+        env:
+          MISE_GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
 
       - name: Install passdirector
         uses: pass-culture/common-workflows/actions/setup-passdirector@b470d76b19d7f3ebcda367f5e17484228021d388 # v1.0.0
