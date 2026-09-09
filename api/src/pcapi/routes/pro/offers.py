@@ -428,7 +428,24 @@ def patch_publish_offer(
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     rest.check_venue_is_opened(venue)
 
-    offer = offers_repository.get_offer_and_extradata(body.id)
+    offer = offers_repository.get_offer_by_id(
+        body.id,
+        load_options=(
+            "stock",
+            "mediations",
+            "price_category",
+            "is_non_free_offer",
+            "bookings_count",
+            "offerer_address",
+            "highlight_requests",
+            "venue",
+            "meta_data",
+            "artists",
+            "cultural_outreach",
+            "pending_bookings",
+            "headline_offer",
+        ),
+    )
     if offer is None:
         raise api_errors.resource_not_found_error()
     if not offers_repository.offer_has_bookable_stocks(offer.id):

@@ -71,15 +71,18 @@ class Returns200Test:
     num_queries = 1  # 1 session + user
     num_queries += 1  # 2 offerer
     num_queries += 1  # 3 user_offerer
-    num_queries += 1  # 4 offer+stock+offererAddress+Address+mediaton+venue
-    num_queries += 1  # 5 headline
-    num_queries += 1  # 6 artists
-    num_queries += 1  # 7 available stock (date comparison)
-    num_queries += 1  # 8 select offer
-    num_queries += 1  # 9 offerer_confidence
-    num_queries += 1  # 10 offerer_confidence
-    num_queries += 1  # 11 offer_validation_rule + offer_validation_sub_rule
-    num_queries += 1  # 12 update offer
+    num_queries += 1  # 4 offer+stock+offerMetaData+venue+offerer+offererAddress
+    num_queries += 1  # 5 price_category
+    num_queries += 1  # 6 headline
+    num_queries += 1  # 7 highlight_request
+    num_queries += 1  # 8 artists
+    num_queries += 1  # 9 mediation
+    num_queries += 1  # 10 available stock (date comparison)
+    num_queries += 1  # 11 select offer
+    num_queries += 1  # 12 offerer_confidence (through venue)
+    num_queries += 1  # 13 offerer_confidence (through offerer)
+    num_queries += 1  # 14 offer_validation_rule + offer_validation_sub_rule
+    num_queries += 1  # 15 update offer
 
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
