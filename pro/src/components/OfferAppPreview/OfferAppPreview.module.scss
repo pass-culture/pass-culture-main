@@ -13,14 +13,12 @@
 
 .offer-img-container {
   align-items: center;
-  background-color: var(--color-background-subtle);
   border: none;
   border-radius: var(--size-border-radius-s);
   display: flex;
   flex-direction: column;
-  height: rem.torem(385px);
   justify-content: center;
-  margin-bottom: var(--size-spacing-xl);
+  margin-bottom: var(--size-spacing-xs);
 
   .offer-img {
     border-radius: var(--size-border-radius-s);

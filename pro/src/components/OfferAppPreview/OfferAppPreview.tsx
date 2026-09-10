@@ -35,7 +35,8 @@ export const OfferAppPreview = ({
             {offer.activeMediation?.credit ? (
               <figcaption id={imageCreditId}>
                 <p className={style['image-credit-text']}>
-                  Crédit image : {offer.activeMediation?.credit}
+                  Crédit image :{' '}
+                  {truncateAtWord(offer.activeMediation?.credit, 50)}
                 </p>
               </figcaption>
             ) : null}
