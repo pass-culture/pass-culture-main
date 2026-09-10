@@ -38,7 +38,7 @@ class QuotientFamilialBonusTaskTest:
 
         assert len(mocked_get_quotient_familial.mock_calls) == 12
         mocked_get_quotient_familial.assert_called_with(
-            custodian, birth_date + relativedelta(years=17) + relativedelta(months=11)
+            custodian, birth_date.replace(day=1) + relativedelta(years=17) + relativedelta(months=11)
         )
 
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)

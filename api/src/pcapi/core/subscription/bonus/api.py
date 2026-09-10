@@ -57,7 +57,14 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
 
     cache_name = f"{_QF_CACHE_KEY}:{quotient_familial_fraud_check.id}"
     most_relevant_result: _ApiParticulierResult[api_particulier.QuotientFamilialResponse] | None = None
-    for qf_result in _yield_quotient_familial_responses(quotient_familial_fraud_check, cache_name):
+    unhandled_api_particulier_errors = []
+    for month in _get_months_when_user_is_17(user):
+        try:
+            qf_result = _get_and_cache_quotient_familial_result(quotient_familial_fraud_check, month, cache_name)
+        except api_particulier.ParticulierApiException as e:
+            unhandled_api_particulier_errors.append(e)
+            continue
+
         if not most_relevant_result:
             most_relevant_result = qf_result
         else:
@@ -65,6 +72,12 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
 
         if most_relevant_result.status == subscription_models.FraudCheckStatus.OK:
             break
+
+    is_result_eligible = (
+        most_relevant_result is not None and most_relevant_result.status == subscription_models.FraudCheckStatus.OK
+    )
+    if unhandled_api_particulier_errors and not is_result_eligible:
+        raise unhandled_api_particulier_errors[-1]
 
     if not most_relevant_result:
         logger.error(
@@ -82,7 +95,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
             transactional_mails.send_bonus_declined_email(user)
 
         elif most_relevant_result.status == subscription_models.FraudCheckStatus.OK:
-            given_recredit, attempts_count = _grant_bonus(quotient_familial_fraud_check)
+            given_recredit, attempts_count = _grant_bonus(quotient_familial_fraud_check, most_relevant_result)
 
             if given_recredit:
                 granted_after_attempts = attempts_count
@@ -100,10 +113,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     )
 
 
-def _yield_quotient_familial_responses(
-    quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck, cache_name: str
-) -> typing.Generator[_ApiParticulierResult[api_particulier.QuotientFamilialResponse]]:
-    user = quotient_familial_fraud_check.user
+def _get_months_when_user_is_17(user: users_models.User) -> list[datetime.date]:
     birth_date = user.validatedBirthDate
     if not birth_date:
         raise ValueError("Beneficiaries applying for the bonus are expected to have a non-null birth date")
@@ -111,13 +121,15 @@ def _yield_quotient_familial_responses(
     MONTHS_IN_A_YEAR = 12
     api_particulier_cutoff_date = datetime.date.today() - relativedelta(years=2)
     cutoff_month = api_particulier_cutoff_date.replace(month=1, day=1)
-    seventeenth_birthday = birth_date + relativedelta(years=17)
-    for month_offset in range(MONTHS_IN_A_YEAR):
-        at_date = seventeenth_birthday + relativedelta(months=month_offset)
-        if at_date < cutoff_month:
-            continue
+    seventeenth_birth_month = birth_date.replace(day=1) + relativedelta(years=17)
 
-        yield _get_and_cache_quotient_familial_result(quotient_familial_fraud_check, at_date, cache_name)
+    months_when_user_is_17 = []
+    for month_offset in range(MONTHS_IN_A_YEAR):
+        month = seventeenth_birth_month + relativedelta(months=month_offset)
+        if month >= cutoff_month:
+            months_when_user_is_17.append(month)
+
+    return months_when_user_is_17
 
 
 def _get_and_cache_quotient_familial_result(
@@ -316,7 +328,7 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
                 transactional_mails.send_bonus_declined_email(user)
 
         elif aah_result.status == subscription_models.FraudCheckStatus.OK:
-            given_recredit, attempts_count = _grant_bonus(aah_fraud_check)
+            given_recredit, attempts_count = _grant_bonus(aah_fraud_check, aah_result)
 
             if given_recredit:
                 granted_after_attempts = attempts_count
@@ -387,7 +399,7 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
                 transactional_mails.send_bonus_declined_email(user)
 
         elif aeeh_result.status == subscription_models.FraudCheckStatus.OK:
-            given_recredit, attempts_count = _grant_bonus(aeeh_fraud_check)
+            given_recredit, attempts_count = _grant_bonus(aeeh_fraud_check, aeeh_result)
 
             if given_recredit:
                 granted_after_attempts = attempts_count
@@ -425,7 +437,7 @@ def _call_api_particulier[
     fraud_check: subscription_models.BeneficiaryFraudCheck, fetch: typing.Callable[[], ResponseT]
 ) -> _ApiParticulierResult[ResponseT]:
     """
-    Run fetch() and format the API Particulier errors into a result.
+    Run fetch() and format the API Particulier business errors into a result.
     """
     response: ResponseT | None = None
     reason_codes = []
@@ -483,8 +495,19 @@ def _decline_bonus(
 
 def _grant_bonus(
     fraud_check: subscription_models.BeneficiaryFraudCheck,
+    result: _ApiParticulierResult[typing.Any],
 ) -> tuple[finance_models.Recredit | None, int | None]:
     user = fraud_check.user
+
+    if not fraud_check.resultContent:
+        fraud_check.resultContent = {}
+
+    if result.http_status_code:
+        fraud_check.resultContent["http_status_code"] = result.http_status_code
+
+    if result.error_code:
+        fraud_check.resultContent["error_code"] = result.error_code
+
     given_recredit = deposit_api.recredit_bonus_credit(user)
     attempts_count: int | None = None
 
