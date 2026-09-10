@@ -307,7 +307,7 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Entité juridique Fermée " in response_text
+        assert "Entité juridique fermée" in response_text
 
     def test_get_offerer_with_fraudulent_booking(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
