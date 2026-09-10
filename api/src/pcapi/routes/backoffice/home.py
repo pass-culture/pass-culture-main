@@ -135,7 +135,7 @@ def _get_claimed_cultural_outreach_stats() -> list[sa.sql.elements.Label]:
     return [pending_claimed_cultural_outreach_subquery]
 
 
-@blueprint.backoffice_web.route("/", methods=["GET"])
+@blueprint.backoffice.route("/", methods=["GET"])
 def home() -> response_utils.BackofficeResponse:
     if not current_user or current_user.is_anonymous:
         return render_template("home/login.html")
@@ -169,7 +169,7 @@ def home() -> response_utils.BackofficeResponse:
     return render_template("home/home.html", **data)
 
 
-@blueprint.backoffice_web.route("/_messages", methods=["GET"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@blueprint.backoffice.route("/_messages", methods=["GET"])
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def get_messages() -> response_utils.BackofficeResponse:
     return render_template("components/messages.html")

@@ -661,7 +661,7 @@ Within the `.btn-group` container, you can add as many buttons as needed, and yo
     disabled
     type="button"
     class="btn btn-outline-primary"
-    data-url="{{ url_for("backoffice_web.validation.batch_validate_user_offerer") }}"
+    data-url="{{ url_for("backoffice.validation.batch_validate_user_offerer") }}"
     data-user-confirmation-modal="false"
   >
     Valider
@@ -686,8 +686,8 @@ Within the `.btn-group` container, you can add as many buttons as needed, and yo
   </button>
 </div>
 
- {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form"), "batch-pending-modal", "eager") }}
- {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form"), "batch-reject-modal", "eager") }}
+ {{ build_lazy_modal(url_for("backoffice.validation.get_batch_user_offerer_pending_form"), "batch-pending-modal", "eager") }}
+ {{ build_lazy_modal(url_for("backoffice.validation.get_batch_reject_user_offerer_form"), "batch-reject-modal", "eager") }}
 ```
 
 ## PcClipBoard

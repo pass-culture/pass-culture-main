@@ -372,7 +372,7 @@ def get_accept_form(ds_application_id: int) -> response_utils.BackofficeResponse
         can_be_accepted=can_be_accepted,
         alert=alert,
         form=account_forms.AccountUpdateRequestAcceptForm() if can_be_accepted else None,
-        dst=url_for("backoffice_web.account_update.accept", ds_application_id=ds_application_id),
+        dst=url_for("backoffice.account_update.accept", ds_application_id=ds_application_id),
     )
 
 
@@ -526,7 +526,7 @@ def get_ask_for_correction_form(ds_application_id: int) -> response_utils.Backof
         target_id=f"#request-row-{ds_application_id}",
         form=empty_forms.EmptyForm(),
         dst=url_for(
-            "backoffice_web.account_update.ask_for_correction",
+            "backoffice.account_update.ask_for_correction",
             ds_application_id=ds_application_id,
             correction_reason=correction_reason,
         ),

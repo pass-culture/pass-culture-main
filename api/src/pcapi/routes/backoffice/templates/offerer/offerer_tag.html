@@ -16,7 +16,7 @@
       {% call tabs.build_details_tabs_content_wrapper() %}
         {% call tabs.build_details_tab_content("tags", active_tab == 'tags') %}
           {% if create_tag_form %}
-            {{ build_modal_form("create-offerer-tag", url_for("backoffice_web.offerer_tag.create_offerer_tag") , create_tag_form, "Créer un tag", "Créer un tag", "Enregistrer") }}
+            {{ build_modal_form("create-offerer-tag", url_for("backoffice.offerer_tag.create_offerer_tag") , create_tag_form, "Créer un tag", "Créer un tag", "Enregistrer") }}
           {% endif %}
           <div>
             <table class="table mb-4">
@@ -65,8 +65,8 @@
                                  aria-hidden="true">
                               <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
-                                  <form action="{{ url_for('backoffice_web.offerer_tag.update_offerer_tag', offerer_tag_id=offerer_tag.id) }}"
-                                        name="{{ url_for('backoffice_web.offerer_tag.update_offerer_tag', offerer_tag_id=offerer_tag.id) | action_to_name }}"
+                                  <form action="{{ url_for('backoffice.offerer_tag.update_offerer_tag', offerer_tag_id=offerer_tag.id) }}"
+                                        name="{{ url_for('backoffice.offerer_tag.update_offerer_tag', offerer_tag_id=offerer_tag.id) | action_to_name }}"
                                         method="post">
                                     <div class="modal-header"
                                          id="{{ edit_offerer_tag_modal_label_id }}">
@@ -92,8 +92,8 @@
                                  aria-hidden="true">
                               <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
-                                  <form action="{{ url_for('backoffice_web.offerer_tag.delete_offerer_tag', offerer_tag_id=offerer_tag.id) }}"
-                                        name="{{ url_for('backoffice_web.offerer_tag.delete_offerer_tag', offerer_tag_id=offerer_tag.id) | action_to_name }}"
+                                  <form action="{{ url_for('backoffice.offerer_tag.delete_offerer_tag', offerer_tag_id=offerer_tag.id) }}"
+                                        name="{{ url_for('backoffice.offerer_tag.delete_offerer_tag', offerer_tag_id=offerer_tag.id) | action_to_name }}"
                                         method="post">
                                     <div class="modal-header"
                                          id="{{ delete_offerer_tag_modal_label_id }}">
@@ -134,7 +134,7 @@
         {% endcall %}
         {% call tabs.build_details_tab_content("categories", active_tab == 'categories') %}
           {% if create_category_form %}
-            {{ build_modal_form("create-offerer-tag-category", url_for("backoffice_web.offerer_tag.create_offerer_tag_category") , create_category_form, "Créer une catégorie", "Créer une catégorie", "Enregistrer") }}
+            {{ build_modal_form("create-offerer-tag-category", url_for("backoffice.offerer_tag.create_offerer_tag_category") , create_category_form, "Créer une catégorie", "Créer une catégorie", "Enregistrer") }}
           {% endif %}
           <div>
             <table class="table mb-4">

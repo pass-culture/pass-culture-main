@@ -66,7 +66,7 @@ def render_bank_account_details(
         search_form=pro_forms.CompactProSearchForm(
             q=request.args.get("q"), pro_type=pro_forms.TypeOptions.BANK_ACCOUNT.name
         ),
-        search_dst=url_for("backoffice_web.pro.search_pro"),
+        search_dst=url_for("backoffice.pro.search_pro"),
         bank_account=bank_account,
         humanized_bank_account_id=humanize(bank_account.id),
         dms_stats=dms_stats,
@@ -183,7 +183,7 @@ def get_invoices(bank_account_id: int) -> response_utils.BackofficeResponse:
 
 def _redirect_to_invoices(bank_account_id: int, code: int = 303) -> response_utils.BackofficeResponse:
     return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id, active_tab="invoices")
+        request, url_for("backoffice.bank_account.get", bank_account_id=bank_account_id, active_tab="invoices")
     )
 
 
@@ -280,4 +280,4 @@ def update_bank_account(bank_account_id: int) -> response_utils.BackofficeRespon
         db.session.add(bank_account)
         flash("Les informations ont été mises à jour", "success")
 
-    return redirect(url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id), code=303)
+    return redirect(url_for("backoffice.bank_account.get", bank_account_id=bank_account_id), code=303)

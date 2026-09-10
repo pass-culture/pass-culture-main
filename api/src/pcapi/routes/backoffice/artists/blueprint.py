@@ -446,7 +446,7 @@ def get_associate_product_form(artist_id: str) -> response_utils.BackofficeRespo
         modal_content_id="associate-product-modal",
         close_on_validation=False,
         div_id=f"associate-product-modal-{artist.id}",
-        dst=url_for("backoffice_web.artist.associate_product", artist_id=artist_id),
+        dst=url_for("backoffice.artist.associate_product", artist_id=artist_id),
         title="Associer un produit",
         form=search_form,
         information=Markup("Rechercher un produit via son identifiant pour l'associer à <b>{name}</b>.").format(
@@ -483,14 +483,14 @@ def associate_product(artist_id: str) -> response_utils.BackofficeResponse:
             f"Aucun produit trouvé avec l'identifiant {id_value} ({id_type.value}). Veuillez vérifier l'identifiant et réessayer.",
             "warning",
         )
-        return redirect(url_for("backoffice_web.artist.get_associate_product_form", artist_id=artist_id))
+        return redirect(url_for("backoffice.artist.get_associate_product_form", artist_id=artist_id))
 
     confirm_form = forms.ConfirmAssociationForm()
     confirm_form.product_id.data = found_product.id
     return render_template(
         "components/dynamic/modal_form.html",
         div_id=f"associate-product-modal-{artist.id}",
-        dst=url_for("backoffice_web.artist.confirm_association", artist_id=artist_id),
+        dst=url_for("backoffice.artist.confirm_association", artist_id=artist_id),
         title="Confirmer l'association",
         form=confirm_form,
         button_text="Confirmer l'association",
@@ -529,9 +529,7 @@ def confirm_association(artist_id: str) -> response_utils.BackofficeResponse:
     else:
         flash(response_utils.build_form_error_msg(confirm_form), "warning")
 
-    return redirect(
-        url_for("backoffice_web.artist.get_artist_details", artist_id=artist_id, active_tab="products"), 303
-    )
+    return redirect(url_for("backoffice.artist.get_artist_details", artist_id=artist_id, active_tab="products"), 303)
 
 
 @artists_blueprint.route("/<string:artist_id>/merge-form", methods=["GET"])

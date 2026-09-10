@@ -25,11 +25,9 @@
           href="{{ url_for('static', filename='backoffice/favicon/' + icon_path) }}" />
     <!-- Bootstrap icons breaks if it is bundled -->
     <link href="{{ url_for('static', filename='backoffice/css/bootstrap-icons@1.11.0/font/bootstrap-icons.css') }}"
-          rel="stylesheet"
-          type="text/css" />
+          rel="stylesheet" />
     <link href="{{ url_for('static', filename='backoffice/css/bundle.css',hash=static_hashes.css) }}"
-          rel="stylesheet"
-          type="text/css" />
+          rel="stylesheet" />
     <script src="{{ url_for('static', filename='backoffice/js/bundle.js', hash=static_hashes.js) }}"></script>
     <script>
       const app = new PcBackofficeApp({
@@ -46,7 +44,7 @@
     <div class="d-none">
       <form id="analytics-form"
             hx-swap="none"
-            hx-get="{{ url_for('backoffice_web.analytics.save') }}">
+            hx-get="{{ url_for('backoffice.analytics.save') }}">
         <input name="type" type="hidden" />
         <input name="name" type="hidden" />
         <input name="origin" type="hidden" />

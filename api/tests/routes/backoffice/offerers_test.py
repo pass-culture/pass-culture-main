@@ -54,7 +54,7 @@ pytestmark = [
 
 
 class GetOffererTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get"
+    endpoint = "backoffice.offerer.get"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -345,7 +345,7 @@ class GetOffererTest(GetEndpointHelper):
         @property
         def path(self):
             offerer = offerers_factories.NewOffererFactory()
-            return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+            return url_for("backoffice.offerer.get", offerer_id=offerer.id)
 
     class PendingButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.VALIDATE_OFFERER
@@ -354,7 +354,7 @@ class GetOffererTest(GetEndpointHelper):
         @property
         def path(self):
             offerer = offerers_factories.NewOffererFactory()
-            return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+            return url_for("backoffice.offerer.get", offerer_id=offerer.id)
 
     class RejectButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.VALIDATE_OFFERER
@@ -363,7 +363,7 @@ class GetOffererTest(GetEndpointHelper):
         @property
         def path(self):
             offerer = offerers_factories.NewOffererFactory()
-            return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+            return url_for("backoffice.offerer.get", offerer_id=offerer.id)
 
     class CloseButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.CLOSE_OFFERER
@@ -372,11 +372,11 @@ class GetOffererTest(GetEndpointHelper):
         @property
         def path(self):
             offerer = offerers_factories.OffererFactory()
-            return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+            return url_for("backoffice.offerer.get", offerer_id=offerer.id)
 
         def test_no_button_when_closed(self, authenticated_client):
             offerer = offerers_factories.ClosedOffererFactory()
-            path = url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+            path = url_for("backoffice.offerer.get", offerer_id=offerer.id)
 
             response = authenticated_client.get(path)
             assert response.status_code == 200
@@ -473,7 +473,7 @@ class DeactivateOffererHelper(ActivateOrDeactivateOffererHelper):
 
 
 class SuspendOffererTest(DeactivateOffererHelper):
-    endpoint = "backoffice_web.offerer.suspend_offerer"
+    endpoint = "backoffice.offerer.suspend_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -485,7 +485,7 @@ class SuspendOffererTest(DeactivateOffererHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+        assert response.location == url_for("backoffice.offerer.get", offerer_id=offerer.id)
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
@@ -508,7 +508,7 @@ class SuspendOffererTest(DeactivateOffererHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+        assert response.location == url_for("backoffice.offerer.get", offerer_id=offerer.id)
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
@@ -522,7 +522,7 @@ class SuspendOffererTest(DeactivateOffererHelper):
 
 
 class UnsuspendOffererTest(ActivateOffererHelper):
-    endpoint = "backoffice_web.offerer.unsuspend_offerer"
+    endpoint = "backoffice.offerer.unsuspend_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -534,7 +534,7 @@ class UnsuspendOffererTest(ActivateOffererHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+        assert response.location == url_for("backoffice.offerer.get", offerer_id=offerer.id)
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
@@ -551,7 +551,7 @@ class UnsuspendOffererTest(ActivateOffererHelper):
 
 
 class DeleteOffererTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.delete_offerer"
+    endpoint = "backoffice.offerer.delete_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.DELETE_PRO_ENTITY
 
@@ -567,7 +567,7 @@ class DeleteOffererTest(PostEndpointHelper):
             == 0
         )
 
-        expected_url = url_for("backoffice_web.pro.search_pro")
+        expected_url = url_for("backoffice.pro.search_pro")
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
@@ -588,7 +588,7 @@ class DeleteOffererTest(PostEndpointHelper):
             == 1
         )
 
-        expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_to_delete.id)
+        expected_url = url_for("backoffice.offerer.get", offerer_id=offerer_to_delete.id)
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
@@ -625,7 +625,7 @@ class DeleteOffererTest(PostEndpointHelper):
 
 
 class UpdateOffererTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.update_offerer"
+    endpoint = "backoffice.offerer.update_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -646,14 +646,14 @@ class UpdateOffererTest(PostEndpointHelper):
         assert response.status_code == 303
 
         # Test redirection
-        expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_to_edit.id)
+        expected_url = url_for("backoffice.offerer.get", offerer_id=offerer_to_edit.id)
         assert response.location == expected_url
 
         # Test region update
         response = authenticated_client.get(expected_url)
 
         # Test history
-        history_url = url_for("backoffice_web.offerer.get_history", offerer_id=offerer_to_edit.id)
+        history_url = url_for("backoffice.offerer.get_history", offerer_id=offerer_to_edit.id)
         history_response = authenticated_client.get(history_url)
 
         offerer_to_edit = db.session.query(offerers_models.Offerer).filter_by(id=offerer_to_edit.id).one()
@@ -694,7 +694,7 @@ class UpdateOffererTest(PostEndpointHelper):
         assert response.status_code == 303
 
         # Test history
-        history_url = url_for("backoffice_web.offerer.get_history", offerer_id=offerer_to_edit.id)
+        history_url = url_for("backoffice.offerer.get_history", offerer_id=offerer_to_edit.id)
         history_response = authenticated_client.get(history_url)
 
         db.session.query(offerers_models.Offerer).filter_by(id=offerer_to_edit.id).one()
@@ -725,7 +725,7 @@ class UpdateOffererTest(PostEndpointHelper):
 
 
 class UpdateForFraudTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.update_for_fraud"
+    endpoint = "backoffice.offerer.update_for_fraud"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -841,7 +841,7 @@ TOTAL_CA_XPF = "24 250"
 
 
 class GetOffererStatsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_stats"
+    endpoint = "backoffice.offerer.get_stats"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -934,7 +934,7 @@ class GetOffererStatsTest(GetEndpointHelper):
 
 
 class GetOffererRevenueDetailsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_revenue_details"
+    endpoint = "backoffice.offerer.get_revenue_details"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -998,7 +998,7 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
 
 
 class GetOffererHistoryTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_history"
+    endpoint = "backoffice.offerer.get_history"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -1013,7 +1013,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         @property
         def path(self):
             offerer = offerers_factories.UserOffererFactory().offerer
-            return url_for("backoffice_web.offerer.get_history", offerer_id=offerer.id)
+            return url_for("backoffice.offerer.get_history", offerer_id=offerer.id)
 
     def test_get_history(self, authenticated_client, pro_fraud_admin):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -1322,7 +1322,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
 
 
 class GetOffererUsersTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_pro_users"
+    endpoint = "backoffice.offerer.get_pro_users"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -1410,7 +1410,7 @@ class GetOffererUsersTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert (url_for("backoffice_web.pro.connect_as").encode() in response.data) == result
+        assert (url_for("backoffice.pro.connect_as").encode() in response.data) == result
 
     def test_get_pro_users_with_one_offerer_invitation_without_user_account(self, authenticated_client, offerer):
         uo1 = offerers_factories.UserOffererFactory(offerer=offerer)
@@ -1549,7 +1549,7 @@ class GetOffererUsersTest(GetEndpointHelper):
 
 
 class GetDeleteOffererAttachmentFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_delete_user_offerer_form"
+    endpoint = "backoffice.offerer.get_delete_user_offerer_form"
     endpoint_kwargs = {"offerer_id": 1, "user_offerer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -1564,7 +1564,7 @@ class GetDeleteOffererAttachmentFormTest(GetEndpointHelper):
 
 
 class DeleteOffererAttachmentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.delete_user_offerer"
+    endpoint = "backoffice.offerer.delete_user_offerer"
     endpoint_kwargs = {"offerer_id": 1, "user_offerer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -1597,7 +1597,7 @@ class DeleteOffererAttachmentTest(PostEndpointHelper):
 
 
 class GetOffererVenuesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_managed_venues"
+    endpoint = "backoffice.offerer.get_managed_venues"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -1708,7 +1708,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
 
 class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_collective_dms_applications"
+    endpoint = "backoffice.offerer.get_collective_dms_applications"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -1811,7 +1811,7 @@ class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
 
 
 class GetOffererBankAccountTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_bank_accounts"
+    endpoint = "backoffice.offerer.get_bank_accounts"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -1889,7 +1889,7 @@ class GetOffererBankAccountTest(GetEndpointHelper):
 
 
 class CommentOffererTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.comment_offerer"
+    endpoint = "backoffice.offerer.comment_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -1899,7 +1899,7 @@ class CommentOffererTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+        expected_url = url_for("backoffice.offerer.get", offerer_id=offerer.id)
         assert response.location == expected_url
 
         db.session.refresh(offerer)
@@ -1922,7 +1922,7 @@ class CommentOffererTest(PostEndpointHelper):
 
 
 class ListOfferersToValidateTest(GetEndpointHelper):
-    endpoint = "backoffice_web.validation.list_offerers_to_validate"
+    endpoint = "backoffice.validation.list_offerers_to_validate"
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     # - session + authenticated user (1 query)
@@ -1958,7 +1958,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", order=order, sort=sort)
+                url_for("backoffice.validation.list_offerers_to_validate", order=order, sort=sort)
             )
             assert response.status_code == 200
 
@@ -2037,7 +2037,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         )
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            response = authenticated_client.get(url_for("backoffice.validation.list_offerers_to_validate"))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2064,7 +2064,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         )
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            response = authenticated_client.get(url_for("backoffice.validation.list_offerers_to_validate"))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2082,7 +2082,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         )
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            response = authenticated_client.get(url_for("backoffice.validation.list_offerers_to_validate"))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2100,7 +2100,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         )
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            response = authenticated_client.get(url_for("backoffice.validation.list_offerers_to_validate"))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2124,7 +2124,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         )
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            response = authenticated_client.get(url_for("backoffice.validation.list_offerers_to_validate"))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2177,7 +2177,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", **pagination_config)
+                url_for("backoffice.validation.list_offerers_to_validate", **pagination_config)
             )
             assert response.status_code == 200
 
@@ -2201,7 +2201,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_web.validation.list_offerers_to_validate",
+                    "backoffice.validation.list_offerers_to_validate",
                     regions=region_filter,
                     status=["NEW", "PENDING"],
                 )
@@ -2234,7 +2234,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", tags=tags_ids, status=["NEW", "PENDING"])
+                url_for("backoffice.validation.list_offerers_to_validate", tags=tags_ids, status=["NEW", "PENDING"])
             )
             assert response.status_code == 200
 
@@ -2260,7 +2260,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_web.validation.list_offerers_to_validate",
+                    "backoffice.validation.list_offerers_to_validate",
                     from_date="2022-11-05",
                     to_date="2022-11-08",
                 )
@@ -2274,7 +2274,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_web.validation.list_offerers_to_validate",
+                    "backoffice.validation.list_offerers_to_validate",
                     from_date="05/11/2022",
                 )
             )
@@ -2286,7 +2286,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
     def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search_filter):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter, status="PENDING")
+                url_for("backoffice.validation.list_offerers_to_validate", q=search_filter, status="PENDING")
             )
             assert response.status_code == 200
 
@@ -2298,7 +2298,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         rid7 = nc_offerer.siren[2:]
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate", q=rid7))
+            response = authenticated_client.get(url_for("backoffice.validation.list_offerers_to_validate", q=rid7))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2308,7 +2308,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
     def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated, postal_code):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", q=postal_code)
+                url_for("backoffice.validation.list_offerers_to_validate", q=postal_code)
             )
             assert response.status_code == 200
 
@@ -2317,7 +2317,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
     def test_list_search_by_department_code(self, authenticated_client, offerers_to_be_validated):
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate", q="35"))
+            response = authenticated_client.get(url_for("backoffice.validation.list_offerers_to_validate", q="35"))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2330,7 +2330,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         # Search "quimper" => results include "Quimper" and "Quimperlé"
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", q="quimper", status="PENDING")
+                url_for("backoffice.validation.list_offerers_to_validate", q="quimper", status="PENDING")
             )
             assert response.status_code == 200
 
@@ -2342,7 +2342,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
     def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search_filter):
         with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter)
+                url_for("backoffice.validation.list_offerers_to_validate", q=search_filter)
             )
             assert response.status_code == 400
 
@@ -2354,7 +2354,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
     def test_list_search_by_email(self, authenticated_client, offerers_to_be_validated):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", q="sadi@example.com", status="PENDING")
+                url_for("backoffice.validation.list_offerers_to_validate", q="sadi@example.com", status="PENDING")
             )
             assert response.status_code == 200
 
@@ -2364,7 +2364,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
     def test_list_search_by_user_name(self, authenticated_client, offerers_to_be_validated):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", q="Felix faure")
+                url_for("backoffice.validation.list_offerers_to_validate", q="Felix faure")
             )
             assert response.status_code == 200
 
@@ -2391,7 +2391,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter)
+                url_for("backoffice.validation.list_offerers_to_validate", q=search_filter)
             )
             assert response.status_code == 200
 
@@ -2420,7 +2420,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         expected_num_queries = self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 1
         with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", status=status_filter)
+                url_for("backoffice.validation.list_offerers_to_validate", status=status_filter)
             )
             assert response.status_code == expected_status
 
@@ -2444,7 +2444,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_web.validation.list_offerers_to_validate",
+                    "backoffice.validation.list_offerers_to_validate",
                     status=["NEW", "PENDING"],
                     ae_documents_received="no",
                 )
@@ -2496,7 +2496,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_web.validation.list_offerers_to_validate",
+                    "backoffice.validation.list_offerers_to_validate",
                     status="PENDING",
                     instructors=instructor_id,
                 )
@@ -2532,7 +2532,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_web.validation.list_offerers_to_validate",
+                    "backoffice.validation.list_offerers_to_validate",
                     dms_adage_status=dms_status_filter,
                     status=["NEW", "PENDING"],
                 )
@@ -2554,7 +2554,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="124578235689")
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate", q=query))
+            response = authenticated_client.get(url_for("backoffice.validation.list_offerers_to_validate", q=query))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2579,7 +2579,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_web.validation.list_offerers_to_validate",
+                    "backoffice.validation.list_offerers_to_validate",
                     q=query,
                     dms_adage_status=dms_status_filter,
                 )
@@ -2591,7 +2591,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.REJECTED)
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            response = authenticated_client.get(url_for("backoffice.validation.list_offerers_to_validate"))
             assert response.status_code == 200
 
         cards = html_parser.extract_cards_text(response.data)
@@ -2602,7 +2602,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
     def test_no_offerer(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            response = authenticated_client.get(url_for("backoffice.validation.list_offerers_to_validate"))
             assert response.status_code == 200
 
         cards = html_parser.extract_cards_text(response.data)
@@ -2720,11 +2720,11 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
 
 
 class GetValidateOffererFormTest(GetValidateOrRejectOffererFormTestHelper):
-    endpoint = "backoffice_web.validation.get_validate_offerer_form"
+    endpoint = "backoffice.validation.get_validate_offerer_form"
 
 
 class ValidateOffererTest(ActivateOffererHelper):
-    endpoint = "backoffice_web.validation.validate_offerer"
+    endpoint = "backoffice.validation.validate_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
     offerer_initial_status = ValidationStatus.NEW
@@ -2877,11 +2877,11 @@ class ValidateOffererTest(ActivateOffererHelper):
 
 
 class GetRejectOffererFormTest(GetValidateOrRejectOffererFormTestHelper):
-    endpoint = "backoffice_web.validation.get_reject_offerer_form"
+    endpoint = "backoffice.validation.get_reject_offerer_form"
 
 
 class RejectOffererTest(DeactivateOffererHelper):
-    endpoint = "backoffice_web.validation.reject_offerer"
+    endpoint = "backoffice.validation.reject_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
     default_form_data = {"rejection_reason": "ELIGIBILITY"}
@@ -3006,7 +3006,7 @@ class RejectOffererTest(DeactivateOffererHelper):
 
 
 class GetOffererPendingFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.validation.get_offerer_pending_form"
+    endpoint = "backoffice.validation.get_offerer_pending_form"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -3028,7 +3028,7 @@ class GetOffererPendingFormTest(GetEndpointHelper):
 
 
 class SetOffererPendingTest(DeactivateOffererHelper):
-    endpoint = "backoffice_web.validation.set_offerer_pending"
+    endpoint = "backoffice.validation.set_offerer_pending"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -3119,7 +3119,7 @@ class SetOffererPendingTest(DeactivateOffererHelper):
 
 
 class ListUserOffererToValidateTest(GetEndpointHelper):
-    endpoint = "backoffice_web.validation.list_offerers_attachments_to_validate"
+    endpoint = "backoffice.validation.list_offerers_attachments_to_validate"
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     # - session + authenticated user (1 query)
@@ -3516,7 +3516,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
 
 
 class ValidateOffererAttachmentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.validation.validate_user_offerer"
+    endpoint = "backoffice.validation.validate_user_offerer"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -3578,7 +3578,7 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
 
 
 class GetRejectOffererAttachmentFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.validation.get_reject_user_offerer_form"
+    endpoint = "backoffice.validation.get_reject_user_offerer_form"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -3596,7 +3596,7 @@ class GetRejectOffererAttachmentFormTest(GetEndpointHelper):
 
 
 class RejectOffererAttachmentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.validation.reject_user_offerer"
+    endpoint = "backoffice.validation.reject_user_offerer"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -3645,7 +3645,7 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
 
 
 class SetOffererAttachmentPendingTest(PostEndpointHelper):
-    endpoint = "backoffice_web.validation.set_user_offerer_pending"
+    endpoint = "backoffice.validation.set_user_offerer_pending"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -3720,11 +3720,11 @@ class InviteUserButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         offerer = offerers_factories.OffererFactory()
-        return url_for("backoffice_web.offerer.get_pro_users", offerer_id=offerer.id)
+        return url_for("backoffice.offerer.get_pro_users", offerer_id=offerer.id)
 
 
 class InviteUserTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.invite_user"
+    endpoint = "backoffice.offerer.invite_user"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -3786,7 +3786,7 @@ class InviteUserTest(PostEndpointHelper):
 
 
 class ResendInvitationTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.resend_invitation"
+    endpoint = "backoffice.offerer.resend_invitation"
     endpoint_kwargs = {"offerer_id": 1, "invitation_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -3842,7 +3842,7 @@ class ResendInvitationTest(PostEndpointHelper):
 
 
 class DeleteInvitationTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.delete_invitation"
+    endpoint = "backoffice.offerer.delete_invitation"
     endpoint_kwargs = {"offerer_id": 1, "invitation_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -3920,11 +3920,11 @@ class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):
 
 
 class GetBatchOffererValidateFormTest(GetBatchValidateOrRejectOffererFormTestHelper):
-    endpoint = "backoffice_web.validation.get_batch_validate_offerer_form"
+    endpoint = "backoffice.validation.get_batch_validate_offerer_form"
 
 
 class BatchOffererValidateTest(PostEndpointHelper):
-    endpoint = "backoffice_web.validation.batch_validate_offerer"
+    endpoint = "backoffice.validation.batch_validate_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     @pytest.mark.parametrize(
@@ -3972,7 +3972,7 @@ class BatchOffererValidateTest(PostEndpointHelper):
 
 
 class GetBatchOffererPendingFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.validation.get_batch_offerer_pending_form"
+    endpoint = "backoffice.validation.get_batch_offerer_pending_form"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     # session + current user (1 query)
@@ -3990,7 +3990,7 @@ class GetBatchOffererPendingFormTest(GetEndpointHelper):
 
 
 class SetBatchOffererPendingTest(PostEndpointHelper):
-    endpoint = "backoffice_web.validation.batch_set_offerer_pending"
+    endpoint = "backoffice.validation.batch_set_offerer_pending"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_batch_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
@@ -4038,11 +4038,11 @@ class SetBatchOffererPendingTest(PostEndpointHelper):
 
 
 class GetBatchOffererRejectFormTest(GetBatchValidateOrRejectOffererFormTestHelper):
-    endpoint = "backoffice_web.validation.get_batch_reject_offerer_form"
+    endpoint = "backoffice.validation.get_batch_reject_offerer_form"
 
 
 class BatchOffererRejectTest(PostEndpointHelper):
-    endpoint = "backoffice_web.validation.batch_reject_offerer"
+    endpoint = "backoffice.validation.batch_reject_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     @pytest.mark.parametrize(
@@ -4093,7 +4093,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
 
 
 class BatchOffererAttachmentValidateTest(PostEndpointHelper):
-    endpoint = "backoffice_web.validation.batch_validate_user_offerer"
+    endpoint = "backoffice.validation.batch_validate_user_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_batch_set_offerer_attachment_validate(self, legit_user, authenticated_client):
@@ -4141,7 +4141,7 @@ class BatchOffererAttachmentValidateTest(PostEndpointHelper):
 
 
 class GetOffererAttachmentPendingFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.validation.get_user_offerer_pending_form"
+    endpoint = "backoffice.validation.get_user_offerer_pending_form"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -4159,7 +4159,7 @@ class GetOffererAttachmentPendingFormTest(GetEndpointHelper):
 
 
 class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
-    endpoint = "backoffice_web.validation.batch_set_user_offerer_pending"
+    endpoint = "backoffice.validation.batch_set_user_offerer_pending"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_batch_set_offerer_attachment_pending(self, legit_user, authenticated_client):
@@ -4197,7 +4197,7 @@ class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
 
 
 class GetOffererAttachmentRejectFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.validation.get_batch_reject_user_offerer_form"
+    endpoint = "backoffice.validation.get_batch_reject_user_offerer_form"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -4212,7 +4212,7 @@ class GetOffererAttachmentRejectFormTest(GetEndpointHelper):
 
 
 class BatchOffererAttachmentRejectTest(PostEndpointHelper):
-    endpoint = "backoffice_web.validation.batch_reject_user_offerer"
+    endpoint = "backoffice.validation.batch_reject_user_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_batch_set_offerer_attachment_reject(self, legit_user, authenticated_client):
@@ -4259,7 +4259,7 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
 
 
 class ListOffererTagsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer_tag.list_offerer_tags"
+    endpoint = "backoffice.offerer_tag.list_offerer_tags"
     needed_permission = perm_models.Permissions.READ_TAGS
 
     # - fetch session + user (1 query)
@@ -4308,7 +4308,7 @@ class CreateTagButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.offerer_tag.list_offerer_tags")
+        return url_for("backoffice.offerer_tag.list_offerer_tags")
 
 
 class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
@@ -4317,11 +4317,11 @@ class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.offerer_tag.list_offerer_tags")
+        return url_for("backoffice.offerer_tag.list_offerer_tags")
 
 
 class UpdateOffererTagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer_tag.update_offerer_tag"
+    endpoint = "backoffice.offerer_tag.update_offerer_tag"
     endpoint_kwargs = {"offerer_tag_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
@@ -4352,7 +4352,7 @@ class UpdateOffererTagTest(PostEndpointHelper):
         assert response.status_code == 303
 
         # Test redirection
-        expected_url = url_for("backoffice_web.offerer_tag.list_offerer_tags")
+        expected_url = url_for("backoffice.offerer_tag.list_offerer_tags")
         assert response.location == expected_url
 
         response = authenticated_client.get(expected_url)
@@ -4378,7 +4378,7 @@ class UpdateOffererTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_tag_id=offerer_tag_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offerer_tag.list_offerer_tags")
+        expected_url = url_for("backoffice.offerer_tag.list_offerer_tags")
         assert response.location == expected_url
 
         response = authenticated_client.get(expected_url)
@@ -4403,7 +4403,7 @@ class UpdateOffererTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_tag_id=offerer_tag_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offerer_tag.list_offerer_tags")
+        expected_url = url_for("backoffice.offerer_tag.list_offerer_tags")
         response = authenticated_client.get(expected_url)
 
         assert html_parser.extract_alert(response.data) == "Ce nom de tag existe déjà"
@@ -4411,7 +4411,7 @@ class UpdateOffererTagTest(PostEndpointHelper):
 
 
 class CreateOffererTagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer_tag.create_offerer_tag"
+    endpoint = "backoffice.offerer_tag.create_offerer_tag"
     needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
     def test_create_offerer_tag(self, authenticated_client):
@@ -4430,7 +4430,7 @@ class CreateOffererTagTest(PostEndpointHelper):
         }
         response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer_tag.list_offerer_tags")
+        assert response.location == url_for("backoffice.offerer_tag.list_offerer_tags")
 
         created_tag = db.session.query(offerers_models.OffererTag).one()
         assert created_tag.name == name
@@ -4464,7 +4464,7 @@ class CreateOffererTagTest(PostEndpointHelper):
 
 
 class DeleteOffererTagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer_tag.delete_offerer_tag"
+    endpoint = "backoffice.offerer_tag.delete_offerer_tag"
     endpoint_kwargs = {"offerer_tag_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
 
@@ -4488,7 +4488,7 @@ class DeleteOffererTagTest(PostEndpointHelper):
 
 
 class CreateOffererTagCategoryTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer_tag.create_offerer_tag_category"
+    endpoint = "backoffice.offerer_tag.create_offerer_tag_category"
     needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
     def test_create_offerer_tag_category(self, authenticated_client):
@@ -4499,7 +4499,7 @@ class CreateOffererTagCategoryTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=form_data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer_tag.list_offerer_tags", active_tab="categories")
+        assert response.location == url_for("backoffice.offerer_tag.list_offerer_tags", active_tab="categories")
 
         created_category = db.session.query(offerers_models.OffererTagCategory).one()
         assert created_category.name == form_data["name"]
@@ -4518,7 +4518,7 @@ class CreateOffererTagCategoryTest(PostEndpointHelper):
 
 
 class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_individual_subscription"
+    endpoint = "backoffice.offerer.get_individual_subscription"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = {perm_models.Permissions.VALIDATE_OFFERER, perm_models.Permissions.READ_PRO_AE_INFO}
 
@@ -4666,13 +4666,11 @@ class SaveIndividualSubscriptionButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         individual_subscription = offerers_factories.IndividualOffererSubscriptionFactory()
-        return url_for(
-            "backoffice_web.offerer.get_individual_subscription", offerer_id=individual_subscription.offerer.id
-        )
+        return url_for("backoffice.offerer.get_individual_subscription", offerer_id=individual_subscription.offerer.id)
 
 
 class CreateIndividualOffererSubscriptionTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.create_individual_subscription"
+    endpoint = "backoffice.offerer.create_individual_subscription"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -4682,7 +4680,7 @@ class CreateIndividualOffererSubscriptionTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offerer.id)
         assert response.status_code == 303
         assert response.location == url_for(
-            "backoffice_web.offerer.get", offerer_id=user_offerer.offerer.id, active_tab="subscription"
+            "backoffice.offerer.get", offerer_id=user_offerer.offerer.id, active_tab="subscription"
         )
         assert user_offerer.offerer.individualSubscription is not None
         individual_subscription = user_offerer.offerer.individualSubscription
@@ -4715,7 +4713,7 @@ class CreateIndividualOffererSubscriptionTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offerer.id)
         assert response.status_code == 303
         assert response.location == url_for(
-            "backoffice_web.offerer.get", offerer_id=user_offerer.offerer.id, active_tab="subscription"
+            "backoffice.offerer.get", offerer_id=user_offerer.offerer.id, active_tab="subscription"
         )
 
         assert individual_subscription.isEmailSent is True
@@ -4739,7 +4737,7 @@ class CreateIndividualOffererSubscriptionTest(PostEndpointHelper):
 
 
 class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.update_individual_subscription"
+    endpoint = "backoffice.offerer.update_individual_subscription"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -4780,14 +4778,12 @@ class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form_data)
 
         assert response.status_code == 303
-        assert response.location == url_for(
-            "backoffice_web.offerer.get", offerer_id=offerer.id, active_tab="subscription"
-        )
+        assert response.location == url_for("backoffice.offerer.get", offerer_id=offerer.id, active_tab="subscription")
         self._assert_data(individual_subscription, form_data)
 
 
 class GetEntrepriseInfoTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_entreprise_info"
+    endpoint = "backoffice.offerer.get_entreprise_info"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTREPRISE_INFO
 
@@ -4859,7 +4855,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
 
 
 class GetEntrepriseInfoRcsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_entreprise_rcs_info"
+    endpoint = "backoffice.offerer.get_entreprise_rcs_info"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTREPRISE_INFO
 
@@ -4919,7 +4915,7 @@ class GetEntrepriseInfoRcsTest(GetEndpointHelper):
 
 
 class GetEntrepriseInfoUrssafTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_entreprise_urssaf_info"
+    endpoint = "backoffice.offerer.get_entreprise_urssaf_info"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_SENSITIVE_INFO
 
@@ -4969,7 +4965,7 @@ class GetEntrepriseInfoUrssafTest(GetEndpointHelper):
 
 
 class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_entreprise_dgfip_info"
+    endpoint = "backoffice.offerer.get_entreprise_dgfip_info"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_SENSITIVE_INFO
 
@@ -5015,7 +5011,7 @@ class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
 
 
 class GetCloseOffererFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offerer.get_close_offerer_form"
+    endpoint = "backoffice.offerer.get_close_offerer_form"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.CLOSE_OFFERER
 
@@ -5054,7 +5050,7 @@ class GetCloseOffererFormTest(GetEndpointHelper):
 
 
 class CloseOffererTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.close_offerer"
+    endpoint = "backoffice.offerer.close_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.CLOSE_OFFERER
 
@@ -5120,7 +5116,7 @@ class CreateVenueTest(PostEndpointHelper):
     Create venue without siret based on existing venue with siret.
     """
 
-    endpoint = "backoffice_web.offerer.create_venue"
+    endpoint = "backoffice.offerer.create_venue"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.CREATE_PRO_ENTITY
 
@@ -5153,7 +5149,7 @@ class CreateVenueTest(PostEndpointHelper):
         assert new_venue.offererAddress.address == venue.offererAddress.address
         assert new_venue.offererAddress != venue.offererAddress
 
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=new_venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=new_venue.id)
 
     def test_create_venue_with_activity_not_open_to_public(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -5172,7 +5168,7 @@ class CreateVenueTest(PostEndpointHelper):
         assert db.session.query(offerers_models.Venue).one() == venue
 
         assert response.location == url_for(
-            "backoffice_web.offerer.get", offerer_id=venue.managingOffererId, active_tab="managed_venues"
+            "backoffice.offerer.get", offerer_id=venue.managingOffererId, active_tab="managed_venues"
         )
         assert "L'activité sélectionnée n'est pas compatible avec l'accueil du public" in html_parser.extract_alert(
             authenticated_client.get(response.location).data

@@ -139,4 +139,4 @@ class MenuTest:
         assert len(menu_section.items) == 3
         assert "Mon compte backoffice" in {e.label for e in menu_section.items}
         menu_item = [e for e in menu_section.items if e.label == "Mon compte backoffice"][0]
-        assert menu_item.url == url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id, active_tab="roles")
+        assert menu_item.url == url_for("backoffice.bo_users.get_bo_user", user_id=user.id, active_tab="roles")

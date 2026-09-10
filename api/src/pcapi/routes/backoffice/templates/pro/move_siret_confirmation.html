@@ -25,7 +25,7 @@
           {% endif %}
         </p>
       </div>
-      <a href="{{ url_for('backoffice_web.venue.get', venue_id=venue.id) }}"
+      <a href="{{ url_for('backoffice.venue.get', venue_id=venue.id) }}"
          target="_blank"
          class="btn btn-md btn-outline-primary fw-bold mt-1">
         CONSULTER LE PROFIL <i class="bi bi-arrow-up-right"></i>
@@ -53,7 +53,7 @@
           <i class="bi bi-exclamation-triangle-fill fs-1 align-middle"></i>
           <div>
             Le partenaire culturel source est associé à au moins un
-            <a href="{{ url_for('backoffice_web.reimbursement_rules.list_custom_reimbursement_rules', venue=source_venue.id) }}"
+            <a href="{{ url_for('backoffice.reimbursement_rules.list_custom_reimbursement_rules', venue=source_venue.id) }}"
                target="_blank">tarif dérogatoire</a>
             actif ou futur.
             <br />

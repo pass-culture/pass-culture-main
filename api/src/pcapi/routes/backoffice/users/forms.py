@@ -83,12 +83,12 @@ def get_toggle_suspension_args(
     if user.isActive and has_current_user_permission(required_permission or perm_models.Permissions.SUSPEND_USER):
         return {
             "suspension_form": SuspendUserForm(suspension_type=suspension_type),
-            "suspension_dst": url_for("backoffice_web.users.suspend_user", user_id=user.id),
+            "suspension_dst": url_for("backoffice.users.suspend_user", user_id=user.id),
         }
     if not user.isActive and has_current_user_permission(required_permission or perm_models.Permissions.UNSUSPEND_USER):
         return {
             "suspension_form": UnsuspendUserForm(suspension_type=suspension_type),
-            "suspension_dst": url_for("backoffice_web.users.unsuspend_user", user_id=user.id),
+            "suspension_dst": url_for("backoffice.users.unsuspend_user", user_id=user.id),
         }
     return {}
 

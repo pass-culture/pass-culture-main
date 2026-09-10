@@ -37,7 +37,7 @@ pytestmark = [
 
 
 class GetBankAccountTest(GetEndpointHelper):
-    endpoint = "backoffice_web.bank_account.get"
+    endpoint = "backoffice.bank_account.get"
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -144,7 +144,7 @@ class GetBankAccountTest(GetEndpointHelper):
 
 
 class GetBankAccountVenuesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.bank_account.get_linked_venues"
+    endpoint = "backoffice.bank_account.get_linked_venues"
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -214,7 +214,7 @@ class GetBankAccountVenuesTest(GetEndpointHelper):
 
 
 class GetBankAccountHistoryTest(GetEndpointHelper):
-    endpoint = "backoffice_web.bank_account.get_history"
+    endpoint = "backoffice.bank_account.get_history"
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -258,7 +258,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["Type"] == "Partenaire culturel associé à un compte bancaire"
         assert f"Partenaire culturel : {venue.publicName}" in rows[0]["Commentaire"]
-        assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
+        assert url_for("backoffice.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("%d/%m/%Y à "))
         assert rows[0]["Auteur"] == action.authorUser.full_name
 
@@ -297,13 +297,13 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
 
         assert rows[0]["Type"] == "Partenaire culturel dissocié d'un compte bancaire"
         assert f"Partenaire culturel : {venue.publicName}" in rows[0]["Commentaire"]
-        assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
+        assert url_for("backoffice.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[0]["Date/Heure"].startswith(unlink_action.actionDate.strftime("%d/%m/%Y à "))
         assert rows[0]["Auteur"] == legit_user.full_name
 
         assert rows[1]["Type"] == "Partenaire culturel associé à un compte bancaire"
         assert f"Partenaire culturel : {venue.publicName}" in rows[0]["Commentaire"]
-        assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
+        assert url_for("backoffice.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[1]["Date/Heure"].startswith(link_action.actionDate.strftime("%d/%m/%Y à "))
         assert rows[1]["Auteur"] == legit_user.full_name
 
@@ -346,7 +346,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
 
 
 class GetBankAccountInvoicesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.bank_account.get_invoices"
+    endpoint = "backoffice.bank_account.get_invoices"
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -410,7 +410,7 @@ class GetBankAccountInvoicesTest(GetEndpointHelper):
 
 
 class DownloadReimbursementDetailsTest(PostEndpointHelper):
-    endpoint = "backoffice_web.bank_account.download_reimbursement_details"
+    endpoint = "backoffice.bank_account.download_reimbursement_details"
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -533,7 +533,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
 
 
 class DownloadInvoicesTest(PostEndpointHelper):
-    endpoint = "backoffice_web.bank_account.download_invoices"
+    endpoint = "backoffice.bank_account.download_invoices"
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -569,11 +569,11 @@ class EditBankAccountButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         bank_account = finance_factories.BankAccountFactory()
-        return url_for("backoffice_web.bank_account.update_bank_account", bank_account_id=bank_account.id)
+        return url_for("backoffice.bank_account.update_bank_account", bank_account_id=bank_account.id)
 
 
 class UpdateBankAccountTest(PostEndpointHelper):
-    endpoint = "backoffice_web.bank_account.update_bank_account"
+    endpoint = "backoffice.bank_account.update_bank_account"
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -588,7 +588,7 @@ class UpdateBankAccountTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.bank_account.get", bank_account_id=bank_account.id)
+        expected_url = url_for("backoffice.bank_account.get", bank_account_id=bank_account.id)
         assert response.location == expected_url
 
         assert bank_account.label == new_label
@@ -609,7 +609,7 @@ class UpdateBankAccountTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.bank_account.get", bank_account_id=bank_account.id)
+        expected_url = url_for("backoffice.bank_account.get", bank_account_id=bank_account.id)
         assert response.location == expected_url
 
         assert bank_account.label == old_label

@@ -240,9 +240,7 @@ def get_finance_incident_cancellation_form(finance_incident_id: int) -> response
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for(
-            "backoffice_web.finance_incidents.cancel_finance_incident", finance_incident_id=finance_incident_id
-        ),
+        dst=url_for("backoffice.finance_incidents.cancel_finance_incident", finance_incident_id=finance_incident_id),
         div_id=f"reject-finance-incident-modal-{finance_incident_id}",
         title="Annuler l'incident",
         button_text="Confirmer l'annulation",
@@ -260,7 +258,7 @@ def cancel_finance_incident(finance_incident_id: int) -> response_utils.Backoffi
     form = forms.CommentForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id), 303)
+        return redirect(url_for("backoffice.finance_incidents.get_incident", finance_incident_id=incident.id), 303)
     try:
         finance_api.cancel_finance_incident(
             incident=incident,
@@ -279,7 +277,7 @@ def cancel_finance_incident(finance_incident_id: int) -> response_utils.Backoffi
     else:
         flash("L'incident a été annulé", "success")
 
-    return redirect(url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id), 303)
+    return redirect(url_for("backoffice.finance_incidents.get_incident", finance_incident_id=incident.id), 303)
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>", methods=["GET"])
@@ -291,15 +289,13 @@ def get_incident(finance_incident_id: int) -> response_utils.BackofficeResponse:
 
     if incident.kind.value == finance_models.IncidentType.COMMERCIAL_GESTURE.value:
         return redirect(
-            url_for("backoffice_web.finance_incidents.get_commercial_gesture", finance_incident_id=finance_incident_id),
+            url_for("backoffice.finance_incidents.get_commercial_gesture", finance_incident_id=finance_incident_id),
             303,
         )
 
     if incident.kind.value == finance_models.IncidentType.OVERPAYMENT.value:
         return redirect(
-            url_for(
-                "backoffice_web.finance_incidents.get_incident_overpayment", finance_incident_id=finance_incident_id
-            ),
+            url_for("backoffice.finance_incidents.get_incident_overpayment", finance_incident_id=finance_incident_id),
             303,
         )
 
@@ -408,7 +404,7 @@ def get_history(finance_incident_id: int) -> response_utils.BackofficeResponse:
         "finance/incidents/get/details/history.html",
         actions=actions,
         form=forms.CommentForm(),
-        dst=url_for("backoffice_web.finance_incidents.comment_incident", finance_incident_id=finance_incident_id),
+        dst=url_for("backoffice.finance_incidents.comment_incident", finance_incident_id=finance_incident_id),
     )
 
 
@@ -475,7 +471,7 @@ def get_individual_bookings_overpayment_creation_form() -> response_utils.Backof
         "components/dynamic/modal_form.html",
         target_id="#booking-table",
         form=form,
-        dst=url_for("backoffice_web.finance_incidents.create_individual_booking_overpayment"),
+        dst=url_for("backoffice.finance_incidents.create_individual_booking_overpayment"),
         div_id="overpayment-creation-modal",
         title="Création d'un incident",
         button_text="Créer l'incident",
@@ -542,7 +538,7 @@ def get_individual_bookings_commercial_gesture_creation_form() -> response_utils
         "components/dynamic/modal_form.html",
         target_id="#booking-table",
         form=form,
-        dst=url_for("backoffice_web.finance_incidents.create_individual_booking_commercial_gesture"),
+        dst=url_for("backoffice.finance_incidents.create_individual_booking_commercial_gesture"),
         div_id="commercial-gesture-creation-modal",
         title="Création d'un geste commercial",
         button_text="Créer le geste commercial",
@@ -592,7 +588,7 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
         target_id=f"#booking-row-{collective_booking.id}",
         form=form,
         dst=url_for(
-            "backoffice_web.finance_incidents.create_collective_booking_overpayment",
+            "backoffice.finance_incidents.create_collective_booking_overpayment",
             collective_booking_id=collective_booking_id,
         ),
         div_id=f"overpayment-creation-modal-{collective_booking_id}",
@@ -648,7 +644,7 @@ def get_collective_booking_commercial_gesture_creation_form(
         target_id=f"#booking-row-{collective_booking.id}",
         form=form,
         dst=url_for(
-            "backoffice_web.finance_incidents.create_collective_booking_commercial_gesture",
+            "backoffice.finance_incidents.create_collective_booking_commercial_gesture",
             collective_booking_id=collective_booking_id,
         ),
         div_id=f"commercial-gesture-creation-modal-{collective_booking_id}",
@@ -668,7 +664,7 @@ def create_individual_booking_overpayment() -> response_utils.BackofficeResponse
         flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
         return request_utils.redirect_if_not_htmx(
-            route=url_for("backoffice_web.individual_bookings.list_individual_bookings"),
+            route=url_for("backoffice.individual_bookings.list_individual_bookings"),
             render_function=_render_individual_bookings,
         )
 
@@ -695,9 +691,7 @@ def create_individual_booking_overpayment() -> response_utils.BackofficeResponse
             "warning",
         )
         return request_utils.redirect_if_not_htmx(
-            route=url_for(
-                "backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]
-            ),
+            route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
             render_function=partial(_render_individual_bookings, form.object_ids_list),
         )
 
@@ -712,9 +706,7 @@ def create_individual_booking_overpayment() -> response_utils.BackofficeResponse
             flash(message, "warning")
         mark_transaction_as_invalid()
         return request_utils.redirect_if_not_htmx(
-            route=url_for(
-                "backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]
-            ),
+            route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
             render_function=partial(_render_individual_bookings, form.object_ids_list),
         )
 
@@ -727,7 +719,7 @@ def create_individual_booking_overpayment() -> response_utils.BackofficeResponse
         amount=amount,
         percent=percent,
     )
-    incident_url = url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id)
+    incident_url = url_for("backoffice.finance_incidents.get_incident", finance_incident_id=incident.id)
 
     flash(
         Markup('Un nouvel <a href="{url}">incident</a> a été créé pour {count} réservation{s}.').format(
@@ -736,7 +728,7 @@ def create_individual_booking_overpayment() -> response_utils.BackofficeResponse
         "success",
     )
     return request_utils.redirect_if_not_htmx(
-        route=url_for("backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
+        route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
         render_function=partial(_render_individual_bookings, form.object_ids_list),
     )
 
@@ -750,7 +742,7 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
         flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
         return request_utils.redirect_if_not_htmx(
-            route=url_for("backoffice_web.individual_bookings.list_individual_bookings"),
+            route=url_for("backoffice.individual_bookings.list_individual_bookings"),
             render_function=_render_individual_bookings,
         )
 
@@ -776,9 +768,7 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
             "warning",
         )
         return request_utils.redirect_if_not_htmx(
-            route=url_for(
-                "backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]
-            ),
+            route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
             render_function=partial(_render_individual_bookings, form.object_ids_list),
         )
 
@@ -790,9 +780,7 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
             flash(message, "warning")
         mark_transaction_as_invalid()
         return request_utils.redirect_if_not_htmx(
-            route=url_for(
-                "backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]
-            ),
+            route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
             render_function=partial(_render_individual_bookings, form.object_ids_list),
         )
 
@@ -804,7 +792,7 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
         zendesk_id=form.zendesk_id.data,
         comment=form.comment.data,
     )
-    incident_url = url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=commercial_gesture.id)
+    incident_url = url_for("backoffice.finance_incidents.get_incident", finance_incident_id=commercial_gesture.id)
 
     flash(
         Markup('Un nouveau <a href="{url}">geste commercial</a> a été créé pour {count} réservation{s}.').format(
@@ -814,7 +802,7 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
     )
 
     return request_utils.redirect_if_not_htmx(
-        route=url_for("backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
+        route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
         render_function=partial(_render_individual_bookings, form.object_ids_list),
     )
 
@@ -849,7 +837,7 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> respons
             return _render_collective_bookings([collective_booking_id])
         return redirect(
             url_for(
-                "backoffice_web.collective_offer.get_collective_offer_details",
+                "backoffice.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
             code=303,
@@ -864,7 +852,7 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> respons
             return _render_collective_bookings([collective_booking_id])
         return redirect(
             url_for(
-                "backoffice_web.collective_offer.get_collective_offer_details",
+                "backoffice.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
             code=303,
@@ -878,7 +866,7 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> respons
             return _render_collective_bookings([collective_booking_id])
         return redirect(
             url_for(
-                "backoffice_web.collective_offer.get_collective_offer_details",
+                "backoffice.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
             code=303,
@@ -892,7 +880,7 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> respons
         comment=form.comment.data,
     )
     incident_url = url_for(
-        "backoffice_web.finance_incidents.get_incident",
+        "backoffice.finance_incidents.get_incident",
         finance_incident_id=incident.id,
     )
 
@@ -901,7 +889,7 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> respons
         return _render_collective_bookings([collective_booking_id])
     return redirect(
         url_for(
-            "backoffice_web.collective_offer.get_collective_offer_details",
+            "backoffice.collective_offer.get_collective_offer_details",
             collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
         ),
         code=303,
@@ -938,7 +926,7 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
             return _render_collective_bookings([collective_booking_id])
         return redirect(
             url_for(
-                "backoffice_web.collective_offer.get_collective_offer_details",
+                "backoffice.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
             code=303,
@@ -953,7 +941,7 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
             return _render_collective_bookings([collective_booking_id])
         return redirect(
             url_for(
-                "backoffice_web.collective_offer.get_collective_offer_details",
+                "backoffice.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
             code=303,
@@ -967,7 +955,7 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
             return _render_collective_bookings([collective_booking_id])
         return redirect(
             url_for(
-                "backoffice_web.collective_offer.get_collective_offer_details",
+                "backoffice.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
             code=303,
@@ -981,7 +969,7 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
         comment=form.comment.data,
     )
     incident_url = url_for(
-        "backoffice_web.finance_incidents.get_incident",
+        "backoffice.finance_incidents.get_incident",
         finance_incident_id=incident.id,
     )
 
@@ -990,7 +978,7 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
         return _render_collective_bookings([collective_booking_id])
     return redirect(
         url_for(
-            "backoffice_web.collective_offer.get_collective_offer_details",
+            "backoffice.collective_offer.get_collective_offer_details",
             collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
         ),
         code=303,
@@ -1075,7 +1063,7 @@ def comment_incident(finance_incident_id: int) -> response_utils.BackofficeRespo
         flash("Le commentaire a été enregistré", "success")
 
     return redirect(
-        url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id, active_tab="history")
+        url_for("backoffice.finance_incidents.get_incident", finance_incident_id=incident.id, active_tab="history")
     )
 
 
@@ -1087,7 +1075,7 @@ def _get_finance_overpayment_incident_validation_form(
     bank_account_details_str = (
         "du partenaire culturel" if not bank_account_link else bank_account_link.bankAccount.label
     )
-    validation_url = "backoffice_web.finance_incidents.validate_finance_overpayment_incident"
+    validation_url = "backoffice.finance_incidents.validate_finance_overpayment_incident"
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -1115,7 +1103,7 @@ def _get_finance_commercial_gesture_validation_form(
     bank_account_details_str = (
         "du partenaire culturel" if not bank_account_link else bank_account_link.bankAccount.label
     )
-    validation_url = "backoffice_web.finance_incidents.validate_finance_commercial_gesture"
+    validation_url = "backoffice.finance_incidents.validate_finance_commercial_gesture"
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -1177,7 +1165,7 @@ def get_batch_finance_incidents_validation_form() -> response_utils.BackofficeRe
         "components/dynamic/modal_form.html",
         target_id="#incident-table",
         form=form,
-        dst=url_for("backoffice_web.finance_incidents.batch_validate_finance_incidents"),
+        dst=url_for("backoffice.finance_incidents.batch_validate_finance_incidents"),
         div_id="batch-validate-modal",
         title=Markup("Voulez-vous valider les {kind} sélectionnés ?").format(
             kind="trop perçus" if incidents_type == finance_models.IncidentType.OVERPAYMENT else "gestes commerciaux"
@@ -1274,7 +1262,7 @@ def get_batch_finance_incidents_cancellation_form() -> response_utils.Backoffice
         "components/dynamic/modal_form.html",
         target_id="#incident-table",
         form=form,
-        dst=url_for("backoffice_web.finance_incidents.batch_cancel_finance_incidents"),
+        dst=url_for("backoffice.finance_incidents.batch_cancel_finance_incidents"),
         div_id="batch-reject-modal",
         title=Markup("Voulez-vous annuler les {kind} sélectionnés ?").format(
             kind="trop perçus" if incidents_type == finance_models.IncidentType.OVERPAYMENT else "gestes commerciaux"
@@ -1408,9 +1396,7 @@ def validate_finance_overpayment_incident(finance_incident_id: int) -> response_
         else:
             flash("L'incident a été validé.", "success")
 
-    return redirect(
-        url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident_id), 303
-    )
+    return redirect(url_for("backoffice.finance_incidents.get_incident", finance_incident_id=finance_incident_id), 303)
 
 
 @finance_incidents_blueprint.route("/commercial-gesture/<int:finance_incident_id>/validate", methods=["POST"])
@@ -1437,9 +1423,7 @@ def validate_finance_commercial_gesture(finance_incident_id: int) -> response_ut
         )
         flash("Le geste commercial a été validé.", "success")
 
-    return redirect(
-        url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
-    )
+    return redirect(url_for("backoffice.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303)
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/force-debit-note", methods=["GET"])
@@ -1453,7 +1437,7 @@ def get_finance_incident_force_debit_note_form(finance_incident_id: int) -> resp
     return render_template(
         "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
-        dst=url_for("backoffice_web.finance_incidents.force_debit_note", finance_incident_id=finance_incident_id),
+        dst=url_for("backoffice.finance_incidents.force_debit_note", finance_incident_id=finance_incident_id),
         div_id=f"finance-incident-force-debit-note-modal-{finance_incident_id}",
         title="Générer une note de débit",
         button_text="Confirmer",
@@ -1474,7 +1458,7 @@ def force_debit_note(finance_incident_id: int) -> response_utils.BackofficeRespo
         flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
         mark_transaction_as_invalid()
         return redirect(
-            url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
+            url_for("backoffice.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
         )
 
     finance_incident.forceDebitNote = True
@@ -1492,9 +1476,7 @@ def force_debit_note(finance_incident_id: int) -> response_utils.BackofficeRespo
     db.session.flush()
 
     flash("Une note de débit sera générée à la prochaine échéance.", "success")
-    return redirect(
-        url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
-    )
+    return redirect(url_for("backoffice.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303)
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel-debit-note", methods=["GET"])
@@ -1508,7 +1490,7 @@ def get_finance_incident_cancel_debit_note_form(finance_incident_id: int) -> res
     return render_template(
         "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
-        dst=url_for("backoffice_web.finance_incidents.cancel_debit_note", finance_incident_id=finance_incident_id),
+        dst=url_for("backoffice.finance_incidents.cancel_debit_note", finance_incident_id=finance_incident_id),
         div_id=f"finance-incident-cancel-debit-note-modal-{finance_incident_id}",
         title="Récupérer l'argent sur les prochaines réservations",
         button_text="Confirmer",
@@ -1528,7 +1510,7 @@ def cancel_debit_note(finance_incident_id: int) -> response_utils.BackofficeResp
     if finance_incident.status != finance_models.IncidentStatus.VALIDATED:
         flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
         return redirect(
-            url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
+            url_for("backoffice.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
         )
 
     finance_incident.forceDebitNote = False
@@ -1548,9 +1530,7 @@ def cancel_debit_note(finance_incident_id: int) -> response_utils.BackofficeResp
     send_finance_incident_emails(finance_incident=finance_incident)
 
     flash("Vous avez fait le choix de récupérer l'argent sur les prochaines réservations de l'acteur.", "success")
-    return redirect(
-        url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
-    )
+    return redirect(url_for("backoffice.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303)
 
 
 def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_models.FinanceIncident:

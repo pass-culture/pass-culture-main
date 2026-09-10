@@ -103,7 +103,7 @@ def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> respons
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.titelive.add_product_whitelist", ean=ean, title=title),
+        dst=url_for("backoffice.titelive.add_product_whitelist", ean=ean, title=title),
         div_id="add-whitelist-confirmation",
         title="Ajouter à la whitelist",
         button_text="Ajouter",

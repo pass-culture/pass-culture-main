@@ -34,7 +34,7 @@ pytestmark = [
 
 
 class SearchEanTest(GetEndpointHelper):
-    endpoint = "backoffice_web.titelive.search_titelive"
+    endpoint = "backoffice.titelive.search_titelive"
     endpoint_kwargs = {"ean": "9782070455379"}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
@@ -127,7 +127,7 @@ class WhitelistButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.titelive.search_titelive", ean="9782070455379")
+        return url_for("backoffice.titelive.search_titelive", ean="9782070455379")
 
     def test_button_when_can_add_one(self, authenticated_client):
         with patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13", return_value=BOOK_BY_SINGLE_EAN_FIXTURE):
@@ -139,7 +139,7 @@ class WhitelistButtonTest(button_helpers.ButtonHelper):
 
 
 class ProductBlackListFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.titelive.get_add_product_whitelist_confirmation_form"
+    endpoint = "backoffice.titelive.get_add_product_whitelist_confirmation_form"
     endpoint_kwargs = {"ean": "9782070455379", "title": "Immortelle randonnée ; Compostelle malgré moi"}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -150,7 +150,7 @@ class ProductBlackListFormTest(GetEndpointHelper):
 
 
 class AddProductWhitelistTest(PostEndpointHelper):
-    endpoint = "backoffice_web.titelive.add_product_whitelist"
+    endpoint = "backoffice.titelive.add_product_whitelist"
     endpoint_kwargs = {"ean": "9782070455379", "title": "Immortelle randonnée ; Compostelle malgré moi"}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
     form_data = {"comment": "OK!"}
@@ -381,7 +381,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
 
 class DeleteProductWhitelistTest(GetEndpointHelper):
-    endpoint = "backoffice_web.titelive.delete_product_whitelist"
+    endpoint = "backoffice.titelive.delete_product_whitelist"
     endpoint_kwargs = {"ean": "9782070455379"}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 

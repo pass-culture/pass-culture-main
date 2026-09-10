@@ -48,7 +48,7 @@ pytestmark = [
 
 
 class ListIncidentsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.list_incidents"
+    endpoint = "backoffice.finance_incidents.list_incidents"
     needed_permission = perm_models.Permissions.READ_INCIDENTS
 
     # Fetch Session + user
@@ -364,7 +364,7 @@ class ListIncidentsTest(GetEndpointHelper):
 
 
 class GetIncidentCancellationFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_finance_incident_cancellation_form"
+    endpoint = "backoffice.finance_incidents.get_finance_incident_cancellation_form"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -377,7 +377,7 @@ class GetIncidentCancellationFormTest(GetEndpointHelper):
 
 
 class GetIncidentValidationFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_finance_incident_validation_form"
+    endpoint = "backoffice.finance_incidents.get_finance_incident_validation_form"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -412,7 +412,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
 
 
 class CancelIncidentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.cancel_finance_incident"
+    endpoint = "backoffice.finance_incidents.cancel_finance_incident"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -464,7 +464,7 @@ class CancelIncidentTest(PostEndpointHelper):
 
 
 class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.validate_finance_overpayment_incident"
+    endpoint = "backoffice.finance_incidents.validate_finance_overpayment_incident"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -718,7 +718,7 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
 
 
 class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_batch_finance_incidents_validation_form"
+    endpoint = "backoffice.finance_incidents.get_batch_finance_incidents_validation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
     @pytest.mark.parametrize(
@@ -806,7 +806,7 @@ class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
 
 
 class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_batch_finance_incidents_cancellation_form"
+    endpoint = "backoffice.finance_incidents.get_batch_finance_incidents_cancellation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
     @pytest.mark.parametrize(
@@ -887,7 +887,7 @@ class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
 
 
 class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.validate_finance_commercial_gesture"
+    endpoint = "backoffice.finance_incidents.validate_finance_commercial_gesture"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_COMMERCIAL_GESTURE
 
@@ -1250,7 +1250,7 @@ class CreateIncidentFinanceEventTest:
 
 
 class GetIncidentTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_incident"
+    endpoint = "backoffice.finance_incidents.get_incident"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
     expected_num_queries = 0
@@ -1269,7 +1269,7 @@ class GetIncidentTest(GetEndpointHelper):
 
         assert response.location.endswith(
             url_for(
-                "backoffice_web.finance_incidents.get_incident_overpayment", finance_incident_id=overpayment_incident.id
+                "backoffice.finance_incidents.get_incident_overpayment", finance_incident_id=overpayment_incident.id
             )
         )
 
@@ -1286,14 +1286,12 @@ class GetIncidentTest(GetEndpointHelper):
             assert response.status_code == 303
 
         assert response.location.endswith(
-            url_for(
-                "backoffice_web.finance_incidents.get_commercial_gesture", finance_incident_id=commercial_gesture.id
-            )
+            url_for("backoffice.finance_incidents.get_commercial_gesture", finance_incident_id=commercial_gesture.id)
         )
 
 
 class GetOverpaymentIncidentTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_incident_overpayment"
+    endpoint = "backoffice.finance_incidents.get_incident_overpayment"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
     expected_num_queries = 0
@@ -1407,7 +1405,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
 
 
 class GetCommercialGestureTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_commercial_gesture"
+    endpoint = "backoffice.finance_incidents.get_commercial_gesture"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
     expected_num_queries = 0
@@ -1533,7 +1531,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
 
 
 class GetOverpaymentCreationFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form"
+    endpoint = "backoffice.finance_incidents.get_individual_bookings_overpayment_creation_form"
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
     error_message_template = "Erreur %s Annuler"
 
@@ -1652,7 +1650,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
 
 
 class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_collective_booking_overpayment_creation_form"
+    endpoint = "backoffice.finance_incidents.get_collective_booking_overpayment_creation_form"
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
 
@@ -1687,7 +1685,7 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
 
 
 class CreateOverpaymentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.create_individual_booking_overpayment"
+    endpoint = "backoffice.finance_incidents.create_individual_booking_overpayment"
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
@@ -1945,7 +1943,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
 
 
 class GetCommercialGestureCreationFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form"
+    endpoint = "backoffice.finance_incidents.get_individual_bookings_commercial_gesture_creation_form"
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
     error_message_template = "Erreur %s Annuler"
 
@@ -2058,7 +2056,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
 
 
 class CreateCommercialGestureTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.create_individual_booking_commercial_gesture"
+    endpoint = "backoffice.finance_incidents.create_individual_booking_commercial_gesture"
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
@@ -2249,7 +2247,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
 
 
 class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.create_collective_booking_overpayment"
+    endpoint = "backoffice.finance_incidents.create_collective_booking_overpayment"
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
 
@@ -2358,7 +2356,7 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
 
 
 class GetIncidentHistoryTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_history"
+    endpoint = "backoffice.finance_incidents.get_history"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
 
@@ -2393,7 +2391,7 @@ class GetIncidentHistoryTest(GetEndpointHelper):
 
 
 class ForceDebitNoteTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.force_debit_note"
+    endpoint = "backoffice.finance_incidents.force_debit_note"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -2503,7 +2501,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
 
 
 class CancelDebitNoteTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.cancel_debit_note"
+    endpoint = "backoffice.finance_incidents.cancel_debit_note"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -2641,7 +2639,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
 
 @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
 class ListSettlementBatchesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.settlements.list_settlement_batches"
+    endpoint = "backoffice.settlements.list_settlement_batches"
     needed_permission = perm_models.Permissions.READ_SETTLEMENTS
 
     # session + user
@@ -2680,7 +2678,7 @@ class ListSettlementBatchesTest(GetEndpointHelper):
 
 @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
 class GetValidateSettlementBatchFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.settlements.get_validate_settlement_batch_form"
+    endpoint = "backoffice.settlements.get_validate_settlement_batch_form"
     endpoint_kwargs = {"batch_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_SETTLEMENTS
 
@@ -2715,7 +2713,7 @@ class GetValidateSettlementBatchFormTest(GetEndpointHelper):
 
 @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
 class ValidateSettlementBatchTest(PostEndpointHelper):
-    endpoint = "backoffice_web.settlements.validate_settlement_batch"
+    endpoint = "backoffice.settlements.validate_settlement_batch"
     endpoint_kwargs = {"batch_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_SETTLEMENTS
 

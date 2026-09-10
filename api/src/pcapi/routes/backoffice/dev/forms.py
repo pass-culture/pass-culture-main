@@ -33,7 +33,7 @@ class SimpleComponentsForm(FlaskForm):
         "autocomplete",
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
     )
     switch = fields.PCSwitchBooleanField("interrupteur")
 

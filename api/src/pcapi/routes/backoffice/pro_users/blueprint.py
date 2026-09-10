@@ -65,7 +65,7 @@ def get(user_id: int) -> response_utils.BackofficeResponse:
     )
     if not user:
         flash("Cet utilisateur n'a pas de compte pro ou n'existe pas", "warning")
-        return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
+        return redirect(url_for("backoffice.pro.search_pro"), code=303)
     form_class = pro_users_forms.EditProUserForm
     form = form_class(
         first_name=user.firstName,
@@ -92,7 +92,7 @@ def get(user_id: int) -> response_utils.BackofficeResponse:
     return render_template(
         "pro_user/get.html",
         search_form=pro_forms.CompactProSearchForm(q=request.args.get("q"), pro_type=pro_forms.TypeOptions.USER.name),
-        search_dst=url_for("backoffice_web.pro.search_pro"),
+        search_dst=url_for("backoffice.pro.search_pro"),
         user=user,
         form=form,
         dst=dst,
@@ -135,7 +135,7 @@ def get_details(user_id: int) -> response_utils.BackofficeResponse:
 
     can_add_comment = access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
     form = pro_users_forms.CommentForm()
-    dst = url_for("backoffice_web.pro_user.comment_pro_user", user_id=user.id)
+    dst = url_for("backoffice.pro_user.comment_pro_user", user_id=user.id)
 
     return render_template(
         "pro_user/get/details.html",
@@ -208,18 +208,18 @@ def delete(user_id: int) -> response_utils.BackofficeResponse:
     if not _user_can_be_deleted(user):
         mark_transaction_as_invalid()
         flash("Le compte est rattaché à une entité juridique", "warning")
-        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+        return redirect(url_for("backoffice.pro_user.get", user_id=user_id), code=303)
 
     form = pro_users_forms.DeleteProUser()
     if not form.validate():
         mark_transaction_as_invalid()
         flash("Le formulaire n'est pas valide", "warning")
-        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+        return redirect(url_for("backoffice.pro_user.get", user_id=user_id), code=303)
 
     if form.email.data != user.email:
         mark_transaction_as_invalid()
         flash("L'email saisi ne correspond pas à celui du compte", "warning")
-        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+        return redirect(url_for("backoffice.pro_user.get", user_id=user_id), code=303)
 
     # clear from mailing list
     if (
@@ -268,7 +268,7 @@ def delete(user_id: int) -> response_utils.BackofficeResponse:
     db.session.query(users_models.User).filter(users_models.User.id == user_id).delete(synchronize_session=False)
     db.session.flush()
     flash("Le compte a été supprimé", "success")
-    return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
+    return redirect(url_for("backoffice.pro.search_pro"), code=303)
 
 
 @pro_user_blueprint.route("/comment", methods=["POST"])
@@ -287,12 +287,12 @@ def comment_pro_user(user_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+        return redirect(url_for("backoffice.pro_user.get", user_id=user_id), code=303)
 
     users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
     flash("Le commentaire a été enregistré", "success")
 
-    return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+    return redirect(url_for("backoffice.pro_user.get", user_id=user_id), code=303)
 
 
 @pro_user_blueprint.route("/validate-email", methods=["POST"])
@@ -310,7 +310,7 @@ def validate_pro_user_email(user_id: int) -> response_utils.BackofficeResponse:
     else:
         users_api.validate_pro_user_email(user=user, author_user=current_user)
         flash(Markup("L'email <b>{email}</b> est validé !").format(email=user.email), "success")
-    return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+    return redirect(url_for("backoffice.pro_user.get", user_id=user_id), code=303)
 
 
 def _user_can_be_deleted(user: users_models.User) -> bool:
@@ -320,7 +320,7 @@ def _user_can_be_deleted(user: users_models.User) -> bool:
 def _get_delete_kwargs(user: users_models.User) -> dict:
     kwargs = {
         "can_be_deleted": _user_can_be_deleted(user),
-        "delete_dst": url_for("backoffice_web.pro_user.delete", user_id=user.id),
+        "delete_dst": url_for("backoffice.pro_user.delete", user_id=user.id),
         "delete_form": pro_users_forms.DeleteProUser(),
     }
     return kwargs
@@ -337,7 +337,7 @@ def _get_disconnect_kwargs(user_id: int) -> dict:
     )
     return {
         "can_be_disconnected": sessions_count > 0,
-        "disconnect_dst": url_for("backoffice_web.pro_user.disconnect_pro_user", user_id=user_id),
+        "disconnect_dst": url_for("backoffice.pro_user.disconnect_pro_user", user_id=user_id),
         "disconnect_form": pro_users_forms.DisconnectProUserForm(),
         "sessions_count": sessions_count,
     }
@@ -351,13 +351,13 @@ def disconnect_pro_user(user_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash("Le formulaire n'est pas valide", "warning")
-        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+        return redirect(url_for("backoffice.pro_user.get", user_id=user_id), code=303)
 
     user = users_api.get_pro_account_base_query(user_id).one_or_none()
     if not user:
         mark_transaction_as_invalid()
         flash("Cet utilisateur n'a pas de compte pro ou n'existe pas", "warning")
-        redirect(url_for("backoffice_web.pro.search_pro"), code=303)
+        redirect(url_for("backoffice.pro.search_pro"), code=303)
 
     count = sessions.disconnect_user_session(user_id=user_id)
     count += sessions.disconnect_native_user_sessions(user_id=user_id)
@@ -372,4 +372,4 @@ def disconnect_pro_user(user_id: int) -> response_utils.BackofficeResponse:
         flash(f"Les {count} sessions ont été déconnectées" if count > 1 else "La session a été déconnectée", "success")
     else:
         flash("Aucune session n'a été trouvée pour être déconnectée", "warning")
-    return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+    return redirect(url_for("backoffice.pro_user.get", user_id=user_id), code=303)

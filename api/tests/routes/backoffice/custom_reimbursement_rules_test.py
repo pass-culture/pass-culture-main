@@ -27,7 +27,7 @@ pytestmark = [
 
 
 class ListCustomReimbursementRulesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.reimbursement_rules.list_custom_reimbursement_rules"
+    endpoint = "backoffice.reimbursement_rules.list_custom_reimbursement_rules"
     needed_permission = perm_models.Permissions.READ_REIMBURSEMENT_RULES
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
@@ -202,7 +202,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
 
 
 class GetCreateCustomReimbursementRuleFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.reimbursement_rules.get_create_custom_reimbursement_rule_form"
+    endpoint = "backoffice.reimbursement_rules.get_create_custom_reimbursement_rule_form"
     needed_permission = perm_models.Permissions.CREATE_REIMBURSEMENT_RULES
 
     def test_get_create_form_test(self, legit_user, authenticated_client):
@@ -214,7 +214,7 @@ class GetCreateCustomReimbursementRuleFormTest(GetEndpointHelper):
 
 
 class CreateCustomReimbursementRuleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.reimbursement_rules.create_custom_reimbursement_rule"
+    endpoint = "backoffice.reimbursement_rules.create_custom_reimbursement_rule"
     needed_permission = perm_models.Permissions.CREATE_REIMBURSEMENT_RULES
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
     next_year = datetime.date.today() + datetime.timedelta(days=365)
@@ -514,7 +514,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
 
 
 class GetEditCustomReimbursementRuleFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.reimbursement_rules.get_edit_custom_reimbursement_rule_form"
+    endpoint = "backoffice.reimbursement_rules.get_edit_custom_reimbursement_rule_form"
     endpoint_kwargs = {"reimbursement_rule_id": 1}
     needed_permission = perm_models.Permissions.CREATE_REIMBURSEMENT_RULES
 
@@ -529,7 +529,7 @@ class GetEditCustomReimbursementRuleFormTest(GetEndpointHelper):
 
 
 class EditCustomReimbursementRuleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.reimbursement_rules.edit_custom_reimbursement_rule"
+    endpoint = "backoffice.reimbursement_rules.edit_custom_reimbursement_rule"
     endpoint_kwargs = {"reimbursement_rule_id": 1}
     needed_permission = perm_models.Permissions.CREATE_REIMBURSEMENT_RULES
 
@@ -609,7 +609,7 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
 
 
 class GetReimburementStatsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.reimbursement_rules.get_stats"
+    endpoint = "backoffice.reimbursement_rules.get_stats"
     needed_permission = perm_models.Permissions.READ_REIMBURSEMENT_RULES
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused

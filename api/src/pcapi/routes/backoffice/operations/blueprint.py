@@ -345,7 +345,7 @@ def get_event_details(special_event_id: int) -> response_utils.BackofficeRespons
     )
     if not response_form.validate():
         flash(response_utils.build_form_error_msg(response_form), "warning")
-        return redirect(url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id), 303)
+        return redirect(url_for("backoffice.operations.get_event_details", special_event_id=special_event_id), 303)
 
     stats = _get_special_event_stats(special_event_id)
     paginated_responses = _get_special_event_responses(
@@ -438,7 +438,7 @@ def get_batch_update_responses_status_form(
         target_id="#operation-table",
         form=form,
         dst=url_for(
-            "backoffice_web.operations.batch_validate_responses_status",
+            "backoffice.operations.batch_validate_responses_status",
             special_event_id=special_event_id,
             response_status=new_status.value.lower(),
         ),
@@ -496,7 +496,7 @@ def get_update_date_event(special_event_id: int) -> response_utils.BackofficeRes
         "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(
-            "backoffice_web.operations.update_date_event",
+            "backoffice.operations.update_date_event",
             special_event_id=special_event_id,
         ),
         div_id="update-event-date-modal",
@@ -529,7 +529,7 @@ def update_date_event(special_event_id: int) -> response_utils.BackofficeRespons
 
     flash("La date de l'évènement a été mise à jour", "success")
     return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id)
+        request, url_for("backoffice.operations.get_event_details", special_event_id=special_event_id)
     )
 
 
@@ -547,7 +547,7 @@ def get_update_end_import_date_event(special_event_id: int) -> response_utils.Ba
         "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(
-            "backoffice_web.operations.update_end_import_date",
+            "backoffice.operations.update_end_import_date",
             special_event_id=special_event_id,
         ),
         div_id="update-end-import-date-modal",
@@ -580,7 +580,7 @@ def update_end_import_date(special_event_id: int) -> response_utils.BackofficeRe
 
     flash("La date de fin d'import des candidatures a été mise à jour", "success")
     return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id)
+        request, url_for("backoffice.operations.get_event_details", special_event_id=special_event_id)
     )
 
 
@@ -606,7 +606,7 @@ def get_update_venue_form(special_event_id: int) -> response_utils.BackofficeRes
         "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(
-            "backoffice_web.operations.update_venue",
+            "backoffice.operations.update_venue",
             special_event_id=special_event_id,
         ),
         div_id="update-venue-modal",
@@ -632,7 +632,7 @@ def update_venue(special_event_id: int) -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.safe_redirect_back(
-            request, url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id)
+            request, url_for("backoffice.operations.get_event_details", special_event_id=special_event_id)
         )
 
     db.session.query(operations_models.SpecialEvent).filter(
@@ -646,5 +646,5 @@ def update_venue(special_event_id: int) -> response_utils.BackofficeResponse:
 
     flash("Le partenaire culturel a été mis à jour", "success")
     return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id)
+        request, url_for("backoffice.operations.get_event_details", special_event_id=special_event_id)
     )

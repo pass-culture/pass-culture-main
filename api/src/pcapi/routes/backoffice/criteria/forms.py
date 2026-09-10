@@ -34,7 +34,7 @@ class EditCriterionForm(FlaskForm):
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_highlights",
+        endpoint="backoffice.autocomplete_highlights",
         coerce=int,
     )
 

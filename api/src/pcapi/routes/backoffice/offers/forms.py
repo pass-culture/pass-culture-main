@@ -259,7 +259,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_highlights",
+        endpoint="backoffice.autocomplete_highlights",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -275,7 +275,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         choices=[],
         coerce=int,
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_criteria",
+        endpoint="backoffice.autocomplete_criteria",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -285,7 +285,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         choices=[],
         coerce=int,
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerer_tags",
+        endpoint="backoffice.autocomplete_offerer_tags",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -321,7 +321,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -336,7 +336,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -351,7 +351,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_addresses",
+        endpoint="backoffice.autocomplete_addresses",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -360,7 +360,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_providers",
+        endpoint="backoffice.autocomplete_providers",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -496,7 +496,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -519,7 +519,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -736,7 +736,7 @@ class GetOfferLlmSearchForm(BaseOfferAdvancedSearchForm):
 
 class EditOfferForm(empty_forms.DynamicForm):
     criteria = fields.PCTomSelectField(
-        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"
+        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice.autocomplete_criteria"
     )
     rankingWeight = fields.PCOptIntegerField("Pondération")
 

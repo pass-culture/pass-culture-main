@@ -54,7 +54,7 @@
     <td>
       {% if offerer.individualSubscription and offerer.individualSubscription.isEmailSent %}
         {% if has_read_ae_permission %}
-          <a href="{{ url_for('backoffice_web.offerer.get', offerer_id=offerer.id, active_tab='subscription') }}"
+          <a href="{{ url_for('backoffice.offerer.get', offerer_id=offerer.id, active_tab='subscription') }}"
              title="Parcours auto-entrepreneur">
         {% endif %}
         {{ (offerer.individualSubscription.isCriminalRecordReceived and offerer.individualSubscription.isExperienceReceived) | format_bool_badge }}

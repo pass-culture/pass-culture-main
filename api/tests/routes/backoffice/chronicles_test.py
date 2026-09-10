@@ -24,7 +24,7 @@ pytestmark = [
 
 
 class ListChroniclesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.chronicles.list_chronicles"
+    endpoint = "backoffice.chronicles.list_chronicles"
     needed_permission = perm_models.Permissions.READ_CHRONICLE
     # session + user
     # list chronicles
@@ -225,7 +225,7 @@ class ListChroniclesTest(GetEndpointHelper):
 
 
 class GetChronicleDetailsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.chronicles.details"
+    endpoint = "backoffice.chronicles.details"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.READ_CHRONICLE
     # - fetch session + user (1 query)
@@ -334,7 +334,7 @@ class GetChronicleDetailsTest(GetEndpointHelper):
 
 
 class GetUpdateChronicleContentFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.chronicles.get_update_chronicle_content_form"
+    endpoint = "backoffice.chronicles.get_update_chronicle_content_form"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
 
@@ -358,7 +358,7 @@ class GetUpdateChronicleContentFormTest(GetEndpointHelper):
 
 
 class UpdateChronicleContentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.chronicles.update_chronicle_content"
+    endpoint = "backoffice.chronicles.update_chronicle_content"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session + user
@@ -408,7 +408,7 @@ class UpdateChronicleContentTest(PostEndpointHelper):
 
 
 class PublishChronicleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.chronicles.publish_chronicle"
+    endpoint = "backoffice.chronicles.publish_chronicle"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session + user
@@ -478,7 +478,7 @@ class PublishChronicleTest(PostEndpointHelper):
 
 
 class UnpublishChronicleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.chronicles.unpublish_chronicle"
+    endpoint = "backoffice.chronicles.unpublish_chronicle"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session + user
@@ -548,7 +548,7 @@ class UnpublishChronicleTest(PostEndpointHelper):
 
 
 class AttachProductTest(PostEndpointHelper):
-    endpoint = "backoffice_web.chronicles.attach_product"
+    endpoint = "backoffice.chronicles.attach_product"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session + user
@@ -742,7 +742,7 @@ class AttachProductTest(PostEndpointHelper):
 
 
 class DetachProductTest(PostEndpointHelper):
-    endpoint = "backoffice_web.chronicles.detach_product"
+    endpoint = "backoffice.chronicles.detach_product"
     endpoint_kwargs = {"chronicle_id": 1, "product_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session + user
@@ -820,7 +820,7 @@ class DetachProductTest(PostEndpointHelper):
 
 
 class CommentChronicleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.chronicles.comment_chronicle"
+    endpoint = "backoffice.chronicles.comment_chronicle"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.READ_CHRONICLE
     # session + user
@@ -851,7 +851,7 @@ class CommentChronicleTest(PostEndpointHelper):
 
 
 class AttachOfferTest(PostEndpointHelper):
-    endpoint = "backoffice_web.chronicles.attach_offer"
+    endpoint = "backoffice.chronicles.attach_offer"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.READ_CHRONICLE
     # session + user
@@ -963,7 +963,7 @@ class AttachOfferTest(PostEndpointHelper):
 
 
 class DetachOfferTest(PostEndpointHelper):
-    endpoint = "backoffice_web.chronicles.detach_offer"
+    endpoint = "backoffice.chronicles.detach_offer"
     endpoint_kwargs = {"chronicle_id": 1, "offer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session
@@ -1039,7 +1039,7 @@ class DetachOfferTest(PostEndpointHelper):
 
 
 class CreateChronicleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.chronicles.create_chronicle"
+    endpoint = "backoffice.chronicles.create_chronicle"
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session + user
     # retrieve the user to attach

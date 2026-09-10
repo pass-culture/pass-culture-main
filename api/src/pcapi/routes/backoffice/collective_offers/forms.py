@@ -157,7 +157,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -166,7 +166,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_institutions",
+        endpoint="backoffice.autocomplete_institutions",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -181,7 +181,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -327,14 +327,14 @@ class GetCollectiveOfferTemplatesListForm(forms.GetOffersBaseFields):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
         "Partenaires culturels",
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
     )
     status = fields.PCSelectMultipleField(
         "États",
@@ -415,5 +415,5 @@ class MoveCollectiveOfferForm(FlaskForm):
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues_allowed_on_adage",
+        endpoint="backoffice.autocomplete_venues_allowed_on_adage",
     )

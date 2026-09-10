@@ -20,15 +20,15 @@ def unauthenticated_user_handler(error: access_control.UnauthenticatedUserError)
         return Response(
             response="redirecting",
             status=200,
-            headers={"HX-Redirect": url_for("backoffice_web.home"), "Location": url_for("backoffice_web.home")},
+            headers={"HX-Redirect": url_for("backoffice.home"), "Location": url_for("backoffice.home")},
         )
 
-    response = redirect(url_for("backoffice_web.home"))
+    response = redirect(url_for("backoffice.home"))
     response.set_cookie(
         key=REDIRECT_AFTER_LOGIN_COOKIE_NAME,
         value=query_path,
         max_age=600,
-        path=url_for("backoffice_web.home"),
+        path=url_for("backoffice.home"),
         httponly=True,
         secure=True,
     )

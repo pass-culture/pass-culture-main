@@ -53,7 +53,7 @@ def _filter_homologation_tags(tags: list[offerers_models.OffererTag]) -> list[of
 
 
 def _redirect_after_offerer_validation_action() -> response_utils.BackofficeResponse:
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.validation.list_offerers_to_validate"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.validation.list_offerers_to_validate"))
 
 
 def _render_offerers_to_validate(offerers_id: list[int]) -> response_utils.BackofficeResponse:
@@ -209,7 +209,7 @@ def get_validate_offerer_form(offerer_id: int) -> response_utils.BackofficeRespo
     kwargs = {
         "information": information,
         "form": offerer_forms.OffererValidationForm(),
-        "dst": url_for("backoffice_web.validation.validate_offerer", offerer_id=offerer.id),
+        "dst": url_for("backoffice.validation.validate_offerer", offerer_id=offerer.id),
         "div_id": f"validate-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Valider l'entité juridique {offerer.name.upper()}",
         "button_text": "Valider l'entité juridique",
@@ -269,7 +269,7 @@ def get_reject_offerer_form(offerer_id: int) -> response_utils.BackofficeRespons
     kwargs = {
         "information": information,
         "form": offerer_forms.OffererRejectionForm(),
-        "dst": url_for("backoffice_web.validation.reject_offerer", offerer_id=offerer.id),
+        "dst": url_for("backoffice.validation.reject_offerer", offerer_id=offerer.id),
         "div_id": f"reject-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Rejeter l'entité juridique {offerer.name.upper()}",
         "button_text": "Rejeter l'entité juridique",
@@ -343,7 +343,7 @@ def get_offerer_pending_form(offerer_id: int) -> response_utils.BackofficeRespon
 
     kwargs = {
         "form": form,
-        "dst": url_for("backoffice_web.validation.set_offerer_pending", offerer_id=offerer.id),
+        "dst": url_for("backoffice.validation.set_offerer_pending", offerer_id=offerer.id),
         "div_id": f"pending-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Mettre en attente l'entité juridique {offerer.name.upper()}",
         "button_text": "Mettre en attente",
@@ -451,7 +451,7 @@ def get_batch_validate_offerer_form() -> response_utils.BackofficeResponse:
         target_id="#offerers-table",
         information=information,
         form=form,
-        dst=url_for("backoffice_web.validation.batch_validate_offerer"),
+        dst=url_for("backoffice.validation.batch_validate_offerer"),
         div_id="batch-validate-modal",
         title="Valider les entités juridiques",
         button_text="Valider les entités juridiques",
@@ -503,7 +503,7 @@ def get_batch_offerer_pending_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#offerers-table",
         form=form,
-        dst=url_for("backoffice_web.validation.batch_set_offerer_pending"),
+        dst=url_for("backoffice.validation.batch_set_offerer_pending"),
         div_id="batch-pending-modal",
         title="Mettre en attente les entités juridiques",
         button_text="Mettre en attente les entités juridiques",
@@ -535,7 +535,7 @@ def get_batch_reject_offerer_form() -> response_utils.BackofficeResponse:
         target_id="#offerers-table",
         information=information,
         form=form,
-        dst=url_for("backoffice_web.validation.batch_reject_offerer"),
+        dst=url_for("backoffice.validation.batch_reject_offerer"),
         div_id="batch-reject-modal",
         title="Rejeter les entités juridiques",
         button_text="Rejeter les entités juridiques",
@@ -656,7 +656,7 @@ def list_offerers_attachments_to_validate() -> response_utils.BackofficeResponse
 
 
 def _redirect_after_user_offerer_validation_action(offerer_id: int) -> response_utils.BackofficeResponse:
-    dst_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id, active_tab="users")
+    dst_url = url_for("backoffice.offerer.get", offerer_id=offerer_id, active_tab="users")
 
     if referrer := request.referrer:
         referrer_path = urlparse(referrer).path
@@ -670,7 +670,7 @@ def _redirect_after_user_offerer_validation_action(offerer_id: int) -> response_
 
 def _redirect_after_user_offerer_validation_action_list() -> response_utils.BackofficeResponse:
     return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.validation.list_offerers_attachments_to_validate")
+        request, url_for("backoffice.validation.list_offerers_attachments_to_validate")
     )
 
 
@@ -739,7 +739,7 @@ def get_batch_reject_user_offerer_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#validate-user-offerer-table",
         form=form,
-        dst=url_for("backoffice_web.validation.batch_reject_user_offerer"),
+        dst=url_for("backoffice.validation.batch_reject_user_offerer"),
         div_id="batch-reject-modal",
         title="Rejeter le rattachement",
         button_text="Rejeter le rattachement",
@@ -754,7 +754,7 @@ def get_batch_user_offerer_pending_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#validate-user-offerer-table",
         form=form,
-        dst=url_for("backoffice_web.validation.batch_set_user_offerer_pending"),
+        dst=url_for("backoffice.validation.batch_set_user_offerer_pending"),
         div_id="batch-pending-modal",
         title="Mettre en attente le rattachement",
         button_text="Mettre en attente le rattachement",
@@ -770,7 +770,7 @@ def get_reject_user_offerer_form(user_offerer_id: int) -> response_utils.Backoff
 
     kwargs = {
         "form": form,
-        "dst": url_for("backoffice_web.validation.reject_user_offerer", user_offerer_id=user_offerer.id),
+        "dst": url_for("backoffice.validation.reject_user_offerer", user_offerer_id=user_offerer.id),
         "div_id": f"reject-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Rejeter le rattachement à {user_offerer.offerer.name.upper()}",
         "button_text": "Rejeter le rattachement",
@@ -817,7 +817,7 @@ def get_user_offerer_pending_form(user_offerer_id: int) -> response_utils.Backof
 
     kwargs = {
         "form": form,
-        "dst": url_for("backoffice_web.validation.set_user_offerer_pending", user_offerer_id=user_offerer.id),
+        "dst": url_for("backoffice.validation.set_user_offerer_pending", user_offerer_id=user_offerer.id),
         "div_id": f"pending-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Mettre en attente le rattachement à {user_offerer.offerer.name.upper()}",
         "button_text": "Mettre en attente le rattachement",

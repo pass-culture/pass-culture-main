@@ -37,7 +37,7 @@ class GetNoticesSearchForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
     )
 
     venue = fields.PCTomSelectField(
@@ -45,7 +45,7 @@ class GetNoticesSearchForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_pricing_points",
+        endpoint="backoffice.autocomplete_pricing_points",
     )
 
     batch = fields.PCTomSelectField(
@@ -53,7 +53,7 @@ class GetNoticesSearchForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_cashflow_batches",
+        endpoint="backoffice.autocomplete_cashflow_batches",
     )
 
     limit = fields.PCLimitField(
@@ -126,14 +126,14 @@ class CreateNonPaymentNoticeForm(FlaskForm):
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
         "Partenaire culturel",
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
     )
 
     def validate(self, extra_validators: dict | None = None) -> bool:
@@ -202,6 +202,6 @@ class CloseForm(FlaskForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_cashflow_batches",
+        endpoint="backoffice.autocomplete_cashflow_batches",
         validators=[validators.InputRequired("Information obligatoire")],
     )

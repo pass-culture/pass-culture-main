@@ -66,7 +66,7 @@ offerer_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 def _self_redirect(
     offerer_id: int, active_tab: str | None = None, anchor: str | None = None
 ) -> response_utils.BackofficeResponse:
-    url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id, active_tab=active_tab)
+    url = url_for("backoffice.offerer.get", offerer_id=offerer_id, active_tab=active_tab)
     if anchor:
         url += f"#{anchor}"
     return redirect(url, code=303)
@@ -283,7 +283,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
     return render_template(
         "offerer/get.html",
         search_form=search_form,
-        search_dst=url_for("backoffice_web.pro.search_pro"),
+        search_dst=url_for("backoffice.pro.search_pro"),
         offerer=offerer,
         regions={regions_utils.get_region_name_from_department_code(code) for code in offerer.department_codes or []},
         creator_phone_number=row.creator_phone_number,
@@ -324,23 +324,21 @@ def _get_stat_urls(offerer: offerers_models.Offerer) -> dict[str, str]:
         "search-0-offerer": offerer.id,
     }
     if access_control.has_current_user_permission(perm_models.Permissions.READ_OFFERS):
-        urls["list_offers"] = url_for("backoffice_web.offer.list_offers", **search_params)  # type: ignore [arg-type]
+        urls["list_offers"] = url_for("backoffice.offer.list_offers", **search_params)  # type: ignore [arg-type]
         urls["list_collective_offers"] = url_for(
-            "backoffice_web.collective_offer.list_collective_offers",
+            "backoffice.collective_offer.list_collective_offers",
             **search_params,  # type: ignore [arg-type]
         )
         urls["list_collective_offer_templates"] = url_for(
-            "backoffice_web.collective_offer_template.list_collective_offer_templates", offerer=offerer.id
+            "backoffice.collective_offer_template.list_collective_offer_templates", offerer=offerer.id
         )
     if access_control.has_current_user_permission(perm_models.Permissions.READ_BOOKINGS):
-        urls["list_bookings"] = url_for(
-            "backoffice_web.individual_bookings.list_individual_bookings", offerer=offerer.id
-        )
+        urls["list_bookings"] = url_for("backoffice.individual_bookings.list_individual_bookings", offerer=offerer.id)
         urls["list_collective_bookins"] = url_for(
-            "backoffice_web.collective_bookings.list_collective_bookings", offerer=offerer.id
+            "backoffice.collective_bookings.list_collective_bookings", offerer=offerer.id
         )
 
-    urls["revenue_details"] = url_for("backoffice_web.offerer.get_revenue_details", offerer_id=offerer.id)
+    urls["revenue_details"] = url_for("backoffice.offerer.get_revenue_details", offerer_id=offerer.id)
     return urls
 
 
@@ -371,7 +369,7 @@ def get_stats(offerer_id: int) -> response_utils.BackofficeResponse:
         urls=_get_stat_urls(offerer),
         stats=stats,
         object=offerer,
-        fraud_dst=url_for("backoffice_web.offerer.update_for_fraud", offerer_id=offerer.id),
+        fraud_dst=url_for("backoffice.offerer.update_for_fraud", offerer_id=offerer.id),
         fraud_form=fraud_form,
     )
 
@@ -520,9 +518,7 @@ def delete_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
         flash(
             Markup(
                 'Impossible de supprimer une entité juridique ayant un <a href="{url}">tarif dérogatoire</a> (passé, actif ou futur)'
-            ).format(
-                url=url_for("backoffice_web.reimbursement_rules.list_custom_reimbursement_rules", offerer=offerer_id)
-            ),
+            ).format(url=url_for("backoffice.reimbursement_rules.list_custom_reimbursement_rules", offerer=offerer_id)),
             "warning",
         )
         return _self_redirect(offerer.id)
@@ -536,7 +532,7 @@ def delete_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
         ),
         "success",
     )
-    return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
+    return redirect(url_for("backoffice.pro.search_pro"), code=303)
 
 
 @offerer_blueprint.route("", methods=["POST"])
@@ -648,7 +644,7 @@ def get_history(offerer_id: int) -> response_utils.BackofficeResponse:
         "offerer/get/details/history.html",
         actions=actions_history,
         form=offerer_forms.CommentForm(),
-        dst=url_for("backoffice_web.offerer.comment_offerer", offerer_id=offerer_id),
+        dst=url_for("backoffice.offerer.comment_offerer", offerer_id=offerer_id),
     )
 
 
@@ -761,7 +757,7 @@ def get_pro_users(offerer_id: int) -> response_utils.BackofficeResponse:
         kwargs.update(
             {
                 "invite_user_form": offerer_forms.InviteUserForm(),
-                "invite_user_dst": url_for("backoffice_web.offerer.invite_user", offerer_id=offerer_id),
+                "invite_user_dst": url_for("backoffice.offerer.invite_user", offerer_id=offerer_id),
             }
         )
 
@@ -827,9 +823,7 @@ def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> respo
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for(
-            "backoffice_web.offerer.delete_user_offerer", offerer_id=offerer_id, user_offerer_id=user_offerer.id
-        ),
+        dst=url_for("backoffice.offerer.delete_user_offerer", offerer_id=offerer_id, user_offerer_id=user_offerer.id),
         div_id=f"delete-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Supprimer le rattachement à {user_offerer.offerer.name.upper()}",
         button_text="Supprimer le rattachement",
@@ -1045,7 +1039,7 @@ def _render_get_create_venue_without_siret_form(form: pro_forms.CreateVenueWitho
         "components/dynamic/modal_form.html",
         information="Ce formulaire permet de créer un nouveau partenaire culturel rattaché au SIRET choisi.",
         form=form,
-        dst=url_for("backoffice_web.offerer.create_venue", offerer_id=offerer_id),
+        dst=url_for("backoffice.offerer.create_venue", offerer_id=offerer_id),
         div_id="create-venue-modal",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer un partenaire culturel sans SIRET",
         button_text="Créer le partenaire culturel",
@@ -1083,9 +1077,7 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(
-            url_for("backoffice_web.offerer.get", offerer_id=offerer_id, active_tab="managed_venues"), code=303
-        )
+        return redirect(url_for("backoffice.offerer.get", offerer_id=offerer_id, active_tab="managed_venues"), code=303)
 
     attachment_venue = (
         db.session.query(offerers_models.Venue)
@@ -1138,7 +1130,7 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
     offerers_api.link_venue_to_pricing_point(venue, attachment_venue.id)
 
     flash(Markup("Le partenaire culturel <b>{name}</b> a été créé").format(name=venue.publicName), "success")
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 
 
 @offerer_blueprint.route("/collective-dms-applications", methods=["GET"])
@@ -1303,8 +1295,8 @@ def get_individual_subscription(offerer_id: int) -> response_utils.BackofficeRes
         adage_decision=adage_decision,
         has_adage_tag=any(tag.name == "adage" for tag in offerer.tags),
         form=form,
-        dst=url_for("backoffice_web.offerer.update_individual_subscription", offerer_id=offerer_id),
-        create_dst=url_for("backoffice_web.offerer.create_individual_subscription", offerer_id=offerer_id),
+        dst=url_for("backoffice.offerer.update_individual_subscription", offerer_id=offerer_id),
+        create_dst=url_for("backoffice.offerer.create_individual_subscription", offerer_id=offerer_id),
         read_only=read_only,
     )
 
@@ -1513,7 +1505,7 @@ def get_close_offerer_form(offerer_id: int) -> response_utils.BackofficeResponse
             ).format(
                 count=count_individual_bookings,
                 url=url_for(
-                    "backoffice_web.individual_bookings.list_individual_bookings",
+                    "backoffice.individual_bookings.list_individual_bookings",
                     offerer=offerer_id,
                     status=[bookings_forms.BookingStatus.BOOKED.name, bookings_forms.BookingStatus.CONFIRMED.name],
                 ),
@@ -1525,7 +1517,7 @@ def get_close_offerer_form(offerer_id: int) -> response_utils.BackofficeResponse
             ).format(
                 count=count_collective_bookings,
                 url=url_for(
-                    "backoffice_web.collective_bookings.list_collective_bookings",
+                    "backoffice.collective_bookings.list_collective_bookings",
                     offerer=offerer_id,
                     status=[
                         bookings_forms.CollectiveBookingStatus.PENDING.name,
@@ -1540,7 +1532,7 @@ def get_close_offerer_form(offerer_id: int) -> response_utils.BackofficeResponse
         "components/dynamic/modal_form.html",
         info=info,
         form=form,
-        dst=url_for("backoffice_web.offerer.close_offerer", offerer_id=offerer.id),
+        dst=url_for("backoffice.offerer.close_offerer", offerer_id=offerer.id),
         div_id=f"close-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Fermer l'entité juridique {offerer.name.upper()}",
         button_text="Fermer l'entité juridique",

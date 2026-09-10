@@ -336,7 +336,7 @@ def get_product_whitelist_form(product_id: int) -> response_utils.BackofficeResp
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.product.whitelist_product", product_id=product.id),
+        dst=url_for("backoffice.product.whitelist_product", product_id=product.id),
         div_id=f"whitelist-product-modal-{product.id}",
         title=f"Whitelister le produit  {product.name}",
         button_text="Whitelister le produit",
@@ -367,7 +367,7 @@ def get_product_blacklist_form(product_id: int) -> response_utils.BackofficeResp
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.product.blacklist_product", product_id=product.id),
+        dst=url_for("backoffice.product.blacklist_product", product_id=product.id),
         div_id=f"blacklist-product-modal-{product.id}",
         title=f"Blacklister le produit  {product.name}",
         button_text="Blacklister le produit",
@@ -400,7 +400,7 @@ def confirm_link_offers_forms(product_id: int) -> response_utils.BackofficeRespo
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.product.batch_link_offers_to_product", product_id=product_id),
+        dst=url_for("backoffice.product.batch_link_offers_to_product", product_id=product_id),
         div_id="batch-link-to-product-modal",
         title=Markup("Voulez-vous associer {number_of_offers} offre{pluralize} au produit ?").format(
             number_of_offers=len(form.object_ids_list), pluralize=pluralize(len(form.object_ids_list))
@@ -619,7 +619,7 @@ def get_import_product_from_titelive_form(ean: str) -> response_utils.Backoffice
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.product.import_product_from_titelive", ean=ean, is_ineligible=is_ineligible),
+        dst=url_for("backoffice.product.import_product_from_titelive", ean=ean, is_ineligible=is_ineligible),
         div_id="import-product-modal",
         title="Voulez-vous importer ce produit ?",
         button_text="Importer",

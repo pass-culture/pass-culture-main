@@ -108,7 +108,7 @@ class OffererValidationListForm(utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_bo_users",
+        endpoint="backoffice.autocomplete_bo_users",
     )
     dms_adage_status = fields.PCSelectMultipleField(
         "États du dossier DN ADAGE",
@@ -184,7 +184,7 @@ class UserOffererValidationListForm(utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_bo_users",
+        endpoint="backoffice.autocomplete_bo_users",
     )
     offerer_status = fields.PCSelectMultipleField(
         "États de l'entité juridique",

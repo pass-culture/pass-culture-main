@@ -149,7 +149,7 @@ def list_notices() -> response_utils.BackofficeResponse:
 
 
 def _redirect_to_list() -> response_utils.BackofficeResponse:
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.non_payment_notices.list_notices"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.non_payment_notices.list_notices"))
 
 
 @non_payment_notices_blueprint.route("/create", methods=["GET"])
@@ -160,7 +160,7 @@ def get_create_non_payment_notice_form() -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.non_payment_notices.create_non_payment_notice"),
+        dst=url_for("backoffice.non_payment_notices.create_non_payment_notice"),
         div_id="create-non-payment-notice",  # must be consistent with parameter passed to build_lazy_modal
         title="Saisir un avis d'impayé",
         button_text="Enregistrer",
@@ -254,7 +254,7 @@ def get_edit_form(notice_id: int) -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.non_payment_notices.edit", notice_id=notice_id),
+        dst=url_for("backoffice.non_payment_notices.edit", notice_id=notice_id),
         div_id=f"edit-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Modifier les informations",
         button_text="Enregistrer",
@@ -279,7 +279,7 @@ def get_set_pending_form(notice_id: int) -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.non_payment_notices.set_pending", notice_id=notice_id),
+        dst=url_for("backoffice.non_payment_notices.set_pending", notice_id=notice_id),
         div_id=f"pending-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Mettre en attente",
         button_text="Mettre en attente",
@@ -320,7 +320,7 @@ def get_set_no_continuation_form(notice_id: int) -> response_utils.BackofficeRes
     return render_template(
         "components/dynamic/modal_form.html",
         form=EmptyForm(),
-        dst=url_for("backoffice_web.non_payment_notices.set_no_continuation", notice_id=notice_id),
+        dst=url_for("backoffice.non_payment_notices.set_no_continuation", notice_id=notice_id),
         div_id=f"no-continuation-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Classer sans suite",
         button_text="Classer sans suite",
@@ -347,7 +347,7 @@ def get_close_form(notice_id: int) -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=forms.CloseForm(),
-        dst=url_for("backoffice_web.non_payment_notices.close", notice_id=notice_id),
+        dst=url_for("backoffice.non_payment_notices.close", notice_id=notice_id),
         div_id=f"close-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Terminer",
         button_text="Terminer",

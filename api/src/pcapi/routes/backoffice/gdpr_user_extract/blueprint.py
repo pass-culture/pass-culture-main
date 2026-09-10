@@ -69,7 +69,7 @@ def download_gdpr_extract(extract_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
-            url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"),
+            url_for("backoffice.gdpr_extract.list_gdpr_user_data_extract"),
             code=303,
         )
 
@@ -86,7 +86,7 @@ def download_gdpr_extract(extract_id: int) -> response_utils.BackofficeResponse:
     if not extract:
         flash("L'extraction demandée n'existe pas ou a expiré", "warning")
         return redirect(
-            url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"),
+            url_for("backoffice.gdpr_extract.list_gdpr_user_data_extract"),
             code=303,
         )
 
@@ -99,7 +99,7 @@ def download_gdpr_extract(extract_id: int) -> response_utils.BackofficeResponse:
     except base_object_storage.FileNotFound:
         flash("L'extraction demandée existe mais aucune archive ne lui est associée", "warning")
         return redirect(
-            url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"),
+            url_for("backoffice.gdpr_extract.list_gdpr_user_data_extract"),
             code=303,
         )
 
@@ -122,11 +122,11 @@ def delete_gdpr_user_data_extract(gdpr_id: int) -> response_utils.BackofficeResp
     extract = db.session.query(users_models.GdprUserDataExtract).filter_by(id=gdpr_id).one_or_none()
     if not extract:
         flash("L'extrait demandé n'existe pas.", "warning")
-        return redirect(url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"))
+        return redirect(url_for("backoffice.gdpr_extract.list_gdpr_user_data_extract"))
     if not extract.dateProcessed and not extract.is_expired:
         flash("L'extraction de données est toujours en cours pour cet utilisateur.", "warning")
-        return redirect(url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"))
+        return redirect(url_for("backoffice.gdpr_extract.list_gdpr_user_data_extract"))
 
     gdpr_api.delete_gdpr_extract(extract.id)
     flash("L'extraction de données a bien été effacée.", "success")
-    return redirect(url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"))
+    return redirect(url_for("backoffice.gdpr_extract.list_gdpr_user_data_extract"))

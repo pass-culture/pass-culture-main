@@ -27,7 +27,7 @@ pytestmark = [
 
 
 class GetArtistDetailsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.artist.get_artist_details"
+    endpoint = "backoffice.artist.get_artist_details"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
@@ -84,11 +84,11 @@ class EditArtistButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         artist = artist_factories.ArtistFactory.create()
-        return url_for("backoffice_web.artist.get_artist_details", artist_id=artist.id)
+        return url_for("backoffice.artist.get_artist_details", artist_id=artist.id)
 
 
 class GetArtistEditFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.artist.get_artist_edit_form"
+    endpoint = "backoffice.artist.get_artist_edit_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
@@ -108,7 +108,7 @@ class GetArtistEditFormTest(GetEndpointHelper):
 
 
 class PostArtistEditTest(PostEndpointHelper):
-    endpoint = "backoffice_web.artist.post_artist_edit_form"
+    endpoint = "backoffice.artist.post_artist_edit_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
@@ -152,11 +152,11 @@ class BlacklistArtistButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         artist = artist_factories.ArtistFactory.create(is_blacklisted=False)
-        return url_for("backoffice_web.artist.get_artist_details", artist_id=artist.id)
+        return url_for("backoffice.artist.get_artist_details", artist_id=artist.id)
 
 
 class GetArtistBlacklistFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.artist.get_artist_blacklist_form"
+    endpoint = "backoffice.artist.get_artist_blacklist_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.BLACKLIST_ARTISTS
 
@@ -176,7 +176,7 @@ class GetArtistBlacklistFormTest(GetEndpointHelper):
 
 
 class PostArtistBlacklistTest(PostEndpointHelper):
-    endpoint = "backoffice_web.artist.post_artist_blacklist"
+    endpoint = "backoffice.artist.post_artist_blacklist"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.BLACKLIST_ARTISTS
 
@@ -206,11 +206,11 @@ class UnblacklistArtistButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         artist = artist_factories.ArtistFactory.create(is_blacklisted=True)
-        return url_for("backoffice_web.artist.get_artist_details", artist_id=artist.id)
+        return url_for("backoffice.artist.get_artist_details", artist_id=artist.id)
 
 
 class GetArtistUnblacklistFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.artist.get_artist_unblacklist_form"
+    endpoint = "backoffice.artist.get_artist_unblacklist_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.BLACKLIST_ARTISTS
 
@@ -229,7 +229,7 @@ class GetArtistUnblacklistFormTest(GetEndpointHelper):
 
 
 class PostArtistUnblacklistTest(PostEndpointHelper):
-    endpoint = "backoffice_web.artist.post_artist_unblacklist"
+    endpoint = "backoffice.artist.post_artist_unblacklist"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.BLACKLIST_ARTISTS
 
@@ -257,11 +257,11 @@ class LinkProductButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         artist = artist_factories.ArtistFactory.create()
-        return url_for("backoffice_web.artist.get_artist_details", artist_id=artist.id)
+        return url_for("backoffice.artist.get_artist_details", artist_id=artist.id)
 
 
 class GetAssociateProductFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.artist.get_associate_product_form"
+    endpoint = "backoffice.artist.get_associate_product_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
@@ -283,7 +283,7 @@ class GetAssociateProductFormTest(GetEndpointHelper):
 
 
 class PostConfirmAssociationTest(PostEndpointHelper):
-    endpoint = "backoffice_web.artist.confirm_association"
+    endpoint = "backoffice.artist.confirm_association"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
@@ -319,7 +319,7 @@ class PostConfirmAssociationTest(PostEndpointHelper):
 
 
 class GetUnlinkProductFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.artist.get_unlink_product_form"
+    endpoint = "backoffice.artist.get_unlink_product_form"
     endpoint_kwargs = {"artist_id": "some-uuid", "product_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
@@ -343,7 +343,7 @@ class GetUnlinkProductFormTest(GetEndpointHelper):
 
 
 class PostUnlinkProductTest(PostEndpointHelper):
-    endpoint = "backoffice_web.artist.post_unlink_product"
+    endpoint = "backoffice.artist.post_unlink_product"
     endpoint_kwargs = {"artist_id": "some-uuid", "product_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
@@ -379,11 +379,11 @@ class MergeArtistButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         artist = artist_factories.ArtistFactory.create()
-        return url_for("backoffice_web.artist.get_artist_details", artist_id=artist.id)
+        return url_for("backoffice.artist.get_artist_details", artist_id=artist.id)
 
 
 class GetMergeArtistFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.artist.get_merge_artist_form"
+    endpoint = "backoffice.artist.get_merge_artist_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
@@ -406,7 +406,7 @@ class GetMergeArtistFormTest(GetEndpointHelper):
 
 
 class PostMergeArtistsTest(PostEndpointHelper):
-    endpoint = "backoffice_web.artist.post_merge_artists"
+    endpoint = "backoffice.artist.post_merge_artists"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
@@ -452,11 +452,11 @@ class SplitArtistButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         artist = artist_factories.ArtistFactory.create()
-        return url_for("backoffice_web.artist.get_artist_details", artist_id=artist.id)
+        return url_for("backoffice.artist.get_artist_details", artist_id=artist.id)
 
 
 class GetSplitArtistFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.artist.get_split_artist_form"
+    endpoint = "backoffice.artist.get_split_artist_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
@@ -480,7 +480,7 @@ class GetSplitArtistFormTest(GetEndpointHelper):
 
 
 class PostSplitArtistTest(PostEndpointHelper):
-    endpoint = "backoffice_web.artist.post_split_artist"
+    endpoint = "backoffice.artist.post_split_artist"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
@@ -518,7 +518,7 @@ class PostSplitArtistTest(PostEndpointHelper):
 
 
 class ListArtistsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.artist.list_artists"
+    endpoint = "backoffice.artist.list_artists"
     needed_permission = perm_models.Permissions.READ_OFFERS
 
     # - session + user

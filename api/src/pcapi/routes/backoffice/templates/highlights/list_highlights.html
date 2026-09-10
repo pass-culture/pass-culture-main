@@ -14,7 +14,7 @@
               data-bs-toggle="modal"
               data-bs-target="#create-highlight"
               type="button">Créer une valorisation</button>
-      {{ build_dynamic_modal(url_for("backoffice_web.highlights.get_create_highlight_form") , "create-highlight") }}
+      {{ build_dynamic_modal(url_for("backoffice.highlights.get_create_highlight_form") , "create-highlight") }}
     </div>
   {% endif %}
 {% endblock %}
@@ -42,7 +42,7 @@
           <ul class="dropdown-menu">
             <li class="dropdown-item">
               <a class="btn btn-sm d-block w-100 text-start px-3"
-                 href="{{ url_for('backoffice_web.offer.list_offers') }}?search-0-search_field=HIGHLIGHT_REQUEST&search-0-operator=IN&search-0-highlight={{ highlight.id }}">Voir les offres candidates</a>
+                 href="{{ url_for('backoffice.offer.list_offers') }}?search-0-search_field=HIGHLIGHT_REQUEST&search-0-operator=IN&search-0-highlight={{ highlight.id }}">Voir les offres candidates</a>
             </li>
             <li class="dropdown-item">
               <a class="btn btn-sm d-block w-100 text-start px-3"
@@ -73,6 +73,6 @@
 {% endblock table_body %}
 {% block after_table %}
   {% for highlight in rows.items %}
-    {{ build_dynamic_modal(url_for('backoffice_web.highlights.get_update_highlight_form', highlight_id=highlight.id) , "update-highlight-" + highlight.id|string) }}
+    {{ build_dynamic_modal(url_for('backoffice.highlights.get_update_highlight_form', highlight_id=highlight.id) , "update-highlight-" + highlight.id|string) }}
   {% endfor %}
 {% endblock after_table %}

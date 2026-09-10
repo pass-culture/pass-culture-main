@@ -261,7 +261,7 @@ class MergeArtistForm(FlaskForm):
         choices=[],
         validate_choice=False,
         coerce=str,
-        endpoint="backoffice_web.autocomplete_artists",
+        endpoint="backoffice.autocomplete_artists",
         validators=[wtforms.validators.DataRequired("Vous devez sélectionner un artiste cible.")],
     )
 

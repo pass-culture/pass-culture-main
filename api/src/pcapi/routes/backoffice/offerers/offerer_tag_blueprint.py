@@ -87,7 +87,7 @@ def create_offerer_tag() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
+        return redirect(url_for("backoffice.offerer_tag.list_offerer_tags"), code=303)
 
     new_categories = [cat for cat in categories if cat.id in form.categories.data]
     try:
@@ -105,7 +105,7 @@ def create_offerer_tag() -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Ce tag existe déjà", "warning")
 
-    return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
+    return redirect(url_for("backoffice.offerer_tag.list_offerer_tags"), code=303)
 
 
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/update", methods=["POST"])
@@ -123,7 +123,7 @@ def update_offerer_tag(offerer_tag_id: int) -> response_utils.BackofficeResponse
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
+        return redirect(url_for("backoffice.offerer_tag.list_offerer_tags"), code=303)
 
     new_categories = [cat for cat in categories if cat.id in form.categories.data]
     try:
@@ -139,7 +139,7 @@ def update_offerer_tag(offerer_tag_id: int) -> response_utils.BackofficeResponse
         mark_transaction_as_invalid()
         flash("Ce nom de tag existe déjà", "warning")
 
-    return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
+    return redirect(url_for("backoffice.offerer_tag.list_offerer_tags"), code=303)
 
 
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/delete", methods=["POST"])
@@ -156,7 +156,7 @@ def delete_offerer_tag(offerer_tag_id: int) -> response_utils.BackofficeResponse
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exception)), "warning")
 
-    return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
+    return redirect(url_for("backoffice.offerer_tag.list_offerer_tags"), code=303)
 
 
 @offerer_tag_blueprint.route("/category", methods=["POST"])
@@ -167,7 +167,7 @@ def create_offerer_tag_category() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags", active_tab="categories"), code=303)
+        return redirect(url_for("backoffice.offerer_tag.list_offerer_tags", active_tab="categories"), code=303)
 
     try:
         db.session.add(offerers_models.OffererTagCategory(name=form.name.data, label=form.label.data))
@@ -177,4 +177,4 @@ def create_offerer_tag_category() -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Cette catégorie existe déjà", "warning")
 
-    return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags", active_tab="categories"), code=303)
+    return redirect(url_for("backoffice.offerer_tag.list_offerer_tags", active_tab="categories"), code=303)

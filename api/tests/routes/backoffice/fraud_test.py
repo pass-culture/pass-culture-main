@@ -25,7 +25,7 @@ pytestmark = [
 
 
 class ListBlacklistedDomainNamesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.fraud.list_blacklisted_domain_names"
+    endpoint = "backoffice.fraud.list_blacklisted_domain_names"
     needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     def test_list_blacklisted_domain_names(self, authenticated_client):
@@ -40,7 +40,7 @@ class ListBlacklistedDomainNamesTest(GetEndpointHelper):
         history_factories.BlacklistDomainNameFactory(extraData=event_extra)
         fraud_factories.BlacklistedDomainNameFactory.create_batch(2)
 
-        url = url_for("backoffice_web.fraud.list_blacklisted_domain_names")
+        url = url_for("backoffice.fraud.list_blacklisted_domain_names")
 
         # get session + user(1 query)
         # get history (1 query)
@@ -57,14 +57,14 @@ class ListBlacklistedDomainNamesTest(GetEndpointHelper):
 
 
 class PrepareBlacklistDomainNamesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.fraud.prepare_blacklist_domain_name"
+    endpoint = "backoffice.fraud.prepare_blacklist_domain_name"
     needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     def test_prepare_blacklist_domain_name(self, authenticated_client):
         user = users_factories.BeneficiaryFactory(email="user@example.fr")
         domain = "example.fr"
 
-        url = url_for("backoffice_web.fraud.prepare_blacklist_domain_name", domain=domain)
+        url = url_for("backoffice.fraud.prepare_blacklist_domain_name", domain=domain)
 
         # get session + user (1 query)
         # get beneficiary emails (1 query)
@@ -80,7 +80,7 @@ class PrepareBlacklistDomainNamesTest(GetEndpointHelper):
 
 
 class BlacklistDomainNameTest(PostEndpointHelper):
-    endpoint = "backoffice_web.fraud.blacklist_domain_name"
+    endpoint = "backoffice.fraud.blacklist_domain_name"
     endpoint_kwargs = {"domain": "example.fr"}
     needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
@@ -92,7 +92,7 @@ class BlacklistDomainNameTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.fraud.list_blacklisted_domain_names")
+        expected_url = url_for("backoffice.fraud.list_blacklisted_domain_names")
         assert response.location == expected_url
 
         db.session.refresh(user)
@@ -127,7 +127,7 @@ class BlacklistDomainNameTest(PostEndpointHelper):
 
 
 class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
-    endpoint = "backoffice_web.fraud.remove_blacklisted_domain_name"
+    endpoint = "backoffice.fraud.remove_blacklisted_domain_name"
     endpoint_kwargs = {"domain": "example.fr"}
     needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
@@ -139,7 +139,7 @@ class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.fraud.list_blacklisted_domain_names")
+        expected_url = url_for("backoffice.fraud.list_blacklisted_domain_names")
         assert response.location == expected_url
 
         # domain is not blacklisted anymore

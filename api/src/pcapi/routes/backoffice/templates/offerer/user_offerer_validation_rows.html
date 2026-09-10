@@ -21,7 +21,7 @@
           </button>
           <ul class="dropdown-menu">
             <li class="dropdown-item p-0">
-              {% set target_url = url_for('backoffice_web.validation.validate_user_offerer', offerer_id=offerer.id, user_offerer_id=user_offerer.id) %}
+              {% set target_url = url_for('backoffice.validation.validate_user_offerer', offerer_id=offerer.id, user_offerer_id=user_offerer.id) %}
               <form action="{{ target_url }}"
                     name="{{ target_url | action_to_name }}"
                     hx-target="#user-offerer-row-{{ user_offerer.id }}"

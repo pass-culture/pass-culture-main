@@ -28,7 +28,7 @@ pytestmark = [
 
 
 class ListNonPaymentNoticesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.non_payment_notices.list_notices"
+    endpoint = "backoffice.non_payment_notices.list_notices"
     needed_permission = perm_models.Permissions.READ_NON_PAYMENT_NOTICES
 
     # - fetch session + user (1 query)
@@ -255,7 +255,7 @@ class ListNonPaymentNoticesTest(GetEndpointHelper):
 
 
 class GetCreateNonPaymentNoticeFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.non_payment_notices.get_create_non_payment_notice_form"
+    endpoint = "backoffice.non_payment_notices.get_create_non_payment_notice_form"
     needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
 
     def test_get_create_form_test(self, authenticated_client):
@@ -267,7 +267,7 @@ class GetCreateNonPaymentNoticeFormTest(GetEndpointHelper):
 
 
 class CreateNonPaymentNoticeTest(PostEndpointHelper):
-    endpoint = "backoffice_web.non_payment_notices.create_non_payment_notice"
+    endpoint = "backoffice.non_payment_notices.create_non_payment_notice"
     needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
 
     def test_create_non_payment_notice(self, authenticated_client):
@@ -478,7 +478,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
 
 
 class GetEditFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.non_payment_notices.get_edit_form"
+    endpoint = "backoffice.non_payment_notices.get_edit_form"
     needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
     endpoint_kwargs = {"notice_id": 1}
     expected_num_queries = 2  # session + notice
@@ -539,7 +539,7 @@ class GetEditFormTest(GetEndpointHelper):
 
 
 class EditTest(PostEndpointHelper):
-    endpoint = "backoffice_web.non_payment_notices.edit"
+    endpoint = "backoffice.non_payment_notices.edit"
     endpoint_kwargs = {"notice_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
 
@@ -637,11 +637,11 @@ class GetFormTestHelper(GetEndpointHelper):
 
 
 class GetSetPendingFormTest(GetFormTestHelper):
-    endpoint = "backoffice_web.non_payment_notices.get_set_pending_form"
+    endpoint = "backoffice.non_payment_notices.get_set_pending_form"
 
 
 class SetPendingTest(PostEndpointHelper):
-    endpoint = "backoffice_web.non_payment_notices.set_pending"
+    endpoint = "backoffice.non_payment_notices.set_pending"
     endpoint_kwargs = {"notice_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
 
@@ -730,11 +730,11 @@ class SetPendingTest(PostEndpointHelper):
 
 
 class GetNoContinuationFormTest(GetFormTestHelper):
-    endpoint = "backoffice_web.non_payment_notices.get_set_no_continuation_form"
+    endpoint = "backoffice.non_payment_notices.get_set_no_continuation_form"
 
 
 class SetNoContinuationTest(PostEndpointHelper):
-    endpoint = "backoffice_web.non_payment_notices.set_no_continuation"
+    endpoint = "backoffice.non_payment_notices.set_no_continuation"
     endpoint_kwargs = {"notice_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
 
@@ -767,11 +767,11 @@ class SetNoContinuationTest(PostEndpointHelper):
 
 
 class GetCloseFormTest(GetFormTestHelper):
-    endpoint = "backoffice_web.non_payment_notices.get_close_form"
+    endpoint = "backoffice.non_payment_notices.get_close_form"
 
 
 class CloseTest(PostEndpointHelper):
-    endpoint = "backoffice_web.non_payment_notices.close"
+    endpoint = "backoffice.non_payment_notices.close"
     endpoint_kwargs = {"notice_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
 

@@ -53,7 +53,7 @@
             hx-target="#{{ table_id }}"
             hx-trigger="click"
             hx-include="#form-ids-{{ table_name }}"
-            hx-post="{{ url_for('backoffice_web.validation.batch_validate_user_offerer') }}">Valider</button>
+            hx-post="{{ url_for('backoffice.validation.batch_validate_user_offerer') }}">Valider</button>
     <button disabled
             type="button"
             class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
@@ -72,12 +72,12 @@
   {% if has_validate_permission %}
     {% for item in rows.items %}
       {% set user_offerer_id = item.UserOfferer.id %}
-      {{ build_dynamic_modal(url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer_id) ,
+      {{ build_dynamic_modal(url_for("backoffice.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer_id) ,
         "reject-modal-" + user_offerer_id|string) }}
-      {{ build_dynamic_modal(url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer_id) ,
+      {{ build_dynamic_modal(url_for("backoffice.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer_id) ,
         "pending-modal-" + user_offerer_id|string) }}
     {% endfor %}
-    {{ build_dynamic_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form") , "batch-reject-modal", form="form-ids-" + table_name) }}
-    {{ build_dynamic_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form") , "batch-pending-modal", form="form-ids-" + table_name) }}
+    {{ build_dynamic_modal(url_for("backoffice.validation.get_batch_reject_user_offerer_form") , "batch-reject-modal", form="form-ids-" + table_name) }}
+    {{ build_dynamic_modal(url_for("backoffice.validation.get_batch_user_offerer_pending_form") , "batch-pending-modal", form="form-ids-" + table_name) }}
   {% endif %}
 {% endblock %}

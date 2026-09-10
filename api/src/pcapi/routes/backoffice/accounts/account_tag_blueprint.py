@@ -92,7 +92,7 @@ def create_account_tag() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return request_utils.safe_redirect_back(request, url_for("backoffice_web.account_tag.list_account_tags"))
+        return request_utils.safe_redirect_back(request, url_for("backoffice.account_tag.list_account_tags"))
 
     new_categories = [cat for cat in categories if cat.id in form.categories.data]
     try:
@@ -110,7 +110,7 @@ def create_account_tag() -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Ce tag existe déjà", "warning")
 
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.account_tag.list_account_tags"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.account_tag.list_account_tags"))
 
 
 def _update_user_tag(
@@ -159,7 +159,7 @@ def update_account_tag(user_tag_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return request_utils.safe_redirect_back(request, url_for("backoffice_web.account_tag.list_account_tags"))
+        return request_utils.safe_redirect_back(request, url_for("backoffice.account_tag.list_account_tags"))
 
     new_categories = [cat for cat in categories if cat.id in form.categories.data]
     try:
@@ -175,7 +175,7 @@ def update_account_tag(user_tag_id: int) -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Ce nom de tag existe déjà", "warning")
 
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.account_tag.list_account_tags"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.account_tag.list_account_tags"))
 
 
 @account_tag_blueprint.route("/<int:user_tag_id>/delete", methods=["POST"])
@@ -196,7 +196,7 @@ def delete_account_tag(user_tag_id: int) -> response_utils.BackofficeResponse:
             "warning",
         )
 
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.account_tag.list_account_tags"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.account_tag.list_account_tags"))
 
 
 @account_tag_blueprint.route("/category", methods=["POST"])
@@ -208,7 +208,7 @@ def create_account_tag_category() -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.safe_redirect_back(
-            request, url_for("backoffice_web.account_tag.list_account_tags", active_tab="categories")
+            request, url_for("backoffice.account_tag.list_account_tags", active_tab="categories")
         )
 
     try:
@@ -220,5 +220,5 @@ def create_account_tag_category() -> response_utils.BackofficeResponse:
         flash("Cette catégorie existe déjà", "warning")
 
     return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.account_tag.list_account_tags", active_tab="categories")
+        request, url_for("backoffice.account_tag.list_account_tags", active_tab="categories")
     )

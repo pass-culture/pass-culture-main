@@ -45,9 +45,9 @@ def _redirect_to_user_page(user: users_models.User) -> response_utils.Backoffice
     # Actions should always come from user details page
     # Fallback in case referrer is missing (maybe because of browser settings)
     if user.has_any_pro_role:
-        url = url_for("backoffice_web.pro_user.get", user_id=user.id)
+        url = url_for("backoffice.pro_user.get", user_id=user.id)
     else:
-        url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
     return request_utils.safe_redirect_back(request, url)
 
@@ -270,7 +270,7 @@ def confirm_batch_suspend_users() -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash(f"{len(users)} compte d'utilisateur a été suspendu", "success")
 
-    return redirect(url_for("backoffice_web.fraud.list_blacklisted_domain_names"), code=303)
+    return redirect(url_for("backoffice.fraud.list_blacklisted_domain_names"), code=303)
 
 
 @users_blueprint.route("/<int:user_id>/redirect-to-brevo", methods=["GET"])

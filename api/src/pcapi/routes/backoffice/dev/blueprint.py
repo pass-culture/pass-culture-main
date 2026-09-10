@@ -251,7 +251,7 @@ def create_disabled_child_education_allowance_fraud_check_mock(
 
 
 @dev_blueprint.route("/components", methods=["GET"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def components() -> response_utils.BackofficeResponse:
     if not settings.ENABLE_BO_COMPONENT_PAGE:
         raise NotFound()
@@ -272,7 +272,7 @@ def components() -> response_utils.BackofficeResponse:
 
 
 @dev_blueprint.route("/user-generator", methods=["GET"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def get_generated_user() -> response_utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
     form.birth_date.default = forms.get_default_birth_date()
@@ -313,7 +313,7 @@ def get_generated_user() -> response_utils.BackofficeResponse:
         link_to_ubble_mock=link_to_ubble_mock,
         user=user,
         form=form,
-        dst=url_for("backoffice_web.dev.generate_user"),
+        dst=url_for("backoffice.dev.generate_user"),
         ubble_configuration_form=ubble_form,
         quotient_familial_form=forms.QuotientFamilialConfigurationForm(),
         disabled_adult_allowance_form=forms.DisabledAdultAllowanceConfigurationForm(),
@@ -322,14 +322,14 @@ def get_generated_user() -> response_utils.BackofficeResponse:
 
 
 @dev_blueprint.route("/user-generator", methods=["POST"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def generate_user() -> response_utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
 
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
+        return redirect(url_for("backoffice.dev.get_generated_user"), code=303)
 
     raw_date_created = form.date_created.data
     user_data = users_generator.GenerateUserData(
@@ -348,7 +348,7 @@ def generate_user() -> response_utils.BackofficeResponse:
     if age >= users_constants.ELIGIBILITY_AGE_18 and id_provider == users_generator.GeneratedIdProvider.EDUCONNECT.name:
         mark_transaction_as_invalid()
         flash("Un utilisateur de plus de 18 ans ne peut pas être identifié via Educonnect", "warning")
-        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
+        return redirect(url_for("backoffice.dev.get_generated_user"), code=303)
 
     # <18yo user cannot validate phone number
     step = form.step.data
@@ -358,7 +358,7 @@ def generate_user() -> response_utils.BackofficeResponse:
     ):
         mark_transaction_as_invalid()
         flash("Un utilisateur de moins de 18 ans ne peut pas valider son numéro de téléphone", "warning")
-        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
+        return redirect(url_for("backoffice.dev.get_generated_user"), code=303)
 
     # 15 to 16 years old only validate their email and complete their profile
     if age in users_constants.ELIGIBILITY_FREE_RANGE and step not in [
@@ -371,7 +371,7 @@ def generate_user() -> response_utils.BackofficeResponse:
             "Un utilisateur de 15 à 16 ans ne peut que valider son email, compléter son profil ou être bénéficiaire",
             "warning",
         )
-        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
+        return redirect(url_for("backoffice.dev.get_generated_user"), code=303)
 
     try:
         user = users_generator.generate_user(user_data=user_data)
@@ -383,7 +383,7 @@ def generate_user() -> response_utils.BackofficeResponse:
     )
     return redirect(
         url_for(
-            "backoffice_web.dev.get_generated_user",
+            "backoffice.dev.get_generated_user",
             userId=user.id,
             accessToken=token.encoded_token,
             expirationTimestamp=get_token_expiration_timestamp(token),
@@ -400,14 +400,14 @@ def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
 
 
 @dev_blueprint.route("/delete", methods=["GET"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def get_user_deletion_form() -> str:
     form = forms.UserDeletionForm()
     return render_template("dev/users_deletion.html", form=form)
 
 
 @dev_blueprint.route("/delete", methods=["POST"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def delete_user() -> response_utils.BackofficeResponse:
     if not settings.ENABLE_TEST_USER_GENERATION:
         raise NotFound()
@@ -441,13 +441,13 @@ def delete_user() -> response_utils.BackofficeResponse:
             Markup("Le compte de l'utilisateur <b>{email}</b> n'a pas pu être supprimé.").format(email=email),
             "warning",
         )
-        return redirect(url_for("backoffice_web.dev.delete_user"), code=303)
+        return redirect(url_for("backoffice.dev.delete_user"), code=303)
 
     flash(
         Markup("Le compte de l'utilisateur <b>{email}</b> a été supprimé").format(email=email),
         "success",
     )
-    return redirect(url_for("backoffice_web.dev.delete_user"), code=303)
+    return redirect(url_for("backoffice.dev.delete_user"), code=303)
 
 
 @dev_blueprint.route("/<int:user_id>/ubble/configuration", methods=["POST"])
@@ -457,13 +457,13 @@ def configure_ubble_v2_response(user_id: int) -> response_utils.BackofficeRespon
     if user is None:
         mark_transaction_as_invalid()
         flash(f"L'utilisateur {user_id} n'a pas été trouvé", "warning")
-        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=404)
+        return redirect(url_for("backoffice.dev.get_generated_user"), code=404)
 
     form = forms.UbbleConfigurationForm()
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return request_utils.safe_redirect_back(request, url_for("backoffice_web.dev.get_generated_user"))
+        return request_utils.safe_redirect_back(request, url_for("backoffice.dev.get_generated_user"))
 
     # Ubble response codes can be tested by inserting the ones we want in the external applicant id of the Ubble
     # applicant. See https://docs.ubble.ai/#section/Testing/Declined-verification-on-retry-after-checks-inconclusive
@@ -477,7 +477,7 @@ def configure_ubble_v2_response(user_id: int) -> response_utils.BackofficeRespon
         params["accessToken"] = token.encoded_token
         params["expirationTimestamp"] = str(get_token_expiration_timestamp(token))
         params["email"] = user.email
-    return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
+    return redirect(url_for("backoffice.dev.get_generated_user", userId=user.id, **params), code=303)
 
 
 @dev_blueprint.route("/<int:user_id>/api_particulier/quotient_familial/configuration", methods=["POST"])
@@ -487,13 +487,13 @@ def configure_api_quotient_familial_response(user_id: int) -> response_utils.Bac
     if user is None:
         mark_transaction_as_invalid()
         flash(f"L'utilisateur {user_id} n'a pas été trouvé", "warning")
-        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=404)
+        return redirect(url_for("backoffice.dev.get_generated_user"), code=404)
 
     form = forms.QuotientFamilialConfigurationForm()
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return request_utils.safe_redirect_back(request, url_for("backoffice_web.dev.get_generated_user"))
+        return request_utils.safe_redirect_back(request, url_for("backoffice.dev.get_generated_user"))
 
     create_qf_fraud_check_mock(user, form)
 
@@ -505,7 +505,7 @@ def configure_api_quotient_familial_response(user_id: int) -> response_utils.Bac
         params["accessToken"] = token.encoded_token
         params["expirationTimestamp"] = str(get_token_expiration_timestamp(token))
         params["email"] = user.email
-    return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
+    return redirect(url_for("backoffice.dev.get_generated_user", userId=user.id, **params), code=303)
 
 
 @dev_blueprint.route("/<int:user_id>/api_particulier/disabled_adult_allowance/configuration", methods=["POST"])
@@ -515,13 +515,13 @@ def configure_api_disabled_adult_allowance_response(user_id: int) -> response_ut
     if user is None:
         mark_transaction_as_invalid()
         flash(f"L'utilisateur {user_id} n'a pas été trouvé", "warning")
-        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=404)
+        return redirect(url_for("backoffice.dev.get_generated_user"), code=404)
 
     form = forms.DisabledAdultAllowanceConfigurationForm()
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return request_utils.safe_redirect_back(request, url_for("backoffice_web.dev.get_generated_user"))
+        return request_utils.safe_redirect_back(request, url_for("backoffice.dev.get_generated_user"))
 
     create_disabled_adult_allowance_fraud_check_mock(user, form)
 
@@ -533,7 +533,7 @@ def configure_api_disabled_adult_allowance_response(user_id: int) -> response_ut
         params["accessToken"] = token.encoded_token
         params["expirationTimestamp"] = str(get_token_expiration_timestamp(token))
         params["email"] = user.email
-    return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
+    return redirect(url_for("backoffice.dev.get_generated_user", userId=user.id, **params), code=303)
 
 
 @dev_blueprint.route(
@@ -545,13 +545,13 @@ def configure_api_disabled_child_education_allowance_response(user_id: int) -> r
     if user is None:
         mark_transaction_as_invalid()
         flash(f"L'utilisateur {user_id} n'a pas été trouvé", "warning")
-        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=404)
+        return redirect(url_for("backoffice.dev.get_generated_user"), code=404)
 
     form = forms.DisabledChildEducationAllowanceConfigurationForm()
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return request_utils.safe_redirect_back(request, url_for("backoffice_web.dev.get_generated_user"))
+        return request_utils.safe_redirect_back(request, url_for("backoffice.dev.get_generated_user"))
 
     create_disabled_child_education_allowance_fraud_check_mock(user, form)
 
@@ -563,11 +563,11 @@ def configure_api_disabled_child_education_allowance_response(user_id: int) -> r
         params["accessToken"] = token.encoded_token
         params["expirationTimestamp"] = str(get_token_expiration_timestamp(token))
         params["email"] = user.email
-    return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
+    return redirect(url_for("backoffice.dev.get_generated_user", userId=user.id, **params), code=303)
 
 
 @dev_blueprint.route("/offer-generator", methods=["POST"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def generate_offer() -> response_utils.BackofficeResponse:
     if not settings.ENABLE_TEST_OFFER_GENERATION:
         raise NotFound()
@@ -576,7 +576,7 @@ def generate_offer() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.dev.get_generate_offer_form"), code=303)
+        return redirect(url_for("backoffice.dev.get_generate_offer_form"), code=303)
 
     offer = offers_generator.create_offer(
         offer_name=form.name.data,
@@ -588,29 +588,29 @@ def generate_offer() -> response_utils.BackofficeResponse:
 
     flash("Offre créée avec succès", "success")
     assert offer is not None  # helps mypy
-    return redirect(url_for("backoffice_web.dev.get_generated_offer", offer_id=offer.id), code=303)
+    return redirect(url_for("backoffice.dev.get_generated_offer", offer_id=offer.id), code=303)
 
 
 @dev_blueprint.route("/offer-generator", methods=["GET"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def get_generate_offer_form() -> response_utils.BackofficeResponse:
     form = forms.OfferGeneratorForm()
     return render_template(
         "dev/offers_generator.html",
         form=form,
-        dst=url_for("backoffice_web.dev.generate_offer"),
+        dst=url_for("backoffice.dev.generate_offer"),
     )
 
 
 @dev_blueprint.route("/offer-generator/<int:offer_id>", methods=["GET"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def get_generated_offer(offer_id: int) -> response_utils.BackofficeResponse:
     form = forms.OfferGeneratorForm()
     offer = db.session.scalars(sa.select(offers_models.Offer).where(offers_models.Offer.id == offer_id)).one_or_none()
 
     if offer is None:
         flash("Offre non trouvée", "warning")
-        return redirect(url_for("backoffice_web.dev.get_generate_offer_form"), code=404)
+        return redirect(url_for("backoffice.dev.get_generate_offer_form"), code=404)
 
     return render_template(
         "dev/offers_generator.html",
@@ -618,14 +618,14 @@ def get_generated_offer(offer_id: int) -> response_utils.BackofficeResponse:
         link_to_local_app=f"{settings.LOCAL_WEBAPP_URL}/offre/{offer_id}" if settings.LOCAL_WEBAPP_URL else None,
         offer=offer,
         form=form,
-        dst=url_for("backoffice_web.dev.generate_offer"),
+        dst=url_for("backoffice.dev.generate_offer"),
         deactivate_offer_form=empty_forms.EmptyForm(),
-        deactivate_offer_dst=url_for("backoffice_web.dev.deactivate_offer", offer_id=offer_id),
+        deactivate_offer_dst=url_for("backoffice.dev.deactivate_offer", offer_id=offer_id),
     )
 
 
 @dev_blueprint.route("/offer-generator/<int:offer_id>/deactivate", methods=["POST"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def deactivate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     if not settings.ENABLE_TEST_OFFER_GENERATION:
         raise NotFound()
@@ -638,4 +638,4 @@ def deactivate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     offers_generator.deactivate_offer(offer)
 
     flash("Offre désactivée avec succès", "success")
-    return redirect(url_for("backoffice_web.dev.get_generated_offer", offer_id=offer.id), code=303)
+    return redirect(url_for("backoffice.dev.get_generated_offer", offer_id=offer.id), code=303)

@@ -18,7 +18,7 @@
         {% endif %}
         <tr>
           <th scope="col">
-            {% if domain and event.actionType.name != 'REMOVE_BLACKLISTED_DOMAIN_NAME' %}
+            {% if domain and event.actionType.name != "REMOVE_BLACKLISTED_DOMAIN_NAME" %}
               <div class="dropdown">
                 <button type="button"
                         data-bs-toggle="dropdown"
@@ -28,7 +28,7 @@
                 </button>
                 <ul class="dropdown-menu">
                   <li class="dropdown-item p-0">
-                    <a href="{{ url_for('backoffice_web.fraud.prepare_blacklist_domain_name', domain=domain) }}"
+                    <a href="{{ url_for('backoffice.fraud.prepare_blacklist_domain_name', domain=domain) }}"
                        class="text-decoration-none">
                       <button type="submit"
                               class="btn btn-sm d-block w-100 text-start px-3">Répéter l'opération</button>
@@ -42,7 +42,7 @@
           <td>{{ event.actionDate | format_date_time }}</td>
           <td>{{ event.authorUser.full_name if event.authorUser else None | empty_string_if_null }}</td>
           <td>
-            {% if event.actionType.name == 'REMOVE_BLACKLISTED_DOMAIN_NAME' %}
+            {% if event.actionType.name == "REMOVE_BLACKLISTED_DOMAIN_NAME" %}
               Domaine retiré de la blacklist
             {% else %}
               {% if event.extraData %}

@@ -18,7 +18,7 @@
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if edit_form %}
                 {% set edit_bank_account_aria_described_by_id = random_hash() %}
-                {{ build_modal_form("edit-bank-account", url_for("backoffice_web.bank_account.update_bank_account", bank_account_id=bank_account.id) , edit_form, "Modifier les informations", "Modifier les informations du compte bancaire", "Enregistrer") }}
+                {{ build_modal_form("edit-bank-account", url_for("backoffice.bank_account.update_bank_account", bank_account_id=bank_account.id) , edit_form, "Modifier les informations", "Modifier les informations du compte bancaire", "Enregistrer") }}
               {% endif %}
               {% if dms_stats %}
                 <a href="{{ dms_stats.url }}"
@@ -96,21 +96,21 @@
           {% call build_details_tab_content("linked-venues", active_tab == 'linked_venues') %}
             <div id="bank_account_venues_frame"
                  hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.bank_account.get_linked_venues', bank_account_id=bank_account.id) }}">
+                 hx-get="{{ url_for('backoffice.bank_account.get_linked_venues', bank_account_id=bank_account.id) }}">
               {{ build_loading_spinner() }}
             </div>
           {% endcall %}
           {% call build_details_tab_content("history", active_tab == 'history') %}
             <div id="bank_account_history_frame"
                  hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.bank_account.get_history', bank_account_id=bank_account.id) }}">
+                 hx-get="{{ url_for('backoffice.bank_account.get_history', bank_account_id=bank_account.id) }}">
               {{ build_loading_spinner() }}
             </div>
           {% endcall %}
           {% call build_details_tab_content("invoices", active_tab == 'invoices') %}
             <div id="bank_account_invoices_frame"
                  hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.bank_account.get_invoices', bank_account_id=bank_account.id) }}">
+                 hx-get="{{ url_for('backoffice.bank_account.get_invoices', bank_account_id=bank_account.id) }}">
               {{ build_loading_spinner() }}
             </div>
           {% endcall %}

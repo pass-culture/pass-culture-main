@@ -982,7 +982,7 @@ def get_batch_validate_offers_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#offers-table",
         form=form,
-        dst=url_for("backoffice_web.offer.batch_validate_offers"),
+        dst=url_for("backoffice.offer.batch_validate_offers"),
         div_id="batch-validate-offer-modal",
         title="Voulez-vous valider les offres sélectionnées ?",
         button_text="Valider",
@@ -1011,7 +1011,7 @@ def get_batch_pending_offers_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#offers-table",
         form=form,
-        dst=url_for("backoffice_web.offer.batch_pending_offers"),
+        dst=url_for("backoffice.offer.batch_pending_offers"),
         div_id="batch-pending-offer-modal",
         title="Voulez-vous annuler la validation des offres sélectionnées ?",
         information="Les offres repasseront en instruction et ne seront plus réservables. Les réservations en cours ne seront pas annulées.",
@@ -1044,7 +1044,7 @@ def get_batch_reject_offers_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#offers-table",
         form=form,
-        dst=url_for("backoffice_web.offer.batch_reject_offers"),
+        dst=url_for("backoffice.offer.batch_reject_offers"),
         div_id="batch-reject-offer-modal",
         title="Voulez-vous rejeter les offres sélectionnées ?",
         button_text="Rejeter",
@@ -1094,7 +1094,7 @@ def get_batch_edit_offer_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#offers-table",
         form=form,
-        dst=url_for("backoffice_web.offer.batch_edit_offer", origin=request.args.get("origin")),
+        dst=url_for("backoffice.offer.batch_edit_offer", origin=request.args.get("origin")),
         div_id="batch-edit-offer-modal",
         title="Édition des offres",
         button_text="Enregistrer les modifications",
@@ -1186,7 +1186,7 @@ def get_edit_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id=f"#offer-row-{offer_id}",
         form=form,
-        dst=url_for("backoffice_web.offer.edit_offer", offer_id=offer.id, origin=request.args.get("origin")),
+        dst=url_for("backoffice.offer.edit_offer", offer_id=offer.id, origin=request.args.get("origin")),
         div_id=f"edit-offer-modal-{offer.id}",
         title=f"Édition de l'offre {offer.name}",
         button_text="Enregistrer les modifications",
@@ -1236,7 +1236,7 @@ def edit_offer(offer_id: int) -> response_utils.BackofficeResponse:
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
 
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
@@ -1253,7 +1253,7 @@ def get_validate_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id=f"#offer-row-{offer_id}",
         form=form,
-        dst=url_for("backoffice_web.offer.validate_offer", offer_id=offer.id),
+        dst=url_for("backoffice.offer.validate_offer", offer_id=offer.id),
         div_id=f"validate-offer-modal-{offer.id}",
         title=f"Validation de l'offre {offer.name}",
         button_text="Valider l'offre",
@@ -1286,7 +1286,7 @@ def validate_offer(offer_id: int) -> response_utils.BackofficeResponse:
 
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/<int:offer_id>/qualify", methods=["GET"])
@@ -1302,7 +1302,7 @@ def get_qualify_cultural_outreach_form(offer_id: int) -> response_utils.Backoffi
         "components/dynamic/modal_form.html",
         target_id=f"#offer-row-{offer_id}",
         form=form,
-        dst=url_for("backoffice_web.offer.qualify_cultural_outreach", offer_id=offer.id),
+        dst=url_for("backoffice.offer.qualify_cultural_outreach", offer_id=offer.id),
         div_id=f"qualify-cultural-outreach-modal-{offer.id}",
         title=f"Qualification de l'action de médiation pour l'offre : {offer.name}",
         button_text="Qualifier",
@@ -1318,7 +1318,7 @@ def qualify_cultural_outreach(offer_id: int) -> response_utils.BackofficeRespons
 
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/batch/qualify", methods=["POST"])
@@ -1329,7 +1329,7 @@ def get_batch_qualify_cultural_outreach_form() -> response_utils.BackofficeRespo
         "components/dynamic/modal_form.html",
         target_id="#offers-table",
         form=form,
-        dst=url_for("backoffice_web.offer.batch_qualify_cultural_outreach"),
+        dst=url_for("backoffice.offer.batch_qualify_cultural_outreach"),
         div_id="batch-qualify-cultural-outreach-modal",
         title="Voulez-vous qualifier les actions de médiation des offres sélectionnées ?",
         button_text="Qualifier",
@@ -1363,7 +1363,7 @@ def get_disqualify_cultural_outreach_form(offer_id: int) -> response_utils.Backo
         "components/dynamic/modal_form.html",
         target_id=f"#offer-row-{offer_id}",
         form=form,
-        dst=url_for("backoffice_web.offer.disqualify_cultural_outreach", offer_id=offer.id),
+        dst=url_for("backoffice.offer.disqualify_cultural_outreach", offer_id=offer.id),
         div_id=f"disqualify-cultural-outreach-modal-{offer.id}",
         title=f"Disqualification de l'action de médiation pour l'offre : {offer.name}",
         button_text="Disqualifier",
@@ -1382,7 +1382,7 @@ def disqualify_cultural_outreach(offer_id: int) -> response_utils.BackofficeResp
 
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/batch/disqualify", methods=["POST"])
@@ -1393,7 +1393,7 @@ def get_batch_disqualify_cultural_outreach_form() -> response_utils.BackofficeRe
         "components/dynamic/modal_form.html",
         target_id="#offers-table",
         form=form,
-        dst=url_for("backoffice_web.offer.batch_disqualify_cultural_outreach"),
+        dst=url_for("backoffice.offer.batch_disqualify_cultural_outreach"),
         div_id="batch-disqualify-cultural-outreach-modal",
         title="Voulez-vous disqualifier les actions de médiation des offres sélectionnées ?",
         button_text="Disqualifier",
@@ -1432,7 +1432,7 @@ def get_pending_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id=f"#offer-row-{offer_id}",
         form=form,
-        dst=url_for("backoffice_web.offer.pending_offer", offer_id=offer.id),
+        dst=url_for("backoffice.offer.pending_offer", offer_id=offer.id),
         div_id=f"pending-offer-modal-{offer.id}",
         title=f"Annuler la validation de l'offre {offer.name}",
         information="L’offre repassera en instruction et ne sera plus réservable. Les réservations en cours ne seront pas annulées.",
@@ -1452,7 +1452,7 @@ def pending_offer(offer_id: int) -> response_utils.BackofficeResponse:
 
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
@@ -1469,7 +1469,7 @@ def get_reject_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id=f"#offer-row-{offer_id}",
         form=form,
-        dst=url_for("backoffice_web.offer.reject_offer", offer_id=offer.id),
+        dst=url_for("backoffice.offer.reject_offer", offer_id=offer.id),
         div_id=f"reject-offer-modal-{offer.id}",
         title=f"Rejet de l'offre {offer.name}",
         button_text="Rejeter l'offre",
@@ -1485,7 +1485,7 @@ def reject_offer(offer_id: int) -> response_utils.BackofficeResponse:
 
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.offer.list_offers"))
 
 
 def _get_offer_recipients(offer: offers_models.Offer) -> list[str]:
@@ -1868,15 +1868,15 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> response_utils.BackofficeR
     if stock.offerId != offer_id:
         mark_transaction_as_invalid()
         flash("L'offer_id et le stock_id ne sont pas cohérents.", "warning")
-        return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
+        return redirect(url_for("backoffice.offer.get_offer_details", offer_id=offer_id), 303)
     if finance_api.are_cashflows_being_generated():
         mark_transaction_as_invalid()
         flash("Le script de génération des cashflows est en cours, veuillez réessayer plus tard.", "warning")
-        return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
+        return redirect(url_for("backoffice.offer.get_offer_details", offer_id=offer_id), 303)
     if not _is_stock_editable(offer_id, stock_id):
         mark_transaction_as_invalid()
         flash("Ce stock n'est pas éditable.", "warning")
-        return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
+        return redirect(url_for("backoffice.offer.get_offer_details", offer_id=offer_id), 303)
 
     form = forms.EditStockForm(old_price=stock.price)
     old_price = stock.price
@@ -1884,7 +1884,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> response_utils.BackofficeR
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
+        return redirect(url_for("backoffice.offer.get_offer_details", offer_id=offer_id), 303)
 
     new_price = 0.0
     if form.price.data:
@@ -1911,7 +1911,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> response_utils.BackofficeR
         },
     )
 
-    return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
+    return redirect(url_for("backoffice.offer.get_offer_details", offer_id=offer_id), 303)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/confirm", methods=["POST"])
@@ -1958,7 +1958,7 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> response_utils.Backoffi
     return render_template(
         "offer/confirm_stock_price_change.html",
         form=form,
-        dst=url_for("backoffice_web.offer.edit_offer_stock", offer_id=offer_id, stock_id=stock_id),
+        dst=url_for("backoffice.offer.edit_offer_stock", offer_id=offer_id, stock_id=stock_id),
         div_id=f"edit-offer-stock-modal-{stock_id}",
         title=f"Baisser le prix du stock {stock_id}",
         button_text="Continuer",
@@ -2006,7 +2006,7 @@ def _generate_offer_stock_edit_form(
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.offer.confirm_offer_stock", offer_id=offer_id, stock_id=stock_id),
+        dst=url_for("backoffice.offer.confirm_offer_stock", offer_id=offer_id, stock_id=stock_id),
         div_id=f"edit-offer-stock-modal-{stock_id}",
         title=f"Baisser le prix du stock {stock_id}",
         button_text="Continuer",
@@ -2049,13 +2049,13 @@ def reindex(offer_id: int) -> response_utils.BackofficeResponse:
     )
 
     flash("La resynchronisation de l'offre a été demandée.", "success")
-    return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
+    return redirect(url_for("backoffice.offer.get_offer_details", offer_id=offer_id), 303)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit-venue", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def edit_offer_venue(offer_id: int) -> response_utils.BackofficeResponse:
-    offer_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id)
+    offer_url = url_for("backoffice.offer.get_offer_details", offer_id=offer_id)
 
     offer = (
         db.session.query(offers_models.Offer)
@@ -2174,7 +2174,7 @@ def get_activate_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id=f"#offer-row-{offer_id}",
         form=form,
-        dst=url_for("backoffice_web.offer.activate_offer", offer_id=offer.id),
+        dst=url_for("backoffice.offer.activate_offer", offer_id=offer.id),
         div_id=f"activate-offer-modal-{offer.id}",
         title=f"Publication de l'offre {offer.name}",
         button_text="Publier l'offre",
@@ -2196,7 +2196,7 @@ def get_deactivate_offer_form(offer_id: int) -> response_utils.BackofficeRespons
         "components/dynamic/modal_form.html",
         target_id=f"#offer-row-{offer_id}",
         form=form,
-        dst=url_for("backoffice_web.offer.deactivate_offer", offer_id=offer.id),
+        dst=url_for("backoffice.offer.deactivate_offer", offer_id=offer.id),
         div_id=f"deactivate-offer-modal-{offer.id}",
         title=f"Mise en pause de l'offre {offer.name}",
         information="L’acteur pourra réactiver l’offre",
@@ -2213,7 +2213,7 @@ def get_batch_activate_offers_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#offers-table",
         form=form,
-        dst=url_for("backoffice_web.offer.batch_activate_offers"),
+        dst=url_for("backoffice.offer.batch_activate_offers"),
         div_id="batch-activate-offer-modal",
         title="Voulez-vous publier les offres sélectionnées ?",
         button_text="Publier",
@@ -2228,7 +2228,7 @@ def get_batch_deactivate_offers_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#offers-table",
         form=form,
-        dst=url_for("backoffice_web.offer.batch_deactivate_offers"),
+        dst=url_for("backoffice.offer.batch_deactivate_offers"),
         div_id="batch-deactivate-offer-modal",
         title="Voulez-vous mettre en pause les offres sélectionnées ?",
         information="L’acteur pourra réactiver les offres",
@@ -2248,7 +2248,7 @@ def activate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     flash("L'offre a été publiée", "success")
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/batch-activate", methods=["POST"])
@@ -2272,7 +2272,7 @@ def deactivate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     flash("L'offre a été mise en pause, l’acteur pourra la réactiver", "success")
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/batch-deactivate", methods=["POST"])

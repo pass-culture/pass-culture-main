@@ -68,7 +68,7 @@ def update_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
         .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues))
         .one()
     )
-    url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id)
+    url = url_for("backoffice.offerer.get", offerer_id=offerer_id)
 
     try:
         zendesk_offerer_data = zendesk_sell_api.get_backend().get_offerer_by_id(offerer)
@@ -133,7 +133,7 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
     if not venue:
         raise NotFound()
 
-    url = url_for("backoffice_web.venue.get", venue_id=venue_id)
+    url = url_for("backoffice.venue.get", venue_id=venue_id)
 
     if not venue.isOpenToPublic:
         flash("Ce partenaire culturel n'est pas ouvert au public", "warning")

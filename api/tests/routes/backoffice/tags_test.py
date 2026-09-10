@@ -27,7 +27,7 @@ pytestmark = [
 
 
 class CreateTagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.tags.create_tag"
+    endpoint = "backoffice.tags.create_tag"
     needed_permission = perm_models.Permissions.READ_TAGS
 
     def test_create_tag(self, authenticated_client):
@@ -126,7 +126,7 @@ class CreateTagTest(PostEndpointHelper):
 
 
 class DeleteTagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.tags.delete_tag"
+    endpoint = "backoffice.tags.delete_tag"
     endpoint_kwargs = {"tag_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
 
@@ -138,13 +138,13 @@ class DeleteTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, tag_id=tag.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.tags.list_tags")
+        assert response.location == url_for("backoffice.tags.list_tags")
 
         assert db.session.query(criteria_models.Criterion).count() == 0
 
 
 class UpdateTagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.tags.update_tag"
+    endpoint = "backoffice.tags.update_tag"
     endpoint_kwargs = {"tag_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
 
@@ -231,7 +231,7 @@ class UpdateTagTest(PostEndpointHelper):
 
 
 class ListTagsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.tags.list_tags"
+    endpoint = "backoffice.tags.list_tags"
     endpoint_kwargs = {"tag_id": 1}
     needed_permission = perm_models.Permissions.READ_TAGS
 
@@ -338,7 +338,7 @@ class CreateTagButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.tags.list_tags")
+        return url_for("backoffice.tags.list_tags")
 
 
 class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
@@ -347,11 +347,11 @@ class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.tags.list_tags")
+        return url_for("backoffice.tags.list_tags")
 
 
 class CreateTagCategoryTest(PostEndpointHelper):
-    endpoint = "backoffice_web.tags.create_tag_category"
+    endpoint = "backoffice.tags.create_tag_category"
     needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
 
     def test_create_tag_category(self, authenticated_client):
@@ -361,7 +361,7 @@ class CreateTagCategoryTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=form_data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.tags.list_tags", active_tab="categories")
+        assert response.location == url_for("backoffice.tags.list_tags", active_tab="categories")
 
         assert db.session.query(criteria_models.CriterionCategory).filter_by(label=form_data["label"]).one_or_none()
 

@@ -343,7 +343,7 @@ def mark_booking_as_used(booking_id: int) -> response_utils.BackofficeResponse:
     _batch_validate_bookings([booking])
 
     return request_utils.redirect_if_not_htmx(
-        route=url_for("backoffice_web.individual_bookings.get_individual_booking", booking_id=booking_id),
+        route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=booking_id),
         render_function=partial(_render_individual_bookings, [booking_id]),
     )
 
@@ -376,14 +376,14 @@ def mark_booking_as_cancelled(booking_id: int) -> response_utils.BackofficeRespo
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.redirect_if_not_htmx(
-            route=url_for("backoffice_web.individual_bookings.get_individual_booking", booking_id=booking_id),
+            route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=booking_id),
             render_function=_render_individual_bookings,
         )
 
     _batch_cancel_bookings([booking], bookings_models.BookingCancellationReasons(form.reason.data))
 
     return request_utils.redirect_if_not_htmx(
-        route=url_for("backoffice_web.individual_bookings.get_individual_booking", booking_id=booking_id),
+        route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=booking_id),
         render_function=partial(_render_individual_bookings, [booking_id]),
     )
 
@@ -396,7 +396,7 @@ def get_batch_validate_individual_bookings_form() -> response_utils.BackofficeRe
         "components/dynamic/modal_form.html",
         target_id="#booking-table",
         form=form,
-        dst=url_for("backoffice_web.individual_bookings.batch_validate_individual_bookings"),
+        dst=url_for("backoffice.individual_bookings.batch_validate_individual_bookings"),
         div_id="batch-validate-booking-modal",
         title="Voulez-vous vraiment valider les réservations ?",
         button_text="Valider les réservations",
@@ -425,7 +425,7 @@ def get_batch_cancel_individual_bookings_form() -> response_utils.BackofficeResp
         "components/dynamic/modal_form.html",
         target_id="#booking-table",
         form=form,
-        dst=url_for("backoffice_web.individual_bookings.batch_cancel_individual_bookings"),
+        dst=url_for("backoffice.individual_bookings.batch_cancel_individual_bookings"),
         div_id="batch-cancel-booking-modal",
         title="Annuler les réservations",
         button_text="Annuler les réservations",
@@ -483,7 +483,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
                         ).format(
                             token=token,
                             url=url_for(
-                                "backoffice_web.individual_bookings.list_individual_bookings",
+                                "backoffice.individual_bookings.list_individual_bookings",
                                 q=token,
                             ),
                             message=str(exc) or exc.__class__.__name__,
@@ -498,7 +498,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
                     ).format(
                         token=token,
                         url=url_for(
-                            "backoffice_web.individual_bookings.list_individual_bookings",
+                            "backoffice.individual_bookings.list_individual_bookings",
                             q=token,
                         ),
                         message=str(exc) or exc.__class__.__name__,
@@ -558,7 +558,7 @@ def _batch_cancel_bookings(
                         ).format(
                             token=token,
                             url=url_for(
-                                "backoffice_web.individual_bookings.list_individual_bookings",
+                                "backoffice.individual_bookings.list_individual_bookings",
                                 q=token,
                             ),
                             message=str(exception) or exception.__class__.__name__,
@@ -573,7 +573,7 @@ def _batch_cancel_bookings(
                     ).format(
                         token=token,
                         url=url_for(
-                            "backoffice_web.individual_bookings.list_individual_bookings",
+                            "backoffice.individual_bookings.list_individual_bookings",
                             q=token,
                         ),
                         message=str(exc) or exc.__class__.__name__,
@@ -647,7 +647,7 @@ def _build_booking_error_str(tokens: list[str], message: str) -> str:
         count=len(tokens),
         message=message,
         url=url_for(
-            "backoffice_web.individual_bookings.list_individual_bookings",
+            "backoffice.individual_bookings.list_individual_bookings",
             q=", ".join(tokens),
         ),
         tokens=", ".join(tokens),
@@ -677,7 +677,7 @@ def get_batch_tag_fraudulent_bookings_form() -> response_utils.BackofficeRespons
         "components/dynamic/modal_form.html",
         target_id="#booking-table",
         form=form,
-        dst=url_for("backoffice_web.individual_bookings.batch_tag_fraudulent_bookings"),
+        dst=url_for("backoffice.individual_bookings.batch_tag_fraudulent_bookings"),
         div_id="batch-tag-fraudulent-booking-modal",
         title="Voulez-vous vraiment marquer ces réservations comme frauduleuses ?",
         button_text="Marquer ces réservations comme frauduleuses",
@@ -691,14 +691,14 @@ def batch_tag_fraudulent_bookings() -> response_utils.BackofficeResponse:
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.redirect_if_not_htmx(
-            route=url_for("backoffice_web.individual_bookings.list_individual_bookings"),
+            route=url_for("backoffice.individual_bookings.list_individual_bookings"),
             render_function=_render_individual_bookings,
         )
 
     booking_helpers.tag_bookings_as_fraudulent(bookings_ids=form.object_ids_list, send_emails=form.send_mails.data)
 
     return request_utils.redirect_if_not_htmx(
-        route=url_for("backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
+        route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
         render_function=partial(_render_individual_bookings, form.object_ids_list),
     )
 
@@ -726,7 +726,7 @@ def get_batch_remove_fraudulent_booking_tag_form() -> response_utils.BackofficeR
         "components/dynamic/modal_form.html",
         target_id="#booking-table",
         form=form,
-        dst=url_for("backoffice_web.individual_bookings.batch_remove_fraudulent_booking_tag"),
+        dst=url_for("backoffice.individual_bookings.batch_remove_fraudulent_booking_tag"),
         div_id="batch-remove-fraudulent-booking-tag-modal",
         title="Voulez-vous vraiment ne plus marquer ces réservations comme frauduleuses ?",
         button_text="Supprimer le tag frauduleux de ces réservations",
@@ -740,7 +740,7 @@ def batch_remove_fraudulent_booking_tag() -> response_utils.BackofficeResponse:
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.redirect_if_not_htmx(
-            route=url_for("backoffice_web.individual_bookings.list_individual_bookings"),
+            route=url_for("backoffice.individual_bookings.list_individual_bookings"),
             render_function=_render_individual_bookings,
         )
 
@@ -750,7 +750,7 @@ def batch_remove_fraudulent_booking_tag() -> response_utils.BackofficeResponse:
     db.session.flush()
 
     return request_utils.redirect_if_not_htmx(
-        route=url_for("backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
+        route=url_for("backoffice.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
         render_function=partial(_render_individual_bookings, form.object_ids_list),
     )
 

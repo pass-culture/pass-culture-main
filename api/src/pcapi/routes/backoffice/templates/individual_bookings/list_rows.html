@@ -64,7 +64,7 @@
     <td>
       {% for booking_finance_incident in booking.incidents | sort(attribute="incidentId", reverse=True) %}
         {% set incident = booking_finance_incident.incident %}
-        <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=incident.id) }}"
+        <a href="{{ url_for('backoffice.finance_incidents.get_incident', finance_incident_id=incident.id) }}"
            class="link-primary incident-link"
            data-bs-toggle="tooltip"
            data-bs-placement="top"

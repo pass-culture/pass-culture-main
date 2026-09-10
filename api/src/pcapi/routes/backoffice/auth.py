@@ -29,7 +29,7 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-@blueprint.backoffice_web.route("/login", methods=["GET"])
+@blueprint.backoffice.route("/login", methods=["GET"])
 def login() -> response_utils.BackofficeResponse:
     use_google_without_credentials = settings.BACKOFFICE_LOGIN_WITHOUT_CREDENTIALS and (
         not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET
@@ -54,7 +54,7 @@ def login() -> response_utils.BackofficeResponse:
     return backoffice_oauth.google.authorize_redirect(redirect_uri)
 
 
-@blueprint.backoffice_web.route("/authorize", methods=["GET"])
+@blueprint.backoffice.route("/authorize", methods=["GET"])
 def authorize() -> response_utils.BackofficeResponse:
     try:
         token = backoffice_oauth.google.authorize_access_token()
@@ -108,14 +108,14 @@ def authorize() -> response_utils.BackofficeResponse:
     return redirect(url_for(".home"))
 
 
-@blueprint.backoffice_web.route("/logout", methods=["POST"])
+@blueprint.backoffice.route("/logout", methods=["POST"])
 @access_control.custom_login_required(redirect_to=".home")
 def logout() -> response_utils.BackofficeResponse:
     logout_user()
     return redirect(url_for(".home"), code=303)
 
 
-@blueprint.backoffice_web.route("/user-not-found", methods=["GET"])
+@blueprint.backoffice.route("/user-not-found", methods=["GET"])
 def user_not_found() -> response_utils.BackofficeResponse:
     return render_template("auth/user_not_found.html")
 

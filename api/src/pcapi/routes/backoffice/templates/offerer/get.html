@@ -192,7 +192,7 @@
     <div class="mt-4">
       <div id="total_revenue_frame"
            hx-trigger="load"
-           hx-get="{{ url_for('backoffice_web.offerer.get_stats', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
+           hx-get="{{ url_for('backoffice.offerer.get_stats', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
     </div>
     <div class="mt-4">
       {% call build_details_tabs_wrapper() %}
@@ -212,13 +212,13 @@
         {% call build_details_tab_content("history", active_tab == 'history') %}
           <div id="offerer_history_frame"
                hx-trigger="intersect once"
-               hx-get="{{ url_for('backoffice_web.offerer.get_history', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
+               hx-get="{{ url_for('backoffice.offerer.get_history', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
         {% if show_subscription_tab %}
           {% call build_details_tab_content("subscription", active_tab == 'subscription') %}
             <div id="offerer_subscription_frame"
                  hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.offerer.get_individual_subscription', offerer_id=offerer.id) }}">
+                 hx-get="{{ url_for('backoffice.offerer.get_individual_subscription', offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}
             </div>
           {% endcall %}
@@ -227,7 +227,7 @@
           {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
             <div id="offerer_entreprise_frame"
                  hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.offerer.get_entreprise_info', offerer_id=offerer.id) }}">
+                 hx-get="{{ url_for('backoffice.offerer.get_entreprise_info', offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}
             </div>
           {% endcall %}
@@ -235,20 +235,18 @@
         {% call build_details_tab_content("pro-users", active_tab == 'users') %}
           <div id="offerer_users_frame"
                hx-trigger="intersect once"
-               hx-get="{{ url_for('backoffice_web.offerer.get_pro_users', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
+               hx-get="{{ url_for('backoffice.offerer.get_pro_users', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
         {% call build_details_tab_content("managed-venues", active_tab == 'managed_venues') %}
           <div id="offerer_venues_frame"
                hx-trigger="intersect once"
-               hx-get="{{ url_for('backoffice_web.offerer.get_managed_venues', offerer_id=offerer.id) }}">
-            {{ build_loading_spinner() }}
-          </div>
+               hx-get="{{ url_for('backoffice.offerer.get_managed_venues', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
         {% if not offerer.is_caledonian %}
           {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
             <div id="offerer_collective_dms_applications_frame"
                  hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.offerer.get_collective_dms_applications', offerer_id=offerer.id) }}">
+                 hx-get="{{ url_for('backoffice.offerer.get_collective_dms_applications', offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}
             </div>
           {% endcall %}
@@ -256,9 +254,7 @@
         {% call build_details_tab_content("bank-accounts", active_tab == 'bank_accounts') %}
           <div id="offerer_bank_accounts_frame"
                hx-trigger="intersect once"
-               hx-get="{{ url_for('backoffice_web.offerer.get_bank_accounts', offerer_id=offerer.id) }}">
-            {{ build_loading_spinner() }}
-          </div>
+               hx-get="{{ url_for('backoffice.offerer.get_bank_accounts', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
       {% endcall %}
     </div>
@@ -270,13 +266,13 @@
           class="d-none"
           target="_blank"
           rel="noopener"
-          action="{{ url_for('backoffice_web.pro.connect_as') }}"
+          action="{{ url_for('backoffice.pro.connect_as') }}"
           method="post">
       {% for field in connect_as.form %}{{ field }}{% endfor %}
     </form>
   {% endif %}
   {% if allowed_actions.actions.UPDATE in allowed_actions %}
-    {{ build_simple_modal_form("edit-offerer", url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) ,
+    {{ build_simple_modal_form("edit-offerer", url_for("backoffice.offerer.update_offerer", offerer_id=offerer.id) ,
       edit_offerer_form, "Modifier les informations de l'entité juridique", "Enregistrer") }}
   {% endif %}
   {% if allowed_actions.actions.ERP_SYNCHRONISATION in allowed_actions %}
@@ -287,8 +283,8 @@
          aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <form action="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) }}"
-                name="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) | action_to_name }}"
+          <form action="{{ url_for('backoffice.zendesk_sell.update_offerer', offerer_id=offerer.id) }}"
+                name="{{ url_for('backoffice.zendesk_sell.update_offerer', offerer_id=offerer.id) | action_to_name }}"
                 method="post">
             {{ zendesk_sell_synchronisation_form.csrf_token }}
             <div class="modal-header"
@@ -318,27 +314,27 @@
     </div>
   {% endif %}
   {% if allowed_actions.actions.PAUSE in allowed_actions %}
-    {{ build_lazy_modal(url_for('backoffice_web.validation.get_offerer_pending_form', offerer_id=offerer.id) , "pending-modal-" ~ offerer.id) }}
+    {{ build_lazy_modal(url_for('backoffice.validation.get_offerer_pending_form', offerer_id=offerer.id) , "pending-modal-" ~ offerer.id) }}
   {% endif %}
   {% if allowed_actions.actions.VALIDATE in allowed_actions %}
-    {{ build_lazy_modal(url_for('backoffice_web.validation.get_validate_offerer_form', offerer_id=offerer.id) , "validate-modal-" ~ offerer.id) }}
+    {{ build_lazy_modal(url_for('backoffice.validation.get_validate_offerer_form', offerer_id=offerer.id) , "validate-modal-" ~ offerer.id) }}
   {% endif %}
   {% if allowed_actions.actions.REJECT in allowed_actions %}
-    {{ build_lazy_modal(url_for('backoffice_web.validation.get_reject_offerer_form', offerer_id=offerer.id) , "reject-modal-" ~ offerer.id) }}
+    {{ build_lazy_modal(url_for('backoffice.validation.get_reject_offerer_form', offerer_id=offerer.id) , "reject-modal-" ~ offerer.id) }}
   {% endif %}
   {% if allowed_actions.actions.CLOSE in allowed_actions %}
-    {{ build_lazy_modal(url_for('backoffice_web.offerer.get_close_offerer_form', offerer_id=offerer.id) , "close-modal-" ~ offerer.id) }}
+    {{ build_lazy_modal(url_for('backoffice.offerer.get_close_offerer_form', offerer_id=offerer.id) , "close-modal-" ~ offerer.id) }}
   {% endif %}
   {% if allowed_actions.actions.SUSPEND in allowed_actions %}
-    {{ build_simple_modal_form("suspend-offerer", url_for("backoffice_web.offerer.suspend_offerer", offerer_id=offerer.id) ,
+    {{ build_simple_modal_form("suspend-offerer", url_for("backoffice.offerer.suspend_offerer", offerer_id=offerer.id) ,
       suspension_form, "Suspendre l'entité juridique", "Confirmer la suspension") }}
   {% endif %}
   {% if allowed_actions.actions.UNSUSPEND in allowed_actions %}
-    {{ build_simple_modal_form("unsuspend-offerer", url_for("backoffice_web.offerer.unsuspend_offerer", offerer_id=offerer.id) ,suspension_form, "Réactiver l'entité juridique", "Confirmer la réactivation") }}
+    {{ build_simple_modal_form("unsuspend-offerer", url_for("backoffice.offerer.unsuspend_offerer", offerer_id=offerer.id) ,suspension_form, "Réactiver l'entité juridique", "Confirmer la réactivation") }}
   {% endif %}
   {% if allowed_actions.actions.DELETE in allowed_actions %}
     {% set form_description = "L'entité juridique <strong>"|safe + offerer.name + "</strong> ("|safe + offerer.id|string + ") sera définitivement supprimée de la base de données. Veuillez confirmer ce choix." %}
-    {{ build_simple_modal_form("delete-offerer", url_for("backoffice_web.offerer.delete_offerer", offerer_id=offerer.id) ,
+    {{ build_simple_modal_form("delete-offerer", url_for("backoffice.offerer.delete_offerer", offerer_id=offerer.id) ,
       delete_offerer_form, "Supprimer l'entité juridique " + offerer.name,
       "Confirmer", form_description) }}
   {% endif %}

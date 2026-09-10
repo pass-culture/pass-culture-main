@@ -40,7 +40,7 @@ def special_events_fixture() -> list[operations_models.SpecialEvent]:
 
 
 class ListEventsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.operations.list_events"
+    endpoint = "backoffice.operations.list_events"
     needed_permission = perm_models.Permissions.READ_SPECIAL_EVENTS
 
     # user session + list of special events + count
@@ -85,11 +85,11 @@ class CreateEventButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.operations.list_events")
+        return url_for("backoffice.operations.list_events")
 
 
 class CreateEventTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.create_event"
+    endpoint = "backoffice.operations.create_event"
     needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
 
     # - session + user
@@ -224,7 +224,7 @@ class CreateEventTest(PostEndpointHelper):
 
 
 class GetEventDetailsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.operations.get_event_details"
+    endpoint = "backoffice.operations.get_event_details"
     endpoint_kwargs = {"special_event_id": 1}
     needed_permission = perm_models.Permissions.READ_SPECIAL_EVENTS
 
@@ -598,7 +598,7 @@ class GetEventDetailsTest(GetEndpointHelper):
 
 
 class SetResponseStatusTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.set_response_status"
+    endpoint = "backoffice.operations.set_response_status"
     endpoint_kwargs = {"special_event_id": 1, "response_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
 
@@ -647,7 +647,7 @@ class SetResponseStatusTest(PostEndpointHelper):
 
 
 class BatchValidateResponsesStatusTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.batch_validate_responses_status"
+    endpoint = "backoffice.operations.batch_validate_responses_status"
     endpoint_kwargs = {
         "special_event_id": 1,
         "response_status": operations_models.SpecialEventResponseStatus.PRESELECTED.value,
@@ -686,7 +686,7 @@ class BatchValidateResponsesStatusTest(PostEndpointHelper):
 
 
 class UpdateDateEventTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.update_date_event"
+    endpoint = "backoffice.operations.update_date_event"
     endpoint_kwargs = {"special_event_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
 
@@ -707,7 +707,7 @@ class UpdateDateEventTest(PostEndpointHelper):
 
 
 class UpdateEndImportDateTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.update_end_import_date"
+    endpoint = "backoffice.operations.update_end_import_date"
     endpoint_kwargs = {"special_event_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
 
@@ -728,7 +728,7 @@ class UpdateEndImportDateTest(PostEndpointHelper):
 
 
 class UpdateVenueTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.update_venue"
+    endpoint = "backoffice.operations.update_venue"
     endpoint_kwargs = {"special_event_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
 

@@ -22,7 +22,7 @@
         <ul class="dropdown-menu">
           <li class="dropdown-item">
             <a class="btn btn-sm d-block w-100 text-start px-3"
-               href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}">Voir le détail de l’offre</a>
+               href="{{ url_for('backoffice.offer.get_offer_details', offer_id=offer.id) }}">Voir le détail de l’offre</a>
           </li>
           {% if has_permission("PRO_FRAUD_ACTIONS") %}
             <li class="dropdown-item">
@@ -200,15 +200,12 @@
     <td>{{ links.build_venue_offers_icon_link_advanced(".list_offers", "Offres individuelles", offer.venue) }}</td>
     <td>{% if offer.lastProviderId %}{{ offer.lastProvider.name | format_badge("primary") }}{% endif %}</td>
     <td>{% if offer.culturalOutreach %}{{ offer.culturalOutreach.status | format_cultural_outreach_status }}{% endif %}</td>
-    <td {%+ if not(page and page =="llm") %}
-        data-pc-display-column="false"
-        class="d-none"
-        {% endif +%}>
-    {% if offer.id in offers_pertinence %}
-      {{ offers_pertinence[offer.id] }}
-    {% else %}
-      -
-    {% endif %}
-  </td>
-</tr>
+    <td {%+ if not(page and page =="llm") %} data-pc-display-column="false" class="d-none" {% endif +%}>
+      {% if offer.id in offers_pertinence %}
+        {{ offers_pertinence[offer.id] }}
+      {% else %}
+        -
+      {% endif %}
+    </td>
+  </tr>
 {% endfor %}

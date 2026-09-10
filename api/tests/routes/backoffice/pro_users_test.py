@@ -39,7 +39,7 @@ pytestmark = [
 
 
 class GetProUserTest(GetEndpointHelper):
-    endpoint = "backoffice_web.pro_user.get"
+    endpoint = "backoffice.pro_user.get"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -53,21 +53,21 @@ class GetProUserTest(GetEndpointHelper):
         @property
         def path(self):
             user = offerers_factories.UserOffererFactory(user__isEmailValidated=False).user
-            return url_for("backoffice_web.pro_user.get", user_id=user.id)
+            return url_for("backoffice.pro_user.get", user_id=user.id)
 
         def test_button_when_can_add_one(self, authenticated_client):
             user = offerers_factories.UserOffererFactory(user__isEmailValidated=False).user
-            response = authenticated_client.get(url_for("backoffice_web.pro_user.get", user_id=user.id))
+            response = authenticated_client.get(url_for("backoffice.pro_user.get", user_id=user.id))
             assert response.status_code == 200
 
             assert self.button_label in response.data.decode("utf-8")
 
-            url = url_for("backoffice_web.pro_user.validate_pro_user_email", user_id=user.id)
+            url = url_for("backoffice.pro_user.validate_pro_user_email", user_id=user.id)
             assert url in response.data.decode("utf-8")
 
         def test_no_button_if_validated_email(self, authenticated_client):
             user = offerers_factories.UserOffererFactory(user__isEmailValidated=True).user
-            response = authenticated_client.get(url_for("backoffice_web.pro_user.get", user_id=user.id))
+            response = authenticated_client.get(url_for("backoffice.pro_user.get", user_id=user.id))
             assert response.status_code == 200
 
             assert self.button_label not in response.data.decode("utf-8")
@@ -79,13 +79,13 @@ class GetProUserTest(GetEndpointHelper):
         @property
         def path(self):
             user = users_factories.NonAttachedProFactory()
-            return url_for("backoffice_web.pro_user.get", user_id=user.id)
+            return url_for("backoffice.pro_user.get", user_id=user.id)
 
         def test_button_when_can_be_deleted(self, authenticated_client):
             user = users_factories.NonAttachedProFactory()
-            url = url_for("backoffice_web.pro_user.delete", user_id=user.id)
+            url = url_for("backoffice.pro_user.delete", user_id=user.id)
 
-            response = authenticated_client.get(url_for("backoffice_web.pro_user.get", user_id=user.id))
+            response = authenticated_client.get(url_for("backoffice.pro_user.get", user_id=user.id))
 
             assert response.status_code == 200
             assert self.button_label in response.data.decode("utf-8")
@@ -93,9 +93,9 @@ class GetProUserTest(GetEndpointHelper):
 
         def test_button_when_cannot_be_deleted_role(self, authenticated_client):
             user = users_factories.UserFactory(roles=[users_models.UserRole.PRO])
-            url = url_for("backoffice_web.pro_user.delete", user_id=user.id)
+            url = url_for("backoffice.pro_user.delete", user_id=user.id)
 
-            response = authenticated_client.get(url_for("backoffice_web.pro_user.get", user_id=user.id))
+            response = authenticated_client.get(url_for("backoffice.pro_user.get", user_id=user.id))
 
             assert response.status_code == 200
             assert self.button_label not in response.data.decode("utf-8")
@@ -104,9 +104,9 @@ class GetProUserTest(GetEndpointHelper):
         def test_button_when_cannot_be_deleted_user_offerer(self, authenticated_client):
             user = users_factories.NonAttachedProFactory()
             offerers_factories.UserOffererFactory(user=user)
-            url = url_for("backoffice_web.pro_user.delete", user_id=user.id)
+            url = url_for("backoffice.pro_user.delete", user_id=user.id)
 
-            response = authenticated_client.get(url_for("backoffice_web.pro_user.get", user_id=user.id))
+            response = authenticated_client.get(url_for("backoffice.pro_user.get", user_id=user.id))
 
             assert response.status_code == 200
             assert self.button_label not in response.data.decode("utf-8")
@@ -119,7 +119,7 @@ class GetProUserTest(GetEndpointHelper):
         @property
         def path(self):
             user = offerers_factories.UserOffererFactory().user
-            return url_for("backoffice_web.pro_user.get", user_id=user.id)
+            return url_for("backoffice.pro_user.get", user_id=user.id)
 
     class UnsuspendButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
@@ -128,7 +128,7 @@ class GetProUserTest(GetEndpointHelper):
         @property
         def path(self):
             user = offerers_factories.UserOffererFactory(user__isActive=False).user
-            return url_for("backoffice_web.pro_user.get", user_id=user.id)
+            return url_for("backoffice.pro_user.get", user_id=user.id)
 
     class DisconnectButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -138,12 +138,12 @@ class GetProUserTest(GetEndpointHelper):
         def path(self):
             user = offerers_factories.UserOffererFactory(user__isActive=False).user
             users_factories.UserSessionFactory(user=user)
-            return url_for("backoffice_web.pro_user.get", user_id=user.id)
+            return url_for("backoffice.pro_user.get", user_id=user.id)
 
         def test_disconnect_button_absent_when_user_is_not_connected(self, authenticated_client):
             user = offerers_factories.UserOffererFactory().user
 
-            response = authenticated_client.get(url_for("backoffice_web.pro_user.get", user_id=user.id))
+            response = authenticated_client.get(url_for("backoffice.pro_user.get", user_id=user.id))
 
             assert "Déconnecter les sessions" not in response.text
 
@@ -165,7 +165,7 @@ class GetProUserTest(GetEndpointHelper):
         assert f"Code postal : {user.postalCode} " in content
         assert f"Département : {user.departementCode} " in content
         assert "Email validé : Oui" in content
-        assert url_for("backoffice_web.users.redirect_to_brevo_user_page", user_id=user.id).encode() in response.data
+        assert url_for("backoffice.users.redirect_to_brevo_user_page", user_id=user.id).encode() in response.data
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Pro" in badges
@@ -180,12 +180,12 @@ class GetProUserTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.pro.search_pro")
+        expected_url = url_for("backoffice.pro.search_pro")
         assert response.location == expected_url
 
     def test_get_pro_user_with_null_names(self, authenticated_client, db_session):
         pro_user = users_factories.ProFactory(firstName=None, lastName=None)
-        url = url_for("backoffice_web.pro_user.get", user_id=pro_user.id)
+        url = url_for("backoffice.pro_user.get", user_id=pro_user.id)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
@@ -194,7 +194,7 @@ class GetProUserTest(GetEndpointHelper):
 
 
 class UpdateProUserTest(PostEndpointHelper):
-    endpoint = "backoffice_web.pro_user.update_pro_user"
+    endpoint = "backoffice.pro_user.update_pro_user"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -293,7 +293,7 @@ class UpdateProUserTest(PostEndpointHelper):
 
 
 class GetProUserHistoryTest(GetEndpointHelper):
-    endpoint = "backoffice_web.pro_user.get_details"
+    endpoint = "backoffice.pro_user.get_details"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -307,7 +307,7 @@ class GetProUserHistoryTest(GetEndpointHelper):
         @property
         def path(self):
             user = offerers_factories.UserOffererFactory().user
-            return url_for("backoffice_web.pro_user.get_details", user_id=user.id)
+            return url_for("backoffice.pro_user.get_details", user_id=user.id)
 
     def test_get_history(self, authenticated_client, pro_user):
         email = pro_user.email
@@ -387,7 +387,7 @@ class GetProUserHistoryTest(GetEndpointHelper):
 
 
 class CommentProUserTest(PostEndpointHelper):
-    endpoint = "backoffice_web.pro_user.comment_pro_user"
+    endpoint = "backoffice.pro_user.comment_pro_user"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -397,7 +397,7 @@ class CommentProUserTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.pro_user.get", user_id=pro_user.id)
+        expected_url = url_for("backoffice.pro_user.get", user_id=pro_user.id)
         assert response.location == expected_url
 
         assert len(pro_user.action_history) == 1
@@ -423,7 +423,7 @@ class CommentProUserTest(PostEndpointHelper):
 
 
 class GetProUserOfferersTest(GetEndpointHelper):
-    endpoint = "backoffice_web.pro_user.get_details"
+    endpoint = "backoffice.pro_user.get_details"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -501,7 +501,7 @@ class GetProUserOfferersTest(GetEndpointHelper):
 
 
 class ValidateProEmailTest(PostEndpointHelper):
-    endpoint = "backoffice_web.pro_user.validate_pro_user_email"
+    endpoint = "backoffice.pro_user.validate_pro_user_email"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -527,7 +527,7 @@ class ValidateProEmailTest(PostEndpointHelper):
 
 
 class DeleteProUserTest(PostEndpointHelper):
-    endpoint = "backoffice_web.pro_user.delete"
+    endpoint = "backoffice.pro_user.delete"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -543,7 +543,7 @@ class DeleteProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro.search_pro")
+        assert response.location == url_for("backoffice.pro.search_pro")
 
         mails_api.delete_contact.assert_called_once_with(user_email, True)
         delete_user_attributes_task.delay.assert_called_once_with({"user_id": user_id})
@@ -569,7 +569,7 @@ class DeleteProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro.search_pro")
+        assert response.location == url_for("backoffice.pro.search_pro")
 
         mails_api.delete_contact.assert_not_called()
         delete_user_attributes_task.delay.assert_called_once_with({"user_id": user_id})
@@ -593,7 +593,7 @@ class DeleteProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id)
+        assert response.location == url_for("backoffice.pro_user.get", user_id=user.id)
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data) == "L'email saisi ne correspond pas à celui du compte"
@@ -622,7 +622,7 @@ class DeleteProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id)
+        assert response.location == url_for("backoffice.pro_user.get", user_id=user.id)
         redirected_response = authenticated_client.get(response.location)
         assert html_parser.extract_alert(redirected_response.data) == "Le compte est rattaché à une entité juridique"
 
@@ -726,7 +726,7 @@ class DeleteProUserTest(PostEndpointHelper):
 
 
 class DisconnectProUserTest(PostEndpointHelper):
-    endpoint = "backoffice_web.pro_user.disconnect_pro_user"
+    endpoint = "backoffice.pro_user.disconnect_pro_user"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 

@@ -146,7 +146,7 @@ def list_chronicles() -> response_utils.BackofficeResponse:
         per_page=int(form.limit.data),
     )
 
-    form_url = partial(url_for, "backoffice_web.chronicles.list_chronicles", **form.raw_data)
+    form_url = partial(url_for, "backoffice.chronicles.list_chronicles", **form.raw_data)
     next_pages_urls = search_utils.pagination_links(form_url, int(form.page.data), paginated_chronicles.pages)
 
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
@@ -251,7 +251,7 @@ def update_chronicle_content(chronicle_id: int) -> response_utils.BackofficeResp
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
-            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content"), code=303
+            url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="content"), code=303
         )
 
     chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
@@ -267,7 +267,7 @@ def update_chronicle_content(chronicle_id: int) -> response_utils.BackofficeResp
     if request_utils.is_request_from_htmx():
         return _render_chronicle_row(chronicle_id)
     return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content")
+        request, url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="content")
     )
 
 
@@ -286,7 +286,7 @@ def publish_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
     flash(f"La chronique {chronicle_id} a été publiée", "success")
     if request_utils.is_request_from_htmx():
         return _render_chronicle_row(chronicle_id)
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.chronicles.list_chronicles"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.chronicles.list_chronicles"))
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/unpublish", methods=["POST"])
@@ -305,7 +305,7 @@ def unpublish_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
 
     if request_utils.is_request_from_htmx():
         return _render_chronicle_row(chronicle_id)
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.chronicles.list_chronicles"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.chronicles.list_chronicles"))
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/attach-product", methods=["POST"])
@@ -319,7 +319,7 @@ def attach_product(chronicle_id: int) -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
-            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
+            url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
         )
 
     product_identifier = str(form.product_identifier.data)
@@ -364,7 +364,7 @@ def attach_product(chronicle_id: int) -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Aucune œuvre n'a été trouvée pour cet identifiant", "warning")
         return redirect(
-            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
+            url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
         )
 
     for product in products:
@@ -390,9 +390,7 @@ def attach_product(chronicle_id: int) -> response_utils.BackofficeResponse:
             "success",
         )
 
-    return redirect(
-        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
-    )
+    return redirect(url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303)
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/detach-product/<int:product_id>", methods=["POST"])
@@ -428,9 +426,7 @@ def detach_product(chronicle_id: int, product_id: int) -> response_utils.Backoff
         mark_transaction_as_invalid()
         flash("Le produit n'existe pas ou n'était pas attaché à la chronique", "warning")
 
-    return redirect(
-        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
-    )
+    return redirect(url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303)
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/attach-offer", methods=["POST"])
@@ -444,7 +440,7 @@ def attach_offer(chronicle_id: int) -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
-            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
+            url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
         )
 
     offers_subquery = (
@@ -469,7 +465,7 @@ def attach_offer(chronicle_id: int) -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Aucune offre n'a été trouvée pour cet ID", "warning")
         return redirect(
-            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
+            url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
         )
 
     for chronicle, offers_id in chronicle_query:
@@ -485,9 +481,7 @@ def attach_offer(chronicle_id: int) -> response_utils.BackofficeResponse:
         "success",
     )
 
-    return redirect(
-        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
-    )
+    return redirect(url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303)
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/detach-offer/<int:offer_id>", methods=["POST"])
@@ -523,9 +517,7 @@ def detach_offer(chronicle_id: int, offer_id: int) -> response_utils.BackofficeR
         mark_transaction_as_invalid()
         flash("L'offre n'existe pas ou n'était pas attachée à la chronique", "warning")
 
-    return redirect(
-        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
-    )
+    return redirect(url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303)
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/comment", methods=["POST"])
@@ -535,7 +527,7 @@ def comment_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
-            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303
+            url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303
         )
 
     chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
@@ -544,9 +536,7 @@ def comment_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
         history_models.ActionType.COMMENT, author=current_user, chronicle=chronicle, comment=form.comment.data
     )
     flash("Le commentaire a été enregistré", "success")
-    return redirect(
-        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303
-    )
+    return redirect(url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303)
 
 
 @chronicles_blueprint.route("/create", methods=["POST"])
@@ -556,7 +546,7 @@ def create_chronicle() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.chronicles.list_chronicles"), code=303)
+        return redirect(url_for("backoffice.chronicles.list_chronicles"), code=303)
 
     unique_random_value = str(int(time())) + str(randint(100_000, 1_000_000))
     user_id = (
@@ -600,4 +590,4 @@ def create_chronicle() -> response_utils.BackofficeResponse:
     )
 
     db.session.add(chronicle)
-    return redirect(url_for("backoffice_web.chronicles.list_chronicles"), code=303)
+    return redirect(url_for("backoffice.chronicles.list_chronicles"), code=303)

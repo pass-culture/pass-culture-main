@@ -1,25 +1,25 @@
 {# ----- internal links (backoffice) ----- #}
 {% macro build_public_user_name_to_details_link(user, active_tab=none, target="_top") %}
   {% if user %}
-    <a href="{{ url_for('backoffice_web.public_accounts.get_public_account', user_id=user.id, active_tab=active_tab) }}"
+    <a href="{{ url_for('backoffice.public_accounts.get_public_account', user_id=user.id, active_tab=active_tab) }}"
        class="link-primary"
        target="{{ target }}">{{ user.full_name }} ({{ user.id }})</a>
   {% endif %}
 {% endmacro %}
 {% macro build_individual_booking_details_link(booking_id) %}
-  <a href="{{ url_for('backoffice_web.individual_bookings.get_individual_booking', booking_id=booking_id) }}"
+  <a href="{{ url_for('backoffice.individual_bookings.get_individual_booking', booking_id=booking_id) }}"
      class="link-primary"
      title="Page de la réservation">{{ booking_id }}</a>
 {% endmacro %}
 {% macro build_pro_user_name_to_details_link(user_id, text) %}
   {% if user_id %}
-    <a href="{{ url_for('backoffice_web.pro_user.get', user_id=user_id) }}"
+    <a href="{{ url_for('backoffice.pro_user.get', user_id=user_id) }}"
        class="link-primary"
        target="_top">{{ text|trim or user_id }}</a>
   {% endif %}
 {% endmacro %}
 {% macro build_offerer_name_to_details_link(offerer, text_attr="name") %}
-  <a href="{{ url_for('backoffice_web.offerer.get', offerer_id=offerer.id) }}"
+  <a href="{{ url_for('backoffice.offerer.get', offerer_id=offerer.id) }}"
      class="link-primary"
      data-bs-toggle="tooltip"
      data-bs-placement="top"
@@ -27,7 +27,7 @@
      target="_top">{{ offerer[text_attr] }}</a>
 {% endmacro %}
 {% macro build_finance_incident_to_details_link(finance_incident, text_attr="id", active_tab='bookings') %}
-  <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=finance_incident.id, active_tab=active_tab) }}"
+  <a href="{{ url_for('backoffice.finance_incidents.get_incident', finance_incident_id=finance_incident.id, active_tab=active_tab) }}"
      class="link-primary"
      target="_top">{{ finance_incident[text_attr] }}</a>
 {% endmacro %}
@@ -35,7 +35,7 @@
   {% if venue.isSoftDeleted %}
     {{ venue[text_attr] }} (supprimé)
   {% else %}
-    <a href="{{ url_for('backoffice_web.venue.get', venue_id=venue.id, active_tab=active_tab) }}"
+    <a href="{{ url_for('backoffice.venue.get', venue_id=venue.id, active_tab=active_tab) }}"
        class="link-primary"
        data-bs-toggle="tooltip"
        data-bs-placement="top"
@@ -44,12 +44,12 @@
   {% endif %}
 {% endmacro %}
 {% macro build_offer_name_to_details_link(offer, text_attr="name") %}
-  <a href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}"
+  <a href="{{ url_for('backoffice.offer.get_offer_details', offer_id=offer.id) }}"
      class="link-primary"
      target="_top">{{ offer[text_attr] }}</a>
 {% endmacro %}
 {% macro build_collective_offer_name_to_details_link(collective_offer, text_attr="name") %}
-  <a href="{{ url_for('backoffice_web.collective_offer.get_collective_offer_details', collective_offer_id=collective_offer.id) }}"
+  <a href="{{ url_for('backoffice.collective_offer.get_collective_offer_details', collective_offer_id=collective_offer.id) }}"
      class="link-primary"
      target="_top">{{ collective_offer[text_attr] }}</a>
 {% endmacro %}
@@ -60,37 +60,37 @@
      title="{{ hint }} associées au partenaire culturel">Voir toutes les offres</a>
 {% endmacro %}
 {% macro build_product_details_link(product, text_attr="id") %}
-  <a href="{{ url_for('backoffice_web.product.get_product_details', product_id=product.id) }}"
+  <a href="{{ url_for('backoffice.product.get_product_details', product_id=product.id) }}"
      class="link-primary"
      title="Page du produit">{{ product[text_attr] }}</a>
 {% endmacro %}
 {% macro build_offer_details_link(offer) %}
-  <a href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}"
+  <a href="{{ url_for('backoffice.offer.get_offer_details', offer_id=offer.id) }}"
      class="link-primary"
      title="Page de l'offre">{{ offer.id }}</a>
 {% endmacro %}
 {% macro build_collective_offer_details_link(offer) %}
-  <a href="{{ url_for('backoffice_web.collective_offer.get_collective_offer_details', collective_offer_id=offer.id) }}"
+  <a href="{{ url_for('backoffice.collective_offer.get_collective_offer_details', collective_offer_id=offer.id) }}"
      class="link-primary"
      title="Page de l'offre">{{ offer.id }}</a>
 {% endmacro %}
 {% macro build_collective_offer_template_details_link(offer, text_attr="id") %}
-  <a href="{{ url_for('backoffice_web.collective_offer_template.get_collective_offer_template_details', collective_offer_template_id=offer.id) }}"
+  <a href="{{ url_for('backoffice.collective_offer_template.get_collective_offer_template_details', collective_offer_template_id=offer.id) }}"
      class="link-primary"
      title="Page de l'offre vitrine">{{ offer[text_attr] }}</a>
 {% endmacro %}
 {% macro build_bank_account_name_to_details_link(bank_account, text_attr="label") %}
-  <a href="{{ url_for('backoffice_web.bank_account.get', bank_account_id=bank_account.id) }}"
+  <a href="{{ url_for('backoffice.bank_account.get', bank_account_id=bank_account.id) }}"
      class="link-primary"
      target="_top">{{ bank_account[text_attr] }}</a>
 {% endmacro %}
 {% macro build_provider_name_to_details_link(provider, text_attr="name") %}
-  <a href="{{ url_for('backoffice_web.providers.get_provider', provider_id=provider.id) }}"
+  <a href="{{ url_for('backoffice.providers.get_provider', provider_id=provider.id) }}"
      class="link-primary"
      target="_top">{{ provider[text_attr] }}</a>
 {% endmacro %}
 {% macro build_special_event_id_to_details_link(special_event, text_attr="id") %}
-  <a href="{{ url_for('backoffice_web.operations.get_event_details', special_event_id=special_event.id) }}"
+  <a href="{{ url_for('backoffice.operations.get_event_details', special_event_id=special_event.id) }}"
      class="link-primary"
      target="_top">{{ special_event[text_attr] }}</a>
 {% endmacro %}
@@ -184,7 +184,7 @@
      class="link-primary">{{ collective_dms_application.application }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
 {% macro build_safe_redirect_link(url) %}
-  <a href="{{ url_for('backoffice_web.safe_redirect', url=url) }}"
+  <a href="{{ url_for('backoffice.safe_redirect', url=url) }}"
      target="_blank"
      rel="noreferrer noopener"
      title="Ouvrir le site web externe"
@@ -198,7 +198,7 @@
      class="link-primary">{{ zendesk_id }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
 {% macro build_artist_details_link(artist, text_attr="name") %}
-  <a href="{{ url_for('backoffice_web.artist.get_artist_details', artist_id=artist.id) }}"
+  <a href="{{ url_for('backoffice.artist.get_artist_details', artist_id=artist.id) }}"
      class="link-primary"
      title="Page de l'artiste">{{ artist[text_attr] }}</a>
 {% endmacro %}

@@ -37,12 +37,12 @@
                   {% if has_permission("MANAGE_CHRONICLE") %}
                     {% if chronicle.isActive %}
                       {{ build_modal_form("unpublish-chronicle-modal-" + chronicle.id|string,
-                        url_for('backoffice_web.chronicles.unpublish_chronicle', chronicle_id=chronicle.id) ,
+                        url_for('backoffice.chronicles.unpublish_chronicle', chronicle_id=chronicle.id) ,
                         chronicle_publication_form, "Dépublier", "Dépublier la chronique " + chronicle.id|string, "Dépublier")
                       }}
                     {% else %}
                       {{ build_modal_form("publish-chronicle-modal-" + chronicle.id|string,
-                        url_for('backoffice_web.chronicles.publish_chronicle', chronicle_id=chronicle.id) ,
+                        url_for('backoffice.chronicles.publish_chronicle', chronicle_id=chronicle.id) ,
                         chronicle_publication_form, "Publier", "Publier la chronique " + chronicle.id|string, "Publier") }}
                     {% endif %}
                   {% endif %}
@@ -61,7 +61,7 @@
                     Non renseigné
                   {% endif %}
                   {% if chronicle.userId %}
-                    (<a href="{{ url_for('backoffice_web.public_accounts.get_public_account', user_id=chronicle.userId) }}">Voir
+                    (<a href="{{ url_for('backoffice.public_accounts.get_public_account', user_id=chronicle.userId) }}">Voir
                     le profil du jeune</a>)
                   {% endif %}
                 </p>
@@ -133,7 +133,7 @@
             {% if has_permission("MANAGE_CHRONICLE") %}
               <div class="d-flex flex-row-reverse">
                 <div class="p-2">
-                  {{ build_modal_form("attach-offer", url_for("backoffice_web.chronicles.attach_offer",
+                  {{ build_modal_form("attach-offer", url_for("backoffice.chronicles.attach_offer",
                     chronicle_id=chronicle.id) , attach_offer_form, "", "Rattacher une offre", "Rattacher", none,
                     "bi-plus-circle-fill h3") }}
                 </div>
@@ -171,7 +171,7 @@
                     {% endif %}
                     <td>
                       <a class="link-primary"
-                         href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}">{{ offer.id }}</a>
+                         href="{{ url_for('backoffice.offer.get_offer_details', offer_id=offer.id) }}">{{ offer.id }}</a>
                     </td>
                     <td>{{ offer.name }}</td>
                   </tr>
@@ -180,7 +180,7 @@
             </table>
             {% if has_permission("MANAGE_CHRONICLE") %}
               {% for offer in chronicle.offers %}
-                {{ build_modal_form("detach-offer-" + offer.id|string, url_for('backoffice_web.chronicles.detach_offer',
+                {{ build_modal_form("detach-offer-" + offer.id|string, url_for('backoffice.chronicles.detach_offer',
                   chronicle_id=chronicle.id, offer_id=offer.id) , empty_form, "", "Détacher " + offer.name, "Détacher") }}
               {% endfor %}
             {% endif %}
@@ -189,7 +189,7 @@
             {% if has_permission("MANAGE_CHRONICLE") %}
               <div class="d-flex flex-row-reverse">
                 <div class="p-2">
-                  {{ build_modal_form("attach-product", url_for("backoffice_web.chronicles.attach_product",
+                  {{ build_modal_form("attach-product", url_for("backoffice.chronicles.attach_product",
                     chronicle_id=chronicle.id) , attach_product_form, "", "Rattacher une œuvre", "Rattacher", none,
                     "bi-plus-circle-fill h3") }}
                 </div>
@@ -258,7 +258,7 @@
             </table>
             {% if has_permission("MANAGE_CHRONICLE") %}
               {% for product in chronicle.products %}
-                {{ build_modal_form("detach-product-" + product.id|string, url_for('backoffice_web.chronicles.detach_product',
+                {{ build_modal_form("detach-product-" + product.id|string, url_for('backoffice.chronicles.detach_product',
                   chronicle_id=chronicle.id, product_id=product.id) , empty_form, "", "Détacher " + product.name, "Détacher") }}
               {% endfor %}
             {% endif %}
@@ -274,7 +274,7 @@
                           title="Modifier le contenu">
                     <i class="bi bi-pencil-fill h3"></i>
                   </button>
-                  {{ build_lazy_modal(url_for('backoffice_web.chronicles.get_update_chronicle_content_form',
+                  {{ build_lazy_modal(url_for('backoffice.chronicles.get_update_chronicle_content_form',
                     chronicle_id=chronicle.id) , "update-chronicle-content-" + chronicle.id|string) }}
                 </div>
               </div>
@@ -282,7 +282,7 @@
             <div>{{ chronicle.content | trim | nl2br }}</div>
           {% endcall %}
           {% call build_details_tab_content("history", active_tab == 'history') %}
-            {% call build_history_view(url_for("backoffice_web.chronicles.comment_chronicle", chronicle_id=chronicle.id),
+            {% call build_history_view(url_for("backoffice.chronicles.comment_chronicle", chronicle_id=chronicle.id),
               comment_form, action_history, False, "MANAGE_CHRONICLE") %}
               Ajouter un commentaire
             {% endcall %}

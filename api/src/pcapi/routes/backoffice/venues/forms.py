@@ -24,7 +24,7 @@ from pcapi.utils import siren as siren_utils
 
 class EditVenueForm(utils.PCForm):
     tags = fields.PCTomSelectField(
-        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"
+        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice.autocomplete_criteria"
     )
     name = fields.PCStringField(
         "Nom juridique",
@@ -225,14 +225,14 @@ class GetVenuesListForm(utils.PCForm):
         get_label=lambda venue_label: venue_label.label,
     )
     criteria = fields.PCTomSelectField(
-        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"
+        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice.autocomplete_criteria"
     )
     offerer = fields.PCTomSelectField(
         "Entités juridiques",
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
     )
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     department = fields.PCSelectMultipleField("Départements", choices=area_choices)
@@ -241,7 +241,7 @@ class GetVenuesListForm(utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_providers",
+        endpoint="backoffice.autocomplete_providers",
     )
     only_validated_offerers = fields.PCSwitchBooleanField(
         "Uniquement les entités juridiques validées",
@@ -287,7 +287,7 @@ class GetVenuesListForm(utils.PCForm):
 
 class BatchEditVenuesForm(empty_forms.BatchForm):
     criteria = fields.PCTomSelectField(
-        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"
+        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice.autocomplete_criteria"
     )
 
 

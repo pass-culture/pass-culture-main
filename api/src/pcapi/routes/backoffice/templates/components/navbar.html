@@ -9,7 +9,7 @@
             aria-label="Afficher/Cacher le menu">
       <i class="bi bi-list h4"></i>
     </button>
-    <a href="{{ url_for('backoffice_web.home') }}">
+    <a href="{{ url_for('backoffice.home') }}">
       <p class="navbar-brand m-0 text-primary btn">
         {{ logo.passculture() }}
         Back Office
@@ -21,7 +21,7 @@
          aria-labelledby="offcanvasNavbarLabel">
       <div class="offcanvas-body">
         <div class="d-flex justify-content-between align-items-center p-3">
-          <a href="{{ url_for('backoffice_web.home') }}"
+          <a href="{{ url_for('backoffice.home') }}"
              class="btn text-primary p-0">
             {{ logo.passculture() }}
             Back Office
@@ -45,8 +45,8 @@
             <hr class="border border-tertiary" />
           {% endfor %}
           <li class="nav-item">
-            <form action="{{ url_for('backoffice_web.logout') }}"
-                  name="{{ url_for('backoffice_web.logout') | action_to_name }}"
+            <form action="{{ url_for('backoffice.logout') }}"
+                  name="{{ url_for('backoffice.logout') | action_to_name }}"
                   method="post">
               {{ csrf_token }}
               <button type="submit"

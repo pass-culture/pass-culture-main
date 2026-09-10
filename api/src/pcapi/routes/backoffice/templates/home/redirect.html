@@ -25,13 +25,13 @@
             </p>
             <p>Si le site s'ouvre en rechargeant cette page, alors tout va bien !</p>
             <p>
-              <a href="{{ url_for('backoffice_web.safe_redirect', url=url) }}"
+              <a href="{{ url_for('backoffice.safe_redirect', url=url) }}"
                  class="btn btn-md btn-primary fw-bold"><i class="bi bi-arrow-clockwise"></i> Recharger</a>
             </p>
             <p>
               Si vous avez confiance et souhaitez poursuivre sans attendre la fin de l'analyse, cliquez sur ce lien :
               <br />
-              <a href="{{ url_for('backoffice_web.safe_redirect', ignore=reason, url=url) }}">{{ url }}</a>
+              <a href="{{ url_for('backoffice.safe_redirect', ignore=reason, url=url) }}">{{ url }}</a>
             </p>
           </div>
         {% elif reason == "MALICIOUS" %}
@@ -57,7 +57,7 @@
             <p>
               Si vous savez (vraiment) ce que vous faites et souhaitez ignorer cet avertissement, cliquez sur ce lien :
               <br />
-              <a href="{{ url_for('backoffice_web.safe_redirect', ignore=reason, url=url) }}">{{ url }}</a>
+              <a href="{{ url_for('backoffice.safe_redirect', ignore=reason, url=url) }}">{{ url }}</a>
             </p>
           </div>
         {% elif reason == "ERROR" %}
@@ -70,7 +70,7 @@
             <p>
               Si vous avez confiance et souhaitez poursuivre, cliquez sur ce lien :
               <br />
-              <a href="{{ url_for('backoffice_web.safe_redirect', ignore=reason, url=url) }}">{{ url }}</a>
+              <a href="{{ url_for('backoffice.safe_redirect', ignore=reason, url=url) }}">{{ url }}</a>
             </p>
           </div>
         {% endif %}

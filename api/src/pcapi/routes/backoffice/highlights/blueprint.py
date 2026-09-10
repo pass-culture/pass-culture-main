@@ -62,7 +62,7 @@ def list_highlights() -> response_utils.BackofficeResponse:
         per_page=int(form.limit.data),
     )
 
-    form_url = partial(url_for, "backoffice_web.highlights.list_highlights", **form.raw_data)
+    form_url = partial(url_for, "backoffice.highlights.list_highlights", **form.raw_data)
     next_pages_urls = search_utils.pagination_links(form_url, int(form.page.data), paginated_rows.pages)
 
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
@@ -85,7 +85,7 @@ def get_create_highlight_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         ajax_submit=False,
         form=form,
-        dst=url_for("backoffice_web.highlights.create_highlight"),
+        dst=url_for("backoffice.highlights.create_highlight"),
         div_id="create-highlight",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer une valorisation",
         button_text="Créer la valorisation",
@@ -139,7 +139,7 @@ def get_update_highlight_form(highlight_id: int) -> response_utils.BackofficeRes
         "components/dynamic/modal_form.html",
         ajax_submit=False,
         form=form,
-        dst=url_for("backoffice_web.highlights.update_highlight", highlight_id=highlight_id),
+        dst=url_for("backoffice.highlights.update_highlight", highlight_id=highlight_id),
         div_id=f"update-highlight-{highlight_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Modifier la valorisation",
         button_text="Enregistrer",

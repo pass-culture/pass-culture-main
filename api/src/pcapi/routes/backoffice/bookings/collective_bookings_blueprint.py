@@ -292,7 +292,7 @@ def mark_booking_as_used(collective_booking_id: int) -> response_utils.Backoffic
         flash("Impossible de valider une réservation qui n'est pas annulée", "warning")
         return request_utils.redirect_if_not_htmx(
             route=url_for(
-                "backoffice_web.collective_offer.get_collective_offer_details",
+                "backoffice.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
             render_function=partial(_render_collective_bookings, [collective_booking.id]),
@@ -302,7 +302,7 @@ def mark_booking_as_used(collective_booking_id: int) -> response_utils.Backoffic
         flash("Impossible de valider une réservation annulée liée à un incident finance validé", "warning")
         return request_utils.redirect_if_not_htmx(
             route=url_for(
-                "backoffice_web.collective_offer.get_collective_offer_details",
+                "backoffice.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
             render_function=partial(_render_collective_bookings, [collective_booking.id]),
@@ -318,7 +318,7 @@ def mark_booking_as_used(collective_booking_id: int) -> response_utils.Backoffic
 
     return request_utils.redirect_if_not_htmx(
         route=url_for(
-            "backoffice_web.collective_offer.get_collective_offer_details",
+            "backoffice.collective_offer.get_collective_offer_details",
             collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
         ),
         render_function=partial(_render_collective_bookings, [collective_booking.id]),
@@ -349,7 +349,7 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> response_utils.Back
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.redirect_if_not_htmx(
             route=url_for(
-                "backoffice_web.collective_offer.get_collective_offer_details",
+                "backoffice.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
             render_function=partial(_render_collective_bookings, [collective_booking.id]),
@@ -376,7 +376,7 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> response_utils.Back
 
     return request_utils.redirect_if_not_htmx(
         route=url_for(
-            "backoffice_web.collective_offer.get_collective_offer_details",
+            "backoffice.collective_offer.get_collective_offer_details",
             collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
         ),
         render_function=partial(_render_collective_bookings, [collective_booking.id]),

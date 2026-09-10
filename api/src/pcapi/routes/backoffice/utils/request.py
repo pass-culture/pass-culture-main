@@ -45,7 +45,7 @@ def safe_redirect_back(request: Request, default_url: str | None = None, *, code
             return redirect(referrer, code=code)
     if default_url:
         return redirect(default_url, code=code)
-    return redirect(url_for("backoffice_web.home"), code=code)
+    return redirect(url_for("backoffice.home"), code=code)
 
 
 # Derived from https://stackoverflow.com/questions/19631335/reverting-a-url-in-flask-to-the-endpoint-arguments

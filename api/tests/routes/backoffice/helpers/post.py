@@ -27,7 +27,7 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
 
     def fetch_csrf_token(self, client):
         # will generate a csrf token (for the logout button)
-        client.get(url_for("backoffice_web.home"))
+        client.get(url_for("backoffice.home"))
 
     def post_to_endpoint(
         self,
@@ -68,7 +68,7 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
         response = client_method(self.path, form=self.form)
 
         assert response.status_code in (302, 303)
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
 
     def test_missing_csrf_token(self, client):
         user = users_factories.UserFactory()

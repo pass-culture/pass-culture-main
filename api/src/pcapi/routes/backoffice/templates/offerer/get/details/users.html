@@ -38,8 +38,8 @@
               <ul class="dropdown-menu">
                 {% if row.id and can_validate_offerer %}
                   <li class="dropdown-item p-0">
-                    <form action="{{ url_for('backoffice_web.validation.validate_user_offerer',user_offerer_id=user_offerer.id) }}"
-                          name="{{ url_for('backoffice_web.validation.validate_user_offerer',user_offerer_id=user_offerer.id) | action_to_name }}"
+                    <form action="{{ url_for('backoffice.validation.validate_user_offerer',user_offerer_id=user_offerer.id) }}"
+                          name="{{ url_for('backoffice.validation.validate_user_offerer',user_offerer_id=user_offerer.id) | action_to_name }}"
                           method="post">
                       {{ csrf_token }}
                       <button type="submit"
@@ -67,8 +67,8 @@
                   {% endif %}
                   {% if row.OffererInvitation %}
                     {% if not row.id %}
-                      <form action="{{ url_for('backoffice_web.offerer.resend_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) }}"
-                            name="{{ url_for('backoffice_web.offerer.resend_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) | action_to_name }}"
+                      <form action="{{ url_for('backoffice.offerer.resend_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) }}"
+                            name="{{ url_for('backoffice.offerer.resend_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) | action_to_name }}"
                             method="post">
                         {{ csrf_token }}
                         <button type="submit"
@@ -76,8 +76,8 @@
                       </form>
                     {% endif %}
                     {% if row.OffererInvitation.status == row.OffererInvitation.status.PENDING %}
-                      <form action="{{ url_for('backoffice_web.offerer.delete_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) }}"
-                            name="{{ url_for('backoffice_web.offerer.delete_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) | action_to_name }}"
+                      <form action="{{ url_for('backoffice.offerer.delete_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) }}"
+                            name="{{ url_for('backoffice.offerer.delete_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) | action_to_name }}"
                             method="post">
                         {{ csrf_token }}
                         <button type="submit"
@@ -127,13 +127,13 @@
   {% set user_offerer = row.UserOfferer %}
   {% if user_offerer %}
     {% if can_validate_offerer %}
-      {{ build_lazy_modal(url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer.id) ,
+      {{ build_lazy_modal(url_for("backoffice.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer.id) ,
         "reject-modal-" + user_offerer.id|string) }}
-      {{ build_lazy_modal(url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id) ,
+      {{ build_lazy_modal(url_for("backoffice.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id) ,
         "pending-modal-" + user_offerer.id|string) }}
     {% endif %}
     {% if can_manage_pro %}
-      {{ build_lazy_modal(url_for("backoffice_web.offerer.get_delete_user_offerer_form", offerer_id=user_offerer.offererId, user_offerer_id=user_offerer.id) ,
+      {{ build_lazy_modal(url_for("backoffice.offerer.get_delete_user_offerer_form", offerer_id=user_offerer.offererId, user_offerer_id=user_offerer.id) ,
         "delete-modal-" + user_offerer.id|string) }}
     {% endif %}
   {% endif %}

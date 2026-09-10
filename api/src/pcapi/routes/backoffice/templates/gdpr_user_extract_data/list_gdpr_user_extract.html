@@ -23,7 +23,7 @@
       <td class="text-center">
         {% if gdpr_data.dateProcessed %}
           <form id="download-extract-{{ gdpr_data.id }}"
-                action="{{ url_for('backoffice_web.gdpr_extract.download_gdpr_extract', extract_id=gdpr_data.id) }}"
+                action="{{ url_for('backoffice.gdpr_extract.download_gdpr_extract', extract_id=gdpr_data.id) }}"
                 method="post">
             {{ empty_form.csrf_token }}
             <a class="nonblock"
@@ -39,7 +39,7 @@
       <td class="text-center">
         {% if gdpr_data.dateProcessed %}
           <form id="delete-extract-{{ gdpr_data.id }}"
-                action="{{ url_for('backoffice_web.gdpr_extract.delete_gdpr_user_data_extract', gdpr_id=gdpr_data.id) }}"
+                action="{{ url_for('backoffice.gdpr_extract.delete_gdpr_user_data_extract', gdpr_id=gdpr_data.id) }}"
                 method="post">
             {{ csrf_token }}
             <a class="nonblock"

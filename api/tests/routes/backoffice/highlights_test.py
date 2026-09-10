@@ -24,7 +24,7 @@ pytestmark = [
 
 
 class ListHighlightsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.highlights.list_highlights"
+    endpoint = "backoffice.highlights.list_highlights"
     needed_permission = perm_models.Permissions.READ_HIGHLIGHT
     # session + user
     # list highlights
@@ -81,7 +81,7 @@ class ListHighlightsTest(GetEndpointHelper):
 
 
 class GetCreateHighlightFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.highlights.get_create_highlight_form"
+    endpoint = "backoffice.highlights.get_create_highlight_form"
     needed_permission = perm_models.Permissions.MANAGE_HIGHLIGHT
 
     # session + current user
@@ -94,7 +94,7 @@ class GetCreateHighlightFormTest(GetEndpointHelper):
 
 
 class CreateHighlightTest(PostEndpointHelper):
-    endpoint = "backoffice_web.highlights.create_highlight"
+    endpoint = "backoffice.highlights.create_highlight"
     needed_permission = perm_models.Permissions.MANAGE_HIGHLIGHT
 
     # - session + user
@@ -363,7 +363,7 @@ class CreateHighlightTest(PostEndpointHelper):
 
 
 class GetUpdateHighlightFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.highlights.get_update_highlight_form"
+    endpoint = "backoffice.highlights.get_update_highlight_form"
     endpoint_kwargs = {"highlight_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_HIGHLIGHT
 
@@ -380,7 +380,7 @@ class GetUpdateHighlightFormTest(GetEndpointHelper):
 
 
 class UpdateHighlightTest(PostEndpointHelper):
-    endpoint = "backoffice_web.highlights.update_highlight"
+    endpoint = "backoffice.highlights.update_highlight"
     endpoint_kwargs = {"highlight_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_HIGHLIGHT
 

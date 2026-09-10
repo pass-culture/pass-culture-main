@@ -199,7 +199,7 @@ def user_ids_of_groups(users_by_group, group_names):
 
 
 class ListPublicAccountsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.list_public_accounts"
+    endpoint = "backoffice.public_accounts.list_public_accounts"
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
     # session + user tags, fetched once to fill in the choices of every advanced filter sub-form
@@ -240,7 +240,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=user_id,
             q=user_id,
             search_rank=1,
@@ -322,7 +322,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=accounts[expected_index].id,
             q=query,
             search_rank=1,
@@ -339,7 +339,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=random.id,
             q=query,
             search_rank=1,
@@ -356,7 +356,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=random.id,
             q=email,
             search_rank=1,
@@ -405,7 +405,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=old_grant_18.id,
             q=query,
             search_rank=1,
@@ -422,7 +422,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=no_address.id,
             q=phone_number,
             search_rank=1,
@@ -439,7 +439,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=old_grant_18.id,
             q=query,
             search_rank=1,
@@ -459,7 +459,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=user.id,
             q="Ann A",
             search_rank=1,
@@ -527,7 +527,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=young_and_pro.id,
             q=email,
             search_rank=1,
@@ -545,7 +545,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=new_grant_18.id,
             search_rank=1,
             total_items=1,
@@ -564,7 +564,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=user_with_tag.id,
             search_rank=1,
             total_items=1,
@@ -739,7 +739,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=user.id,
             q=email,
             search_rank=1,
@@ -760,7 +760,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=event.user.id,
             q=old_email,
             search_rank=1,
@@ -1045,7 +1045,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
         assert_response_location(
             response,
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=matching_user.id,
             search_rank=1,
             total_items=1,
@@ -1072,7 +1072,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
 
 
 class GetPublicAccountTest(GetEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_public_account"
+    endpoint = "backoffice.public_accounts.get_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
     # user session
@@ -1089,7 +1089,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         @property
         def path(self):
             user = users_factories.UserFactory()
-            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
     class QFBonusCreditButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
@@ -1098,7 +1098,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         @property
         def path(self):
             user = users_factories.BeneficiaryFactory()
-            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
         @pytest.mark.parametrize(
             "user_factory",
@@ -1113,7 +1113,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = user_factory()
 
             response = authenticated_client.get(
-                url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+                url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
             )
 
             assert response.status_code == 200
@@ -1126,7 +1126,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             )
 
             response = authenticated_client.get(
-                url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+                url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
             )
 
             assert response.status_code == 200
@@ -1139,7 +1139,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         @property
         def path(self):
             user = users_factories.BeneficiaryFactory()
-            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
         @pytest.mark.parametrize(
             "user_factory",
@@ -1154,7 +1154,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = user_factory()
 
             response = authenticated_client.get(
-                url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+                url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
             )
 
             assert response.status_code == 200
@@ -1167,7 +1167,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             )
 
             response = authenticated_client.get(
-                url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+                url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
             )
 
             assert response.status_code == 200
@@ -1180,13 +1180,13 @@ class GetPublicAccountTest(GetEndpointHelper):
         @property
         def path(self):
             user = users_factories.UserFactory()
-            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
         def test_no_button_when_user_is_suspended(self, authenticated_client):
             user = users_factories.UserFactory(isActive=False)
 
             response = authenticated_client.get(
-                url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+                url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
             )
 
             assert response.status_code == 200
@@ -1199,7 +1199,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = users_factories.UserFactory(email=email)
 
             response = authenticated_client.get(
-                url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+                url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
             )
 
             assert response.status_code == 200
@@ -1212,7 +1212,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         @property
         def path(self):
             user = users_factories.UserFactory()
-            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
     class SuspendButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.SUSPEND_USER
@@ -1221,7 +1221,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         @property
         def path(self):
             user = users_factories.UserFactory()
-            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
     class UnsuspendButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.UNSUSPEND_USER
@@ -1230,7 +1230,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         @property
         def path(self):
             user = users_factories.UserFactory(isActive=False)
-            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
     class AnonymizeUserButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT
@@ -1239,7 +1239,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         @property
         def path(self):
             user = users_factories.UserFactory()
-            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
     class TagPublicAccountButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
@@ -1248,7 +1248,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         @property
         def path(self):
             user = users_factories.UserFactory()
-            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
     @pytest.mark.parametrize("index,expected_badge", [(0, "Pass 17"), (1, "Ancien Pass 18"), (2, "Pass 18"), (3, None)])
     def test_get_public_account(self, authenticated_client, index, expected_badge):
@@ -1311,7 +1311,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         else:
             assert "Date de dernière connexion" not in descriptions
 
-        assert url_for("backoffice_web.users.redirect_to_brevo_user_page", user_id=user_id).encode() in response.data
+        assert url_for("backoffice.users.redirect_to_brevo_user_page", user_id=user_id).encode() in response.data
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         if expected_badge:
@@ -2104,7 +2104,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
 
 class GetUserActivityTest(GetEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_public_account_activity"
+    endpoint = "backoffice.public_accounts.get_public_account_activity"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
@@ -2169,7 +2169,7 @@ class GetUserActivityTest(GetEndpointHelper):
 
 
 class UpdatePublicAccountTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.update_public_account"
+    endpoint = "backoffice.public_accounts.update_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
@@ -2201,9 +2201,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data)
         assert response.status_code == 303
 
-        expected_url = url_for(
-            "backoffice_web.public_accounts.get_public_account", user_id=user.id, active_tab="history"
-        )
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id, active_tab="history")
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -2272,9 +2270,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data)
         assert response.status_code == 303
 
-        expected_url = url_for(
-            "backoffice_web.public_accounts.get_public_account", user_id=user.id, active_tab="history"
-        )
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id, active_tab="history")
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -2490,7 +2486,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
 
 
 class ResendValidationEmailTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.resend_validation_email"
+    endpoint = "backoffice.public_accounts.resend_validation_email"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
@@ -2540,7 +2536,7 @@ class ResendValidationEmailTest(PostEndpointHelper):
 
 
 class ReviewPublicAccountTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.review_public_account"
+    endpoint = "backoffice.public_accounts.review_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW
 
@@ -2556,7 +2552,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -2582,7 +2578,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -2634,7 +2630,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -2673,7 +2669,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -2697,7 +2693,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -2820,7 +2816,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
 
 class GetQFBonusCreditRequestFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_request_qf_bonus_credit_form"
+    endpoint = "backoffice.public_accounts.get_request_qf_bonus_credit_form"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
 
@@ -2910,7 +2906,7 @@ class GetQFBonusCreditRequestFormTest(GetEndpointHelper):
 
 
 class QFBonusCreditRequestTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.request_qf_bonus_credit"
+    endpoint = "backoffice.public_accounts.request_qf_bonus_credit"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
 
@@ -3045,7 +3041,7 @@ class QFBonusCreditRequestTest(PostEndpointHelper):
 
 
 class GetDisabilityBonusCreditRequestFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_request_disability_bonus_credit_form"
+    endpoint = "backoffice.public_accounts.get_request_disability_bonus_credit_form"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
 
@@ -3129,7 +3125,7 @@ class GetDisabilityBonusCreditRequestFormTest(GetEndpointHelper):
 
 
 class DisabilityBonusCreditRequestTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.request_disability_bonus_credit"
+    endpoint = "backoffice.public_accounts.request_disability_bonus_credit"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
 
@@ -3284,7 +3280,7 @@ class DisabilityBonusCreditRequestTest(PostEndpointHelper):
 
 
 class ExtendDepositValidityTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.extend_deposit_validity"
+    endpoint = "backoffice.public_accounts.extend_deposit_validity"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.EXTEND_DEPOSIT_VALIDITY
 
@@ -3747,7 +3743,7 @@ class GetPublicAccountHistoryTest:
 
 
 class GetUserRegistrationStepTest(GetEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_public_account"
+    endpoint = "backoffice.public_accounts.get_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
@@ -5748,7 +5744,7 @@ class RegistrationStepTest:
 
 
 class AnonymizePublicAccountTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.anonymize_public_account"
+    endpoint = "backoffice.public_accounts.anonymize_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT
 
@@ -5762,7 +5758,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         assert user.firstName is None
@@ -5795,7 +5791,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         assert user.roles == [users_models.UserRole.ANONYMIZED]
@@ -5818,7 +5814,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         assert user.roles != [users_models.UserRole.ANONYMIZED]
@@ -5892,7 +5888,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         assert user.roles == [users_models.UserRole.ANONYMIZED]
@@ -5912,7 +5908,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         assert user.roles == [users_models.UserRole.ANONYMIZED]
@@ -5966,7 +5962,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
 
 
 class ExtractPublicAccountTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.create_extract_user_gdpr_data"
+    endpoint = "backoffice.public_accounts.create_extract_user_gdpr_data"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
 
@@ -5980,7 +5976,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
         )
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        expected_url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         extract_data = db.session.query(users_models.GdprUserDataExtract).one()
@@ -6014,7 +6010,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=expired_gdpr_data_extract.user.id)
 
         expected_url = url_for(
-            "backoffice_web.public_accounts.get_public_account",
+            "backoffice.public_accounts.get_public_account",
             user_id=expired_gdpr_data_extract.user.id,
         )
 
@@ -6037,7 +6033,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
 
 
 class ClearEmailTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.clear_email"
+    endpoint = "backoffice.public_accounts.clear_email"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
@@ -6073,7 +6069,7 @@ class ClearEmailTest(PostEndpointHelper):
 
 
 class InvalidatePublicAccountPasswordTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.invalidate_public_account_password"
+    endpoint = "backoffice.public_accounts.invalidate_public_account_password"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
@@ -6119,7 +6115,7 @@ class InvalidatePublicAccountPasswordTest(PostEndpointHelper):
 
 
 class SendPublicAccountPasswordResetEmailTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.send_public_account_reset_password_email"
+    endpoint = "backoffice.public_accounts.send_public_account_reset_password_email"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
@@ -6178,7 +6174,7 @@ class SendPublicAccountPasswordResetEmailTest(PostEndpointHelper):
 
 
 class ListAccountTagsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.account_tag.list_account_tags"
+    endpoint = "backoffice.account_tag.list_account_tags"
     needed_permission = perm_models.Permissions.READ_TAGS
 
     # - fetch session + user (1 query)
@@ -6231,7 +6227,7 @@ class CreateTagButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.account_tag.list_account_tags")
+        return url_for("backoffice.account_tag.list_account_tags")
 
 
 class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
@@ -6240,11 +6236,11 @@ class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.account_tag.list_account_tags")
+        return url_for("backoffice.account_tag.list_account_tags")
 
 
 class UpdateAccountTagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.account_tag.update_account_tag"
+    endpoint = "backoffice.account_tag.update_account_tag"
     endpoint_kwargs = {"user_tag_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
 
@@ -6337,7 +6333,7 @@ class UpdateAccountTagTest(PostEndpointHelper):
 
 
 class CreateAccountTagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.account_tag.create_account_tag"
+    endpoint = "backoffice.account_tag.create_account_tag"
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
 
     def test_create_account_tag(self, authenticated_client):
@@ -6356,7 +6352,7 @@ class CreateAccountTagTest(PostEndpointHelper):
         }
         response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.account_tag.list_account_tags")
+        assert response.location == url_for("backoffice.account_tag.list_account_tags")
 
         created_tag = db.session.query(users_models.UserTag).one()
         assert created_tag.name == name
@@ -6388,7 +6384,7 @@ class CreateAccountTagTest(PostEndpointHelper):
 
 
 class DeleteAccountTagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.account_tag.delete_account_tag"
+    endpoint = "backoffice.account_tag.delete_account_tag"
     endpoint_kwargs = {"user_tag_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2
 
@@ -6412,7 +6408,7 @@ class DeleteAccountTagTest(PostEndpointHelper):
 
 
 class CreateAccountTagCategoryTest(PostEndpointHelper):
-    endpoint = "backoffice_web.account_tag.create_account_tag_category"
+    endpoint = "backoffice.account_tag.create_account_tag_category"
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
 
     def test_create_account_tag_category(self, authenticated_client):
@@ -6424,7 +6420,7 @@ class CreateAccountTagCategoryTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert response.location == url_for(
-            "backoffice_web.account_tag.list_account_tags",
+            "backoffice.account_tag.list_account_tags",
             active_tab="categories",
         )
 
@@ -6447,7 +6443,7 @@ class CreateAccountTagCategoryTest(PostEndpointHelper):
 
 
 class TagPublicAccountTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.tag_public_account"
+    endpoint = "backoffice.public_accounts.tag_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
 
@@ -6521,7 +6517,7 @@ class TagPublicAccountTest(PostEndpointHelper):
 
 
 class MarkBookingAsFraudulentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.mark_booking_as_fraudulent"
+    endpoint = "backoffice.public_accounts.mark_booking_as_fraudulent"
     endpoint_kwargs = {"booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO
 
@@ -6537,7 +6533,7 @@ class MarkBookingAsFraudulentTest(PostEndpointHelper):
 
 
 class MarkBookingAsNotFraudulentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.mark_booking_as_not_fraudulent"
+    endpoint = "backoffice.public_accounts.mark_booking_as_not_fraudulent"
     endpoint_kwargs = {"booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO
 
@@ -6551,7 +6547,7 @@ class MarkBookingAsNotFraudulentTest(PostEndpointHelper):
 
 
 class GetIdDocumentTest(GetEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_id_document"
+    endpoint = "backoffice.public_accounts.get_id_document"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_ID_DOCUMENT
 
@@ -6586,7 +6582,7 @@ class GetIdDocumentTest(GetEndpointHelper):
 
 
 class ViewIdDocumentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.view_id_document"
+    endpoint = "backoffice.public_accounts.view_id_document"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_ID_DOCUMENT
 
@@ -6709,7 +6705,7 @@ class ViewIdDocumentTest(PostEndpointHelper):
 
 
 class DisconnectPublicAccountTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.disconnect_public_account"
+    endpoint = "backoffice.public_accounts.disconnect_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
@@ -6739,7 +6735,7 @@ class DisconnectPublicAccountTest(PostEndpointHelper):
 
 
 class GetBatchSendPublicAccountResetPasswordEmailFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_batch_send_public_account_reset_password_email_form"
+    endpoint = "backoffice.public_accounts.get_batch_send_public_account_reset_password_email_form"
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_get_batch_send_reset_password_email_form(self, authenticated_client):
@@ -6751,7 +6747,7 @@ class GetBatchSendPublicAccountResetPasswordEmailFormTest(PostEndpointHelper):
 
 
 class BatchSendPublicAccountResetPasswordEmailTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.batch_send_public_account_reset_password_email"
+    endpoint = "backoffice.public_accounts.batch_send_public_account_reset_password_email"
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_batch_send_reset_password_email(self, authenticated_client):
@@ -6799,7 +6795,7 @@ class BatchSendPublicAccountResetPasswordEmailTest(PostEndpointHelper):
         assert html_parser.count_table_rows(response.data) == 0
         assert len(mails_testing.outbox) == 0
         assert (
-            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice.home")).data)
             == "Certains des comptes sélectionnés ont un email anonymisé ou supprimé"
         )
 
@@ -6808,7 +6804,7 @@ class BatchSendPublicAccountResetPasswordEmailTest(PostEndpointHelper):
         assert response.status_code == 200
         assert len(mails_testing.outbox) == 0
         assert (
-            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice.home")).data)
             == "La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public"
         )
 
@@ -6827,7 +6823,7 @@ class BatchSendPublicAccountResetPasswordEmailTest(PostEndpointHelper):
 
 
 class GetBatchInvalidatePublicAccountPasswordFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_batch_invalidate_public_account_password_form"
+    endpoint = "backoffice.public_accounts.get_batch_invalidate_public_account_password_form"
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_get_batch_invalidate_password_form(self, authenticated_client):
@@ -6839,7 +6835,7 @@ class GetBatchInvalidatePublicAccountPasswordFormTest(PostEndpointHelper):
 
 
 class BatchInvalidatePublicAccountPasswordTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.batch_invalidate_public_account_password"
+    endpoint = "backoffice.public_accounts.batch_invalidate_public_account_password"
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_batch_invalidate_password(self, authenticated_client, legit_user):
@@ -6876,7 +6872,7 @@ class BatchInvalidatePublicAccountPasswordTest(PostEndpointHelper):
         assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
         assert (
-            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice.home")).data)
             == "La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public"
         )
 
@@ -6896,7 +6892,7 @@ class BatchInvalidatePublicAccountPasswordTest(PostEndpointHelper):
 
 
 class GetBatchSuspendPublicAccountFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_batch_suspend_public_account_form"
+    endpoint = "backoffice.public_accounts.get_batch_suspend_public_account_form"
     needed_permission = perm_models.Permissions.SUSPEND_USER
 
     def test_get_batch_suspend_form(self, authenticated_client):
@@ -6908,7 +6904,7 @@ class GetBatchSuspendPublicAccountFormTest(PostEndpointHelper):
 
 
 class BatchSuspendPublicAccountTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.batch_suspend_public_account"
+    endpoint = "backoffice.public_accounts.batch_suspend_public_account"
     needed_permission = perm_models.Permissions.SUSPEND_USER
 
     def _get_expected_num_queries(self, num_users: int) -> int:
@@ -7023,7 +7019,7 @@ class BatchSuspendPublicAccountTest(PostEndpointHelper):
         assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
         assert (
-            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice.home")).data)
             == "La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public"
         )
 
@@ -7045,7 +7041,7 @@ class BatchSuspendPublicAccountTest(PostEndpointHelper):
         assert active_user.action_history == []
         assert suspended_user.action_history == []
         assert (
-            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice.home")).data)
             == "Certains comptes sélectionnés sont déjà suspendus"
         )
 
@@ -7070,7 +7066,7 @@ class BatchSuspendPublicAccountTest(PostEndpointHelper):
 
 
 class GetBatchTagPublicAccountFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_batch_tag_public_account_form"
+    endpoint = "backoffice.public_accounts.get_batch_tag_public_account_form"
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
 
     expected_num_queries = 1  # session + current user
@@ -7109,7 +7105,7 @@ class GetBatchTagPublicAccountFormTest(PostEndpointHelper):
 
 
 class BatchTagPublicAccountTest(PostEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.batch_tag_public_account"
+    endpoint = "backoffice.public_accounts.batch_tag_public_account"
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
 
     def test_batch_tag(self, authenticated_client):
@@ -7163,7 +7159,7 @@ class BatchTagPublicAccountTest(PostEndpointHelper):
         assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
         assert (
-            html_parser.extract_alert(authenticated_client.get(url_for("backoffice_web.home")).data)
+            html_parser.extract_alert(authenticated_client.get(url_for("backoffice.home")).data)
             == "La fonctionnalité n'est disponible que pour des comptes bénéficiaires ou grand public"
         )
 

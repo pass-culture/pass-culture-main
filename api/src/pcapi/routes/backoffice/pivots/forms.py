@@ -21,7 +21,7 @@ class EditPivotForm(FlaskForm):
         "Partenaire culturel",
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
         coerce=int,
         validators=(wtforms.validators.DataRequired("Information obligatoire"),),
     )
