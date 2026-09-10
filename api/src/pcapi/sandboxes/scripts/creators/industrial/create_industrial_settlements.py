@@ -27,7 +27,11 @@ def create_industrial_settlements() -> None:
         for cashflow in cashflow_batch.cashflows:
             for invoice in cashflow.invoices:
                 finance_factories.SettlementFactory(
-                    bankAccount=invoice.bankAccount, amount=invoice.amount, batch=settlement_batch, invoices=[invoice]
+                    bankAccount=invoice.bankAccount,
+                    amount=abs(invoice.amount),
+                    batch=settlement_batch,
+                    invoices=[invoice],
+                    status=finance_models.SettlementStatus.EXECUTED,
                 )
 
     logger.info("Created %s settlements", db.session.query(finance_models.Settlement).count())
