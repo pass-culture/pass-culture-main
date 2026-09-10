@@ -63,7 +63,7 @@
     "date-fns-tz": "3.2.0",
     "dompurify": "3.4.14",
     "downshift": "9.4.0",
-    "libphonenumber-js": "1.13.9",
+    "libphonenumber-js": "1.13.12",
     "lodash.invert": "4.3.0",
     "magic-bytes.js": "^1.13.1",
     "qrcode.react": "4.2.0",
