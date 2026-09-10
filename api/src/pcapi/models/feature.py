@@ -218,7 +218,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 )
 
 if settings.IS_PROD:
-    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.ENABLE_BONUS_CREDIT,)
+    FEATURES_DISABLED_BY_DEFAULT += ()
 
 
 def install_feature_flags() -> None:

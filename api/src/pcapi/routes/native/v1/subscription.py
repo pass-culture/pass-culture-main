@@ -25,7 +25,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.security import authenticated_and_active_user_required
-from pcapi.serialization.decorator import feature_flag_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.transaction_manager import atomic
@@ -174,7 +173,6 @@ def start_identification_session(
         raise api_errors.ApiErrors({"code": code, "message": message}, status_code=return_status)
 
 
-@feature_flag_required(FeatureToggle.ENABLE_BONUS_CREDIT)
 @blueprint.native_route("/subscription/bonus/quotient_familial", methods=["POST"])
 @atomic()
 @authenticated_and_active_user_required
@@ -200,9 +198,6 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.Quotient
         origin=bonus_constants.QUOTIENT_FAMILIAL_ENDPOINT_ORIGIN,
     )
 
-    payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
-
     if is_first_attempt:
         delay = bonus_fraud_api.get_attempt_delay_in_seconds(fraud_check)
         if delay is not None:
@@ -211,6 +206,13 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.Quotient
     disability_fraud_checks = bonus_fraud_api.accelerate_automatic_disability_bonus_fraud_checks(
         current_user.beneficiaryFraudChecks, new_origin="/subscription/bonus/quotient_familial endpoint"
     )
+
+    if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
+        return
+
+    payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
+    on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
+
     for i, fraud_check in enumerate(disability_fraud_checks):
         countdown = bonus_constants.DISABILITY_COUNTDOWN * i
         if fraud_check.type == subscription_models.FraudCheckType.AAH_BONUS_CREDIT:
@@ -232,7 +234,6 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.Quotient
             )
 
 
-@feature_flag_required(FeatureToggle.ENABLE_BONUS_CREDIT)
 @blueprint.native_route("/subscription/bonus/disability", methods=["POST"])
 @atomic()
 @authenticated_and_active_user_required
@@ -254,6 +255,14 @@ def create_disability_bonus_credit_fraud_checks(body: serializers.DisabilityBonu
         origin=bonus_constants.DISABILITY_ENDPOINT_ORIGIN,
     )
 
+    if is_first_attempt:
+        delay = bonus_fraud_api.get_attempt_delay_in_seconds(aah_fraud_check)
+        if delay is not None:
+            on_commit(partial(bonus_statistics_api.record_first_bonus_attempt, delay))
+
+    if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
+        return
+
     aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
     on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.apply_async, (aah_payload,), countdown=0))
 
@@ -265,8 +274,3 @@ def create_disability_bonus_credit_fraud_checks(body: serializers.DisabilityBonu
             countdown=bonus_constants.DISABILITY_COUNTDOWN,
         )
     )
-
-    if is_first_attempt:
-        delay = bonus_fraud_api.get_attempt_delay_in_seconds(aah_fraud_check)
-        if delay is not None:
-            on_commit(partial(bonus_statistics_api.record_first_bonus_attempt, delay))
