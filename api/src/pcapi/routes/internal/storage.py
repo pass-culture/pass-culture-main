@@ -4,11 +4,11 @@ from flask import Response
 from flask import send_file
 
 from pcapi.core.object_storage.backends.local import LocalBackend
-from pcapi.routes.apis import public_api
+from pcapi.routes.apis import misc_blueprint
 
 
 # used locally only: auth is not needed.
-@public_api.route("/storage/<bucket_id>/<path:object_id>")
+@misc_blueprint.route("/storage/<bucket_id>/<path:object_id>")
 def send_storage_file(bucket_id: str, object_id: str) -> Response:
     path = LocalBackend().local_path(bucket_id, object_id)
     type_path = path.parent / (path.name + ".type")
