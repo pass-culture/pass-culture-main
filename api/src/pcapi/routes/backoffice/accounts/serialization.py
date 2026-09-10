@@ -142,7 +142,7 @@ class SpecialEventActivity(BeneficiaryActivity):
             """Candidature à l'opération spéciale <a class="link-primary" href="{url}">{title}</a> : {status}"""
         ).format(
             url=url_for(
-                "backoffice_web.operations.get_event_details", special_event_id=self._special_event_response.eventId
+                "backoffice.operations.get_event_details", special_event_id=self._special_event_response.eventId
             ),
             title=self._special_event_response.title,
             status=format_special_event_response_status(self._special_event_response.status),
@@ -167,7 +167,7 @@ class ChronicleActivity(BeneficiaryActivity):
         comment = Markup(
             """Rédaction d'une chronique sur <a class="link-primary" href="{url}">{title}</a> : {status}"""
         ).format(
-            url=url_for("backoffice_web.chronicles.details", chronicle_id=self._chronicle.id),
+            url=url_for("backoffice.chronicles.details", chronicle_id=self._chronicle.id),
             title=self._chronicle.title or "une œuvre",
             status="publiée" if self._chronicle.isPublished else "non publiée",
         )

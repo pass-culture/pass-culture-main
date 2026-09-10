@@ -49,8 +49,8 @@
                    aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
-                    <form action="{{ url_for('backoffice_web.account_tag.update_account_tag', user_tag_id=user_tag.id) }}"
-                          name="{{ url_for('backoffice_web.account_tag.update_account_tag', user_tag_id=user_tag.id) | action_to_name }}"
+                    <form action="{{ url_for('backoffice.account_tag.update_account_tag', user_tag_id=user_tag.id) }}"
+                          name="{{ url_for('backoffice.account_tag.update_account_tag', user_tag_id=user_tag.id) | action_to_name }}"
                           method="post">
                       <div class="modal-header"
                            id="{{ edit_account_tag_modal_label_id }}">
@@ -76,8 +76,8 @@
                    aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
-                    <form action="{{ url_for('backoffice_web.account_tag.delete_account_tag', user_tag_id=user_tag.id) }}"
-                          name="{{ url_for('backoffice_web.account_tag.delete_account_tag', user_tag_id=user_tag.id) | action_to_name }}"
+                    <form action="{{ url_for('backoffice.account_tag.delete_account_tag', user_tag_id=user_tag.id) }}"
+                          name="{{ url_for('backoffice.account_tag.delete_account_tag', user_tag_id=user_tag.id) | action_to_name }}"
                           method="post">
                       <div class="modal-header"
                            id="{{ delete_account_tag_modal_label_id }}">
@@ -150,7 +150,7 @@
         {% call tabs.build_details_tabs_content_wrapper() %}
           {% call tabs.build_details_tab_content("tags", active_tab == 'tags') %}
             {% if create_tag_form %}
-              {{ build_modal_form("create-account-tag", url_for("backoffice_web.account_tag.create_account_tag") , create_tag_form, "Créer un tag", "Créer un tag", "Enregistrer") }}
+              {{ build_modal_form("create-account-tag", url_for("backoffice.account_tag.create_account_tag") , create_tag_form, "Créer un tag", "Créer un tag", "Enregistrer") }}
             {% endif %}
             <div>
               {% with table_header=tags_table.header, table_name=tags_table.name, table_body=tags_table.body, rows_count=tags_table.rows_count, hide_search_block=tags_table.hide_search_block %}
@@ -160,7 +160,7 @@
           {% endcall %}
           {% call tabs.build_details_tab_content("categories", active_tab == 'categories') %}
             {% if create_category_form %}
-              {{ build_modal_form("create-account-tag-category", url_for("backoffice_web.account_tag.create_account_tag_category") , create_category_form, "Créer une catégorie", "Créer une catégorie", "Enregistrer") }}
+              {{ build_modal_form("create-account-tag-category", url_for("backoffice.account_tag.create_account_tag_category") , create_category_form, "Créer une catégorie", "Créer une catégorie", "Enregistrer") }}
             {% endif %}
             <div>
               {% with table_header=categories_table.header, table_name=categories_table.name, table_body=categories_table.body, rows_count=categories_table.rows_count, hide_search_block=categories_table.hide_search_block %}

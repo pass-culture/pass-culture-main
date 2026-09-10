@@ -28,8 +28,8 @@
                     <form hx-swap="outerHTML"
                           hx-trigger="submit"
                           hx-target="#request-row-{{ update_request.dsApplicationId }}"
-                          hx-post="{{ url_for('backoffice_web.account_update.instruct', ds_application_id=update_request.dsApplicationId) }}"
-                          name="{{ url_for('backoffice_web.account_update.instruct', ds_application_id=update_request.dsApplicationId) | action_to_name }}">
+                          hx-post="{{ url_for('backoffice.account_update.instruct', ds_application_id=update_request.dsApplicationId) }}"
+                          name="{{ url_for('backoffice.account_update.instruct', ds_application_id=update_request.dsApplicationId) | action_to_name }}">
                       {{ csrf_token }}
                       <button type="submit"
                               class="btn btn-sm d-block w-100 text-start px-3">Passer en instruction</button>

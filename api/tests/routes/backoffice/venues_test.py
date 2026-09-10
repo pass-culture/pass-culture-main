@@ -101,7 +101,7 @@ def venues_fixture(criteria) -> list[offerers_models.Venue]:
 
 
 class ListVenuesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.list_venues"
+    endpoint = "backoffice.venue.list_venues"
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
@@ -303,7 +303,7 @@ class ListVenuesTest(GetEndpointHelper):
 
 
 class GetVenueTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get"
+    endpoint = "backoffice.venue.get"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -607,7 +607,7 @@ class GetVenueTest(GetEndpointHelper):
         @property
         def path(self):
             venue = offerers_factories.VenueFactory()
-            return url_for("backoffice_web.venue.get", venue_id=venue.id)
+            return url_for("backoffice.venue.get", venue_id=venue.id)
 
     class UnsuspendReimbursementButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
@@ -616,11 +616,11 @@ class GetVenueTest(GetEndpointHelper):
         @property
         def path(self):
             venue = offerers_factories.VenueFactory(isReimbursementSuspended=True)
-            return url_for("backoffice_web.venue.get", venue_id=venue.id)
+            return url_for("backoffice.venue.get", venue_id=venue.id)
 
 
 class GetVenueStatsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_stats"
+    endpoint = "backoffice.venue.get_stats"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -709,7 +709,7 @@ class GetVenueStatsTest(GetEndpointHelper):
 
 
 class GetVenueRevenueDetailsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_revenue_details"
+    endpoint = "backoffice.venue.get_revenue_details"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -759,7 +759,7 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
 
 
 class DeleteVenueTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.delete_venue"
+    endpoint = "backoffice.venue.delete_venue"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.DELETE_PRO_ENTITY
 
@@ -775,7 +775,7 @@ class DeleteVenueTest(PostEndpointHelper):
             db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_to_delete_id).count() == 0
         )
 
-        expected_url = url_for("backoffice_web.pro.search_pro")
+        expected_url = url_for("backoffice.pro.search_pro")
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
@@ -794,7 +794,7 @@ class DeleteVenueTest(PostEndpointHelper):
             db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
         )
 
-        expected_url = url_for("backoffice_web.venue.get", venue_id=venue_to_delete.id)
+        expected_url = url_for("backoffice.venue.get", venue_id=venue_to_delete.id)
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
@@ -813,7 +813,7 @@ class DeleteVenueTest(PostEndpointHelper):
             db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
         )
 
-        expected_url = url_for("backoffice_web.venue.get", venue_id=venue_to_delete.id)
+        expected_url = url_for("backoffice.venue.get", venue_id=venue_to_delete.id)
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
@@ -863,7 +863,7 @@ class DeleteVenueTest(PostEndpointHelper):
 
 
 class UpdateVenueTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.update_venue"
+    endpoint = "backoffice.venue.update_venue"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -947,7 +947,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
         offerer_address = db.session.query(offerers_models.OffererAddress).one()  # address updated in the same OA
@@ -1047,7 +1047,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
         offerer_address = db.session.query(offerers_models.OffererAddress).one()
@@ -1127,7 +1127,7 @@ class UpdateVenueTest(PostEndpointHelper):
             response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
         offerer_address = db.session.query(offerers_models.OffererAddress).one()
@@ -1184,7 +1184,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
         address = db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
@@ -1535,7 +1535,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
 
@@ -1568,7 +1568,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
 
@@ -1638,7 +1638,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
 
@@ -1665,7 +1665,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
 
@@ -2143,7 +2143,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
 
 class UpdateForFraudTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.update_for_fraud"
+    endpoint = "backoffice.venue.update_for_fraud"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -2253,7 +2253,7 @@ class UpdateForFraudTest(PostEndpointHelper):
 
 
 class GetVenueHistoryTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_history"
+    endpoint = "backoffice.venue.get_history"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -2268,7 +2268,7 @@ class GetVenueHistoryTest(GetEndpointHelper):
         @property
         def path(self):
             venue = offerers_factories.VenueFactory()
-            return url_for("backoffice_web.venue.get_history", venue_id=venue.id)
+            return url_for("backoffice.venue.get_history", venue_id=venue.id)
 
     def test_venue_history(self, authenticated_client, legit_user, pro_fraud_admin):
         venue = offerers_factories.VenueFactory()
@@ -2464,7 +2464,7 @@ class GetVenueHistoryTest(GetEndpointHelper):
 
 
 class CommentVenueTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.comment_venue"
+    endpoint = "backoffice.venue.comment_venue"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -2474,7 +2474,7 @@ class CommentVenueTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.venue.get", venue_id=venue.id)
+        expected_url = url_for("backoffice.venue.get", venue_id=venue.id)
         assert response.location == expected_url
 
         db.session.refresh(venue)
@@ -2497,7 +2497,7 @@ class CommentVenueTest(PostEndpointHelper):
 
 
 class GetVenueCollectiveDmsApplicationsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_collective_dms_applications"
+    endpoint = "backoffice.venue.get_collective_dms_applications"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -2565,7 +2565,7 @@ class GetVenueCollectiveDmsApplicationsTest(GetEndpointHelper):
 
 
 class GetBatchEditVenuesFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.get_batch_edit_venues_form"
+    endpoint = "backoffice.venue.get_batch_edit_venues_form"
     endpoint_kwargs = {"object_ids": "1,2"}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -2601,7 +2601,7 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
 
 
 class BatchEditVenuesTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.batch_edit_venues"
+    endpoint = "backoffice.venue.batch_edit_venues"
     endpoint_kwargs = {"object_ids": "1,2"}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
@@ -2672,7 +2672,7 @@ class BatchEditVenuesTest(PostEndpointHelper):
 
 
 class GetRemovePricingPointFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_remove_pricing_point_form"
+    endpoint = "backoffice.venue.get_remove_pricing_point_form"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
@@ -2732,7 +2732,7 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
 
 
 class GetSetPricingPointFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_set_pricing_point_form"
+    endpoint = "backoffice.venue.get_set_pricing_point_form"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
     # +1 session + user
@@ -2749,7 +2749,7 @@ class GetSetPricingPointFormTest(GetEndpointHelper):
 
 
 class SetPricingPointTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.set_pricing_point"
+    endpoint = "backoffice.venue.set_pricing_point"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
     # +1 session + user
@@ -2877,7 +2877,7 @@ class SetPricingPointTest(PostEndpointHelper):
 
 
 class RemovePricingPointTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.remove_pricing_point"
+    endpoint = "backoffice.venue.remove_pricing_point"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
@@ -2991,7 +2991,7 @@ class RemovePricingPointTest(PostEndpointHelper):
 
 
 class GetRemoveSiretFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_remove_siret_form"
+    endpoint = "backoffice.venue.get_remove_siret_form"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.MOVE_SIRET
 
@@ -3077,7 +3077,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
 
 
 class RemoveSiretTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.remove_siret"
+    endpoint = "backoffice.venue.remove_siret"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.MOVE_SIRET
 
@@ -3247,7 +3247,7 @@ class RemoveSiretTest(PostEndpointHelper):
 
 
 class GetCloseVenueFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_close_venue_form"
+    endpoint = "backoffice.venue.get_close_venue_form"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.CLOSE_VENUE
 
@@ -3295,7 +3295,7 @@ class GetCloseVenueFormTest(GetEndpointHelper):
 
 
 class GetReopenVenueFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_reopen_venue_form"
+    endpoint = "backoffice.venue.get_reopen_venue_form"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.REOPEN_VENUE
 
@@ -3310,7 +3310,7 @@ class GetReopenVenueFormTest(GetEndpointHelper):
 
 
 class CloseVenueTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.close_venue"
+    endpoint = "backoffice.venue.close_venue"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.CLOSE_VENUE
 
@@ -3393,7 +3393,7 @@ class CloseVenueTest(PostEndpointHelper):
 
 
 class ReopenVenueTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.reopen_venue"
+    endpoint = "backoffice.venue.reopen_venue"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.REOPEN_VENUE
 
@@ -3457,7 +3457,7 @@ class ReopenVenueTest(PostEndpointHelper):
 
 
 class PostToggleVenueProviderIsActiveTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.toggle_venue_provider_is_active"
+    endpoint = "backoffice.venue.toggle_venue_provider_is_active"
     endpoint_kwargs = {"venue_id": 1, "provider_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
@@ -3507,7 +3507,7 @@ class PostToggleVenueProviderIsActiveTest(PostEndpointHelper):
 
 
 class ToggleNewCinemaIntegrationIsEnabledTestPost(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.toggle_new_cinema_integration_is_enabled"
+    endpoint = "backoffice.venue.toggle_new_cinema_integration_is_enabled"
     endpoint_kwargs = {"venue_id": 1, "provider_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
@@ -3541,7 +3541,7 @@ class ToggleNewCinemaIntegrationIsEnabledTestPost(PostEndpointHelper):
 
 
 class AddCinemaSessionsSynchronizeTaskPostTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.add_cinema_sessions_synchronize_task"
+    endpoint = "backoffice.venue.add_cinema_sessions_synchronize_task"
     endpoint_kwargs = {"venue_id": 1, "provider_id": 1}
     needed_permission = {
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
@@ -3578,7 +3578,7 @@ class AddCinemaSessionsSynchronizeTaskPostTest(PostEndpointHelper):
 
 
 class PostDeleteVenueProviderTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.delete_venue_provider"
+    endpoint = "backoffice.venue.delete_venue_provider"
     endpoint_kwargs = {"venue_id": 1, "provider_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
@@ -3605,7 +3605,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         assert action.venueId == venue_id
         assert action.extraData["provider_id"] == provider_id
         assert action.extraData["provider_name"] == "Test provider"
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue_provider.venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=venue_provider.venue.id)
 
         response = authenticated_client.get(response.location)
         assert (
@@ -3646,7 +3646,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
             == 1
         )
         assert db.session.query(history_models.ActionHistory).count() == 0
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue_provider.venue.id)
+        assert response.location == url_for("backoffice.venue.get", venue_id=venue_provider.venue.id)
 
         response = authenticated_client.get(response.location)
         assert (
@@ -3656,7 +3656,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
 
 
 class GetEntrepriseInfoTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_entreprise_info"
+    endpoint = "backoffice.venue.get_entreprise_info"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTREPRISE_INFO
 
@@ -3736,7 +3736,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
 
 
 class SuspendReimbursementTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.suspend_reimbursement"
+    endpoint = "backoffice.venue.suspend_reimbursement"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
 
@@ -3761,7 +3761,7 @@ class SuspendReimbursementTest(PostEndpointHelper):
 
 
 class UnsuspendReimbursementTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.unsuspend_reimbursement"
+    endpoint = "backoffice.venue.unsuspend_reimbursement"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
 
@@ -3786,7 +3786,7 @@ class UnsuspendReimbursementTest(PostEndpointHelper):
 
 
 class GetOfferLocationsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_offer_locations"
+    endpoint = "backoffice.venue.get_offer_locations"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 

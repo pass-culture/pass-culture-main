@@ -37,7 +37,7 @@ pytestmark = [
 
 
 class ListAccountUpdateRequestsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.account_update.list_account_update_requests"
+    endpoint = "backoffice.account_update.list_account_update_requests"
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
     # session + results + results count
@@ -584,7 +584,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
 
 
 class InstructTest(PostEndpointHelper):
-    endpoint = "backoffice_web.account_update.instruct"
+    endpoint = "backoffice.account_update.instruct"
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
@@ -706,7 +706,7 @@ class InstructTest(PostEndpointHelper):
 
 
 class GetAcceptFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.account_update.get_accept_form"
+    endpoint = "backoffice.account_update.get_accept_form"
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
@@ -936,7 +936,7 @@ class GetAcceptFormTest(GetEndpointHelper):
 
 
 class AcceptTest(PostEndpointHelper):
-    endpoint = "backoffice_web.account_update.accept"
+    endpoint = "backoffice.account_update.accept"
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
@@ -1290,7 +1290,7 @@ class AcceptTest(PostEndpointHelper):
 
 
 class GetAskForCorrectionFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.account_update.get_ask_for_correction_form"
+    endpoint = "backoffice.account_update.get_ask_for_correction_form"
     endpoint_kwargs = {"ds_application_id": 1, "correction_reason": "unreadable-photo"}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
@@ -1323,7 +1323,7 @@ class GetAskForCorrectionFormTest(GetEndpointHelper):
 
 
 class AskForCorrectionTest(PostEndpointHelper):
-    endpoint = "backoffice_web.account_update.ask_for_correction"
+    endpoint = "backoffice.account_update.ask_for_correction"
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
@@ -1501,7 +1501,7 @@ class AskForCorrectionTest(PostEndpointHelper):
 
 
 class GetIdentityTheftFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.account_update.get_identity_theft_form"
+    endpoint = "backoffice.account_update.get_identity_theft_form"
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
@@ -1532,7 +1532,7 @@ class GetIdentityTheftFormTest(GetEndpointHelper):
 
 
 class IdentityTheftTest(PostEndpointHelper):
-    endpoint = "backoffice_web.account_update.identity_theft"
+    endpoint = "backoffice.account_update.identity_theft"
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
@@ -1637,7 +1637,7 @@ class IdentityTheftTest(PostEndpointHelper):
 
 
 class GetSelectUserFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.account_update.get_select_user_form"
+    endpoint = "backoffice.account_update.get_select_user_form"
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
@@ -1692,7 +1692,7 @@ class GetSelectUserFormTest(GetEndpointHelper):
 
 
 class SelectUserTest(PostEndpointHelper):
-    endpoint = "backoffice_web.account_update.select_user"
+    endpoint = "backoffice.account_update.select_user"
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 

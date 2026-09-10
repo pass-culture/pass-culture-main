@@ -126,7 +126,7 @@ def offers_fixture(criteria) -> tuple:
 
 
 class ListOffersTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.list_offers"
+    endpoint = "backoffice.offer.list_offers"
     needed_permission = perm_models.Permissions.READ_OFFERS
 
     def _get_query_args_by_id(self, id_: int) -> dict[str, str]:
@@ -1691,7 +1691,7 @@ class ListOffersTest(GetEndpointHelper):
 
 
 class EditOfferTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.edit_offer"
+    endpoint = "backoffice.offer.edit_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
@@ -1707,7 +1707,7 @@ class EditOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer_to_edit)
@@ -1785,7 +1785,7 @@ class EditOfferTest(PostEndpointHelper):
 
 
 class GetEditOfferFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.get_edit_offer_form"
+    endpoint = "backoffice.offer.get_edit_offer_form"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
@@ -1800,7 +1800,7 @@ class GetEditOfferFormTest(GetEndpointHelper):
 
 
 class GetBatchEditOfferFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.get_batch_edit_offer_form"
+    endpoint = "backoffice.offer.get_batch_edit_offer_form"
     endpoint_kwargs = {"offer_ids": "1,2"}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
@@ -1846,7 +1846,7 @@ class GetBatchEditOfferFormTest(PostEndpointHelper):
         assert set(offers[2].criteria) == set(criteria[2:])
 
     def _update_offers_form(self, authenticated_client, form):
-        edit_url = url_for("backoffice_web.offer.list_offers")
+        edit_url = url_for("backoffice.offer.list_offers")
         authenticated_client.get(edit_url)
 
         url = url_for(self.endpoint)
@@ -1855,20 +1855,20 @@ class GetBatchEditOfferFormTest(PostEndpointHelper):
         return authenticated_client.post(url, form=form)
 
     def _update_offers(self, authenticated_client, form):
-        url = url_for("backoffice_web.offer.batch_edit_offer")
+        url = url_for("backoffice.offer.batch_edit_offer")
         form["csrf_token"] = g.get("csrf_token", "")
 
         return authenticated_client.post(url, form=form)
 
     def _update_offer(self, authenticated_client, offer, form):
-        url = url_for("backoffice_web.offer.edit_offer", offer_id=offer.id)
+        url = url_for("backoffice.offer.edit_offer", offer_id=offer.id)
         form["csrf_token"] = g.get("csrf_token", "")
 
         return authenticated_client.post(url, form=form)
 
 
 class BatchEditOfferTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.batch_edit_offer"
+    endpoint = "backoffice.offer.batch_edit_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
@@ -1910,7 +1910,7 @@ class BatchEditOfferTest(PostEndpointHelper):
 
 
 class ListAlgoliaOffersTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.list_algolia_offers"
+    endpoint = "backoffice.offer.list_algolia_offers"
     needed_permission = perm_models.Permissions.READ_OFFERS
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
@@ -2181,7 +2181,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
 
 
 class ListLlmOffersTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.list_llm_offers"
+    endpoint = "backoffice.offer.list_llm_offers"
     needed_permission = perm_models.Permissions.READ_OFFERS
 
     # - fetch session + user (1 query)
@@ -2341,7 +2341,7 @@ class ListLlmOffersTest(GetEndpointHelper):
 
 
 class ValidateOfferTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.validate_offer"
+    endpoint = "backoffice.offer.validate_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -2353,7 +2353,7 @@ class ValidateOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_validate.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer_to_validate)
@@ -2428,7 +2428,7 @@ class ValidateOfferTest(PostEndpointHelper):
 
 
 class GetQualifyCulturalOutreachFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.qualify_cultural_outreach"
+    endpoint = "backoffice.offer.qualify_cultural_outreach"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
 
@@ -2443,7 +2443,7 @@ class GetQualifyCulturalOutreachFormTest(GetEndpointHelper):
 
 
 class QualifyCulturalOutreachTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.qualify_cultural_outreach"
+    endpoint = "backoffice.offer.qualify_cultural_outreach"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
 
@@ -2456,7 +2456,7 @@ class QualifyCulturalOutreachTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer)
@@ -2520,7 +2520,7 @@ class QualifyCulturalOutreachTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer)
@@ -2534,7 +2534,7 @@ class QualifyCulturalOutreachTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer)
@@ -2544,7 +2544,7 @@ class QualifyCulturalOutreachTest(PostEndpointHelper):
 
 
 class BatchQualifyCulturalOutreachTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.batch_qualify_cultural_outreach"
+    endpoint = "backoffice.offer.batch_qualify_cultural_outreach"
     needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
 
     def test_batch_qualify_cultural_outreach(self, legit_user, authenticated_client):
@@ -2585,7 +2585,7 @@ class BatchQualifyCulturalOutreachTest(PostEndpointHelper):
 
 
 class GetDisqualifyCulturalOutreachFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.disqualify_cultural_outreach"
+    endpoint = "backoffice.offer.disqualify_cultural_outreach"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
 
@@ -2600,7 +2600,7 @@ class GetDisqualifyCulturalOutreachFormTest(GetEndpointHelper):
 
 
 class DisqualifyCulturalOutreachTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.disqualify_cultural_outreach"
+    endpoint = "backoffice.offer.disqualify_cultural_outreach"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
 
@@ -2613,7 +2613,7 @@ class DisqualifyCulturalOutreachTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer)
@@ -2677,7 +2677,7 @@ class DisqualifyCulturalOutreachTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer)
@@ -2693,7 +2693,7 @@ class DisqualifyCulturalOutreachTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer)
@@ -2707,7 +2707,7 @@ class DisqualifyCulturalOutreachTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer)
@@ -2715,7 +2715,7 @@ class DisqualifyCulturalOutreachTest(PostEndpointHelper):
 
 
 class BatchDisqualifyCulturalOutreachTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.batch_disqualify_cultural_outreach"
+    endpoint = "backoffice.offer.batch_disqualify_cultural_outreach"
     needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
 
     def test_batch_disqualify_cultural_outreach(self, legit_user, authenticated_client):
@@ -2754,7 +2754,7 @@ class BatchDisqualifyCulturalOutreachTest(PostEndpointHelper):
 
 
 class PendingOfferTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.pending_offer"
+    endpoint = "backoffice.offer.pending_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -2765,7 +2765,7 @@ class PendingOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_validate.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer_to_validate)
@@ -2827,7 +2827,7 @@ class PendingOfferTest(PostEndpointHelper):
 
 
 class GetValidateOfferFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.get_validate_offer_form"
+    endpoint = "backoffice.offer.get_validate_offer_form"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -2842,7 +2842,7 @@ class GetValidateOfferFormTest(GetEndpointHelper):
 
 
 class RejectOfferTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.reject_offer"
+    endpoint = "backoffice.offer.reject_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -2857,7 +2857,7 @@ class RejectOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_reject.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         assert offer_to_reject.isActive is False
@@ -2944,7 +2944,7 @@ class RejectOfferTest(PostEndpointHelper):
 
 
 class GetRejectOfferFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.get_reject_offer_form"
+    endpoint = "backoffice.offer.get_reject_offer_form"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -2959,7 +2959,7 @@ class GetRejectOfferFormTest(GetEndpointHelper):
 
 
 class BatchOfferValidateTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.batch_validate_offers"
+    endpoint = "backoffice.offer.batch_validate_offers"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     @pytest.mark.parametrize(
@@ -3026,7 +3026,7 @@ class BatchOfferValidateTest(PostEndpointHelper):
 
 
 class BatchOfferPendingTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.batch_pending_offers"
+    endpoint = "backoffice.offer.batch_pending_offers"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_batch_pending_offers(self, legit_user, authenticated_client):
@@ -3061,7 +3061,7 @@ class BatchOfferPendingTest(PostEndpointHelper):
 
 
 class BatchOfferRejectTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.batch_reject_offers"
+    endpoint = "backoffice.offer.batch_reject_offers"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_batch_reject_offers(self, legit_user, authenticated_client):
@@ -3116,7 +3116,7 @@ class IndexOfferButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         offer = offers_factories.OfferFactory()
-        return url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+        return url_for("backoffice.offer.get_offer_details", offer_id=offer.id)
 
 
 class MoveOfferVenueButtonTest(button_helpers.ButtonHelper):
@@ -3134,11 +3134,11 @@ class MoveOfferVenueButtonTest(button_helpers.ButtonHelper):
             beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
             isSoftDeleted=True,
         )
-        return url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+        return url_for("backoffice.offer.get_offer_details", offer_id=offer.id)
 
 
 class IndexOfferTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.reindex"
+    endpoint = "backoffice.offer.reindex"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
@@ -3167,7 +3167,7 @@ def venues_in_same_offerer_fixture() -> tuple[offerers_models.Venue]:
 
 
 class EditOfferVenueTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.edit_offer_venue"
+    endpoint = "backoffice.offer.edit_offer_venue"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
@@ -3423,7 +3423,7 @@ class EditOfferVenueTest(PostEndpointHelper):
 
 
 class GetOfferStockEditFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.get_offer_stock_edit_form"
+    endpoint = "backoffice.offer.get_offer_stock_edit_form"
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
@@ -3483,7 +3483,7 @@ class GetOfferStockEditFormTest(GetEndpointHelper):
 
 
 class ConfirmOfferStockTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.confirm_offer_stock"
+    endpoint = "backoffice.offer.confirm_offer_stock"
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
@@ -3636,7 +3636,7 @@ class ConfirmOfferStockTest(PostEndpointHelper):
 
 
 class EditOfferStockTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.edit_offer_stock"
+    endpoint = "backoffice.offer.edit_offer_stock"
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
@@ -3804,10 +3804,10 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+        expected_url = url_for("backoffice.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
-        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        response = authenticated_client.get(url_for("backoffice.offer.get_offer_details", offer_id=offer.id))
         assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data)
@@ -3834,10 +3834,10 @@ class EditOfferStockTest(PostEndpointHelper):
             form={"price": 50.1},
         )
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+        expected_url = url_for("backoffice.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
-        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        response = authenticated_client.get(url_for("backoffice.offer.get_offer_details", offer_id=offer.id))
         assert response.status_code == 200
         assert html_parser.extract_alert(response.data) == "Ce stock n'est pas éditable."
 
@@ -3867,10 +3867,10 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+        expected_url = url_for("backoffice.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
-        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        response = authenticated_client.get(url_for("backoffice.offer.get_offer_details", offer_id=offer.id))
         assert response.status_code == 200
         assert html_parser.extract_alert(response.data) == "Ce stock n'est pas éditable."
 
@@ -3902,10 +3902,10 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+        expected_url = url_for("backoffice.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
-        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        response = authenticated_client.get(url_for("backoffice.offer.get_offer_details", offer_id=offer.id))
         assert response.status_code == 200
         assert (
             "Les données envoyées comportent des erreurs. Nouveau prix : Le prix doit être positif et inférieur à 123.45 €."
@@ -3940,10 +3940,10 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+        expected_url = url_for("backoffice.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
-        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        response = authenticated_client.get(url_for("backoffice.offer.get_offer_details", offer_id=offer.id))
         assert response.status_code == 200
         assert (
             "Les données envoyées comportent des erreurs. Réduction en pourcentage (%) : La réduction du prix doit être entre 0 % et 100 %."
@@ -3981,10 +3981,10 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+        expected_url = url_for("backoffice.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
-        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        response = authenticated_client.get(url_for("backoffice.offer.get_offer_details", offer_id=offer.id))
         assert response.status_code == 200
         assert (
             "Les données envoyées comportent des erreurs. Nouveau prix : Un seul des deux champs est utilisable à la fois ; Réduction en pourcentage (%) : Un seul des deux champs est utilisable à la fois ;"
@@ -4019,10 +4019,10 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+        expected_url = url_for("backoffice.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
-        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        response = authenticated_client.get(url_for("backoffice.offer.get_offer_details", offer_id=offer.id))
         assert response.status_code == 200
 
         assert event.booking.stock.price == decimal.Decimal("10.00")
@@ -4102,7 +4102,7 @@ class EditOfferStockTest(PostEndpointHelper):
 
 
 class DownloadBookingsCSVTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.download_bookings_csv"
+    endpoint = "backoffice.offer.download_bookings_csv"
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
@@ -4127,7 +4127,7 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
 
 
 class DownloadBookingsXLSXTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.download_bookings_xlsx"
+    endpoint = "backoffice.offer.download_bookings_xlsx"
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
@@ -4159,7 +4159,7 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
 
 
 class ActivateOfferTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.activate_offer"
+    endpoint = "backoffice.offer.activate_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
     # session + user
@@ -4177,7 +4177,7 @@ class ActivateOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer_to_activate)
@@ -4235,7 +4235,7 @@ class ActivateOfferTest(PostEndpointHelper):
 
 
 class GetActivateOfferFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.get_activate_offer_form"
+    endpoint = "backoffice.offer.get_activate_offer_form"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
     # session + user
@@ -4253,7 +4253,7 @@ class GetActivateOfferFormTest(GetEndpointHelper):
 
 
 class DeactivateOfferTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.deactivate_offer"
+    endpoint = "backoffice.offer.deactivate_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
     # session + user
@@ -4271,7 +4271,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers")
+        expected_url = url_for("backoffice.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer_to_deactivate)
@@ -4329,7 +4329,7 @@ class DeactivateOfferTest(PostEndpointHelper):
 
 
 class GetDeactivateOfferFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.get_deactivate_offer_form"
+    endpoint = "backoffice.offer.get_deactivate_offer_form"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
     # session + user
@@ -4347,7 +4347,7 @@ class GetDeactivateOfferFormTest(GetEndpointHelper):
 
 
 class BatchOfferActivateTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.batch_activate_offers"
+    endpoint = "backoffice.offer.batch_activate_offers"
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
     # session + user
     # get offers
@@ -4376,7 +4376,7 @@ class BatchOfferActivateTest(PostEndpointHelper):
 
 
 class BatchOfferDeactivateTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer.batch_deactivate_offers"
+    endpoint = "backoffice.offer.batch_deactivate_offers"
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
     # session + user
     # get offers
@@ -4405,7 +4405,7 @@ class BatchOfferDeactivateTest(PostEndpointHelper):
 
 
 class GetOfferDetailsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer.get_offer_details"
+    endpoint = "backoffice.offer.get_offer_details"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 

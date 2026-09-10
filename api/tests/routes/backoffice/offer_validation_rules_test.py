@@ -39,7 +39,7 @@ def get_empty_sub_rule_data(i: int | None = 0) -> dict:
 
 
 class ListRulesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer_validation_rules.list_rules"
+    endpoint = "backoffice.offer_validation_rules.list_rules"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     # session
@@ -336,7 +336,7 @@ class ListRulesTest(GetEndpointHelper):
 
 
 class GetCreateOfferValidationRuleFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer_validation_rules.create_rule"
+    endpoint = "backoffice.offer_validation_rules.create_rule"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_create_form_test(self, legit_user, authenticated_client):
@@ -348,7 +348,7 @@ class GetCreateOfferValidationRuleFormTest(GetEndpointHelper):
 
 
 class CreateOfferValidationRuleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer_validation_rules.create_rule"
+    endpoint = "backoffice.offer_validation_rules.create_rule"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     @pytest.mark.parametrize(
@@ -716,7 +716,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
 
 
 class GetDeleteOfferValidationRuleFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer_validation_rules.get_delete_offer_validation_rule_form"
+    endpoint = "backoffice.offer_validation_rules.get_delete_offer_validation_rule_form"
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -752,7 +752,7 @@ class GetDeleteOfferValidationRuleFormTest(GetEndpointHelper):
 
 
 class DeleteOfferValidationRuleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer_validation_rules.delete_rule"
+    endpoint = "backoffice.offer_validation_rules.delete_rule"
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -817,7 +817,7 @@ class DeleteOfferValidationRuleTest(PostEndpointHelper):
 
 
 class GetEditOfferValidationRuleFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer_validation_rules.edit_rule"
+    endpoint = "backoffice.offer_validation_rules.edit_rule"
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -838,7 +838,7 @@ class GetEditOfferValidationRuleFormTest(GetEndpointHelper):
 
 
 class EditOfferValidationRuleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer_validation_rules.edit_rule"
+    endpoint = "backoffice.offer_validation_rules.edit_rule"
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -1037,7 +1037,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
 
 
 class ListRulesHistoryTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer_validation_rules.get_rules_history"
+    endpoint = "backoffice.offer_validation_rules.get_rules_history"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     # session

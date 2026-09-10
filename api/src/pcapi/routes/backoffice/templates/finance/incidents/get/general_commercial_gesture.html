@@ -16,12 +16,12 @@
               <button class="btn btn-outline-primary"
                       data-bs-toggle="modal"
                       data-bs-target="#reject-finance-incident-modal-{{ incident.id }}">Annuler le geste commercial</button>
-              {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_cancellation_form', finance_incident_id=incident.id) , "reject-finance-incident-modal-" + incident.id|string) }}
+              {{ build_lazy_modal(url_for('backoffice.finance_incidents.get_finance_incident_cancellation_form', finance_incident_id=incident.id) , "reject-finance-incident-modal-" + incident.id|string) }}
               {% if has_permission("VALIDATE_COMMERCIAL_GESTURE") %}
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#finance-incident-validation-modal-{{ incident.id }}">Valider le geste commercial</button>
-                {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_validation_form', finance_incident_id=incident.id) , "finance-incident-validation-modal-" + incident.id|string) }}
+                {{ build_lazy_modal(url_for('backoffice.finance_incidents.get_finance_incident_validation_form', finance_incident_id=incident.id) , "finance-incident-validation-modal-" + incident.id|string) }}
               {% endif %}
             {% endif %}
           </div>

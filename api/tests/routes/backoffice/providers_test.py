@@ -30,7 +30,7 @@ pytestmark = [
 
 
 class ListProvidersTest(GetEndpointHelper):
-    endpoint = "backoffice_web.providers.list_providers"
+    endpoint = "backoffice.providers.list_providers"
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
     # - fetch session + user (1 query)
@@ -81,11 +81,11 @@ class CreateProviderButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.providers.list_providers")
+        return url_for("backoffice.providers.list_providers")
 
 
 class CreateProviderTest(PostEndpointHelper):
-    endpoint = "backoffice_web.providers.create_provider"
+    endpoint = "backoffice.providers.create_provider"
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
     def test_create_provider_and_offerer(self, authenticated_client):
@@ -201,7 +201,7 @@ class CreateProviderTest(PostEndpointHelper):
 
 
 class GetProviderTest(GetEndpointHelper):
-    endpoint = "backoffice_web.providers.get_provider"
+    endpoint = "backoffice.providers.get_provider"
     endpoint_kwargs = {"provider_id": 1}
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
@@ -241,7 +241,7 @@ class GetProviderTest(GetEndpointHelper):
 
 
 class GetProviderStatsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.providers.get_stats"
+    endpoint = "backoffice.providers.get_stats"
     endpoint_kwargs = {"provider_id": 1}
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
@@ -286,7 +286,7 @@ class GetProviderStatsTest(GetEndpointHelper):
 
 
 class GetProviderVenuesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.providers.get_venues"
+    endpoint = "backoffice.providers.get_venues"
     endpoint_kwargs = {"provider_id": 1}
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
@@ -333,11 +333,11 @@ class UpdateProviderButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         provider = providers_factories.ProviderFactory()
-        return url_for("backoffice_web.providers.get_provider", provider_id=provider.id)
+        return url_for("backoffice.providers.get_provider", provider_id=provider.id)
 
 
 class UpdateProviderTest(PostEndpointHelper):
-    endpoint = "backoffice_web.providers.update_provider"
+    endpoint = "backoffice.providers.update_provider"
     endpoint_kwargs = {"provider_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 

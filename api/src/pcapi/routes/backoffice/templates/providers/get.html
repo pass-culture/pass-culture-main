@@ -18,7 +18,7 @@
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if edit_form %}
                 {% set edit_provider_aria_described_by_id = random_hash() %}
-                {{ build_modal_form("edit-provider", url_for("backoffice_web.providers.update_provider", provider_id=provider.id) , edit_form, "Modifier les informations", "Modifier les informations du partenaire technique", "Enregistrer") }}
+                {{ build_modal_form("edit-provider", url_for("backoffice.providers.update_provider", provider_id=provider.id) , edit_form, "Modifier les informations", "Modifier les informations du partenaire technique", "Enregistrer") }}
               {% endif %}
             </div>
           </div>
@@ -72,7 +72,7 @@
       <div class="mt-4">
         <div id="venue_providers_count_frame"
              hx-trigger="load"
-             hx-get="{{ url_for('backoffice_web.providers.get_stats', provider_id=provider.id) }}">{{ build_loading_spinner() }}</div>
+             hx-get="{{ url_for('backoffice.providers.get_stats', provider_id=provider.id) }}">{{ build_loading_spinner() }}</div>
       </div>
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
@@ -82,7 +82,7 @@
           {% call build_details_tab_content("venues", active_tab == 'venues') %}
             <div id="provider_venues_frame"
                  hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.providers.get_venues', provider_id=provider.id) }}">{{ build_loading_spinner() }}</div>
+                 hx-get="{{ url_for('backoffice.providers.get_venues', provider_id=provider.id) }}">{{ build_loading_spinner() }}</div>
           {% endcall %}
         {% endcall %}
       </div>

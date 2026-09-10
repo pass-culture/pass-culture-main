@@ -36,7 +36,7 @@ def offer_price_limitation_rules_fixture():
 
 
 class ListRulesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer_price_limitation_rules.list_rules"
+    endpoint = "backoffice.offer_price_limitation_rules.list_rules"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     # session + rules
@@ -89,7 +89,7 @@ class ListRulesTest(GetEndpointHelper):
 
 
 class GetCreateOfferPriceLimitationRuleFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer_price_limitation_rules.create_rule"
+    endpoint = "backoffice.offer_price_limitation_rules.create_rule"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_create_form_test(self, legit_user, authenticated_client):
@@ -101,7 +101,7 @@ class GetCreateOfferPriceLimitationRuleFormTest(GetEndpointHelper):
 
 
 class CreateOfferPriceLimitationRuleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer_price_limitation_rules.create_rule"
+    endpoint = "backoffice.offer_price_limitation_rules.create_rule"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_create_offer_price_limitation_rule(self, legit_user, authenticated_client):
@@ -140,7 +140,7 @@ class CreateOfferPriceLimitationRuleTest(PostEndpointHelper):
 
 
 class GetDeleteOfferPriceLimitationRuleFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer_price_limitation_rules.get_delete_offer_price_limitation_rule_form"
+    endpoint = "backoffice.offer_price_limitation_rules.get_delete_offer_price_limitation_rule_form"
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -155,7 +155,7 @@ class GetDeleteOfferPriceLimitationRuleFormTest(GetEndpointHelper):
 
 
 class DeleteOfferPriceLimitationRuleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer_price_limitation_rules.delete_rule"
+    endpoint = "backoffice.offer_price_limitation_rules.delete_rule"
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -174,7 +174,7 @@ class DeleteOfferPriceLimitationRuleTest(PostEndpointHelper):
 
 
 class GetEditOfferPriceLimitationRuleFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer_price_limitation_rules.edit_rule"
+    endpoint = "backoffice.offer_price_limitation_rules.edit_rule"
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -187,7 +187,7 @@ class GetEditOfferPriceLimitationRuleFormTest(GetEndpointHelper):
 
 
 class EditOfferPriceLimitationRuleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offer_price_limitation_rules.edit_rule"
+    endpoint = "backoffice.offer_price_limitation_rules.edit_rule"
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 

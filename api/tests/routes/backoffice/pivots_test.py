@@ -32,7 +32,7 @@ pytestmark = [
 
 
 class GetPivotsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.pivots.get_pivots"
+    endpoint = "backoffice.pivots.get_pivots"
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
     def test_get_pivots_page(self, authenticated_client):
@@ -42,7 +42,7 @@ class GetPivotsTest(GetEndpointHelper):
 
 
 class ListPivotsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.pivots.list_pivots"
+    endpoint = "backoffice.pivots.list_pivots"
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
@@ -290,11 +290,11 @@ class CreatePivotsButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.pivots.list_pivots", name="allocine")
+        return url_for("backoffice.pivots.list_pivots", name="allocine")
 
 
 class GetCreatePivotFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.pivots.get_create_pivot_form"
+    endpoint = "backoffice.pivots.get_create_pivot_form"
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
@@ -330,7 +330,7 @@ class GetCreatePivotFormTest(GetEndpointHelper):
 
 
 class CreatePivotTest(PostEndpointHelper):
-    endpoint = "backoffice_web.pivots.create_pivot"
+    endpoint = "backoffice.pivots.create_pivot"
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
@@ -497,7 +497,7 @@ class CreatePivotTest(PostEndpointHelper):
 
 
 class GetUpdatePivotFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.pivots.get_update_pivot_form"
+    endpoint = "backoffice.pivots.get_update_pivot_form"
     endpoint_kwargs = {"name": "allocine", "pivot_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
@@ -564,7 +564,7 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
 
 
 class UpdatePivotTest(PostEndpointHelper):
-    endpoint = "backoffice_web.pivots.update_pivot"
+    endpoint = "backoffice.pivots.update_pivot"
     endpoint_kwargs = {"name": "allocine", "pivot_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
@@ -710,7 +710,7 @@ class UpdatePivotTest(PostEndpointHelper):
 
 
 class DeleteProviderTest(PostEndpointHelper):
-    endpoint = "backoffice_web.pivots.delete_pivot"
+    endpoint = "backoffice.pivots.delete_pivot"
     endpoint_kwargs = {"name": "cgr", "pivot_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 

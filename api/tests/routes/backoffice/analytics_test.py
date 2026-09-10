@@ -13,7 +13,7 @@ pytestmark = [
 
 
 class GetSaveTest(GetEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.analytics.save"
+    endpoint = "backoffice.analytics.save"
 
     def test_nominal(self, authenticated_client, caplog):
         event_data = {
@@ -28,7 +28,7 @@ class GetSaveTest(GetEndpointWithoutPermissionHelper):
 
         # Then
         assert caplog.records[0].message == "Analytics event"
-        assert caplog.records[0].extra["eventOrigin"] == "backoffice_web.offer.list_offers"
+        assert caplog.records[0].extra["eventOrigin"] == "backoffice.offer.list_offers"
         assert caplog.records[0].extra["eventName"] == event_data["name"]
         assert caplog.records[0].extra["eventType"] == event_data["type"]
 

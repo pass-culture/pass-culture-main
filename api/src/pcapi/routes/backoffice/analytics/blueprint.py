@@ -21,7 +21,7 @@ analytics_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 
 
 @analytics_blueprint.route("/save", methods=["GET"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def save() -> response_utils.BackofficeResponse:
     form = AnalyticsRegisterForm(request.args)
     if not form.validate():

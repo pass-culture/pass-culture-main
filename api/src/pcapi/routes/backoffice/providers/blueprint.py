@@ -98,7 +98,7 @@ def get_create_provider_form() -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.providers.create_provider"),
+        dst=url_for("backoffice.providers.create_provider"),
         div_id="create-provider",
         modal_content_id="create-provider-modale-content",
         target_id="#create-provider-modale-content",
@@ -120,7 +120,7 @@ def create_provider() -> response_utils.BackofficeResponse:
             response="redirecting",
             status=303,
             headers={
-                "HX-Redirect": url_for("backoffice_web.providers.list_providers"),
+                "HX-Redirect": url_for("backoffice.providers.list_providers"),
             },
         )
 
@@ -166,7 +166,7 @@ def create_provider() -> response_utils.BackofficeResponse:
             response="redirecting",
             status=303,
             headers={
-                "HX-Redirect": url_for("backoffice_web.providers.list_providers"),
+                "HX-Redirect": url_for("backoffice.providers.list_providers"),
             },
         )
 
@@ -176,7 +176,7 @@ def create_provider() -> response_utils.BackofficeResponse:
     form = empty_forms.EmptyGetForm()
     return render_template(
         "components/dynamic/modal_form.html",
-        dst=url_for("backoffice_web.providers.list_providers"),
+        dst=url_for("backoffice.providers.list_providers"),
         form=form,
         include_template="providers/list/create.html",
         div_id="create-provider",
@@ -364,4 +364,4 @@ def update_provider(provider_id: int) -> response_utils.BackofficeResponse:
     else:
         flash("Les informations ont été mises à jour", "success")
 
-    return redirect(url_for("backoffice_web.providers.get_provider", provider_id=provider_id), code=303)
+    return redirect(url_for("backoffice.providers.get_provider", provider_id=provider_id), code=303)

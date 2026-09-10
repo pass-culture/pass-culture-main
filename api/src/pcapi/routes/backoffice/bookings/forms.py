@@ -65,14 +65,14 @@ class BaseBookingListForm(FlaskForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
         "Partenaires culturels",
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
     )
     status = fields.PCSelectMultipleField("États")
     cashflow_batches = fields.PCTomSelectField(
@@ -80,7 +80,7 @@ class BaseBookingListForm(FlaskForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_cashflow_batches",
+        endpoint="backoffice.autocomplete_cashflow_batches",
     )
     has_incident = fields.PCSelectMultipleField(
         "Incident comptable",
@@ -172,7 +172,7 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_institutions",
+        endpoint="backoffice.autocomplete_institutions",
     )
     ministry = fields.PCSelectMultipleField(
         "Ministère", choices=utils.choices_from_enum(educational_models.Ministry), field_list_compatibility=True

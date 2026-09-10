@@ -6,121 +6,121 @@
       <tr {%+ if use_new_tab_ui %}
           class="bg-secondary-subtle fs-7 align-middle"
           {% endif %}>
-        <th scope="col"></th>
-        <th scope="col" class="col-2">Type</th>
-        <th scope="col" class="col-2">Date/Heure</th>
-        <th scope="col" class="col-6">Commentaire</th>
-        <th scope="col" class="col-2">Auteur</th>
-      </tr>
-    </thead>
-    <tbody {%+ if not use_new_tab_ui %}
-           class="table-group-divider"
-           {% endif %}>
-      {% for action in actions %}
-        <tr>
-          <th scope="row"></th>
-          {# action can be an ActionHistory row from db or an AccountAction object from another table #}
-          <td>{{ action.actionType | format_action_type }}</td>
-          <td>{{ action.actionDate | format_date_time }}</td>
-          <td class="text-break">
-            {% set user_offerer_action_type = action | is_user_offerer_action_type %}
-            {% if action.userId and user_offerer_action_type %}
-              {{ links.build_pro_user_name_to_details_link(action.user.id, action.user.full_name) }}
-            {% elif action.actionType.name == "USER_SUSPENDED" %}
-              <p>{{ action.extraData['reason'] | format_reason_label }}</p>
-            {% elif action.actionType.name in ["RULE_CREATED","RULE_DELETED","RULE_MODIFIED"] %}
-              <p>{{ action.rule.name }}</p>
-              {{ build_sub_rules_extra_data(action.extraData['sub_rules_info']) }}
-            {% elif action.actionType.name in ["LINK_VENUE_BANK_ACCOUNT_DEPRECATED", "LINK_VENUE_BANK_ACCOUNT_CREATED"] %}
-              Partenaire culturel : {{ links.build_venue_name_to_details_link(action.venue) }}
-            {% elif action.actionType.name == "OFFERER_ATTESTATION_CHECKED" %}
-              L'état positif ou négatif de l'attestation {{ action.extraData['provider'] }} a été visualisé
-            {% elif action.actionType.name == "SYNC_VENUE_TO_PROVIDER" %}
-              Partenaire technique : {{ action.extraData["provider_name"] }}
-            {% elif action.actionType.name == "PIVOT_CREATED" %}
-              Création d'un pivot {{ action.extraData["pivot_name"] | format_pivot_name }},
-              <br />
-              Identifiant du cinéma : {{ action.extraData["cinema_id"] }}
-            {% elif action.extraData and action.actionType.name in ["OFFERER_REJECTED", "USER_OFFERER_REJECTED"] %}
-              Raison : {{ action.extraData["rejection_reason"] | format_offerer_rejection_reason }}
-            {% elif action.actionType.name == "VENUE_REGULARIZATION" %}
-              {% set origin_venue_id = action.extraData.get('origin_venue_id') %}
-              {% set destination_venue_id = action.extraData.get('destination_venue_id') %}
-              {% if destination_venue_id %}
-                Tous les éléments ont été transférés vers le partenaire culturel
-                <a href="{{ url_for('backoffice_web.venue.get', venue_id=destination_venue_id) }}"
-                   class="link-primary">{{ destination_venue_id }}</a>
+      <th scope="col"></th>
+      <th scope="col" class="col-2">Type</th>
+      <th scope="col" class="col-2">Date/Heure</th>
+      <th scope="col" class="col-6">Commentaire</th>
+      <th scope="col" class="col-2">Auteur</th>
+    </tr>
+  </thead>
+  <tbody {%+ if not use_new_tab_ui %}
+         class="table-group-divider"
+         {% endif %}>
+  {% for action in actions %}
+    <tr>
+      <th scope="row"></th>
+      {# action can be an ActionHistory row from db or an AccountAction object from another table #}
+      <td>{{ action.actionType | format_action_type }}</td>
+      <td>{{ action.actionDate | format_date_time }}</td>
+      <td class="text-break">
+        {% set user_offerer_action_type = action | is_user_offerer_action_type %}
+        {% if action.userId and user_offerer_action_type %}
+          {{ links.build_pro_user_name_to_details_link(action.user.id, action.user.full_name) }}
+        {% elif action.actionType.name == "USER_SUSPENDED" %}
+          <p>{{ action.extraData['reason'] | format_reason_label }}</p>
+        {% elif action.actionType.name in ["RULE_CREATED","RULE_DELETED","RULE_MODIFIED"] %}
+          <p>{{ action.rule.name }}</p>
+          {{ build_sub_rules_extra_data(action.extraData['sub_rules_info']) }}
+        {% elif action.actionType.name in ["LINK_VENUE_BANK_ACCOUNT_DEPRECATED", "LINK_VENUE_BANK_ACCOUNT_CREATED"] %}
+          Partenaire culturel : {{ links.build_venue_name_to_details_link(action.venue) }}
+        {% elif action.actionType.name == "OFFERER_ATTESTATION_CHECKED" %}
+          L'état positif ou négatif de l'attestation {{ action.extraData['provider'] }} a été visualisé
+        {% elif action.actionType.name == "SYNC_VENUE_TO_PROVIDER" %}
+          Partenaire technique : {{ action.extraData["provider_name"] }}
+        {% elif action.actionType.name == "PIVOT_CREATED" %}
+          Création d'un pivot {{ action.extraData["pivot_name"] | format_pivot_name }},
+          <br />
+          Identifiant du cinéma : {{ action.extraData["cinema_id"] }}
+        {% elif action.extraData and action.actionType.name in ["OFFERER_REJECTED", "USER_OFFERER_REJECTED"] %}
+          Raison : {{ action.extraData["rejection_reason"] | format_offerer_rejection_reason }}
+        {% elif action.actionType.name == "VENUE_REGULARIZATION" %}
+          {% set origin_venue_id = action.extraData.get('origin_venue_id') %}
+          {% set destination_venue_id = action.extraData.get('destination_venue_id') %}
+          {% if destination_venue_id %}
+            Tous les éléments ont été transférés vers le partenaire culturel
+            <a href="{{ url_for('backoffice.venue.get', venue_id=destination_venue_id) }}"
+               class="link-primary">{{ destination_venue_id }}</a>
+          {% endif %}
+        {% endif %}
+        {% if action.comment %}<p>{{ action.comment | empty_string_if_null | nl2br }}</p>{% endif %}
+        {% if action.extraData %}
+          {% set role_name = action.extraData.get('role_name') %}
+          {% if role_name %}
+            <div>
+              <span class="fw-bold">Rôle :</span>
+              {{ role_name }}
+            </div>
+          {% endif %}
+          {% set modified_info = action.extraData.get('modified_info', {}) %}
+          {% if modified_info %}
+            {# INFO_MODIFIED but also tags modified in OFFERER_PENDING, OFFERER_CLOSED and others #}
+            <div>
+              <span class="fw-bold">Informations modifiées :</span>
+              {% if show_venue and action.venueId %}
+                sur le partenaire culturel
+                {{ links.build_venue_name_to_details_link(action.venue) }}
+                ({{ action.venueId }})
               {% endif %}
-            {% endif %}
-            {% if action.comment %}<p>{{ action.comment | empty_string_if_null | nl2br }}</p>{% endif %}
-            {% if action.extraData %}
-              {% set role_name = action.extraData.get('role_name') %}
-              {% if role_name %}
-                <div>
-                  <span class="fw-bold">Rôle :</span>
-                  {{ role_name }}
-                </div>
-              {% endif %}
-              {% set modified_info = action.extraData.get('modified_info', {}) %}
-              {% if modified_info %}
-                {# INFO_MODIFIED but also tags modified in OFFERER_PENDING, OFFERER_CLOSED and others #}
-                <div>
-                  <span class="fw-bold">Informations modifiées :</span>
-                  {% if show_venue and action.venueId %}
-                    sur le partenaire culturel
-                    {{ links.build_venue_name_to_details_link(action.venue) }}
-                    ({{ action.venueId }})
-                  {% endif %}
-                </div>
-                {% for info_name, modified_info in modified_info.items() %}
-                  <div>
-                    {% if action.actionType.name == "ROLE_PERMISSIONS_CHANGED" %}
-                      <span class="text-decoration-underline">{{ info_name | format_permission_name }} :</span>
-                    {% else %}
-                      <span class="text-decoration-underline">{{ info_name | format_modified_info_name | escape }} :</span>
-                    {% endif %}
-                    {{ modified_info | format_modified_info_values(info_name) }}
-                  </div>
-                {% endfor %}
-              {% endif %}
-              {% set linked_incident_id = action.extraData.get('linked_incident_id') %}
-              {% if linked_incident_id and "/finance/incidents/" not in request.path %}
-                {% set link = url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=linked_incident_id) %}
-                {% if request.url != link %}
-                  <a href="{{ link }}"
-                     class="link-primary">Voir l'incident #{{ linked_incident_id }}</a>
+            </div>
+            {% for info_name, modified_info in modified_info.items() %}
+              <div>
+                {% if action.actionType.name == "ROLE_PERMISSIONS_CHANGED" %}
+                  <span class="text-decoration-underline">{{ info_name | format_permission_name }} :</span>
+                {% else %}
+                  <span class="text-decoration-underline">{{ info_name | format_modified_info_name | escape }} :</span>
                 {% endif %}
-              {% endif %}
-              {% set non_payment_notice_id = action.extraData.get('non_payment_notice_id') %}
-              {% if non_payment_notice_id %}
-                {% set link = url_for('backoffice_web.non_payment_notices.list_notices', q=non_payment_notice_id, offerer=action.offererId, venue=action.venueId) %}
-                <a href="{{ link }}"
-                   class="link-primary">Voir l'avis d'impayé #{{ non_payment_notice_id }}</a>
-              {% endif %}
-              {% set provider_id = action.extraData.get('provider_id') %}
-              {% if provider_id %}{{ action.extraData.get("provider_name") | empty_string_if_null }} (Provider ID : {{ provider_id }}){% endif %}
-              {% set ds_dossier_id = action.extraData.get('ds_dossier_id') %}
-              {% if ds_dossier_id %}
-                {% set ds_procedure_id = action.extraData.get("ds_procedure_id") %}
-                {{ links.build_ds_application_external_link(ds_dossier_id, ds_procedure_id, "Dossier Démarche Numérique n°") }}
-                {% set ds_status = action.extraData.get("ds_status") %}
-                {% if ds_status %}{{ action.extraData.get("ds_status") | format_dms_application_status_badge }}{% endif %}
-              {% endif %}
-              {% set zendesk_id = action.extraData.get('zendesk_id') %}
-              {% if zendesk_id %}N° de ticket Zendesk : {{ links.build_zendesk_ticket_external_link(zendesk_id) }}{% endif %}
-              {% set drive_link = action.extraData.get('drive_link') %}
-              {% if drive_link %}
-                <br />
-                Document Drive :
-                <a href="{{ drive_link }}"
-                   target="_blank"
-                   class="link-primary">{{ drive_link }} <i class="bi bi-box-arrow-up-right"></i></a>
-              {% endif %}
+                {{ modified_info | format_modified_info_values(info_name) }}
+              </div>
+            {% endfor %}
+          {% endif %}
+          {% set linked_incident_id = action.extraData.get('linked_incident_id') %}
+          {% if linked_incident_id and "/finance/incidents/" not in request.path %}
+            {% set link = url_for('backoffice.finance_incidents.get_incident', finance_incident_id=linked_incident_id) %}
+            {% if request.url != link %}
+              <a href="{{ link }}"
+                 class="link-primary">Voir l'incident #{{ linked_incident_id }}</a>
             {% endif %}
-          </td>
-          <td>{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+          {% endif %}
+          {% set non_payment_notice_id = action.extraData.get('non_payment_notice_id') %}
+          {% if non_payment_notice_id %}
+            {% set link = url_for('backoffice.non_payment_notices.list_notices', q=non_payment_notice_id, offerer=action.offererId, venue=action.venueId) %}
+            <a href="{{ link }}"
+               class="link-primary">Voir l'avis d'impayé #{{ non_payment_notice_id }}</a>
+          {% endif %}
+          {% set provider_id = action.extraData.get('provider_id') %}
+          {% if provider_id %}{{ action.extraData.get("provider_name") | empty_string_if_null }} (Provider ID : {{ provider_id }}){% endif %}
+          {% set ds_dossier_id = action.extraData.get('ds_dossier_id') %}
+          {% if ds_dossier_id %}
+            {% set ds_procedure_id = action.extraData.get("ds_procedure_id") %}
+            {{ links.build_ds_application_external_link(ds_dossier_id, ds_procedure_id, "Dossier Démarche Numérique n°") }}
+            {% set ds_status = action.extraData.get("ds_status") %}
+            {% if ds_status %}{{ action.extraData.get("ds_status") | format_dms_application_status_badge }}{% endif %}
+          {% endif %}
+          {% set zendesk_id = action.extraData.get('zendesk_id') %}
+          {% if zendesk_id %}N° de ticket Zendesk : {{ links.build_zendesk_ticket_external_link(zendesk_id) }}{% endif %}
+          {% set drive_link = action.extraData.get('drive_link') %}
+          {% if drive_link %}
+            <br />
+            Document Drive :
+            <a href="{{ drive_link }}"
+               target="_blank"
+               class="link-primary">{{ drive_link }} <i class="bi bi-box-arrow-up-right"></i></a>
+          {% endif %}
+        {% endif %}
+      </td>
+      <td>{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</td>
+    </tr>
+  {% endfor %}
+</tbody>
+</table>
 {% endmacro %}

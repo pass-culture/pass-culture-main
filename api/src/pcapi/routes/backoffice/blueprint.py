@@ -16,10 +16,10 @@ from .utils import static as static_utils
 from .utils.access_control import _check_any_permission_of
 
 
-BACKOFFICE_WEB_BLUEPRINT_NAME = "backoffice_web"
-backoffice_web = Blueprint(BACKOFFICE_WEB_BLUEPRINT_NAME, __name__, url_prefix="/", template_folder="templates")
+BACKOFFICE_WEB_BLUEPRINT_NAME = "backoffice"
+backoffice = Blueprint(BACKOFFICE_WEB_BLUEPRINT_NAME, __name__, url_prefix="/", template_folder="templates")
 CORS(
-    backoffice_web,
+    backoffice,
     origins=settings.CORS_ALLOWED_ORIGINS,
     supports_credentials=True,
 )
@@ -35,7 +35,7 @@ SECURITY_SCHEMES = [
 ]
 
 
-backoffice_web_schema = ExtendedSpecTree(
+backoffice_schema = ExtendedSpecTree(
     "flask",
     title="pass Culture poc backoffice web",
     MODE="strict",
@@ -45,10 +45,10 @@ backoffice_web_schema = ExtendedSpecTree(
     humanize_operation_id=True,
     version=1,
 )
-backoffice_web_schema.register(backoffice_web)
+backoffice_schema.register(backoffice)
 
 
-@backoffice_web.context_processor
+@backoffice.context_processor
 def extra_funcs() -> dict:
     return {
         "csrf_token": empty_forms.EmptyForm().csrf_token,
@@ -65,7 +65,7 @@ def child_backoffice_blueprint(
     name: str, import_name: str, url_prefix: str, permission: perm_models.Permissions | None = None
 ) -> Blueprint:
     child_blueprint = Blueprint(name, import_name, url_prefix=url_prefix)
-    backoffice_web.register_blueprint(child_blueprint)
+    backoffice.register_blueprint(child_blueprint)
 
     @child_blueprint.before_request
     def check_permission() -> None:

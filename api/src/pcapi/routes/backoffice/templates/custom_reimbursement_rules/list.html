@@ -10,14 +10,14 @@
 {% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
 {% block before_table %}
   <div class="col-md-12 mt-4">
-    {{ dynamic_element(url=url_for('backoffice_web.reimbursement_rules.get_stats') , div_id="reimbursement_stats") }}
+    {{ dynamic_element(url=url_for('backoffice.reimbursement_rules.get_stats') , div_id="reimbursement_stats") }}
   </div>
   {% if has_permission("CREATE_REIMBURSEMENT_RULES") %}
     <button class="btn btn-outline-primary-subtle-bg col-2"
             data-bs-toggle="modal"
             data-bs-target="#create-custom-reimbursement-rule"
             type="button">Créer un tarif dérogatoire</button>
-    {{ build_dynamic_modal(url_for("backoffice_web.reimbursement_rules.get_create_custom_reimbursement_rule_form") , "create-custom-reimbursement-rule") }}
+    {{ build_dynamic_modal(url_for("backoffice.reimbursement_rules.get_create_custom_reimbursement_rule_form") , "create-custom-reimbursement-rule") }}
   {% endif %}
 {% endblock before_table %}
 {% block table_header %}
@@ -38,7 +38,7 @@
 {% block after_table %}
   {% for reimbursement_rule in rows %}
     {% if not reimbursement_rule.timespan.upper %}
-      {{ build_dynamic_modal(url_for("backoffice_web.reimbursement_rules.get_edit_custom_reimbursement_rule_form", reimbursement_rule_id=reimbursement_rule.id) ,
+      {{ build_dynamic_modal(url_for("backoffice.reimbursement_rules.get_edit_custom_reimbursement_rule_form", reimbursement_rule_id=reimbursement_rule.id) ,
         "edit-custom-reimbursement-rule-" + reimbursement_rule.id|string) }}
     {% endif %}
   {% endfor %}

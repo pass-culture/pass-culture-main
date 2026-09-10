@@ -423,7 +423,7 @@ def anonymize_public_account(user_id: int) -> response_utils.BackofficeResponse:
     form = empty_forms.EmptyForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
+        return redirect(url_for("backoffice.public_accounts.get_public_account", user_id=user_id), code=303)
 
     if gdpr_api.has_unprocessed_extract(user):
         flash("Une extraction de données est en cours pour cet utilisateur.", "warning")
@@ -1910,7 +1910,7 @@ def review_public_account(user_id: int) -> response_utils.BackofficeResponse:
     form = account_forms.ManualReviewForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
+        return redirect(url_for("backoffice.public_accounts.get_public_account", user_id=user_id), code=303)
 
     eligibility = users_models.EligibilityType[form.eligibility.data]
     try:
@@ -2008,7 +2008,7 @@ def get_request_qf_bonus_credit_form(user_id: int) -> response_utils.BackofficeR
             "Il faut remplir l'information sur son <b>parent</b>, <b>tuteur légal</b> ou l'<b>organisme qui le prend en charge</b>."
         ),
         form=form,
-        dst=url_for("backoffice_web.public_accounts.request_qf_bonus_credit", user_id=user_id),
+        dst=url_for("backoffice.public_accounts.request_qf_bonus_credit", user_id=user_id),
         div_id="request-qf-bonus-credit",
         button_text="Faire la demande",
         ajax_submit=False,
@@ -2104,7 +2104,7 @@ def get_request_disability_bonus_credit_form(user_id: int) -> response_utils.Bac
             "Il faut remplir les informations le concernant."
         ),
         form=form,
-        dst=url_for("backoffice_web.public_accounts.request_disability_bonus_credit", user_id=user_id),
+        dst=url_for("backoffice.public_accounts.request_disability_bonus_credit", user_id=user_id),
         div_id="request-disability-bonus-credit",
         button_text="Faire la demande",
         ajax_submit=False,
@@ -2651,7 +2651,7 @@ def get_batch_send_public_account_reset_password_email_form() -> response_utils.
         "components/dynamic/modal_form.html",
         target_id="#users-table",
         form=form,
-        dst=url_for("backoffice_web.public_accounts.batch_send_public_account_reset_password_email"),
+        dst=url_for("backoffice.public_accounts.batch_send_public_account_reset_password_email"),
         div_id="batch-send-public-account-reset-password-email-modal",
         title="Voulez-vous envoyer un email de changement de mot de passe aux comptes sélectionnés ?",
         button_text="Envoyer",
@@ -2696,7 +2696,7 @@ def get_batch_invalidate_public_account_password_form() -> response_utils.Backof
         "components/dynamic/modal_form.html",
         target_id="#users-table",
         form=form,
-        dst=url_for("backoffice_web.public_accounts.batch_invalidate_public_account_password"),
+        dst=url_for("backoffice.public_accounts.batch_invalidate_public_account_password"),
         div_id="batch-invalidate-public-account-password-modal",
         title="Voulez-vous invalider le mot de passe des comptes sélectionnés ?",
         button_text="Invalider",
@@ -2735,7 +2735,7 @@ def get_batch_suspend_public_account_form() -> response_utils.BackofficeResponse
         "components/dynamic/modal_form.html",
         target_id="#users-table",
         form=form,
-        dst=url_for("backoffice_web.public_accounts.batch_suspend_public_account"),
+        dst=url_for("backoffice.public_accounts.batch_suspend_public_account"),
         div_id="batch-suspend-public-account-modal",
         title="Voulez-vous suspendre les comptes sélectionnés ?",
         button_text="Suspendre",
@@ -2801,7 +2801,7 @@ def get_batch_tag_public_account_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#users-table",
         form=form,
-        dst=url_for("backoffice_web.public_accounts.batch_tag_public_account"),
+        dst=url_for("backoffice.public_accounts.batch_tag_public_account"),
         div_id="batch-tag-public-account-modal",
         title="Édition des comptes",
         button_text="Enregistrer les modifications",
