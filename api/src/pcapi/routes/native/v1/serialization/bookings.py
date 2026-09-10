@@ -97,7 +97,7 @@ class BookingOfferResponse(HttpBodyModel):
                 postal_code=addr.postalCode,
                 city=addr.city,
                 label=offerer_address.label,
-                coordinates=OfferCoordinatesResponse(latitude=addr.latitude, longitude=addr.longitude),
+                coordinates=OfferCoordinatesResponse(latitude=float(addr.latitude), longitude=float(addr.longitude)),
                 timezone=addr.timezone,
             )
 
@@ -111,10 +111,10 @@ class BookingOfferResponse(HttpBodyModel):
             booking_contact=offer.bookingContact,
             name=offer.name,
             extra_data=extra_data,
-            image=offer.image,
+            image=offer.image,  # type: ignore [arg-type]
             is_digital=offer.isDigital,
             is_permanent=offer.isPermanent,
-            subcategory_id=offer.subcategoryId,
+            subcategory_id=offer.subcategoryId,  # type: ignore [arg-type]
             url=offer.url,
             venue=BookingVenueResponse.build(offer.venue),
             withdrawal_details=offer.withdrawalDetails,

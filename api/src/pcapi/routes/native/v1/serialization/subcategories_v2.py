@@ -45,10 +45,10 @@ class SubcategoryResponseModelv2(HttpBodyModel):
             category_id=subcategory.category_id,
             native_category_id=native_category_id,
             app_label=subcategory.app_label,
-            search_group_name=search_group_name,
+            search_group_name=search_group_name,  # type: ignore [arg-type]
             homepage_label_name=subcategory.homepage_label_name,
             is_event=subcategory.is_event,
-            online_offline_platform=subcategory.online_offline_platform,
+            online_offline_platform=subcategory.online_offline_platform,  # type: ignore [arg-type]
         )
 
 

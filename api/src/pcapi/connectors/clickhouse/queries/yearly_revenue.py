@@ -27,7 +27,7 @@ class AggregatedCollectiveRevenueQuery(BaseQuery[AggregatedCollectiveRevenueMode
         return AggregatedCollectiveRevenueModel(
             year=row.year,
             revenue=CollectiveRevenue(**json.loads(row.revenue)),
-            expected_revenue=CollectiveRevenue(**json.loads(row.expected_revenue)) if row.expected_revenue else None,
+            expected_revenue=CollectiveRevenue(**json.loads(row.expected_revenue)) if row.expected_revenue else None,  # type: ignore [arg-type]
         )
 
     @property
@@ -63,7 +63,7 @@ class AggregatedIndividualRevenueQuery(BaseQuery[AggregatedIndividualRevenueMode
         return AggregatedIndividualRevenueModel(
             year=row.year,
             revenue=IndividualRevenue(**json.loads(row.revenue)),
-            expected_revenue=IndividualRevenue(**json.loads(row.expected_revenue)) if row.expected_revenue else None,
+            expected_revenue=IndividualRevenue(**json.loads(row.expected_revenue)) if row.expected_revenue else None,  # type: ignore [arg-type]
         )
 
     @property
@@ -101,7 +101,7 @@ class AggregatedTotalRevenueQuery(BaseQuery[AggregatedTotalRevenueModel, _Row]):
         return AggregatedTotalRevenueModel(
             year=row.year,
             revenue=TotalRevenue(**json.loads(row.revenue)),
-            expected_revenue=TotalRevenue(**json.loads(row.expected_revenue)) if row.expected_revenue else None,
+            expected_revenue=TotalRevenue(**json.loads(row.expected_revenue)) if row.expected_revenue else None,  # type: ignore [arg-type]
         )
 
     @property

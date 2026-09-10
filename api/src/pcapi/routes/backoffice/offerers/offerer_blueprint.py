@@ -1107,8 +1107,8 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
         city=attachment_address.city,
         postalCode=attachment_address.postalCode,
         inseeCode=attachment_address.inseeCode,
-        latitude=float(attachment_address.latitude),
-        longitude=float(attachment_address.longitude),
+        latitude=attachment_address.latitude,
+        longitude=attachment_address.longitude,
         banId=attachment_address.banId,
         label=None,
     )

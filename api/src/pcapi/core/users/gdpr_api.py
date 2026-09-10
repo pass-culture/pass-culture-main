@@ -808,7 +808,7 @@ def _extract_gdpr_deposits(user: models.User) -> list[schemas.GdprDepositSeriali
             dateCreated=deposit.dateCreated,
             dateUpdated=deposit.dateUpdated,
             expirationDate=deposit.expirationDate,
-            amount=deposit.amount,
+            amount=float(deposit.amount),
             source=deposit.source,
             type=deposit_types.get(deposit.type.name, deposit.type.name),
         )
@@ -942,7 +942,7 @@ def _extract_gdpr_booking_data(user: models.User) -> list[schemas.GdprBookingSer
                 dateCreated=booking_data.dateCreated,
                 dateUsed=booking_data.dateUsed,
                 quantity=booking_data.quantity,
-                amount=booking_data.amount,
+                amount=float(booking_data.amount),
                 status=booking_status.get(booking_data.status.name, booking_data.status.name),
                 name=booking_data.stock.offer.name,
                 venue=booking_data.venue.publicName,

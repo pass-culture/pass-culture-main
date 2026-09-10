@@ -85,10 +85,10 @@ def create_qf_fraud_check_mock(user: users_models.User, form: forms.QuotientFami
     mock_type = form.mock_type.data
     result_content = None
     user_qf_person = bonus_schemas.BonusCreditPerson(
-        last_name=user.lastName,
+        last_name=user.lastName,  # type: ignore [arg-type]
         first_names=[user.firstName] if user.firstName else [],
-        birth_date=user.validatedBirthDate,
-        gender=user.gender,
+        birth_date=user.validatedBirthDate,  # type: ignore [arg-type]
+        gender=user.gender,  # type: ignore [arg-type]
     )
 
     if mock_type == forms.QFMockType.OK.value:

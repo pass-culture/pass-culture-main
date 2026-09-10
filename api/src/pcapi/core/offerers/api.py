@@ -2306,7 +2306,7 @@ def create_from_onboarding_data(
                 "siret": onboarding_data.siret,
             }
         venue_kwargs = common_kwargs | comment_and_siret
-        venue_creation_info = venue_serialize.PostVenueBodyModel(**venue_kwargs)
+        venue_creation_info = venue_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore [arg-type]
         pricing_point_id = venue.id if venue else None
         venue = create_venue(venue_creation_info, user)
         db.session.flush()
@@ -3439,8 +3439,9 @@ def find_ban_address_from_insee_address(
                 city=ban_address.city,
                 inseeCode=ban_address.citycode,
                 label=ban_address.label,
-                latitude=ban_address.latitude,
-                longitude=ban_address.longitude,
+                # latitude and longitude are cast as Decimal in before validator
+                latitude=ban_address.latitude,  # type: ignore [arg-type]
+                longitude=ban_address.longitude,  # type: ignore [arg-type]
                 postalCode=ban_address.postcode,
                 street=ban_address.street,
             )

@@ -140,12 +140,13 @@ def _create_pro_user(row: dict) -> User:
     db.session.commit()
 
     address = address_serialize.LocationBodyModelV2(
-        street=offerer_creation_info.street,
+        street=offerer_creation_info.street,  # type: ignore [arg-type]
         city=offerer_creation_info.city,
         postalCode=offerer_creation_info.postal_code,
         inseeCode="75101",
-        latitude=gps[0],
-        longitude=gps[1],
+        # latitude and longitude are cast as Decimal in before validator
+        latitude=gps[0],  # type: ignore [arg-type]
+        longitude=gps[1],  # type: ignore [arg-type]
         banId="75101_2259_00001",  # 1 place de la Concorde
         label=None,
     )

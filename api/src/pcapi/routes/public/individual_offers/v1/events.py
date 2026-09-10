@@ -791,7 +791,7 @@ def get_event_categories() -> events_serializers.GetEventCategoriesResponse:
         if subcategory.is_selectable:
             event_categories_response.append(
                 events_serializers.EventCategoryResponse(
-                    id=subcategory.id,
+                    id=subcategory.id,  # type: ignore [arg-type]
                     conditional_fields={
                         field: condition.is_required_in_external_form
                         for field, condition in subcategory.conditional_fields.items()

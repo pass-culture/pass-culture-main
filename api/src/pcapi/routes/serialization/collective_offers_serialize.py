@@ -108,6 +108,12 @@ class CollectiveOfferResponseModel(HttpBodyModel):
         else:
             dates = None
 
+        institution = (
+            educational_institutions.EducationalInstitutionResponseModel.model_validate(offer.institution)
+            if offer.institution is not None
+            else None
+        )
+
         return cls(
             id=offer.id,
             name=offer.name,
@@ -116,7 +122,7 @@ class CollectiveOfferResponseModel(HttpBodyModel):
             imageUrl=offer.imageUrl,
             location=GetCollectiveOfferLocationModelV2.build(offer),
             stock=serialized_stock,
-            educationalInstitution=offer.institution,
+            educationalInstitution=institution,
             dates=dates,
         )
 
@@ -224,7 +230,7 @@ class GetCollectiveOfferVenueResponseModel(HttpBodyModel):
         return cls(
             departementCode=venue.offererAddress.address.departmentCode,
             id=venue.id,
-            managingOfferer=venue.managingOfferer,
+            managingOfferer=GetCollectiveOfferManagingOffererResponseModel.model_validate(venue.managingOfferer),
             name=venue.name,
             publicName=venue.publicName,
             bannerUrl=venue.bannerUrl,

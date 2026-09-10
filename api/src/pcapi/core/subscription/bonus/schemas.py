@@ -33,11 +33,11 @@ class BonusCreditPerson(BaseModelV2):
     @classmethod
     def from_api_particulier_person(cls, child: "api_particulier.ApiParticulierPerson") -> typing.Self:
         return cls(
-            last_name=child.nom_naissance,
+            last_name=child.nom_naissance,  # type: ignore [arg-type]
             common_name=child.nom_usage,
             first_names=child.prenoms.split(" ") if child.prenoms else [],
-            birth_date=child.date_naissance,
-            gender=child.sexe,
+            birth_date=child.date_naissance,  # type: ignore [arg-type]
+            gender=child.sexe,  # type: ignore [arg-type]
         )
 
 

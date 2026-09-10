@@ -406,7 +406,7 @@ class CineOfficeAPIClient(cinema_client.CinemaAPIClient):
                 is_cancelled=False,
                 seat_col=seats_to_book[i].seatCol if bool(seats_to_book) else None,
                 seat_row=seats_to_book[i].seatRow if bool(seats_to_book) else None,
-                seat_number=seats_to_book[i].seatNumber if bool(seats_to_book) else None,
+                seat_number=seats_to_book[i].seatNumber if bool(seats_to_book) else None,  # type: ignore [arg-type]
                 tariff=cine_office_serializers.IdObject(id=show_voucher_type.tariff.id),
                 show=cine_office_serializers.IdObject(id=show.id),
                 voucher_type=PASS_CULTURE_VOUCHER_CODE,
