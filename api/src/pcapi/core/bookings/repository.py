@@ -673,3 +673,14 @@ def get_external_bookings_by_cinema_id_and_barcodes(
         .filter(models.ExternalBooking.barcode.in_(barcodes))
         .all()
     )
+
+
+def booking_events_pending_auto_used_query(threshold: datetime) -> sa_orm.Query[models.Booking]:
+    return (
+        db.session.query(models.Booking)
+        .join(models.Booking.stock)
+        .filter(
+            models.Booking.status == models.BookingStatus.CONFIRMED,
+            offers_models.Stock.beginningDatetime < threshold,
+        )
+    )
