@@ -45,12 +45,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations im
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_non_payment_notices import (
     create_industrial_non_payment_notices,
 )
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_price_limitation_rules import (
-    create_industrial_offer_price_limitation_rules,
-)
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import (
-    create_industrial_offer_validation_rules,
-)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_addresses import (
     create_industrial_offerer_addresses,
 )
