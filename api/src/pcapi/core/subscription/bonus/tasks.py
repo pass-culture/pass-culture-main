@@ -6,7 +6,6 @@ import sqlalchemy as sa
 from dateutil.relativedelta import relativedelta
 from pydantic import BaseModel as BaseModelV2
 
-from pcapi import settings
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors import api_particulier
 from pcapi.core.subscription import models as subscription_models
@@ -23,18 +22,21 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-# the task calls the quotient familial endpoint for each month of a year
-QUOTIENT_FAMILIAL_TASK_RATE_LIMIT = settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD // 12
-
-
 class BonusTaskPayload(BaseModelV2):
     fraud_check_id: int
+
+
+RETRYABLE_EXCEPTIONS = (
+    api_particulier.ParticulierApiUnavailable,
+    api_particulier.ParticulierApiRateLimitExceeded,
+    api_particulier.ParticulierApiRequestConflict,
+)
 
 
 @celery_async_task(
     name="tasks.api_particulier.default.apply_for_quotient_familial_bonus",
     model=BonusTaskPayload,
-    autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
+    autoretry_for=RETRYABLE_EXCEPTIONS,
     rate_limit="200/m",
 )
 def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
@@ -83,7 +85,7 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
 @celery_async_task(
     name="tasks.api_particulier.default.apply_for_adult_disability_bonus",
     model=BonusTaskPayload,
-    autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
+    autoretry_for=RETRYABLE_EXCEPTIONS,
     rate_limit="200/m",
 )
 def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
@@ -132,7 +134,7 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
 @celery_async_task(
     name="tasks.api_particulier.default.apply_for_disabled_child_education_bonus",
     model=BonusTaskPayload,
-    autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
+    autoretry_for=RETRYABLE_EXCEPTIONS,
     rate_limit="200/m",
 )
 def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> None:

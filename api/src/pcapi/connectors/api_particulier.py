@@ -53,6 +53,10 @@ class ParticulierApiUnavailable(ParticulierApiException):
     pass
 
 
+class ParticulierApiRequestConflict(ParticulierApiException):
+    pass
+
+
 class ParticulierApiQueryError(ParticulierApiException):
     pass
 
@@ -291,6 +295,8 @@ def _raise_for_status(response: Response, endpoint_label: str) -> None:
     elif response.status_code == 404:
         # the person was found, but no application was found
         ExceptionClass = ParticulierApiApplicationNotFound
+    elif response.status_code == 409:
+        ExceptionClass = ParticulierApiRequestConflict
     elif response.status_code == 422:
         # what we usually think of 404 not found: either nobody or more than one person was found
         ExceptionClass = ParticulierApiPersonNotFound
