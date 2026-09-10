@@ -531,15 +531,18 @@ class GetVenueTest(GetEndpointHelper):
         assert ("Remboursements gelés" in badges) is has_reimbursement_suspended_badge
 
     def test_get_venue_managed_by_closed_offerer(self, authenticated_client):
-        closed_venue = offerers_factories.VenueFactory(managingOfferer=offerers_factories.ClosedOffererFactory())
-        url = url_for(self.endpoint, venue_id=closed_venue.id)
+        closed_venue_with_closed_offerer = offerers_factories.VenueFactory(
+            state="CLOSED", managingOfferer=offerers_factories.ClosedOffererFactory()
+        )
+        url = url_for(self.endpoint, venue_id=closed_venue_with_closed_offerer.id)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Partenaire culturel Fermé " in response_text
+        assert "Entité juridique fermée" in response_text
+        assert "Partenaire culturel fermé" in response_text
         assert "Fermer le partenaire culturel" not in response_text
 
     def test_get_closed_venue_with_active_offerer(self, authenticated_client):
@@ -551,7 +554,7 @@ class GetVenueTest(GetEndpointHelper):
             assert response.status_code == 200
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert "Fermé" in badges
+        assert "Partenaire culturel fermé" in badges
         assert "Suspendu" not in badges
 
         response_text = html_parser.content_as_text(response.data)

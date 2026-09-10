@@ -831,7 +831,7 @@ def format_validation_status(status: validation_status_mixin.ValidationStatus) -
         case validation_status_mixin.ValidationStatus.DELETED:
             return "Supprimé"
         case validation_status_mixin.ValidationStatus.CLOSED:
-            return "Fermé"
+            return "Entité juridique fermée"
         case _:
             return status.value
 
@@ -1286,7 +1286,7 @@ def format_offerer_status_badge(offerer: offerers_models.Offerer) -> str:
     if offerer.isDeleted:
         return format_badge("Supprimée", "danger")
     if offerer.isClosed:
-        return format_badge("Fermée", "danger")
+        return format_badge("Entité juridique fermée", "danger")
     return ""
 
 
@@ -1302,7 +1302,7 @@ def format_user_offerer_status_badge(user_offerer: offerers_models.UserOfferer) 
     if user_offerer.isDeleted:
         return format_badge("Supprimé", "danger")
     if user_offerer.isClosed:
-        return format_badge("Fermé", "danger")
+        return format_badge("Entité juridique fermée", "danger")
     return ""
 
 
