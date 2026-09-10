@@ -35,7 +35,7 @@ GENERIC_AUTHENTICATION_ERROR = (
 )
 
 
-@blueprint.auth_blueprint.route("/discord/signin", methods=["GET"])
+@blueprint.discord_blueprint.route("/signin", methods=["GET"])
 def discord_signin() -> str:
     if FeatureToggle.DISCORD_ENABLE_NEW_ACCESS.is_active():
         form = SigninForm()
@@ -47,7 +47,7 @@ def discord_signin() -> str:
     return render_template("discord_signin_disabled.html")
 
 
-@blueprint.auth_blueprint.route("/discord/callback", methods=["GET"])
+@blueprint.discord_blueprint.route("/callback", methods=["GET"])
 @atomic()
 def discord_call_back() -> Response | str:
     code = request.args.get("code")
@@ -142,7 +142,7 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
     discord_user.discordId = discord_id
 
 
-@blueprint.auth_blueprint.route("/discord/signin", methods=["POST"])
+@blueprint.discord_blueprint.route("/signin", methods=["POST"])
 def discord_signin_post() -> Response | str:
     if not FeatureToggle.DISCORD_ENABLE_NEW_ACCESS.is_active():
         return render_template("discord_signin_disabled.html")
@@ -195,5 +195,5 @@ def redirect_with_error(error_message: str) -> Response:
 
 
 def render_retry_template(code: str, state: str, error_message: str) -> str:
-    auth_success_url = flask.url_for("auth.discord_call_back", code=code, state=state)
+    auth_success_url = flask.url_for("discord.discord_call_back", code=code, state=state)
     return render_template("discord_retry.html", error=error_message, url=auth_success_url)
