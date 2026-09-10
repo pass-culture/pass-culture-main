@@ -330,8 +330,12 @@ def reset_password_with_token(new_password: str, encoded_reset_password_token: s
             logger.exception(
                 "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
             )
+
     if token:
         token.expire()
+
+    db.session.flush()
+
     return user
 
 
