@@ -102,8 +102,10 @@ def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     return event
 
 
+# TODO rpa use real url_prefix instead of an enum
 class UrlPrefix(enum.StrEnum):
     AUTH = "/auth"
+    ADAGE_V1 = "/adage/v1"
 
 
 def custom_traces_sampler(sampling_context: dict) -> float:
@@ -151,7 +153,7 @@ def custom_traces_sampler(sampling_context: dict) -> float:
         case _ if path.startswith(UrlPrefix.AUTH.value):
             score = LOW_SAMPLE_RATE
         # adage V1
-        case _ if path.startswith(UrlPrefixOld.ADAGE_V1.value):
+        case _ if path.startswith(UrlPrefix.ADAGE_V1.value):
             score = LOW_SAMPLE_RATE
 
         # SAML
