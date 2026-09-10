@@ -752,7 +752,7 @@ class DomainsCreditTest:
         for finance_event in booking_finance_incident.finance_events:
             finance_api.price_event(finance_event)
 
-    def test_get_domains_regular_credit_with_finance_incidents(self):
+    def test_get_domains_regular_credit_with_overpayments(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(
@@ -853,7 +853,104 @@ class DomainsCreditTest:
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
         )
 
-    def test_get_domains_regular_credit_with_finance_incidents_in_case_of_v3_deposit_transition(self):
+    def test_get_domains_regular_credit_with_commercial_gestures(self):
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            pricing_point="self",
+            managingOfferer=offerer,
+            bank_account=bank_account,
+            siret="85331845900023",
+        )
+        author_user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryGrant18Factory(
+            deposit__version=1, deposit__amount=500, deposit__type=finance_models.DepositType.GRANT_18
+        )
+
+        # booking1 (20€ → 20€) + booking2 (6€ → 0€) + booking3 (15€ → 15€) = 35€
+
+        booking1 = bookings_factories.BookingFactory(
+            user=user,
+            cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
+            quantity=4,
+            stock__price=Decimal("5.0"),
+            stock__offer__venue=venue,
+            stock__beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+        )  # 20€
+        self._price_booking(booking1)
+
+        # Cancelled booking with commercial gesture
+        booking2 = bookings_factories.CancelledBookingFactory(
+            user=user,
+            cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
+            quantity=2,
+            stock__price=Decimal("3.0"),
+            stock__offer__venue=venue,
+            stock__beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+        )  # 0€
+
+        # Reimbursed booking with commercial gesture
+        booking3 = bookings_factories.BookingFactory(
+            user=user,
+            cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
+            quantity=5,
+            stock__price=Decimal("3.0"),
+            stock__offer__venue=venue,
+            stock__beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+        )  # 15€
+        self._price_booking(booking3)
+
+        # Mark all pricings as invoiced
+        cutoff = date_utils.get_naive_utc_now()
+        batch = finance_api.generate_cashflows(cutoff)
+        assert len(batch.cashflows) == 1
+        cashflow = batch.cashflows[0]
+        cashflow.status = finance_models.CashflowStatus.UNDER_REVIEW
+        db.session.add(cashflow)
+        db.session.flush()
+        invoice = finance_api._generate_invoice(
+            bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
+        )
+        finance_api.validate_invoices([invoice.id])
+
+        # Create the finance incidents and validate them
+        # Overpayments are ignored in remaining credit
+        incident2 = finance_api.create_finance_commercial_gesture(
+            bookings=[booking2],
+            author=author_user,
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
+            amount=Decimal("6.0"),
+        )
+        finance_api.validate_finance_commercial_gesture(
+            finance_incident=incident2,
+            author=author_user,
+        )
+        self._price_incident(incident2)
+
+        incident3 = finance_api.create_finance_commercial_gesture(
+            bookings=[booking3],
+            author=author_user,
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
+            amount=Decimal("5.0"),
+        )
+        finance_api.validate_finance_commercial_gesture(
+            finance_incident=incident3,
+            author=author_user,
+        )
+        self._price_incident(incident3)
+
+        assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
+            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(465)),
+            digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
+            physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
+        )
+
+    def test_get_domains_regular_credit_with_overpayments_in_case_of_v3_deposit_transition(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(
@@ -971,7 +1068,7 @@ class DomainsCreditTest:
         # 20€ are used with booking4 => remaining = 61 - 20 = 41€
         assert users_api.get_domains_credit(user).all == users_models.Credit(initial=Decimal(61), remaining=Decimal(41))
 
-    def test_get_domains_digital_credit_with_finance_incidents(self):
+    def test_get_domains_digital_credit_with_overpayments(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(
@@ -1069,7 +1166,7 @@ class DomainsCreditTest:
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
         )
 
-    def test_get_domains_physical_credit_with_finance_incidents(self):
+    def test_get_domains_physical_credit_with_overpayments(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(
@@ -1167,7 +1264,7 @@ class DomainsCreditTest:
 
 class CreateProUserTest:
     data = {
-        "email": "prouser@Example.com",  # should be sanitize
+        "email": "prouser@Example.com",  # should be sanitized
         "firstName": "Jean",
         "lastName": "Test",
         "password": "P@ssword12345",
