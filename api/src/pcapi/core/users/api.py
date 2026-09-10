@@ -734,12 +734,16 @@ def add_comment_to_user(user: models.User, author_user: models.User, comment: st
 def _get_booking_credit(booking: bookings_models.Booking) -> Decimal:
     # Get only partial incidents
     for booking_finance_incident in booking.incidents:
-        if booking_finance_incident.is_partial:
-            if booking_finance_incident.incident.status in (
+        if (
+            booking_finance_incident.incident.kind == finance_models.IncidentType.OVERPAYMENT
+            and booking_finance_incident.is_partial
+            and booking_finance_incident.incident.status
+            in (
                 finance_models.IncidentStatus.VALIDATED,
                 finance_models.IncidentStatus.INVOICED,
-            ):
-                return Decimal(booking_finance_incident.newTotalAmount) / Decimal(100)
+            )
+        ):
+            return Decimal(booking_finance_incident.newTotalAmount) / Decimal(100)
     return booking.total_amount
 
 
