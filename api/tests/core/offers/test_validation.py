@@ -1553,20 +1553,10 @@ class CheckCanUpdateOfferTest:
 
         check_validation_status.assert_called_once_with(offer)
 
-    @pytest.mark.parametrize(
-        "fields",
-        [
-            {},
-            {"name": "Les Quatre Cents Coups", "durationMinutes": 99},
-        ],
-        ids=["empty body", "values equal to the offer's"],
-    )
-    def test_should_return_early_when_no_field_changes(self, fields, venue_provider):
+    def test_should_return_early_when_there_is_no_update(self, venue_provider):
         offer = self.build_offer(offererAddress=None)
 
-        validation.check_can_update_offer(
-            offer, fields, mandatory_extra_data_fields=set(), venue_provider=venue_provider
-        )
+        validation.check_can_update_offer(offer, {}, mandatory_extra_data_fields=set(), venue_provider=venue_provider)
 
     @pytest.mark.parametrize(
         "changed_field,expected_key",
@@ -1646,16 +1636,6 @@ class CheckCanUpdateOfferTest:
         )
 
         assert check_extra_data.call_args.args[0] == {}
-
-    @mock.patch("pcapi.core.offers.validation.check_extra_data")
-    def test_should_not_check_extra_data_when_it_does_not_change(self, check_extra_data, venue_provider):
-        offer = self.build_offer()
-
-        validation.check_can_update_offer(
-            offer, {"extraData": offer.extraData}, mandatory_extra_data_fields=set(), venue_provider=venue_provider
-        )
-
-        check_extra_data.assert_not_called()
 
     @mock.patch("pcapi.core.offers.validation.check_is_duo_compliance")
     def test_should_check_duo_compliance_against_the_offer_subcategory(self, check_is_duo_compliance, venue_provider):

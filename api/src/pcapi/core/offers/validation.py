@@ -623,76 +623,77 @@ def check_booking_limit_datetime(
 
 def check_can_update_offer(
     offer: models.Offer,
-    fields: dict[str, typing.Any],
+    updates: dict[str, typing.Any],
     *,
     mandatory_extra_data_fields: typing.Collection[str],
     venue_provider: providers_models.VenueProvider | None = None,
 ) -> None:
     check_validation_status(offer)
 
-    updates = {key for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:
         return
 
+    updated_fields = set(updates)
+
     if offer.lastProvider is not None:
-        check_update_only_allowed_fields_for_offer_from_provider(updates, offer.lastProvider)
+        check_update_only_allowed_fields_for_offer_from_provider(updated_fields, offer.lastProvider)
 
     if "subcategoryId" in updates and offer.status != OfferStatus.DRAFT:
         raise exceptions.UnallowedUpdate("subcategoryId")
 
-    subcategory_id = get_field(offer, fields, "subcategoryId")
+    subcategory_id = get_field(offer, updates, "subcategoryId")
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
 
-    if updates & {
+    if updated_fields & {
         "audioDisabilityCompliant",
         "mentalDisabilityCompliant",
         "motorDisabilityCompliant",
         "visualDisabilityCompliant",
     }:
         check_accessibility_compliance(
-            audio_disability_compliant=get_field(offer, fields, "audioDisabilityCompliant"),
-            mental_disability_compliant=get_field(offer, fields, "mentalDisabilityCompliant"),
-            motor_disability_compliant=get_field(offer, fields, "motorDisabilityCompliant"),
-            visual_disability_compliant=get_field(offer, fields, "visualDisabilityCompliant"),
+            audio_disability_compliant=get_field(offer, updates, "audioDisabilityCompliant"),
+            mental_disability_compliant=get_field(offer, updates, "mentalDisabilityCompliant"),
+            motor_disability_compliant=get_field(offer, updates, "motorDisabilityCompliant"),
+            visual_disability_compliant=get_field(offer, updates, "visualDisabilityCompliant"),
         )
 
-    if updates & {"extraData", "ean"}:
+    if updated_fields & {"extraData", "ean"}:
         check_extra_data(
-            format_extra_data(subcategory_id, get_field(offer, fields, "extraData")) or {},
+            format_extra_data(subcategory_id, get_field(offer, updates, "extraData")) or {},
             offer.venue,
             mandatory_extra_data_fields,
             offer=offer,
-            ean=get_field(offer, fields, "ean"),
+            ean=get_field(offer, updates, "ean"),
         )
 
     if "isDuo" in updates:
-        check_is_duo_compliance(get_field(offer, fields, "isDuo"), subcategory)
+        check_is_duo_compliance(get_field(offer, updates, "isDuo"), subcategory)
 
     if "idAtProvider" in updates:
-        id_at_provider = get_field(offer, fields, "idAtProvider")
+        id_at_provider = get_field(offer, updates, "idAtProvider")
         check_can_input_id_at_provider(offer.lastProvider, id_at_provider)
         check_can_input_id_at_provider_for_this_venue(offer.venueId, id_at_provider, offer.id)
 
     if "name" in updates:
-        name = get_field(offer, fields, "name")
+        name = get_field(offer, updates, "name")
         if name is None:
             raise exceptions.OfferException({"name": ["cannot be null"]})
         check_offer_name_does_not_contain_ean(name)
 
-    if updates & {"withdrawalType", "withdrawalDelay", "withdrawalDetails", "bookingContact"}:
+    if updated_fields & {"withdrawalType", "withdrawalDelay", "withdrawalDetails", "bookingContact"}:
         check_offer_withdrawal(
-            withdrawal_type=get_field(offer, fields, "withdrawalType"),
-            withdrawal_delay=get_field(offer, fields, "withdrawalDelay"),
+            withdrawal_type=get_field(offer, updates, "withdrawalType"),
+            withdrawal_delay=get_field(offer, updates, "withdrawalDelay"),
             subcategory_id=subcategory_id,
-            booking_contact=get_field(offer, fields, "bookingContact"),
+            booking_contact=get_field(offer, updates, "bookingContact"),
             provider=offer.lastProvider,
             venue_provider=venue_provider,
         )
 
     if "durationMinutes" in updates:
-        check_offer_duration(get_field(offer, fields, "durationMinutes"))
+        check_offer_duration(get_field(offer, updates, "durationMinutes"))
 
-    resulting_url = get_field(offer, fields, "url")
+    resulting_url = get_field(offer, updates, "url")
 
     # the creation process is splitted into several steps. URL and
     # address might be set only in the end. Therefore, this validation is
@@ -700,7 +701,7 @@ def check_can_update_offer(
     # of an online offer, which can never be removed.
     if offer.status != OfferStatus.DRAFT:
         check_url_is_coherent_with_subcategory(subcategory, resulting_url)
-        check_url_and_offererAddress_are_not_both_set(resulting_url, get_field(offer, fields, "offererAddress"))
+        check_url_and_offererAddress_are_not_both_set(resulting_url, get_field(offer, updates, "offererAddress"))
     elif offer.url and resulting_url is None:
         check_url_is_coherent_with_subcategory(subcategory, None)
 

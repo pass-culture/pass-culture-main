@@ -583,44 +583,19 @@ def update_offer(
     if offerer_address:
         fields["offererAddress"] = offerer_address
 
+    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
+
     validation.check_can_update_offer(
         offer,
-        fields,
+        updates,
         mandatory_extra_data_fields=mandatory_extra_data_fields,
         venue_provider=venue_provider,
     )
-
-    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
 
     if not updates:
         return offer
 
     updates_set = set(updates)
-
-    if "bookingAllowedDatetime" in updates:
-        new_booking_allowed_datetime = updates["bookingAllowedDatetime"]
-        if not new_booking_allowed_datetime or (new_booking_allowed_datetime <= datetime.datetime.now(datetime.UTC)):
-            reminders_notifications.notify_users_offer_is_bookable(offer)
-
-    try:
-        updates["ean"] = updates["extraData"].pop("ean")
-
-        # TODO(jbaudet - 11/2025): remove this whole try/except in a
-        # couple of weeks, after checking that this warning never
-        # appears.
-        # Caller should use the `ean` argument instead of extra_data["ean"]
-        # This seems to be ok today, but... lets wait a little bit before
-        # doing anything stupid.
-        # update 06/08/2026 : found warning https://console.cloud.google.com/logs/query;cursorTimestamp=2026-06-26T06:36:36.808331953Z;endTime=2026-08-06T09:51:01.625Z;query=jsonPayload.message:%22extracting%20EAN%20from%20extraData%20%2528use%20body.ean%20instead%2529%22%0Atimestamp%3D%222026-06-26T06:29:13.144607099Z%22%0AinsertId%3D%226l39mh05fg1z3sn9%22;startTime=2026-01-07T10:51:01.625Z?project=pc-backend-prd
-        logger.warning(
-            "update_offer: extracting EAN from extraData (use body.ean instead)",
-            extra={"offer": offer.id, "ean": updates["ean"]},
-        )
-    except (KeyError, AttributeError):
-        pass
-
-    if offer.is_soft_deleted():
-        raise pc_object.DeletedRecordException()
 
     changes = {}
     for key, value in updates.items():
@@ -630,6 +605,11 @@ def update_offer(
         setattr(offer, key, value)
 
     db.session.add(offer)
+
+    if "bookingAllowedDatetime" in updates:
+        new_booking_allowed_datetime = updates["bookingAllowedDatetime"]
+        if not new_booking_allowed_datetime or (new_booking_allowed_datetime <= datetime.datetime.now(datetime.UTC)):
+            reminders_notifications.notify_users_offer_is_bookable(offer)
 
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.

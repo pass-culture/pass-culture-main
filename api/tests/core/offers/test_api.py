@@ -2332,6 +2332,7 @@ class UpdateOfferTest:
             offer,
             name="Jules et Jim",
             booking_email="new@example.com",
+            is_duo=False,
             mandatory_extra_data_fields=set(),
             venue_provider=venue_provider,
         )
@@ -2404,8 +2405,11 @@ class UpdateOfferTest:
         assert offer.venueId == venue_id
         assert offer.offererAddress is not None
 
+    @mock.patch("pcapi.core.offers.validation.check_can_update_offer")
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_should_return_early_when_no_field_changes(self, mocked_async_index_offer_ids, venue_provider, caplog):
+    def test_should_return_early_when_no_field_changes(
+        self, mocked_async_index_offer_ids, check_can_update_offer, venue_provider, caplog
+    ):
         offer = self.build_offer()
         date_updated = offer.dateUpdated
 
@@ -2414,6 +2418,9 @@ class UpdateOfferTest:
         db.session.flush()
 
         assert offer.dateUpdated == date_updated
+        check_can_update_offer.assert_called_once_with(
+            offer, {}, mandatory_extra_data_fields=set(), venue_provider=venue_provider
+        )
         mocked_async_index_offer_ids.assert_not_called()
         update_logs = [
             record for record in caplog.records if getattr(record, "technical_message_id", None) == "offer.updated"
@@ -2454,20 +2461,6 @@ class UpdateOfferTest:
         )
 
         notify_users.assert_not_called()
-
-    def test_should_move_an_ean_found_in_extra_data_to_its_own_column(self, venue_provider):
-        offer = self.build_offer(subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"author": "Truffaut"})
-
-        api.update_offer(
-            offer,
-            extra_data={"author": "Truffaut", "ean": "9782070100002"},
-            mandatory_extra_data_fields=set(),
-            venue_provider=venue_provider,
-        )
-        db.session.flush()
-
-        assert offer.ean == "9782070100002"
-        assert "ean" not in offer.extraData
 
     def test_should_log_the_changed_fields(self, venue_provider, caplog):
         offer = self.build_offer()
