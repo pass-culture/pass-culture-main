@@ -8,7 +8,7 @@
           data-bs-toggle="modal"
           data-bs-target="#create-venue-modal"
           type="button">Ajouter un partenaire sans SIRET</button>
-  {{ build_lazy_modal(url_for('backoffice_web.offerer.get_create_venue_without_siret_form', offerer_id=offerer_id) , "create-venue-modal") }}
+  {{ build_lazy_modal(url_for('backoffice.offerer.get_create_venue_without_siret_form', offerer_id=offerer_id) , "create-venue-modal") }}
 {% endif %}
 <table class="table table-hover my-4">
   <thead>
@@ -18,9 +18,9 @@
       <th scope="col">Nom</th>
       <th scope="col">
         {%+ if rows | map(attribute="Venue.ridet") | any +%}
-        RIDET
+          RIDET
         {%+ else +%}
-        SIRET
+          SIRET
         {%+ endif +%}
       </th>
       <th scope="col">Permanent</th>

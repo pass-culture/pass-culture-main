@@ -49,13 +49,13 @@ def handle_csrf_error(error: typing.Any) -> tuple[str, int]:
 with app.app_context():
     from pcapi.routes import error_handlers  # noqa F401
     from pcapi.routes.backoffice import install_routes
-    from pcapi.routes.backoffice.blueprint import backoffice_web
+    from pcapi.routes.backoffice.blueprint import backoffice
     import pcapi.routes.backoffice.error_handlers  # noqa F401
 
     static_utils.generate_bundles()
     install_backoffice_login()
     install_routes(app)
-    app.register_blueprint(backoffice_web, url_prefix="/")
+    app.register_blueprint(backoffice)
 
     setup_metrics(app)
 

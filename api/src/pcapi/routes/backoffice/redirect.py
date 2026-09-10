@@ -38,7 +38,7 @@ class SafeRedirectForm(forms_utils.PCForm):
     )
 
 
-@blueprint.backoffice_web.route("/redirect", methods=["GET"])
+@blueprint.backoffice.route("/redirect", methods=["GET"])
 @access_control.custom_login_required(redirect_to=".home")
 def safe_redirect() -> response_utils.BackofficeResponse:
     form = SafeRedirectForm(request.args)

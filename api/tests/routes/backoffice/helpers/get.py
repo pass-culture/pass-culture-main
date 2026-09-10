@@ -14,7 +14,7 @@ class GetEndpointWithoutPermissionHelper(AuthenticatedHelperBase):
     def test_not_logged_in(self, client):
         response = getattr(client, self.http_method)(self.path)
         assert response.status_code in (302, 303)
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
 
 
 class GetEndpointHelper(UnauthorizedHelperBase):
@@ -37,4 +37,4 @@ class GetEndpointHelper(UnauthorizedHelperBase):
     def test_not_logged_in(self, client):
         response = getattr(client, self.http_method)(self.path)
         assert response.status_code in (302, 303)
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")

@@ -56,6 +56,6 @@
 {% endblock %}
 {% block after_table %}
   {% if can_edit %}
-    {{ build_dynamic_modal(url_for('backoffice_web.venue.get_batch_edit_venues_form') , "batch-edit-venues-modal", form="form-ids-" + table_name, method="post") }}
+    {{ build_dynamic_modal(url_for('backoffice.venue.get_batch_edit_venues_form') , "batch-edit-venues-modal", form="form-ids-" + table_name, method="post") }}
   {% endif %}
 {% endblock %}

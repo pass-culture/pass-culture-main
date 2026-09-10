@@ -645,7 +645,7 @@ def get_validate_collective_offer_form(collective_offer_id: int) -> response_uti
     kwargs = {
         "form": form,
         "dst": url_for(
-            "backoffice_web.collective_offer.validate_collective_offer",
+            "backoffice.collective_offer.validate_collective_offer",
             collective_offer_id=collective_offer.id,
         ),
         "div_id": f"validate-collective-offer-modal-{collective_offer.id}",
@@ -669,7 +669,7 @@ def validate_collective_offer(collective_offer_id: int) -> response_utils.Backof
     _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.APPROVED, [collective_offer_id])
     if request_utils.is_request_from_htmx():
         return _render_collective_offers([collective_offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.collective_offer.list_collective_offers"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.collective_offer.list_collective_offers"))
 
 
 def _batch_validate_or_reject_collective_offers(
@@ -805,9 +805,7 @@ def get_reject_collective_offer_form(collective_offer_id: int) -> response_utils
 
     kwargs = {
         "form": form,
-        "dst": url_for(
-            "backoffice_web.collective_offer.reject_collective_offer", collective_offer_id=collective_offer.id
-        ),
+        "dst": url_for("backoffice.collective_offer.reject_collective_offer", collective_offer_id=collective_offer.id),
         "div_id": f"reject-collective-offer-modal-{collective_offer.id}",
         "title": f"Rejet de l'offre {collective_offer.name}",
         "button_text": "Rejeter l'offre",
@@ -831,9 +829,7 @@ def reject_collective_offer(collective_offer_id: int) -> response_utils.Backoffi
         flash(response_utils.build_form_error_msg(form), "warning")
         if request_utils.is_request_from_htmx():
             return _render_collective_offers()
-        return request_utils.safe_redirect_back(
-            request, url_for("backoffice_web.collective_offer.list_collective_offers")
-        )
+        return request_utils.safe_redirect_back(request, url_for("backoffice.collective_offer.list_collective_offers"))
 
     _batch_validate_or_reject_collective_offers(
         offer_mixin.OfferValidationStatus.REJECTED,
@@ -842,7 +838,7 @@ def reject_collective_offer(collective_offer_id: int) -> response_utils.Backoffi
     )
     if request_utils.is_request_from_htmx():
         return _render_collective_offers([collective_offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.collective_offer.list_collective_offers"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.collective_offer.list_collective_offers"))
 
 
 @blueprint.route("/batch/validate", methods=["GET"])
@@ -853,7 +849,7 @@ def get_batch_validate_collective_offers_form() -> response_utils.BackofficeResp
         "components/dynamic/modal_form.html",
         target_id="#collective-offer-table",
         form=form,
-        dst=url_for("backoffice_web.collective_offer.batch_validate_collective_offers"),
+        dst=url_for("backoffice.collective_offer.batch_validate_collective_offers"),
         div_id="batch-validate-modal",
         title="Voulez-vous valider les offres collectives sélectionnées ?",
         button_text="Valider",
@@ -868,7 +864,7 @@ def get_batch_reject_collective_offers_form() -> response_utils.BackofficeRespon
         "components/dynamic/modal_form.html",
         target_id="#collective-offer-table",
         form=form,
-        dst=url_for("backoffice_web.collective_offer.batch_reject_collective_offers"),
+        dst=url_for("backoffice.collective_offer.batch_reject_collective_offers"),
         div_id="batch-reject-modal",
         title="Voulez-vous rejeter les offres collectives sélectionnées ?",
         button_text="Rejeter",
@@ -1086,7 +1082,7 @@ def get_collective_offer_details(collective_offer_id: int) -> response_utils.Bac
 
     if not collective_offer:
         flash("Cette offre collective n'existe pas", "warning")
-        return redirect(url_for("backoffice_web.collective_offer.list_collective_offers"), code=303)
+        return redirect(url_for("backoffice.collective_offer.list_collective_offers"), code=303)
 
     connect_as = get_connect_as(
         object_id=collective_offer.id,
@@ -1197,7 +1193,7 @@ def get_collective_offer_details(collective_offer_id: int) -> response_utils.Bac
 @access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def edit_collective_offer_price(collective_offer_id: int) -> response_utils.BackofficeResponse:
     redirect_url = url_for(
-        "backoffice_web.collective_offer.get_collective_offer_details", collective_offer_id=collective_offer_id
+        "backoffice.collective_offer.get_collective_offer_details", collective_offer_id=collective_offer_id
     )
     collective_offer = (
         db.session.query(educational_models.CollectiveOffer)
@@ -1314,9 +1310,7 @@ def get_collective_offer_price_form(collective_offer_id: int) -> response_utils.
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for(
-            "backoffice_web.collective_offer.edit_collective_offer_price", collective_offer_id=collective_offer_id
-        ),
+        dst=url_for("backoffice.collective_offer.edit_collective_offer_price", collective_offer_id=collective_offer_id),
         div_id="update-collective-offer-price",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Ajuster le prix de l'offre collective {collective_offer_id}",
         button_text="Ajuster le prix",
@@ -1337,7 +1331,7 @@ def get_move_collective_offer_form(collective_offer_id: int) -> response_utils.B
     return render_template(
         "components/dynamic/modal_form.html",
         form=forms.MoveCollectiveOfferForm(),
-        dst=url_for("backoffice_web.collective_offer.move_collective_offer", collective_offer_id=collective_offer_id),
+        dst=url_for("backoffice.collective_offer.move_collective_offer", collective_offer_id=collective_offer_id),
         div_id="move-collective-offer",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Déplacer l'offre collective {collective_offer_id}",
         button_text="Déplacer",
@@ -1350,7 +1344,7 @@ def get_move_collective_offer_form(collective_offer_id: int) -> response_utils.B
 @access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def move_collective_offer(collective_offer_id: int) -> response_utils.BackofficeResponse:
     redirect_url = url_for(
-        "backoffice_web.collective_offer.get_collective_offer_details", collective_offer_id=collective_offer_id
+        "backoffice.collective_offer.get_collective_offer_details", collective_offer_id=collective_offer_id
     )
 
     form = forms.MoveCollectiveOfferForm()

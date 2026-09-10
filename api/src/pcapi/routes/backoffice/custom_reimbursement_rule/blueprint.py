@@ -279,7 +279,7 @@ def get_create_custom_reimbursement_rule_form() -> response_utils.BackofficeResp
         "components/dynamic/modal_form.html",
         ajax_submit=False,
         form=form,
-        dst=url_for("backoffice_web.reimbursement_rules.create_custom_reimbursement_rule"),
+        dst=url_for("backoffice.reimbursement_rules.create_custom_reimbursement_rule"),
         div_id="create-custom-reimbursement-rule",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer un tarif dérogatoire",
         button_text="Créer le tarif dérogatoire",
@@ -311,7 +311,7 @@ def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> respo
         target_id=f"#custom-reimbursement-rule-row-{reimbursement_rule_id}",
         form=form,
         dst=url_for(
-            "backoffice_web.reimbursement_rules.edit_custom_reimbursement_rule",
+            "backoffice.reimbursement_rules.edit_custom_reimbursement_rule",
             reimbursement_rule_id=reimbursement_rule_id,
         ),
         div_id=f"edit-custom-reimbursement-rule-{reimbursement_rule_id}",  # must be consistent with parameter passed to build_lazy_modal
@@ -351,4 +351,4 @@ def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> response_utils
 
 
 def _redirect_after_reimbursement_rule_action() -> response_utils.BackofficeResponse:
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.validation.list_offerers_to_validate"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.validation.list_offerers_to_validate"))

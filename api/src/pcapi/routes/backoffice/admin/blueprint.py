@@ -26,7 +26,7 @@ from pcapi.routes.backoffice.utils import response as response_utils
 from . import forms
 
 
-@blueprint.backoffice_web.route("/admin/roles", methods=["GET"])
+@blueprint.backoffice.route("/admin/roles", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.READ_PERMISSIONS)
 def get_roles() -> response_utils.BackofficeResponse:
     roles = (
@@ -54,7 +54,7 @@ def get_roles() -> response_utils.BackofficeResponse:
     )
 
 
-@blueprint.backoffice_web.route("/admin/roles-matrix", methods=["GET"])
+@blueprint.backoffice.route("/admin/roles-matrix", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def get_roles_management() -> response_utils.BackofficeResponse:
     roles = (
@@ -78,7 +78,7 @@ def get_roles_management() -> response_utils.BackofficeResponse:
     return render_template("admin/roles_management.html", forms=perm_forms)
 
 
-@blueprint.backoffice_web.route("/admin/roles-history", methods=["GET"])
+@blueprint.backoffice.route("/admin/roles-history", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.READ_PERMISSIONS)
 def get_roles_history() -> response_utils.BackofficeResponse:
     actions_history = (
@@ -96,7 +96,7 @@ def get_roles_history() -> response_utils.BackofficeResponse:
     return render_template("admin/roles_history.html", actions=actions_history)
 
 
-@blueprint.backoffice_web.route("/admin/roles/<int:role_id>", methods=["POST"])
+@blueprint.backoffice.route("/admin/roles/<int:role_id>", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def update_role(role_id: int) -> response_utils.BackofficeResponse:
     role = (
@@ -130,7 +130,7 @@ def update_role(role_id: int) -> response_utils.BackofficeResponse:
     return redirect(url_for(".get_roles", active_tab="management"), code=303)
 
 
-@blueprint.backoffice_web.route("/admin/feature-flipping", methods=["GET"])
+@blueprint.backoffice.route("/admin/feature-flipping", methods=["GET"])
 @access_control.custom_login_required(redirect_to=".home")
 def list_feature_flags() -> response_utils.BackofficeResponse:
     feature_flags = db.session.query(feature_models.Feature).order_by(feature_models.Feature.name).all()
@@ -140,13 +140,13 @@ def list_feature_flags() -> response_utils.BackofficeResponse:
     )
 
 
-@blueprint.backoffice_web.route("/admin/feature-flipping/<int:feature_flag_id>/enable", methods=["POST"])
+@blueprint.backoffice.route("/admin/feature-flipping/<int:feature_flag_id>/enable", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.FEATURE_FLIPPING)
 def enable_feature_flag(feature_flag_id: int) -> response_utils.BackofficeResponse:
     return toggle_feature_flag(feature_flag_id, True)
 
 
-@blueprint.backoffice_web.route("/admin/feature-flipping/<int:feature_flag_id>/disable", methods=["POST"])
+@blueprint.backoffice.route("/admin/feature-flipping/<int:feature_flag_id>/disable", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.FEATURE_FLIPPING)
 def disable_feature_flag(feature_flag_id: int) -> response_utils.BackofficeResponse:
     return toggle_feature_flag(feature_flag_id, False)
@@ -175,7 +175,7 @@ def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> response_u
     return redirect(url_for(".list_feature_flags"), code=303)
 
 
-@blueprint.backoffice_web.route("/admin/subcategories", methods=["GET"])
+@blueprint.backoffice.route("/admin/subcategories", methods=["GET"])
 @access_control.custom_login_required(redirect_to=".home")
 def get_subcategories() -> response_utils.BackofficeResponse:
     all_subcategories = subcategories.ALL_SUBCATEGORIES_DICT.values()

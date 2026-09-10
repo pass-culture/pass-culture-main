@@ -29,7 +29,7 @@ pytestmark = [
 @pytest.fixture(name="override_homeview")
 def override_homeview_fixture(app, request):
     called = False
-    homeview_import_name = "backoffice_web.home"
+    homeview_import_name = "backoffice.home"
     old_view = app.view_functions[homeview_import_name]
 
     def _decorator(func):
@@ -59,11 +59,11 @@ class HomePageTest:
     expected_num_queries = 2
 
     def test_view_home_page_as_anonymous(self, client):
-        response = client.get(url_for("backoffice_web.home"))
+        response = client.get(url_for("backoffice.home"))
         assert response.status_code == 200
 
     def test_view_home_page(self, authenticated_client):
-        response = authenticated_client.get(url_for("backoffice_web.home"))
+        response = authenticated_client.get(url_for("backoffice.home"))
         assert response.status_code == 200
 
     def test_view_home_page_pending_offers(self, authenticated_client):
@@ -94,7 +94,7 @@ class HomePageTest:
         )
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.home"))
+            response = authenticated_client.get(url_for("backoffice.home"))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
@@ -120,7 +120,7 @@ class HomePageTest:
         offerers_factories.NewOffererFactory(tags=[other_tag])
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.home"))
+            response = authenticated_client.get(url_for("backoffice.home"))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
@@ -139,7 +139,7 @@ class HomePageTest:
         users_factories.FirstNameUpdateRequestFactory(lastInstructor=legit_user)
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.home"))
+            response = authenticated_client.get(url_for("backoffice.home"))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
@@ -157,7 +157,7 @@ class HomePageTest:
         db.session.flush()
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.home"))
+            response = authenticated_client.get(url_for("backoffice.home"))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
@@ -171,7 +171,7 @@ class HomePageTest:
     def test_view_home_page_with_pending_claimed_cultural_outreach_stats(self, authenticated_client):
         cultural_outreach_factories.ClaimedCulturalOutreachFactory.create_batch(5)
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.home"))
+            response = authenticated_client.get(url_for("backoffice.home"))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
@@ -187,19 +187,19 @@ class HomePageTest:
 
 class MessagesTest:
     def test_anonymous_access(self, client):
-        response = client.get(url_for("backoffice_web.get_messages"))
+        response = client.get(url_for("backoffice.get_messages"))
         assert response.status_code == 302
-        url.assert_response_location(response, "backoffice_web.home")
+        url.assert_response_location(response, "backoffice.home")
 
     def test_empty_messages(self, authenticated_client):
-        response = authenticated_client.get(url_for("backoffice_web.get_messages"))
+        response = authenticated_client.get(url_for("backoffice.get_messages"))
         assert response.status_code == 200
         assert response.data == b""
 
     def test_regular_get(self, authenticated_client):
         with authenticated_client.session_transaction() as client_session:
             client_session["_flashes"] = [("danger", "error message"), ("warning", "warning message")]
-        response = authenticated_client.get(url_for("backoffice_web.get_messages"))
+        response = authenticated_client.get(url_for("backoffice.get_messages"))
         assert response.status_code == 200
         alerts = html_parser.extract_alerts(response.data)
         assert alerts == ["error message", "warning message"]
@@ -222,7 +222,7 @@ class MessagesTest:
         response = authenticated_client.get("/", headers=headers)
         assert response.status_code == 500
 
-        response = authenticated_client.get(url_for("backoffice_web.get_messages"))
+        response = authenticated_client.get(url_for("backoffice.get_messages"))
         assert response.status_code == 200
         alerts = html_parser.extract_alerts(response.data, raise_if_not_found=False)
         assert alerts == expected_alerts
@@ -242,7 +242,7 @@ class MessagesTest:
         response = authenticated_client.get("/", headers=headers)
         assert response.status_code == 404
 
-        response = authenticated_client.get(url_for("backoffice_web.get_messages"))
+        response = authenticated_client.get(url_for("backoffice.get_messages"))
         assert response.status_code == 200
         alerts = html_parser.extract_alerts(response.data, raise_if_not_found=False)
         assert alerts == expected_alerts
@@ -256,7 +256,7 @@ class MessagesTest:
         response = authenticated_client.get("/", headers={"hx-request": "true"})
         assert response.status_code == 404
 
-        response = authenticated_client.get(url_for("backoffice_web.get_messages"))
+        response = authenticated_client.get(url_for("backoffice.get_messages"))
         assert response.status_code == 200
         alerts = html_parser.extract_alerts(response.data)
         assert alerts == ["Offre 42 non trouvée !"]
@@ -281,7 +281,7 @@ class MessagesTest:
         response = client.get("/", headers=headers)
         assert response.status_code == 403
 
-        response = client.get(url_for("backoffice_web.get_messages"))
+        response = client.get(url_for("backoffice.get_messages"))
         assert response.status_code == 200
         alerts = html_parser.extract_alerts(response.data, raise_if_not_found=False)
         assert alerts == expected_alerts

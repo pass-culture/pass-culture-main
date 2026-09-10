@@ -83,14 +83,14 @@ class SearchRuleForm(FlaskForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
         "Partenaires culturels",
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
     )
     category = fields.PCSelectMultipleField(
         "Catégories", choices=utils.choices_from_enum(pro_categories.CategoryIdLabelEnum)
@@ -146,7 +146,7 @@ class OfferValidationSubRuleForm(FlaskForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
         field_list_compatibility=True,
     )
     offerer = fields.PCTomSelectField(
@@ -154,7 +154,7 @@ class OfferValidationSubRuleForm(FlaskForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
         field_list_compatibility=True,
     )
     subcategories = fields.PCSelectMultipleField(

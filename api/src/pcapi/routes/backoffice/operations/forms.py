@@ -63,7 +63,7 @@ class CreateSpecialEventForm(FlaskForm):
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
         search_inline=True,
     )
 
@@ -175,7 +175,7 @@ class UpdateEventVenueForm(utils.PCForm):
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
         search_inline=True,
     )
 

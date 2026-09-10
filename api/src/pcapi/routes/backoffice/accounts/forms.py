@@ -162,7 +162,7 @@ class AccountsSearchSubForm(utils.PCForm):
         field_list_compatibility=True,
         multiple=True,
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_account_cities",
+        endpoint="backoffice.autocomplete_account_cities",
         search_inline=True,
         validators=[_city_validator],
         # Results are already filtered server-side. Since option labels don't contain the postal code,
@@ -355,7 +355,7 @@ class QFBonusCreditRequestForm(FlaskForm):
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_cities",
+        endpoint="backoffice.autocomplete_cities",
     )
 
     def validate(self, extra_validators: dict | None = None) -> bool:
@@ -381,7 +381,7 @@ class DisabilityBonusCreditRequestForm(FlaskForm):
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_cities",
+        endpoint="backoffice.autocomplete_cities",
     )
 
     def validate(self, extra_validators: dict | None = None) -> bool:
@@ -481,7 +481,7 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_bo_users",
+        endpoint="backoffice.autocomplete_bo_users",
     )
 
     only_unassigned = fields.PCSwitchBooleanField(
@@ -512,7 +512,7 @@ class AccountUpdateRequestSelectUserForm(utils.PCForm):
         "Compte jeune",
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_public_users",
+        endpoint="backoffice.autocomplete_public_users",
     )
 
 

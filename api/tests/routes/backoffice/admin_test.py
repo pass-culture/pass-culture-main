@@ -32,7 +32,7 @@ pytestmark = [
 
 
 class GetRolesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.get_roles"
+    endpoint = "backoffice.get_roles"
     needed_permission = perm_models.Permissions.READ_PERMISSIONS
 
     # session + roles + permissions
@@ -59,7 +59,7 @@ class GetRolesTest(GetEndpointHelper):
 
 
 class GetRolesManagementTest(GetEndpointHelper):
-    endpoint = "backoffice_web.get_roles_management"
+    endpoint = "backoffice.get_roles_management"
     needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
 
     # session + roles + permissions
@@ -95,7 +95,7 @@ class GetRolesManagementTest(GetEndpointHelper):
 
 
 class UpdateRoleTest(PostEndpointHelper):
-    endpoint = "backoffice_web.update_role"
+    endpoint = "backoffice.update_role"
     endpoint_kwargs = {"role_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
 
@@ -113,7 +113,7 @@ class UpdateRoleTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, role_id=role_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.get_roles", active_tab="management")
+        expected_url = url_for("backoffice.get_roles", active_tab="management")
         assert response.location == expected_url
 
         role_to_edit = db.session.query(perm_models.Role).filter_by(id=role_to_edit.id).one()
@@ -228,7 +228,7 @@ class UpdateRoleTest(PostEndpointHelper):
 
 
 class GetRolesHistoryTest(GetEndpointHelper):
-    endpoint = "backoffice_web.get_roles_history"
+    endpoint = "backoffice.get_roles_history"
     needed_permission = perm_models.Permissions.READ_PERMISSIONS
 
     # session + history
@@ -277,7 +277,7 @@ class GetRolesHistoryTest(GetEndpointHelper):
 
 
 class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.list_feature_flags"
+    endpoint = "backoffice.list_feature_flags"
 
     # session + list of feature flags
     expected_num_queries = 2
@@ -322,7 +322,7 @@ class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
 
 
 class EnableFeatureFlagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.enable_feature_flag"
+    endpoint = "backoffice.enable_feature_flag"
     endpoint_kwargs = {"feature_flag_id": 1}
     needed_permission = perm_models.Permissions.FEATURE_FLIPPING
 
@@ -348,7 +348,7 @@ class EnableFeatureFlagTest(PostEndpointHelper):
 
 
 class DisableFeatureFlagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.disable_feature_flag"
+    endpoint = "backoffice.disable_feature_flag"
     endpoint_kwargs = {"feature_flag_id": 1}
     needed_permission = perm_models.Permissions.FEATURE_FLIPPING
 
@@ -384,7 +384,7 @@ def assert_user_equals(result_card_text: str, expected_user: users_models.User):
 
 
 class SearchBoUsersTest(GetEndpointHelper):
-    endpoint = "backoffice_web.bo_users.search_bo_users"
+    endpoint = "backoffice.bo_users.search_bo_users"
     needed_permission = perm_models.Permissions.READ_ADMIN_ACCOUNTS
 
     # - fetch session and user
@@ -471,7 +471,7 @@ class SearchBoUsersTest(GetEndpointHelper):
 
 
 class GetBoUserTest(GetEndpointHelper):
-    endpoint = "backoffice_web.bo_users.get_bo_user"
+    endpoint = "backoffice.bo_users.get_bo_user"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_ADMIN_ACCOUNTS
 
@@ -596,7 +596,7 @@ class UpdateButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         user = users_factories.AdminFactory()
-        return url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id)
+        return url_for("backoffice.bo_users.get_bo_user", user_id=user.id)
 
 
 class SuspendButtonTest(button_helpers.ButtonHelper):
@@ -606,7 +606,7 @@ class SuspendButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         user = users_factories.AdminFactory()
-        return url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id)
+        return url_for("backoffice.bo_users.get_bo_user", user_id=user.id)
 
 
 class UnsuspendButtonTest(button_helpers.ButtonHelper):
@@ -616,11 +616,11 @@ class UnsuspendButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         user = users_factories.AdminFactory(isActive=False)
-        return url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id)
+        return url_for("backoffice.bo_users.get_bo_user", user_id=user.id)
 
 
 class UpdateBoUserTest(PostEndpointHelper):
-    endpoint = "backoffice_web.bo_users.update_bo_user"
+    endpoint = "backoffice.bo_users.update_bo_user"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
 
@@ -689,7 +689,7 @@ class UpdateBoUserTest(PostEndpointHelper):
 
 
 class GetSubcategoriesTest(GetEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.get_subcategories"
+    endpoint = "backoffice.get_subcategories"
 
     def test_get_subcategories(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint))
@@ -717,7 +717,7 @@ class GetSubcategoriesTest(GetEndpointWithoutPermissionHelper):
 
 class ListUserProfileRefreshCampaignTest(GetEndpointWithoutPermissionHelper):
     needed_permission = perm_models.Permissions.READ_USER_PROFILE_REFRESH_CAMPAIGN
-    endpoint = "backoffice_web.user_profile_refresh_campaigns.list_campaigns"
+    endpoint = "backoffice.user_profile_refresh_campaigns.list_campaigns"
 
     def test_get_campaigns(self, authenticated_client):
         campaign1 = users_factories.UserProfileRefreshCampaignFactory(
@@ -752,7 +752,7 @@ class CreateUserProfileRefreshCampaignButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        return url_for("backoffice_web.user_profile_refresh_campaigns.list_campaigns")
+        return url_for("backoffice.user_profile_refresh_campaigns.list_campaigns")
 
     @property
     def unauthorized_user(self) -> users_models.User:
@@ -775,7 +775,7 @@ class CreateUserProfileRefreshCampaignButtonTest(button_helpers.ButtonHelper):
 
 
 class CreateUserProfileRefreshCampaignTest(PostEndpointHelper):
-    endpoint = "backoffice_web.user_profile_refresh_campaigns.create_campaign"
+    endpoint = "backoffice.user_profile_refresh_campaigns.create_campaign"
     needed_permission = perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN
 
     @pytest.mark.time_machine("2025-02-02")  # Winter time
@@ -906,7 +906,7 @@ class CreateUserProfileRefreshCampaignTest(PostEndpointHelper):
 
 class EditUserProfileRefreshCampaignTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN
-    endpoint = "backoffice_web.user_profile_refresh_campaigns.edit_campaign"
+    endpoint = "backoffice.user_profile_refresh_campaigns.edit_campaign"
     endpoint_kwargs = {"campaign_id": 1}
 
     @pytest.mark.time_machine("2025-02-02")  # Winter time

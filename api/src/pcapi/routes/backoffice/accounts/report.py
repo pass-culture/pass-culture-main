@@ -23,7 +23,7 @@ def _get_token_link(booking: bookings_models.Booking) -> str:
         return booking.token
     return Markup('<a class="link-primary" href="{url}">{token}</a>').format(
         token=booking.token,
-        url=url_for("backoffice_web.individual_bookings.list_individual_bookings", q=booking.token),
+        url=url_for("backoffice.individual_bookings.list_individual_bookings", q=booking.token),
     )
 
 
@@ -32,7 +32,7 @@ def _get_incident_link(finance_incident: finance_models.FinanceIncident) -> str:
         return f"#{finance_incident.id}"
     return Markup('<a class="link-primary" href="{url}">#{incident_id}</a>').format(
         incident_id=finance_incident.id,
-        url=url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id),
+        url=url_for("backoffice.finance_incidents.get_incident", finance_incident_id=finance_incident.id),
     )
 
 

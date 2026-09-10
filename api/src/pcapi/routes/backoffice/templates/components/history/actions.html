@@ -3,9 +3,7 @@
 {% macro build_actions_table(actions, show_venue) %}
   <table class="table table-hover my-4">
     <thead>
-      <tr {%+ if use_new_tab_ui %}
-          class="bg-secondary-subtle fs-7 align-middle"
-          {% endif %}>
+      <tr {%+ if use_new_tab_ui %} class="bg-secondary-subtle fs-7 align-middle" {% endif %}>
         <th scope="col"></th>
         <th scope="col" class="col-2">Type</th>
         <th scope="col" class="col-2">Date/Heure</th>
@@ -13,9 +11,7 @@
         <th scope="col" class="col-2">Auteur</th>
       </tr>
     </thead>
-    <tbody {%+ if not use_new_tab_ui %}
-           class="table-group-divider"
-           {% endif %}>
+    <tbody {%+ if not use_new_tab_ui %} class="table-group-divider" {% endif %}>
       {% for action in actions %}
         <tr>
           <th scope="row"></th>
@@ -48,7 +44,7 @@
               {% set destination_venue_id = action.extraData.get('destination_venue_id') %}
               {% if destination_venue_id %}
                 Tous les éléments ont été transférés vers le partenaire culturel
-                <a href="{{ url_for('backoffice_web.venue.get', venue_id=destination_venue_id) }}"
+                <a href="{{ url_for('backoffice.venue.get', venue_id=destination_venue_id) }}"
                    class="link-primary">{{ destination_venue_id }}</a>
               {% endif %}
             {% endif %}
@@ -85,7 +81,7 @@
               {% endif %}
               {% set linked_incident_id = action.extraData.get('linked_incident_id') %}
               {% if linked_incident_id and "/finance/incidents/" not in request.path %}
-                {% set link = url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=linked_incident_id) %}
+                {% set link = url_for('backoffice.finance_incidents.get_incident', finance_incident_id=linked_incident_id) %}
                 {% if request.url != link %}
                   <a href="{{ link }}"
                      class="link-primary">Voir l'incident #{{ linked_incident_id }}</a>
@@ -93,7 +89,7 @@
               {% endif %}
               {% set non_payment_notice_id = action.extraData.get('non_payment_notice_id') %}
               {% if non_payment_notice_id %}
-                {% set link = url_for('backoffice_web.non_payment_notices.list_notices', q=non_payment_notice_id, offerer=action.offererId, venue=action.venueId) %}
+                {% set link = url_for('backoffice.non_payment_notices.list_notices', q=non_payment_notice_id, offerer=action.offererId, venue=action.venueId) %}
                 <a href="{{ link }}"
                    class="link-primary">Voir l'avis d'impayé #{{ non_payment_notice_id }}</a>
               {% endif %}

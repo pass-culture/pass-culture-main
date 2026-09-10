@@ -319,7 +319,7 @@ def get_create_offer_validation_rule_form() -> response_utils.BackofficeResponse
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.offer_validation_rules.create_rule"),
+        dst=url_for("backoffice.offer_validation_rules.create_rule"),
         div_id="create-offer-validation-rule",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer une règle de validation d'offre",
         button_text="Créer la règle",
@@ -334,7 +334,7 @@ def create_rule() -> response_utils.BackofficeResponse:
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
+        return redirect(url_for("backoffice.offer_validation_rules.list_rules"), code=303)
 
     try:
         new_rule = offers_models.OfferValidationRule(name=form.name.data)
@@ -377,7 +377,7 @@ def create_rule() -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash(Markup("Erreur dans la création de la règle : {message}").format(message=str(err)), "warning")
 
-    return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
+    return redirect(url_for("backoffice.offer_validation_rules.list_rules"), code=303)
 
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/delete", methods=["GET"])
@@ -390,7 +390,7 @@ def get_delete_offer_validation_rule_form(rule_id: int) -> response_utils.Backof
     return render_template(
         "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
-        dst=url_for("backoffice_web.offer_validation_rules.delete_rule", rule_id=rule_id),
+        dst=url_for("backoffice.offer_validation_rules.delete_rule", rule_id=rule_id),
         div_id=f"delete-offer-validation-rule-{rule_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Supprimer une règle de validation d'offre",
         button_text="Supprimer la règle",
@@ -436,7 +436,7 @@ def delete_rule(rule_id: int) -> response_utils.BackofficeResponse:
                 "success",
             )
 
-    return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
+    return redirect(url_for("backoffice.offer_validation_rules.list_rules"), code=303)
 
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/edit", methods=["GET"])
@@ -479,7 +479,7 @@ def get_edit_offer_validation_rule_form(rule_id: int) -> response_utils.Backoffi
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.offer_validation_rules.edit_rule", rule_id=rule_id),
+        dst=url_for("backoffice.offer_validation_rules.edit_rule", rule_id=rule_id),
         div_id=f"edit-offer-validation-rule-{rule_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Modifier une règle de validation d'offre",
         button_text="Modifier la règle",
@@ -498,7 +498,7 @@ def edit_rule(rule_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
+        return redirect(url_for("backoffice.offer_validation_rules.list_rules"), code=303)
 
     sub_rules_info: dict[str, list] = {"sub_rules_deleted": [], "sub_rules_created": [], "sub_rules_modified": []}
     try:
@@ -601,7 +601,7 @@ def edit_rule(rule_id: int) -> response_utils.BackofficeResponse:
             "success",
         )
 
-    return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
+    return redirect(url_for("backoffice.offer_validation_rules.list_rules"), code=303)
 
 
 def _add_sub_rule_data_to_history(

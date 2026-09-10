@@ -52,6 +52,6 @@
   </div>
 {% endblock multi_select_menu %}
 {% block after_table %}
-  {{ build_dynamic_modal(url_for("backoffice_web.finance_incidents.get_batch_finance_incidents_validation_form") , "batch-validate-modal", form="form-ids-" + table_name, method="post") }}
-  {{ build_dynamic_modal(url_for("backoffice_web.finance_incidents.get_batch_finance_incidents_cancellation_form") , "batch-reject-modal", form="form-ids-" + table_name, method="post") }}
+  {{ build_dynamic_modal(url_for("backoffice.finance_incidents.get_batch_finance_incidents_validation_form") , "batch-validate-modal", form="form-ids-" + table_name, method="post") }}
+  {{ build_dynamic_modal(url_for("backoffice.finance_incidents.get_batch_finance_incidents_cancellation_form") , "batch-reject-modal", form="form-ids-" + table_name, method="post") }}
 {% endblock after_table %}

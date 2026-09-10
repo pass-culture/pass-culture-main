@@ -4,7 +4,7 @@
           class="d-none"
           target="_blank"
           rel="noopener"
-          action="{{ url_for('backoffice_web.pro.connect_as') }}"
+          action="{{ url_for('backoffice.pro.connect_as') }}"
           method="post">
       {% for field in connect_as_object.form %}{{ field }}{% endfor %}
     </form>

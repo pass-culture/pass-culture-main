@@ -21,7 +21,7 @@ class OfferCriteriaForm(FlaskForm):
         choices=[],
         validate_choice=False,
         coerce=int,
-        endpoint="backoffice_web.autocomplete_criteria",
+        endpoint="backoffice.autocomplete_criteria",
         validators=[
             wtforms.validators.DataRequired(),
         ],

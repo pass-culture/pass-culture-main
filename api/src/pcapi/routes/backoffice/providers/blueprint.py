@@ -99,7 +99,7 @@ def get_create_provider_form() -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.providers.create_provider"),
+        dst=url_for("backoffice.providers.create_provider"),
         div_id="create-provider",
         modal_content_id="create-provider-modale-content",
         target_id="#create-provider-modale-content",
@@ -121,7 +121,7 @@ def create_provider() -> response_utils.BackofficeResponse:
             response="redirecting",
             status=303,
             headers={
-                "HX-Redirect": url_for("backoffice_web.providers.list_providers"),
+                "HX-Redirect": url_for("backoffice.providers.list_providers"),
             },
         )
 
@@ -164,7 +164,7 @@ def create_provider() -> response_utils.BackofficeResponse:
             response="redirecting",
             status=303,
             headers={
-                "HX-Redirect": url_for("backoffice_web.providers.list_providers"),
+                "HX-Redirect": url_for("backoffice.providers.list_providers"),
             },
         )
 
@@ -174,7 +174,7 @@ def create_provider() -> response_utils.BackofficeResponse:
     form = empty_forms.EmptyGetForm()
     return render_template(
         "components/dynamic/modal_form.html",
-        dst=url_for("backoffice_web.providers.list_providers"),
+        dst=url_for("backoffice.providers.list_providers"),
         form=form,
         include_template="providers/list/create.html",
         div_id="create-provider",
@@ -280,7 +280,7 @@ def create_api_key(provider_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.providers.get_provider", provider_id=provider_id), code=303)
+        return redirect(url_for("backoffice.providers.get_provider", provider_id=provider_id), code=303)
 
     provider = (
         db.session.query(providers_models.Provider).filter(providers_models.Provider.id == provider_id).one_or_none()
@@ -300,7 +300,7 @@ def create_api_key(provider_id: int) -> response_utils.BackofficeResponse:
             response="redirecting",
             status=303,
             headers={
-                "HX-Redirect": url_for("backoffice_web.providers.get_provider", provider_id=provider_id),
+                "HX-Redirect": url_for("backoffice.providers.get_provider", provider_id=provider_id),
             },
         )
     db.session.add(api_key)
@@ -319,7 +319,7 @@ def delete_api_key(provider_id: int, key_id: int) -> response_utils.BackofficeRe
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.providers.get_provider", provider_id=provider_id), code=303)
+        return redirect(url_for("backoffice.providers.get_provider", provider_id=provider_id), code=303)
 
     deleted = (
         db.session.query(offerers_models.ApiKey)
@@ -335,9 +335,7 @@ def delete_api_key(provider_id: int, key_id: int) -> response_utils.BackofficeRe
     else:
         flash("La clé n'a pas été trouvée pour ce provider", "warning")
 
-    return redirect(
-        url_for("backoffice_web.providers.get_provider", provider_id=provider_id, active_tab="keys"), code=303
-    )
+    return redirect(url_for("backoffice.providers.get_provider", provider_id=provider_id, active_tab="keys"), code=303)
 
 
 @providers_blueprint.route("/<int:provider_id>/stats", methods=["GET"])
@@ -436,4 +434,4 @@ def update_provider(provider_id: int) -> response_utils.BackofficeResponse:
     else:
         flash("Les informations ont été mises à jour", "success")
 
-    return redirect(url_for("backoffice_web.providers.get_provider", provider_id=provider_id), code=303)
+    return redirect(url_for("backoffice.providers.get_provider", provider_id=provider_id), code=303)

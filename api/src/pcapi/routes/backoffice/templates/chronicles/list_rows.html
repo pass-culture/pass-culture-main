@@ -35,7 +35,7 @@
     {% endif %}
     <td>
       <a class="link-primary"
-         href="{{ url_for('backoffice_web.chronicles.details', chronicle_id=chronicle.id) }}">{{ chronicle.id }}</a>
+         href="{{ url_for('backoffice.chronicles.details', chronicle_id=chronicle.id) }}">{{ chronicle.id }}</a>
     </td>
     <td>
       {% if chronicle.products %}

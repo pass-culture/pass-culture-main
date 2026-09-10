@@ -21,10 +21,10 @@ pytestmark = [
 
 class LoginPageTest:
     def test_view_login_page(self, client, app):
-        response = client.get(url_for("backoffice_web.login"))
+        response = client.get(url_for("backoffice.login"))
 
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
 
 
 class AuthorizePageTest:
@@ -37,10 +37,10 @@ class AuthorizePageTest:
             "given_name": "GivenName",
         }
 
-        response = client.get(url_for("backoffice_web.authorize"))
+        response = client.get(url_for("backoffice.authorize"))
 
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
 
     @pytest.mark.settings(
         BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0,
@@ -71,10 +71,10 @@ class AuthorizePageTest:
         mock_fetch_user_roles.return_value = expected_roles
 
         with caplog.at_level(logging.INFO):
-            response = client.get(url_for("backoffice_web.authorize"))
+            response = client.get(url_for("backoffice.authorize"))
 
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         assert "Successful authentication attempt" in caplog.messages
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -108,13 +108,13 @@ class AuthorizePageTest:
         mock_fetch_user_roles.return_value = expected_roles
 
         with caplog.at_level(logging.INFO):
-            response = client.get(url_for("backoffice_web.authorize"))
+            response = client.get(url_for("backoffice.authorize"))
 
         user = db.session.query(users_models.User).filter(users_models.User.email == email).first()
         assert user is not None
         assert user.has_admin_role
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         assert "Successful authentication attempt" in caplog.messages
 
     @pytest.mark.settings(
@@ -138,34 +138,34 @@ class AuthorizePageTest:
         mock_fetch_user_roles.return_value = expected_roles
 
         with caplog.at_level(logging.INFO):
-            response = client.get(url_for("backoffice_web.authorize"))
+            response = client.get(url_for("backoffice.authorize"))
 
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.user_not_found")
+        assert response.location == url_for("backoffice.user_not_found")
         assert "Failed authentication attempt" in caplog.messages
 
     @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.authorize_access_token")
     def test_csrf_token_expired(self, mock_authorize_access_token, client):
         mock_authorize_access_token.side_effect = MismatchingStateError()
 
-        response = client.get(url_for("backoffice_web.authorize"))
+        response = client.get(url_for("backoffice.authorize"))
 
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.login")
+        assert response.location == url_for("backoffice.login")
 
 
 class LogoutTest(PostEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.logout"
+    endpoint = "backoffice.logout"
     needed_permission = None
 
     def test_logout_success(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
 
 
 class UserNotFoundPageTest:
     def test_renders(self, client):
-        response = client.get(url_for("backoffice_web.user_not_found"))
+        response = client.get(url_for("backoffice.user_not_found"))
         assert response.status_code == 200

@@ -15,14 +15,14 @@
             data-use-dynamic-modal="true"
             data-bs-target="#batch-suspend-users-form"
             type="button">Suspendre des utilisateurs en masse via leur ID</button>
-    {{ build_dynamic_modal(url_for("backoffice_web.users.get_batch_suspend_users_form") , "batch-suspend-users-form") }}
+    {{ build_dynamic_modal(url_for("backoffice.users.get_batch_suspend_users_form") , "batch-suspend-users-form") }}
   </div>
   <div class="row row-cols-1 g-4 py-3">
     <div class="col">
       <h2 class="card-title text-primary">Noms de domaines</h2>
       <div class="my-4">
-        <form action="{{ url_for('backoffice_web.fraud.prepare_blacklist_domain_name') }}"
-              name="{{ url_for('backoffice_web.fraud.prepare_blacklist_domain_name') | action_to_name }}"
+        <form action="{{ url_for('backoffice.fraud.prepare_blacklist_domain_name') }}"
+              name="{{ url_for('backoffice.fraud.prepare_blacklist_domain_name') | action_to_name }}"
               method="get">
           <div class="col-8 row">
             <div class="col-8">

@@ -57,7 +57,7 @@ class AutocompleteTestBase:
 
 
 class AutocompleteOffererTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_offerers"
+    endpoint = "backoffice.autocomplete_offerers"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts",
@@ -89,7 +89,7 @@ class AutocompleteOffererTest(AutocompleteTestBase):
 
 
 class AutocompleteInstitutionTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_institutions"
+    endpoint = "backoffice.autocomplete_institutions"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts",
@@ -128,7 +128,7 @@ class AutocompleteInstitutionTest(AutocompleteTestBase):
 
 
 class AutocompleteVenueTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_venues"
+    endpoint = "backoffice.autocomplete_venues"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts",
@@ -165,7 +165,7 @@ class AutocompleteVenueTest(AutocompleteTestBase):
 
 
 class AutocompletePricingPointTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_pricing_points"
+    endpoint = "backoffice.autocomplete_pricing_points"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts",
@@ -186,7 +186,7 @@ class AutocompletePricingPointTest(AutocompleteTestBase):
 
 
 class AutocompleteVenuesAllowedOnAdageTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_venues_allowed_on_adage"
+    endpoint = "backoffice.autocomplete_venues_allowed_on_adage"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts",
@@ -211,7 +211,7 @@ class AutocompleteVenuesAllowedOnAdageTest(AutocompleteTestBase):
 
 
 class AutocompleteCriteriaTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_criteria"
+    endpoint = "backoffice.autocomplete_criteria"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts",
@@ -245,7 +245,7 @@ class AutocompleteCriteriaTest(AutocompleteTestBase):
 
 
 class AutocompleteBoUsersTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_bo_users"
+    endpoint = "backoffice.autocomplete_bo_users"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts",
@@ -274,7 +274,7 @@ class AutocompleteBoUsersTest(AutocompleteTestBase):
 
 
 class AutocompletePublicUsersTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_public_users"
+    endpoint = "backoffice.autocomplete_public_users"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts",
@@ -304,7 +304,7 @@ class AutocompletePublicUsersTest(AutocompleteTestBase):
 
 
 class AutocompleteProvidersTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_providers"
+    endpoint = "backoffice.autocomplete_providers"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts, expected_queries",
@@ -341,7 +341,7 @@ class AutocompleteProvidersTest(AutocompleteTestBase):
 
 
 class AutocompleteHighlightsTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_highlights"
+    endpoint = "backoffice.autocomplete_highlights"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts, expected_queries",
@@ -391,7 +391,7 @@ class AutocompleteHighlightsTest(AutocompleteTestBase):
 
 
 class AutocompleteAddressesTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_addresses"
+    endpoint = "backoffice.autocomplete_addresses"
 
     @pytest.mark.parametrize(
         "search_query, search_address_response, expected_texts",
@@ -492,7 +492,7 @@ class AutocompleteAddressesTest(AutocompleteTestBase):
 
 
 class AutocompleteOffererTagTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_offerer_tags"
+    endpoint = "backoffice.autocomplete_offerer_tags"
 
     @pytest.mark.parametrize(
         "search_query, expected_texts",
@@ -512,7 +512,7 @@ class AutocompleteOffererTagTest(AutocompleteTestBase):
 
 
 class AutocompleteCitiesTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_cities"
+    endpoint = "backoffice.autocomplete_cities"
     expected_num_queries = 1  # only authenticated user
 
     @pytest.mark.parametrize(
@@ -543,7 +543,7 @@ class AutocompleteCitiesTest(AutocompleteTestBase):
 
 
 class AutocompleteAccountCitiesTest(AutocompleteTestBase):
-    endpoint = "backoffice_web.autocomplete_account_cities"
+    endpoint = "backoffice.autocomplete_account_cities"
     expected_num_queries = 1  # only authenticated user
 
     @pytest.mark.parametrize(

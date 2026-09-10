@@ -4,10 +4,10 @@
 {% set can_manage_event = has_permission("MANAGE_SPECIAL_EVENTS") %}
 {% macro change_response_status_action_form(response_id, status, text) %}
   <li class="dropdown-item p-0">
-    <form action="{{ url_for('backoffice_web.operations.set_response_status', special_event_id=special_event.id, response_id=response_id) }}"
-          name="{{ url_for('backoffice_web.operations.set_response_status', special_event_id=special_event.id, response_id=response_id) | action_to_name }}"
+    <form action="{{ url_for('backoffice.operations.set_response_status', special_event_id=special_event.id, response_id=response_id) }}"
+          name="{{ url_for('backoffice.operations.set_response_status', special_event_id=special_event.id, response_id=response_id) | action_to_name }}"
           hx-target="#{{ table_id }}"
-          hx-post="{{ url_for('backoffice_web.operations.set_response_status', special_event_id=special_event.id, response_id=response_id) }}"
+          hx-post="{{ url_for('backoffice.operations.set_response_status', special_event_id=special_event.id, response_id=response_id) }}"
           hx-swap="outerHTML"
           hx-trigger="submit"
           method="post">

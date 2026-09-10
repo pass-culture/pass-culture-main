@@ -21,14 +21,14 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
         "Points de valorisation",
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
     )
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
@@ -72,14 +72,14 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
         "Point de valorisation",
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_pricing_points",
+        endpoint="backoffice.autocomplete_pricing_points",
     )
     subcategories = fields.PCSelectMultipleField(
         "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES]
