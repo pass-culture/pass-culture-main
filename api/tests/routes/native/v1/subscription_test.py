@@ -24,7 +24,6 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
@@ -1386,7 +1385,7 @@ class DisabilityBonusTest:
         expected_num_queries += 1  # beneficiary_fraud_check
         expected_num_queries += 1  # beneficiary_fraud_check (insert)
         client.with_token(user)
-        assert FeatureToggle.ENABLE_BONUS_CREDIT.is_active()
+
         with (
             assert_num_queries(expected_num_queries),
             caplog.at_level(logging.INFO),
