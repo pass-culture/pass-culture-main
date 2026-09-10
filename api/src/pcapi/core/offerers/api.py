@@ -3535,6 +3535,16 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
     db.session.flush()
 
 
+def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
+    if not venue.is_closed or venue.managingOfferer.isClosed:
+        return
+
+    venue.state = None
+    history_api.add_action(history_models.ActionType.VENUE_REOPENED, author=author, venue=venue, comment=comment)
+
+    db.session.flush()
+
+
 def nullify_venue_emails(venue: models.Venue, author: users_models.User) -> None:
     """Nullify venue's booking email addresses and contact object
 

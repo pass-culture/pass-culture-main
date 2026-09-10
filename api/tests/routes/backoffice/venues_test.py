@@ -3291,6 +3291,21 @@ class GetCloseVenueFormTest(GetEndpointHelper):
         assert "Motif de la fermeture (optionnel)" in content
 
 
+class GetReopenVenueFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.venue.get_reopen_venue_form"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.REOPEN_VENUE
+
+    def test_get_reopen_venue_form_displays_optional_comment_field(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+
+        assert response.status_code == 200
+        content = html_parser.content_as_text(response.data)
+        assert "Motif de la réouverture (optionnel)" in content
+
+
 class CloseVenueTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.close_venue"
     endpoint_kwargs = {"venue_id": 1}
@@ -3369,6 +3384,70 @@ class CloseVenueTest(PostEndpointHelper):
         assert venue.managingOfferer.validationStatus == validation_status
 
     def test_close_venue_returns_404_if_venue_is_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, venue_id=1)
+
+        assert response.status_code == 404
+
+
+class ReopenVenueTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.reopen_venue"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.REOPEN_VENUE
+
+    def test_reopen_venue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"Le partenaire culturel {venue.name} a été rouvert"
+
+        db.session.refresh(venue)
+        assert venue.state == None
+
+    def test_reopen_venue_with_comment(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        comment = "Fermeture demandee par le support"
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={"comment": comment},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+
+        venue_reopened_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(venueId=venue.id, actionType=history_models.ActionType.VENUE_REOPENED)
+            .one()
+        )
+        assert venue_reopened_action.comment == comment
+
+    def test_reopen_venue_with_too_long_comment(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={"comment": "a" * 1025},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        alert = html_parser.extract_alert(response.data)
+        assert "Les données envoyées comportent des erreurs." in alert
+        assert "Motif de la réouverture (optionnel)" in alert
+
+        db.session.refresh(venue)
+        assert venue.state == offerers_models.VenueState.CLOSED
+
+    def test_reopen_venue_returns_404_if_venue_is_not_found(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client, venue_id=1)
 
         assert response.status_code == 404
