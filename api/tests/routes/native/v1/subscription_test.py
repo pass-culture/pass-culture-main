@@ -23,7 +23,6 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
@@ -1145,6 +1144,46 @@ class QuotientFamilialBonusTest:
             == "automatic attempt, accelerated by /subscription/bonus/quotient_familial endpoint"
         )
 
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
+    @pytest.mark.features(ENABLE_BONUS_CREDIT=False)
+    def test_create_qf_bonus_fraud_check_respects_feature_flag(
+        self,
+        mocked_apply_for_aeeh_task,
+        mocked_apply_for_aah_task,
+        mocked_apply_for_qf_task,
+        client,
+    ):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.AAHBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            reason=bonus_constants.AUTOMATIC_ORIGIN,
+        )
+        subscription_factories.AEEHBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            reason=bonus_constants.AUTOMATIC_ORIGIN,
+        )
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "08480",
+            },
+        )
+        assert response.status_code == 204, response.json
+
+        mocked_apply_for_aeeh_task.assert_not_called()
+        mocked_apply_for_aah_task.assert_not_called()
+        mocked_apply_for_qf_task.assert_not_called()
+
     @pytest.mark.parametrize(
         "fraud_check_status",
         [subscription_models.FraudCheckStatus.PENDING, subscription_models.FraudCheckStatus.STARTED],
@@ -1387,7 +1426,7 @@ class DisabilityBonusTest:
         expected_num_queries += 1  # beneficiary_fraud_check
         expected_num_queries += 1  # beneficiary_fraud_check (insert)
         client.with_token(user)
-        assert FeatureToggle.ENABLE_BONUS_CREDIT.is_active()
+
         with (
             assert_num_queries(expected_num_queries),
             caplog.at_level(logging.INFO),
@@ -1444,6 +1483,29 @@ class DisabilityBonusTest:
         assert route_call_record.sourceIp == route_call_record.extra["sourceIp"] == "[REDACTED]"
 
         mocked_record_first_attempt.assert_called_once()
+
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
+    @pytest.mark.features(ENABLE_BONUS_CREDIT=False)
+    def test_create_disability_bonus_fraud_check_respects_feature_flag(
+        self,
+        mocked_apply_for_aeeh_task,
+        mocked_apply_for_aah_task,
+        client,
+    ):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/disability",
+            json={
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "67482",  # Strasbourg
+            },
+        )
+        assert response.status_code == 204, response.json
+
+        mocked_apply_for_aeeh_task.assert_not_called()
+        mocked_apply_for_aah_task.assert_not_called()
 
     @pytest.mark.parametrize(
         "fraud_check_status",

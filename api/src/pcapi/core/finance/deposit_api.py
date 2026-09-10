@@ -16,7 +16,6 @@ from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import fraud_check_api
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils.repository import transaction
 
@@ -150,10 +149,9 @@ def _recredit_user_if_no_missing_step(user: users_models.User) -> None:
     if recredit.recreditType == models.RecreditType.RECREDIT_18:
         user.add_beneficiary_role()
 
-        if FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
-            fraud_check_api.create_disability_bonus_credit_fraud_checks(
-                user, origin=f"{bonus_constants.AUTOMATIC_ORIGIN} through recredit cron"
-            )
+        fraud_check_api.create_disability_bonus_credit_fraud_checks(
+            user, origin=f"{bonus_constants.AUTOMATIC_ORIGIN} through recredit cron"
+        )
 
     user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
     db.session.add(user)
