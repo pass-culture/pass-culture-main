@@ -14,7 +14,7 @@ import pcapi.routes.apis as routes_apis
 import pcapi.routes.backoffice.blueprint as backoffice_blueprint
 import pcapi.routes.pro.blueprint as pro_blueprint
 from pcapi import settings
-from pcapi.routes import UrlPrefix
+from pcapi.routes import UrlPrefix as UrlPrefixOld
 from pcapi.utils.health_checker import read_version_from_file
 
 
@@ -102,6 +102,10 @@ def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     return event
 
 
+class UrlPrefix(enum.StrEnum):
+    AUTH = "/auth"
+
+
 def custom_traces_sampler(sampling_context: dict) -> float:
     """
     This sampler defines a fraction of the DEFAULT_SAMPLE_RATE according to the requested path
@@ -140,21 +144,21 @@ def custom_traces_sampler(sampling_context: dict) -> float:
             score = LOWEST_SAMPLE_RATE
 
         # native routes
-        case _ if path.startswith(UrlPrefix.NATIVE.value):
+        case _ if path.startswith(UrlPrefixOld.NATIVE.value):
             score = LOWER_SAMPLE_RATE
 
         # Discord Auth
         case _ if path.startswith(UrlPrefix.AUTH.value):
             score = LOW_SAMPLE_RATE
         # adage V1
-        case _ if path.startswith(UrlPrefix.ADAGE_V1.value):
+        case _ if path.startswith(UrlPrefixOld.ADAGE_V1.value):
             score = LOW_SAMPLE_RATE
 
         # SAML
-        case _ if path.startswith(UrlPrefix.SAML.value):
+        case _ if path.startswith(UrlPrefixOld.SAML.value):
             score = DEFAULT_SAMPLE_RATE
         # adage
-        case _ if path.startswith(UrlPrefix.ADAGE_IFRAME.value):
+        case _ if path.startswith(UrlPrefixOld.ADAGE_IFRAME.value):
             score = DEFAULT_SAMPLE_RATE
 
         # `Private API` or `pro_private_api` blueprints or a 404. We will filter them later
