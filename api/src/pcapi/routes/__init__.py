@@ -14,8 +14,8 @@ class UrlPrefix(enum.Enum):
 def install_all_routes(app: Flask) -> None:
     from pcapi.routes.adage.blueprint import adage_blueprint
     from pcapi.routes.adage_iframe.blueprint import adage_iframe as adage_iframe_blueprint
+    from pcapi.routes.apis import misc_blueprint
     from pcapi.routes.apis import private_api
-    from pcapi.routes.apis import public_api
     from pcapi.routes.auth.blueprint import discord_blueprint
     from pcapi.routes.external.blueprint import external_blueprint
     from pcapi.routes.native.blueprint import native_blueprint
@@ -53,6 +53,6 @@ def install_all_routes(app: Flask) -> None:
     app.register_blueprint(adage_iframe_blueprint, url_prefix=UrlPrefix.ADAGE_IFRAME.value)
     app.register_blueprint(saml_blueprint_blueprint, url_prefix=UrlPrefix.SAML.value)
     app.register_blueprint(private_api)
-    app.register_blueprint(public_api)
+    app.register_blueprint(misc_blueprint)
     app.register_blueprint(external_blueprint)
     app.register_blueprint(discord_blueprint)

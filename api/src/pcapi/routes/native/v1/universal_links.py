@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask.wrappers import Response
 
-from pcapi.routes.apis import public_api
+from pcapi.routes.apis import misc_blueprint
 
 
 # WARNING: those routes are required for universal links - ie links to the
@@ -10,7 +10,7 @@ from pcapi.routes.apis import public_api
 # the server's root.
 
 
-@public_api.route("/.well-known/apple-app-site-association", methods=["GET"])
+@misc_blueprint.route("/.well-known/apple-app-site-association", methods=["GET"])
 def apple_app_site_association() -> Response:
     response = jsonify(
         {
@@ -35,7 +35,7 @@ def apple_app_site_association() -> Response:
     return response
 
 
-@public_api.route("/.well-known/assetlinks.json", methods=["GET"])
+@misc_blueprint.route("/.well-known/assetlinks.json", methods=["GET"])
 def asset_links() -> Response:
     response = jsonify(
         [

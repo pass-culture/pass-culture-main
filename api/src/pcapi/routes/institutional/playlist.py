@@ -4,7 +4,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
-from pcapi.routes.apis import public_api
+from pcapi.routes.apis import misc_blueprint
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import serializers
@@ -13,7 +13,7 @@ from . import serializers
 PLAYLIST_MAX_SIZE = 10
 
 
-@public_api.route("/institutional/playlist/<tag_name>", methods=["GET"])
+@misc_blueprint.route("/institutional/playlist/<tag_name>", methods=["GET"])
 @spectree_serialize(response_model=serializers.OffersResponse)
 def get_offers_by_tag(tag_name: str) -> serializers.OffersResponse:
     offers = (
