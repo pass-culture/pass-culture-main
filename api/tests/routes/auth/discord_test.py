@@ -25,7 +25,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class DiscordSigninTest:
-    endpoint = "auth.discord_signin"
+    endpoint = "discord.discord_signin"
     private_key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=4096,
@@ -43,7 +43,7 @@ class DiscordSigninTest:
 
     def fetch_csrf_token(self, client):
         # will generate a csrf token
-        client.get(url_for("auth.discord_signin"))
+        client.get(url_for("discord.discord_signin"))
 
     def post_to_endpoint(
         self,
@@ -132,7 +132,7 @@ class DiscordSigninTest:
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_callback_rejects_invalid_state(self, client):
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state="forged_user_id"))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state="forged_user_id"))
 
         assert response.status_code == 303
         assert "lien invalide ou expir" in unquote(response.location)
@@ -143,13 +143,13 @@ class DiscordSigninTest:
         with time_machine.travel("2020-01-01"):
             expired_state = self._build_signed_state(user.id)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=expired_state))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state=expired_state))
 
         assert response.status_code == 303
         assert "lien invalide ou expir" in unquote(response.location)
 
     def test_callback_rejects_missing_state(self, client):
-        response = client.get(url_for("auth.discord_call_back", code="discord_code"))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code"))
 
         assert response.status_code == 303
         assert "état de la requête non récupéré" in unquote(response.location)
@@ -167,7 +167,7 @@ class DiscordSigninTest:
         discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
 
         signed_state = self._build_signed_state(user.id)
-        client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
+        client.get(url_for("discord.discord_call_back", code="discord_code", state=signed_state))
 
         assert mock_retrieve_access_token.call_count == 1
         assert mock_get_user_id.call_count == 1
@@ -195,7 +195,7 @@ class DiscordSigninTest:
         users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
 
         signed_state = self._build_signed_state(user.id)
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state=signed_state))
 
         assert response.status_code == 200
         assert (
@@ -210,7 +210,7 @@ class DiscordSigninTest:
 
         user = users_factories.BeneficiaryFactory()
         signed_state = self._build_signed_state(user.id)
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state=signed_state))
 
         assert response.status_code == 303
         assert "session invalide ou expir" in unquote(response.location)
@@ -319,7 +319,7 @@ class DiscordSigninTest:
         discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
         signed_state = self._build_signed_state(user.id)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state=signed_state))
 
         assert response.status_code == 200
         assert (
@@ -344,7 +344,7 @@ class DiscordSigninTest:
         user = users_factories.BeneficiaryFactory()
         signed_state = self._build_signed_state(user.id)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 200
         assert (
             "Erreur lors de l&#39;ajout au serveur Discord: réessaye en cliquant sur le bouton ci-dessous"
@@ -368,7 +368,7 @@ class DiscordSigninTest:
         non_beneficiary = users_factories.UserFactory()
         signed_state = self._build_signed_state(non_beneficiary.id)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 303
 
         assert db.session.query(DiscordUser).filter_by(userId=non_beneficiary.id).count() == 0
@@ -387,7 +387,7 @@ class DiscordSigninTest:
         not_eligible_user = users_factories.BeneficiaryFactory(age=16)
         signed_state = self._build_signed_state(not_eligible_user.id)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 303
 
         assert db.session.query(DiscordUser).filter_by(userId=not_eligible_user.id).count() == 0
@@ -407,7 +407,7 @@ class DiscordSigninTest:
         )
         signed_state = self._build_signed_state(user.id)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 303
 
         assert mock_get_user_id.call_count == 1
@@ -434,7 +434,7 @@ class DiscordSigninTest:
         users_factories.DiscordUserFactory(user=user, discordId="discord_user_id", hasAccess=True, isBanned=False)
         signed_state = self._build_signed_state(another_user.id)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 303
         assert "Impossible" in unquote(response.location)
         assert "Contacte le support" in unquote(response.location)
@@ -457,14 +457,14 @@ class DiscordSigninTest:
         non_beneficiary = users_factories.UserFactory()
         signed_state = self._build_signed_state(non_beneficiary.id)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
+        response = client.get(url_for("discord.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 303
         assert "Impossible" in unquote(response.location)
         assert "Contacte le support" in unquote(response.location)
 
     @pytest.mark.features(DISCORD_ENABLE_NEW_ACCESS=False)
     def test_discord_signin_disabled(self, client):
-        response = client.get(url_for("auth.discord_signin"))
+        response = client.get(url_for("discord.discord_signin"))
         assert response.status_code == 200
         assert "L'accès au serveur Discord du pass Culture est désactivé" in response.data.decode()
 
