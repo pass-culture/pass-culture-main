@@ -1,3 +1,4 @@
+import contextlib
 import datetime
 import logging
 
@@ -5,10 +6,10 @@ import sqlalchemy as sa
 from dateutil.relativedelta import relativedelta
 from pydantic import BaseModel as BaseModelV2
 
-from pcapi import settings
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors import api_particulier
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus.api import apply_for_adult_disability_bonus
 from pcapi.core.subscription.bonus.api import apply_for_disabled_child_education_bonus
 from pcapi.core.subscription.bonus.api import apply_for_quotient_familial_bonus
@@ -21,18 +22,21 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-# the task calls the quotient familial endpoint for each month of a year
-QUOTIENT_FAMILIAL_TASK_RATE_LIMIT = settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD // 12
-
-
 class BonusTaskPayload(BaseModelV2):
     fraud_check_id: int
+
+
+RETRYABLE_EXCEPTIONS = (
+    api_particulier.ParticulierApiUnavailable,
+    api_particulier.ParticulierApiRateLimitExceeded,
+    api_particulier.ParticulierApiRequestConflict,
+)
 
 
 @celery_async_task(
     name="tasks.api_particulier.default.apply_for_quotient_familial_bonus",
     model=BonusTaskPayload,
-    autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
+    autoretry_for=RETRYABLE_EXCEPTIONS,
     rate_limit="200/m",
 )
 def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
@@ -64,7 +68,9 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
         return
 
     try:
-        apply_for_quotient_familial_bonus(fraud_check)
+        # the fraud check being deleted means that another task successfully granted the bonus credit
+        with contextlib.suppress(sa.orm.exc.ObjectDeletedError):
+            apply_for_quotient_familial_bonus(fraud_check)
     except Exception:
         with atomic():
             if not fraud_check.resultContent:
@@ -79,7 +85,7 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
 @celery_async_task(
     name="tasks.api_particulier.default.apply_for_adult_disability_bonus",
     model=BonusTaskPayload,
-    autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
+    autoretry_for=RETRYABLE_EXCEPTIONS,
     rate_limit="200/m",
 )
 def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
@@ -111,7 +117,9 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
         return
 
     try:
-        apply_for_adult_disability_bonus(fraud_check)
+        # the fraud check being deleted means that another task successfully granted the bonus credit
+        with contextlib.suppress(sa.orm.exc.ObjectDeletedError):
+            apply_for_adult_disability_bonus(fraud_check)
     except Exception:
         with atomic():
             if not fraud_check.resultContent:
@@ -126,7 +134,7 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
 @celery_async_task(
     name="tasks.api_particulier.default.apply_for_disabled_child_education_bonus",
     model=BonusTaskPayload,
-    autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
+    autoretry_for=RETRYABLE_EXCEPTIONS,
     rate_limit="200/m",
 )
 def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> None:
@@ -158,7 +166,9 @@ def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> 
         return
 
     try:
-        apply_for_disabled_child_education_bonus(fraud_check)
+        # the fraud check being deleted means that another task successfully granted the bonus credit
+        with contextlib.suppress(sa.orm.exc.ObjectDeletedError):
+            apply_for_disabled_child_education_bonus(fraud_check)
     except Exception:
         with atomic():
             if not fraud_check.resultContent:
@@ -209,6 +219,7 @@ def recover_started_bonus_credit_applications(
     started_bonus_credit_fraud_checks = db.session.scalars(keyset_paginated_stmt).all()
 
     handled_fraud_checks: list[subscription_models.BeneficiaryFraudCheck] = []
+    disability_fraud_check_user_ids: set[int] = set()
     expected_api_particulier_calls = 0
     for fraud_check in started_bonus_credit_fraud_checks:
         match fraud_check.type:
@@ -228,8 +239,14 @@ def recover_started_bonus_credit_applications(
                 if expected_api_particulier_calls > page_size:
                     return handled_fraud_checks
 
+                is_other_disability_bonus_ongoing = fraud_check.userId in disability_fraud_check_user_ids
+                if is_other_disability_bonus_ongoing:
+                    countdown = bonus_constants.DISABILITY_COUNTDOWN
+                else:
+                    countdown = 0
+                disability_fraud_check_user_ids.add(fraud_check.userId)
                 payload = BonusTaskPayload(fraud_check_id=fraud_check.id)
-                apply_for_adult_disability_bonus_task.delay(payload=payload.model_dump())
+                apply_for_adult_disability_bonus_task.apply_async((payload.model_dump(),), countdown=countdown)
                 handled_fraud_checks.append(fraud_check)
 
             case subscription_models.FraudCheckType.AEEH_BONUS_CREDIT:
@@ -238,8 +255,14 @@ def recover_started_bonus_credit_applications(
                 if expected_api_particulier_calls > page_size:
                     return handled_fraud_checks
 
+                is_other_disability_bonus_ongoing = fraud_check.userId in disability_fraud_check_user_ids
+                if is_other_disability_bonus_ongoing:
+                    countdown = bonus_constants.DISABILITY_COUNTDOWN
+                else:
+                    countdown = 0
+                disability_fraud_check_user_ids.add(fraud_check.userId)
                 payload = BonusTaskPayload(fraud_check_id=fraud_check.id)
-                apply_for_disabled_child_education_bonus_task.delay(payload=payload.model_dump())
+                apply_for_disabled_child_education_bonus_task.apply_async((payload.model_dump(),), countdown=countdown)
                 handled_fraud_checks.append(fraud_check)
 
             case _:

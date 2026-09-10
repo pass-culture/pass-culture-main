@@ -1,5 +1,6 @@
 import datetime
 import logging
+from unittest.mock import ANY
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -928,8 +929,8 @@ class HonorStatementTest:
 class QuotientFamilialBonusTest:
     @patch("pcapi.core.subscription.bonus.fraud_check_api._get_next_bonus_credit_retry_date")
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
     @patch("pcapi.core.subscription.bonus.statistics_api.record_first_bonus_attempt")
     def test_create_qf_bonus_fraud_check(
         self,
@@ -1038,14 +1039,110 @@ class QuotientFamilialBonusTest:
             == aeeh_fraud_check.resultContent["next_retry_at"]
             == tomorrow.isoformat()
         )
-        mocked_apply_for_aah_task.assert_called_once_with({"fraud_check_id": aah_fraud_check.id})
-        mocked_apply_for_aeeh_task.assert_called_once_with({"fraud_check_id": aeeh_fraud_check.id})
+        mocked_apply_for_aah_task.assert_called_once_with(({"fraud_check_id": aah_fraud_check.id},), countdown=0)
+        mocked_apply_for_aeeh_task.assert_called_once_with(({"fraud_check_id": aeeh_fraud_check.id},), countdown=5)
 
         route_call_record = caplog.records[0]
         assert route_call_record.deviceId == route_call_record.extra["deviceId"] == "[REDACTED]"
         assert route_call_record.sourceIp == route_call_record.extra["sourceIp"] == "[REDACTED]"
 
         mocked_record_first_attempt.assert_called_once()
+
+    @patch("pcapi.core.subscription.bonus.fraud_check_api._get_next_bonus_credit_retry_date")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.statistics_api.record_first_bonus_attempt")
+    def test_create_qf_bonus_fraud_check_accelerates_disability_once(
+        self,
+        mocked_record_first_attempt,
+        mocked_apply_for_aeeh_task,
+        mocked_apply_for_aah_task,
+        mocked_apply_for_qf_task,
+        mocked_get_retry_date,
+        client,
+    ):
+        user = users_factories.BeneficiaryFactory()
+        result_content = {
+            "person": {
+                "last_name": user.lastName,
+                "first_names": [user.firstName],
+                "birth_date": user.birth_date.isoformat(),
+                "gender": "M.",
+            },
+        }
+        subscription_factories.AAHBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            reason=bonus_constants.AUTOMATIC_ORIGIN,
+            resultContent=result_content,
+        )
+        subscription_factories.AEEHBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            reason=bonus_constants.AUTOMATIC_ORIGIN,
+            resultContent=result_content,
+        )
+
+        now = date_utils.get_naive_utc_now()
+        tomorrow = now + relativedelta(days=1)
+        mocked_get_retry_date.return_value = tomorrow
+
+        client.with_token(user)
+        with time_machine.travel(now, tick=False):
+            response = client.post(
+                "/native/v1/subscription/bonus/quotient_familial",
+                json={
+                    "lastName": "Lefebvre",
+                    "firstNames": ["Alexis"],
+                    "birthDate": "1982-12-27",
+                    "gender": "Mme",
+                    "birthCountryCogCode": "99100",
+                    "birthCityCogCode": "08480",
+                },
+            )
+            assert response.status_code == 204, response.json
+
+            (qf_fraud_check,) = [
+                fraud_check
+                for fraud_check in user.beneficiaryFraudChecks
+                if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+            ]
+            qf_fraud_check.status = subscription_models.FraudCheckStatus.KO
+
+            response = client.post(
+                "/native/v1/subscription/bonus/quotient_familial",
+                json={
+                    "lastName": "Lefebvre",
+                    "firstNames": ["Alexis"],
+                    "birthDate": "1982-12-27",
+                    "gender": "Mme",
+                    "birthCountryCogCode": "99100",
+                    "birthCityCogCode": "08480",
+                },
+            )
+            assert response.status_code == 204, response.json
+
+        DISABILITY_FRAUD_CHECK_TYPES = [
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        ]
+        disability_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in DISABILITY_FRAUD_CHECK_TYPES
+        ]
+        aah_fraud_check, aeeh_fraud_check = sorted(
+            disability_fraud_checks, key=lambda fraud_check: DISABILITY_FRAUD_CHECK_TYPES.index(fraud_check.type)
+        )
+        assert aah_fraud_check.type == subscription_models.FraudCheckType.AAH_BONUS_CREDIT
+        assert aeeh_fraud_check.type == subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
+        assert aah_fraud_check.status == aeeh_fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert (
+            aah_fraud_check.reason
+            == aeeh_fraud_check.reason
+            == "automatic attempt, accelerated by /subscription/bonus/quotient_familial endpoint"
+        )
 
     @pytest.mark.parametrize(
         "fraud_check_status",
@@ -1273,8 +1370,8 @@ class QuotientFamilialBonusTest:
 
 
 class DisabilityBonusTest:
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
     @patch("pcapi.core.subscription.bonus.statistics_api.record_first_bonus_attempt")
     def test_create_disability_bonus_fraud_checks(
         self, mocked_record_first_attempt, mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, client, caplog
@@ -1336,8 +1433,8 @@ class DisabilityBonusTest:
                 "next_retry_at": tomorrow.isoformat(),
             }
         )
-        mocked_apply_for_aah_task.assert_called_once_with({"fraud_check_id": aah_fraud_check.id})
-        mocked_apply_for_aeeh_task.assert_called_once_with({"fraud_check_id": aeeh_fraud_check.id})
+        mocked_apply_for_aah_task.assert_called_once_with(({"fraud_check_id": aah_fraud_check.id},), countdown=ANY)
+        mocked_apply_for_aeeh_task.assert_called_once_with(({"fraud_check_id": aeeh_fraud_check.id},), countdown=ANY)
 
         route_call_record = caplog.records[0]
         assert route_call_record.deviceId == route_call_record.extra["deviceId"] == "[REDACTED]"

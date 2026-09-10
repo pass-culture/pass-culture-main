@@ -209,7 +209,7 @@ class QuotientFamilialApplicationTest:
         assert len(mocked_get_quotient_familial.mock_calls) == 12
         mocked_get_quotient_familial.assert_has_calls(
             [
-                call(custodian, birth_date + relativedelta(years=17) + relativedelta(months=offset))
+                call(custodian, birth_date.replace(day=1) + relativedelta(years=17) + relativedelta(months=offset))
                 for offset in range(12)
             ],
             any_order=True,
@@ -218,7 +218,6 @@ class QuotientFamilialApplicationTest:
     @patch("pcapi.connectors.api_particulier.get_quotient_familial")
     def test_get_quotient_familial_calls_no_more_than_needed(self, mocked_get_quotient_familial):
         eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
-        with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QF_DESERIALIZED_RESPONSE)
         with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QF_DESERIALIZED_RESPONSE)
         child_data = with_18_child_quotient_familial.data.enfants[0]
         child_data.date_naissance = eighteen_years_ago
@@ -233,8 +232,8 @@ class QuotientFamilialApplicationTest:
             ).model_dump(),
         )
         mocked_get_quotient_familial.side_effect = (
-            api_particulier.ParticulierApiApplicationNotFound(status_code=404),
-            with_18_child_quotient_familial,
+            # the bonus application shouldn't give up after a single failure
+            api_particulier.ParticulierApiUnavailable(status_code=500),
             with_18_child_quotient_familial,
         )
 
@@ -252,13 +251,11 @@ class QuotientFamilialApplicationTest:
                 custodian=custodian
             ).model_dump(),
         )
-        mocked_get_quotient_familial.side_effect = (
+        mocked_get_quotient_familial.side_effect = [
             bonus_fixtures.QF_DESERIALIZED_RESPONSE,
             bonus_fixtures.QF_DESERIALIZED_RESPONSE,
             bonus_fixtures.QF_DESERIALIZED_RESPONSE,
-            api_particulier.ParticulierApiUnavailable(status_code=500),
-            api_particulier.ParticulierApiUnavailable(status_code=500),
-        )
+        ] + [api_particulier.ParticulierApiUnavailable(status_code=500)] * 21
         mocked_get_result_relevance.return_value = (1, 1)
 
         with pytest.raises(api_particulier.ParticulierApiUnavailable):
@@ -267,7 +264,7 @@ class QuotientFamilialApplicationTest:
         with pytest.raises(api_particulier.ParticulierApiUnavailable):
             bonus_api.apply_for_quotient_familial_bonus(fraud_check)
 
-        assert len(mocked_get_quotient_familial.mock_calls) == 5
+        assert len(mocked_get_quotient_familial.mock_calls) == 21
         # sorting results more than 4 times mean that there were 3 cache hits during the second call
         assert len(mocked_get_result_relevance.mock_calls) == 8
 

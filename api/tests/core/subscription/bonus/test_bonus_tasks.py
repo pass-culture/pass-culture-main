@@ -1,4 +1,5 @@
 import datetime
+from unittest.mock import ANY
 from unittest.mock import call
 from unittest.mock import patch
 
@@ -37,7 +38,7 @@ class QuotientFamilialBonusTaskTest:
 
         assert len(mocked_get_quotient_familial.mock_calls) == 12
         mocked_get_quotient_familial.assert_called_with(
-            custodian, birth_date + relativedelta(years=17) + relativedelta(months=11)
+            custodian, birth_date.replace(day=1) + relativedelta(years=17) + relativedelta(months=11)
         )
 
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
@@ -143,8 +144,8 @@ class DisabledChildEducationBonusTaskTest:
 
 class RecoverStartedBonusCreditApplicationsTest:
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
     def test_recover_started_bonus_credit_applications_full_page(
         self, mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, mocked_apply_for_qf_task
     ):
@@ -173,8 +174,8 @@ class RecoverStartedBonusCreditApplicationsTest:
             ],
             any_order=True,
         )
-        mocked_apply_for_aah_task.assert_has_calls([call(payload={"fraud_check_id": aah_fraud_check.id})])
-        mocked_apply_for_aeeh_task.assert_has_calls([call(payload={"fraud_check_id": aeeh_fraud_check.id})])
+        mocked_apply_for_aah_task.assert_has_calls([call(({"fraud_check_id": aah_fraud_check.id},), countdown=ANY)])
+        mocked_apply_for_aeeh_task.assert_has_calls([call(({"fraud_check_id": aeeh_fraud_check.id},), countdown=ANY)])
 
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
     def test_recover_started_bonus_credit_applications_for_a_user(self, mocked_apply_for_qf_task):
@@ -195,8 +196,8 @@ class RecoverStartedBonusCreditApplicationsTest:
         )
 
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
     def test_recovery_ignores_date_planned_too_late(
         self, mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, mocked_apply_for_qf_task
     ):
