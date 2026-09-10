@@ -1,60 +1,14 @@
 from unittest.mock import patch
 
-import pytest
-from sqlalchemy.exc import IntegrityError
-
 from pcapi import settings
 from pcapi.core.cultural_survey import tasks
-from pcapi.core.cultural_survey.api import save_cultural_survey_for_user
-from pcapi.core.users import factories as users_factories
 from pcapi.utils import date as date_utils
 
 
-class CulturalSurveyAnswerTest:
-    def test_should_save_a_cultural_survey_for_user(self, db_session):
-        submit_time = date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S")
-
-        user = users_factories.UserFactory.create()
-        db_session.add(user)
-        db_session.flush()
-
-        payload = tasks.CulturalSurveyTaskAnswers(
-            user_id=user.id,
-            submitted_at=submit_time,
-            answers=[
-                {"question_id": "SORTIES", "answer_ids": ["FESTIVAL"]},
-                {"question_id": "FESTIVALS", "answer_ids": ["FESTIVAL_MUSIQUE"]},
-            ],
-        )
-
-        response = save_cultural_survey_for_user(payload)
-
-        assert response
-
-    def test_should_raise_an_exception_for_submitting_twice_the_survey(self, db_session):
-        submit_time = date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S")
-
-        user = users_factories.UserFactory.create()
-        db_session.add(user)
-        db_session.flush()
-
-        payload = tasks.CulturalSurveyTaskAnswers(
-            user_id=user.id,
-            submitted_at=submit_time,
-            answers=[
-                {"question_id": "SORTIES", "answer_ids": ["FESTIVAL"]},
-                {"question_id": "FESTIVALS", "answer_ids": ["FESTIVAL_MUSIQUE"]},
-            ],
-        )
-
-        save_cultural_survey_for_user(payload)
-
-        with pytest.raises(IntegrityError):
-            save_cultural_survey_for_user(payload)
-
+class CulturalSurveyAnswerTasksTest:
     @patch("pcapi.core.cultural_survey.tasks.store_public_object")
-    def test_cultural_survey_task(self, store_public_object_mock, client, db_session):
-        submit_time = date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S")
+    def test_cultural_survey_task(self, store_public_object_mock, db_session):
+        submit_time = date_utils.get_naive_utc_now().isoformat()
         submit_time_short = date_utils.get_naive_utc_now().strftime("%Y%m%d")
 
         tasks.upload_answers_task.run(

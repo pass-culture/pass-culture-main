@@ -53,7 +53,6 @@ def post_cultural_survey_answers(body: serializers.CulturalSurveyAnswersRequest)
     tasks.upload_answers_task.delay(payload.model_dump())
 
     with transaction():
-        # Add survey data for user
         save_cultural_survey_for_user(payload)
 
         current_user.needsToFillCulturalSurvey = False
