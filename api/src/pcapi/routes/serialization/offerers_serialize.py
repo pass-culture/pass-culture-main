@@ -49,7 +49,7 @@ class GetOffererVenueResponseModel(HttpBodyModel):
         dms_application = venue.last_collective_dms_application
         return cls(
             activity=offerers_models.DisplayableActivity[venue.activity.name],
-            banner_meta=venue.bannerMeta,
+            banner_meta=venue.bannerMeta,  # type: ignore [arg-type]
             banner_url=venue.bannerUrl,
             booking_email=venue.bookingEmail,
             last_collective_dms_application=venue_collective_serialize.DMSApplicationForEAC.build(

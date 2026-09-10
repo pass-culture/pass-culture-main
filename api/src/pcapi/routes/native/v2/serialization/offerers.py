@@ -142,7 +142,7 @@ class VenueResponse(HttpBodyModel):
             activity=venue.activity,
             banner_credit=banner_credit,
             banner_is_from_google=banner_is_from_google,
-            banner_url=venue.bannerUrl,
+            banner_url=venue.bannerUrl,  # type: ignore [arg-type]
             accessibility_data=accessibility_data,
             city=city,
             contact=VenueContact.model_validate(venue.contact) if venue.contact else None,

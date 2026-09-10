@@ -1,6 +1,7 @@
 import typing
 from collections import abc
 
+from algoliasearch.search.models import Hit
 from algoliasearch.search.models import search_response
 
 from pcapi.core.search import testing
@@ -53,15 +54,18 @@ class TestingBackend(AlgoliaBackend):
         params: dict[str, typing.Any],
     ) -> search_response.SearchResponse:
         assert index
+
         if query == "ok":
             start = params.get("page", 0) * 1000
             count = params.get("hitsPerPage", 20)
+
             return search_response.SearchResponse(
-                hits=[{"objectID": i} for i in range(start, start + count)],
+                hits=[Hit(object_id=str(i)) for i in range(start, start + count)],
                 processing_time_ms=10,
                 query="query",
                 params="?p=params",
             )
+
         return search_response.SearchResponse(
             hits=[],
             processing_time_ms=10,

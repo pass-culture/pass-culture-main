@@ -73,7 +73,7 @@ def get_current_pricing_point(
         ):
             return venue_finance_serialize.GetVenuePricingPointResponseModel(
                 id=pricing_link.pricingPoint.id,
-                siret=pricing_link.pricingPoint.siret,
+                siret=pricing_link.pricingPoint.siret,  # type: ignore [arg-type]
                 venueName=pricing_link.pricingPoint.publicName,
             )
     return None
@@ -170,7 +170,7 @@ class GetVenueResponseModel(HttpBodyModel):
             activity=offerers_models.DisplayableActivity[venue.activity.name],
             bannerUrl=venue.bannerUrl,
             name=venue.name,
-            contact=venue.contact,
+            contact=venue.contact,  # type: ignore [arg-type]
             description=venue.description,
             externalAccessibilityData=external_accessibility_data,
             externalAccessibilityId=external_accessibility_id,
@@ -191,9 +191,9 @@ class GetVenueResponseModel(HttpBodyModel):
             collectiveDescription=venue.collectiveDescription,
             collectiveStudents=venue.collectiveStudents,
             collectiveWebsite=venue.collectiveWebsite,
-            collectiveDomains=venue.collectiveDomains,
+            collectiveDomains=venue.collectiveDomains,  # type: ignore [arg-type]
             collectiveInterventionArea=venue.collectiveInterventionArea,
-            collectiveLegalStatus=venue.venueEducationalStatus,
+            collectiveLegalStatus=venue.venueEducationalStatus,  # type: ignore [arg-type]
             collectivePhone=venue.collectivePhone,
             collectiveEmail=venue.collectiveEmail,
             lastCollectiveDmsApplication=venue_collective_serialize.DMSApplicationForEAC.build(

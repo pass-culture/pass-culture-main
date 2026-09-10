@@ -75,7 +75,7 @@ class FavoriteOfferResponse(HttpBodyModel):
             price=to_cents(favorite_data.price) if favorite_data.price is not None else None,
             start_date=favorite_data.start_date,
             start_price=to_cents(favorite_data.start_price) if favorite_data.start_price is not None else None,
-            subcategory_id=offer.subcategoryId,
+            subcategory_id=offer.subcategoryId,  # type: ignore [arg-type]
             venue_name=venue_name,
         )
 

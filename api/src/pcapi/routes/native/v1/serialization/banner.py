@@ -3,14 +3,10 @@ import enum
 
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
-from pcapi.serialization.utils import to_camel
 
 
 class BannerQueryParams(HttpQueryParamsModel):
     is_geolocated: bool = False
-
-    class Config:
-        alias_generator = to_camel
 
 
 class BannerName(enum.Enum):
