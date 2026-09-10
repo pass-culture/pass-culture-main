@@ -14,8 +14,8 @@ from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.subscription.ubble import tasks as ubble_tasks
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.apis import public_api
 from pcapi.routes.external import authentication
+from pcapi.routes.external.blueprint import external_blueprint
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.transaction_manager import atomic
@@ -24,7 +24,7 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-@public_api.route("/webhooks/dms/application_status", methods=["POST"])
+@external_blueprint.route("/dms/application_status", methods=["POST"])
 @authentication.require_dms_token
 @spectree_serialize(on_success_status=204)
 def dms_webhook_update_application_status(form: dms_serializers.DMSWebhookRequest) -> None:
@@ -39,7 +39,7 @@ def dms_webhook_update_application_status(form: dms_serializers.DMSWebhookReques
         logger.exception("Error while updating application status", extra=form.model_dump())
 
 
-@public_api.route("/webhooks/ubble/dummy", methods=["POST"])
+@external_blueprint.route("/ubble/dummy", methods=["POST"])
 @spectree_serialize(
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,
@@ -48,7 +48,7 @@ def dummy_webook_ubble_v2(body: ubble_serializers.WebhookBodyV2) -> ubble_serial
     return ubble_serializers.WebhookDummyReponse()
 
 
-@public_api.route("/webhooks/ubble/v2/application_status", methods=["POST"])
+@external_blueprint.route("/ubble/v2/application_status", methods=["POST"])
 @authentication.require_ubble_v2_signature
 @spectree_serialize(
     on_success_status=200,
@@ -89,7 +89,7 @@ def ubble_v2_webhook_update_application_status(
     return ubble_serializers.WebhookDummyReponse()
 
 
-@public_api.route("/webhooks/ubble/application_status", methods=["POST"])
+@external_blueprint.route("/ubble/application_status", methods=["POST"])
 @authentication.require_ubble_signature
 @spectree_serialize(
     headers=ubble_serializers.WebhookRequestHeaders,  # type: ignore[arg-type]
@@ -126,7 +126,7 @@ def ubble_webhook_update_application_status(
     return ubble_serializers.WebhookDummyReponse()
 
 
-@public_api.route("/webhooks/ubble/store_id_pictures", methods=["POST"])
+@external_blueprint.route("/ubble/store_id_pictures", methods=["POST"])
 @spectree_serialize(
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,
@@ -149,7 +149,7 @@ def ubble_webhook_store_id_pictures(
     return ubble_serializers.WebhookDummyReponse()
 
 
-@public_api.route("/webhooks/ubble/sync-dn/<int:procedure_number>/<int:application_number>", methods=["POST"])
+@external_blueprint.route("/ubble/sync-dn/<int:procedure_number>/<int:application_number>", methods=["POST"])
 @authentication.require_ubble_v2_signature
 @spectree_serialize(
     on_success_status=200,

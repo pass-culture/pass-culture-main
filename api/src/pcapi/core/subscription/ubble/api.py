@@ -160,7 +160,7 @@ def start_ubble_workflow(
 
     if webhook_url is None:
         webhook_url = urllib.parse.urljoin(
-            settings.API_URL, flask.url_for("Public API.ubble_v2_webhook_update_application_status", _external=False)
+            settings.API_URL, flask.url_for("external.ubble_v2_webhook_update_application_status", _external=False)
         )
 
     ubble_fraud_check = _get_last_ubble_fraud_check(user)
