@@ -1,3 +1,4 @@
+import contextlib
 import datetime
 import logging
 
@@ -65,7 +66,9 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
         return
 
     try:
-        apply_for_quotient_familial_bonus(fraud_check)
+        # the fraud check being deleted means that another task successfully granted the bonus credit
+        with contextlib.suppress(sa.orm.exc.ObjectDeletedError):
+            apply_for_quotient_familial_bonus(fraud_check)
     except Exception:
         with atomic():
             if not fraud_check.resultContent:
@@ -112,7 +115,9 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
         return
 
     try:
-        apply_for_adult_disability_bonus(fraud_check)
+        # the fraud check being deleted means that another task successfully granted the bonus credit
+        with contextlib.suppress(sa.orm.exc.ObjectDeletedError):
+            apply_for_adult_disability_bonus(fraud_check)
     except Exception:
         with atomic():
             if not fraud_check.resultContent:
@@ -159,7 +164,9 @@ def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> 
         return
 
     try:
-        apply_for_disabled_child_education_bonus(fraud_check)
+        # the fraud check being deleted means that another task successfully granted the bonus credit
+        with contextlib.suppress(sa.orm.exc.ObjectDeletedError):
+            apply_for_disabled_child_education_bonus(fraud_check)
     except Exception:
         with atomic():
             if not fraud_check.resultContent:
