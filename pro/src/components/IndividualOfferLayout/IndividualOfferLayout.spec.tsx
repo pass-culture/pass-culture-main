@@ -103,7 +103,6 @@ describe('IndividualOfferLayout', () => {
   })
 
   beforeEach(() => {
-    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({ proAdvice: null })
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
     vi.mocked(getOfferEnhancementActionsVisibility).mockReturnValue({
       shouldDisplayRecommendationAction: true,
