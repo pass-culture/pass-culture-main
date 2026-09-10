@@ -150,6 +150,7 @@ class QuotientFamilialTest:
         [
             (400, api_particulier.ParticulierApiQueryError),
             (404, api_particulier.ParticulierApiApplicationNotFound),
+            (409, api_particulier.ParticulierApiRequestConflict),
             (422, api_particulier.ParticulierApiPersonNotFound),
             (429, api_particulier.ParticulierApiRateLimitExceeded),
             (500, api_particulier.ParticulierApiUnavailable),
@@ -255,6 +256,7 @@ class DisabledAdultAllowanceTest:
         [
             (400, api_particulier.ParticulierApiQueryError),
             (404, api_particulier.ParticulierApiApplicationNotFound),
+            (409, api_particulier.ParticulierApiRequestConflict),
             (422, api_particulier.ParticulierApiPersonNotFound),
             (429, api_particulier.ParticulierApiRateLimitExceeded),
             (500, api_particulier.ParticulierApiUnavailable),
@@ -360,6 +362,7 @@ class DisabledChildEducationAllowanceTest:
         [
             (400, api_particulier.ParticulierApiQueryError),
             (404, api_particulier.ParticulierApiApplicationNotFound),
+            (409, api_particulier.ParticulierApiRequestConflict),
             (422, api_particulier.ParticulierApiPersonNotFound),
             (429, api_particulier.ParticulierApiRateLimitExceeded),
             (500, api_particulier.ParticulierApiUnavailable),
