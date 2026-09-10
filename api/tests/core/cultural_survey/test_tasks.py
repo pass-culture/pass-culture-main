@@ -5,10 +5,10 @@ from pcapi.core.cultural_survey import tasks
 from pcapi.utils import date as date_utils
 
 
-class CulturalSurveyAnswerTest:
+class CulturalSurveyAnswerTasksTest:
     @patch("pcapi.core.cultural_survey.tasks.store_public_object")
-    def test_cultural_survey_task(self, store_public_object_mock, client, db_session):
-        submit_time = date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S")
+    def test_cultural_survey_task(self, store_public_object_mock, db_session):
+        submit_time = date_utils.get_naive_utc_now().isoformat()
         submit_time_short = date_utils.get_naive_utc_now().strftime("%Y%m%d")
 
         tasks.upload_answers_task.run(
