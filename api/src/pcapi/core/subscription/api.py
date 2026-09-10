@@ -113,7 +113,7 @@ def activate_beneficiary_for_eligibility(
     eligibility_api.add_eligibility_role(user, activated_eligibility)
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit.source})
 
-    if FeatureToggle.ENABLE_BONUS_CREDIT.is_active() and user.received_pass_18_v3:
+    if user.received_pass_18_v3:
         bonus_fraud_check_api.create_disability_bonus_credit_fraud_checks(
             user, origin=f"{bonus_constants.AUTOMATIC_ORIGIN} through beneficiary activation"
         )

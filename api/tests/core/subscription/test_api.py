@@ -2489,27 +2489,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
         }
 
-    @pytest.mark.features(ENABLE_BONUS_CREDIT=False)
-    def test_beneficiary_activation_respects_feature_flag(self):
-        user = users_factories.HonorStatementValidatedUserFactory(age=18)
-
-        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
-
-        assert is_user_activated
-        assert user.is_beneficiary
-        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
-
-        [recredit] = user.deposit.recredits
-        assert recredit.recreditType == finance_models.RecreditType.RECREDIT_18
-        assert user.recreditAmountToShow == 150
-
-        bonus_fraud_checks = [
-            fraud_check
-            for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
-        ]
-        assert not bonus_fraud_checks
-
     def test_free_eligibility(self):
         user = users_factories.ProfileCompletedUserFactory(age=16)
 
