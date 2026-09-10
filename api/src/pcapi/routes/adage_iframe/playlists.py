@@ -24,10 +24,13 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-def _format_distance(distance: float | None) -> Decimal | None:
+def _format_distance(distance: float | None) -> float | None:
     if not distance:
         return None
-    return Decimal.from_float(distance).quantize(Decimal("1.0"))
+
+    rounded_distance = Decimal.from_float(distance).quantize(Decimal("1.0"))
+
+    return float(rounded_distance)
 
 
 def _serialize_playlist_item_with_offer_template(

@@ -54,4 +54,4 @@ def format_opening_hours(
             timespans.append((start, end))
         formatted[oh.weekday.value] = sorted(timespans, key=lambda ts: ts[0]) or None
 
-    return schemas.WeekdayOpeningHoursTimespans(**formatted)
+    return schemas.WeekdayOpeningHoursTimespans(**formatted)  # type: ignore [arg-type]

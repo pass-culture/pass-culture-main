@@ -94,12 +94,14 @@ class OfferStockResponseV2(HttpBodyModel):
             is_forbidden_to_underage=stock.is_forbidden_to_underage,
             isSoldOut=stock.isSoldOut,
             isExpired=stock.isExpired,
-            price=stock.price,
+            # price is converted to cents in before validator
+            price=stock.price,  # type: ignore [arg-type]
             activationCode=OfferStockActivationCodeResponseV2(expirationDate=activation_code.expirationDate)
             if activation_code
             else None,
             priceCategoryLabel=stock.priceCategory.label if stock.priceCategory else None,
-            remainingQuantity=stock.remainingQuantity,
+            # 'unlimited' becomes None in before validator
+            remainingQuantity=stock.remainingQuantity,  # type: ignore [arg-type]
         )
 
 
@@ -133,7 +135,7 @@ class OfferVenueResponseV2(HttpBodyModel):
             name=venue.publicName,
             postalCode=address.postalCode,
             publicName=venue.publicName,
-            coordinates=AddressCoordinates(latitude=address.latitude, longitude=address.longitude),
+            coordinates=AddressCoordinates(latitude=float(address.latitude), longitude=float(address.longitude)),
             isPermanent=venue.isPermanent,
             isOpenToPublic=venue.isOpenToPublic,
             timezone=address.timezone,
@@ -409,7 +411,7 @@ class OfferResponseV2(HttpBodyModel):
             postalCode=address.postalCode,
             city=address.city,
             label=offerer_address.label,
-            coordinates=AddressCoordinates(latitude=address.latitude, longitude=address.longitude),
+            coordinates=AddressCoordinates(latitude=float(address.latitude), longitude=float(address.longitude)),
             timezone=address.timezone,
         )
 
@@ -471,7 +473,7 @@ class OfferResponseV2(HttpBodyModel):
             bookingAllowedDatetime=offer.bookingAllowedDatetime,
             reactions_count=ReactionCountV2(likes=likes),
             stocks=[OfferStockResponseV2.build(stock) for stock in offer.activeStocks],
-            subcategoryId=offer.subcategoryId,
+            subcategoryId=offer.subcategoryId,  # type: ignore [arg-type]
             venue=OfferVenueResponseV2.build(offer.venue),
             video=video,
             withdrawalDetails=offer.withdrawalDetails,

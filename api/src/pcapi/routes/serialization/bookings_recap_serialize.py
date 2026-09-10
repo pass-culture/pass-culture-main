@@ -212,10 +212,10 @@ def serialize_bookings(booking: schemas.GetBookingsQueryResult) -> BookingRecapR
             bool(booking.isExternal),
             _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode),
         ),
-        booking_date=booking_date,
+        booking_date=booking_date,  # type: ignore [arg-type]
         booking_status=_build_booking_status(booking),
         booking_is_duo=booking.quantity == 2,
-        booking_amount=booking.bookingAmount,
+        booking_amount=float(booking.bookingAmount),
         booking_price_category_label=booking.priceCategoryLabel,
         booking_status_history=serialize_booking_status_history(booking),
     )

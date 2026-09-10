@@ -37,14 +37,14 @@ class GetBookingResponse(HttpBodyModel):
 def get_booking_response(booking: Booking) -> GetBookingResponse:
     birth_date = booking.user.birth_date.isoformat() if booking.user.birth_date else None
     return GetBookingResponse(
-        booking_id=humanize(booking.id),
+        booking_id=humanize(booking.id),  # type: ignore [arg-type]
         date_of_birth=birth_date,
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
         ean13=booking.stock.offer.ean,
         email=booking.email,
         is_used=booking.is_used_or_reimbursed,
         offer_id=booking.stock.offer.id,
-        public_offer_id=humanize(booking.stock.offer.id),
+        public_offer_id=humanize(booking.stock.offer.id),  # type: ignore [arg-type]
         offer_name=booking.stock.offer.name,
         offer_type=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.BIEN,
         phone_number=booking.user.phoneNumber,

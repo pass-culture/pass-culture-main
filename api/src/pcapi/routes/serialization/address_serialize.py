@@ -43,8 +43,8 @@ class LocationResponseModelV2(HttpBodyModel):
             postalCode=offerer_address.address.postalCode,
             street=offerer_address.address.street,
             city=offerer_address.address.city,
-            latitude=offerer_address.address.latitude,
-            longitude=offerer_address.address.longitude,
+            latitude=float(offerer_address.address.latitude),
+            longitude=float(offerer_address.address.longitude),
             departmentCode=offerer_address.address.departmentCode,
         )
 

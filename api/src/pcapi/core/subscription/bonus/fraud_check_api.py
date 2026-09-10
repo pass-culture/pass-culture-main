@@ -124,9 +124,9 @@ def _build_bonus_credit_person_for_disability(
         birth_location_kwargs["birth_city"] = user.birthPlace
 
     return bonus_schemas.BonusCreditPerson(
-        last_name=user.lastName,
-        first_names=[user.firstName],
-        birth_date=user.birth_date,
+        last_name=user.lastName,  # type: ignore [arg-type]
+        first_names=[user.firstName],  # type: ignore [list-item]
+        birth_date=user.birth_date,  # type: ignore [arg-type]
         gender=user.gender or users_models.GenderEnum.F,
         **{key: value for key, value in birth_location_kwargs.items() if value},
     )
