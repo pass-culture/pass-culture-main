@@ -102,7 +102,7 @@ test.describe('Financial Management - messages, links to external help page, rei
       await page.getByText('Rattacher une structure').click()
 
       const dialog = page.getByRole('dialog')
-      await dialog.getByText('Tout sélectionner').click()
+      await dialog.getByText('Tout sélectionner').check()
       await dialog.getByText('Enregistrer').click()
 
       await expectSuccessSnackbar(
@@ -129,8 +129,8 @@ test.describe('Financial Management - messages, links to external help page, rei
       await linkedVenuesSection.getByText('Modifier').click()
 
       const modifyDialog = page.getByRole('dialog')
-      await modifyDialog.getByText('Mon lieu 1').click()
-      await modifyDialog.getByText('Mon lieu 2').click()
+      await modifyDialog.getByText('Mon lieu 1').uncheck()
+      await modifyDialog.getByText('Mon lieu 2').uncheck()
       await modifyDialog.getByText('Enregistrer').click()
       await confirmUnlinkWarningDialog(page)
 
@@ -165,7 +165,7 @@ test.describe('Financial Management - messages, links to external help page, rei
       await page.getByText('Rattacher une structure').click()
 
       const dialog = page.getByRole('dialog')
-      await dialog.getByText('Tout sélectionner').click()
+      await dialog.getByText('Tout sélectionner').check()
       await dialog.getByText('Enregistrer').click()
 
       await expectSuccessSnackbar(
@@ -184,7 +184,7 @@ test.describe('Financial Management - messages, links to external help page, rei
       await page.getByText('Modifier').click()
 
       const modifyDialog = page.getByRole('dialog')
-      await modifyDialog.getByText('Tout désélectionner').click()
+      await modifyDialog.getByText('Tout désélectionner').uncheck()
       await modifyDialog.getByText('Enregistrer').click()
       await confirmUnlinkWarningDialog(page)
 
