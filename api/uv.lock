@@ -6,9 +6,6 @@ requires-python = "==3.13.*"
 exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
 exclude-newer-span = "P7D"
 
-[options.exclude-newer-package]
-pgcli = { timestamp = "0001-01-01T00:00:00Z", span = "P2D" }
-
 [manifest]
 overrides = [{ name = "pyopenssl", specifier = ">=26.0.0" }]
 
@@ -568,7 +565,7 @@ wheels = [
 
 [[package]]
 name = "clickhouse-connect"
-version = "1.7.2"
+version = "1.8.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "backports-zstd" },
@@ -577,17 +574,17 @@ dependencies = [
     { name = "tzdata", marker = "sys_platform == 'win32'" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/10/d7/3419b0ad51aa931336621ae9370fd30d1761b79c84902e0f892ffabcf5f0/clickhouse_connect-1.7.2.tar.gz", hash = "sha256:5455cba40dc1972b3b1f3feb0216099630eb631975ee4ef70bcf1d949944437b", size = 211866, upload-time = "2026-08-20T14:27:42.142Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/a2/3ab000f0f7522157cb395f6bcb82f60e42c945b6a005719034a367c2594f/clickhouse_connect-1.8.0.tar.gz", hash = "sha256:3d8592d880301a7fb67ef2d570aefd20d2021569fa72edd05be43104213be358", size = 240267, upload-time = "2026-09-03T00:16:00.189Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5d/f9/9ac9d87461e8eb1cd39aaa2d2439236894d117bf52d64877ed2cff079dec/clickhouse_connect-1.7.2-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:2235f3f6b84afd494efc85abc77d04b35360395de8683456a99b55fddd2e0c67", size = 402799, upload-time = "2026-08-20T14:26:41.671Z" },
-    { url = "https://files.pythonhosted.org/packages/87/5c/e6ea0eefd96ccdc4d005710ee0072ac051eb5bedc8178abc25c7d55daecc/clickhouse_connect-1.7.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:493b4623330235f1da7396715976f81ded8f778ab966c3274cf3e190b393af78", size = 391418, upload-time = "2026-08-20T14:26:43.398Z" },
-    { url = "https://files.pythonhosted.org/packages/13/b7/12f58fffaec70d4f6d25cb3faf5ae2bf07e2eea132bca710cd9963da6d3c/clickhouse_connect-1.7.2-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:07f35953fb55a816b32bb0e6509996979706fcdc3577837f5741fbb18aa1dd00", size = 1326128, upload-time = "2026-08-20T14:26:45.159Z" },
-    { url = "https://files.pythonhosted.org/packages/0b/6e/82834d20243dd39be6eee84e87218d43b28e83009fc8e27d563a6c144ea9/clickhouse_connect-1.7.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d5bb5748e1dfc2adbd927bafe1305e040b87b668f7b5119482f8ec8bf4190c1d", size = 1350071, upload-time = "2026-08-20T14:26:47.242Z" },
-    { url = "https://files.pythonhosted.org/packages/aa/0e/a02c4f010b81806a2bfaaeaae5abc750e393c7dfd85a83c7481a434e746d/clickhouse_connect-1.7.2-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:ca5f0a61b83c9e6b82e7fb4ff56dff9e9c11b48e39575d0bce46b388e8791195", size = 1303271, upload-time = "2026-08-20T14:26:49.016Z" },
-    { url = "https://files.pythonhosted.org/packages/31/6a/6dbcb4643d6f1bf72632cd5675cffcd74c01a8a8ba73f371a1f43970b949/clickhouse_connect-1.7.2-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:a5554004022b368daac2106f651811876dd35acc0ae5dda51fd2f30d9e66ce00", size = 1345936, upload-time = "2026-08-20T14:26:50.844Z" },
-    { url = "https://files.pythonhosted.org/packages/55/c4/25cdf7a01d25bc9de4c77ed4728e4162e8f710ec92f9353e38e591475ba8/clickhouse_connect-1.7.2-cp313-cp313-win32.whl", hash = "sha256:fe1aa1e90dcaa3db4f12f0e612746fb93f6edc32377cf2afa12af22dd7c33be8", size = 367144, upload-time = "2026-08-20T14:26:52.829Z" },
-    { url = "https://files.pythonhosted.org/packages/b8/9b/f54b501b6ea99cd60e65b18608bb07a09a7dcb5e8ec7419dbe0829ba785a/clickhouse_connect-1.7.2-cp313-cp313-win_amd64.whl", hash = "sha256:09e718e7ad2970b2de978f6da63320276b9a958a9a32f4b878e4dce09df169a9", size = 385362, upload-time = "2026-08-20T14:26:54.613Z" },
-    { url = "https://files.pythonhosted.org/packages/ab/56/6dc6dbc8b7b7206545911b7cb5f8e6371d9051d62a3e8da967766cad21d7/clickhouse_connect-1.7.2-cp313-cp313-win_arm64.whl", hash = "sha256:e270c55b6fb46e92abce1b0c3c27352b394cba077b8e2db53787b1de97e6ac62", size = 367655, upload-time = "2026-08-20T14:26:56.277Z" },
+    { url = "https://files.pythonhosted.org/packages/30/1e/4f3bb1a731655f14cfacb0844570d429948e68a0923963408782155c80d6/clickhouse_connect-1.8.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:1cd618d066909c44c6e5334f102554c20dee1c52a8059af28d9844d820e9d16e", size = 443968, upload-time = "2026-09-03T00:15:00.711Z" },
+    { url = "https://files.pythonhosted.org/packages/de/2b/a537db4ce6ed6777895e91161cf4f6f5b5c67201838a5838c2e6e8bf8675/clickhouse_connect-1.8.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:50e846bb7cbe1e20a4bd051342a77122f3ba4050273e9e87ad1b3ee4c28becf3", size = 432035, upload-time = "2026-09-03T00:15:02.492Z" },
+    { url = "https://files.pythonhosted.org/packages/86/59/2e93e502a0352ad2e69c2d79dacb32330cef4cee0e7e4a42905b8c17dc57/clickhouse_connect-1.8.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:1f50571c8858397319805d10e47a224edbb485b122e0b4a07ba90d2ef3bb11f6", size = 1398240, upload-time = "2026-09-03T00:15:04.314Z" },
+    { url = "https://files.pythonhosted.org/packages/71/9b/1e31ee5e69c2b6e6dc8cf12b8edefdd3591dedcb195ce90dcd6eabb11b3c/clickhouse_connect-1.8.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:bcede458bf96411a221617b136131b3d8eeace93f08a433a7feca389b84f1751", size = 1420353, upload-time = "2026-09-03T00:15:06.078Z" },
+    { url = "https://files.pythonhosted.org/packages/df/db/806b7397bfc93e8cf6abd32f7c649481bda821f5ee6a6ed2660c6f1566a6/clickhouse_connect-1.8.0-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:4549145b3e72b1dc07126ee0bfa2e75308782ea3504b6634f414f48d166e8bd6", size = 1378263, upload-time = "2026-09-03T00:15:08.084Z" },
+    { url = "https://files.pythonhosted.org/packages/ad/93/b42b6ae6855faff2f69f2a3ca660b24892b3dd8b3bd56a2367156c89996d/clickhouse_connect-1.8.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:2331eb33038fcf9cfd3b84b5a0a5df53a91da795073410a0cfce05baca3b63f6", size = 1418229, upload-time = "2026-09-03T00:15:10.089Z" },
+    { url = "https://files.pythonhosted.org/packages/9d/16/7d1eb7627b70e6f904b93a825cb8a2dd1465f99f3342ccf524f6f29de291/clickhouse_connect-1.8.0-cp313-cp313-win32.whl", hash = "sha256:bb44525401b90c6a15c5ce04754657a49998ad23001f05298e6834de9643e62d", size = 403565, upload-time = "2026-09-03T00:15:12.047Z" },
+    { url = "https://files.pythonhosted.org/packages/b0/57/db7c5936307fa5bb5afe989ab07a026b0a82f4cf5f7007bc6ebe9ec4b8c5/clickhouse_connect-1.8.0-cp313-cp313-win_amd64.whl", hash = "sha256:012c6f6ca52e9acac005c734c9ed2f2cc6de707d6d512c006906e5d8d4c354c7", size = 422867, upload-time = "2026-09-03T00:15:13.905Z" },
+    { url = "https://files.pythonhosted.org/packages/f5/e6/0753c40fb99bf6c205e49fdd056c95fb7dc221c29e9267cceb1df272bf83/clickhouse_connect-1.8.0-cp313-cp313-win_arm64.whl", hash = "sha256:3cb9c3577bf7d7057249dd29a3f3787a9d63cca3c17248a69476234f49584c7f", size = 403355, upload-time = "2026-09-03T00:15:15.608Z" },
 ]
 
 [package.optional-dependencies]
@@ -2031,7 +2028,7 @@ requires-dist = [
     { name = "brevo-python", specifier = "==5.0.2" },
     { name = "celery", extras = ["redis"], specifier = "==5.6.3" },
     { name = "click", specifier = "==8.5.0" },
-    { name = "clickhouse-connect", extras = ["sqlalchemy"], specifier = "==1.7.2" },
+    { name = "clickhouse-connect", extras = ["sqlalchemy"], specifier = "==1.8.0" },
     { name = "cryptography", specifier = "==50.0.1" },
     { name = "ecdsa", specifier = "==0.19.2" },
     { name = "email-validator", specifier = "==2.3.0" },
