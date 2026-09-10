@@ -46,6 +46,7 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
         .filter(
             subscription_models.BeneficiaryFraudCheck.id == payload.fraud_check_id,
         )
+        .options(sa.orm.joinedload(subscription_models.BeneficiaryFraudCheck.user))
         .one_or_none()
     )
     if fraud_check is None:
@@ -64,8 +65,12 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
         logger.warning("Trying to handle already processed bonus fraud check #%s", payload.fraud_check_id)
         return
 
+    user = fraud_check.user
     try:
         apply_for_quotient_familial_bonus(fraud_check)
+    except (sa.orm.exc.ObjectDeletedError, sa.orm.exc.StaleDataError):
+        if not user.received_bonus_credit:
+            raise
     except Exception:
         with atomic():
             if not fraud_check.resultContent:
@@ -93,6 +98,7 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
         .filter(
             subscription_models.BeneficiaryFraudCheck.id == payload.fraud_check_id,
         )
+        .options(sa.orm.joinedload(subscription_models.BeneficiaryFraudCheck.user))
         .one_or_none()
     )
     if fraud_check is None:
@@ -111,8 +117,12 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
         logger.warning("Trying to handle already processed bonus fraud check #%s", payload.fraud_check_id)
         return
 
+    user = fraud_check.user
     try:
         apply_for_adult_disability_bonus(fraud_check)
+    except (sa.orm.exc.ObjectDeletedError, sa.orm.exc.StaleDataError):
+        if not user.received_bonus_credit:
+            raise
     except Exception:
         with atomic():
             if not fraud_check.resultContent:
@@ -140,6 +150,7 @@ def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> 
         .filter(
             subscription_models.BeneficiaryFraudCheck.id == payload.fraud_check_id,
         )
+        .options(sa.orm.joinedload(subscription_models.BeneficiaryFraudCheck.user))
         .one_or_none()
     )
     if fraud_check is None:
@@ -158,8 +169,13 @@ def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> 
         logger.warning("Trying to handle already processed bonus fraud check #%s", payload.fraud_check_id)
         return
 
+    user = fraud_check.user
     try:
         apply_for_disabled_child_education_bonus(fraud_check)
+    except (sa.orm.exc.ObjectDeletedError, sa.orm.exc.StaleDataError):
+        if not user.received_bonus_credit:
+            raise
+
     except Exception:
         with atomic():
             if not fraud_check.resultContent:

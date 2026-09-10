@@ -1,15 +1,20 @@
 import datetime
+from contextlib import nullcontext as does_not_raise
 from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
+import sqlalchemy as sa
 from dateutil.relativedelta import relativedelta
 
+import pcapi.core.finance.factories as finance_factories
 from pcapi.connectors import api_particulier
+from pcapi.core.finance import models as finance_models
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import tasks
+from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 
@@ -61,6 +66,20 @@ class QuotientFamilialBonusTaskTest:
             datetime.datetime.fromisoformat(fraud_check.resultContent["next_retry_at"]) > date_utils.get_naive_utc_now()
         )
 
+    @pytest.mark.parametrize(
+        "sqlalchemy_error",
+        [sa.orm.exc.ObjectDeletedError, sa.orm.exc.StaleDataError],
+    )
+    @patch("pcapi.core.subscription.bonus.api.apply_for_quotient_familial_bonus")
+    def test_ignore_successful_parallel_bonus_credit_application(self, mocked_apply_for_qf, sqlalchemy_error):
+        user = users_factories.BeneficiaryFactory()
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
+        mocked_apply_for_qf.side_effect = sqlalchemy_error
+
+        with does_not_raise():
+            payload = tasks.BonusTaskPayload(fraud_check_id=1)
+            tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
+
 
 class AdultDisabilityBonusTaskTest:
     @patch("pcapi.connectors.api_particulier.get_disabled_adult_allowance")
@@ -99,6 +118,20 @@ class AdultDisabilityBonusTaskTest:
         assert (
             datetime.datetime.fromisoformat(fraud_check.resultContent["next_retry_at"]) > date_utils.get_naive_utc_now()
         )
+
+    @pytest.mark.parametrize(
+        "sqlalchemy_error",
+        [sa.orm.exc.ObjectDeletedError, sa.orm.exc.StaleDataError],
+    )
+    @patch("pcapi.core.subscription.bonus.api.apply_for_adult_disability_bonus")
+    def test_ignore_successful_parallel_bonus_credit_application(self, mocked_apply_for_aah_task, sqlalchemy_error):
+        user = users_factories.BeneficiaryFactory()
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
+        mocked_apply_for_aah_task.side_effect = sqlalchemy_error
+
+        with does_not_raise():
+            payload = tasks.BonusTaskPayload(fraud_check_id=1)
+            tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump())
 
 
 class DisabledChildEducationBonusTaskTest:
@@ -140,6 +173,20 @@ class DisabledChildEducationBonusTaskTest:
         assert (
             datetime.datetime.fromisoformat(fraud_check.resultContent["next_retry_at"]) > date_utils.get_naive_utc_now()
         )
+
+    @pytest.mark.parametrize(
+        "sqlalchemy_error",
+        [sa.orm.exc.ObjectDeletedError, sa.orm.exc.StaleDataError],
+    )
+    @patch("pcapi.core.subscription.bonus.api.apply_for_disabled_child_education_bonus")
+    def test_ignore_successful_parallel_bonus_credit_application(self, mocked_apply_for_aeeh_task, sqlalchemy_error):
+        user = users_factories.BeneficiaryFactory()
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
+        mocked_apply_for_aeeh_task.side_effect = sqlalchemy_error
+
+        with does_not_raise():
+            payload = tasks.BonusTaskPayload(fraud_check_id=1)
+            tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump())
 
 
 class RecoverStartedBonusCreditApplicationsTest:
