@@ -571,88 +571,96 @@ def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id:
     )
 
 
-def get_bank_accounts_query(user: users_models.User) -> sa_orm.Query:
-    query = db.session.query(
-        models.BankAccount.id,
-        models.BankAccount.label,
-    ).filter(
-        models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
-    )
+# def get_bank_accounts_query(user: users_models.User) -> sa_orm.Query:
+#     query = db.session.query(
+#         models.BankAccount.id,
+#         models.BankAccount.label,
+#     ).filter(
+#         models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
+#     )
 
-    if not user.has_admin_role:
-        query = query.join(
-            offerers_models.UserOfferer,
-            models.BankAccount.offererId == offerers_models.UserOfferer.offererId,
-        ).filter(
-            offerers_models.UserOfferer.userId == user.id,
-            offerers_models.UserOfferer.isValidated,
-        )
-    return query
+#     # if not user.has_admin_role:
+#     #     query = query.join(
+#     #         offerers_models.UserOfferer,
+#     #         models.BankAccount.offererId == offerers_models.UserOfferer.offererId,
+#     #     ).filter(
+#     #         offerers_models.UserOfferer.userId == user.id,
+#     #         offerers_models.UserOfferer.isValidated,
+#     #     )
+#     query = query.join(
+#             offerers_models.UserOfferer,
+#             models.BankAccount.offererId == offerers_models.UserOfferer.offererId,
+#         ).filter(
+#             offerers_models.UserOfferer.userId == user.id,
+#             offerers_models.UserOfferer.isValidated,
+#         )
+#     return query
 
 
 def convert_to_datetime(date: datetime.date) -> datetime.datetime:
     return date_utils.get_day_start(date, utils.ACCOUNTING_TIMEZONE).astimezone(pytz.utc)
 
 
-def get_paid_invoices_query(
-    user: users_models.User,
-    bank_account_id: int | None = None,
-    offerer_id: int | None = None,
-    date_from: datetime.date | None = None,
-    date_until: datetime.date | None = None,
-    amount_lower_than: int | None = None,
-    amount_greater_than_equal: int | None = None,
-) -> sa_orm.Query[models.Invoice]:
-    bank_account_subquery = db.session.query(models.BankAccount)
+# def get_paid_invoices_query(
+#     user: users_models.User,
+#     bank_account_id: int | None = None,
+#     offerer_id: int | None = None,
+#     date_from: datetime.date | None = None,
+#     date_until: datetime.date | None = None,
+#     amount_lower_than: int | None = None,
+#     amount_greater_than_equal: int | None = None,
+# ) -> sa_orm.Query[models.Invoice]:
+#     bank_account_subquery = db.session.query(models.BankAccount)
 
-    if not user.has_admin_role:
-        bank_account_subquery = bank_account_subquery.join(
-            offerers_models.UserOfferer,
-            offerers_models.UserOfferer.offererId == models.BankAccount.offererId,
-        ).filter(
-            offerers_models.UserOfferer.userId == user.id,
-            offerers_models.UserOfferer.isValidated,
-        )
-    elif user.has_admin_role and not offerer_id and not bank_account_id:
-        # The following intentionally returns nothing for admin users,
-        # so that we do NOT return all invoices of all bank accounts
-        # for them. Admin users must select a bank account, or at least an offererId must be provided.
-        bank_account_subquery = bank_account_subquery.filter(sa.false())
+# #TODO bulle
+#     if not user.has_admin_role:
+#         bank_account_subquery = bank_account_subquery.join(
+#             offerers_models.UserOfferer,
+#             offerers_models.UserOfferer.offererId == models.BankAccount.offererId,
+#         ).filter(
+#             offerers_models.UserOfferer.userId == user.id,
+#             offerers_models.UserOfferer.isValidated,
+#         )
+#     elif user.has_admin_role and not offerer_id and not bank_account_id:
+#         # The following intentionally returns nothing for admin users,
+#         # so that we do NOT return all invoices of all bank accounts
+#         # for them. Admin users must select a bank account, or at least an offererId must be provided.
+#         bank_account_subquery = bank_account_subquery.filter(sa.false())
 
-    if bank_account_id:
-        bank_account_subquery = bank_account_subquery.filter(models.BankAccount.id == bank_account_id)
-    elif offerer_id:
-        bank_account_subquery = bank_account_subquery.filter(models.BankAccount.offererId == offerer_id)
+#     if bank_account_id:
+#         bank_account_subquery = bank_account_subquery.filter(models.BankAccount.id == bank_account_id)
+#     elif offerer_id:
+#         bank_account_subquery = bank_account_subquery.filter(models.BankAccount.offererId == offerer_id)
 
-    invoices = (
-        db.session.query(models.Invoice)
-        .filter(
-            models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id)),
-            models.Invoice.status == models.InvoiceStatus.PAID,
-        )
-        .options(
-            sa_orm.joinedload(models.Invoice.bankAccount).load_only(models.BankAccount.label),
-            sa_orm.joinedload(models.Invoice.cashflows).joinedload(models.Cashflow.batch),
-        )
-        .order_by(models.Invoice.date.desc())
-    )
+#     invoices = (
+#         db.session.query(models.Invoice)
+#         .filter(
+#             models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id)),
+#             models.Invoice.status == models.InvoiceStatus.PAID,
+#         )
+#         .options(
+#             sa_orm.joinedload(models.Invoice.bankAccount).load_only(models.BankAccount.label),
+#             sa_orm.joinedload(models.Invoice.cashflows).joinedload(models.Cashflow.batch),
+#         )
+#         .order_by(models.Invoice.date.desc())
+#     )
 
-    if date_from:
-        datetime_from = convert_to_datetime(date_from)
-        invoices = invoices.filter(models.Invoice.date >= datetime_from)
+#     if date_from:
+#         datetime_from = convert_to_datetime(date_from)
+#         invoices = invoices.filter(models.Invoice.date >= datetime_from)
 
-    if date_until:
-        # add one day to get all settlements until the day date_until included
-        datetime_until = convert_to_datetime(date_until) + datetime.timedelta(days=1)
-        invoices = invoices.filter(models.Invoice.date < datetime_until)
+#     if date_until:
+#         # add one day to get all settlements until the day date_until included
+#         datetime_until = convert_to_datetime(date_until) + datetime.timedelta(days=1)
+#         invoices = invoices.filter(models.Invoice.date < datetime_until)
 
-    if amount_lower_than is not None:
-        invoices = invoices.filter(models.Invoice.amount < amount_lower_than)
+#     if amount_lower_than is not None:
+#         invoices = invoices.filter(models.Invoice.amount < amount_lower_than)
 
-    if amount_greater_than_equal is not None:
-        invoices = invoices.filter(models.Invoice.amount >= amount_greater_than_equal)
+#     if amount_greater_than_equal is not None:
+#         invoices = invoices.filter(models.Invoice.amount >= amount_greater_than_equal)
 
-    return invoices
+#     return invoices
 
 
 def has_invoice(offerer_id: int) -> bool:

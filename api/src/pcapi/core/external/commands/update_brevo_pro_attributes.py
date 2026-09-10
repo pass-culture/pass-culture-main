@@ -36,7 +36,7 @@ def get_all_pro_users_emails() -> set[str]:
         .filter(
             User.isActive,
             sa.or_(User.has_pro_role, User.has_non_attached_pro_role),
-            sa.not_(User.has_admin_role),
+            # sa.not_(User.has_admin_role),
         )
         .all()
     )

@@ -1855,42 +1855,42 @@ def can_offerer_create_educational_offer(offerer_id: int) -> bool:
         return False
 
 
-def get_educational_offerers(offerer_id: int | None, current_user: users_models.User) -> list[models.Offerer]:
-    if current_user.has_admin_role and not offerer_id:
-        logger.info("Admin user must provide offerer_id as a query parameter")
-        raise exceptions.MissingOffererIdQueryParameter
+# def get_educational_offerers(offerer_id: int | None, current_user: users_models.User) -> list[models.Offerer]:
+#     if current_user.has_admin_role and not offerer_id:
+#         logger.info("Admin user must provide offerer_id as a query parameter")
+#         raise exceptions.MissingOffererIdQueryParameter
 
-    if offerer_id and current_user.has_admin_role:
-        offerers = (
-            db.session.query(models.Offerer)
-            .filter(
-                models.Offerer.isValidated,
-                models.Offerer.isActive.is_(True),
-                models.Offerer.id == offerer_id,
-            )
-            .options(
-                sa_orm.joinedload(models.Offerer.managedVenues)
-                .joinedload(models.Venue.offererAddress)
-                .joinedload(models.OffererAddress.address),
-            )
-            .all()
-        )
-    else:
-        offerers = (
-            offerers_repository.get_all_offerers_for_user(
-                user=current_user,
-                validated_offerers_only=True,
-            )
-            .join(models.Offerer.managedVenues)
-            .options(
-                sa_orm.joinedload(models.Offerer.managedVenues)
-                .joinedload(models.Venue.offererAddress)
-                .joinedload(models.OffererAddress.address)
-            )
-            .distinct(models.Offerer.id)
-            .all()
-        )
-    return offerers
+#     if offerer_id and current_user.has_admin_role:
+#         offerers = (
+#             db.session.query(models.Offerer)
+#             .filter(
+#                 models.Offerer.isValidated,
+#                 models.Offerer.isActive.is_(True),
+#                 models.Offerer.id == offerer_id,
+#             )
+#             .options(
+#                 sa_orm.joinedload(models.Offerer.managedVenues)
+#                 .joinedload(models.Venue.offererAddress)
+#                 .joinedload(models.OffererAddress.address),
+#             )
+#             .all()
+#         )
+#     else:
+#         offerers = (
+#             offerers_repository.get_all_offerers_for_user(
+#                 user=current_user,
+#                 validated_offerers_only=True,
+#             )
+#             .join(models.Offerer.managedVenues)
+#             .options(
+#                 sa_orm.joinedload(models.Offerer.managedVenues)
+#                 .joinedload(models.Venue.offererAddress)
+#                 .joinedload(models.OffererAddress.address)
+#             )
+#             .distinct(models.Offerer.id)
+#             .all()
+#         )
+#     return offerers
 
 
 def get_venues_by_batch(
