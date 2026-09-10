@@ -6,14 +6,13 @@ from pcapi import settings
 
 
 class UrlPrefix(enum.Enum):
-    ADAGE_V1 = "/adage/v1"
     NATIVE = "/native"
     ADAGE_IFRAME = "/adage-iframe"
     SAML = "/saml"
 
 
 def install_all_routes(app: Flask) -> None:
-    from pcapi.routes.adage.v1.blueprint import adage_v1 as adage_v1_blueprint
+    from pcapi.routes.adage.blueprint import adage_blueprint
     from pcapi.routes.adage_iframe.blueprint import adage_iframe as adage_iframe_blueprint
     from pcapi.routes.apis import private_api
     from pcapi.routes.apis import public_api
@@ -46,7 +45,7 @@ def install_all_routes(app: Flask) -> None:
     adage_iframe.install_routes(app)
     institutional.install_routes(app)
 
-    app.register_blueprint(adage_v1_blueprint, url_prefix=UrlPrefix.ADAGE_V1.value)
+    app.register_blueprint(adage_blueprint)
     app.register_blueprint(native_blueprint, url_prefix=UrlPrefix.NATIVE.value)
     app.register_blueprint(public_blueprint.public_api)
     app.register_blueprint(pro_private_api_blueprint)
