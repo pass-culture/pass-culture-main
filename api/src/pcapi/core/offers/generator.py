@@ -2,18 +2,19 @@ import datetime
 import decimal
 
 import faker
+import pytz
 import sqlalchemy as sa
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import factories as geography_factories
+from pcapi.core.geography.constants import TIME_ZONE_COUNTRY_CODE
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.constants import DEFAULT_PRICE_LABEL
-from pcapi.core.search import models as search_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
@@ -37,7 +38,11 @@ def _create_offerer() -> offerers_models.Offerer:
 
 
 def _create_cinema_offer(
-    venue: offerers_models.Venue, offer_name: str, price: decimal.Decimal, is_duo: bool
+    venue: offerers_models.Venue,
+    offer_name: str,
+    price: decimal.Decimal,
+    is_duo: bool,
+    timezone: str,
 ) -> offers_models.Offer:
     fake = faker.Faker(["fr-FR"])
     offer_description = fake.paragraph(nb_sentences=30)
@@ -70,11 +75,16 @@ def _create_cinema_offer(
     )
     db.session.add(offer_metadata)
     price_category = offers_factories.PriceCategoryFactory(offer=offer, label=DEFAULT_PRICE_LABEL, price=price)
+    # Create screenings for the next 18 days separated by holes of 4 days
+    future_day_delta = (0, 1, 2, 3, 7, 8, 9, 10, 14, 15, 16, 17)
 
-    for daydelta in range(0, 20, 4):
-        day = datetime.date.today() + datetime.timedelta(days=daydelta)
-        for hour in (9, 15, 18):
-            beginning_datetime = datetime.datetime.combine(day, datetime.time(hour=hour))
+    for daydelta in future_day_delta:
+        day = datetime.datetime.now(pytz.timezone(timezone)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ) + datetime.timedelta(days=daydelta)
+        for hour in (9, 15, 18) if (daydelta % 2) else (14, 19):
+            minute = ((hour - 9) // 3) * 15  # 0, 30, 45 or 15, 45
+            beginning_datetime = date_utils.to_naive_utc_datetime(day.replace(hour=hour, minute=minute))
             stock = offers_factories.StockFactory.build(
                 offer=offer,
                 price=price,
@@ -89,9 +99,11 @@ def _create_cinema_offer(
     return offer
 
 
-def _create_venue(offerer: offerers_models.Offerer, activity: offerers_models.Activity) -> offerers_models.Venue:
+def _create_venue(
+    offerer: offerers_models.Offerer, activity: offerers_models.Activity, timezone: str
+) -> offerers_models.Venue:
     fake = faker.Faker(["fr-FR"])
-    latitude, longitude, _, _, _ = fake.local_latlng(country_code="FR") or (
+    latitude, longitude, _, _, _ = fake.local_latlng(country_code=TIME_ZONE_COUNTRY_CODE[timezone]) or (
         geography_factories.DEFAULT_LATITUDE,
         geography_factories.DEFAULT_LONGITUDE,
         0,
@@ -103,6 +115,7 @@ def _create_venue(offerer: offerers_models.Offerer, activity: offerers_models.Ac
         postalCode=fake.postcode(),
         latitude=decimal.Decimal(latitude),
         longitude=decimal.Decimal(longitude),
+        timezone=timezone,
     )
     venue: offerers_models.Venue = offerers_factories.VenueFactory.create(
         activity=activity,
@@ -176,19 +189,19 @@ def _create_venue(offerer: offerers_models.Offerer, activity: offerers_models.Ac
 
 
 def create_offer(
-    offer_name: str, price: decimal.Decimal, subcategory_id: str, is_duo: bool
+    offer_name: str, price: decimal.Decimal, subcategory_id: str, is_duo: bool, timezone: str
 ) -> offers_models.Offer | None:
     # For the moment this function can only generate offers having SEANCE_CINE subcategory
     offerer = _create_offerer()
     offer = None
     venue = None
     if subcategory_id == subcategories.SEANCE_CINE.id:
-        venue = _create_venue(offerer, offerers_models.Activity.CINEMA)
-        offer = _create_cinema_offer(venue, offer_name, price, is_duo)
+        venue = _create_venue(offerer, offerers_models.Activity.CINEMA, timezone)
+        offer = _create_cinema_offer(venue, offer_name, price, is_duo, timezone)
 
     if offer is not None and venue is not None:
-        search.async_index_venue_ids([venue.id], search_models.IndexationReason.VENUE_CREATION)
-        search.async_index_offer_ids([offer.id], search_models.IndexationReason.OFFER_CREATION)
+        search.reindex_venue_ids([venue.id])
+        search.reindex_offer_ids([offer.id])
     return offer
 
 

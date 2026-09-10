@@ -22,10 +22,14 @@ def generate_offer() -> tuple[dict, int]:
         price=form.price.data,
         subcategory_id=form.subcategory_id.data,
         is_duo=form.is_duo.data,
+        timezone=form.timezone.data,
     )
 
     if offer is None:
         return {"subcategoryId": ["Invalid subcategoryId"]}, 400
+
+    offerer_address = offer.offererAddress
+    assert offerer_address  # helps mypy
 
     return {
         "id": offer.id,
@@ -33,6 +37,7 @@ def generate_offer() -> tuple[dict, int]:
         "subcategoryId": offer.subcategoryId,
         "venueId": offer.venueId,
         "isDuo": offer.isDuo,
+        "timezone": offerer_address.address.timezone,
     }, 200
 
 

@@ -173,7 +173,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         assert response.status_code == 200
         query_args = response.request.args.to_dict()
         user_id = query_args["userId"]
-        user = db.session.query(users_models.User).get(user_id)
+        user = db.session.get(users_models.User, user_id)
         assert user.postalCode == "63170"
 
     def test_user_postal_code_ignored_before_profile_completion(self, authenticated_client):
@@ -188,7 +188,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         assert response.status_code == 200
         query_args = response.request.args.to_dict()
         user_id = query_args["userId"]
-        user = db.session.query(users_models.User).get(user_id)
+        user = db.session.get(users_models.User, user_id)
         assert user.postalCode is None
 
     @pytest.mark.settings(ENABLE_TEST_USER_GENERATION=1)
@@ -210,7 +210,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         assert response.status_code == 200
         query_args = response.request.args.to_dict()
         user_id = query_args["userId"]
-        user = db.session.query(users_models.User).get(user_id)
+        user = db.session.get(users_models.User, user_id)
         assert user.activity == expected_activity
 
     def test_user_credit(self, authenticated_client):
@@ -221,7 +221,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         query_args = response.request.args.to_dict()
         assert "userId" in query_args, response.data
         user_id = query_args["userId"]
-        user = db.session.query(users_models.User).get(user_id)
+        user = db.session.get(users_models.User, user_id)
         assert user.deposit.amount == 36
 
     def test_user_credit_default_amount(self, authenticated_client):
@@ -232,7 +232,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         query_args = response.request.args.to_dict()
         assert "userId" in query_args, response.data
         user_id = query_args["userId"]
-        user = db.session.query(users_models.User).get(user_id)
+        user = db.session.get(users_models.User, user_id)
         assert user.wallet_balance == 150
 
 
@@ -305,7 +305,7 @@ class OfferGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermi
 
         assert response.status_code == 200
         offer_id = response.request.path.rsplit("/")[-1]
-        offer = db.session.query(offers_models.Offer).get(offer_id)
+        offer = db.session.get(offers_models.Offer, offer_id)
         assert offer.subcategoryId == "SEANCE_CINE"
         assert offer.description in html_parser.content_as_text(response.data)
         assert offer.publicationDatetime is not None
@@ -318,8 +318,18 @@ class OfferGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermi
         response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
         assert response.status_code == 200
         offer_id = response.request.path.rsplit("/")[-1]
-        offer = db.session.query(offers_models.Offer).get(offer_id)
+        offer = db.session.get(offers_models.Offer, offer_id)
         assert offer.isDuo == is_duo
+
+    @pytest.mark.settings(ENABLE_TEST_OFFER_GENERATION=True)
+    @pytest.mark.parametrize("timezone", ["Europe/Paris", "Pacific/Noumea"])
+    def test_offer_creation_timezone(self, authenticated_client, timezone):
+        form = {"name": "Test Offer", "price": 13.4, "subcategory_id": "SEANCE_CINE", "timezone": timezone}
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+        assert response.status_code == 200
+        offer_id = response.request.path.rsplit("/")[-1]
+        offer = db.session.get(offers_models.Offer, offer_id)
+        assert offer.offererAddress.address.timezone == timezone
 
 
 class OfferGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
