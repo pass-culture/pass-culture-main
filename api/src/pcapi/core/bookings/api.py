@@ -1211,17 +1211,14 @@ def auto_mark_as_used_after_event() -> None:
     # However, this is only possible in SQLAlchemy 2.
 
     # Individual bookings: update and add a finance event for each one.
-    db.session.execute(
-        sa.update(models.Booking)
-        .where(
-            models.Booking.status == models.BookingStatus.CONFIRMED,
-            models.Booking.stockId == offers_models.Stock.id,
-            offers_models.Stock.beginningDatetime < threshold,
-        )
-        .values(
-            dateUsed=now, status=models.BookingStatus.USED, validationAuthorType=models.BookingValidationAuthorType.AUTO
-        ),
-        execution_options={"synchronize_session": False},
+    booking_subquery = repository.booking_events_pending_auto_used_query(threshold).with_entities(models.Booking.id)
+    db.session.query(models.Booking).filter(models.Booking.id.in_(booking_subquery)).update(
+        {
+            "dateUsed": now,
+            "status": models.BookingStatus.USED,
+            "validationAuthorType": models.BookingValidationAuthorType.AUTO,
+        },
+        synchronize_session=False,
     )
     # `dateUsed` is precise enough that it's very unlikely to get a
     # booking that was marked as used from another channel (and that
