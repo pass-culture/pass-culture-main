@@ -27,8 +27,10 @@ export interface BaseDialogProps {
   children: React.ReactNode
   /**
    * Element to focus after the dialog has closed.
-   * Native `<dialog>` already restores focus to the opener; use this to
-   * override that target (e.g. a dropdown trigger instead of a menu item).
+   * By default, the dialog restores focus to whichever element was focused
+   * right before it opened (the trigger button). Use this prop to override
+   * that target (e.g. a dropdown trigger instead of a menu item that no
+   * longer exists once the dropdown has closed).
    */
   refToFocusOnClose?: React.RefObject<HTMLElement | null>
   /**
@@ -56,6 +58,10 @@ export const BaseDialog = ({
   isSnackBarPortalTarget = false,
 }: BaseDialogProps): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null)
+  // Element focused right before the dialog opened, used as the default
+  // focus-restore target on close (independent of the browser's own,
+  // sometimes unreliable, native restore behavior).
+  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null)
 
   // Synchronizes React's open/closed state with the imperative APIs of the <dialog> tag
   useEffect(() => {
@@ -64,6 +70,10 @@ export const BaseDialog = ({
 
     if (isOpen) {
       if (!dialog.open) {
+        previouslyFocusedElementRef.current =
+          document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : null
         dialog.showModal()
       }
     } else if (dialog.open) {
@@ -97,7 +107,9 @@ export const BaseDialog = ({
 
   // Native `close` is queued after dialog.close() (focus trap already gone).
   const handleNativeClose = () => {
-    refToFocusOnClose?.current?.focus()
+    ;(
+      refToFocusOnClose?.current ?? previouslyFocusedElementRef.current
+    )?.focus()
   }
 
   return (

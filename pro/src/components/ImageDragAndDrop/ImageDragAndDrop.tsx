@@ -45,6 +45,7 @@ interface ImageDragAndDropProps {
     width?: number
     height?: number
   }
+  id?: string
 }
 
 export const ImageDragAndDrop = forwardRef(
@@ -56,6 +57,7 @@ export const ImageDragAndDrop = forwardRef(
       onError,
       disabled,
       minSizes,
+      id,
     }: ImageDragAndDropProps,
     dragAndDropInputRef: ForwardedRef<HTMLInputElement>
   ) => {
@@ -239,6 +241,7 @@ export const ImageDragAndDrop = forwardRef(
                   </label>
                   <input
                     {...inputProps}
+                    id={id}
                     ref={dragAndDropInputRef}
                     aria-labelledby={`drag-and-drop-label-${ariaId}`}
                     aria-describedby={`drag-and-drop-description-${ariaId}`}

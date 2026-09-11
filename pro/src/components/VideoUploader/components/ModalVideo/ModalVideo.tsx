@@ -15,14 +15,18 @@ import styles from './ModalVideo.module.scss'
 interface ModalVideoProps {
   isOpen: boolean
   onClose: () => void
+  editVideoRef: React.RefObject<HTMLElement | null>
+  addVideoRef: React.RefObject<HTMLElement | null>
 }
 
 export const ModalVideo = ({
   isOpen,
   onClose,
+  editVideoRef,
+  addVideoRef,
 }: ModalVideoProps): JSX.Element | null => {
   const [error, setError] = useState<string>()
-  const { videoUrl, onVideoUpload, setVideoUrl, offerId } =
+  const { videoUrl, videoData, onVideoUpload, setVideoUrl, offerId } =
     useVideoUploaderContext()
   const { logEvent } = useAnalytics()
 
@@ -55,6 +59,11 @@ export const ModalVideo = ({
         />
       }
       isFooterFixed
+      // Based on the actually saved video, not the draft `videoUrl` bound to the
+      // input: that draft can be filled/valid without a video ever being saved.
+      refToFocusOnClose={
+        videoData?.videoThumbnailUrl ? editVideoRef : addVideoRef
+      }
     >
       <div className={styles['modal-video']}>
         <div className={styles['modal-video-content']}>

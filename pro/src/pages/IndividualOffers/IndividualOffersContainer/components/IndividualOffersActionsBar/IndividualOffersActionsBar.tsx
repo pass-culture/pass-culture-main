@@ -38,7 +38,7 @@ export type IndividualOffersActionsBarProps = {
   canDelete: boolean
   canPublish: boolean
   canDeactivate: boolean
-  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
+  searchButtonId?: string
 }
 
 const computeAllActivationSuccessMessage = (nbSelectedOffers: number) =>
@@ -63,7 +63,8 @@ const updateIndividualOffersStatus = async (
   areAllOffersSelected: boolean,
   selectedOfferIds: number[],
   snackBar: ReturnType<typeof useSnackBar>,
-  apiFilters: IndividualOffersFilters
+  apiFilters: IndividualOffersFilters,
+  searchButtonId?: string
 ) => {
   const payload: PatchAllOffersActiveStatusBodyModel = {
     categoryId: apiFilters.categoryId,
@@ -89,13 +90,15 @@ const updateIndividualOffersStatus = async (
       snackBar.success(
         isActive
           ? computeAllActivationSuccessMessage(selectedOfferIds.length)
-          : computeAllDeactivationSuccessMessage(selectedOfferIds.length)
+          : computeAllDeactivationSuccessMessage(selectedOfferIds.length),
+        searchButtonId
       )
     } catch {
       snackBar.error(
         `Une erreur est survenue lors de ${
           isActive ? 'l’activation' : deactivationWording
-        } des offres`
+        } des offres`,
+        searchButtonId
       )
     }
   } else {
@@ -109,13 +112,15 @@ const updateIndividualOffersStatus = async (
       snackBar.success(
         isActive
           ? computeActivationSuccessMessage(selectedOfferIds.length)
-          : computeDeactivationSuccessMessage(selectedOfferIds.length)
+          : computeDeactivationSuccessMessage(selectedOfferIds.length),
+        searchButtonId
       )
     } catch {
       snackBar.error(
         `Une erreur est survenue lors de ${
           isActive ? 'l’activation' : deactivationWording
-        } des offres`
+        } des offres`,
+        searchButtonId
       )
     }
   }
@@ -130,7 +135,7 @@ export const IndividualOffersActionsBar = ({
   canDelete,
   canPublish,
   canDeactivate,
-  searchButtonRef,
+  searchButtonId,
 }: IndividualOffersActionsBarProps): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = useStoredFilterConfig('individual')
@@ -174,7 +179,8 @@ export const IndividualOffersActionsBar = ({
         )
         .map((offer) => offer.id),
       snackBar,
-      apiFilters
+      apiFilters,
+      searchButtonId
     )
 
     handleClose()
@@ -185,12 +191,11 @@ export const IndividualOffersActionsBar = ({
   }
 
   const handleDeactivateOffers = async () => {
-    await handleUpdateOffersStatus(false)
+    // Close the dialog before updating: while its native focus trap is
+    // active, the globally rendered snackbar can never grab focus and its
+    // announcement is lost.
     setIsDeactivationDialogOpen(false)
-
-    setTimeout(() => {
-      searchButtonRef?.current?.focus()
-    })
+    await handleUpdateOffersStatus(false)
   }
 
   const handleDelete = async () => {
@@ -200,21 +205,22 @@ export const IndividualOffersActionsBar = ({
           ids: selectedOffers.map((offer) => offer.id),
         },
       })
+      setIsDeleteDialogOpen(false)
       snackBar.success(
         computeDeletionSuccessMessage(
           selectedOffers.filter((o) => o.status === OfferStatus.DRAFT).length
-        )
+        ),
+        searchButtonId
       )
       await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
       clearSelectedOffers()
     } catch {
-      snackBar.error(computeDeletionErrorMessage(selectedOffers.length))
+      setIsDeleteDialogOpen(false)
+      snackBar.error(
+        computeDeletionErrorMessage(selectedOffers.length),
+        searchButtonId
+      )
     }
-    setIsDeleteDialogOpen(false)
-
-    setTimeout(() => {
-      searchButtonRef?.current?.focus()
-    })
   }
 
   const handleOpenDeleteDialog = () => {

@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { useRef, useState } from 'react'
+import { useId, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -30,6 +30,8 @@ const BankInformations = (): JSX.Element => {
   const { mutate } = useSWRConfig()
   const { syncVenue } = useSyncVenueCache()
   const snackBar = useSnackBar()
+  const editLinkId = useId()
+  const addLinkId = useId()
 
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const selectedPartnerVenue = useAppSelector(
@@ -45,8 +47,6 @@ const BankInformations = (): JSX.Element => {
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
-
-  const addBankAccountButtonRef = useRef<HTMLButtonElement>(null)
 
   const hasBankAccount =
     selectedAdminOfferer.hasValidBankAccount ||
@@ -146,7 +146,6 @@ const BankInformations = (): JSX.Element => {
           setShowAddBankInformationsDialog(true)
           logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT)
         }}
-        ref={addBankAccountButtonRef}
         label="Ajouter un compte bancaire"
       />
 
@@ -174,6 +173,8 @@ const BankInformations = (): JSX.Element => {
                   selectedAdminOfferer
                     .venuesWithNonFreeOffersWithoutBankAccounts.length > 0
                 }
+                editLinkId={editLinkId}
+                addLinkId={addLinkId}
               />
             ))}
           </div>
@@ -194,6 +195,8 @@ const BankInformations = (): JSX.Element => {
             updateBankAccountVenuePricingPoint
           }
           closeDialog={closeDialog}
+          editLinkId={editLinkId}
+          addLinkId={addLinkId}
         />
       )}
     </div>

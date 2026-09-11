@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useState } from 'react'
+import { type Dispatch, type SetStateAction, useId, useState } from 'react'
 import useSWR, { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -77,6 +77,9 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
+  const addStocksBtnId = useId()
+  const editStockBtnId = useId()
+
   const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
 
   const stockQueryKeys: stockQueryKeysType = [
@@ -139,7 +142,8 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
       snackBar.success(
         ids.length === 1
           ? 'Une date a été supprimée'
-          : `${ids.length} dates ont été supprimées`
+          : `${ids.length} dates ont été supprimées`,
+        addStocksBtnId
       )
 
       // Update offer price categories and status
@@ -154,7 +158,10 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     }
   }
 
-  async function updateStock(stock: EventStockUpdateBodyModel) {
+  async function updateStock(
+    stock: EventStockUpdateBodyModel,
+    closeDialog: () => void
+  ) {
     try {
       const updatedStocks = await mutate(
         stockQueryKeys,
@@ -170,19 +177,25 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
       )
 
       if (updatedStocks?.editedStockCount === 0) {
-        snackBar.error('Aucune date n’a pu être modifiée')
+        closeDialog()
+        snackBar.error('Aucune date n’a pu être modifiée', editStockBtnId)
         return
       }
-
-      snackBar.success('Les modifications ont été enregistrées')
 
       if (mode === OFFER_WIZARD_MODE.EDITION) {
         // update offer status
         await mutate([GET_OFFER_QUERY_KEY, offer.id])
       }
+
+      // Close the dialog before showing the snackbar: while it's still open, its
+      // native focus trap blocks the snackbar from being focused/announced.
+      closeDialog()
+      snackBar.success('Les modifications ont été enregistrées', editStockBtnId)
     } catch {
+      closeDialog()
       snackBar.error(
-        'Une erreur est survenue lors de la modification des dates'
+        'Une erreur est survenue lors de la modification des dates',
+        editStockBtnId
       )
     }
   }
@@ -198,7 +211,14 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
       offerId: offer.id,
     })
 
-    await onSubmit(values, departmentCode, offer.id, snackBar, stockQueryKeys)
+    await onSubmit(
+      values,
+      departmentCode,
+      offer.id,
+      snackBar,
+      stockQueryKeys,
+      addStocksBtnId
+    )
 
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
   }
@@ -229,6 +249,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
               }
               isDialogOpen={isDialogOpen}
               setIsDialogOpen={setIsDialogOpen}
+              addStocksBtnId={addStocksBtnId}
             />
           )}
         </div>
@@ -260,6 +281,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
                 }
                 isDialogOpen={isDialogOpen}
                 setIsDialogOpen={setIsDialogOpen}
+                addStocksBtnId={addStocksBtnId}
               />
             </>
           )}
@@ -304,6 +326,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
               onUpdateStock={updateStock}
               isLoading={isLoading}
               hasNoStocks={hasNoStocks}
+              editStockBtnId={editStockBtnId}
               onUpdateFilters={() => {
                 setPage(1)
                 setAppliedFilters({})
@@ -354,6 +377,7 @@ function RecurrenceModalButton({
   setIsDialogOpen,
   offer,
   handleSubmitRecurrenceFormDrawer,
+  addStocksBtnId,
 }: Readonly<{
   triggerLabel: string
   triggerVariant: ButtonVariant
@@ -363,6 +387,7 @@ function RecurrenceModalButton({
   handleSubmitRecurrenceFormDrawer: (
     values: RecurrenceFormValues
   ) => Promise<void>
+  addStocksBtnId: string
 }>) {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
@@ -374,6 +399,7 @@ function RecurrenceModalButton({
         label={triggerLabel}
         onClick={() => setIsDialogOpen(true)}
         disabled={isClosed}
+        id={addStocksBtnId}
       />
       <DetailedModal
         isOpen={isDialogOpen}

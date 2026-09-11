@@ -9,7 +9,10 @@ import {
   isStickyBarOpenSelector,
   listSelector,
 } from '@/commons/store/snackBar/selectors'
-import { SnackBar } from '@/design-system/SnackBar/SnackBar'
+import {
+  getSnackBarAnnouncement,
+  SnackBar,
+} from '@/design-system/SnackBar/SnackBar'
 
 import styles from './SnackBarContainer.module.scss'
 
@@ -43,13 +46,6 @@ export const SnackBarContainer = (): JSX.Element => {
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     )
 
-  const errorSnackBars = sortedSnackBars.filter(
-    (snackBar) => snackBar.variant === 'error'
-  )
-  const successSnackBars = sortedSnackBars.filter(
-    (snackBar) => snackBar.variant === 'success'
-  )
-
   return createPortal(
     <aside
       aria-label="Zone de notifications"
@@ -63,26 +59,17 @@ export const SnackBarContainer = (): JSX.Element => {
       */}
       <div className={styles['visually-hidden']}>
         <div role="alert" aria-live="assertive" aria-atomic="true">
-          {errorSnackBars.length > 0 ? (
-            errorSnackBars.map((snackBar) => (
-              <div key={snackBar.id}>{snackBar.description}</div>
+          {sortedSnackBars.length > 0 ? (
+            sortedSnackBars.map((snackBar) => (
+              // Utiliser impérativement l'id unique pour forcer le re-rendu du nœud DOM
+              <div key={snackBar.id}>
+                {getSnackBarAnnouncement(
+                  snackBar.variant,
+                  snackBar.description
+                )}
+              </div>
             ))
           ) : (
-            /* The screen reader won't react to the same alert twice if we do not have a "default" state.
-               The `&nbsp;` is needed.
-            */
-            <div>&nbsp;</div>
-          )}
-        </div>
-        <div role="status" aria-live="polite" aria-atomic="true">
-          {successSnackBars.length > 0 ? (
-            successSnackBars.map((snackBar) => (
-              <div key={snackBar.id}>{snackBar.description}</div>
-            ))
-          ) : (
-            /* The screen reader won't react to the same alert twice if we do not have a "default" state.
-             The `&nbsp;` is needed.
-          */
             <div>&nbsp;</div>
           )}
         </div>
@@ -94,6 +81,7 @@ export const SnackBarContainer = (): JSX.Element => {
           description={snackBar.description}
           onClose={() => dispatch(removeSnackBar(snackBar.id))}
           testId={`global-snack-bar-${snackBar.variant}-${index}`}
+          targetFocusId={snackBar.targetFocusId}
         />
       ))}
     </aside>,

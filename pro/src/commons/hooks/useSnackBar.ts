@@ -1,5 +1,3 @@
-/* istanbul ignore file */
-
 import { useCallback, useMemo } from 'react'
 
 import { addSnackBar } from '@/commons/store/snackBar/reducer'
@@ -11,16 +9,18 @@ export const useSnackBar = () => {
   const dispatch = useAppDispatch()
 
   const notify = useCallback(
-    (description: string, variant: SnackBarVariant) => {
-      dispatch(addSnackBar({ description, variant }))
+    (description: string, variant: SnackBarVariant, targetFocusId?: string) => {
+      dispatch(addSnackBar({ description, variant, targetFocusId }))
     },
     [dispatch]
   )
 
   return useMemo(
     () => ({
-      success: (msg: string) => notify(msg, SnackBarVariant.SUCCESS),
-      error: (msg: string) => notify(msg, SnackBarVariant.ERROR),
+      success: (msg: string, targetFocusId?: string) =>
+        notify(msg, SnackBarVariant.SUCCESS, targetFocusId),
+      error: (msg: string, targetFocusId?: string) =>
+        notify(msg, SnackBarVariant.ERROR, targetFocusId),
     }),
     [notify]
   )
