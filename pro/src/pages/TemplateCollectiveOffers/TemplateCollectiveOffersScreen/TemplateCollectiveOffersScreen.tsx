@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 
 import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
@@ -55,6 +55,7 @@ export const TemplateCollectiveOffersScreen = ({
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('template')
+  const searchButtonId = useId()
 
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferTemplateResponseModel[]
@@ -154,6 +155,7 @@ export const TemplateCollectiveOffersScreen = ({
         resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
+        searchButtonId={searchButtonId}
       />
       <output aria-live="polite">
         {offers.length > MAX_OFFERS_TO_DISPLAY && (
@@ -228,6 +230,7 @@ export const TemplateCollectiveOffersScreen = ({
               areAllOffersSelected={areAllOffersSelected}
               clearSelectedOfferIds={clearSelectedOfferIds}
               selectedOffers={selectedOffers}
+              searchButtonId={searchButtonId}
             />
           )}
         </Table>

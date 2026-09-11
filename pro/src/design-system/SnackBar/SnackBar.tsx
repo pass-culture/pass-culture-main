@@ -42,6 +42,7 @@ export type SnackBarProps = {
    * Force the mobile view mode.
    */
   forceMobile?: boolean
+  targetFocusId?: string
 }
 
 export const ANIMATION_DURATION = 300 // should have the same value as `&.show transition` in `SnackBar.module.scss`
@@ -62,8 +63,8 @@ const VARIANT_CONFIG: Record<SnackBarVariant, VariantConfig> = {
   [SnackBarVariant.SUCCESS]: {
     icon: fullValidateIcon,
     ariaLabel: 'Message de succès',
-    role: 'status',
-    ariaLive: 'polite',
+    role: 'alert',
+    ariaLive: 'assertive',
   },
   [SnackBarVariant.ERROR]: {
     icon: fullClearIcon,
@@ -73,6 +74,14 @@ const VARIANT_CONFIG: Record<SnackBarVariant, VariantConfig> = {
   },
 }
 
+// Single source of truth for the accessible text of a snack bar, so any
+// place that needs to announce it (the snack bar itself, the always-present
+// live region in SnackBarContainer) stays in sync.
+export const getSnackBarAnnouncement = (
+  variant: SnackBarVariant,
+  description: string
+): string => `${VARIANT_CONFIG[variant].ariaLabel} : ${description}`
+
 export const SnackBar = ({
   variant = SnackBarVariant.SUCCESS,
   description,
@@ -80,6 +89,7 @@ export const SnackBar = ({
   autoClose = true,
   testId,
   forceMobile = false,
+  targetFocusId,
 }: SnackBarProps): JSX.Element => {
   const [isClosing, setIsClosing] = useState(false)
   const hasClosedRef = useRef(false)
@@ -89,6 +99,47 @@ export const SnackBar = ({
   useEffect(() => {
     onCloseRef.current = onClose
   }, [onClose])
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const previousFocusedElementRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    // 1. Sauvegarder l'élément actif avant la snackbar
+    if (document.activeElement instanceof HTMLElement) {
+      previousFocusedElementRef.current = document.activeElement
+    }
+
+    // 2. Focus sur la snackbar pour vocalisation immédiate VoiceOver
+    const rafId = requestAnimationFrame(() => {
+      containerRef.current?.focus()
+    })
+
+    return () => {
+      cancelAnimationFrame(rafId)
+
+      // 3. Au démontage de la snackbar, on remet le focus au bon endroit
+      requestAnimationFrame(() => {
+        // A. Si un ID cible explicite a été fourni
+        if (targetFocusId) {
+          const targetEl = document.getElementById(targetFocusId)
+          if (targetEl) {
+            targetEl.focus()
+            return
+          }
+        }
+
+        // B. Sinon, retour sur l'élément initial s'il existe toujours
+        const prevEl = previousFocusedElementRef.current
+        if (
+          prevEl &&
+          document.body.contains(prevEl) &&
+          prevEl !== document.body
+        ) {
+          prevEl.focus()
+        }
+      })
+    }
+  }, [targetFocusId])
 
   const duration =
     description.length <= SHORT_TEXT_THRESHOLD
@@ -126,12 +177,17 @@ export const SnackBar = ({
 
   return (
     <div
+      ref={containerRef}
+      tabIndex={-1}
       className={cx(
         styles['container'],
         styles[variant],
         isClosing ? styles['hide'] : styles['show'],
         forceMobile && styles['mobile']
       )}
+      role={variantConfig.role}
+      aria-live={variantConfig.ariaLive}
+      aria-atomic="true"
       style={
         {
           '--snackbar-duration': `${duration}ms`,

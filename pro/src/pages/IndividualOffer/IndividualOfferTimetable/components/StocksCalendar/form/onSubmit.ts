@@ -30,7 +30,8 @@ export const onSubmit = async (
   departmentCode: string,
   offerId: number,
   snackBar: ReturnType<typeof useSnackBar>,
-  stockQueryKeys: stockQueryKeysType
+  stockQueryKeys: stockQueryKeysType,
+  addStocksBtnId: string
 ) => {
   const dates = getRecurrenceDates(values)
   const generatedStocks = generateStocksForDates(values, dates, departmentCode)
@@ -84,7 +85,8 @@ export const onSubmit = async (
           ? `${new Intl.NumberFormat('fr-FR').format(
               stockCount
             )} nouvelles dates ont été ajoutées`
-          : `${stockCount} nouvelle date a été ajoutée`
+          : `${stockCount} nouvelle date a été ajoutée`,
+        addStocksBtnId
       )
     } catch (error) {
       snackBar.error(

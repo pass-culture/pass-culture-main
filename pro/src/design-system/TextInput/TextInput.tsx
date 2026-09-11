@@ -51,6 +51,7 @@ export type TextInputProps = {
     React.InputHTMLAttributes<HTMLInputElement>['spellCheck']
   >
   describedBy?: string
+  id?: string
 }
 
 export const TextInput = forwardRef(
@@ -78,11 +79,13 @@ export const TextInput = forwardRef(
       autoComplete,
       spellCheck,
       describedBy,
+      id,
     }: TextInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
     const formLayoutDescribedBy = useFormLayoutSideComponentDescribedBy()
-    const inputId = useId()
+    const textInputId = useId()
+    const inputId = id ?? textInputId
     const descriptionId = useId()
     const errorId = useId()
     const charactersCountId = useId()

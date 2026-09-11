@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
@@ -30,6 +30,7 @@ export type ButtonImageEditProps = {
   onClickButtonImage?: () => void
   label?: string
   disableForm?: boolean
+  id: string
 }
 
 export const ButtonImageEdit = ({
@@ -40,12 +41,16 @@ export const ButtonImageEdit = ({
   onClickButtonImage,
   label,
   disableForm,
+  id,
 }: ButtonImageEditProps): JSX.Element => {
   const { croppedImageUrl, originalImageUrl } = initialValues
   const imageUrl = croppedImageUrl || originalImageUrl
   const snackBar = useSnackBar()
 
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
+  // Explicit target for the modal's close-focus-restore, since the trigger
+  // button switches between the "add" and "edit" DOM nodes depending on state.
+  const triggerButtonRef = useRef<HTMLButtonElement>(null)
 
   const onClickButtonImageAdd = () => {
     if (onClickButtonImage) {
@@ -60,10 +65,11 @@ export const ButtonImageEdit = ({
     setIsModalImageOpen(false)
     try {
       await Promise.resolve(onImageUpload(values))
-      snackBar.success(successMessage)
+      snackBar.success(successMessage, id)
     } catch {
       snackBar.error(
-        "Une erreur est survenue lors de l'importation de votre image"
+        "Une erreur est survenue lors de l'importation de votre image",
+        id
       )
     }
   }
@@ -72,6 +78,7 @@ export const ButtonImageEdit = ({
     <>
       {imageUrl ? (
         <Button
+          ref={triggerButtonRef}
           onClick={() => {
             onClickButtonImageAdd()
             setIsModalImageOpen(true)
@@ -82,9 +89,11 @@ export const ButtonImageEdit = ({
           aria-label="Modifier l’image"
           icon={fullEditIcon}
           label={label ?? 'Modifier'}
+          id={id}
         />
       ) : (
         <button
+          ref={triggerButtonRef}
           className={cn(style['button-image-add'], {
             [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
             [style['add-image-offer']]:
@@ -97,6 +106,7 @@ export const ButtonImageEdit = ({
           }}
           type="button"
           disabled={disableForm}
+          id={id}
         >
           <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
           <p className={style['label']}>Ajouter une image</p>
@@ -109,6 +119,7 @@ export const ButtonImageEdit = ({
         initialValues={initialValues}
         onOpenChange={setIsModalImageOpen}
         open={isModalImageOpen}
+        refToFocusOnClose={triggerButtonRef}
       />
     </>
   )

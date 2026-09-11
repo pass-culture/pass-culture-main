@@ -1,5 +1,5 @@
 import { isBefore } from 'date-fns'
-import { type ReactNode, useRef, useState } from 'react'
+import { type ReactNode, useState } from 'react'
 
 import type {
   EventStockUpdateBodyModel,
@@ -54,10 +54,14 @@ export type StocksCalendarTableProps = {
   }
   checkedStocks: Set<number>
   updateCheckedStocks: (newStocks: Set<number>) => void
-  onUpdateStock: (stock: EventStockUpdateBodyModel) => Promise<void>
+  onUpdateStock: (
+    stock: EventStockUpdateBodyModel,
+    closeDialog: () => void
+  ) => Promise<void>
   onDeleteStocks: (id: number[]) => void
   onUpdateFilters: (filters: StocksTableFilters) => void
   children?: ReactNode
+  editStockBtnId?: string
 }
 
 export function StocksCalendarTable({
@@ -74,6 +78,7 @@ export function StocksCalendarTable({
   onDeleteStocks,
   onUpdateFilters,
   children,
+  editStockBtnId,
 }: Readonly<StocksCalendarTableProps>) {
   type StockAction = 'delete' | 'editTime' | 'editDate' | 'editTimeDate'
   type WarningModalState = {
@@ -92,19 +97,19 @@ export function StocksCalendarTable({
 
   const isCaledonian = useIsCaledonian()
 
-  const openedStockTriggerRef = useRef<HTMLButtonElement | null>(null)
-
   const snackBar = useSnackBar()
 
   const updateStock = async (stock: EventStockUpdateBodyModel) => {
     try {
-      await onUpdateStock(stock)
+      // Close the dialog before the snackbar is shown (passed as a callback so
+      // onUpdateStock can call it right before dispatching): its native focus
+      // trap would otherwise block the snackbar from being focused/announced.
+      await onUpdateStock(stock, () => setIsEditStockDialogOpen(false))
     } catch {
+      setIsEditStockDialogOpen(false)
       snackBar.error(
         'Une erreur est survenue pendant la modification de la date.'
       )
-    } finally {
-      setIsEditStockDialogOpen(false)
     }
   }
 
@@ -317,11 +322,7 @@ export function StocksCalendarTable({
                 size={ButtonSize.SMALL}
                 icon={fullEditIcon}
                 tooltip="Modifier la date"
-                ref={
-                  stock.id === stockOpenedInDialog?.id
-                    ? openedStockTriggerRef
-                    : undefined
-                }
+                id={editStockBtnId}
                 onClick={() => {
                   setStockOpenedInDialog(stock)
                   setIsEditStockDialogOpen(true)
@@ -361,11 +362,6 @@ export function StocksCalendarTable({
           if (warningModalState) {
             return
           }
-
-          setTimeout(() => {
-            //  Re-focus the trigger of the dialog when it's closed
-            openedStockTriggerRef.current?.focus()
-          })
           setIsEditStockDialogOpen(false)
         }}
         primaryAction={
@@ -377,9 +373,6 @@ export function StocksCalendarTable({
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             onClick={() => {
-              setTimeout(() => {
-                openedStockTriggerRef.current?.focus()
-              })
               setIsEditStockDialogOpen(false)
             }}
             label="Annuler"

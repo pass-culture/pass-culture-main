@@ -36,7 +36,8 @@ export const Desk = () => {
     undefined
   )
   const snackBar = useSnackBar()
-
+  const textInputId = useId()
+  const validateButtonId = useId()
   const statusId = useId()
 
   const tokenInputRef = useRef<HTMLInputElement | null>(null)
@@ -104,7 +105,7 @@ export const Desk = () => {
   const handleSubmitValidate = async (formValues: FormValues) => {
     try {
       await api.patchBookingUseByToken({ path: { token: formValues.token } })
-      snackBar.success('Contremarque validée')
+      snackBar.success('Contremarque validée', textInputId)
 
       setBooking(undefined)
       resetField('token')
@@ -118,7 +119,7 @@ export const Desk = () => {
       await api.patchBookingKeepByToken({
         path: { token: token },
       })
-      snackBar.success('Contremarque invalidée')
+      snackBar.success('Contremarque invalidée', textInputId)
 
       setIsTokenValidated(false)
       resetField('token')
@@ -133,7 +134,8 @@ export const Desk = () => {
     if (error.status === 503 || error.status === 502 || error.status === 500) {
       snackBar.error(
         error['body']?.global ||
-          'Le service de validation des contremarques est momentanément indisponible. Veuillez réessayer dans quelques instants.'
+          'Le service de validation des contremarques est momentanément indisponible. Veuillez réessayer dans quelques instants.',
+        validateButtonId
       )
     } else {
       const failure = getBookingFailure(error)
@@ -164,6 +166,7 @@ export const Desk = () => {
                 required
                 requiredIndicator="explicit"
                 error={errors?.token?.message}
+                id={textInputId}
               />
 
               {booking && <BookingDetails booking={booking} />}
@@ -178,6 +181,7 @@ export const Desk = () => {
                   disabled={isSubmitting || isClosed}
                   isLoading={isSubmitting}
                   label="Valider la contremarque"
+                  id={validateButtonId}
                 />
               )}
             </div>

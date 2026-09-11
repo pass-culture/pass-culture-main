@@ -114,6 +114,7 @@ export const IndividualActionsCells = ({
           ids: [offer.id],
         },
       })
+      setIsConfirmDialogDeleteDraftOpen(false)
       snackBar.success(computeDeletionSuccessMessage(1))
       logEvent(Events.DELETE_DRAFT_OFFER, {
         used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TRASH_ICON,
@@ -123,10 +124,9 @@ export const IndividualActionsCells = ({
       })
       await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
     } catch {
+      setIsConfirmDialogDeleteDraftOpen(false)
       snackBar.error(computeDeletionErrorMessage(1))
     }
-
-    setIsConfirmDialogDeleteDraftOpen(false)
   }
 
   const onConfirmReplaceHeadlineOffer = async () => {
@@ -344,7 +344,6 @@ export const IndividualActionsCells = ({
             key="confirm"
           />,
         ]}
-        refToFocusOnClose={dropdownTriggerRef}
       />
       <SimpleModal
         iconPath={strokeStarIcon}

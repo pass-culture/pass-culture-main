@@ -16,6 +16,7 @@ type ShareLinkDrawerProps = {
   offerId: number
   triggerButtonVariant?: ButtonVariant
   triggerButtonSize?: ButtonSize
+  triggerButtonRef?: React.RefObject<HTMLButtonElement | null>
   open?: boolean
   onOpenChange?: (open: boolean) => void
 } & React.ComponentPropsWithoutRef<'button'>
@@ -25,7 +26,14 @@ export const ShareLinkDrawer = forwardRef<
   ShareLinkDrawerProps
 >(
   (
-    { offerId, triggerButtonVariant, triggerButtonSize, open, onOpenChange },
+    {
+      offerId,
+      triggerButtonVariant,
+      triggerButtonSize,
+      open,
+      onOpenChange,
+      triggerButtonRef,
+    },
     ref
   ) => {
     const [internalOpen, setInternalOpen] = useState(false)
@@ -70,6 +78,7 @@ export const ShareLinkDrawer = forwardRef<
             />
           }
           isFooterFixed
+          refToFocusOnClose={triggerButtonRef}
         >
           <div className={styles['drawer-content']}>
             <ShareTemplateOfferLink offerId={offerId} />

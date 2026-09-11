@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useId, useState } from 'react'
 
 import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
 import {
@@ -82,7 +82,7 @@ export const CollectiveOffersScreen = ({
   >(new Set())
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
-  const searchButtonRef = useRef<HTMLButtonElement>(null)
+  const searchButtonId = useId()
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -170,7 +170,7 @@ export const CollectiveOffersScreen = ({
         resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
-        searchButtonRef={searchButtonRef}
+        searchButtonId={searchButtonId}
       />
       {currentPageItems.length > 0 && (
         <div className={styles['downloads-banner']}>
@@ -249,7 +249,7 @@ export const CollectiveOffersScreen = ({
             areAllOffersSelected={areAllOffersSelected}
             clearSelectedOfferIds={clearSelectedOfferIds}
             selectedOffers={selectedOffers}
-            searchButtonRef={searchButtonRef}
+            searchButtonId={searchButtonId}
           />
         )}
       </AccessibleScrollContainer>
