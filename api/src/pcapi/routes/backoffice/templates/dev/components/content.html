@@ -1,0 +1,47 @@
+{% from "dev/components/_spec.html" import ds_section, ds_spec, ds_state %}
+{% from "components/description.html" import description, description_detail_vertical, description_detail_horizontal %}
+{% from "components/collapsable_text.html" import collapsable_text %}
+{% from "components/display_selector.html" import display_selector %}
+{% call ds_section("pc-ds-contenu", "Contenu", "Affichage des données d'un objet.") %}
+  {% call ds_spec("Listes de description", "description(title) · description_detail_vertical(title) · description_detail_horizontal(title)", "Macros de components/description.html. Le libellé est en gris léger, la valeur en couleur du corps.") %}
+    {% call ds_state("En ligne") %}
+      {% call description("Email") %}jean.dupont@example.com{% endcall %}
+      {% call description("Téléphone") %}+33 6 12 34 56 78{% endcall %}
+    {% endcall %}
+    {% call ds_state("Verticale") %}
+      {% call description_detail_vertical("Email") %}jean.dupont@example.com{% endcall %}
+      {% call description_detail_vertical("Téléphone") %}+33 6 12 34 56 78{% endcall %}
+    {% endcall %}
+    {% call ds_state("Horizontale", class="pc-ds-state-wide") %}
+      {% call description_detail_horizontal("Email") %}jean.dupont@example.com{% endcall %}
+      {% call description_detail_horizontal("Téléphone") %}+33 6 12 34 56 78{% endcall %}
+    {% endcall %}
+  {% endcall %}
+  {% call ds_spec("Texte repliable", "collapsable_text(id, short, long)", "Affiche la version courte avec un chevron ; le clic bascule vers la version longue.") %}
+    {% call ds_state("Repliable", class="pc-ds-state-wide") %}
+      {{ collapsable_text('pc-ds-collapsable', 'Le pass Culture est un dispositif', "Le pass Culture est un dispositif public qui permet aux jeunes de 15 à 20 ans d'accéder à des offres culturelles.\nIl est financé par le ministère de la Culture.") }}
+    {% endcall %}
+    {% call ds_state("Texte court", class="pc-ds-state-wide") %}{{ collapsable_text('pc-ds-collapsable-short', 'Texte court.', 'Texte court.') }}{% endcall %}
+  {% endcall %}
+  {% call ds_spec("Sélecteur d'affichage", "display_selector(name, options, width, class)", "Boutons radio présentés comme des cartes ; la sélection est mémorisée dans le navigateur.") %}
+    <div class="vstack gap-3">
+      {{ display_selector('pc-ds-display-selector', [('Individuelles', 'Offres à destination des jeunes', 'pc-ds-display-individual', True), ('Collectives', 'Offres à destination des établissements scolaires', 'pc-ds-display-collective', False)], '16rem') }}
+      <p id="pc-ds-display-individual"
+         class="mb-0">Contenu affiché pour les offres individuelles.</p>
+      <p id="pc-ds-display-collective"
+         class="mb-0 d-none">Contenu affiché pour les offres collectives.</p>
+    </div>
+  {% endcall %}
+  {% call ds_spec("Compteur de résultats", "num-results", "Sous la barre de recherche, avant le tableau.") %}
+    {% call ds_state("Pluriel") %}<p class="num-results hstack text-secondary my-auto gap-2">25 résultat{{ 25 | pluralize }}</p>{% endcall %}
+    {% call ds_state("Singulier") %}<p class="num-results hstack text-secondary my-auto gap-2">1 résultat{{ 1 | pluralize }}</p>{% endcall %}
+    {% call ds_state("Tronqué") %}
+      <p class="num-results hstack text-secondary my-auto gap-2">
+        100 résultats affichés<i class="bi bi-info-circle"
+   data-bs-toggle="tooltip"
+   data-bs-placement="top"
+   data-bs-title="Pour afficher davantage de résultats, changer le filtre de résultats maximum dans la barre de recherche."></i>
+      </p>
+    {% endcall %}
+  {% endcall %}
+{% endcall %}

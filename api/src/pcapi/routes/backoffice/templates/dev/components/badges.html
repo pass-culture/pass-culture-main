@@ -1,0 +1,29 @@
+{% from "dev/components/_spec.html" import ds_section, ds_spec, ds_state %}
+{% from "components/badges.html" import badges_container %}
+{% call ds_section("pc-ds-badges", "Badges", "Tags et états. Texte coloré sur fond subtil de la même couleur, jamais de fond plein.") %}
+  {% call ds_spec("Catégories", '"texte" | format_badge("catégorie")') %}
+    {% for color in theme_colors %}
+      {% call ds_state(color) %}{{ "Badge" | format_badge(color) }}{% endcall %}
+    {% endfor %}
+  {% endcall %}
+  {% call ds_spec("Avec icône", '"texte" | format_badge("catégorie", "icône")') %}
+    {% call ds_state("Avertissement") %}{{ "Remboursements gelés" | format_badge('danger', 'exclamation-triangle') }}{% endcall %}
+    {% call ds_state("Validé") %}{{ "Validé" | format_badge('success', 'check-circle-fill') }}{% endcall %}
+    {% call ds_state("En attente") %}{{ "En attente" | format_badge('warning', 'hourglass-split') }}{% endcall %}
+    {% call ds_state("Information") %}{{ "Nouveau" | format_badge('info', 'info-circle') }}{% endcall %}
+  {% endcall %}
+  {% call ds_spec("Booléen", 'valeur | format_bool_badge(none_display="")') %}
+    {% call ds_state("True") %}{{ True | format_bool_badge }}{% endcall %}
+    {% call ds_state("False") %}{{ False | format_bool_badge }}{% endcall %}
+    {% call ds_state("None") %}{{ None | format_bool_badge("Inconnu") }}{% endcall %}
+  {% endcall %}
+  {% call ds_spec("Groupe de badges", "{% call badges_container() %} … {% endcall %}", "Conteneur en ligne avec retour automatique, utilisé sous le titre des pages de détail.") %}
+  {% call badges_container() %}
+    {{ "Entité juridique" | format_badge("primary") }}
+    {{ "Validée" | format_badge("success") }}
+    {{ "Top Acteur" | format_badge("secondary") }}
+    {{ "Suspendue" | format_badge("danger") }}
+    {{ "Réservations frauduleuses" | format_badge('danger', 'exclamation-triangle') }}
+  {% endcall %}
+{% endcall %}
+{% endcall %}
