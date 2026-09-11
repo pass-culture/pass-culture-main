@@ -6,6 +6,7 @@ from pydantic import BaseModel as BaseModelV2
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
+from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -107,6 +108,17 @@ def finalize_closing_venue_task(payload: FinalizeClosingVenuePayload) -> None:
         offerers_api.cancel_collective_bookings_on_venue_closure(venue.id, payload.author_id)
 
         logger.info("closing venue: bookings cancelled", extra={"venue_id": venue.id})
+
+        # The previous calls might leave some uncancelled bookings.
+        # That's ok, they should be marked as USED at most 3 days later. Let's just abort
+        # if we still have bookings that are just CONFIRMED
+        if bookings_repository.venue_has_ongoing_bookings(venue.id):
+            logger.info(
+                "closing venue: aborting because venue %s still has ongoing bookings",
+                venue.id,
+                extra={"venue_id": venue.id},
+            )
+            return
 
         offers_api.batch_delete_draft_offers(
             db.session.query(offers_models.Offer)

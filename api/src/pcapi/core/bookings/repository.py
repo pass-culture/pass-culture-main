@@ -684,3 +684,14 @@ def booking_events_pending_auto_used_query(threshold: datetime) -> sa_orm.Query[
             offers_models.Stock.beginningDatetime < threshold,
         )
     )
+
+
+def venue_has_ongoing_bookings(venue_id: int) -> bool:
+    return db.session.query(
+        db.session.query(models.Booking)
+        .filter(
+            models.Booking.venueId == venue_id,
+            models.Booking.status == models.BookingStatus.CONFIRMED,
+        )
+        .exists()
+    ).scalar()
