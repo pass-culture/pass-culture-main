@@ -1,0 +1,25 @@
+{% import "components/links.html" as links with context %}
+<table class="table table-hover my-4">
+  <thead>
+    <tr>
+      <th scope="col">N° de lot de virement</th>
+      <th scope="col">Date d'émission</th>
+      <th scope="col">Intitulé du compte bancaire</th>
+      <th scope="col">État</th>
+      <th scope="col">Montant</th>
+      <th scope="col">Justificatifs</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for settlement in settlements %}
+      <tr>
+        <td>{{ settlement.batch.name }}</td>
+        <td>{{ settlement.batch.dateValidated | format_date }}</td>
+        <td>{{ settlement.bankAccount.label }}</td>
+        <td>{{ settlement.status | format_settlement_status }}</td>
+        <td>{{ settlement.amount | format_cents(target=settlement.bankAccount.offerer) }}</td>
+        <td>{{ settlement.invoices | map(attribute="reference") | sort(attribute="reference") | join(", ") | escape }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
