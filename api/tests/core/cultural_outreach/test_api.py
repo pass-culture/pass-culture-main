@@ -1,5 +1,6 @@
 import datetime
 import logging
+from unittest import mock
 
 import pytest
 import sqlalchemy as sa
@@ -148,3 +149,42 @@ class UpdateCulturalOutreachClaimTest:
         assert exc.value.errors == {
             "global": ["Le statut de l'offre ne permet pas de déclarer une action de médiation"]
         }
+
+
+class SetCulturalOutreachClaimTest:
+    @mock.patch("pcapi.core.cultural_outreach.api.update_cultural_outreach_claim")
+    @time_machine.travel("2026-04-21 12:00:00", tick=False)
+    def test_turns_the_claim_to_true(self, mocked_update_claim):
+        offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.CulturalOutreachFactory(offer=offer)
+
+        cultural_outreach_api.set_cultural_outreach_claim(offer, True)
+
+        mocked_update_claim.assert_called_once_with(datetime.datetime(2026, 4, 21, 12, 0, 0), offer)
+
+    @mock.patch("pcapi.core.cultural_outreach.api.update_cultural_outreach_claim")
+    @time_machine.travel("2026-04-21 12:00:00", tick=False)
+    def test_does_not_update_the_claim_datetime_when_already_claimed(self, mocked_update_claim):
+        offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        cultural_outreach_api.set_cultural_outreach_claim(offer, True)
+
+        mocked_update_claim.assert_not_called()
+
+    @mock.patch("pcapi.core.cultural_outreach.api.update_cultural_outreach_claim")
+    def test_turns_the_claim_to_false(self, mocked_update_claim):
+        offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        cultural_outreach_api.set_cultural_outreach_claim(offer, False)
+
+        mocked_update_claim.assert_called_once_with(None, offer)
+
+    @mock.patch("pcapi.core.cultural_outreach.api.create_cultural_outreach_claim")
+    def test_creates_the_claim_when_the_offer_has_none(self, mocked_create_claim):
+        offer = offers_factories.OfferFactory()
+
+        cultural_outreach_api.set_cultural_outreach_claim(offer, True)
+
+        mocked_create_claim.assert_called_once_with(offer)
