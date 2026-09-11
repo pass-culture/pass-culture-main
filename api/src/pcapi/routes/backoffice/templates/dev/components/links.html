@@ -1,0 +1,61 @@
+{% from "dev/components/_spec.html" import ds_section, ds_spec, ds_state %}
+{% from "components/connect_as.html" import build_connect_as_link %}
+{% from "components/clipboard.html" import copy_to_clipboard %}
+{% import "components/links.html" as links with context %}
+{% call ds_section("pc-ds-liens", "Liens", "Les liens vers une autre page du backoffice restent dans l'onglet ; les liens externes s'ouvrent dans un nouvel onglet avec l'icône dédiée.") %}
+  {% call ds_spec("Lien interne", "link-primary · macros build_*_to_details_link de components/links.html") %}
+    {% call ds_state("Par défaut") %}<a href="#" class="link-primary">Jean Dupont (12)</a>{% endcall %}
+    {% call ds_state("Avec infobulle") %}
+      <a href="#"
+         class="link-primary"
+         data-bs-toggle="tooltip"
+         data-bs-placement="top"
+         data-bs-title="Voir le partenaire culturel">Le Grand Rex</a>
+    {% endcall %}
+    {% call ds_state("Dans une phrase") %}
+      <span>Réservation liée à l'offre <a href="#" class="link-primary">Concert</a>.</span>
+    {% endcall %}
+  {% endcall %}
+  {% call ds_spec("Lien externe", 'link-primary + target="_blank" rel="noreferrer noopener" + <i class="bi bi-box-arrow-up-right"></i>') %}
+  {% call ds_state("Par défaut") %}
+    <a href="https://passculture.app"
+       class="link-primary"
+       target="_blank"
+       rel="noreferrer noopener">passculture.app <i class="bi bi-box-arrow-up-right"></i></a>
+  {% endcall %}
+  {% call ds_state("Macro safe_redirect") %}{{ links.build_safe_redirect_link("https://example.com") }}{% endcall %}
+  {% call ds_state("Macro Zendesk") %}{{ links.build_zendesk_ticket_external_link(12345) }}{% endcall %}
+{% endcall %}
+{% call ds_spec("Lien « connect as »", 'build_connect_as_link(connect_as, "texte")', "Ouvre le portail PRO en tant que l'utilisateur ciblé via un formulaire POST caché.") %}
+  {% call ds_state("Par défaut") %}{{ build_connect_as_link(connect_as, "Ouvrir le portail PRO") }}{% endcall %}
+  {% call ds_state("Sans droit") %}{{ build_connect_as_link(none, "Ouvrir le portail PRO") }}{% endcall %}
+{% endcall %}
+{% call ds_spec("Lien vers l'application", "build_offer_webapp_link(offer)") %}
+  {% call ds_state("Offre") %}{{ links.build_offer_webapp_link(sample_offer) }}{% endcall %}
+{% endcall %}
+{% call ds_spec("Lien vers Brevo", "pc-brevo-logo-link (pro_user/get.html)") %}
+  {% call ds_state("Compte") %}
+    <div class="pc-brevo-logo-link">
+      <a href="#"
+         target="_blank"
+         rel="noreferrer noopener"
+         data-bs-toggle="tooltip"
+         data-bs-title="Voir le compte sur Brevo">
+        <svg height="100%"
+             viewBox="0 0 163.27 223.47998"
+             version="1.1"
+             xmlns="http://www.w3.org/2000/svg">
+          <path fill="#0B996E" d="M 37.67,111.59 V 36.47 h 45.5 c 15.37,0 25.52,8.93 25.52,22.47 0,15.39 -13.22,27.09 -40.27,36.01 -18.45,5.84 -26.74,10.77 -29.82,16.63 z m 0,75.42 v -31.4 c 0,-13.85 11.68,-27.4 27.98,-32.63 14.45,-4.93 26.44,-9.85 36.59,-15.08 13.53,8.01 21.82,21.85 21.82,36.32 0,24.62 -23.37,42.79 -55.03,42.79 z M 10,213.48 h 61.49 c 46.74,0 81.78,-29.24 81.78,-68.03 0,-21.24 -10.76,-40.32 -29.82,-52.64 9.84,-9.85 14.45,-21.24 14.45,-35.1 C 137.9,29.09 117.3,10 86.25,10 H 10 Z">
+          </path>
+        </svg>
+      </a>
+    </div>
+  {% endcall %}
+{% endcall %}
+{% call ds_spec("Copier dans le presse-papier", 'copy_to_clipboard(text_to_copy, tooltip_title)', "L'infobulle devient « Copié » pendant trois secondes après le clic.") %}
+  {% call ds_state("Seul") %}{{ copy_to_clipboard('12345', "Copier l'ID") }}{% endcall %}
+  {% call ds_state("À côté d'une valeur") %}
+    <span class="d-inline-flex align-items-center">12345 {{ copy_to_clipboard('12345', "Copier l'ID") }}</span>
+  {% endcall %}
+{% endcall %}
+{% endcall %}
