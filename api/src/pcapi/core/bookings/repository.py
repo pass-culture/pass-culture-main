@@ -673,3 +673,14 @@ def get_external_bookings_by_cinema_id_and_barcodes(
         .filter(models.ExternalBooking.barcode.in_(barcodes))
         .all()
     )
+
+
+def venue_has_ongoing_bookings(venue_id: int) -> bool:
+    return db.session.query(
+        db.session.query(models.Booking)
+        .filter(
+            models.Booking.venueId == venue_id,
+            models.Booking.status.in_([models.BookingStatus.CONFIRMED, models.BookingStatus.USED]),
+        )
+        .exists()
+    ).scalar()

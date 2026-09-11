@@ -6,6 +6,7 @@ import time_machine
 
 from pcapi.connectors.entreprise.models import SirenInfo
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -234,16 +235,71 @@ class FinalizeClosingVenueTaskTest:
         assert db.session.query(offers_models.Offer).filter(offers_models.Offer.id == regular_offer_id).one()
         assert not db.session.query(offers_models.Offer).filter(offers_models.Offer.id == draft_offer_id).one_or_none()
 
+    def test_with_ongoing_bookings(self):
+        now = datetime.datetime.now(datetime.UTC)
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSING)
+        author = users_factories.BaseUserFactory()
+        self.create_synced_offers_with_bookings(venue)
+        cancellable_bookings = list(venue.bookings)
+        cancellable_collective_bookings = list(venue.collectiveBookings)
+
+        # CONFIRMED booking with event planned yesterday - booking should not be cancelled
+        pending_auto_used_booking = bookings_factories.BookingFactory(
+            stock__offer__venue=venue,
+            stock__offer__subcategoryId="SEANCE_CINE",
+            stock__beginningDatetime=(now - datetime.timedelta(days=1)),
+        )
+        pending_auto_used_collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__startDatetime=(now - datetime.timedelta(days=2)),
+            collectiveStock__endDatetime=(now - datetime.timedelta(days=1)),
+        )
+
+        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
+
+        db.session.refresh(venue)
+        db.session.refresh(pending_auto_used_booking)
+        for booking in cancellable_bookings:
+            db.session.refresh(booking)
+        # Venue is still CLOSING - couldn't CLOSE due to remaining bookings
+        assert venue.state == offerers_models.VenueState.CLOSING
+        # Check cancellable bookings are actually cancelled
+        assert all(booking.isCancelled for booking in cancellable_bookings)
+        assert all(booking.isCancelled for booking in cancellable_collective_bookings)
+        # booking pending auto confirmation are still CONFIRMED
+        assert not pending_auto_used_booking.isCancelled
+        assert not pending_auto_used_collective_booking.isCancelled
+
     def create_synced_offers_with_bookings(self, venue):
         boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)
         now = datetime.datetime.now(datetime.UTC)
 
+        # CONFIRMED products
         bookings_factories.BookingFactory.create_batch(
-            2, stock__offer__venue=venue, stock__offer__publicationDatetime=now
+            2,
+            stock__offer__venue=venue,
+            stock__offer__subcategoryId="ABO_MEDIATHEQUE",
+            stock__offer__publicationDatetime=now,
+        )
+        # CONFIRMED future events
+        bookings_factories.BookingFactory.create_batch(
+            2,
+            stock__offer__venue=venue,
+            stock__offer__subcategoryId="SEANCE_CINE",
+            stock__offer__publicationDatetime=now,
+            stock__beginningDatetime=(now + datetime.timedelta(days=1)),
         )
         bookings_factories.BookingFactory.create_batch(
             3,
             stock__offer__venue=venue,
+            stock__offer__subcategoryId="SEANCE_CINE",
             stock__offer__publicationDatetime=now,
             stock__offer__lastProviderId=boost_pivot.providerId,
+            stock__beginningDatetime=(now + datetime.timedelta(days=1)),
+        )
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__startDatetime=(now + datetime.timedelta(days=1)),
+            collectiveStock__endDatetime=(now + datetime.timedelta(days=2)),
         )

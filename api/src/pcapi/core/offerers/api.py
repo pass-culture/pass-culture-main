@@ -3617,16 +3617,3 @@ def delete_venue_pivots(venue_id: int) -> None:
     db.session.query(providers_models.AllocinePivot).filter(providers_models.AllocinePivot.venueId == venue_id).delete(
         synchronize_session=False
     )
-
-
-def venue_has_ongoing_bookings(venue: models.Venue) -> bool:
-    return db.session.query(
-        db.session.query(bookings_models.Booking)
-        .filter_by(venueId=venue.id)
-        .filter(
-            bookings_models.Booking.status.not_in(
-                [bookings_models.BookingStatus.REIMBURSED, bookings_models.BookingStatus.CANCELLED]
-            )
-        )
-        .exists()
-    ).scalar()

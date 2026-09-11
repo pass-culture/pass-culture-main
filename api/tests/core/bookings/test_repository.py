@@ -919,3 +919,45 @@ class GetTomorrowEventOfferTest:
             bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
         assert len(bookings) == 1
+
+
+class VenueHasOngoingBookingsTest:
+    def test_venue_without_any_bookings_is_false(self):
+        venue = offerers_factories.VenueFactory()
+        assert not booking_repository.venue_has_ongoing_bookings(venue.id)
+
+    def test_venue_with_only_cancelled_and_reimbursed_bookings_is_false(self):
+        venue = offerers_factories.VenueFactory()
+
+        bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
+        bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
+
+        assert not booking_repository.venue_has_ongoing_bookings(venue.id)
+
+    def test_venue_with_only_ongoing_bookings_is_true(self):
+        venue = offerers_factories.VenueFactory()
+
+        bookings_factories.BookingFactory(stock__offer__venue=venue)
+        bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        bookings_factories.PendingReimbursementBookingFactory(stock__offer__venue=venue)
+
+        assert booking_repository.venue_has_ongoing_bookings(venue.id)
+
+    def test_venue_with_mixed_ongoing_and_not_bookings_is_true(self):
+        venue = offerers_factories.VenueFactory()
+
+        bookings_factories.BookingFactory(stock__offer__venue=venue)
+        bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        bookings_factories.PendingReimbursementBookingFactory(stock__offer__venue=venue)
+
+        bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
+        bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
+
+        assert booking_repository.venue_has_ongoing_bookings(venue.id)
+
+    def test_ensure_all_the_states_are_covered(self):
+        # Whenever this test fails, please check venue_has_ongoing_bookings
+        # and add the new state there if the booking is considered ongoing.
+        assert {"CANCELLED", "CONFIRMED", "PENDING_REIMBURSEMENT", "REIMBURSED", "USED"} == {
+            v.name for v in BookingStatus
+        }
