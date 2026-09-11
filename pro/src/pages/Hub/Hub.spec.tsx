@@ -168,6 +168,28 @@ describe('Hub', () => {
     expect(screen.queryByText('Structure fermée')).not.toBeInTheDocument()
   })
 
+  it('should display venues in closing process', () => {
+    renderHub({
+      venues: [
+        makeVenueListItemLiteResponseModel({
+          id: 101,
+          publicName: 'Venue ouverte 1',
+          managingOffererId: 100,
+          state: null,
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 102,
+          publicName: 'Venue en cours de fermeture',
+          managingOffererId: 100,
+          state: VenueState.CLOSING,
+        }),
+      ],
+    })
+
+    expect(screen.queryByText('Structure fermée')).not.toBeInTheDocument()
+    expect(screen.getByText('Fermeture en cours')).toBeInTheDocument()
+  })
+
   it('should display venue address', () => {
     const venuesWithLocation = [
       makeVenueListItemLiteResponseModel({

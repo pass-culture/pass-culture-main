@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { api } from '@/apiClient/api'
+import { VenueState } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
@@ -65,7 +66,11 @@ const VenueManagement = () => {
           variant={ButtonVariant.PRIMARY}
           color={ButtonColor.DANGER}
           disabled={isClosed}
-          label="Fermer la structure"
+          label={
+            selectedPartnerVenue.state === VenueState.CLOSING
+              ? 'Demande en cours'
+              : 'Fermer la structure'
+          }
           onClick={() => setIsCloseVenueModalOpen(true)}
         />
       </div>

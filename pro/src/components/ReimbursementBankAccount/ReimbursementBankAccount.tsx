@@ -162,11 +162,16 @@ export const ReimbursementBankAccount = ({
                         ({ id, commonName, state }) => (
                           <div className={styles['linked-venue']} key={id}>
                             {commonName}
-                            {(state === VenueState.CLOSING ||
-                              state === VenueState.CLOSED) && (
+                            {state === VenueState.CLOSED && (
                               <Tag
                                 variant={TagVariant.ERROR}
                                 label="Structure fermée"
+                              />
+                            )}
+                            {state === VenueState.CLOSING && (
+                              <Tag
+                                variant={TagVariant.WARNING}
+                                label="Demande de fermeture de structure en cours"
                               />
                             )}
                           </div>

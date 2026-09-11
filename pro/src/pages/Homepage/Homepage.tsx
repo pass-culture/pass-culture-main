@@ -1,7 +1,7 @@
 import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
-import { DMSApplicationstatus } from '@/apiClient/v1'
+import { DMSApplicationstatus, VenueState } from '@/apiClient/v1'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -60,6 +60,19 @@ export const Homepage = (): JSX.Element => {
         <h2 className={styles['onboarding-title']}>
           Diffusez votre première offre et pilotez ici votre activité !
         </h2>
+        {selectedPartnerVenue.state === VenueState.CLOSED && (
+          <div className={styles['venue-banner']}>
+            <Banner variant={BannerVariants.ERROR} title="Structure fermée" />
+          </div>
+        )}
+        {selectedPartnerVenue.state === VenueState.CLOSING && (
+          <div className={styles['venue-banner']}>
+            <Banner
+              variant={BannerVariants.WARNING}
+              title="Demande de fermeture de structure en cours"
+            />
+          </div>
+        )}
         <OnboardingOffersChoice hideSkipOnboardingLink />
       </div>
     )
@@ -111,11 +124,21 @@ export const Homepage = (): JSX.Element => {
       <MainHeading
         mainHeading={`Votre espace ${selectedPartnerVenue.publicName}`}
       />
-      {isClosed && !isOffererClosed && (
+      {!isOffererClosed && selectedPartnerVenue.state === VenueState.CLOSED && (
         <div className={styles['venue-banner']}>
           <Banner variant={BannerVariants.ERROR} title="Structure fermée" />
         </div>
       )}
+      {!isOffererClosed &&
+        selectedPartnerVenue.state === VenueState.CLOSING && (
+          <div className={styles['venue-banner']}>
+            <Banner
+              variant={BannerVariants.WARNING}
+              title="Demande de fermeture de structure en cours"
+            />
+          </div>
+        )}
+
       {isOffererClosed && (
         <div className={styles['venue-banner']}>
           <Banner
