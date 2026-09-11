@@ -10,7 +10,7 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.transaction_manager import atomic
 
 
-@blueprints.public_api.route("/v2/collective/student-levels", methods=["GET"])
+@blueprints.provider_blueprint.route("/v2/collective/student-levels", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
