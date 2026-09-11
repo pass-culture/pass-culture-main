@@ -1,0 +1,140 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_a11y.scss" as a11y;
+
+@mixin small {
+  .info-panel-item {
+    &-left-content {
+      width: rem.torem(32px);
+      height: rem.torem(32px);
+    }
+
+    &-stepnumber {
+      @include fonts.body-accent-xs;
+    }
+
+    &-icon {
+      width: rem.torem(16px);
+    }
+
+    &-title {
+      @include fonts.body-accent-s;
+    }
+
+    &-description {
+      @include fonts.body-xs;
+    }
+  }
+}
+
+.info-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-s);
+
+  // ------------------------------
+  // Item
+  // ------------------------------
+
+  .info-panel-item {
+    display: flex;
+    align-items: center;
+    gap: var(--size-spacing-l);
+
+    &-left-content {
+      flex-shrink: 0;
+      aspect-ratio: 1 / 1;
+      background-color: var(--color-background-info);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &-stepnumber {
+      color: var(--color-text-brand-primary);
+    }
+
+    &-icon {
+      color: var(--color-icon-brand-primary);
+    }
+
+    &-content {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  &-ordered .info-panel-item-left-content {
+    border-radius: rem.torem(48px); // cercle
+  }
+
+  &-unordered .info-panel-item-left-content {
+    border-radius: rem.torem(6px); // carré arrondi
+  }
+
+  // ------------------------------
+  // Sizes
+  // ------------------------------
+
+  &-large {
+    .info-panel-item {
+      &-left-content {
+        width: rem.torem(48px);
+        height: rem.torem(48px);
+      }
+
+      &-stepnumber {
+        @include fonts.body-accent;
+      }
+
+      &-icon {
+        width: rem.torem(24px);
+      }
+
+      &-content {
+        gap: var(--size-spacing-xs);
+      }
+
+      &-title {
+        @include fonts.title3;
+
+        color: var(--color-text-default);
+      }
+
+      &-description {
+        @include fonts.body;
+      }
+    }
+  }
+
+  &-small {
+    @include small;
+  }
+
+  @media screen and (max-width: size.$tablet) {
+    @include small;
+  }
+
+  // ------------------------------
+  // Surfaces
+  // ------------------------------
+
+  &-flat .info-panel-item-description {
+    color: var(--color-text-default);
+  }
+
+  &-elevated .info-panel-item {
+    border: rem.torem(1px) solid var(--color-border-subtle);
+    padding: var(--size-spacing-l);
+    border-radius: var(--size-border-radius-m);
+
+    &-description {
+      color: var(--color-text-subtle);
+    }
+  }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
