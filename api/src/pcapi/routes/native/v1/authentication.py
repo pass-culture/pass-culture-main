@@ -72,6 +72,18 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     except users_exceptions.CredentialsException as exc:
         raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]}) from exc
 
+    logger.info(
+        "Successful authentication attempt",
+        extra={
+            "identifier": body.identifier,
+            "user": user.id,
+            "avoid_current_user": True,
+            "success": True,
+            "api_version": "v1",
+        },
+        technical_message_id="users.login",
+    )
+
     if user.account_state.is_deleted:
         raise ApiErrors({"code": "ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
 

@@ -53,12 +53,6 @@ def get_user_with_credentials(identifier: str, password: str, allow_inactive: bo
             technical_message_id="users.login",
         )
     check_user_and_credentials(user, password, allow_inactive)
-    if user:
-        logger.info(
-            "Successful authentication attempt",
-            extra={"identifier": identifier, "user": user.id, "avoid_current_user": True, "success": True},
-            technical_message_id="users.login",
-        )
     return typing.cast(models.User, user)
 
 
