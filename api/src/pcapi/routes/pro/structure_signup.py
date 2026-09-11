@@ -16,7 +16,7 @@ from pcapi.core.offerers import structure_signup_api
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import resource_not_found_error
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import public_information_serialize
 from pcapi.routes.serialization import sirene_serialize
@@ -29,13 +29,13 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/offerers/new", methods=["POST"])
+@pro_blueprint.route("/offerers/new", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201,
     response_model=public_information_serialize.PostOffererResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def signup_structure(
     body: offerers_serialize.SaveNewOnboardingDataQueryModel,
@@ -62,12 +62,12 @@ def signup_structure(
     return public_information_serialize.PostOffererResponseModel.model_validate(user_offerer.offerer)
 
 
-@private_api.route("/structure/search/<search_input>", methods=["GET"])
+@pro_blueprint.route("/structure/search/<search_input>", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=sirene_serialize.StructureDataBodyModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_structure_data(search_input: str) -> sirene_serialize.StructureDataBodyModel:
     if not api_entreprise.is_valid_siret(search_input):
@@ -97,11 +97,11 @@ def get_structure_data(search_input: str) -> sirene_serialize.StructureDataBodyM
     )
 
 
-@private_api.route("/structure/check/<search_input>", methods=["GET"])
+@pro_blueprint.route("/structure/check/<search_input>", methods=["GET"])
 @atomic()
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def check_structure(search_input: str) -> None:
     if not feature.FeatureToggle.WIP_PRE_SIGNUP_SIMULATION.is_active():
@@ -127,11 +127,11 @@ def check_structure(search_input: str) -> None:
     )
 
 
-@private_api.route("/structure/simulate-signup", methods=["POST"])
+@pro_blueprint.route("/structure/simulate-signup", methods=["POST"])
 @atomic()
 @spectree_serialize(
     response_model=sirene_serialize.SignupSimulationResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def simulate_signup(
     body: sirene_serialize.SignupSimulationPayload,
@@ -164,11 +164,11 @@ def simulate_signup(
     )
 
 
-@private_api.route("/structure/summarise-signup", methods=["POST"])
+@pro_blueprint.route("/structure/summarise-signup", methods=["POST"])
 @atomic()
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def send_signup_simulation_summary(body: sirene_serialize.SignupSimulationSummaryPayload) -> None:
     if not feature.FeatureToggle.WIP_PRE_SIGNUP_SIMULATION.is_active():

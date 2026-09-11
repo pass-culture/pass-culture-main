@@ -1,13 +1,13 @@
 from pcapi.core.offers import generator as offers_generator
 from pcapi.core.offers import models as offers_models
 from pcapi.models.utils import get_or_404
-from pcapi.routes.apis import private_api
 from pcapi.routes.backoffice.dev import forms as dev_forms
 from pcapi.routes.internal.auth import api_key_required
+from pcapi.routes.internal.blueprint import testing_blueprint
 from pcapi.utils import transaction_manager
 
 
-@private_api.route("/e2e/offer", methods=["POST"])
+@testing_blueprint.route("/e2e/offer", methods=["POST"])
 @transaction_manager.atomic()
 @api_key_required
 def generate_offer() -> tuple[dict, int]:
@@ -41,7 +41,7 @@ def generate_offer() -> tuple[dict, int]:
     }, 200
 
 
-@private_api.route("/e2e/offer/<int:offer_id>/deactivate", methods=["POST"])
+@testing_blueprint.route("/e2e/offer/<int:offer_id>/deactivate", methods=["POST"])
 @transaction_manager.atomic()
 @api_key_required
 def deactivate_offer(offer_id: int) -> tuple[dict, int]:

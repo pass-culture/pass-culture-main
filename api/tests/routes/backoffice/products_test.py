@@ -52,7 +52,7 @@ pytestmark = [
 
 
 class GetProductDetailsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.product.get_product_details"
+    endpoint = "backoffice.product.get_product_details"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
@@ -263,7 +263,7 @@ class ProductSynchronizationWithTiteliveButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         product = offers_factories.ProductFactory.create()
-        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+        return url_for("backoffice.product.get_product_details", product_id=product.id)
 
     def test_button_when_can_add_one(self, authenticated_client):
         with patch(
@@ -279,7 +279,7 @@ class ProductSynchronizationWithTiteliveButtonTest(button_helpers.ButtonHelper):
 
 
 class GetProductSynchronizationWithTiteliveFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.product.get_product_synchronize_with_titelive_form"
+    endpoint = "backoffice.product.get_product_synchronize_with_titelive_form"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -345,7 +345,7 @@ class GetProductSynchronizationWithTiteliveFormTest(GetEndpointHelper):
 
 
 class PostProductSynchronizationWithTiteliveTest(PostEndpointHelper):
-    endpoint = "backoffice_web.product.synchronize_product_with_titelive"
+    endpoint = "backoffice.product.synchronize_product_with_titelive"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -405,11 +405,11 @@ class WhitelistProductButtonTest(button_helpers.ButtonHelper):
         product = offers_factories.ProductFactory.create(
             gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         )
-        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+        return url_for("backoffice.product.get_product_details", product_id=product.id)
 
 
 class GetProductWhitelistConfirmationFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.product.get_product_whitelist_form"
+    endpoint = "backoffice.product.get_product_whitelist_form"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -433,7 +433,7 @@ class GetProductWhitelistConfirmationFormTest(GetEndpointHelper):
 
 
 class PostProductWhitelistTest(PostEndpointHelper):
-    endpoint = "backoffice_web.product.whitelist_product"
+    endpoint = "backoffice.product.whitelist_product"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -460,11 +460,11 @@ class BlacklistProductButtonTest(button_helpers.ButtonHelper):
         product = offers_factories.ProductFactory.create(
             gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE
         )
-        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+        return url_for("backoffice.product.get_product_details", product_id=product.id)
 
 
 class GetProductBlacklistConfirmationFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.product.get_product_blacklist_form"
+    endpoint = "backoffice.product.get_product_blacklist_form"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -488,7 +488,7 @@ class GetProductBlacklistConfirmationFormTest(GetEndpointHelper):
 
 
 class PostProductBlacklistTest(PostEndpointHelper):
-    endpoint = "backoffice_web.product.blacklist_product"
+    endpoint = "backoffice.product.blacklist_product"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -658,11 +658,11 @@ class LinkUnlinkedOfferToProductButtonTest(button_helpers.ButtonHelper):
         ean = "1234567899999"
         product = offers_factories.ProductFactory.create(ean=ean)
         offers_factories.OfferFactory.create(ean=ean)
-        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+        return url_for("backoffice.product.get_product_details", product_id=product.id)
 
 
 class GetProductLinkOfferFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.product.confirm_link_offers_forms"
+    endpoint = "backoffice.product.confirm_link_offers_forms"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -690,7 +690,7 @@ class GetProductLinkOfferFormTest(PostEndpointHelper):
 
 
 class LinkUnlinkedOfferToProductTest(PostEndpointHelper):
-    endpoint = "backoffice_web.product.batch_link_offers_to_product"
+    endpoint = "backoffice.product.batch_link_offers_to_product"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -728,11 +728,11 @@ class TagOffersButtonTest(button_helpers.ButtonHelper):
         ean = "1234567890123"
         product = offers_factories.ProductFactory.create(ean=ean)
         offers_factories.OfferFactory.create(product=product)
-        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+        return url_for("backoffice.product.get_product_details", product_id=product.id)
 
 
 class GetTagOffersFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.product.get_tag_offers_form"
+    endpoint = "backoffice.product.get_tag_offers_form"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS
 
@@ -778,7 +778,7 @@ class GetTagOffersFormTest(GetEndpointHelper):
 
 
 class AddCriteriaToOffersTest(PostEndpointHelper):
-    endpoint = "backoffice_web.product.add_criteria_to_offers"
+    endpoint = "backoffice.product.add_criteria_to_offers"
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS
 

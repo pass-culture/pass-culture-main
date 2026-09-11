@@ -18,7 +18,7 @@ from pcapi.core.offerers import repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import resource_not_found_error
 from pcapi.models.utils import get_or_404
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization import headline_offer_serialize
 from pcapi.routes.serialization import offerers_serialize
@@ -35,10 +35,10 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/offerers/names", methods=["GET"])
+@pro_blueprint.route("/offerers/names", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=offerers_serialize.GetOfferersNamesResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=offerers_serialize.GetOfferersNamesResponseModel, api=blueprint.pro_schema)
 def list_offerers_names() -> offerers_serialize.GetOfferersNamesResponseModel:
     offerers = api.get_user_pending_and_validated_offerers(current_user)
     return offerers_serialize.GetOfferersNamesResponseModel.build(
@@ -46,12 +46,10 @@ def list_offerers_names() -> offerers_serialize.GetOfferersNamesResponseModel:
     )
 
 
-@private_api.route("/offerers/educational", methods=["GET"])
+@pro_blueprint.route("/offerers/educational", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(
-    response_model=offerers_serialize.GetEducationalOfferersResponseModel, api=blueprint.pro_private_schema
-)
+@spectree_serialize(response_model=offerers_serialize.GetEducationalOfferersResponseModel, api=blueprint.pro_schema)
 def list_educational_offerers(
     query: offerers_serialize.GetEducationalOfferersQueryModel,
 ) -> offerers_serialize.GetEducationalOfferersResponseModel:
@@ -70,10 +68,10 @@ def list_educational_offerers(
         raise ApiErrors({"offerer_id": "Missing query parameter"})
 
 
-@private_api.route("/offerers/<int:offerer_id>", methods=["GET"])
+@pro_blueprint.route("/offerers/<int:offerer_id>", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=offerers_serialize.GetOffererResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=offerers_serialize.GetOffererResponseModel, api=blueprint.pro_schema)
 def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
     row = repository.get_offerer_and_extradata(offerer_id)
@@ -90,10 +88,10 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
     )
 
 
-@private_api.route("/offerers/<int:offerer_id>/invite", methods=["POST"])
+@pro_blueprint.route("/offerers/<int:offerer_id>/invite", methods=["POST"])
 @atomic()
 @login_required
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_schema)
 def invite_member(offerer_id: int, body: offerers_serialize.InviteMemberQueryModel) -> None:
     check_user_has_access_to_offerer(current_user, offerer_id)
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
@@ -105,10 +103,10 @@ def invite_member(offerer_id: int, body: offerers_serialize.InviteMemberQueryMod
         raise ApiErrors({"email": "Ce collaborateur est déjà membre de votre structure"})
 
 
-@private_api.route("/offerers/<int:offerer_id>/invite-again", methods=["POST"])
+@pro_blueprint.route("/offerers/<int:offerer_id>/invite-again", methods=["POST"])
 @atomic()
 @login_required
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_schema)
 def invite_member_again(offerer_id: int, body: offerers_serialize.InviteMemberQueryModel) -> None:
     check_user_has_access_to_offerer(current_user, offerer_id)
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
@@ -118,10 +116,10 @@ def invite_member_again(offerer_id: int, body: offerers_serialize.InviteMemberQu
         raise ApiErrors({"email": "Impossible de renvoyer une invitation pour ce collaborateur"})
 
 
-@private_api.route("/offerers/<int:offerer_id>/members", methods=["GET"])
+@pro_blueprint.route("/offerers/<int:offerer_id>/members", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=offerers_serialize.GetOffererMembersResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=offerers_serialize.GetOffererMembersResponseModel, api=blueprint.pro_schema)
 def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembersResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
@@ -133,13 +131,13 @@ def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembers
     )
 
 
-@private_api.route("/offerers", methods=["POST"])
+@pro_blueprint.route("/offerers", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201,
     response_model=public_information_serialize.PostOffererResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def create_offerer(
     body: offerers_serialize.CreateOffererBodyModel,
@@ -164,12 +162,10 @@ def create_offerer(
     return public_information_serialize.PostOffererResponseModel.model_validate(user_offerer.offerer)
 
 
-@private_api.route("/offerers/<int:offerer_id>/bank-accounts", methods=["GET"])
+@pro_blueprint.route("/offerers/<int:offerer_id>/bank-accounts", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(
-    response_model=offerers_serialize.GetOffererBankAccountsResponseModel, api=blueprint.pro_private_schema
-)
+@spectree_serialize(response_model=offerers_serialize.GetOffererBankAccountsResponseModel, api=blueprint.pro_schema)
 def get_offerer_bank_accounts_and_attached_venues(
     offerer_id: int,
 ) -> offerers_serialize.GetOffererBankAccountsResponseModel:
@@ -199,10 +195,10 @@ def get_offerer_bank_accounts_and_attached_venues(
     )
 
 
-@private_api.route("/offerers/<int:offerer_id>/bank-accounts/<int:bank_account_id>", methods=["PATCH"])
+@pro_blueprint.route("/offerers/<int:offerer_id>/bank-accounts/<int:bank_account_id>", methods=["PATCH"])
 @atomic()
 @login_required
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_schema)
 def link_venue_to_bank_account(
     offerer_id: int, bank_account_id: int, body: offerers_serialize.LinkVenueToBankAccountBodyModel
 ) -> None:
@@ -222,12 +218,12 @@ def link_venue_to_bank_account(
         )
 
 
-@private_api.route("/venues/<int:venue_id>/offers-statistics", methods=["GET"])
+@pro_blueprint.route("/venues/<int:venue_id>/offers-statistics", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     response_model=offerers_serialize.GetVenueStatsResponseModel,
 )
 def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsResponseModel:
@@ -266,12 +262,12 @@ def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsRes
     )
 
 
-@private_api.route("/offerers/<int:offerer_id>/offerer_addresses", methods=["GET"])
+@pro_blueprint.route("/offerers/<int:offerer_id>/offerer_addresses", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     response_model=offerers_serialize.GetOffererAddressesResponseModel,
 )
 def get_offerer_addresses(
@@ -289,12 +285,12 @@ def get_offerer_addresses(
     )
 
 
-@private_api.route("/venues/<int:venue_id>/headline-offer", methods=["GET"])
+@pro_blueprint.route("/venues/<int:venue_id>/headline-offer", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=headline_offer_serialize.HeadLineOfferResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     on_success_status=200,
 )
 def get_venue_headline_offer(
@@ -310,11 +306,11 @@ def get_venue_headline_offer(
     return headline_offer_serialize.HeadLineOfferResponseModel.model_validate(venue_headline_offer)
 
 
-@private_api.route("/offerers/<int:offerer_id>/synchronize-onboarding", methods=["POST"])
+@pro_blueprint.route("/offerers/<int:offerer_id>/synchronize-onboarding", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     on_success_status=204,
 )
 def synchronize_offerer_onboarding(offerer_id: int) -> None:

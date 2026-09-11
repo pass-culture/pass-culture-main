@@ -13,7 +13,7 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.transaction_manager import atomic
 
 
-@blueprints.public_api.route("/public/providers/v1/provider", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/providers/v1/provider", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -37,7 +37,7 @@ def get_provider() -> providers_serialization.ProviderResponse:
     return providers_serialization.ProviderResponse.build_model(current_api_key.provider)
 
 
-@blueprints.public_api.route("/public/providers/v1/provider", methods=["PATCH"])
+@blueprints.provider_blueprint.route("/public/providers/v1/provider", methods=["PATCH"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -74,7 +74,7 @@ def update_provider(body: providers_serialization.ProviderUpdate) -> providers_s
     return providers_serialization.ProviderResponse.build_model(provider)
 
 
-@blueprints.public_api.route("/public/providers/v1/venues/<int:venue_id>", methods=["PATCH"])
+@blueprints.provider_blueprint.route("/public/providers/v1/venues/<int:venue_id>", methods=["PATCH"])
 @atomic()
 @api_key_required
 @spectree_serialize(

@@ -26,7 +26,7 @@ pytestmark = [
 
 
 class GetMoveSiretTest(GetEndpointHelper):
-    endpoint = "backoffice_web.move_siret.move_siret"
+    endpoint = "backoffice.move_siret.move_siret"
     needed_permission = perm_models.Permissions.MOVE_SIRET
 
     def test_get_move_siret(self, authenticated_client):
@@ -147,7 +147,7 @@ class MoveSiretTestHelper(PostEndpointHelper):
 
 
 class PostMoveSiretTest(MoveSiretTestHelper):
-    endpoint = "backoffice_web.move_siret.post_move_siret"
+    endpoint = "backoffice.move_siret.post_move_siret"
     needed_permission = perm_models.Permissions.MOVE_SIRET
 
     def _assert_move_siret_ok_response(self, response):
@@ -189,7 +189,7 @@ class PostMoveSiretTest(MoveSiretTestHelper):
 
 
 class ApplyMoveSiretTest(MoveSiretTestHelper):
-    endpoint = "backoffice_web.move_siret.apply_move_siret"
+    endpoint = "backoffice.move_siret.apply_move_siret"
     needed_permission = perm_models.Permissions.MOVE_SIRET
 
     def _assert_move_siret_ok_response(self, response):

@@ -23,7 +23,7 @@ from .serializers.addresses import SearchAddressResponse
 logger = logging.getLogger(__name__)
 
 
-@blueprints.public_api.route("/public/offers/v1/addresses/<int:address_id>", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/addresses/<int:address_id>", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -55,7 +55,7 @@ def get_address(
     return AddressResponse.model_validate(address)
 
 
-@blueprints.public_api.route("/public/offers/v1/addresses/search", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/addresses/search", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -113,7 +113,7 @@ def search_addresses(query: AddressModel) -> SearchAddressResponse:
     return SearchAddressResponse(addresses=[AddressResponse.model_validate(address) for address in addresses])
 
 
-@blueprints.public_api.route("/public/offers/v1/addresses", methods=["POST"])
+@blueprints.provider_blueprint.route("/public/offers/v1/addresses", methods=["POST"])
 @atomic()
 @api_key_required
 @spectree_serialize(

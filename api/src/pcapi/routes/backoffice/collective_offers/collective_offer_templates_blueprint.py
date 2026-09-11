@@ -221,7 +221,7 @@ def get_validate_collective_offer_template_form(collective_offer_template_id: in
     kwargs = {
         "form": form,
         "dst": url_for(
-            "backoffice_web.collective_offer_template.validate_collective_offer_template",
+            "backoffice.collective_offer_template.validate_collective_offer_template",
             collective_offer_template_id=collective_offer_template.id,
         ),
         "div_id": f"validate-collective-offer-template-modal-{collective_offer_template.id}",
@@ -247,7 +247,7 @@ def validate_collective_offer_template(collective_offer_template_id: int) -> res
     if request_utils.is_request_from_htmx():
         return _render_collective_offers_templates([collective_offer_template_id])
     return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
+        request, url_for("backoffice.collective_offer_template.list_collective_offer_templates")
     )
 
 
@@ -267,7 +267,7 @@ def get_reject_collective_offer_template_form(collective_offer_template_id: int)
     kwargs = {
         "form": form,
         "dst": url_for(
-            "backoffice_web.collective_offer_template.reject_collective_offer_template",
+            "backoffice.collective_offer_template.reject_collective_offer_template",
             collective_offer_template_id=collective_offer_template.id,
         ),
         "div_id": f"reject-collective-offer-template-modal-{collective_offer_template.id}",
@@ -293,7 +293,7 @@ def reject_collective_offer_template(collective_offer_template_id: int) -> respo
         if request_utils.is_request_from_htmx():
             return _render_collective_offers_templates()
         return request_utils.safe_redirect_back(
-            request, url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
+            request, url_for("backoffice.collective_offer_template.list_collective_offer_templates")
         )
 
     _batch_validate_or_reject_collective_offer_templates(
@@ -304,7 +304,7 @@ def reject_collective_offer_template(collective_offer_template_id: int) -> respo
     if request_utils.is_request_from_htmx():
         return _render_collective_offers_templates([collective_offer_template_id])
     return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
+        request, url_for("backoffice.collective_offer_template.list_collective_offer_templates")
     )
 
 
@@ -419,7 +419,7 @@ def get_batch_validate_collective_offer_templates_form() -> response_utils.Backo
         "components/dynamic/modal_form.html",
         target_id="#collective-offer-template-table",
         form=form,
-        dst=url_for("backoffice_web.collective_offer_template.batch_validate_collective_offer_templates"),
+        dst=url_for("backoffice.collective_offer_template.batch_validate_collective_offer_templates"),
         div_id="batch-validate-modal",
         title="Voulez-vous valider les offres collectives vitrine sélectionnées ?",
         button_text="Valider",
@@ -434,7 +434,7 @@ def get_batch_reject_collective_offer_templates_form() -> response_utils.Backoff
         "components/dynamic/modal_form.html",
         target_id="#collective-offer-template-table",
         form=form,
-        dst=url_for("backoffice_web.collective_offer_template.batch_reject_collective_offer_templates"),
+        dst=url_for("backoffice.collective_offer_template.batch_reject_collective_offer_templates"),
         div_id="batch-reject-modal",
         title="Voulez-vous rejeter les offres collectives vitrine sélectionnées ?",
         button_text="Rejeter",

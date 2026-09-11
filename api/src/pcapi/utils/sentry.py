@@ -10,11 +10,10 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
-import pcapi.routes.apis as routes_apis
 import pcapi.routes.backoffice.blueprint as backoffice_blueprint
-import pcapi.routes.pro.blueprint as pro_blueprint
 from pcapi import settings
-from pcapi.routes import UrlPrefix
+from pcapi.routes import UrlPrefix as UrlPrefixOld
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.utils.health_checker import read_version_from_file
 
 
@@ -102,6 +101,12 @@ def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     return event
 
 
+# TODO rpa use real url_prefix instead of an enum
+class UrlPrefix(enum.StrEnum):
+    AUTH = "/auth"
+    ADAGE_V1 = "/adage/v1"
+
+
 def custom_traces_sampler(sampling_context: dict) -> float:
     """
     This sampler defines a fraction of the DEFAULT_SAMPLE_RATE according to the requested path
@@ -140,7 +145,7 @@ def custom_traces_sampler(sampling_context: dict) -> float:
             score = LOWEST_SAMPLE_RATE
 
         # native routes
-        case _ if path.startswith(UrlPrefix.NATIVE.value):
+        case _ if path.startswith(UrlPrefixOld.NATIVE.value):
             score = LOWER_SAMPLE_RATE
 
         # Discord Auth
@@ -151,10 +156,10 @@ def custom_traces_sampler(sampling_context: dict) -> float:
             score = LOW_SAMPLE_RATE
 
         # SAML
-        case _ if path.startswith(UrlPrefix.SAML.value):
+        case _ if path.startswith(UrlPrefixOld.SAML.value):
             score = DEFAULT_SAMPLE_RATE
         # adage
-        case _ if path.startswith(UrlPrefix.ADAGE_IFRAME.value):
+        case _ if path.startswith(UrlPrefixOld.ADAGE_IFRAME.value):
             score = DEFAULT_SAMPLE_RATE
 
         # `Private API` or `pro_private_api` blueprints or a 404. We will filter them later
@@ -189,11 +194,8 @@ def filter_transactions(event: "Event", _hint: dict[str, typing.Any]) -> "Event 
         case _ if transaction.startswith(backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME):
             sample_rate = DEFAULT_SAMPLE_RATE
 
-        # private API "Private API"
-        case _ if transaction.startswith(routes_apis.PRIVATE_API_BLUEPRINT_NAME):
-            sample_rate = DEFAULT_SAMPLE_RATE
-        # other private API "pro_private_api"
-        case _ if transaction.startswith(pro_blueprint.PRO_PRIVATE_API_BLUEPRINT_NAME):
+        # private API "pro"
+        case _ if transaction.startswith(pro_blueprint.name):
             sample_rate = DEFAULT_SAMPLE_RATE
 
         # Unmatched

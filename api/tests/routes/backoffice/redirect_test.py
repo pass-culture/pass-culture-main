@@ -21,9 +21,9 @@ class SafeRedirectTest:
     expected_num_queries = 1
 
     def test_redirect_as_anonymous(self, client):
-        response = client.get(url_for("backoffice_web.safe_redirect", url="https://example.com"))
+        response = client.get(url_for("backoffice.safe_redirect", url="https://example.com"))
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
 
     @patch("pcapi.connectors.virustotal.request_url_scan")
     @patch("pcapi.connectors.virustotal.check_url_is_safe")
@@ -31,7 +31,7 @@ class SafeRedirectTest:
         url = "https://safe.example.com"
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.safe_redirect", url=url))
+            response = authenticated_client.get(url_for("backoffice.safe_redirect", url=url))
             assert response.status_code == 303
 
         assert response.location == url
@@ -44,7 +44,7 @@ class SafeRedirectTest:
         url = "https://malicious.example.com"
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.safe_redirect", url=url))
+            response = authenticated_client.get(url_for("backoffice.safe_redirect", url=url))
             assert response.status_code == 200
 
         assert f"L'analyse de l'adresse {url} a détecté un risque de sécurité." in html_parser.content_as_text(
@@ -59,7 +59,7 @@ class SafeRedirectTest:
         url = "https://unknown.example.com"
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.safe_redirect", url=url))
+            response = authenticated_client.get(url_for("backoffice.safe_redirect", url=url))
             assert response.status_code == 200
 
         content = html_parser.content_as_text(response.data)
@@ -74,7 +74,7 @@ class SafeRedirectTest:
         url = "https://pending.example.com"
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.safe_redirect", url=url))
+            response = authenticated_client.get(url_for("backoffice.safe_redirect", url=url))
             assert response.status_code == 200
 
         content = html_parser.content_as_text(response.data)
@@ -89,7 +89,7 @@ class SafeRedirectTest:
         url = "https://unknown.example.com"
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_web.safe_redirect", url=url))
+            response = authenticated_client.get(url_for("backoffice.safe_redirect", url=url))
             assert response.status_code == 200
 
         assert "Une erreur s'est produite lors de la vérification du lien." in html_parser.content_as_text(
@@ -112,7 +112,7 @@ class SafeRedirectTest:
 
         with patch("pcapi.connectors.virustotal.check_url_is_safe", side_effect=exception):
             with caplog.at_level(logging.INFO):
-                response = authenticated_client.get(url_for("backoffice_web.safe_redirect", url=url, ignore=reason))
+                response = authenticated_client.get(url_for("backoffice.safe_redirect", url=url, ignore=reason))
             assert response.status_code == 303
 
         assert response.location == url

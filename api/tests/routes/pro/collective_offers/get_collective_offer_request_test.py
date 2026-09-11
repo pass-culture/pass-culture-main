@@ -33,7 +33,7 @@ class GetCollectiveOfferRequestTest:
         )
 
         dst = url_for(
-            "Private API.get_collective_offer_request",
+            "pro.get_collective_offer_request",
             offer_id=request.collectiveOfferTemplateId,
             request_id=request.id,
         )
@@ -78,7 +78,7 @@ class GetCollectiveOfferRequestTest:
         )
 
         dst = url_for(
-            "Private API.get_collective_offer_request",
+            "pro.get_collective_offer_request",
             offer_id=request.collectiveOfferTemplateId,
             request_id=request.id,
         )
@@ -103,7 +103,7 @@ class GetCollectiveOfferRequestTest:
         )
 
         dst = url_for(
-            "Private API.get_collective_offer_request",
+            "pro.get_collective_offer_request",
             offer_id=request.collectiveOfferTemplateId,
             request_id=request.id + 1,
         )

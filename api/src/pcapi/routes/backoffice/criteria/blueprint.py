@@ -97,7 +97,7 @@ def create_tag() -> response_utils.BackofficeResponse:
 
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return request_utils.safe_redirect_back(request, url_for("backoffice_web.tags.list_tags"))
+        return request_utils.safe_redirect_back(request, url_for("backoffice.tags.list_tags"))
 
     try:
         tag = criteria_models.Criterion(
@@ -117,7 +117,7 @@ def create_tag() -> response_utils.BackofficeResponse:
     else:
         flash("Le nouveau tag offres et partenaires culturels a été créé", "success")
 
-    return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
+    return redirect(url_for("backoffice.tags.list_tags"), code=303)
 
 
 @tags_blueprint.route("/tags/new", methods=["GET"])
@@ -129,7 +129,7 @@ def get_create_tag_form() -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.tags.create_tag"),
+        dst=url_for("backoffice.tags.create_tag"),
         div_id="create-offer-venue-tag",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer un tag offres et partenaires culturels",
         button_text="Créer le tag",
@@ -149,7 +149,7 @@ def update_tag(tag_id: int) -> response_utils.BackofficeResponse:
 
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
+        return redirect(url_for("backoffice.tags.list_tags"), code=303)
 
     tag.name = form.name.data
     tag.description = form.description.data
@@ -167,7 +167,7 @@ def update_tag(tag_id: int) -> response_utils.BackofficeResponse:
     else:
         flash("Informations mises à jour", "success")
 
-    return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
+    return redirect(url_for("backoffice.tags.list_tags"), code=303)
 
 
 @tags_blueprint.route("/<int:tag_id>/edit", methods=["GET"])
@@ -198,7 +198,7 @@ def get_update_tag_form(tag_id: int) -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.tags.update_tag", tag_id=tag_id),
+        dst=url_for("backoffice.tags.update_tag", tag_id=tag_id),
         div_id=f"update-offer-venue-tag-{tag_id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Modifier {tag.name}",
         button_text="Valider",
@@ -221,7 +221,7 @@ def delete_tag(tag_id: int) -> response_utils.BackofficeResponse:
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exception)), "warning")
 
     flash("Le tag a été supprimé", "success")
-    return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
+    return redirect(url_for("backoffice.tags.list_tags"), code=303)
 
 
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["GET"])
@@ -239,7 +239,7 @@ def get_delete_tag_form(tag_id: int) -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
-        dst=url_for("backoffice_web.tags.delete_tag", tag_id=tag_id),
+        dst=url_for("backoffice.tags.delete_tag", tag_id=tag_id),
         div_id=f"delete-offer-venue-tag-{tag_id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Supprimer {tag.name}",
         button_text="Confirmer",
@@ -255,7 +255,7 @@ def create_tag_category() -> response_utils.BackofficeResponse:
 
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.tags.list_tags", active_tab="categories"), code=303)
+        return redirect(url_for("backoffice.tags.list_tags", active_tab="categories"), code=303)
 
     try:
         db.session.add(criteria_models.CriterionCategory(label=form.label.data))
@@ -265,4 +265,4 @@ def create_tag_category() -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Cette catégorie existe déjà", "warning")
 
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.tags.list_tags", active_tab="categories"))
+    return request_utils.safe_redirect_back(request, url_for("backoffice.tags.list_tags", active_tab="categories"))

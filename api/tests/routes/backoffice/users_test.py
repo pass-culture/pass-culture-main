@@ -62,7 +62,7 @@ def super_admin_fixture(roles_with_permissions: None) -> users_models.User:
 
 
 class SuspendUserTest(PostEndpointHelper):
-    endpoint = "backoffice_web.users.suspend_user"
+    endpoint = "backoffice.users.suspend_user"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = {
         perm_models.Permissions.SUSPEND_USER,
@@ -84,7 +84,7 @@ class SuspendUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        assert response.location == url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
         assert not user.isActive
         assert "email.supprime" not in user.email
@@ -134,7 +134,7 @@ class SuspendUserTest(PostEndpointHelper):
         db.session.refresh(event_booking)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        assert response.location == url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
         assert used_booking.status == bookings_models.BookingStatus.USED
         assert reimbursed_booking.status == bookings_models.BookingStatus.REIMBURSED
         if cancel_bookings:
@@ -179,7 +179,7 @@ class SuspendUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id)
+        assert response.location == url_for("backoffice.pro_user.get", user_id=user.id)
 
         assert not user.isActive
         assert len(user.action_history) == 1
@@ -275,7 +275,7 @@ class SuspendUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        assert response.location == url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
         redirected_response = authenticated_client.get(response.location)
         assert "Les données envoyées sont invalides" in html_parser.extract_alert(redirected_response.data)
@@ -292,7 +292,7 @@ class SuspendUserTest(PostEndpointHelper):
             ]
         )
 
-        referer = url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id, _external=True)
+        referer = url_for("backoffice.bo_users.get_bo_user", user_id=user.id, _external=True)
 
         response = self.post_to_endpoint(
             client.with_bo_session_auth(super_admin),
@@ -333,7 +333,7 @@ class SuspendUserTest(PostEndpointHelper):
             ]
         )
 
-        referer = url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id, _external=True)
+        referer = url_for("backoffice.bo_users.get_bo_user", user_id=user.id, _external=True)
 
         response = self.post_to_endpoint(
             client.with_bo_session_auth(beneficiary_fraud_admin),
@@ -376,7 +376,7 @@ class SuspendUserTest(PostEndpointHelper):
 
 
 class UnsuspendUserTest(PostEndpointHelper):
-    endpoint = "backoffice_web.users.unsuspend_user"
+    endpoint = "backoffice.users.unsuspend_user"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = {
         perm_models.Permissions.UNSUSPEND_USER,
@@ -392,7 +392,7 @@ class UnsuspendUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        assert response.location == url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
         assert user.isActive
         assert len(user.action_history) == 1
@@ -413,7 +413,7 @@ class UnsuspendUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+        assert response.location == url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
         assert user.isActive
         assert len(user.action_history) == 1
@@ -452,7 +452,7 @@ class UnsuspendUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id)
+        assert response.location == url_for("backoffice.pro_user.get", user_id=user.id)
 
         assert user.isActive
         assert len(user.action_history) == 1
@@ -526,7 +526,7 @@ class UnsuspendUserTest(PostEndpointHelper):
 
 
 class GetBatchSuspendUsersFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.users.get_batch_suspend_users_form"
+    endpoint = "backoffice.users.get_batch_suspend_users_form"
     needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     def test_get_batch_suspend_users_form(self, authenticated_client):
@@ -585,7 +585,7 @@ class BatchSuspendUsersReturns400Helper(PostEndpointHelper):
 
 
 class BatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
-    endpoint = "backoffice_web.users.batch_suspend_users"
+    endpoint = "backoffice.users.batch_suspend_users"
     needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     @pytest.mark.parametrize("separator", [",", ", ", "\n"])
@@ -633,7 +633,7 @@ class BatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
 
 
 class ConfirmBatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
-    endpoint = "backoffice_web.users.confirm_batch_suspend_users"
+    endpoint = "backoffice.users.confirm_batch_suspend_users"
     needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     def test_confirm_batch_suspend_users(self, authenticated_client, legit_user):
@@ -703,7 +703,7 @@ class ConfirmBatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
 
 
 class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
-    endpoint = "backoffice_web.users.redirect_to_brevo_user_page"
+    endpoint = "backoffice.users.redirect_to_brevo_user_page"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
@@ -731,7 +731,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 303
 
-        assert response.location == url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id)
+        assert response.location == url_for("backoffice.public_accounts.get_public_account", user_id=user_id)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == f"L'adresse {user.email} n'existe pas dans Brevo"
@@ -763,7 +763,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 303
 
-        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user_id)
+        assert response.location == url_for("backoffice.pro_user.get", user_id=user_id)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == f"L'adresse {user_offerer.user.email} n'existe pas dans Brevo"

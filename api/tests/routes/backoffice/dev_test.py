@@ -24,7 +24,7 @@ pytestmark = [
 
 
 class UserGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.dev.get_generated_user"
+    endpoint = "backoffice.dev.get_generated_user"
     needed_permission = None
 
     def test_returns_user_data(self, authenticated_client):
@@ -115,7 +115,7 @@ class UserGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
 
 
 class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.dev.generate_user"
+    endpoint = "backoffice.dev.generate_user"
     needed_permission = None
 
     @pytest.mark.settings(ENABLE_TEST_USER_GENERATION=False)
@@ -132,9 +132,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = db.session.query(users_models.User).count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(
-            "backoffice_web.dev.get_generated_user"
-        )
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice.dev.get_generated_user")
         assert number_of_users_before == number_of_users_after
 
     def test_user_not_created_when_underage_validates_phone_number(self, authenticated_client):
@@ -144,9 +142,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = db.session.query(users_models.User).count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(
-            "backoffice_web.dev.get_generated_user"
-        )
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice.dev.get_generated_user")
         assert number_of_users_before == number_of_users_after
 
     def test_user_not_created_when_age_below_valid_range(self, authenticated_client):
@@ -156,9 +152,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = db.session.query(users_models.User).count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(
-            "backoffice_web.dev.get_generated_user"
-        )
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice.dev.get_generated_user")
         assert number_of_users_before == number_of_users_after
 
     def test_user_set_postal_code(self, authenticated_client):
@@ -237,7 +231,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
 
 
 class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.dev.delete_user"
+    endpoint = "backoffice.dev.delete_user"
     needed_permission = None
 
     def test_user_deletion(self, authenticated_client):
@@ -251,7 +245,7 @@ class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissi
 
         assert response.status_code == 303, response.data
         assert db.session.query(users_models.User).filter(users_models.User.id == user.id).one_or_none() is None
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.dev.delete_user")
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice.dev.delete_user")
 
     def test_user_with_relations_deletion_failure(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
@@ -260,7 +254,7 @@ class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissi
 
         assert response.status_code == 303
         assert db.session.query(users_models.User).filter(users_models.User.id == user.id).one_or_none() is not None
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.dev.delete_user")
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice.dev.delete_user")
 
     @pytest.mark.settings(ENABLE_TEST_USER_GENERATION=0)
     def test_user_deletion_disabled(self, authenticated_client):
@@ -273,7 +267,7 @@ class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissi
 
 
 class ComponentsTest(GetEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.dev.components"
+    endpoint = "backoffice.dev.components"
     needed_permission = None
 
     @pytest.mark.settings(ENABLE_BO_COMPONENT_PAGE=1)
@@ -288,7 +282,7 @@ class ComponentsTest(GetEndpointWithoutPermissionHelper):
 
 
 class OfferGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.dev.generate_offer"
+    endpoint = "backoffice.dev.generate_offer"
     needed_permission = None
 
     @pytest.mark.settings(ENABLE_TEST_OFFER_GENERATION=False)
@@ -333,7 +327,7 @@ class OfferGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermi
 
 
 class OfferGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.dev.get_generated_offer"
+    endpoint = "backoffice.dev.get_generated_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = None
 
@@ -366,7 +360,7 @@ class OfferGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
 
 
 class OfferGenerationFormGetRouteTest(GetEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.dev.get_generate_offer_form"
+    endpoint = "backoffice.dev.get_generate_offer_form"
 
     def test_get(self, authenticated_client):
         response = authenticated_client.get(self.path)
@@ -375,7 +369,7 @@ class OfferGenerationFormGetRouteTest(GetEndpointWithoutPermissionHelper):
 
 
 class OfferDeactivationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.dev.deactivate_offer"
+    endpoint = "backoffice.dev.deactivate_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = None
 

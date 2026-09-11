@@ -62,25 +62,25 @@ class Context:
 
 class UserContext(Context):
     fetch_rows_func = users_api.search_pro_account
-    endpoint = "backoffice_web.pro_user.get"
+    endpoint = "backoffice.pro_user.get"
     row_id_name = "user_id"
 
 
 class OffererContext(Context):
     fetch_rows_func = offerers_api.search_offerer  # type: ignore[assignment]
-    endpoint = "backoffice_web.offerer.get"
+    endpoint = "backoffice.offerer.get"
     row_id_name = "offerer_id"
 
 
 class VenueContext(Context):
     fetch_rows_func = offerers_api.search_venue  # type: ignore[assignment]
-    endpoint = "backoffice_web.venue.get"
+    endpoint = "backoffice.venue.get"
     row_id_name = "venue_id"
 
 
 class BankAccountContext(Context):
     fetch_rows_func = offerers_api.search_bank_account
-    endpoint = "backoffice_web.bank_account.get"
+    endpoint = "backoffice.bank_account.get"
     row_id_name = "bank_account_id"
 
     @classmethod

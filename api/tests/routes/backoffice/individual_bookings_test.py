@@ -112,7 +112,7 @@ def bookings_fixture() -> tuple:
 
 
 class ListIndividualBookingsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.list_individual_bookings"
+    endpoint = "backoffice.individual_bookings.list_individual_bookings"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
@@ -782,7 +782,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
 
 class MarkBookingAsUsedTest(PostEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.mark_booking_as_used"
+    endpoint = "backoffice.individual_bookings.mark_booking_as_used"
     endpoint_kwargs = {"booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
@@ -968,7 +968,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
 
 class CancelBookingTest(PostEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.mark_booking_as_cancelled"
+    endpoint = "backoffice.individual_bookings.mark_booking_as_cancelled"
     endpoint_kwargs = {"booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
@@ -1235,7 +1235,7 @@ class CancelBookingTest(PostEndpointHelper):
 
 
 class GetBatchMarkAsUsedIndividualBookingsFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.get_batch_validate_individual_bookings_form"
+    endpoint = "backoffice.individual_bookings.get_batch_validate_individual_bookings_form"
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_get_batch_mark_as_used_booking_form(self, legit_user, authenticated_client):
@@ -1247,7 +1247,7 @@ class GetBatchMarkAsUsedIndividualBookingsFormTest(GetEndpointHelper):
 
 
 class BatchMarkBookingAsUsedTest(PostEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.batch_validate_individual_bookings"
+    endpoint = "backoffice.individual_bookings.batch_validate_individual_bookings"
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_batch_mark_as_used_bookings(self, legit_user, authenticated_client):
@@ -1475,7 +1475,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
 
 
 class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form"
+    endpoint = "backoffice.individual_bookings.get_batch_cancel_individual_bookings_form"
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_get_batch_cancel_booking_form(self, legit_user, authenticated_client):
@@ -1488,7 +1488,7 @@ class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
 
 
 class BatchCancelIndividualBookingsTest(PostEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.batch_cancel_individual_bookings"
+    endpoint = "backoffice.individual_bookings.batch_cancel_individual_bookings"
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_batch_cancel_bookings(self, legit_user, authenticated_client):
@@ -1540,7 +1540,7 @@ class BatchCancelIndividualBookingsTest(PostEndpointHelper):
 
 
 class GetBatchTagFraudulentBookingsFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.get_batch_tag_fraudulent_bookings_form"
+    endpoint = "backoffice.individual_bookings.get_batch_tag_fraudulent_bookings_form"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_batch_tag_fraudulent_bookings_form(self, legit_user, authenticated_client):
@@ -1571,7 +1571,7 @@ class GetBatchTagFraudulentBookingsFormTest(PostEndpointHelper):
 
 
 class BatchTagFraudulentBookingsTest(PostEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.batch_tag_fraudulent_bookings"
+    endpoint = "backoffice.individual_bookings.batch_tag_fraudulent_bookings"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_batch_tag_fraudulent_bookings_without_email(self, legit_user, authenticated_client):
@@ -1679,7 +1679,7 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
 
 
 class GetBatchRemoveFraudulentBookingTagFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.get_batch_remove_fraudulent_booking_tag_form"
+    endpoint = "backoffice.individual_bookings.get_batch_remove_fraudulent_booking_tag_form"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_batch_remove_fraudulent_booking_tag_form(self, legit_user, authenticated_client):
@@ -1708,7 +1708,7 @@ class GetBatchRemoveFraudulentBookingTagFormTest(PostEndpointHelper):
 
 
 class BatchRemoveFraudulentBookingTagTest(PostEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.batch_remove_fraudulent_booking_tag"
+    endpoint = "backoffice.individual_bookings.batch_remove_fraudulent_booking_tag"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_batch_remove_fraudulent_booking_tag(self, legit_user, authenticated_client):
@@ -1736,7 +1736,7 @@ class BatchRemoveFraudulentBookingTagTest(PostEndpointHelper):
 
 
 class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.get_individual_booking_csv_download"
+    endpoint = "backoffice.individual_bookings.get_individual_booking_csv_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
     # session + bookings
@@ -1753,7 +1753,7 @@ class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):
 
 
 class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.get_individual_booking_xlsx_download"
+    endpoint = "backoffice.individual_bookings.get_individual_booking_xlsx_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
     # session + bookings
@@ -1778,7 +1778,7 @@ class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
 
 
 class GetIndividualBookingTest(GetEndpointHelper):
-    endpoint = "backoffice_web.individual_bookings.get_individual_booking"
+    endpoint = "backoffice.individual_bookings.get_individual_booking"
     endpoint_kwargs = {"booking_id": 1}
     needed_permission = perm_models.Permissions.READ_BOOKINGS
     # session

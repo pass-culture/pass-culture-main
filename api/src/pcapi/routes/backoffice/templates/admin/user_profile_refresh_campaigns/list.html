@@ -37,7 +37,7 @@
   {% set form = creation_form %}
   {% set title = "Création d'une nouvelle campagne" %}
   {% set button_text = "Créer" %}
-  {% set dst = url_for("backoffice_web.user_profile_refresh_campaigns.create_campaign") %}
+  {% set dst = url_for("backoffice.user_profile_refresh_campaigns.create_campaign") %}
   {% set ajax_submit = False %}
   <div class="modal fade modal-xl"
        id="create-campaign-modal"
@@ -51,6 +51,6 @@
     </div>
   </div>
   {% for campaign in rows %}
-    {{ build_dynamic_modal(url_for('backoffice_web.user_profile_refresh_campaigns.get_campaign_edit_form', campaign_id=campaign.id) , "edit-campaign-modal-" + campaign.id|string) }}
+    {{ build_dynamic_modal(url_for('backoffice.user_profile_refresh_campaigns.get_campaign_edit_form', campaign_id=campaign.id) , "edit-campaign-modal-" + campaign.id|string) }}
   {% endfor %}
 {% endblock after_table %}

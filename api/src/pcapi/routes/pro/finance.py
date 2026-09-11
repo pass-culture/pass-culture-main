@@ -6,7 +6,7 @@ from pcapi.core.finance import repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import finance_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import pdf
@@ -16,10 +16,10 @@ from pcapi.utils.transaction_manager import atomic
 from . import blueprint
 
 
-@private_api.route("/finance/settlements", methods=["GET"])
+@pro_blueprint.route("/finance/settlements", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=finance_serialize.SettlementListResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=finance_serialize.SettlementListResponseModel, api=blueprint.pro_schema)
 def get_settlements(query: finance_serialize.SettlementListQueryModel) -> finance_serialize.SettlementListResponseModel:
     rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
 
@@ -36,10 +36,10 @@ def get_settlements(query: finance_serialize.SettlementListQueryModel) -> financ
     )
 
 
-@private_api.route("/finance/has-settlement", methods=["GET"])
+@pro_blueprint.route("/finance/has-settlement", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=finance_serialize.HasSettlementResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=finance_serialize.HasSettlementResponseModel, api=blueprint.pro_schema)
 def has_settlement(query: finance_serialize.HasSettlementQueryModel) -> finance_serialize.HasSettlementResponseModel:
     rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
 
@@ -48,10 +48,10 @@ def has_settlement(query: finance_serialize.HasSettlementQueryModel) -> finance_
     return finance_serialize.HasSettlementResponseModel(has_settlement=offerer_has_settlement)
 
 
-@private_api.route("/v2/finance/invoices", methods=["GET"])
+@pro_blueprint.route("/v2/finance/invoices", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=finance_serialize.InvoiceListV2ResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=finance_serialize.InvoiceListV2ResponseModel, api=blueprint.pro_schema)
 def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance_serialize.InvoiceListV2ResponseModel:
     invoices = repository.get_paid_invoices_query(
         current_user,
@@ -69,10 +69,10 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
     )
 
 
-@private_api.route("/v2/finance/has-invoice", methods=["GET"])
+@pro_blueprint.route("/v2/finance/has-invoice", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=finance_serialize.HasInvoiceResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=finance_serialize.HasInvoiceResponseModel, api=blueprint.pro_schema)
 def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serialize.HasInvoiceResponseModel:
     rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
 
@@ -81,11 +81,11 @@ def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serial
     return finance_serialize.HasInvoiceResponseModel(has_invoice=offerer_has_invoice)
 
 
-@private_api.route("/finance/combined-invoices", methods=["GET"])
+@pro_blueprint.route("/finance/combined-invoices", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     json_format=False,
     response_headers={
         "Content-Type": "application/pdf; charset=utf-8;",

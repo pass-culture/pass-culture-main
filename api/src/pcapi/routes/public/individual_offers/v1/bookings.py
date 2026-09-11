@@ -97,7 +97,7 @@ def _get_paginated_and_filtered_bookings(
     )
 
 
-@blueprints.public_api.route("/public/bookings/v1/bookings", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/bookings/v1/bookings", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -165,7 +165,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
     return _get_booking_by_token_query(token).one_or_none()
 
 
-@blueprints.public_api.route("/public/bookings/v1/token/<string:token>", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/bookings/v1/token/<string:token>", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -208,7 +208,7 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
     return serialization.GetBookingResponse.build_booking(booking)
 
 
-@blueprints.public_api.route("/public/bookings/v1/use/token/<token>", methods=["PATCH"])
+@blueprints.provider_blueprint.route("/public/bookings/v1/use/token/<token>", methods=["PATCH"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -256,7 +256,7 @@ def validate_booking_by_token(token: str) -> None:
         raise api_errors.ForbiddenError({"booking": str(exc)})
 
 
-@blueprints.public_api.route("/public/bookings/v1/keep/token/<token>", methods=["PATCH"])
+@blueprints.provider_blueprint.route("/public/bookings/v1/keep/token/<token>", methods=["PATCH"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -304,7 +304,7 @@ def cancel_booking_validation_by_token(token: str) -> None:
         )
 
 
-@blueprints.public_api.route("/public/bookings/v1/cancel/token/<token>", methods=["PATCH"])
+@blueprints.provider_blueprint.route("/public/bookings/v1/cancel/token/<token>", methods=["PATCH"])
 @atomic()
 @api_key_required
 @spectree_serialize(

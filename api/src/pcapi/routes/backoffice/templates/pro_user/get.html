@@ -37,7 +37,7 @@
                 {% endif %}
                 {% if user.isActive %}
                   <div class="mx-3 pt-2 pc-brevo-logo-link">
-                    <a href="{{ url_for('backoffice_web.users.redirect_to_brevo_user_page', user_id=user.id) }}"
+                    <a href="{{ url_for('backoffice.users.redirect_to_brevo_user_page', user_id=user.id) }}"
                        target="_blank"
                        rel="noreferrer noopener">{{ logo.brevo() }}</a>
                   </div>
@@ -81,7 +81,7 @@
                 </p>
                 {% if not user.isEmailValidated and has_permission("MANAGE_PRO_ENTITY") %}
                   <p class="mb-1">
-                    {{ build_modal_form("validate-email", url_for("backoffice_web.pro_user.validate_pro_user_email", user_id=user.id) , empty_form, "Valider l'adresse email", "Confirmer la validation de l'adresse email", "Vous êtes sur le point de valider l'adresse email, êtes-vous sûr ?") }}
+                    {{ build_modal_form("validate-email", url_for("backoffice.pro_user.validate_pro_user_email", user_id=user.id) , empty_form, "Valider l'adresse email", "Confirmer la validation de l'adresse email", "Vous êtes sur le point de valider l'adresse email, êtes-vous sûr ?") }}
                   </p>
                 {% endif %}
                 <p class="mb-1">
@@ -95,7 +95,7 @@
       <div class="mt-4">
         <div id="pro_user_details_frame"
              hx-trigger="load"
-             hx-get="{{ url_for('backoffice_web.pro_user.get_details', user_id=user.id, active_tab=request.args.get('active_tab', 'history')) }}">
+             hx-get="{{ url_for('backoffice.pro_user.get_details', user_id=user.id, active_tab=request.args.get('active_tab', 'history')) }}">
           {{ build_loading_spinner() }}
         </div>
       </div>

@@ -6,7 +6,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.feature import Feature
 from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.apis import public_api
+from pcapi.routes.apis import misc_blueprint
 from pcapi.routes.internal.auth import api_key_required
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -18,7 +18,7 @@ from . import serializers
 logger = logging.getLogger(__name__)
 
 
-@public_api.route("/testing/features", methods=["PATCH"])
+@misc_blueprint.route("/testing/features", methods=["PATCH"])
 @api_key_required
 @atomic()
 @spectree_serialize(on_success_status=204)

@@ -43,7 +43,7 @@ pytestmark = [
 
 class SearchProTest(search_helpers.SearchHelper, GetEndpointHelper):
     # This class performs basic search tests by inheritance
-    endpoint = "backoffice_web.pro.search_pro"
+    endpoint = "backoffice.pro.search_pro"
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     def test_default_options(self, legit_user, authenticated_client):
@@ -102,7 +102,7 @@ def assert_venue_equals(result_card_text: str, expected_venue: offerers_models.V
 
 
 class SearchProUserTest:
-    endpoint = "backoffice_web.pro.search_pro"
+    endpoint = "backoffice.pro.search_pro"
 
     # - fetch session + user
     expected_num_queries_when_no_query = 1
@@ -151,7 +151,7 @@ class SearchProUserTest:
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.pro_user.get",
+            "backoffice.pro_user.get",
             user_id=self.pro_accounts[5].id,
             q=self.pro_accounts[5].id,
             search_rank=1,
@@ -184,7 +184,7 @@ class SearchProUserTest:
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.pro_user.get",
+            "backoffice.pro_user.get",
             user_id=self.pro_accounts[2].id,
             q=self.pro_accounts[2].email,
             search_rank=1,
@@ -214,7 +214,7 @@ class SearchProUserTest:
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.pro_user.get",
+            "backoffice.pro_user.get",
             user_id=self.pro_accounts[3].id,
             q="Alice Dubois",
             search_rank=1,
@@ -257,7 +257,7 @@ class SearchProUserTest:
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.pro_user.get",
+            "backoffice.pro_user.get",
             user_id=pro_beneficiary.id,
             q=search_query,
             search_rank=1,
@@ -319,7 +319,7 @@ class SearchProUserTest:
 
 
 class SearchOffererTest:
-    endpoint = "backoffice_web.pro.search_pro"
+    endpoint = "backoffice.pro.search_pro"
 
     # - fetch session + user
     # - fetch results
@@ -361,7 +361,7 @@ class SearchOffererTest:
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.offerer.get",
+            "backoffice.offerer.get",
             offerer_id=offerer_id,
             q=offerer_id,
             search_rank=1,
@@ -379,7 +379,7 @@ class SearchOffererTest:
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.offerer.get",
+            "backoffice.offerer.get",
             offerer_id=self.offerers[3].id,
             q=self.offerers[3].siren,
             search_rank=1,
@@ -398,7 +398,7 @@ class SearchOffererTest:
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.offerer.get",
+            "backoffice.offerer.get",
             offerer_id=bank_account.offerer.id,
             q=reference,
             search_rank=1,
@@ -430,7 +430,7 @@ class SearchOffererTest:
 
         assert_response_location(
             response,
-            "backoffice_web.offerer.get",
+            "backoffice.offerer.get",
             offerer_id=self.offerers[1].id,  # Cinéma de la plage
             q="cine de plage",
             search_rank=1,
@@ -481,7 +481,7 @@ class SearchOffererTest:
 
         # Redirected to single result
         assert_response_location(
-            response, "backoffice_web.offerer.get", offerer_id=nc_offerer.id, q="1020304", search_rank=1, total_items=1
+            response, "backoffice.offerer.get", offerer_id=nc_offerer.id, q="1020304", search_rank=1, total_items=1
         )
 
     def test_search_caledonian_offerer_shows_rid7(self, authenticated_client):
@@ -507,7 +507,7 @@ class SearchOffererTest:
 
 
 class SearchVenueTest:
-    endpoint = "backoffice_web.pro.search_pro"
+    endpoint = "backoffice.pro.search_pro"
 
     # - fetch session + user
     # - fetch results
@@ -557,7 +557,7 @@ class SearchVenueTest:
 
         # Redirected to single result
         assert_response_location(
-            response, "backoffice_web.venue.get", venue_id=venue_id, q=venue_id, search_rank=1, total_items=1
+            response, "backoffice.venue.get", venue_id=venue_id, q=venue_id, search_rank=1, total_items=1
         )
 
     @pytest.mark.parametrize("siret", ["12345600300003", "123 456 003 00003"])
@@ -571,7 +571,7 @@ class SearchVenueTest:
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.venue.get",
+            "backoffice.venue.get",
             venue_id=self.venues[3].id,
             q=self.venues[3].siret,
             search_rank=1,
@@ -588,7 +588,7 @@ class SearchVenueTest:
 
         # Redirected to single result
         assert_response_location(
-            response, "backoffice_web.venue.get", venue_id=self.venues[1].id, q=email, search_rank=1, total_items=1
+            response, "backoffice.venue.get", venue_id=self.venues[1].id, q=email, search_rank=1, total_items=1
         )
 
     def test_can_search_venue_by_booking_email_domain(self, authenticated_client):
@@ -616,7 +616,7 @@ class SearchVenueTest:
 
         # Redirected to single result
         assert_response_location(
-            response, "backoffice_web.venue.get", venue_id=self.venues[1].id, q=email, search_rank=1, total_items=1
+            response, "backoffice.venue.get", venue_id=self.venues[1].id, q=email, search_rank=1, total_items=1
         )
 
     def test_can_search_venue_by_name(self, authenticated_client):
@@ -670,7 +670,7 @@ class SearchVenueTest:
 
         assert_response_location(
             response,
-            "backoffice_web.venue.get",
+            "backoffice.venue.get",
             venue_id=self.venues[6].id,  # Librairie du Centre
             q="Librairie Centre",
             search_rank=1,
@@ -701,7 +701,7 @@ class SearchVenueTest:
         # Redirected to single result
         assert_response_location(
             response,
-            "backoffice_web.venue.get",
+            "backoffice.venue.get",
             venue_id=venue_ids[expected_venue_index],
             q=query,
             search_rank=1,
@@ -717,7 +717,7 @@ class SearchVenueTest:
 
         # Redirected to single result
         assert_response_location(
-            response, "backoffice_web.venue.get", venue_id=nc_venue.id, q="1020304001", search_rank=1, total_items=1
+            response, "backoffice.venue.get", venue_id=nc_venue.id, q="1020304001", search_rank=1, total_items=1
         )
 
     def test_search_caledonian_venue_shows_ridet(self, authenticated_client):
@@ -761,7 +761,7 @@ class SearchVenueTest:
 
 
 class SearchBankAccountTest:
-    endpoint = "backoffice_web.pro.search_pro"
+    endpoint = "backoffice.pro.search_pro"
 
     # session + current user (1 query)
     # results + count in .paginate (2 queries)
@@ -775,7 +775,7 @@ class SearchBankAccountTest:
             assert response.status_code == 303
 
         assert response.location == url_for(
-            "backoffice_web.bank_account.get", bank_account_id=expected_id, q=str(search_query)
+            "backoffice.bank_account.get", bank_account_id=expected_id, q=str(search_query)
         )
 
     def test_search_bank_account_by_humanized_id(self, authenticated_client):
@@ -814,7 +814,7 @@ class SearchBankAccountTest:
 
 
 class LogsTest:
-    endpoint = "backoffice_web.pro.search_pro"
+    endpoint = "backoffice.pro.search_pro"
 
     def test_log_pro_search(self, authenticated_client, caplog):
         offerer = offerers_factories.OffererFactory(name="Log à rythme")
@@ -839,7 +839,7 @@ class LogsTest:
 
 
 class ConnectAsProUserTest(PostEndpointHelper):
-    endpoint = "backoffice_web.pro.connect_as"
+    endpoint = "backoffice.pro.connect_as"
     needed_permission = perm_models.Permissions.CONNECT_AS_PRO
     # session + user
     # pro user data
@@ -884,7 +884,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
 
         # check url form
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -904,7 +904,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
 
         # check url form
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -931,7 +931,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -963,7 +963,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         if warning:
             redirected_response = authenticated_client.get(response.location)
             assert html_parser.extract_alert(redirected_response.data) == warning
@@ -1006,7 +1006,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1023,7 +1023,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1046,7 +1046,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1076,7 +1076,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1143,7 +1143,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1159,7 +1159,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1179,7 +1179,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1206,7 +1206,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1276,7 +1276,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1292,7 +1292,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1315,7 +1315,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1345,7 +1345,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1413,7 +1413,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1429,7 +1429,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1451,7 +1451,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1480,7 +1480,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1550,7 +1550,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1566,7 +1566,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1589,7 +1589,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1619,7 +1619,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1689,7 +1689,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1705,7 +1705,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1728,7 +1728,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1758,7 +1758,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home")
+        assert response.location == url_for("backoffice.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)

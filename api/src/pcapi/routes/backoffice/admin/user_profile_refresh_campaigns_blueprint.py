@@ -73,7 +73,7 @@ def create_campaign() -> response_utils.BackofficeResponse:
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.safe_redirect_back(
-            request, url_for("backoffice_web.user_profile_refresh_campaigns.list_campaigns")
+            request, url_for("backoffice.user_profile_refresh_campaigns.list_campaigns")
         )
 
     new_campaign_is_active = bool(form.is_active.data)
@@ -94,7 +94,7 @@ def create_campaign() -> response_utils.BackofficeResponse:
     db.session.flush()
     flash("Campagne de mise à jour de données créée avec succès.", "success")
 
-    return redirect(url_for("backoffice_web.user_profile_refresh_campaigns.list_campaigns"), code=303)
+    return redirect(url_for("backoffice.user_profile_refresh_campaigns.list_campaigns"), code=303)
 
 
 @user_profile_refresh_campaigns_blueprint.route("/<int:campaign_id>/edit_form", methods=["GET"])
@@ -115,7 +115,7 @@ def get_campaign_edit_form(campaign_id: int) -> response_utils.BackofficeRespons
         alert="L'activation de la campagne actuelle désactivera toutes les autres campagnes.",
         target_id=f"#campaign-row-{campaign_id}",
         form=form,
-        dst=url_for("backoffice_web.user_profile_refresh_campaigns.edit_campaign", campaign_id=campaign_id),
+        dst=url_for("backoffice.user_profile_refresh_campaigns.edit_campaign", campaign_id=campaign_id),
         div_id=f"edit-campaign-modal-{campaign_id}",
         title=f"Modification de la campagne #{campaign_id}",
         button_text="Valider",

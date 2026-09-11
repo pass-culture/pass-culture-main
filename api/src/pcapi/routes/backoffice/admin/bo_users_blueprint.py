@@ -46,7 +46,7 @@ def _get_bo_user_query(user_id: int) -> sa_orm.Query:
 def get_admin_account_link(user_id: int, form: forms.BOUserSearchForm | None, **kwargs: typing.Any) -> str:
     if form and form.q.data:
         kwargs["q"] = form.q.data
-    return url_for("backoffice_web.bo_users.get_bo_user", user_id=user_id, **kwargs)
+    return url_for("backoffice.bo_users.get_bo_user", user_id=user_id, **kwargs)
 
 
 @bo_users_blueprint.route("/search", methods=["GET"])
@@ -163,7 +163,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
 
 
 @bo_users_blueprint.route("/<int:user_id>", methods=["GET"])
-@access_control.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice.home")
 def get_bo_user(user_id: int) -> response_utils.BackofficeResponse:
     if not (
         current_user.backoffice_profile

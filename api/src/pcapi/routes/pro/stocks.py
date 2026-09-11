@@ -14,7 +14,7 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import get_or_404_from_query
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -96,12 +96,12 @@ def get_stocks_with_count(offer: offers_models.Offer) -> tuple[list[offers_seria
     return stocks, filtered_stocks.count()
 
 
-@private_api.route("/stocks/bulk", methods=["POST"])
+@pro_blueprint.route("/stocks/bulk", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=201,
     response_model=offers_serialize.GetStocksResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def bulk_create_event_stocks(
@@ -148,12 +148,12 @@ def bulk_create_event_stocks(
     )
 
 
-@private_api.route("/stocks/bulk", methods=["PATCH"])
+@pro_blueprint.route("/stocks/bulk", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
     response_model=offers_serialize.GetStocksResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def bulk_update_event_stocks(

@@ -26,7 +26,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.feature import FeatureToggle
-from pcapi.routes.apis import public_api
+from pcapi.routes.external.blueprint import external_blueprint
 from pcapi.routes.external.serialization import brevo as serializers
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -87,7 +87,7 @@ def _toggle_marketing_email_subscription(subscribe: bool) -> None:
     update_external_user(user, skip_brevo=True)
 
 
-@public_api.route("/webhooks/brevo/unsubscribe", methods=["POST"])
+@external_blueprint.route("/brevo/unsubscribe", methods=["POST"])
 @require_brevo_token_as_query_param
 @spectree_serialize(on_success_status=204)
 def brevo_unsubscribe_user() -> None:
@@ -98,7 +98,7 @@ def brevo_unsubscribe_user() -> None:
     _toggle_marketing_email_subscription(False)
 
 
-@public_api.route("/webhooks/brevo/subscribe", methods=["POST"])
+@external_blueprint.route("/brevo/subscribe", methods=["POST"])
 @require_brevo_token_as_query_param
 @spectree_serialize(on_success_status=204)
 def brevo_subscribe_user() -> None:
@@ -109,7 +109,7 @@ def brevo_subscribe_user() -> None:
     _toggle_marketing_email_subscription(True)
 
 
-@public_api.route("/webhooks/brevo/importcontacts/<int:list_id>/<int:iteration>", methods=["POST"])
+@external_blueprint.route("/brevo/importcontacts/<int:list_id>/<int:iteration>", methods=["POST"])
 @require_brevo_token_as_query_param
 @spectree_serialize(on_success_status=204)
 def brevo_notify_importcontacts(list_id: int, iteration: int) -> None:
@@ -124,7 +124,7 @@ def brevo_notify_importcontacts(list_id: int, iteration: int) -> None:
     logger.info("Brevo import_contacts finished", extra={"list_id": list_id, "iteration": iteration})
 
 
-@public_api.route("/webhooks/brevo/recommendations/<int:user_id>", methods=["GET"])
+@external_blueprint.route("/brevo/recommendations/<int:user_id>", methods=["GET"])
 @brevo_webhook
 @spectree_serialize(
     on_success_status=200, response_model=serializers.BrevoOffersResponse, on_error_statuses=[404, 500, 502, 504]

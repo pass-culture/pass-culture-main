@@ -12,8 +12,8 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import resource_not_found_error
-from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rest as rest_utils
@@ -23,14 +23,14 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/collective/stocks", methods=["POST"])
+@pro_blueprint.route("/collective/stocks", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201,
     on_error_statuses=[400, 404],
     response_model=collective_stock_serialize.CollectiveStockResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def create_collective_stock(
     body: collective_stock_serialize.CollectiveStockCreationBodyModel,
@@ -58,13 +58,13 @@ def create_collective_stock(
     return collective_stock_serialize.CollectiveStockResponseModel.model_validate(collective_stock)
 
 
-@private_api.route("/collective/stocks/<int:collective_stock_id>", methods=["PATCH"])
+@pro_blueprint.route("/collective/stocks/<int:collective_stock_id>", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
     on_error_statuses=[400, 401, 404],
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     response_model=collective_stock_serialize.CollectiveStockResponseModel,
 )
 def edit_collective_stock(

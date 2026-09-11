@@ -19,27 +19,27 @@
         {% call build_details_tab_content("allocine", active_tab == 'allocine') %}
           <div id="allocine_frame"
                hx-trigger="intersect once"
-               hx-get="{{ url_for('backoffice_web.pivots.list_pivots', name='allocine') }}">{{ build_loading_spinner() }}</div>
+               hx-get="{{ url_for('backoffice.pivots.list_pivots', name='allocine') }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
         {% call build_details_tab_content("boost", active_tab == 'boost') %}
           <div id="boost_frame"
                hx-trigger="intersect once"
-               hx-get="{{ url_for('backoffice_web.pivots.list_pivots', name='boost') }}">{{ build_loading_spinner() }}</div>
+               hx-get="{{ url_for('backoffice.pivots.list_pivots', name='boost') }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
         {% call build_details_tab_content("cgr", active_tab == 'cgr') %}
           <div id="cgr_frame"
                hx-trigger="intersect once"
-               hx-get="{{ url_for('backoffice_web.pivots.list_pivots', name='cgr') }}">{{ build_loading_spinner() }}</div>
+               hx-get="{{ url_for('backoffice.pivots.list_pivots', name='cgr') }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
         {% call build_details_tab_content("cineoffice", active_tab == 'cineoffice') %}
           <div id="cineoffice_frame"
                hx-trigger="intersect once"
-               hx-get="{{ url_for('backoffice_web.pivots.list_pivots', name='cineoffice') }}">{{ build_loading_spinner() }}</div>
+               hx-get="{{ url_for('backoffice.pivots.list_pivots', name='cineoffice') }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
         {% call build_details_tab_content("ems", active_tab == 'ems') %}
           <div id="ems_frame"
                hx-trigger="intersect once"
-               hx-get="{{ url_for('backoffice_web.pivots.list_pivots', name='ems') }}">{{ build_loading_spinner() }}</div>
+               hx-get="{{ url_for('backoffice.pivots.list_pivots', name='ems') }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
       {% endcall %}
     </div>

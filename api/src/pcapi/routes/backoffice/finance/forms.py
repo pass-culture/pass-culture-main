@@ -127,7 +127,7 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
+        endpoint="backoffice.autocomplete_offerers",
     )
 
     venue = fields.PCTomSelectField(
@@ -135,7 +135,7 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
         multiple=True,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_venues",
+        endpoint="backoffice.autocomplete_venues",
     )
 
     origin = fields.PCSelectMultipleField(

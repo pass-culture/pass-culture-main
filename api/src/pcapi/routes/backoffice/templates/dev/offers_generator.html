@@ -12,7 +12,7 @@
               <h5 class="card-title">{{ offer.name }}</h5>
             </div>
             <div>
-              <a href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}">
+              <a href="{{ url_for('backoffice.offer.get_offer_details', offer_id=offer.id) }}">
                 <div class="mb-1">
                   <span class="fw-bold">Offer ID :</span> {{ offer.id }}
                 </div>
@@ -40,7 +40,7 @@
               <div class="mb-1">
                 <span class="fw-bold">Fuseau horaire :</span> {{ offer.offererAddress.address.timezone }}
               </div>
-              {{ build_modal_form("deactivate-offer", url_for("backoffice_web.dev.deactivate_offer", offer_id=offer.id) , deactivate_offer_form, "Désactiver l'offre", "Désactiver l'offre", "Valider") }}
+              {{ build_modal_form("deactivate-offer", url_for("backoffice.dev.deactivate_offer", offer_id=offer.id) , deactivate_offer_form, "Désactiver l'offre", "Désactiver l'offre", "Valider") }}
             </div>
             <hr>
             <div class="d-flex justify-content-start">

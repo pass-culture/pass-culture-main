@@ -22,7 +22,7 @@ class Returns200Test:
             roles=[users_models.UserRole.PRO],
         )
 
-        url = flask.url_for("Private API.get_profile")
+        url = flask.url_for("pro.get_profile")
         client = client.with_session_auth(email=user.email)
 
         with client.client.session_transaction() as session:

@@ -580,7 +580,7 @@ def format_booking_cancellation(
                     return Markup(
                         'Annulée par l\'acteur culturel (<a class="link-primary" href="{url}">{email}</a>)'
                     ).format(
-                        url=url_for("backoffice_web.pro_user.get", user_id=author.id),
+                        url=url_for("backoffice.pro_user.get", user_id=author.id),
                         email=author.email,
                     )
                 return f"Annulée par l'acteur culturel ({author.email})"
@@ -594,7 +594,7 @@ def format_booking_cancellation(
                     return Markup(
                         'Annulée par <a class="link-primary" href="{url}">{full_name}</a> via Connect As'
                     ).format(
-                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        url=url_for("backoffice.bo_users.get_bo_user", user_id=author.id),
                         full_name=author.full_name,
                     )
                 return f"Annulée par {author.full_name} via Connect As"
@@ -638,7 +638,7 @@ def format_booking_cancellation(
                     return Markup(
                         'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a>'
                     ).format(
-                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        url=url_for("backoffice.bo_users.get_bo_user", user_id=author.id),
                         full_name=author.full_name,
                     )
                 return f"Annulée depuis le backoffice par {author.full_name}"
@@ -652,7 +652,7 @@ def format_booking_cancellation(
                     return Markup(
                         'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour annulation d’évènement'
                     ).format(
-                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        url=url_for("backoffice.bo_users.get_bo_user", user_id=author.id),
                         full_name=author.full_name,
                     )
                 return f"Annulée depuis le backoffice par {author.full_name} pour annulation d’évènement"
@@ -663,7 +663,7 @@ def format_booking_cancellation(
                     return Markup(
                         'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour surbooking'
                     ).format(
-                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        url=url_for("backoffice.bo_users.get_bo_user", user_id=author.id),
                         full_name=author.full_name,
                     )
                 return f"Annulée depuis le backoffice par {author.full_name} pour surbooking"
@@ -674,7 +674,7 @@ def format_booking_cancellation(
                     return Markup(
                         'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> sur demande du bénéficiaire'
                     ).format(
-                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        url=url_for("backoffice.bo_users.get_bo_user", user_id=author.id),
                         full_name=author.full_name,
                     )
                 return f"Annulée depuis le backoffice par {author.full_name} sur demande du bénéficiaire"
@@ -688,7 +688,7 @@ def format_booking_cancellation(
                     return Markup(
                         'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour modification des informations de l\'offre'
                     ).format(
-                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        url=url_for("backoffice.bo_users.get_bo_user", user_id=author.id),
                         full_name=author.full_name,
                     )
                 return (
@@ -704,7 +704,7 @@ def format_booking_cancellation(
                     return Markup(
                         "Annulée depuis le backoffice par <a class='link-primary' href=\"{url}\">{full_name}</a> pour erreur d'information dans l'offre"
                     ).format(
-                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        url=url_for("backoffice.bo_users.get_bo_user", user_id=author.id),
                         full_name=author.full_name,
                     )
                 return f"Annulée depuis le backoffice par {author.full_name} pour erreur d'information dans l'offre"
@@ -718,7 +718,7 @@ def format_booking_cancellation(
                     return Markup(
                         'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour cause de fermeture d\'entité juridique'
                     ).format(
-                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        url=url_for("backoffice.bo_users.get_bo_user", user_id=author.id),
                         full_name=author.full_name,
                     )
                 return f"Annulée depuis le backoffice par {author.full_name} pour cause de fermeture d'entité juridique"

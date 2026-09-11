@@ -7,7 +7,7 @@ include GDPR protected data.
 from flask_login import login_required
 
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import public_information_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
@@ -15,12 +15,12 @@ from pcapi.utils.transaction_manager import atomic
 from . import blueprint
 
 
-@private_api.route("/venues/siret/<siret>", methods=["GET"])
+@pro_blueprint.route("/venues/siret/<siret>", methods=["GET"])
 @login_required
 @atomic()
 @spectree_serialize(
     response_model=public_information_serialize.GetVenuesOfOffererFromSiretResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_venues_of_offerer_from_siret(
     siret: str,

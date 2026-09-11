@@ -98,7 +98,7 @@ def collective_bookings_fixture() -> tuple:
 
 
 class ListCollectiveBookingsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.collective_bookings.list_collective_bookings"
+    endpoint = "backoffice.collective_bookings.list_collective_bookings"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
@@ -595,7 +595,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
 
 
 class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
-    endpoint = "backoffice_web.collective_bookings.mark_booking_as_used"
+    endpoint = "backoffice.collective_bookings.mark_booking_as_used"
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
@@ -689,7 +689,7 @@ class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
 
 
 class CancelCollectiveBookingTest(PostEndpointHelper):
-    endpoint = "backoffice_web.collective_bookings.mark_booking_as_cancelled"
+    endpoint = "backoffice.collective_bookings.mark_booking_as_cancelled"
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 

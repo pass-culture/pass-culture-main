@@ -78,7 +78,7 @@
             <div class="mt-4">
               <div id="admin_roles_management_frame"
                    hx-trigger="intersect once"
-                   hx-get="{{ url_for('backoffice_web.get_roles_management') }}">{{ build_loading_spinner() }}</div>
+                   hx-get="{{ url_for('backoffice.get_roles_management') }}">{{ build_loading_spinner() }}</div>
             </div>
           {% endcall %}
         {% endif %}
@@ -86,7 +86,7 @@
           <div class="mt-4">
             <div id="admin_roles_history_frame"
                  hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.get_roles_history') }}">{{ build_loading_spinner() }}</div>
+                 hx-get="{{ url_for('backoffice.get_roles_history') }}">{{ build_loading_spinner() }}</div>
           </div>
         {% endcall %}
       {% endcall %}

@@ -38,7 +38,7 @@ pytestmark = [
 
 
 class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
-    endpoint = "backoffice_web.product.search_product"
+    endpoint = "backoffice.product.search_product"
     needed_permission = perm_models.Permissions.READ_OFFERS
 
     # session + product
@@ -62,7 +62,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
             )
             assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id)
+        expected_url = url_for("backoffice.product.get_product_details", product_id=product.id)
         assert response.location == expected_url
 
     @pytest.mark.parametrize(
@@ -242,7 +242,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
             )
             assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id)
+        expected_url = url_for("backoffice.product.get_product_details", product_id=product.id)
         assert response.location == expected_url
 
     def test_search_by_visa_unexisting_product(self, authenticated_client):
@@ -281,7 +281,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
             )
             assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id)
+        expected_url = url_for("backoffice.product.get_product_details", product_id=product.id)
         assert response.location == expected_url
 
     def test_search_by_allocine_id_unexisting_product(self, authenticated_client):
@@ -305,7 +305,7 @@ class ImportProductFromTiteliveButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         return url_for(
-            "backoffice_web.product.search_product",
+            "backoffice.product.search_product",
             q="9782070455379",
             product_filter_type=ProductFilterTypeEnum.EAN.name,
         )
@@ -324,7 +324,7 @@ class ImportProductFromTiteliveButtonTest(button_helpers.ButtonHelper):
 
 
 class GetImportProductFromTiteliveFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.product.get_import_product_from_titelive_form"
+    endpoint = "backoffice.product.get_import_product_from_titelive_form"
     endpoint_kwargs = {"ean": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -361,7 +361,7 @@ class GetImportProductFromTiteliveFormTest(GetEndpointHelper):
 
 
 class PostImportProductFromTiteliveTest(PostEndpointHelper):
-    endpoint = "backoffice_web.product.import_product_from_titelive"
+    endpoint = "backoffice.product.import_product_from_titelive"
     endpoint_kwargs = {"ean": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
@@ -406,7 +406,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         whitelist_product = db.session.query(fraud_models.ProductWhitelist).filter_by(ean=ean).one_or_none()
         assert not whitelist_product
 
-        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id)
+        expected_url = url_for("backoffice.product.get_product_details", product_id=product.id)
         assert response.location == expected_url
 
         redirection = authenticated_client.get(response.location)
@@ -460,7 +460,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         whitelist_product = db.session.query(fraud_models.ProductWhitelist).filter_by(ean=ean).one_or_none()
         assert whitelist_product
 
-        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id)
+        expected_url = url_for("backoffice.product.get_product_details", product_id=product.id)
         assert response.location == expected_url
 
         redirection = authenticated_client.get(response.location)
@@ -483,7 +483,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, ean=ean, is_ineligible=False)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.product.search_product")
+        expected_url = url_for("backoffice.product.search_product")
         assert response.location == expected_url
 
         redirection = authenticated_client.get(response.location)

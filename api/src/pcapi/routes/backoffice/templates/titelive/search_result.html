@@ -103,9 +103,9 @@
                               class="btn btn-outline-primary"
                               data-bs-toggle="modal"
                               data-bs-target="#add-whitelist-confirmation">Ajouter le livre dans la whitelist</button>
-                      {{ build_lazy_modal(url_for("backoffice_web.titelive.get_add_product_whitelist_confirmation_form", ean=json.ean, title=json.oeuvre.titre) , "add-whitelist-confirmation") }}
+                      {{ build_lazy_modal(url_for("backoffice.titelive.get_add_product_whitelist_confirmation_form", ean=json.ean, title=json.oeuvre.titre) , "add-whitelist-confirmation") }}
                     {% else %}
-                      <a href="{{ url_for('backoffice_web.titelive.delete_product_whitelist', ean=json.ean) }}"
+                      <a href="{{ url_for('backoffice.titelive.delete_product_whitelist', ean=json.ean) }}"
                          class="btn btn-outline-primary">Retirer le livre de la whitelist</a>
                     {% endif %}
                   </div>

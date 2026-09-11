@@ -314,7 +314,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVe
     venue: offerers_models.Venue = venue_row.Venue
     actions = _get_venue_details_actions(venue)
     kwargs: dict[str, typing.Any] = {
-        "search_dst": url_for("backoffice_web.pro.search_pro"),
+        "search_dst": url_for("backoffice.pro.search_pro"),
         "search_form": pro_forms.CompactProSearchForm(
             q=request.args.get("q"),
             pro_type=pro_forms.TypeOptions.VENUE.name,
@@ -453,21 +453,21 @@ def _get_stat_urls(venue: offerers_models.Venue) -> dict[str, str]:
         "search-0-venue": venue.id,
     }
     if access_control.has_current_user_permission(perm_models.Permissions.READ_OFFERS):
-        urls["list_offers"] = url_for("backoffice_web.offer.list_offers", **search_params)  # type: ignore [arg-type]
+        urls["list_offers"] = url_for("backoffice.offer.list_offers", **search_params)  # type: ignore [arg-type]
         urls["list_collective_offers"] = url_for(
-            "backoffice_web.collective_offer.list_collective_offers",
+            "backoffice.collective_offer.list_collective_offers",
             **search_params,  # type: ignore [arg-type]
         )
         urls["list_collective_offer_templates"] = url_for(
-            "backoffice_web.collective_offer_template.list_collective_offer_templates", venue=venue.id
+            "backoffice.collective_offer_template.list_collective_offer_templates", venue=venue.id
         )
     if access_control.has_current_user_permission(perm_models.Permissions.READ_BOOKINGS):
-        urls["list_bookings"] = url_for("backoffice_web.individual_bookings.list_individual_bookings", venue=venue.id)
+        urls["list_bookings"] = url_for("backoffice.individual_bookings.list_individual_bookings", venue=venue.id)
         urls["list_collective_bookins"] = url_for(
-            "backoffice_web.collective_bookings.list_collective_bookings", venue=venue.id
+            "backoffice.collective_bookings.list_collective_bookings", venue=venue.id
         )
 
-    urls["revenue_details"] = url_for("backoffice_web.venue.get_revenue_details", venue_id=venue.id)
+    urls["revenue_details"] = url_for("backoffice.venue.get_revenue_details", venue_id=venue.id)
     return urls
 
 
@@ -501,7 +501,7 @@ def get_stats(venue_id: int) -> response_utils.BackofficeResponse:
         kwargs["fraud_form"] = forms.FraudForm(
             confidence_level=venue.confidenceLevel.value if venue.confidenceLevel else None
         )
-        kwargs["fraud_dst"] = url_for("backoffice_web.venue.update_for_fraud", venue_id=venue.id)
+        kwargs["fraud_dst"] = url_for("backoffice.venue.update_for_fraud", venue_id=venue.id)
 
     return render_template(
         "components/stats/venue_offerer_stats.html", object=venue, stats=stats, urls=_get_stat_urls(venue), **kwargs
@@ -598,7 +598,7 @@ def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> response
         "info",
     )
 
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue_id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/synchronize-cinema", methods=["POST"])
@@ -613,7 +613,7 @@ def add_cinema_sessions_synchronize_task(venue_id: int, provider_id: int) -> res
 
     flash(Markup("La tâche de synchronisation a été ajoutée"), "success")
 
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue_id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/delete", methods=["POST"])
@@ -624,12 +624,12 @@ def delete_venue_provider(venue_id: int, provider_id: int) -> response_utils.Bac
     if venue_provider.isFromAllocineProvider:
         flash("Impossible de supprimer le lien entre le partenaire culturel et Allociné.", "warning")
         mark_transaction_as_invalid()
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+        return redirect(url_for("backoffice.venue.get", venue_id=venue_id), code=303)
 
     providers_api.delete_venue_provider(venue_provider, author=current_user, send_email=False)
     flash("Le lien entre le partenaire culturel et le provider a été supprimé.", "info")
 
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue_id), code=303)
 
 
 def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
@@ -669,7 +669,7 @@ def get_history(venue_id: int) -> response_utils.BackofficeResponse:
     actions = sorted(venue.action_history, key=lambda action: action.actionDate, reverse=True)
 
     form = forms.CommentForm()
-    dst = url_for("backoffice_web.venue.comment_venue", venue_id=venue.id)
+    dst = url_for("backoffice.venue.comment_venue", venue_id=venue.id)
 
     return render_template(
         "venue/get/history.html",
@@ -755,30 +755,30 @@ def delete_venue(venue_id: int) -> response_utils.BackofficeResponse:
     except offerers_exceptions.CannotDeleteVenueWithBookingsException:
         mark_transaction_as_invalid()
         flash("Impossible de supprimer un partenaire culturel pour lequel il existe des réservations", "warning")
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+        return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
     except offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException:
         mark_transaction_as_invalid()
         flash(
             "Impossible de supprimer un partenaire culturel utilisé comme point de valorisation d'un autre partenaire culturel",
             "warning",
         )
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+        return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
     except offerers_exceptions.CannotDeleteVenueLinkedToFinanceEventException:
         mark_transaction_as_invalid()
         flash(
             "Impossible de supprimer un partenaire culturel référencé dans un événement finance",
             "warning",
         )
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+        return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
     except offerers_exceptions.CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule:
         mark_transaction_as_invalid()
         flash(
             Markup(
                 'Impossible de supprimer un point de valorisation ayant un <a href="{url}">tarif dérogatoire</a> (passé, actif ou futur)'
-            ).format(url=url_for("backoffice_web.reimbursement_rules.list_custom_reimbursement_rules", venue=venue_id)),
+            ).format(url=url_for("backoffice.reimbursement_rules.list_custom_reimbursement_rules", venue=venue_id)),
             "warning",
         )
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+        return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
     except offerers_exceptions.CannotDeleteLastVenue:
         mark_transaction_as_invalid()
         flash(
@@ -786,7 +786,7 @@ def delete_venue(venue_id: int) -> response_utils.BackofficeResponse:
             "Si cela est pertinent, préférer la suppression de l'entité juridique.",
             "warning",
         )
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+        return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 
     for email in emails:
         external_attributes_api.update_external_pro(email)
@@ -797,7 +797,7 @@ def delete_venue(venue_id: int) -> response_utils.BackofficeResponse:
         ),
         "success",
     )
-    return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
+    return redirect(url_for("backoffice.pro.search_pro"), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>", methods=["POST"])
@@ -948,7 +948,7 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
             offerers_api.link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
     flash("Les informations ont été mises à jour", "success")
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/fraud", methods=["POST"])
@@ -977,7 +977,7 @@ def update_for_fraud(venue_id: int) -> response_utils.BackofficeResponse:
     ):
         flash("Les informations ont été mises à jour", "success")
 
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/comment", methods=["POST"])
@@ -1000,7 +1000,7 @@ def comment_venue(venue_id: int) -> response_utils.BackofficeResponse:
         offerers_api.add_comment_to_venue(venue, current_user, comment=form.comment.data)
         flash("Le commentaire a été enregistré", "success")
 
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue_id), code=303)
 
 
 @venue_blueprint.route("/batch-edit-form", methods=["POST"])
@@ -1129,7 +1129,7 @@ def _render_remove_pricing_point_content(
         kwargs.update(
             {
                 "form": form,
-                "dst": url_for("backoffice_web.venue.remove_pricing_point", venue_id=venue.id),
+                "dst": url_for("backoffice.venue.remove_pricing_point", venue_id=venue.id),
                 "button_text": "Confirmer",
             }
         )
@@ -1196,7 +1196,7 @@ def remove_pricing_point(venue_id: int) -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         return _render_remove_pricing_point_content(venue, form=form, error=str(exc))
 
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue_id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/set-pricing-point", methods=["GET"])
@@ -1236,7 +1236,7 @@ def get_set_pricing_point_form(venue_id: int) -> response_utils.BackofficeRespon
         div_id="set-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
         title="Attribuer un point de valorisation",
         form=form,
-        dst=url_for("backoffice_web.venue.set_pricing_point", venue_id=venue.id),
+        dst=url_for("backoffice.venue.set_pricing_point", venue_id=venue.id),
         button_text="Confirmer",
         ajax_submit=False,
     )
@@ -1276,7 +1276,7 @@ def set_pricing_point(venue_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+        return redirect(url_for("backoffice.venue.get", venue_id=venue_id), code=303)
     try:
         offerers_api.link_venue_to_pricing_point(venue, form.new_pricing_point.data)
         flash("Ce partenaire culturel a été lié à un point de valorisation", "info")
@@ -1289,7 +1289,7 @@ def set_pricing_point(venue_id: int) -> response_utils.BackofficeResponse:
     except offerers_exceptions.CannotLinkVenueToPricingPoint:
         mark_transaction_as_invalid()
         flash("Ce partenaire culturel est déjà lié à un point de valorisation", "warning")
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue_id), code=303)
 
 
 REMOVE_SIRET_TITLE = "Supprimer le SIRET d'un partenaire culturel"
@@ -1332,7 +1332,7 @@ def _render_remove_siret_content(
         kwargs.update(
             {
                 "form": form,
-                "dst": url_for("backoffice_web.venue.remove_siret", venue_id=venue.id),
+                "dst": url_for("backoffice.venue.remove_siret", venue_id=venue.id),
                 "button_text": "Confirmer",
             }
         )
@@ -1410,7 +1410,7 @@ def get_close_venue_form(venue_id: int) -> response_utils.BackofficeResponse:
             ).format(
                 count=count_individual_bookings,
                 url=url_for(
-                    "backoffice_web.individual_bookings.list_individual_bookings",
+                    "backoffice.individual_bookings.list_individual_bookings",
                     venue=venue.id,
                     status=[bookings_forms.BookingStatus.BOOKED.name, bookings_forms.BookingStatus.CONFIRMED.name],
                 ),
@@ -1422,7 +1422,7 @@ def get_close_venue_form(venue_id: int) -> response_utils.BackofficeResponse:
             ).format(
                 count=count_collective_bookings,
                 url=url_for(
-                    "backoffice_web.collective_bookings.list_collective_bookings",
+                    "backoffice.collective_bookings.list_collective_bookings",
                     venue=venue.id,
                     status=[
                         bookings_forms.CollectiveBookingStatus.PENDING.name,
@@ -1437,7 +1437,7 @@ def get_close_venue_form(venue_id: int) -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         info=info,
         form=form,
-        dst=url_for("backoffice_web.venue.close_venue", venue_id=venue.id),
+        dst=url_for("backoffice.venue.close_venue", venue_id=venue.id),
         div_id=f"close-modal-{venue.id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Fermer le partenaire culturel {venue.name.upper()}",
         button_text="Fermer le partenaire culturel",
@@ -1460,18 +1460,18 @@ def close_venue(venue_id: int) -> response_utils.BackofficeResponse:
 
     if not venue.managingOfferer.isValidated:
         flash("Seul un partenaire culturel validé peut être fermé", "warning")
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+        return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 
     form = forms.CloseVenueForm()
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+        return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 
     offerers_api.close_venue(venue, author=current_user, comment=form.comment.data)
 
     flash(Markup("Le partenaire culturel <b>{name}</b> a été fermé").format(name=venue.name), "success")
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/reopen", methods=["GET"])
@@ -1486,7 +1486,7 @@ def get_reopen_venue_form(venue_id: int) -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         info=info,
         form=form,
-        dst=url_for("backoffice_web.venue.reopen_venue", venue_id=venue.id),
+        dst=url_for("backoffice.venue.reopen_venue", venue_id=venue.id),
         div_id=f"reopen-modal-{venue.id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Rouvrir le partenaire culturel {venue.name.upper()}",
         button_text="Rouvrir le partenaire culturel",
@@ -1511,12 +1511,12 @@ def reopen_venue(venue_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+        return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 
     offerers_api.reopen_venue(venue, author=current_user, comment=form.comment.data)
 
     flash(Markup("Le partenaire culturel <b>{name}</b> a été rouvert").format(name=venue.name), "success")
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-siret", methods=["POST"])
@@ -1545,7 +1545,7 @@ def remove_siret(venue_id: int) -> response_utils.BackofficeResponse:
         response="redirecting",
         status=200,
         headers={
-            "HX-Redirect": url_for("backoffice_web.venue.get", venue_id=venue_id),
+            "HX-Redirect": url_for("backoffice.venue.get", venue_id=venue_id),
         },
     )
 
@@ -1578,7 +1578,7 @@ def _suspend_venue_reimbursement(venue_id: int, suspend: bool) -> response_utils
             "success",
         )
 
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+    return redirect(url_for("backoffice.venue.get", venue_id=venue_id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/suspend-reimbursement", methods=["POST"])

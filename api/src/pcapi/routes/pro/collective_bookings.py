@@ -9,7 +9,7 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import resource_not_found_error
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rest as rest_utils
 from pcapi.utils.transaction_manager import atomic
@@ -20,12 +20,12 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/collective/offers/<int:offer_id>/cancel_booking", methods=["PATCH"])
+@pro_blueprint.route("/collective/offers/<int:offer_id>/cancel_booking", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     on_success_status=204,
     on_error_statuses=[400, 403, 404],
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def cancel_collective_offer_booking(offer_id: int) -> None:
