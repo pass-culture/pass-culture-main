@@ -1,6 +1,7 @@
 import datetime
 import enum
 import typing
+from io import BytesIO
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -8,6 +9,7 @@ from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import send_file
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
@@ -21,6 +23,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import repository as finance_repository
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import transactional as transactional_mails
@@ -45,8 +48,10 @@ from pcapi.routes.backoffice.utils import logs as logs_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils.details_actions import DetailsActions
 from pcapi.routes.serialization import address_serialize
+from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.routes.serialization import venue_serialize
 from pcapi.utils import date as date_utils
+from pcapi.utils import pdf
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import urls
@@ -1213,6 +1218,86 @@ def get_bank_accounts(offerer_id: int) -> response_utils.BackofficeResponse:
         "offerer/get/details/bank_accounts.html",
         rows=rows,
         connect_as=connect_as,
+    )
+
+
+@offerer_blueprint.route("/invoices", methods=["GET"])
+def get_invoices(offerer_id: int) -> response_utils.BackofficeResponse:
+    invoices = (
+        db.session.query(finance_models.Invoice)
+        .join(finance_models.Invoice.bankAccount)
+        .filter(finance_models.BankAccount.offererId == offerer_id)
+        .options(
+            sa_orm.contains_eager(finance_models.Invoice.bankAccount, innerjoin=True)
+            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label)
+            .joinedload(finance_models.BankAccount.offerer, innerjoin=True)
+            .load_only(offerers_models.Offerer.siren),
+            sa_orm.selectinload(finance_models.Invoice.cashflows)
+            .load_only(finance_models.Cashflow.batchId)
+            .joinedload(finance_models.Cashflow.batch)
+            .load_only(finance_models.CashflowBatch.label),
+        )
+        .order_by(finance_models.Invoice.date.desc(), finance_models.BankAccount.id)
+    ).all()
+
+    return render_template(
+        "offerer/get/details/invoices.html",
+        offerer_id=offerer_id,
+        invoices=invoices,
+    )
+
+
+@offerer_blueprint.route("/reimbursement-details", methods=["POST"])
+def download_reimbursement_details(offerer_id: int) -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return _self_redirect(offerer_id)
+
+    invoices = (
+        db.session.query(finance_models.Invoice).filter(finance_models.Invoice.id.in_(form.object_ids_list)).all()
+    )
+    reimbursement_details = [
+        reimbursement_csv_serialize.ReimbursementDetails(details)
+        for details in finance_repository.find_all_invoices_finance_details([invoice.id for invoice in invoices])
+    ]
+    export_data = reimbursement_csv_serialize.generate_reimbursement_details_csv(reimbursement_details)
+    export_date = date_utils.get_naive_utc_now().strftime("%Y-%m-%d-%H-%M")
+    return send_file(
+        BytesIO(export_data.encode("utf-8-sig")),
+        as_attachment=True,
+        download_name=f"details_remboursements_{offerer_id}_{export_date}.csv",
+        mimetype="text/csv",
+    )
+
+
+@offerer_blueprint.route("/invoices", methods=["POST"])
+def download_invoices(offerer_id: int) -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return _self_redirect(offerer_id)
+
+    invoices = (
+        db.session.query(finance_models.Invoice)
+        .filter(finance_models.Invoice.id.in_(form.object_ids_list))
+        .order_by(finance_models.Invoice.date)
+        .all()
+    )
+
+    invoice_pdf_urls = [invoice.url for invoice in invoices]
+
+    try:
+        export_data = pdf.merge_pdf_files(invoice_pdf_urls)
+    except FileNotFoundError as exc:
+        flash(Markup("Échec de téléchargement du justificatif {url}").format(url=exc), "warning")
+        return _self_redirect(offerer_id)
+
+    return send_file(
+        BytesIO(export_data),
+        as_attachment=True,
+        download_name=f"justificatifs_{offerer_id}.pdf",
+        mimetype="application/pdf; charset=utf-8;",
     )
 
 

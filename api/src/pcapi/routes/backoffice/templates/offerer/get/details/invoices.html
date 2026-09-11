@@ -1,0 +1,80 @@
+{% import "components/links.html" as links with context %}
+<div class="btn-group btn-group-sm"
+     data-toggle="pc-batch-confirm-btn-group"
+     data-toggle-id="table-container-download-reimbursement-details-btn-group"
+     data-pc-table-multi-select-id="table-container-download-reimbursement-details"
+     data-input-ids-name="object_ids">
+  <form method="post"
+        id="form-ids-table-container-download-reimbursement-details"
+        data-pc-form-opt-out="true"
+        action="{{ url_for('backoffice_web.offerer.download_reimbursement_details', offerer_id=offerer_id) }}">
+    <input type="hidden"
+           name="object_ids">
+    {{ csrf_token }}
+    <button disabled
+            type="submit"
+            class="btn btn-outline-primary"
+            data-use-confirmation-modal="false">
+      Téléchargement
+      des détails de remboursements
+    </button>
+  </form>
+  <form method="post"
+        id="form-ids-table-container-download-invoices"
+        data-pc-form-opt-out="true"
+        action="{{ url_for('backoffice_web.offerer.download_invoices', offerer_id=offerer_id) }}">
+    <input type="hidden"
+           name="object_ids">
+    {{ csrf_token }}
+    <button disabled
+            type="submit"
+            class="btn btn-outline-primary mx-2"
+            data-use-confirmation-modal="false">
+      Téléchargement
+      des justificatifs
+    </button>
+  </form>
+</div>
+<table class="table table-hover my-4"
+       data-table-multi-select-id="table-container-download-reimbursement-details"
+       data-table-multi-select-form-ids="form-ids-table-container-download-reimbursement-details form-ids-table-container-download-invoices">
+  <thead>
+    <tr>
+      <th scope="col">
+        <input class="form-check-input"
+               type="checkbox"
+               name="pc-table-multi-select-check-all" />
+      </th>
+      <th scope="col">N° de virement</th>
+      <th scope="col">N° du justificatif</th>
+      <th scope="col">Date du justificatif</th>
+      <th scope="col">État du justificatif</th>
+      <th scope="col">Montant remboursé</th>
+      <th scope="col">Compte bancaire d'origine</th>
+      <th scope="col">Justificatif</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for invoice in invoices %}
+      <tr>
+        <td scope="col">
+          <input type="checkbox"
+                 class="form-check-input"
+                 name="pc-table-multi-select-check-{invoice.id}"
+                 data-id="{{ invoice.id }}" />
+        </td>
+        <td>{{ invoice.cashflows | map(attribute="batch.label") | join(", ") | escape }}</td>
+        <td>{{ invoice.reference }}</td>
+        <td>{{ invoice.date | format_date }}</td>
+        <td>{{ invoice.status | format_invoice_status }}</td>
+        <td>{{ -invoice.amount | format_cents(target=invoice.bankAccount.offerer) }}</td>
+        <td>{{ links.build_bank_account_name_to_details_link(invoice.bankAccount, text_attr="label") }}</td>
+        <td>
+          <a class="link-primary"
+             download
+             href="{{ invoice.url }}"><i class="bi bi-cloud-download-fill"></i> PDF</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
