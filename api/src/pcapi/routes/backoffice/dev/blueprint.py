@@ -38,6 +38,7 @@ from pcapi.utils import string as string_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
+from . import design_system
 from . import forms
 
 
@@ -264,10 +265,15 @@ def components() -> response_utils.BackofficeResponse:
 
     return render_template(
         "dev/components.html",
-        simple_form=forms.SimpleComponentsForm(),
-        rows={"pages": 5},
-        next_pages_urls=[(i, str(i)) for i in range(6)],
+        form_states=design_system.build_form_states(),
+        theme_colors=design_system.THEME_COLORS,
+        spacers=design_system.SPACERS,
+        font_weights=design_system.FONT_WEIGHTS,
+        icons=design_system.ICONS,
+        rows={"pages": 5, "page": 2},
+        next_pages_urls=[(i, "#") for i in range(1, 6)],
         connect_as=connect_as,
+        sample_offer=design_system.SAMPLE_OFFER,
     )
 
 

@@ -1,0 +1,36 @@
+{% macro ds_section(section_id, title, description=none) %}
+  <section id="{{ section_id }}"
+           class="pc-ds-section">
+    <h2 class="pc-ds-section-title">{{ title }}</h2>
+    {% if description %}<p class="pc-ds-section-description">{{ description }}</p>{% endif %}
+    {{ caller() }}
+  </section>
+{% endmacro %}
+{% macro ds_spec(title, usage=none, description=none) %}
+  <article class="pc-ds-spec">
+    <header class="pc-ds-spec-header">
+      <h3 class="pc-ds-spec-title">{{ title }}</h3>
+      {% if description %}<p class="pc-ds-spec-description">{{ description }}</p>{% endif %}
+    </header>
+    <div class="pc-ds-spec-preview">{{ caller() }}</div>
+    {% if usage %}
+      <footer class="pc-ds-spec-usage">
+        <code>{{ usage }}</code>
+      </footer>
+    {% endif %}
+  </article>
+{% endmacro %}
+{% macro ds_state(label, class="") %}
+  <div class="pc-ds-state {{ class }}">
+    <div class="pc-ds-state-preview">{{ caller() }}</div>
+    <span class="pc-ds-state-label">{{ label }}</span>
+  </div>
+{% endmacro %}
+{% macro ds_toc_group(title) %}
+  <span class="navbar-text">{{ title }}</span>
+  {{ caller() }}
+{% endmacro %}
+{% macro ds_toc_link(section_id, title) %}
+  <a class="nav-link py-1"
+     href="#{{ section_id }}">{{ title }}</a>
+{% endmacro %}
