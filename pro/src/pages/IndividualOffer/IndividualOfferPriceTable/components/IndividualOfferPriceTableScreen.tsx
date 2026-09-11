@@ -106,26 +106,15 @@ export const IndividualOfferPriceTableScreen = ({
       onSubmit: save,
     })
 
-  const handlePreviousStepOrBackToReadOnly = () => {
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isOnboarding,
-        })
-      )
-    } else {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
-          mode,
-          isOnboarding,
-        })
-      )
-    }
+  const handlePreviousStep = () => {
+    navigate(
+      getIndividualOfferUrl({
+        offerId: offer.id,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
+        mode: OFFER_WIZARD_MODE.CREATION,
+        isOnboarding,
+      })
+    )
   }
 
   return (
@@ -169,7 +158,7 @@ export const IndividualOfferPriceTableScreen = ({
             </FormLayout>
           )}
           <ActionBar
-            onClickPrevious={handlePreviousStepOrBackToReadOnly}
+            onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE}
             isDisabled={
               isOfferDisabled(offer) ||
@@ -180,7 +169,6 @@ export const IndividualOfferPriceTableScreen = ({
               isClosed
             }
             dirtyForm={form.formState.isDirty}
-            isEvent={false}
           />
         </form>
       </FormProvider>

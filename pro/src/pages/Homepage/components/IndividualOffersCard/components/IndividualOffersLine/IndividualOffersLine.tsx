@@ -54,7 +54,7 @@ export const IndividualOffersLine = ({
 }: IndividualOffersLineProps): JSX.Element => {
   const offerLink = getIndividualOfferUrl({
     offerId: offer.id,
-    mode: OFFER_WIZARD_MODE.READ_ONLY,
+    mode: OFFER_WIZARD_MODE.EDITION,
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
   })
 

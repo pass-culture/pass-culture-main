@@ -74,25 +74,14 @@ export const IndividualOfferMediaScreen = ({
   const isFormDirty = hasUpdatedVideoUrl || hasUpsertedImage
 
   const handlePreviousStep = async () => {
-    if (mode === OFFER_WIZARD_MODE.CREATION) {
-      await navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
-          mode: OFFER_WIZARD_MODE.CREATION,
-          isOnboarding,
-        })
-      )
-    } else {
-      await navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isOnboarding,
-        })
-      )
-    }
+    await navigate(
+      getIndividualOfferUrl({
+        offerId: offer.id,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
+        mode: OFFER_WIZARD_MODE.CREATION,
+        isOnboarding,
+      })
+    )
   }
 
   const onSubmit = async (): Promise<boolean> => {

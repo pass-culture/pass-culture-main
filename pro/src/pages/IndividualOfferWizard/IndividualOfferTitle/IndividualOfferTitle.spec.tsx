@@ -13,31 +13,25 @@ const renderIndividualOfferTitle = (
 }
 
 describe('IndividualOfferTitle', () => {
-  describe('EDITION and READ_ONLY modes', () => {
-    it.each([OFFER_WIZARD_MODE.EDITION, OFFER_WIZARD_MODE.READ_ONLY])(
-      'should render the offer name in %s mode',
-      (mode) => {
-        const offer = getIndividualOfferFactory({
-          name: 'Mon offre incroyable',
-        })
-        renderIndividualOfferTitle({ mode, offer })
+  describe('EDITION mode', () => {
+    it('should render the offer name', () => {
+      const offer = getIndividualOfferFactory({
+        name: 'Mon offre incroyable',
+      })
+      renderIndividualOfferTitle({ mode: OFFER_WIZARD_MODE.EDITION, offer })
 
-        expect(screen.getByText(offer.name)).toBeVisible()
-      }
-    )
+      expect(screen.getByText(offer.name)).toBeVisible()
+    })
 
-    it.each([OFFER_WIZARD_MODE.EDITION, OFFER_WIZARD_MODE.READ_ONLY])(
-      'should render the synchronization tag for a synchronized offer in %s mode',
-      (mode) => {
-        const offer = getIndividualOfferFactory({
-          name: 'Mon offre incroyable',
-          lastProvider: { name: 'Boost' },
-        })
-        renderIndividualOfferTitle({ mode, offer })
+    it('should render the synchronization tag for a synchronized offer', () => {
+      const offer = getIndividualOfferFactory({
+        name: 'Mon offre incroyable',
+        lastProvider: { name: 'Boost' },
+      })
+      renderIndividualOfferTitle({ mode: OFFER_WIZARD_MODE.EDITION, offer })
 
-        expect(screen.getByText('Synchronisée : Boost')).toBeVisible()
-      }
-    )
+      expect(screen.getByText('Synchronisée : Boost')).toBeVisible()
+    })
 
     it('should not render the synchronization tag for a non-synchronized offer', () => {
       const offer = getIndividualOfferFactory({
@@ -45,7 +39,7 @@ describe('IndividualOfferTitle', () => {
         lastProvider: undefined,
       })
       renderIndividualOfferTitle({
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
+        mode: OFFER_WIZARD_MODE.EDITION,
         offer,
       })
 

@@ -12,7 +12,6 @@ import fullLeftIcon from '@/icons/full-left.svg'
 
 interface ActionBarLeftProps {
   isDisabled: boolean
-  isEvent: boolean
   mode: OFFER_WIZARD_MODE
   onClickNext?: () => void
   onClickPrevious?: () => void
@@ -22,7 +21,6 @@ interface ActionBarLeftProps {
 
 export const ActionBarLeft = ({
   isDisabled,
-  isEvent,
   mode,
   onClickNext,
   onClickPrevious,
@@ -39,20 +37,6 @@ export const ActionBarLeft = ({
         variant={ButtonVariant.SECONDARY}
         disabled={isDisabled}
         label="Retour"
-      />
-    )
-  }
-
-  if (
-    mode === OFFER_WIZARD_MODE.EDITION &&
-    step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE &&
-    isEvent
-  ) {
-    return (
-      <Button
-        onClick={onClickPrevious}
-        variant={ButtonVariant.SECONDARY}
-        label="Quitter le mode édition"
       />
     )
   }

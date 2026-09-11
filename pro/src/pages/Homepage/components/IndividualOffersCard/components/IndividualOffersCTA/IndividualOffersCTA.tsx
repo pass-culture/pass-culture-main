@@ -34,7 +34,7 @@ export const IndividualOffersCTA = ({
 
   const offerLink = getIndividualOfferUrl({
     offerId,
-    mode: OFFER_WIZARD_MODE.READ_ONLY,
+    mode: OFFER_WIZARD_MODE.EDITION,
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
   })
 

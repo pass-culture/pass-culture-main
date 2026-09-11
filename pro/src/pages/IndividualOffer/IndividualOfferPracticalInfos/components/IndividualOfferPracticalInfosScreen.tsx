@@ -70,27 +70,16 @@ export const IndividualOfferPracticalInfosScreen = ({
   })
 
   const handlePreviousStep = async () => {
-    if (mode === OFFER_WIZARD_MODE.CREATION) {
-      await navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: offer.isEvent
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-          isOnboarding,
-        })
-      )
-    } else {
-      await navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isOnboarding,
-        })
-      )
-    }
+    await navigate(
+      getIndividualOfferUrl({
+        offerId: offer.id,
+        step: offer.isEvent
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+        mode: OFFER_WIZARD_MODE.CREATION,
+        isOnboarding,
+      })
+    )
   }
 
   const updateWarningDialogCallbackRef = useRef<

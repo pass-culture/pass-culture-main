@@ -20,7 +20,6 @@ export type StocksCalendarActionsBarProps = {
   hasStocks: boolean
   updateCheckedStocks: (newStocks: Set<number>) => void
   deleteStocks: (ids: number[]) => void
-  mode: OFFER_WIZARD_MODE
 }
 
 export function StocksCalendarActionsBar({
@@ -29,29 +28,17 @@ export function StocksCalendarActionsBar({
   hasStocks,
   updateCheckedStocks,
   deleteStocks,
-  mode,
 }: Readonly<StocksCalendarActionsBarProps>) {
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
   function handlePreviousStep() {
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offerId,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isOnboarding,
-        })
-      )
-      return
-    }
     navigate(
       getIndividualOfferUrl({
         offerId: offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-        mode,
+        mode: OFFER_WIZARD_MODE.CREATION,
         isOnboarding,
       })
     )
@@ -69,7 +56,7 @@ export function StocksCalendarActionsBar({
       getIndividualOfferUrl({
         offerId: offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
-        mode,
+        mode: OFFER_WIZARD_MODE.CREATION,
         isOnboarding,
       })
     )
@@ -113,7 +100,6 @@ export function StocksCalendarActionsBar({
           }}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE}
           dirtyForm={false}
-          isEvent={true}
         />
       )}
     </>

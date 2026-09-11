@@ -13,10 +13,7 @@ export const IndividualOfferTitle = ({
   mode,
   offer,
 }: IndividualOfferTitleProps) => {
-  if (
-    mode === OFFER_WIZARD_MODE.EDITION ||
-    mode === OFFER_WIZARD_MODE.READ_ONLY
-  ) {
+  if (mode === OFFER_WIZARD_MODE.EDITION) {
     const synchronizationTag = offer?.lastProvider?.name ? (
       <Tag
         label={`Synchronisée : ${offer.lastProvider.name}`}

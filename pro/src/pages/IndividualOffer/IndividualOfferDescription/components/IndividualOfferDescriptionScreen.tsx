@@ -200,19 +200,8 @@ export const IndividualOfferDescriptionScreen = () => {
       onSubmit,
     })
 
-  const handlePreviousStepOrBackToReadOnly = () => {
-    if (mode === OFFER_WIZARD_MODE.CREATION) {
-      navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
-    } else {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offerIdRef.current,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isOnboarding,
-        })
-      )
-    }
+  const handlePreviousStep = () => {
+    navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
   }
 
   const updateProduct = (ean: string, product: Product) => {
@@ -309,7 +298,7 @@ export const IndividualOfferDescriptionScreen = () => {
               hasPublishedOfferWithSameEan ||
               (!form.formState.isDirty && mode !== OFFER_WIZARD_MODE.CREATION)
             }
-            onClickPrevious={handlePreviousStepOrBackToReadOnly}
+            onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION}
           />
         </form>

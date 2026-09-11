@@ -34,7 +34,7 @@ export function getIndividualOfferColumns({
           mode:
             offer.status === OfferStatus.DRAFT
               ? OFFER_WIZARD_MODE.CREATION
-              : OFFER_WIZARD_MODE.READ_ONLY,
+              : OFFER_WIZARD_MODE.EDITION,
           step:
             offer.status === OfferStatus.DRAFT
               ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
@@ -93,7 +93,7 @@ export function getIndividualOfferColumns({
           mode:
             offer.status === OfferStatus.DRAFT
               ? OFFER_WIZARD_MODE.CREATION
-              : OFFER_WIZARD_MODE.READ_ONLY,
+              : OFFER_WIZARD_MODE.EDITION,
           step:
             offer.status === OfferStatus.DRAFT
               ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION

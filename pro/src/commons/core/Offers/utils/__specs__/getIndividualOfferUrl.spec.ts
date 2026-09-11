@@ -8,7 +8,6 @@ import { getIndividualOfferUrl } from '../getIndividualOfferUrl'
 describe('getIndividualOfferUrl', () => {
   const offerId = 42
   const testCases = [
-    // when no offer (mode is no relevant)
     {
       props: {
         offerId: undefined,
@@ -17,7 +16,6 @@ describe('getIndividualOfferUrl', () => {
       },
       expectedUrl: '/offre/individuelle/creation/description',
     },
-    // when creation mode
     {
       props: {
         offerId: offerId,
@@ -50,7 +48,6 @@ describe('getIndividualOfferUrl', () => {
       },
       expectedUrl: '/offre/individuelle/42/creation/tarifs',
     },
-    // when edition mode
     {
       props: {
         offerId: offerId,
@@ -67,11 +64,10 @@ describe('getIndividualOfferUrl', () => {
       },
       expectedUrl: '/offre/individuelle/42/edition/tarifs',
     },
-    // when readonly mode
     {
       props: {
         offerId: offerId,
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
+        mode: OFFER_WIZARD_MODE.EDITION,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       },
       expectedUrl: '',
@@ -79,7 +75,7 @@ describe('getIndividualOfferUrl', () => {
     {
       props: {
         offerId: offerId,
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
+        mode: OFFER_WIZARD_MODE.EDITION,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.CONFIRMATION,
       },
       expectedUrl: '',
@@ -87,15 +83,7 @@ describe('getIndividualOfferUrl', () => {
     {
       props: {
         offerId: offerId,
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-      },
-      expectedUrl: '/offre/individuelle/42/edition/tarifs',
-    },
-    {
-      props: {
-        offerId: offerId,
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
+        mode: OFFER_WIZARD_MODE.EDITION,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
       },
       expectedUrl: '/offre/individuelle/42/reservations',
@@ -103,7 +91,7 @@ describe('getIndividualOfferUrl', () => {
     {
       props: {
         offerId: offerId,
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
+        mode: OFFER_WIZARD_MODE.EDITION,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
       },
       expectedUrl: '/offre/individuelle/42/visibilite',
@@ -113,43 +101,8 @@ describe('getIndividualOfferUrl', () => {
     expect(getIndividualOfferUrl(props)).toBe(expectedUrl)
   })
 
-  describe('when mode is readonly', () => {
-    it('should fall back to the edition path', () => {
-      expect(
-        getIndividualOfferUrl({
-          offerId,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-        })
-      ).toBe('/offre/individuelle/42/edition/tarifs')
-    })
-  })
-
-  describe('when mode is edition', () => {
-    it('should return the exposure url', () => {
-      expect(
-        getIndividualOfferUrl({
-          offerId,
-          mode: OFFER_WIZARD_MODE.EDITION,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
-        })
-      ).toBe('/offre/individuelle/42/visibilite')
-    })
-
-    it('should return the bookings url', () => {
-      expect(
-        getIndividualOfferUrl({
-          offerId,
-          mode: OFFER_WIZARD_MODE.EDITION,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
-        })
-      ).toBe('/offre/individuelle/42/reservations')
-    })
-  })
-
   describe('onboarding', () => {
     const onBoardingTestCases = [
-      // when no offer (mode is no relevant)
       {
         props: {
           offerId: undefined,
@@ -159,7 +112,6 @@ describe('getIndividualOfferUrl', () => {
         },
         expectedUrl: '/onboarding/offre/individuelle/creation/description',
       },
-      // when creation mode
       {
         props: {
           offerId: offerId,

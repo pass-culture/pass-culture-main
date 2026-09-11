@@ -20,7 +20,6 @@ interface StepDefinition {
 }
 
 const isOfferAlreadyCreated = (ctx: GetStepsContext) =>
-  ctx.mode === OFFER_WIZARD_MODE.READ_ONLY ||
   ctx.mode === OFFER_WIZARD_MODE.EDITION
 
 const STEP_DEFINITIONS: StepDefinition[] = [

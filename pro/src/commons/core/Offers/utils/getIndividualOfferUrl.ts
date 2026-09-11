@@ -67,10 +67,7 @@ export const getIndividualOfferPath = ({
     return `${isOnboarding ? '/onboarding' : ''}/offre/individuelle/creation/${step}`
   }
 
-  const modeToUse =
-    mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode
-
-  return `${isOnboarding ? '/onboarding' : ''}${routes[step][modeToUse]}`
+  return `${isOnboarding ? '/onboarding' : ''}${routes[step][mode]}`
 }
 
 interface GetIndividualOfferUrlArgs {

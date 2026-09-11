@@ -47,7 +47,7 @@ export const IndividualOfferConfirmationScreen = ({
   const offerReadOnlyUrl = getIndividualOfferUrl({
     offerId: offer.id,
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
-    mode: OFFER_WIZARD_MODE.READ_ONLY,
+    mode: OFFER_WIZARD_MODE.EDITION,
   })
 
   const offerCreationUrl = getIndividualOfferUrl({

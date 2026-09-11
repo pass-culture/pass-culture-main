@@ -166,23 +166,6 @@ describe('IndividualOfferLayout', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should not display offer name title in readonly', async () => {
-      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.READ_ONLY)
-
-      const offer = getIndividualOfferFactory({
-        isActive: false,
-        status: OfferStatus.ACTIVE,
-        name: 'offer name',
-      })
-
-      renderIndividualOfferLayout({ props: { offer } })
-      await waitFor(() => {
-        expect(
-          screen.queryByRole('paragraph', { name: /offer name/ })
-        ).not.toBeInTheDocument()
-      })
-    })
-
     it('should not display offer name title in edition', async () => {
       vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
 
@@ -428,12 +411,6 @@ describe('IndividualOfferLayout', () => {
       expect(
         screen.queryByRole('button', { name: 'Mettre en pause' })
       ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when mode is READONLY', () => {
-    beforeEach(() => {
-      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.READ_ONLY)
     })
 
     it('should not display publication date when it is passed', async () => {

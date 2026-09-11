@@ -30,7 +30,7 @@ export const BookingOfferCell = ({
     ? `/offre/${booking.stock.offerId}/collectif/recapitulatif`
     : getIndividualOfferUrl({
         offerId: booking.stock.offerId,
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
+        mode: OFFER_WIZARD_MODE.EDITION,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
       })
 

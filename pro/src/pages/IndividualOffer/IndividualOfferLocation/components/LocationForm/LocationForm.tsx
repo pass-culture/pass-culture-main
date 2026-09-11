@@ -2,11 +2,9 @@ import { useFormContext } from 'react-hook-form'
 
 import { OfferStatus } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -25,9 +23,7 @@ export const LocationForm = () => {
   const { hasPublishedOfferWithSameEan, offer } = useIndividualOfferContext()
   assertOrFrontendError(offer, '`offer` is undefined in LocationForm.')
 
-  const mode = useOfferWizardMode()
   const isFormReadOnly =
-    mode === OFFER_WIZARD_MODE.READ_ONLY ||
     hasPublishedOfferWithSameEan ||
     [OfferStatus.PENDING, OfferStatus.REJECTED].includes(offer.status) ||
     isOfferSynchronized(offer) ||

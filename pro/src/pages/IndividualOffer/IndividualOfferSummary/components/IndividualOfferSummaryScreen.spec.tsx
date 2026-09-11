@@ -157,13 +157,6 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
           <Route
             path={getIndividualOfferPath({
               step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.READ_ONLY,
-            })}
-            element={<IndividualOfferSummaryScreen offer={offer} />}
-          />
-          <Route
-            path={getIndividualOfferPath({
-              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.CREATION,
             })}
             element={<IndividualOfferSummaryScreen offer={offer} />}

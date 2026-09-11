@@ -316,7 +316,6 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
                   hasStocks={offer.hasStocks}
                   deleteStocks={deleteStocks}
                   updateCheckedStocks={setCheckedStocks}
-                  mode={mode}
                   offerId={offer.id}
                 />
               )}
@@ -329,7 +328,6 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
             hasStocks={offer.hasStocks}
             deleteStocks={deleteStocks}
             updateCheckedStocks={setCheckedStocks}
-            mode={mode}
             offerId={offer.id}
           />
         )}

@@ -124,26 +124,15 @@ export const IndividualOfferLocationScreen = ({
       onSubmit: updateOffer,
     })
 
-  const handlePreviousStepOrBackToReadOnly = () => {
-    if (mode === OFFER_WIZARD_MODE.CREATION) {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-          mode: OFFER_WIZARD_MODE.CREATION,
-          isOnboarding,
-        })
-      )
-    } else {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isOnboarding,
-        })
-      )
-    }
+  const handlePreviousStep = () => {
+    navigate(
+      getIndividualOfferUrl({
+        offerId: offer.id,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+        mode: OFFER_WIZARD_MODE.CREATION,
+        isOnboarding,
+      })
+    )
   }
 
   return (
@@ -174,7 +163,7 @@ export const IndividualOfferLocationScreen = ({
           </FormLayout>
 
           <ActionBar
-            onClickPrevious={handlePreviousStepOrBackToReadOnly}
+            onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION}
             isDisabled={
               isSaving ||

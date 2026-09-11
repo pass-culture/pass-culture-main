@@ -144,7 +144,6 @@ describe('IndividualOffer::ActionBar', () => {
 
     it('should render the component for tarifs page', async () => {
       props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
-      props.isEvent = false
 
       renderActionBar({ props, url: '/edition/url' })
 
@@ -162,22 +161,6 @@ describe('IndividualOffer::ActionBar', () => {
         name: 'Retour à la liste des offres',
       })
       expect(buttonBack).toHaveAttribute('href', '/offres')
-    })
-
-    it('should show a button to go back read only when editing stocks (timetable)', async () => {
-      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
-      props.isEvent = true
-
-      renderActionBar({
-        props,
-        url: '/edition/url',
-      })
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Quitter le mode édition' })
-      )
-
-      expect(onClickPreviousMock).toHaveBeenCalled()
     })
   })
 })

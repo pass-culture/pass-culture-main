@@ -43,7 +43,7 @@ export function HeadlineOffer() {
     mode:
       offerQuery.data.status === OfferStatus.DRAFT
         ? OFFER_WIZARD_MODE.CREATION
-        : OFFER_WIZARD_MODE.READ_ONLY,
+        : OFFER_WIZARD_MODE.EDITION,
     step:
       offerQuery.data.status === OfferStatus.DRAFT
         ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION

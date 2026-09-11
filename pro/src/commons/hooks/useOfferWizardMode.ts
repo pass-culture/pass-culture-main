@@ -29,7 +29,5 @@ export const useOfferWizardMode = (): OFFER_WIZARD_MODE => {
     location.pathname.includes(data.pathPart)
   )
 
-  return wizardModeDetails
-    ? wizardModeDetails.mode
-    : OFFER_WIZARD_MODE.READ_ONLY
+  return wizardModeDetails ? wizardModeDetails.mode : OFFER_WIZARD_MODE.EDITION
 }

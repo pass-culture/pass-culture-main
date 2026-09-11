@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
@@ -26,7 +25,6 @@ function renderStocksCalendarActionsBar(
   return renderWithProviders(
     <>
       <StocksCalendarActionsBar
-        mode={OFFER_WIZARD_MODE.CREATION}
         offerId={1}
         checkedStocks={new Set([])}
         deleteStocks={() => {}}
@@ -46,20 +44,6 @@ describe('StocksCalendarActionsBar', () => {
     expect(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     ).toBeInTheDocument()
-  })
-
-  it('should trigger the navigation to the form next step when editing the offer', async () => {
-    renderStocksCalendarActionsBar({
-      hasStocks: true,
-      mode: OFFER_WIZARD_MODE.EDITION,
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Enregistrer les modifications' })
-    )
-    expect(mockNavigate).toHaveBeenLastCalledWith(
-      '/offre/individuelle/1/edition/informations_pratiques'
-    )
   })
 
   it('should trigger the navigation to the form next step when creating the offer', async () => {
