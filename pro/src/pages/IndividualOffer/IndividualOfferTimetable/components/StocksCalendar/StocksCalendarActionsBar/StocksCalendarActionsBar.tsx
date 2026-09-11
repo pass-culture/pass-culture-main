@@ -7,7 +7,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -21,7 +20,6 @@ export type StocksCalendarActionsBarProps = {
   hasStocks: boolean
   updateCheckedStocks: (newStocks: Set<number>) => void
   deleteStocks: (ids: number[]) => void
-  mode: OFFER_WIZARD_MODE
 }
 
 export function StocksCalendarActionsBar({
@@ -30,32 +28,17 @@ export function StocksCalendarActionsBar({
   hasStocks,
   updateCheckedStocks,
   deleteStocks,
-  mode,
 }: Readonly<StocksCalendarActionsBarProps>) {
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
-
   function handlePreviousStep() {
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offerId,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isOnboarding,
-          isOfferExposureEnabled,
-        })
-      )
-      return
-    }
     navigate(
       getIndividualOfferUrl({
         offerId: offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-        mode,
+        mode: OFFER_WIZARD_MODE.CREATION,
         isOnboarding,
       })
     )
@@ -73,14 +56,10 @@ export function StocksCalendarActionsBar({
       getIndividualOfferUrl({
         offerId: offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
-        mode,
+        mode: OFFER_WIZARD_MODE.CREATION,
         isOnboarding,
       })
     )
-  }
-
-  if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
-    return
   }
 
   return (
@@ -121,7 +100,6 @@ export function StocksCalendarActionsBar({
           }}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE}
           dirtyForm={false}
-          isEvent={true}
         />
       )}
     </>

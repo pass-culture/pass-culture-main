@@ -13,7 +13,6 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -47,7 +46,6 @@ export const IndividualOfferLocationScreen = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
   const mode = useOfferWizardMode()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const { hasPublishedOfferWithSameEan, subCategories } =
     useIndividualOfferContext()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
@@ -117,8 +115,6 @@ export const IndividualOfferLocationScreen = ({
     offerId: offer.id,
     mode,
     isOnboarding,
-    isOfferExposureEnabled,
-    currentStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
     followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
   })
   const { navigationGuardedSubmitHandler, navigationGuardDialog } =
@@ -128,27 +124,15 @@ export const IndividualOfferLocationScreen = ({
       onSubmit: updateOffer,
     })
 
-  const handlePreviousStepOrBackToReadOnly = () => {
-    if (mode === OFFER_WIZARD_MODE.CREATION) {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-          mode: OFFER_WIZARD_MODE.CREATION,
-          isOnboarding,
-        })
-      )
-    } else {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isOnboarding,
-          isOfferExposureEnabled,
-        })
-      )
-    }
+  const handlePreviousStep = () => {
+    navigate(
+      getIndividualOfferUrl({
+        offerId: offer.id,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+        mode: OFFER_WIZARD_MODE.CREATION,
+        isOnboarding,
+      })
+    )
   }
 
   return (
@@ -179,14 +163,13 @@ export const IndividualOfferLocationScreen = ({
           </FormLayout>
 
           <ActionBar
-            onClickPrevious={handlePreviousStepOrBackToReadOnly}
+            onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION}
             isDisabled={
               isSaving ||
               isOfferDisabled(offer) ||
               !!hasPublishedOfferWithSameEan ||
-              (isOfferExposureEnabled &&
-                !form.formState.isDirty &&
+              (!form.formState.isDirty &&
                 mode !== OFFER_WIZARD_MODE.CREATION) ||
               isClosed
             }

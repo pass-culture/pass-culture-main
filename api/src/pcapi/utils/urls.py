@@ -54,10 +54,7 @@ def build_pc_pro_offer_path(offer: CollectiveOffer | CollectiveOfferTemplate | O
     if isinstance(offer, CollectiveOfferTemplate):
         return f"/offre/T-{offer.id}/collectif/recapitulatif"
 
-    if FeatureToggle.WIP_OFFER_EXPOSURE.is_active():
-        return f"/offre/individuelle/{offer.id}/visibilite"
-
-    return f"/offre/individuelle/{offer.id}/recapitulatif/description"
+    return f"/offre/individuelle/{offer.id}/visibilite"
 
 
 def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:

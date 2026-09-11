@@ -16,7 +16,6 @@ import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividu
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -51,7 +50,6 @@ export const IndividualOfferMediaScreen = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
   const mode = useOfferWizardMode()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const tipsVideoUploaderId = useId()
@@ -76,26 +74,14 @@ export const IndividualOfferMediaScreen = ({
   const isFormDirty = hasUpdatedVideoUrl || hasUpsertedImage
 
   const handlePreviousStep = async () => {
-    if (mode === OFFER_WIZARD_MODE.CREATION) {
-      await navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
-          mode: OFFER_WIZARD_MODE.CREATION,
-          isOnboarding,
-        })
-      )
-    } else {
-      await navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isOnboarding,
-          isOfferExposureEnabled,
-        })
-      )
-    }
+    await navigate(
+      getIndividualOfferUrl({
+        offerId: offer.id,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
+        mode: OFFER_WIZARD_MODE.CREATION,
+        isOnboarding,
+      })
+    )
   }
 
   const onSubmit = async (): Promise<boolean> => {
@@ -179,7 +165,7 @@ export const IndividualOfferMediaScreen = ({
       }
     }
 
-    if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
       snackBar.success('Votre offre a bien été modifiée.')
     }
 
@@ -191,8 +177,6 @@ export const IndividualOfferMediaScreen = ({
       offerId: offer.id,
       mode,
       isOnboarding,
-      isOfferExposureEnabled,
-      currentStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
       followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
     })
   const { navigationGuardedSubmitHandler, navigationGuardDialog } =
@@ -257,9 +241,7 @@ export const IndividualOfferMediaScreen = ({
             isDisabled={
               form.formState.isSubmitting ||
               isOfferDisabled(offer) ||
-              (isOfferExposureEnabled &&
-                !isFormDirty &&
-                mode !== OFFER_WIZARD_MODE.CREATION)
+              (!isFormDirty && mode !== OFFER_WIZARD_MODE.CREATION)
             }
           />
         </form>

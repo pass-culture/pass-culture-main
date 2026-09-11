@@ -288,68 +288,66 @@ export function StocksCalendarTable({
     })
   }
 
-  if (mode !== OFFER_WIZARD_MODE.READ_ONLY) {
-    columns.push({
-      id: 'actions',
-      label: 'Actions',
-      render: (stock) => {
-        const canDeleteStock =
-          !isOfferDisabled(offer) && stock.isEventDeletable && !isClosed
+  columns.push({
+    id: 'actions',
+    label: 'Actions',
+    render: (stock) => {
+      const canDeleteStock =
+        !isOfferDisabled(offer) && stock.isEventDeletable && !isClosed
 
-        const canEditStock =
-          mode === OFFER_WIZARD_MODE.EDITION &&
-          !isOfferDisabled(offer) &&
-          stock.beginningDatetime &&
-          !isBefore(stock.beginningDatetime, new Date()) &&
-          (!isOfferSynchronized(offer) || isOfferAllocineSynchronized(offer)) &&
-          !isClosed
+      const canEditStock =
+        mode === OFFER_WIZARD_MODE.EDITION &&
+        !isOfferDisabled(offer) &&
+        stock.beginningDatetime &&
+        !isBefore(stock.beginningDatetime, new Date()) &&
+        (!isOfferSynchronized(offer) || isOfferAllocineSynchronized(offer)) &&
+        !isClosed
 
-        if (!canEditStock && !canDeleteStock) {
-          return null
-        }
+      if (!canEditStock && !canDeleteStock) {
+        return null
+      }
 
-        return (
-          <div className={styles['table-actions']}>
-            {canEditStock && (
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                size={ButtonSize.SMALL}
-                icon={fullEditIcon}
-                tooltip="Modifier la date"
-                ref={
-                  stock.id === stockOpenedInDialog?.id
-                    ? openedStockTriggerRef
-                    : undefined
+      return (
+        <div className={styles['table-actions']}>
+          {canEditStock && (
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
+              icon={fullEditIcon}
+              tooltip="Modifier la date"
+              ref={
+                stock.id === stockOpenedInDialog?.id
+                  ? openedStockTriggerRef
+                  : undefined
+              }
+              onClick={() => {
+                setStockOpenedInDialog(stock)
+                setIsEditStockDialogOpen(true)
+              }}
+            />
+          )}
+
+          {canDeleteStock && (
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
+              icon={fullTrashIcon}
+              tooltip="Supprimer la date"
+              onClick={() => {
+                if (stockHasBookings(stock)) {
+                  shouldOpenWarningModal(stock, 'delete')
+                } else {
+                  onDeleteStocks([stock.id])
                 }
-                onClick={() => {
-                  setStockOpenedInDialog(stock)
-                  setIsEditStockDialogOpen(true)
-                }}
-              />
-            )}
-
-            {canDeleteStock && (
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                size={ButtonSize.SMALL}
-                icon={fullTrashIcon}
-                tooltip="Supprimer la date"
-                onClick={() => {
-                  if (stockHasBookings(stock)) {
-                    shouldOpenWarningModal(stock, 'delete')
-                  } else {
-                    onDeleteStocks([stock.id])
-                  }
-                }}
-              />
-            )}
-          </div>
-        )
-      },
-    })
-  }
+              }}
+            />
+          )}
+        </div>
+      )
+    },
+  })
 
   return (
     <>

@@ -15,7 +15,6 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import type { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
@@ -137,11 +136,9 @@ export const IndividualOffersContainer = ({
   )
 
   const { headlineOffer } = useHeadlineOfferContext()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   const columns = getIndividualOfferColumns({
     headlineOffer,
-    isOfferExposureEnabled,
     isReadOnly: isClosed,
   })
 

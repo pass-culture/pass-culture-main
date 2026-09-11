@@ -62,7 +62,6 @@ export const IndividualOfferDescriptionScreen = () => {
   const isCulturalOutreachEnabled = useActiveFeature(
     'WIP_ENABLE_CULTURAL_OUTREACH'
   )
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   const {
     categories,
@@ -163,7 +162,7 @@ export const IndividualOfferDescriptionScreen = () => {
         )
       }
 
-      if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
         snackBar.success('Votre offre a bien été modifiée.')
       }
 
@@ -192,8 +191,6 @@ export const IndividualOfferDescriptionScreen = () => {
       offerId: offerIdRef.current,
       mode,
       isOnboarding,
-      isOfferExposureEnabled,
-      currentStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
       followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
     })
   const { navigationGuardedSubmitHandler, navigationGuardDialog } =
@@ -203,20 +200,8 @@ export const IndividualOfferDescriptionScreen = () => {
       onSubmit,
     })
 
-  const handlePreviousStepOrBackToReadOnly = () => {
-    if (mode === OFFER_WIZARD_MODE.CREATION) {
-      navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
-    } else {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offerIdRef.current,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isOnboarding,
-          isOfferExposureEnabled,
-        })
-      )
-    }
+  const handlePreviousStep = () => {
+    navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
   }
 
   const updateProduct = (ean: string, product: Product) => {
@@ -311,11 +296,9 @@ export const IndividualOfferDescriptionScreen = () => {
               form.formState.isSubmitting ||
               Boolean(initialOffer && isOfferDisabled(initialOffer)) ||
               hasPublishedOfferWithSameEan ||
-              (isOfferExposureEnabled &&
-                !form.formState.isDirty &&
-                mode !== OFFER_WIZARD_MODE.CREATION)
+              (!form.formState.isDirty && mode !== OFFER_WIZARD_MODE.CREATION)
             }
-            onClickPrevious={handlePreviousStepOrBackToReadOnly}
+            onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION}
           />
         </form>
