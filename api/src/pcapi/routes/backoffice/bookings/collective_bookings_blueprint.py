@@ -187,7 +187,7 @@ def _get_collective_booking_ids_query(form: booking_forms.GetCollectiveBookingLi
         )
 
     if form.ministry.data:
-        base_query = base_query.outerjoin(educational_models.CollectiveBooking.educationalDeposit).filter(
+        base_query = base_query.join(educational_models.CollectiveBooking.educationalDeposit).filter(
             sa.or_(*_get_ministry_filters(form.ministry.data))
         )
 
