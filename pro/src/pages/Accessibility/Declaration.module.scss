@@ -30,6 +30,10 @@
   width: 100%;
 }
 
+.table-caption-no-display {
+  display: none;
+}
+
 .td,
 .th {
   padding: var(--size-spacing-m);

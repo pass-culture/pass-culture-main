@@ -125,6 +125,9 @@ const Collaborators = () => {
                 members.length > MAX_COLLABORATORS,
             })}
           >
+            <caption className={styles['table-caption-no-display']}>
+              Liste des collaborateurs
+            </caption>
             <thead>
               <tr className={styles['members-list-tr']}>
                 <th scope="col" className={styles['members-list-th']}>

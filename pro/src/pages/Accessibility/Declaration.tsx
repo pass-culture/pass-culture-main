@@ -248,10 +248,17 @@ export const Declaration = () => {
         L’audit a porté sur l’échantillon de pages listé ci-dessous.
       </p>
       <table className={styles['table']}>
+        <caption className={styles['table-caption-no-display']}>
+          Pages du site ayant fait l'objet de la vérification de conformité
+        </caption>
         <thead>
           <tr>
-            <th className={styles.th}>Titre de la page</th>
-            <th className={styles.th}>URL</th>
+            <th scope="col" className={styles.th}>
+              Titre de la page
+            </th>
+            <th scope="col" className={styles.th}>
+              URL
+            </th>
           </tr>
         </thead>
         <tbody>
