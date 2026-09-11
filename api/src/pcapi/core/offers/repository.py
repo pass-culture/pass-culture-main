@@ -30,7 +30,6 @@ from pcapi.core.reactions import models as reactions_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import custom_keys
 from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
@@ -729,11 +728,8 @@ def get_offers_by_filters(
             query = query.filter(models.Offer.name.ilike(search))
 
     if status is not None:
-        if FeatureToggle.WIP_ENABLE_NEW_OFFER_STATUS_FILTER.is_active():
-            status_filters = models.Offer.get_status_filters(status=status)
-            query = query.filter(*status_filters)
-        else:
-            query = _filter_by_status(query, status)
+        status_filters = models.Offer.get_status_filters(status=status)
+        query = query.filter(*status_filters)
 
     if period_beginning_date is not None or period_ending_date is not None:
         offer_alias = sa_orm.aliased(models.Offer)
@@ -810,10 +806,6 @@ def _filter_by_creation_mode(query: sa_orm.Query, creation_mode: str) -> sa_orm.
         query = query.filter(models.Offer.lastProviderId.is_not(None))
 
     return query
-
-
-def _filter_by_status(query: sa_orm.Query, status: offer_mixin.OfferStatus) -> sa_orm.Query:
-    return query.filter(models.Offer.status == status.name)
 
 
 def venue_already_has_validated_offer(venue_id: int) -> bool:
