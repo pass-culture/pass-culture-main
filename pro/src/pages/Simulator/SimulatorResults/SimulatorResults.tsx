@@ -11,8 +11,6 @@ import {
   tryRestoreTargetAudienceFromStorage,
 } from 'pages/Simulator/storage'
 import { useEffect, useState } from 'react'
-import { InfoPanel } from 'ui-kit/InfoPanel/InfoPanel'
-import { InfoPanelSize, InfoPanelSurface } from 'ui-kit/InfoPanel/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
@@ -20,6 +18,12 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import nextIcon from '@/icons/full-next.svg'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
+import { InfoPanelList } from '@/ui-kit/InfoPanelList/InfoPanelList'
+import {
+  InfoPanelSize,
+  InfoPanelSurface,
+  InfoPanelVariant,
+} from '@/ui-kit/InfoPanelList/types'
 
 import { api } from 'apiClient/api'
 import {
@@ -158,21 +162,15 @@ export const SimulatorResults = (): JSX.Element => {
         />
       )}
       <div className={styles['documents']}>
-        {result?.eligibilityDocuments.map((document, index: number) => {
-          const { title, description } = getDocumentCardContent(document)
-          return (
-            <InfoPanel
-              surface={InfoPanelSurface.ELEVATED}
-              size={InfoPanelSize.SMALL}
-              title={title}
-              stepNumber={index + 1}
-              key={title}
-              titleLevel="2"
-            >
-              {description}
-            </InfoPanel>
-          )
-        })}
+        {result?.eligibilityDocuments && (
+          <InfoPanelList
+            variant={InfoPanelVariant.ORDERED}
+            surface={InfoPanelSurface.ELEVATED}
+            size={InfoPanelSize.SMALL}
+            titleLevel="2"
+            panels={result.eligibilityDocuments.map(getDocumentCardContent)}
+          />
+        )}
         {result?.messages.map((message: SignupSimulationMessageModel) => {
           const content = getAlertContent(message.type)
           return (
