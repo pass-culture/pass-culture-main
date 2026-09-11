@@ -7,12 +7,12 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.db_utils import clean_all_database
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.apis import private_api
 from pcapi.routes.internal.auth import api_key_required
+from pcapi.routes.internal.blueprint import testing_blueprint
 from pcapi.sandboxes.scripts import getters
 
 
-@private_api.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
+@testing_blueprint.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
 @api_key_required
 def get_sandbox(module_name: str, getter_name: str) -> Response:
     if not hasattr(getters, module_name):
@@ -46,7 +46,7 @@ def get_sandbox(module_name: str, getter_name: str) -> Response:
 # The next endpoints must only be used with EMAIL_BACKEND set to `pcapi.core.mails.backends.testing.TestingBackend`
 # otherwise the outbox will be empty
 # The next endpoints is only available if ENABLE_TEST_ROUTES is set to 1
-@private_api.route("/sandboxes/clear_email_list", methods=["GET"])
+@testing_blueprint.route("/sandboxes/clear_email_list", methods=["GET"])
 @api_key_required
 def clear_email_list() -> str:
     if len(mails_testing.outbox) != 0:
@@ -54,7 +54,7 @@ def clear_email_list() -> str:
     return "Outbox cleared"
 
 
-@private_api.route("/sandboxes/get_unique_email", methods=["GET"])
+@testing_blueprint.route("/sandboxes/get_unique_email", methods=["GET"])
 @api_key_required
 def get_unique_email() -> dict:
     delay = 0

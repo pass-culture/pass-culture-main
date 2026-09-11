@@ -4,8 +4,8 @@ import math
 from flask_login import login_required
 
 from pcapi.core.educational import repository
-from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import educational_institutions
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
@@ -14,14 +14,14 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/educational_institutions", methods=["GET"])
+@pro_blueprint.route("/educational_institutions", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=educational_institutions.EducationalInstitutionsResponseModel,
     on_success_status=200,
     on_error_statuses=[401],
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_educational_institutions(
     query: educational_institutions.EducationalInstitutionsQueryModel,

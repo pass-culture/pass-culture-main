@@ -7,7 +7,6 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import generator as users_generator
 from pcapi.core.users import models as users_models
 from pcapi.models.utils import get_or_404
-from pcapi.routes.apis import private_api
 from pcapi.routes.backoffice.dev import forms as dev_forms
 from pcapi.routes.backoffice.dev.blueprint import create_disabled_adult_allowance_fraud_check_mock
 from pcapi.routes.backoffice.dev.blueprint import create_disabled_child_education_allowance_fraud_check_mock
@@ -15,10 +14,11 @@ from pcapi.routes.backoffice.dev.blueprint import create_qf_fraud_check_mock
 from pcapi.routes.backoffice.dev.blueprint import create_ubble_fraud_check
 from pcapi.routes.backoffice.dev.blueprint import get_token_expiration_timestamp
 from pcapi.routes.internal.auth import api_key_required
+from pcapi.routes.internal.blueprint import testing_blueprint
 from pcapi.utils import transaction_manager
 
 
-@private_api.route("/e2e/account", methods=["POST"])
+@testing_blueprint.route("/e2e/account", methods=["POST"])
 @transaction_manager.atomic()
 @api_key_required
 def generate_account() -> tuple[dict, int]:
@@ -51,7 +51,7 @@ def generate_account() -> tuple[dict, int]:
     }, 200
 
 
-@private_api.route("/e2e/account/<user_id>/ubble", methods=["POST"])
+@testing_blueprint.route("/e2e/account/<user_id>/ubble", methods=["POST"])
 @transaction_manager.atomic()
 @api_key_required
 def configure_ubble_responses(user_id: int) -> tuple[dict, int]:
@@ -67,7 +67,7 @@ def configure_ubble_responses(user_id: int) -> tuple[dict, int]:
     return {}, 200
 
 
-@private_api.route("/e2e/account/<user_id>/quotient_familial", methods=["POST"])
+@testing_blueprint.route("/e2e/account/<user_id>/quotient_familial", methods=["POST"])
 @transaction_manager.atomic()
 @api_key_required
 def configure_api_quotient_familial_response(user_id: int) -> tuple[dict, int]:
@@ -83,7 +83,7 @@ def configure_api_quotient_familial_response(user_id: int) -> tuple[dict, int]:
     return {}, 200
 
 
-@private_api.route("/e2e/account/<user_id>/aah", methods=["POST"])
+@testing_blueprint.route("/e2e/account/<user_id>/aah", methods=["POST"])
 @transaction_manager.atomic()
 @api_key_required
 def configure_api_disabled_adult_allowance_response(user_id: int) -> tuple[dict, int]:
@@ -99,7 +99,7 @@ def configure_api_disabled_adult_allowance_response(user_id: int) -> tuple[dict,
     return {}, 200
 
 
-@private_api.route("/e2e/account/<user_id>/aeeh", methods=["POST"])
+@testing_blueprint.route("/e2e/account/<user_id>/aeeh", methods=["POST"])
 @transaction_manager.atomic()
 @api_key_required
 def configure_api_disabled_child_education_allowance_response(user_id: int) -> tuple[dict, int]:
@@ -115,7 +115,7 @@ def configure_api_disabled_child_education_allowance_response(user_id: int) -> t
     return {}, 200
 
 
-@private_api.route("/e2e/bonus_credit/<user_id>/recover", methods=["POST"])
+@testing_blueprint.route("/e2e/bonus_credit/<user_id>/recover", methods=["POST"])
 @transaction_manager.atomic()
 @api_key_required
 def recover_started_bonus_credit_applications(user_id: int) -> tuple[dict[str, list[int]], int]:

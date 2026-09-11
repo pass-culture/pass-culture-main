@@ -21,7 +21,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import resource_not_found_error
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
@@ -53,12 +53,12 @@ def _get_filters_from_query(
     )
 
 
-@private_api.route("/collective/bookable-offers", methods=["GET"])
+@pro_blueprint.route("/collective/bookable-offers", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.ListCollectiveOffersResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     query_params_as_list=["status"],
 )
 def get_collective_offers(
@@ -73,12 +73,12 @@ def get_collective_offers(
     )
 
 
-@private_api.route("/collective/home/bookable-offers", methods=["GET"])
+@pro_blueprint.route("/collective/home/bookable-offers", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.ListCollectiveOffersHomeResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_collective_offers_home(
     query: collective_offers_serialize.ListCollectiveOffersHomeQueryModel,
@@ -95,12 +95,12 @@ def get_collective_offers_home(
     )
 
 
-@private_api.route("/collective/offers-template", methods=["GET"])
+@pro_blueprint.route("/collective/offers-template", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.ListCollectiveOfferTemplatesResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     query_params_as_list=["status"],
 )
 def get_collective_offer_templates(
@@ -116,12 +116,12 @@ def get_collective_offer_templates(
     )
 
 
-@private_api.route("/collective/home/offers-template", methods=["GET"])
+@pro_blueprint.route("/collective/home/offers-template", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.CollectiveOfferTemplatesHomeResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_collective_offer_templates_home(
     query: collective_offers_serialize.ListCollectiveOffersHomeQueryModel,
@@ -139,7 +139,7 @@ def get_collective_offer_templates_home(
     )
 
 
-@private_api.route("/collective/offers/csv", methods=["GET"])
+@pro_blueprint.route("/collective/offers/csv", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
@@ -148,7 +148,7 @@ def get_collective_offer_templates_home(
         "Content-Type": "text/csv; charset=utf-8-sig;",
         "Content-Disposition": "attachment; filename=offres_collectives_reservables_pass_culture.csv",
     },
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_collective_offers_csv(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
@@ -156,7 +156,7 @@ def get_collective_offers_csv(
     return _get_collective_offers_export(query, models.CollectiveOfferExportType.CSV)
 
 
-@private_api.route("/collective/offers/excel", methods=["GET"])
+@pro_blueprint.route("/collective/offers/excel", methods=["GET"])
 @login_required
 @spectree_serialize(
     json_format=False,
@@ -164,7 +164,7 @@ def get_collective_offers_csv(
         "Content-Type": "application/vnd.ms-excel",
         "Content-Disposition": "attachment; filename=offres_collectives_reservables_pass_culture.xlsx",
     },
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_collective_offers_excel(
@@ -186,12 +186,12 @@ def _get_collective_offers_export(
     return api_export.generate_excel_for_collective_offers(collective_offers_query=offers_query)
 
 
-@private_api.route("/collective/offers/<int:offer_id>", methods=["GET"])
+@pro_blueprint.route("/collective/offers/<int:offer_id>", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
@@ -207,12 +207,12 @@ def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollec
     return collective_offers_serialize.GetCollectiveOfferResponseModel.build(offer)
 
 
-@private_api.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
+@pro_blueprint.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_collective_offer_template(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     try:
@@ -227,12 +227,12 @@ def get_collective_offer_template(offer_id: int) -> collective_offers_serialize.
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.build(offer)
 
 
-@private_api.route("/collective/offers-template/request/<int:request_id>", methods=["GET"])
+@pro_blueprint.route("/collective/offers-template/request/<int:request_id>", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferRequestResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_collective_offer_request(request_id: int) -> collective_offers_serialize.GetCollectiveOfferRequestResponseModel:
     try:
@@ -246,13 +246,13 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
     return collective_offers_serialize.GetCollectiveOfferRequestResponseModel.model_validate(collective_offer_request)
 
 
-@private_api.route("/collective/offers", methods=["POST"])
+@pro_blueprint.route("/collective/offers", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.CollectiveOfferResponseIdModel,
     on_success_status=201,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def create_collective_offer(
     body: collective_offers_serialize.PostCollectiveOfferBodyModel,
@@ -289,12 +289,12 @@ def create_collective_offer(
     return collective_offers_serialize.CollectiveOfferResponseIdModel(id=offer.id)
 
 
-@private_api.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
+@pro_blueprint.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def edit_collective_offer(
     offer_id: int, body: collective_offers_serialize.PatchCollectiveOfferBodyModel
@@ -342,12 +342,12 @@ def edit_collective_offer(
     return collective_offers_serialize.GetCollectiveOfferResponseModel.build(offer)
 
 
-@private_api.route("/collective/offers-template/<int:offer_id>", methods=["PATCH"])
+@pro_blueprint.route("/collective/offers-template/<int:offer_id>", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def edit_collective_offer_template(
     offer_id: int, body: collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel
@@ -391,12 +391,12 @@ def edit_collective_offer_template(
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.build(offer)
 
 
-@private_api.route("/collective/offers/archive", methods=["PATCH"])
+@pro_blueprint.route("/collective/offers/archive", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def patch_collective_offers_archive(
     body: collective_offers_serialize.PatchCollectiveOfferArchiveBodyModel,
@@ -415,12 +415,12 @@ def patch_collective_offers_archive(
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 
 
-@private_api.route("/collective/offers-template/active-status", methods=["PATCH"])
+@pro_blueprint.route("/collective/offers-template/active-status", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def patch_collective_offers_template_active_status(
     body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
@@ -445,12 +445,12 @@ def patch_collective_offers_template_active_status(
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 
 
-@private_api.route("/collective/offers-template/archive", methods=["PATCH"])
+@pro_blueprint.route("/collective/offers-template/archive", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def patch_collective_offers_template_archive(
     body: collective_offers_serialize.PatchCollectiveOfferArchiveBodyModel,
@@ -473,13 +473,13 @@ def patch_collective_offers_template_archive(
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 
 
-@private_api.route("/collective/offers/<int:offer_id>/educational_institution", methods=["PATCH"])
+@pro_blueprint.route("/collective/offers/<int:offer_id>/educational_institution", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
     on_error_statuses=[403, 404],
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
 )
 def patch_collective_offers_educational_institution(
@@ -510,13 +510,13 @@ def patch_collective_offers_educational_institution(
     return collective_offers_serialize.GetCollectiveOfferResponseModel.build(offer)
 
 
-@private_api.route("/collective/offers/<int:offer_id>/publish", methods=["PATCH"])
+@pro_blueprint.route("/collective/offers/<int:offer_id>/publish", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
     on_error_statuses=[404],
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
 )
 def patch_collective_offer_publication(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
@@ -532,13 +532,13 @@ def patch_collective_offer_publication(offer_id: int) -> collective_offers_seria
     return collective_offers_serialize.GetCollectiveOfferResponseModel.build(offer)
 
 
-@private_api.route("/collective/offers-template/<int:offer_id>/publish", methods=["PATCH"])
+@pro_blueprint.route("/collective/offers-template/<int:offer_id>/publish", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
     on_error_statuses=[404],
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
 )
 def patch_collective_offer_template_publication(
@@ -557,13 +557,13 @@ def patch_collective_offer_template_publication(
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.build(offer)
 
 
-@private_api.route("/collective/offers-template", methods=["POST"])
+@pro_blueprint.route("/collective/offers-template", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.CollectiveOfferResponseIdModel,
     on_success_status=201,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def create_collective_offer_template(
     body: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel,
@@ -647,13 +647,13 @@ def _get_crop_params(image_form: collective_offers_serialize.AttachImageFormMode
     )
 
 
-@private_api.route("/collective/offers/<int:offer_id>/image", methods=["POST"])
+@pro_blueprint.route("/collective/offers/<int:offer_id>/image", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
     response_model=collective_offers_serialize.AttachImageResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def attach_offer_image(
     offer_id: int, form: collective_offers_serialize.AttachImageFormModel
@@ -689,13 +689,13 @@ def attach_offer_image(
     return collective_offers_serialize.AttachImageResponseModel.model_validate(offer)
 
 
-@private_api.route("/collective/offers-template/<int:offer_id>/image", methods=["POST"])
+@pro_blueprint.route("/collective/offers-template/<int:offer_id>/image", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
     response_model=collective_offers_serialize.AttachImageResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def attach_offer_template_image(
     offer_id: int, form: collective_offers_serialize.AttachImageFormModel
@@ -726,12 +726,12 @@ def attach_offer_template_image(
     return collective_offers_serialize.AttachImageResponseModel.model_validate(offer)
 
 
-@private_api.route("/collective/offers/<int:offer_id>/image", methods=["DELETE"])
+@pro_blueprint.route("/collective/offers/<int:offer_id>/image", methods=["DELETE"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def delete_offer_image(offer_id: int) -> None:
     try:
@@ -750,12 +750,12 @@ def delete_offer_image(offer_id: int) -> None:
     api_offer.delete_image(obj=offer)
 
 
-@private_api.route("/collective/offers-template/<int:offer_id>/image", methods=["DELETE"])
+@pro_blueprint.route("/collective/offers-template/<int:offer_id>/image", methods=["DELETE"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def delete_offer_template_image(offer_id: int) -> None:
     try:
@@ -769,12 +769,12 @@ def delete_offer_template_image(offer_id: int) -> None:
     api_offer.delete_image(obj=offer)
 
 
-@private_api.route("/collective/offers/redactors", methods=["GET"])
+@pro_blueprint.route("/collective/offers/redactors", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=educational_redactors.EducationalRedactors,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_autocomplete_educational_redactors_for_uai(
     query: educational_redactors.EducationalRedactorQueryModel,
@@ -796,13 +796,13 @@ def get_autocomplete_educational_redactors_for_uai(
     )
 
 
-@private_api.route("/collective/offers/<int:offer_id>/duplicate", methods=["POST"])
+@pro_blueprint.route("/collective/offers/<int:offer_id>/duplicate", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
     on_success_status=201,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def duplicate_collective_offer(
     offer_id: int,
