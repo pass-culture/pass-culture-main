@@ -232,7 +232,7 @@ class UserProfileResponse(HttpBodyModel):
                 deposit_activation_date=user.deposit_activation_date,
                 deposit_expiration_date=user.deposit_expiration_date,
                 deposit_type=user.deposit_type,
-                domains_credit=users_api.get_domains_credit(user),
+                domains_credit=users_api.get_domains_credit(user),  # type: ignore [arg-type]
                 eligibility=user.eligibility,
                 eligibility_end_datetime=eligibility_api.get_eligibility_end_datetime(
                     user.birth_date, user.departementCode
@@ -250,7 +250,7 @@ class UserProfileResponse(HttpBodyModel):
                 ),
                 last_name=user.lastName,
                 needs_to_fill_cultural_survey=(
-                    user.needsToFillCulturalSurvey and user.is_eligible and _is_cultural_survey_active()
+                    user.needsToFillCulturalSurvey and user.is_eligible and _is_cultural_survey_active()  # type: ignore [arg-type]
                 ),
                 phone_number=user.phoneNumber,
                 postal_code=user.postalCode,
@@ -266,7 +266,7 @@ class UserProfileResponse(HttpBodyModel):
                 show_eligible_card=not user.has_beneficiary_role and user.is_18_or_above_eligible,
                 status=cls._get_status(user),
                 subscription_message=cls._get_subscription_message(user),
-                subscriptions=user.get_notification_subscriptions(),
+                subscriptions=user.get_notification_subscriptions(),  # type: ignore [arg-type]
             )
         return data
 

@@ -124,7 +124,7 @@ class BookingOfferResponseV2(HttpBodyModel):
                 postal_code=addr.postalCode,
                 city=addr.city,
                 label=offerer_address.label,
-                coordinates=CoordinatesV2(latitude=addr.latitude, longitude=addr.longitude),
+                coordinates=CoordinatesV2(latitude=addr.latitude, longitude=addr.longitude),  # type: ignore [arg-type]
                 timezone=addr.timezone,
             )
 
@@ -138,10 +138,10 @@ class BookingOfferResponseV2(HttpBodyModel):
             booking_contact=offer.bookingContact,
             name=offer.name,
             extra_data=extra_data,
-            image=offer.image,
+            image=offer.image,  # type: ignore [arg-type]
             is_digital=offer.isDigital,
             is_permanent=offer.isPermanent,
-            subcategory_id=offer.subcategoryId,
+            subcategory_id=offer.subcategoryId,  # type: ignore [arg-type]
             url=offer.url,
             venue=BookingVenueResponseV2.model_validate(offer.venue),
         )
@@ -170,7 +170,7 @@ class BookingStockResponseV2(HttpBodyModel):
             is_automatically_used=stock.is_automatically_used,
             beginning_datetime=stock.beginningDatetime,
             features=stock.features,
-            offer=stock.offer,
+            offer=stock.offer,  # type: ignore [arg-type]
             price_category_label=stock.priceCategory.label if stock.priceCategory else None,
             price=to_cents(stock.price),
         )
@@ -246,7 +246,7 @@ def get_ticket_infos(booking: bookings_models.Booking) -> TicketResponse:
 
     if offer.isDigital:
         return TicketResponse(
-            activation_code=booking.activationCode,
+            activation_code=booking.activationCode,  # type: ignore [arg-type]
             external_booking=None,
             display=TicketDisplayEnum.ONLINE_CODE,
             token=TokenResponse(data=booking.token) if not booking.activationCode else None,
@@ -331,7 +331,7 @@ class BookingResponse(HttpBodyModel):
             display_as_ended=booking.displayAsEnded,
             expiration_date=booking.expirationDate,
             quantity=booking.quantity,
-            stock=booking.stock,
+            stock=booking.stock,  # type: ignore [arg-type]
             total_amount=to_cents(booking.total_amount),
             enable_pop_up_reaction=booking.enable_pop_up_reaction,
             can_react=booking.can_react,
@@ -411,7 +411,7 @@ class BookingListItemOfferResponse(HttpBodyModel):
             is_permanent=offer.isPermanent,
             withdrawal_delay=offer.withdrawalDelay,
             withdrawal_type=offer.withdrawalType,
-            subcategory_id=offer.subcategoryId,
+            subcategory_id=offer.subcategoryId,  # type: ignore [arg-type]
             venue=BookingListItemVenueResponse.build(offer.venue),
         )
 

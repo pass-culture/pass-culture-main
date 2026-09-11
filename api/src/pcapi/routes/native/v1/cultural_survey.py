@@ -46,7 +46,7 @@ def post_cultural_survey_answers(body: serializers.CulturalSurveyAnswersRequest)
 
     payload = tasks.CulturalSurveyTaskAnswers(
         user_id=current_user.id,
-        submitted_at=date_utils.get_naive_utc_now().isoformat(),
+        submitted_at=date_utils.get_naive_utc_now(),
         answers=answers,
     )
 

@@ -126,8 +126,8 @@ class OfferVenueResponse(HttpBodyModel):
             banner_url=venue.bannerUrl,
             city=venue.offererAddress.address.city,
             coordinates=OfferVenueCoordinates(
-                latitude=venue.offererAddress.address.latitude,
-                longitude=venue.offererAddress.address.longitude,
+                latitude=venue.offererAddress.address.latitude,  # type: ignore [arg-type]
+                longitude=venue.offererAddress.address.longitude,  # type: ignore [arg-type]
             ),
             is_permanent=venue.isPermanent,
             is_open_to_public=venue.isOpenToPublic,
@@ -376,7 +376,7 @@ class OfferResponse(HttpBodyModel):
             address: Address = offerer_address.address
             address_response = OfferAddressResponse(
                 city=address.city,
-                coordinates=OfferVenueCoordinates(latitude=address.latitude, longitude=address.longitude),
+                coordinates=OfferVenueCoordinates(latitude=address.latitude, longitude=address.longitude),  # type: ignore [arg-type]
                 label=offerer_address.label,
                 postal_code=address.postalCode,
                 street=address.street,
@@ -410,10 +410,10 @@ class OfferResponse(HttpBodyModel):
             chronicles_count=product.chroniclesCount if product and product.chroniclesCount else offer.chroniclesCount,
             pro_advices_count=product.proAdvicesCount if product else (1 if offer.hasProAdvice else 0),
             description=offer.description,
-            expense_domains=(domain.value for domain in get_expense_domains(offer)),
+            expense_domains=(domain.value for domain in get_expense_domains(offer)),  # type: ignore [arg-type]
             external_ticket_office_url=offer.externalTicketOfficeUrl,
             extra_data=extra_data,
-            images=offer.images,
+            images=offer.images,  # type: ignore [arg-type]
             is_digital=offer.isDigital,
             is_duo=offer.isDuo,
             is_educational=offer.isEducational,
@@ -430,7 +430,7 @@ class OfferResponse(HttpBodyModel):
             name=offer.name,
             publication_date=offer.bookingAllowedDatetime,
             stocks=[OfferStockResponse.build(stock) for stock in offer.activeStocks],
-            subcategory_id=offer.subcategoryId,
+            subcategory_id=offer.subcategoryId,  # type: ignore [arg-type]
             venue=OfferVenueResponse.build(offer.venue),
             video=video,
             withdrawal_details=offer.withdrawalDetails,

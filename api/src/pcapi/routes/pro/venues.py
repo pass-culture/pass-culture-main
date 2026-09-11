@@ -280,7 +280,7 @@ def delete_venue_banner(venue_id: int) -> None:
 )
 def get_venues_educational_statuses() -> venue_collective_serialize.VenuesEducationalStatusesResponseModel:
     statuses = offerers_api.get_venues_educational_statuses()
-    return venue_collective_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)
+    return venue_collective_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)  # type: ignore [arg-type]
 
 
 @private_api.route("/venues/<int:venue_id>/locations", methods=["GET"])

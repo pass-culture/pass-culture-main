@@ -42,7 +42,7 @@ class DMSApplicationForEAC(HttpBodyModel):
     ) -> typing.Self:
         return cls(
             venueId=venue_id,
-            state=collective_dms_application.state,
+            state=collective_dms_application.state,  # type: ignore [arg-type]
             procedure=collective_dms_application.procedure,
             application=collective_dms_application.application,
             lastChangeDate=collective_dms_application.lastChangeDate,

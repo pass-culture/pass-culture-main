@@ -205,7 +205,7 @@ class MovieScreenings(HttpBodyModel):
         assert raw_screening.movie_data
         return cls(
             duration=raw_screening.movie_data.duration,
-            genres=list(filter(bool, map(get_movie_label, raw_screening.movie_data.genres))),  # pyright: ignore[reportArgumentType]
+            genres=list(filter(bool, map(get_movie_label, raw_screening.movie_data.genres))),  # type: ignore [arg-type]
             last_30_days_bookings=raw_screening.movie_data.last_30_days_bookings,
             movie_name=raw_screening.movie_data.movie_name,
             offer_id=raw_screening.offer_id,
@@ -303,7 +303,7 @@ class VenueMovieCalendarResponse(HttpBodyModel):
         timezone = raw_screening_timezone or date_utils.METROPOLE_TIMEZONE
 
         return cls(
-            calendar=serialize_calendar(
+            calendar=serialize_calendar(  # type: ignore [arg-type]
                 raw_screenings,
                 date_utils.default_timezone_to_local_datetime(start_date, timezone),
                 date_utils.default_timezone_to_local_datetime(end_date, timezone),
