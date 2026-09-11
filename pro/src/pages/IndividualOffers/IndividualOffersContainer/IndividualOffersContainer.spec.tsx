@@ -570,7 +570,8 @@ describe('IndividualOffersScreen', () => {
       await userEvent.click(screen.getByText('Publier'))
 
       expect(snackBarSuccess).toHaveBeenCalledWith(
-        'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants.'
+        'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants.',
+        expect.any(String)
       )
       expect(patchSpy).toHaveBeenCalledWith({
         body: {
@@ -651,7 +652,8 @@ describe('IndividualOffersScreen', () => {
 
     expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
     expect(snackBarSuccess).toHaveBeenCalledWith(
-      '2 brouillons ont bien été supprimés'
+      '2 brouillons ont bien été supprimés',
+      expect.any(String)
     )
   })
 

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -27,6 +27,25 @@ export const VideoUploader = () => {
   const { videoDuration, videoTitle, videoThumbnailUrl } = videoData ?? {}
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const editVideoRef = useRef<HTMLButtonElement>(null)
+  const addVideoRef = useRef<HTMLButtonElement>(null)
+  const hasVideo = !!videoThumbnailUrl
+  const hadVideoRef = useRef(hasVideo)
+
+  useEffect(() => {
+    if (hasVideo !== hadVideoRef.current) {
+      if (hasVideo) {
+        editVideoRef.current?.focus()
+      } else {
+        addVideoRef.current?.focus()
+      }
+    }
+    hadVideoRef.current = hasVideo
+  }, [hasVideo])
+
+  const handleVideoDelete = () => {
+    onVideoDelete()
+  }
 
   return (
     <div className={styles['video-uploader-container']}>
@@ -46,14 +65,20 @@ export const VideoUploader = () => {
               label="Modifier"
               onClick={() => setIsOpen(true)}
               disabled={isClosed}
+              ref={editVideoRef}
             />
-            <ModalVideo isOpen={isOpen} onClose={() => setIsOpen(false)} />
+            <ModalVideo
+              isOpen={isOpen}
+              onClose={() => setIsOpen(false)}
+              addVideoRef={addVideoRef}
+              editVideoRef={editVideoRef}
+            />
             <Button
               variant={ButtonVariant.SECONDARY}
               color={ButtonColor.NEUTRAL}
               size={ButtonSize.SMALL}
               icon={fullTrashIcon}
-              onClick={onVideoDelete}
+              onClick={handleVideoDelete}
               label="Supprimer"
               disabled={isClosed}
             />
@@ -73,8 +98,14 @@ export const VideoUploader = () => {
             label="Ajouter une URL Youtube"
             onClick={() => setIsOpen(true)}
             disabled={isClosed}
+            ref={addVideoRef}
           />
-          <ModalVideo isOpen={isOpen} onClose={() => setIsOpen(false)} />
+          <ModalVideo
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            addVideoRef={addVideoRef}
+            editVideoRef={editVideoRef}
+          />
           <p className={styles['video-uploader-text-subtle']}>
             Affichage de la prévisualisation ici
           </p>

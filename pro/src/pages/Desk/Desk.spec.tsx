@@ -179,7 +179,10 @@ describe('Desk', () => {
         })
       )
 
-      expect(snackBarSuccess).toHaveBeenCalledWith('Contremarque validée')
+      expect(snackBarSuccess).toHaveBeenCalledWith(
+        'Contremarque validée',
+        expect.any(String)
+      )
 
       expect(input).toHaveValue('')
     })
@@ -206,7 +209,7 @@ describe('Desk', () => {
         screen.getByRole('button', { name: 'Valider la contremarque' })
       )
 
-      expect(snackBarError).toHaveBeenCalledWith('Erreur')
+      expect(snackBarError).toHaveBeenCalledWith('Erreur', expect.any(String))
 
       expect(input).toHaveValue('AAAAAA')
     })
@@ -238,7 +241,10 @@ describe('Desk', () => {
 
       await user.click(screen.getByRole('button', { name: 'Continuer' }))
 
-      expect(snackBarSuccess).toHaveBeenCalledWith('Contremarque invalidée')
+      expect(snackBarSuccess).toHaveBeenCalledWith(
+        'Contremarque invalidée',
+        expect.any(String)
+      )
 
       expect(input).toHaveValue('')
     })

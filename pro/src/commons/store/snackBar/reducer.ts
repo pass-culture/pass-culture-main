@@ -15,11 +15,13 @@ export interface ISnackBarItem {
   variant: SnackBarVariant
   id: string
   createdAt: string
+  targetFocusId?: string
 }
 
 interface SnackBarPayload {
   description: string
   variant: SnackBarVariant
+  targetFocusId?: string
 }
 
 export const snackBarAdapter = createEntityAdapter({

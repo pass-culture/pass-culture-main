@@ -51,6 +51,7 @@ export interface ModalImageUpsertOrEditProps {
   onImageUpload: (values: OnImageUploadArgs, successMessage: string) => void
   onImageDelete?: () => void
   initialValues?: UploadImageValues
+  refToFocusOnClose?: React.RefObject<HTMLElement | null>
 }
 
 const AppPreviewCollectiveOffer = () => <></>
@@ -62,7 +63,8 @@ export const ModalImageUpsertOrEdit = ({
   onImageUpload,
   onImageDelete,
   initialValues = {},
-}: ModalImageUpsertOrEditProps): JSX.Element | null => {
+  refToFocusOnClose,
+}: ModalImageUpsertOrEditProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const { draftImage, ...previouslyUploadedImage } = initialValues
   const defaultPositions = {
@@ -263,14 +265,11 @@ export const ModalImageUpsertOrEdit = ({
     onOpenChange?.(open)
   }
 
-  if (!open) {
-    return null
-  }
-
   return (
     <DetailedModal
       isOpen={open}
       onClose={() => handleOpenChange(false)}
+      refToFocusOnClose={refToFocusOnClose}
       title="Modifier une image"
       description={
         'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci.'

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useId, useState } from 'react'
 
 import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
 import { OfferStatus } from '@/apiClient/v1'
@@ -66,7 +66,7 @@ export const IndividualOffersContainer = ({
 
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
-  const searchButtonRef = useRef<HTMLButtonElement>(null)
+  const searchButtonId = useId()
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -157,7 +157,7 @@ export const IndividualOffersContainer = ({
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         venueAddresses={venueAddresses}
-        searchButtonRef={searchButtonRef}
+        searchButtonId={searchButtonId}
       />
 
       <HeadlineOffer />
@@ -230,7 +230,7 @@ export const IndividualOffersContainer = ({
               canDelete={canDelete}
               canDeactivate={canDeactivate}
               canPublish={canPublish}
-              searchButtonRef={searchButtonRef}
+              searchButtonId={searchButtonId}
             />
           )}
         </Table>

@@ -256,7 +256,8 @@ describe('Header', () => {
     })
     await waitFor(() => {
       expect(snackBarSuccess).toHaveBeenCalledWith(
-        'Votre image a bien été supprimée'
+        'Votre image a bien été supprimée',
+        expect.any(String)
       )
     })
   })
@@ -286,7 +287,8 @@ describe('Header', () => {
 
     await waitFor(() => {
       expect(snackBarError).toHaveBeenCalledWith(
-        "Une erreur est survenue lors de la suppression de l'image"
+        "Une erreur est survenue lors de la suppression de l'image",
+        expect.any(String)
       )
     })
   })

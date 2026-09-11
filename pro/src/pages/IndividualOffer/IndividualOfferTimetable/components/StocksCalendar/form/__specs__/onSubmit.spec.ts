@@ -355,7 +355,14 @@ describe('onSubmit', () => {
             editedStockCount: expectedStocks.length,
           })
         )
-        await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])
+        await onSubmit(
+          formValues,
+          '75',
+          66,
+          notify,
+          ['queryKey', 1, 1, {}, {}],
+          '123'
+        )
 
         expect(api.bulkCreateEventStocks).toHaveBeenCalledWith({
           body: {
@@ -375,7 +382,10 @@ describe('onSubmit', () => {
             ),
           },
         })
-        expect(snackBarSuccess).toHaveBeenCalledWith(expectedNotification)
+        expect(snackBarSuccess).toHaveBeenCalledWith(
+          expectedNotification,
+          '123'
+        )
       })
     }
   )

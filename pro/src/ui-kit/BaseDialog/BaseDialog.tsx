@@ -26,7 +26,6 @@ export interface BaseDialogProps {
    */
   children: React.ReactNode
   /**
-   * Element to focus after the dialog has closed.
    * Native `<dialog>` already restores focus to the opener; use this to
    * override that target (e.g. a dropdown trigger instead of a menu item).
    */

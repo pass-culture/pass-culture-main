@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 
 import { api } from '@/apiClient/api'
 import { VenueState } from '@/apiClient/v1'
@@ -34,6 +34,7 @@ const VenueManagement = () => {
   const [isCloseVenueModalOpen, setIsCloseVenueModalOpen] = useState(false)
   const [isConfirmVenueClosedModalOpen, setIsConfirmVenueClosedModalOpen] =
     useState(false)
+  const closeButtonId = useId()
 
   const onValidateModal = () => {
     setIsCloseVenueModalOpen(false)
@@ -49,7 +50,10 @@ const VenueManagement = () => {
       await syncVenue(Number(selectedPartnerVenue.id))
       setIsConfirmVenueClosedModalOpen(true)
     } catch {
-      snackBar.error('Une erreur est survenue. Merci de réessayer plus tard.')
+      snackBar.error(
+        'Une erreur est survenue. Merci de réessayer plus tard.',
+        closeButtonId
+      )
     }
   }
 
@@ -71,6 +75,7 @@ const VenueManagement = () => {
               ? 'Demande en cours'
               : 'Fermer la structure'
           }
+          id={closeButtonId}
           onClick={() => setIsCloseVenueModalOpen(true)}
         />
       </div>

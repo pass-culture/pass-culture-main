@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useId, useState } from 'react'
 
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
@@ -14,7 +14,7 @@ import { CollectiveOffersSearchFilters } from '../CollectiveOffers/components/Co
 import styles from './CollectiveActivityData.module.scss'
 
 const CollectiveActivityData = () => {
-  const searchButtonRef = useRef<HTMLButtonElement>(null)
+  const searchButtonId = useId()
 
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const snackBar = useSnackBar()
@@ -62,7 +62,7 @@ const CollectiveActivityData = () => {
         isAdministrationSpace
         offererId={selectedAdminOfferer.id.toString()}
         resetFilters={resetFilters}
-        searchButtonRef={searchButtonRef}
+        searchButtonId={searchButtonId}
         selectedFilters={selectedFiltersWithOffererId}
         setSelectedFilters={setSelectedFilters}
       />

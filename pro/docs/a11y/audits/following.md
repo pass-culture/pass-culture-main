@@ -21,6 +21,37 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 7.1 - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43630](https://passculture.atlassian.net/browse/PC-43630)  
+**PR** : [#24309](https://github.com/pass-culture/pass-culture-main/pull/24309)
+
+**Problème** 😱  
+
+Le composant “Image et vidéo” : 
+
+L'ajout d'une vidéo à l'étape « Image et vidéo » repositionne le focus en haut de la page, sans justification, obligeant l'utilisateur à parcourir de nouveau le contenu pour reprendre sa navigation.
+
+L’annulation de l’ajout d’une image repositionne également mal le focus.
+
+L'ajout / modification / suppression d'une image ne lit pas la snackbar de validation par la suite.
+
+Corrections :
+
+Conserver le focus sur l'élément ayant déclenché l'action ou le repositionner de manière logique vers le contenu nouvellement ajouté ou mis à jour en utilisant tabindex="-1".
+
+Veiller à ce que toute mise à jour dynamique de la page ne provoque pas un déplacement inattendu du focus.
+
+**Correction** 💡  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 5.4 - RGAA - Pour chaque tableau de données ayant un titre, le titre est-il correctement associé au tableau de données ?</summary>
 
 **RAWeb/RGAA** : [Critère 5.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-4)

@@ -96,11 +96,18 @@ beforeEach(() => {
 let originalShowModal: typeof HTMLDialogElement.prototype.showModal
 let originalClose: typeof HTMLDialogElement.prototype.close
 
+// Mirrors the native <dialog> spec: showModal() remembers the element focused
+// beforehand, close() restores focus to it. jsdom does not implement this.
+const previouslyFocusedElements = new WeakMap<HTMLDialogElement, HTMLElement>()
+
 beforeAll(() => {
   originalShowModal = HTMLDialogElement.prototype.showModal
   HTMLDialogElement.prototype.showModal = vi.fn(function (
     this: HTMLDialogElement
   ) {
+    if (document.activeElement instanceof HTMLElement) {
+      previouslyFocusedElements.set(this, document.activeElement)
+    }
     this.open = true
     this.setAttribute('open', '')
   })
@@ -109,6 +116,10 @@ beforeAll(() => {
   HTMLDialogElement.prototype.close = vi.fn(function (this: HTMLDialogElement) {
     this.open = false
     this.removeAttribute('open')
+    // Native focus restoration happens synchronously within close(), before the
+    // "close" event fires, so a refToFocusOnClose handler can still override it.
+    previouslyFocusedElements.get(this)?.focus()
+    previouslyFocusedElements.delete(this)
     this.dispatchEvent(new Event('close'))
   })
 })

@@ -33,7 +33,7 @@ export interface CollectiveOffersSearchFiltersProps {
   disableAllFilters?: boolean
   isAdministrationSpace?: boolean
   resetFilters: () => void
-  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
+  searchButtonId?: string
 }
 
 export const CollectiveOffersSearchFilters = ({
@@ -45,7 +45,7 @@ export const CollectiveOffersSearchFilters = ({
   setSelectedFilters,
   resetFilters,
   disableAllFilters = false,
-  searchButtonRef,
+  searchButtonId,
 }: Readonly<CollectiveOffersSearchFiltersProps>): JSX.Element => {
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY
@@ -293,7 +293,7 @@ export const CollectiveOffersSearchFilters = ({
         value: selectedFilters.name,
       }}
       onResetFilters={resetFilters}
-      searchButtonRef={searchButtonRef}
+      searchButtonId={searchButtonId}
     >
       {children}
     </OffersTableSearch>

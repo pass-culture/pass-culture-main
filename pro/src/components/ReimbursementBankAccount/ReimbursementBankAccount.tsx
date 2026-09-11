@@ -24,7 +24,8 @@ interface ReimbursementBankAccountProps {
   managedVenues: ManagedVenue[]
   onUpdateButtonClick?: (id: number) => void
   hasWarning?: boolean
-  updateButtonRef?: React.RefObject<HTMLButtonElement | null>
+  editLinkId?: string
+  addLinkId?: string
 }
 
 export const ReimbursementBankAccount = ({
@@ -32,7 +33,8 @@ export const ReimbursementBankAccount = ({
   onUpdateButtonClick,
   managedVenues,
   hasWarning = false,
-  updateButtonRef,
+  editLinkId,
+  addLinkId,
 }: ReimbursementBankAccountProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const venuesNotLinkedToBankAccount = managedVenues.filter(
@@ -182,8 +184,8 @@ export const ReimbursementBankAccount = ({
                     <Button
                       variant={ButtonVariant.SECONDARY}
                       onClick={handleUpdateClick}
-                      ref={updateButtonRef}
                       label="Modifier"
+                      id={editLinkId}
                     />
                   </>
                 )}
@@ -191,7 +193,7 @@ export const ReimbursementBankAccount = ({
                 {!hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
                   <Button
                     onClick={handleAttachClick}
-                    ref={updateButtonRef}
+                    id={addLinkId}
                     label="Rattacher une structure"
                   />
                 )}
