@@ -38,7 +38,7 @@ class BookedCollectiveOffer(HttpBodyModel):
     booking_status: models.CollectiveBookingStatus
 
 
-@blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/confirm", methods=["POST"])
+@blueprints.provider_blueprint.route("/v2/collective/adage_mock/bookings/<int:booking_id>/confirm", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
 @api_key_required
@@ -80,7 +80,7 @@ def confirm_collective_booking(booking_id: int) -> None:
         raise ResourceNotFoundError({"code": "DEPOSIT_NOT_FOUND"})
 
 
-@blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/cancel", methods=["POST"])
+@blueprints.provider_blueprint.route("/v2/collective/adage_mock/bookings/<int:booking_id>/cancel", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
 @api_key_required
@@ -123,7 +123,7 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
         raise ApiErrors({"code": "FAILED_TO_CANCEL_BOOKING_TRY_AGAIN"}, status_code=500)
 
 
-@blueprints.public_api.route("/v2/collective/bookings/<int:booking_id>/use", methods=["POST"])
+@blueprints.provider_blueprint.route("/v2/collective/bookings/<int:booking_id>/use", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
 @api_key_required
@@ -170,7 +170,7 @@ def use_collective_booking(booking_id: int) -> None:
         raise ApiErrors({"code": "FAILED_TO_USE_BOOKING_TRY_AGAIN_LATER"}, status_code=500)
 
 
-@blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/pending", methods=["POST"])
+@blueprints.provider_blueprint.route("/v2/collective/adage_mock/bookings/<int:booking_id>/pending", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
 @api_key_required
@@ -225,7 +225,7 @@ def reset_collective_booking(booking_id: int) -> None:
         raise ApiErrors({"code": "FAILED_TO_SET_BACK_BOOKING_TO_PENDING"}, status_code=500)
 
 
-@blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/reimburse", methods=["POST"])
+@blueprints.provider_blueprint.route("/v2/collective/adage_mock/bookings/<int:booking_id>/reimburse", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
 @api_key_required
@@ -270,7 +270,7 @@ def reimburse_collective_booking(booking_id: int) -> None:
         raise ApiErrors({"code": "REPAYMENT_FAILED_TRY_AGAIN_LATER"}, status_code=500)
 
 
-@blueprints.public_api.route("/v2/collective/adage_mock/offer/<int:offer_id>/book", methods=["POST"])
+@blueprints.provider_blueprint.route("/v2/collective/adage_mock/offer/<int:offer_id>/book", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
 @api_key_required

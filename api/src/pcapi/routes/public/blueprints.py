@@ -28,16 +28,20 @@ def _check_api_is_enabled_and_json_valid() -> None:
             raise api_errors.ApiErrors({"global": [e.description]}, status_code=400)
 
 
-public_api = Blueprint("public_api", __name__, url_prefix="/")  # we must add `url_prefix="/"` for spectree to work
-public_api.before_request(_check_api_is_enabled_and_json_valid)
+provider_blueprint = Blueprint(
+    name="provider",
+    import_name=__name__,  # we must add `url_prefix="/"` for spectree to work
+    url_prefix="/",
+)
+provider_blueprint.before_request(_check_api_is_enabled_and_json_valid)
 
 
 # Setting CORS
 CORS(
-    public_api,
+    provider_blueprint,
     resources={r"/*": {"origins": "*"}},
     supports_credentials=True,
 )
 
 # Registering spectree schemas
-spectree_schemas.public_api_schema.register(public_api)
+spectree_schemas.public_api_schema.register(provider_blueprint)

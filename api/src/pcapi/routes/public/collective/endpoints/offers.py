@@ -50,7 +50,7 @@ PATCH_NON_NULLABLE_FIELDS = (
 )
 
 
-@blueprints.public_api.route("/v2/collective/offers/", methods=["GET"])
+@blueprints.provider_blueprint.route("/v2/collective/offers/", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -90,7 +90,7 @@ def get_collective_offers_public(
     )
 
 
-@blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["GET"])
+@blueprints.provider_blueprint.route("/v2/collective/offers/<int:offer_id>", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -125,7 +125,7 @@ def get_collective_offer_public(offer_id: int) -> offers_serialization.GetPublic
     return offers_serialization.GetPublicCollectiveOfferResponseModel.build(offer)
 
 
-@blueprints.public_api.route("/v2/collective/offers/", methods=["POST"])
+@blueprints.provider_blueprint.route("/v2/collective/offers/", methods=["POST"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -250,7 +250,7 @@ def post_collective_offer_public(
     return offers_serialization.GetPublicCollectiveOfferResponseModel.build(offer)
 
 
-@blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["PATCH"])
+@blueprints.provider_blueprint.route("/v2/collective/offers/<int:offer_id>", methods=["PATCH"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -500,7 +500,7 @@ def patch_collective_offer_public(
     return offers_serialization.GetPublicCollectiveOfferResponseModel.build(offer)
 
 
-@blueprints.public_api.route("/v2/collective/offers/archive", methods=["POST"])
+@blueprints.provider_blueprint.route("/v2/collective/offers/archive", methods=["POST"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -538,7 +538,7 @@ def archive_collective_offers(body: offers_serialization.ArchiveCollectiveOfferB
         raise api_errors.ApiErrors({"global": ["Cette action n'est pas autorisée sur une des offres"]}, status_code=400)
 
 
-@blueprints.public_api.route("/v2/collective/offers/formats", methods=["GET"])
+@blueprints.provider_blueprint.route("/v2/collective/offers/formats", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(

@@ -24,7 +24,7 @@ from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
 
 
-@blueprints.public_api.route("/v2/collective/bookings/<int:booking_id>", methods=["PATCH"])
+@blueprints.provider_blueprint.route("/v2/collective/bookings/<int:booking_id>", methods=["PATCH"])
 @atomic()
 @api_key_required
 @spectree_serialize(

@@ -24,7 +24,7 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-@blueprints.public_api.route("/public/offers/v1/offerer_venues", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/offerer_venues", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -51,7 +51,7 @@ def get_offerer_venues(
     return venues_serialization.GetOfferersVenuesResponse.serialize_offerers_venues(rows, current_api_key.provider)
 
 
-@blueprints.public_api.route("/public/offers/v1/venues/<siret>", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/venues/<siret>", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(

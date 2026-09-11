@@ -43,7 +43,7 @@ from . import utils
 logger = logging.getLogger(__name__)
 
 
-@blueprints.public_api.route("/public/offers/v1/show_types", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/show_types", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -76,7 +76,7 @@ def get_show_types() -> serialization.GetShowTypesResponse:
     )
 
 
-@blueprints.public_api.route("/public/offers/v1/music_types/all", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/music_types/all", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -108,7 +108,7 @@ def get_all_titelive_music_types() -> serialization.GetTiteliveMusicTypesRespons
     )
 
 
-@blueprints.public_api.route("/public/offers/v1/music_types/event", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/music_types/event", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -140,7 +140,7 @@ def get_event_titelive_music_types() -> serialization.GetTiteliveEventMusicTypes
     )
 
 
-@blueprints.public_api.route("/public/offers/v1/products", methods=["POST"])
+@blueprints.provider_blueprint.route("/public/offers/v1/products", methods=["POST"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -236,7 +236,7 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
-@blueprints.public_api.route("/public/offers/v1/products/ean", methods=["POST"])
+@blueprints.provider_blueprint.route("/public/offers/v1/products/ean", methods=["POST"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -306,7 +306,7 @@ def _serialize_products_from_body(
     return stock_details
 
 
-@blueprints.public_api.route("/public/offers/v1/products/<int:product_id>", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/products/<int:product_id>", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -339,7 +339,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
-@blueprints.public_api.route("/public/offers/v1/products/ean", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/products/ean", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -377,7 +377,7 @@ def get_product_by_ean(
     )
 
 
-@blueprints.public_api.route("/public/offers/v1/products/ean/check_availability", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/products/ean/check_availability", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -462,7 +462,7 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sa_orm.Query
     )
 
 
-@blueprints.public_api.route("/public/offers/v1/products", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/products", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -512,7 +512,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
         )
 
 
-@blueprints.public_api.route("/public/offers/v1/products", methods=["PATCH"])
+@blueprints.provider_blueprint.route("/public/offers/v1/products", methods=["PATCH"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -608,7 +608,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
-@blueprints.public_api.route("/public/offers/v1/products/categories", methods=["GET"])
+@blueprints.provider_blueprint.route("/public/offers/v1/products/categories", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
@@ -638,7 +638,7 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
     return serialization.GetProductCategoriesResponse(product_categories_response)
 
 
-@blueprints.public_api.route("/public/offers/v1/<int:offer_id>/image", methods=["POST"])
+@blueprints.provider_blueprint.route("/public/offers/v1/<int:offer_id>/image", methods=["POST"])
 @atomic()
 @api_key_required
 @spectree_serialize(

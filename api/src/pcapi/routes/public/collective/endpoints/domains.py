@@ -11,7 +11,7 @@ from pcapi.utils.cache import cached_view
 from pcapi.utils.transaction_manager import atomic
 
 
-@blueprints.public_api.route("/v2/collective/educational-domains", methods=["GET"])
+@blueprints.provider_blueprint.route("/v2/collective/educational-domains", methods=["GET"])
 @atomic()
 @api_key_required
 @spectree_serialize(
