@@ -15,18 +15,22 @@ function build_backend {
     concat_command
     move
     concat_command
+
     if  [[ $FAST != true ]];then
         RUN="$RUN docker compose -f '$ROOT_PATH/docker-compose-backend.yml' build --build-arg=\"uid=$UID\""
     fi
-}
 
-function build_proxy_backend {
-    concat_command
-    move
-    concat_command
-    if  [[ $FAST != true ]];then
-        RUN="$RUN docker compose -f '$ROOT_PATH/docker-compose-backend.yml' build --build-arg=\"network_mode=proxy\" --build-arg=\"uid=$UID\""
+    if _is_proxy_running; then
+        if ! _is_proxy_cert_copied; then
+            echo "Proxy certificate not found in api folder."
+            echo "Please copy it first in api folder as 'cacert.pem'"
+            exit
+        fi
+
+        RUN="$RUN --build-arg=\"network_mode=proxy\""
     fi
+
+    RUN="$RUN"
 }
 
 function start_backend {
@@ -43,8 +47,9 @@ function drop_data {
 }
 
 function rebuild_backend {
-    RUN='docker compose -f "$ROOT_PATH"/docker-compose-backend.yml build --no-cache --build-arg=\"uid=$UID\";
-    rm -rf $ROOT_PATH/api/static/object_store_data;
-    docker compose -f "$ROOT_PATH"/docker-compose-backend.yml down --volumes'
+    concat_command
+    drop_data
+    concat_command
+    build_backend "--no-cache"
 }
 
