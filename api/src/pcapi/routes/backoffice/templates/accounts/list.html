@@ -29,9 +29,11 @@
   <th scope="col">Email</th>
   <th scope="col">Ville</th>
   <th scope="col">Type de crédit</th>
+  <th scope="col">Crédit restant</th>
   {% call sortable_column(default_sort="up") %}
     Date d'expiration du crédit
   {% endcall %}
+  <th scope="col">Étape d'inscription</th>
   <th scope="col">Tags</th>
   <th scope="col">Raison de suspension</th>
 {% endblock table_header %}

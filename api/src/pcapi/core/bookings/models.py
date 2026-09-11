@@ -572,18 +572,6 @@ trig_check_booking_deposit_ddl = sa.DDL(f"""
     $$
     LANGUAGE plpgsql;
 
-    CREATE OR REPLACE FUNCTION public.get_wallet_balance (user_id bigint, only_used_bookings boolean)
-        RETURNS numeric
-        AS $$
-    DECLARE
-        deposit_id bigint := (SELECT deposit.id FROM deposit WHERE "userId" = user_id  AND "expirationDate" > now());
-    BEGIN
-        RETURN
-            CASE WHEN deposit_id IS NOT NULL THEN get_deposit_balance(deposit_id, only_used_bookings) ELSE 0 END;
-    END;
-    $$
-    LANGUAGE plpgsql;
-
     CREATE OR REPLACE FUNCTION check_booking()
     RETURNS TRIGGER AS $$
     DECLARE
