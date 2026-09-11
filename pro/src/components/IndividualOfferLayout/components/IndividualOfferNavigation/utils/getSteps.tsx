@@ -3,8 +3,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 
-import { LabelBooking } from '../LabelBooking/LabelBooking'
-
 export interface StepPattern {
   id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   label: string | React.ReactNode
@@ -13,25 +11,23 @@ export interface StepPattern {
 type GetStepsContext = {
   isEvent: boolean | null
   mode: OFFER_WIZARD_MODE
-  bookingsCount?: number | null
-  isOfferExposureEnabled?: boolean
 }
 
 interface StepDefinition {
   id: StepPattern['id']
-  label: StepPattern['label'] | ((ctx: GetStepsContext) => StepPattern['label'])
+  label: StepPattern['label']
   shouldInclude?: (ctx: GetStepsContext) => boolean
 }
+
+const isOfferAlreadyCreated = (ctx: GetStepsContext) =>
+  ctx.mode === OFFER_WIZARD_MODE.READ_ONLY ||
+  ctx.mode === OFFER_WIZARD_MODE.EDITION
 
 const STEP_DEFINITIONS: StepDefinition[] = [
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
     label: 'Visibilité',
-    shouldInclude: (ctx) =>
-      ((ctx.mode === OFFER_WIZARD_MODE.READ_ONLY ||
-        ctx.mode === OFFER_WIZARD_MODE.EDITION) &&
-        ctx.isOfferExposureEnabled) ??
-      false,
+    shouldInclude: isOfferAlreadyCreated,
   },
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
@@ -65,30 +61,20 @@ const STEP_DEFINITIONS: StepDefinition[] = [
   },
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
-    label: (ctx) => <LabelBooking bookingsCount={ctx.bookingsCount || 0} />,
-    shouldInclude: (ctx) =>
-      ctx.mode === OFFER_WIZARD_MODE.READ_ONLY ||
-      (ctx.mode === OFFER_WIZARD_MODE.EDITION &&
-        ctx.isOfferExposureEnabled === true),
+    label: 'Réservations',
+    shouldInclude: isOfferAlreadyCreated,
   },
 ]
 
-export const getSteps = ({
-  isEvent,
-  mode,
-  bookingsCount,
-  isOfferExposureEnabled,
-}: GetStepsContext): StepPattern[] => {
+export const getSteps = ({ isEvent, mode }: GetStepsContext): StepPattern[] => {
   const ctx: GetStepsContext = {
     isEvent,
     mode,
-    bookingsCount,
-    isOfferExposureEnabled,
   }
   return STEP_DEFINITIONS.filter((def) =>
     def.shouldInclude ? def.shouldInclude(ctx) : true
   ).map<StepPattern>((def) => ({
     id: def.id,
-    label: typeof def.label === 'function' ? def.label(ctx) : def.label,
+    label: def.label,
   }))
 }

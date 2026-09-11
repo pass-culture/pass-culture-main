@@ -54,22 +54,6 @@
   margin-bottom: var(--size-spacing-l);
 }
 
-.banner-container {
-  margin: var(--size-spacing-l) 0;
-
-  &-title {
-    @include fonts.title3;
-
-    margin-bottom: var(--size-spacing-l);
-  }
-}
-
-.cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--size-spacing-l);
-}
-
 .ean-already-exists-callout {
   margin: var(--size-spacing-l) 0;
 }

@@ -176,47 +176,11 @@ describe('IndividualOfferNavigation', () => {
       const bookingStep = screen
         .getAllByRole('listitem')
         .find((listitem) => listitem.textContent?.match(LABELS.BOOKING))
-      expect(bookingStep).not.toBeDefined()
-    })
-
-    it('should never display "Récapitulatif" step', () => {
-      renderIndividualOfferNavigation({ path })
-
-      const summaryStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.SUMMARY))
-      expect(summaryStep).not.toBeDefined()
-    })
-  })
-
-  describe('on read-only mode', () => {
-    const path = getIndividualOfferPath({
-      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-      mode: OFFER_WIZARD_MODE.READ_ONLY,
-    })
-
-    it('should display all steps as links', () => {
-      renderIndividualOfferNavigation({ path })
-
-      const steps = screen.getAllByRole('listitem')
-      const links = screen.getAllByRole('link')
-      expect(steps).toHaveLength(links.length)
-    })
-
-    it('should display "Réservation" step', () => {
-      renderIndividualOfferNavigation({ path })
-
-      const bookingStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.BOOKING))
       expect(bookingStep).toBeDefined()
     })
 
-    it('should display "Visibilité" step when FF is activated', () => {
-      renderIndividualOfferNavigation({
-        path,
-        options: { features: ['WIP_OFFER_EXPOSURE'] },
-      })
+    it('should display "Visibilité" step', () => {
+      renderIndividualOfferNavigation({ path })
 
       const exposureStep = screen
         .getAllByRole('listitem')
