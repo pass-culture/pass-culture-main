@@ -6,11 +6,13 @@ import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { SkipLinksProvider } from '@/components/SkipLinks/SkipLinksContext'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
+import { BackendVersionMismatch } from '@/pages/Errors/BackendVersionMismatch/BackendVersionMismatch'
 
 import { useBeamer } from './analytics/beamer'
 import { useFirebase } from './analytics/firebase'
 import { useOrejime } from './analytics/orejime'
 import { useSentry } from './analytics/sentry'
+import { useCheckBackendVersion } from './hook/useCheckBackendVersion'
 import { useFocus } from './hook/useFocus'
 import { useLoadFeatureFlags } from './hook/useLoadFeatureFlags'
 import { useLogNavigation } from './hook/useLogNavigation'
@@ -22,6 +24,7 @@ export const App = (): JSX.Element | null => {
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const location = useLocation()
+  const hasBackendVersionMismatch = useCheckBackendVersion()
 
   // Main hooks
   useLoadFeatureFlags()
@@ -34,6 +37,10 @@ export const App = (): JSX.Element | null => {
   useBeamer(consentedToBeamer)
   useFirebase(consentedToFirebase)
   useLogNavigation()
+
+  if (hasBackendVersionMismatch) {
+    return <BackendVersionMismatch />
+  }
 
   return (
     <>

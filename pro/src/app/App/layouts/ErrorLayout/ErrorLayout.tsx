@@ -1,3 +1,5 @@
+import { type ReactNode, useId } from 'react'
+
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
@@ -6,7 +8,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ErrorLayout.module.scss'
 
-interface ErrorLayoutProps {
+interface BaseErrorLayoutProps {
   /**
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
@@ -20,21 +22,36 @@ interface ErrorLayoutProps {
    * Icon to display in the error page.
    */
   errorIcon: string
-  /**
-   * Redirect link for the button.
-   */
-  redirect?: string
 }
+
+/**
+ * Redirect link for the button.
+ */
+type RouterCTAErrorLayoutProps = BaseErrorLayoutProps & {
+  redirect?: string
+  cta?: never
+}
+
+/**
+ * Custom behavior for the redirect button.
+ */
+type CustomCTAErrorLayoutProps = BaseErrorLayoutProps & {
+  redirect?: never
+  cta?: ReactNode
+}
+
+type ErrorLayoutProps = RouterCTAErrorLayoutProps | CustomCTAErrorLayoutProps
 
 export const ErrorLayout = ({
   mainHeading,
   paragraph,
   errorIcon,
   redirect = '/',
+  cta,
 }: ErrorLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
   const isConnected = !!currentUser
-
+  const errorReturnLinkId = useId()
   return (
     <main className={styles['content-wrapper']}>
       <div className={styles['content']}>
@@ -42,15 +59,15 @@ export const ErrorLayout = ({
         <h1 className={styles['title']}>{mainHeading}</h1>
         <p className={styles.description}>{paragraph}</p>
         <div className={styles['nm-redirection-link']}>
-          {/** biome-ignore lint/correctness/useUniqueElementIds: This is always
-          rendered once per page, so there cannot be id duplications.> */}
-          <Button
-            as="router-link"
-            id="error-return-link"
-            variant={ButtonVariant.SECONDARY}
-            to={redirect}
-            label={isConnected ? "Retour à la page d'accueil" : 'Retour'}
-          />
+          {cta ?? (
+            <Button
+              as="router-link"
+              id={errorReturnLinkId}
+              variant={ButtonVariant.SECONDARY}
+              to={redirect}
+              label={isConnected ? "Retour à la page d'accueil" : 'Retour'}
+            />
+          )}
         </div>
       </div>
     </main>

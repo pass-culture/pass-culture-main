@@ -2,23 +2,31 @@ import { withCallSites } from '@/apiClient/callSite'
 import { ApiError, normalizeApiPath } from '@/apiClient/compat'
 
 import { client as adageClient } from './adage/client.gen'
+import { notifyIfBackendVersionChanged } from './backendVersionCompatibility'
 import { client as v1Client } from './v1/client.gen'
+
+export { BACKEND_VERSION_MISMATCH_EVENT } from './backendVersionCompatibility'
 
 function createApiErrorInterceptor() {
   return async (
     error: unknown,
     response: Response | undefined,
     request: Request | undefined
-  ) =>
-    response?.status && request
-      ? new ApiError(
-          request.url,
-          response.status,
-          response.statusText,
-          error,
-          `${request.method} ${normalizeApiPath(request.url)}`
-        )
-      : error
+  ) => {
+    if (!response?.status || !request) {
+      return error
+    }
+
+    await notifyIfBackendVersionChanged(response)
+
+    return new ApiError(
+      request.url,
+      response.status,
+      response.statusText,
+      error,
+      `${request.method} ${normalizeApiPath(request.url)}`
+    )
+  }
 }
 
 v1Client.interceptors.error.use(createApiErrorInterceptor())
