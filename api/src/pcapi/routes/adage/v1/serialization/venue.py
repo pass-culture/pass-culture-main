@@ -1,12 +1,13 @@
 import logging
 import typing
 
+from pydantic import Field
 from pydantic.v1 import PositiveInt
 
 from pcapi.core.educational import schemas
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.models import VenueLabel
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
 logger = logging.getLogger(__name__)
@@ -16,36 +17,22 @@ class GetRelativeVenuesQueryModel(BaseModel):
     getRelative: bool = False
 
 
-class VenueDomain(BaseModel):
+class VenueDomain(HttpBodyModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True
+
+class VenueLabelModel(HttpBodyModel):
+    id: int
+    label: str = Field(alias="name")
 
 
-class VenueLabelModel(BaseModel):
+class OffererModel(HttpBodyModel):
     id: int
     name: str
 
-    @classmethod
-    def from_orm(cls, venue_label: VenueLabel) -> "VenueLabelModel":
-        venue_label.name = venue_label.label  # type: ignore [attr-defined]
-        return super().from_orm(venue_label)
 
-    class Config:
-        orm_mode = True
-
-
-class OffererModel(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
-
-
-class VenueModel(BaseModel):
+class VenueModel(HttpBodyModel):
     name: str
     siret: str | None
     address: str | None
@@ -64,7 +51,7 @@ class VenueModel(BaseModel):
     mentalDisabilityCompliant: bool | None
     motorDisabilityCompliant: bool | None
     visualDisabilityCompliant: bool | None
-    domains: typing.Sequence[VenueDomain]
+    domains: list[VenueDomain]
     interventionArea: list[str]
     network: list[str] | None
     statusId: int | None
@@ -76,7 +63,7 @@ class VenueModel(BaseModel):
     bannerMeta: dict | None
 
     @classmethod
-    def from_orm(cls, venue: Venue) -> "VenueModel":
+    def build(cls, venue: Venue) -> typing.Self:
         contact = venue.contact
 
         email: str | None = None
@@ -118,23 +105,20 @@ class VenueModel(BaseModel):
             mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
             motorDisabilityCompliant=venue.motorDisabilityCompliant,
             visualDisabilityCompliant=venue.visualDisabilityCompliant,
-            domains=venue.collectiveDomains,  # type: ignore [arg-type]
+            domains=[VenueDomain.model_validate(d) for d in venue.collectiveDomains],
             interventionArea=intervention_area,
             network=venue.collectiveNetwork,
             statusId=venue.venueEducationalStatusId,
-            label=venue.venueLabel,  # type: ignore [arg-type]
+            label=VenueLabelModel.model_validate(venue.venueLabel) if venue.venueLabel else None,
             siren=venue.managingOfferer.siren,
             isPermanent=venue.isPermanent,
-            offerer=venue.managingOfferer,  # type: ignore [arg-type]
+            offerer=OffererModel.model_validate(venue.managingOfferer),
             bannerUrl=venue.bannerUrl,
             bannerMeta=venue.bannerMeta,
         )
 
-    class Config:
-        orm_mode = True
 
-
-class GetVenuesResponseModel(BaseModel):
+class GetVenuesResponseModel(HttpBodyModel):
     venues: list[VenueModel]
 
 
