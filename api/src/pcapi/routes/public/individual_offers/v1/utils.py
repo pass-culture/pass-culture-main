@@ -108,6 +108,8 @@ def log_offer_edition_without_last_provider(
             "venue_id": offer.venueId,
             "provider_id": current_api_key.providerId,
             "body_fields": sorted(body.dict(by_alias=True, exclude_unset=True)),
+            "feature": "offer",
+            "action": "edited_without_last_provider",
         },
         technical_message_id="offer.edited_without_last_provider",
     )

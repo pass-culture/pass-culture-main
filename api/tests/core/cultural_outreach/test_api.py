@@ -36,7 +36,12 @@ class CreateCulturalOutreachClaimTest:
 
         assert len(caplog.records) == 1
         assert caplog.records[0].message == "Create cultural outreach claim"
-        assert caplog.records[0].extra == {"offer_id": offer.id, "venue_id": offer.venueId}
+        assert caplog.records[0].extra == {
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "feature": "cultural_outreach",
+            "action": "claim_created",
+        }
 
     def test_raises_when_activity_is_not_allowed(self):
         venue = offerers_factories.VenueFactory(activity=offerers_models.Activity.CINEMA)
@@ -94,6 +99,8 @@ class UpdateCulturalOutreachClaimTest:
             "offer_id": offer.id,
             "venue_id": offer.venueId,
             "claim_datetime": self.mock_claim_datetime,
+            "action": "claim_updated",
+            "feature": "cultural_outreach",
         }
 
     def test_unsets_claimed_datetime_when_none_is_given(self):

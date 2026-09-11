@@ -37,6 +37,8 @@ class PostFeedbackTest:
             "firstDepositActivationDate": user.deposit.dateCreated,
             "bookings_count": 1,
             "analyticsSource": "app-native",
+            "feature": "users",
+            "action": "feedback",
         }
         assert caplog.records[0].technical_message_id == "user_feedback"
         harvestr_create_message.assert_called_with(

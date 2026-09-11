@@ -835,6 +835,8 @@ class LogsTest:
             "searchDepartments": "02,30",
             "searchNbResults": 1,
             "searchProType": "offerer",
+            "feature": "analytics",
+            "action": "event",
         }
 
 

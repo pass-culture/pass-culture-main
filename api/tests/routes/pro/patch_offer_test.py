@@ -1704,6 +1704,8 @@ class Returns200Test:
             "venue_id": offer.venueId,
             "product_id": offer.productId,
             "changes": {"name": {"newValue": "Un autre nom", "oldValue": "Un nom"}},
+            "feature": "offer",
+            "action": "updated",
         }
 
         assert log.technical_message_id == "offer.updated"

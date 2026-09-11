@@ -943,6 +943,8 @@ def update_notification_subscription(
             },
             "subscriptions": user.notificationSubscriptions,
             "origin": origin,
+            "feature": "subscription",
+            "action": "update",
         },
         technical_message_id="subscription_update",
     )

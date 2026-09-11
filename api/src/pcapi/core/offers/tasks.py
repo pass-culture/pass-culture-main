@@ -216,6 +216,8 @@ def _create_offer_from_product(
             "offer_id": offer.id,
             "venue_id": venue.id,
             "product_id": offer.productId,
+            "feature": "offer",
+            "action": "created",
         },
         technical_message_id="offer.created",
     )
@@ -405,7 +407,13 @@ def _create_or_update_ean_offers(
                 logger.warning(
                     "Some provided eans were not found",
                     # TODO: remove extra data without `_id`
-                    extra={"eans": ",".join(not_found_eans), "venue": venue_id, "venue_id": venue_id},
+                    extra={
+                        "eans": ",".join(not_found_eans),
+                        "venue": venue_id,
+                        "venue_id": venue_id,
+                        "feature": "ean",
+                        "action": "not_found",
+                    },
                     technical_message_id="ean.not_found",
                 )
             for product in existing_products:

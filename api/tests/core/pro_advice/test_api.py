@@ -36,6 +36,8 @@ class CreateProAdviceTest:
             "offer_id": offer.id,
             "venue_id": offer.venueId,
             "user_id": user.id,
+            "feature": "pro_advice",
+            "action": "created",
         }
 
     @pytest.mark.parametrize(
@@ -89,6 +91,8 @@ class UpdateProAdviceTest:
             "offer_id": offer.id,
             "venue_id": offer.venueId,
             "user_id": user.id,
+            "feature": "pro_advice",
+            "action": "updated",
         }
 
     @pytest.mark.parametrize(
@@ -132,6 +136,8 @@ class DeleteProAdviceTest:
             "offer_id": offer.id,
             "venue_id": offer.venueId,
             "user_id": user.id,
+            "feature": "pro_advice",
+            "action": "deleted",
         }
 
     @pytest.mark.parametrize(

@@ -286,7 +286,7 @@ def anonymize() -> None:
             partial(
                 logger.info,
                 "User has been anonymized",
-                extra={"user_id": user.id},
+                extra={"user_id": user.id, "feature": "users", "action": "anonymized"},
                 technical_message_id="user.anonymized",
             )
         )
@@ -316,7 +316,9 @@ def get_pro_anonymization_eligibility() -> users_serializers.ProAnonymizationEli
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def cookies_consent(body: CookieConsentRequest) -> None:
     logger.info(
-        "Cookies consent", extra={"analyticsSource": "app-pro", **body.dict()}, technical_message_id="cookies_consent"
+        "Cookies consent",
+        extra={"analyticsSource": "app-pro", "feature": "cookies", "action": "consent", **body.dict()},
+        technical_message_id="cookies_consent",
     )
 
 
@@ -385,6 +387,8 @@ def submit_user_review(body: users_serializers.SubmitReviewRequestModel) -> None
             "user_satisfaction": body.user_satisfaction,
             "user_comment": body.user_comment,
             "source_page": body.location,
+            "feature": "users",
+            "action": "review",
         },
         technical_message_id="user_review",
     )
