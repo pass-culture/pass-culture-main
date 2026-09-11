@@ -21,21 +21,27 @@ const WelcomeStepCollective = (): JSX.Element => {
       <h2 className={commonStyles.subtitle}>Intervenez auprès des classes</h2>
       <div className={cn(commonStyles[`container`], styles['container'])}>
         <CardInfo icon={strokeEventIcon} title="Qui réserve ?">
-          Le corps enseignant réserve pour les classes (de la 6e à la Terminale)
-          via la plateforme ADAGE.
+          <p>
+            Le corps enseignant réserve pour les classes (de la 6e à la
+            Terminale) via la plateforme ADAGE.
+          </p>
         </CardInfo>
         <CardInfo icon={strokeEuroIcon} title="Comment ça fonctionne ?">
-          Déposez votre dossier ADAGE pour obtenir un référencement. Les
-          établissements paient avec leur budget pass Culture. Vous recevez le
-          paiement sous 2 à 3 semaines.
+          <p>
+            Déposez votre dossier ADAGE pour obtenir un référencement. Les
+            établissements paient avec leur budget pass Culture. Vous recevez le
+            paiement sous 2 à 3 semaines.
+          </p>
         </CardInfo>
         <CardInfo
           icon={strokeHourglassIcon}
           title="Combien de temps ça prend ?"
         >
-          pass Culture Pro : quelques jours. Référencement ADAGE : 2 à 9 mois
-          (selon commissions régionales). Vous pouvez démarrer avec des offres
-          via l’application destinée aux jeunes en attendant.
+          <p>
+            pass Culture Pro : quelques jours. Référencement ADAGE : 2 à 9 mois
+            (selon commissions régionales). Vous pouvez démarrer avec des offres
+            via l’application destinée aux jeunes en attendant.
+          </p>
         </CardInfo>
         <div className={styles['footer']}>
           <Button

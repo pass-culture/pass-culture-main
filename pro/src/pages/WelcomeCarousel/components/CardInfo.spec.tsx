@@ -8,8 +8,10 @@ describe('<CardInfo />', () => {
   it('should render without accessibility violations', async () => {
     const { container } = render(
       <CardInfo icon={strokeEventsIcon} title="Qui réserve ?">
-        Les jeunes de 15 à 21 ans réservent directement via l'application pass
-        Culture.
+        <p>
+          Les jeunes de 15 à 21 ans réservent directement via l'application pass
+          Culture.
+        </p>
       </CardInfo>
     )
 

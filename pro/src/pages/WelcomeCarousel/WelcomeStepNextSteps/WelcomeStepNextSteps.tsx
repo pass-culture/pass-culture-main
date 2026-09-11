@@ -8,8 +8,12 @@ import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { InfoPanel } from '@/ui-kit/InfoPanel/InfoPanel'
-import { InfoPanelSize, InfoPanelSurface } from '@/ui-kit/InfoPanel/types'
+import { InfoPanelList } from '@/ui-kit/InfoPanelList/InfoPanelList'
+import {
+  InfoPanelSize,
+  InfoPanelSurface,
+  InfoPanelVariant,
+} from '@/ui-kit/InfoPanelList/types'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import styles from './WelcomeStepNextSteps.module.scss'
@@ -27,34 +31,29 @@ const WelcomeStepNextSteps = (): JSX.Element => {
       </h2>
       <div className={commonStyles[`container`]}>
         <div className={styles['steps']}>
-          <InfoPanel
+          <InfoPanelList
+            variant={InfoPanelVariant.ORDERED}
             surface={InfoPanelSurface.ELEVATED}
             size={InfoPanelSize.SMALL}
-            title="Décrivez votre structure et votre activité culturelle - 5 minutes"
-            stepNumber={1}
-          >
-            Renseignez les informations administratives et les domaines dans
-            lesquels vous intervenez
-          </InfoPanel>
-          <InfoPanel
-            surface={InfoPanelSurface.ELEVATED}
-            size={InfoPanelSize.SMALL}
-            title="Nos équipes valident votre inscription - 48 heures"
-            stepNumber={2}
-          >
-            Elles peuvent demander des documents complémentaires. Les offres
-            scolaires nécessitent aussi que votre dossier Adage soit validé par
-            des équipes externes.
-          </InfoPanel>
-          <InfoPanel
-            surface={InfoPanelSurface.ELEVATED}
-            size={InfoPanelSize.SMALL}
-            title="Créez vos premières offres - 3 minutes"
-            stepNumber={3}
-          >
-            Créez vos offres sur pass Culture Pro puis diffusez-les sur
-            l'application pour les jeunes ou sur Adage.
-          </InfoPanel>
+            panels={[
+              {
+                title:
+                  'Décrivez votre structure et votre activité culturelle - 5 minutes',
+                description:
+                  'Renseignez les informations administratives et les domaines dans lesquels vous intervenez',
+              },
+              {
+                title: 'Nos équipes valident votre inscription - 48 heures',
+                description:
+                  'Elles peuvent demander des documents complémentaires. Les offres scolaires nécessitent aussi que votre dossier Adage soit validé par des équipes externes.',
+              },
+              {
+                title: 'Créez vos premières offres - 3 minutes',
+                description:
+                  "Créez vos offres sur pass Culture Pro puis diffusez-les sur l'application pour les jeunes ou sur Adage.",
+              },
+            ]}
+          />
         </div>
         <div className={styles['banner']}>
           <Banner
