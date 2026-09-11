@@ -6,9 +6,8 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullLeftIcon from '@/icons/full-left.svg'
 
 interface ActionBarLeftProps {
@@ -30,7 +29,6 @@ export const ActionBarLeft = ({
   step,
 }: Readonly<ActionBarLeftProps>) => {
   const { logEvent } = useAnalytics()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const { offerId } = useIndividualOfferContext()
 
   if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -72,26 +70,16 @@ export const ActionBarLeft = ({
   }
 
   return (
-    <>
-      {!isOfferExposureEnabled && (
-        <Button
-          onClick={onClickPrevious}
-          variant={ButtonVariant.SECONDARY}
-          color={ButtonColor.NEUTRAL}
-          label="Annuler et quitter"
-        />
-      )}
-      <Button
-        type="submit"
-        onClick={() => {
-          logEvent(Events.CLICKED_INDIVIDUAL_OFFER_MODIFICATION, {
-            offerId: offerId ?? undefined,
-          })
-          onClickNext?.()
-        }}
-        disabled={isDisabled}
-        label="Enregistrer les modifications"
-      />
-    </>
+    <Button
+      type="submit"
+      onClick={() => {
+        logEvent(Events.CLICKED_INDIVIDUAL_OFFER_MODIFICATION, {
+          offerId: offerId ?? undefined,
+        })
+        onClickNext?.()
+      }}
+      disabled={isDisabled}
+      label="Enregistrer les modifications"
+    />
   )
 }

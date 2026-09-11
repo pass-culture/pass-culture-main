@@ -122,9 +122,6 @@ describe('IndividualOffer::ActionBar', () => {
         contextValues: { offerId: expectedOfferId },
       })
 
-      await userEvent.click(screen.getByText('Annuler et quitter'))
-      expect(onClickPreviousMock).toHaveBeenCalled()
-
       const buttonSave = screen.getByText('Enregistrer les modifications')
       await userEvent.click(buttonSave)
       expect(onClickNextMock).toHaveBeenCalled()
@@ -134,13 +131,12 @@ describe('IndividualOffer::ActionBar', () => {
       )
     })
 
-    it('should should not render "Annuler et quitter" when WIP_OFFER_EXPOSURE is active', () => {
+    it('should not render "Annuler et quitter"', () => {
       props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
 
       renderActionBar({
         props,
         url: '/edition/url',
-        features: ['WIP_OFFER_EXPOSURE'],
       })
 
       expect(screen.queryByText('Annuler et quitter')).not.toBeInTheDocument()
@@ -151,9 +147,6 @@ describe('IndividualOffer::ActionBar', () => {
       props.isEvent = false
 
       renderActionBar({ props, url: '/edition/url' })
-
-      await userEvent.click(screen.getByText('Annuler et quitter'))
-      expect(onClickPreviousMock).toHaveBeenCalled()
 
       const buttonSave = screen.getByText('Enregistrer les modifications')
       await userEvent.click(buttonSave)

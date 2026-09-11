@@ -4,7 +4,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 
@@ -17,8 +16,6 @@ export const IndividualOffersCTA = ({
   offerStatus,
   offerId,
 }: IndividualOffersCTAProps): JSX.Element => {
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
-
   if (offerStatus === OfferStatus.SOLD_OUT) {
     const offerLink = getIndividualOfferUrl({
       offerId,
@@ -38,10 +35,7 @@ export const IndividualOffersCTA = ({
   const offerLink = getIndividualOfferUrl({
     offerId,
     mode: OFFER_WIZARD_MODE.READ_ONLY,
-    step: isOfferExposureEnabled
-      ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE
-      : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-    isOfferExposureEnabled,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
   })
 
   return (

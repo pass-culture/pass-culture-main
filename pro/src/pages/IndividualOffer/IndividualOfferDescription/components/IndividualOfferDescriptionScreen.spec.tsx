@@ -938,7 +938,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       ).toBeDisabled()
     })
 
-    it('should show a success snackbar and not navigate when WIP_OFFER_EXPOSURE is enabled', async () => {
+    it('should show a success snackbar and not navigate in edition mode', async () => {
       vi.spyOn(api, 'patchOffer').mockResolvedValue(
         getIndividualOfferFactory({ id: 12 })
       )
@@ -955,7 +955,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       renderDetailsScreen({
         contextValue: context,
         mode: OFFER_WIZARD_MODE.EDITION,
-        options: { features: ['WIP_OFFER_EXPOSURE'] },
       })
 
       await userEvent.type(

@@ -63,7 +63,7 @@ const renderOffer = (
           }
         />
         <Route
-          path="/offre/individuelle/:offerId/recapitulatif/description"
+          path="/offre/individuelle/:offerId/visibilite"
           element={<div>Offer summary page</div>}
         />
       </Routes>

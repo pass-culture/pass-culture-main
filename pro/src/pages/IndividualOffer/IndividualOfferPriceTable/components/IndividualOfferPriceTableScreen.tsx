@@ -16,7 +16,6 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
@@ -49,7 +48,6 @@ export const IndividualOfferPriceTableScreen = ({
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const { subCategories, hasPublishedOfferWithSameEan } =
@@ -97,8 +95,6 @@ export const IndividualOfferPriceTableScreen = ({
     offerId: offer.id,
     mode,
     isOnboarding,
-    isOfferExposureEnabled,
-    currentStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
     followingStep: offer.isEvent
       ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
       : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
@@ -118,7 +114,6 @@ export const IndividualOfferPriceTableScreen = ({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
-          isOfferExposureEnabled,
         })
       )
     } else {
@@ -180,8 +175,7 @@ export const IndividualOfferPriceTableScreen = ({
               isOfferDisabled(offer) ||
               hasPublishedOfferWithSameEan ||
               form.formState.isSubmitting ||
-              (isOfferExposureEnabled &&
-                !form.formState.isDirty &&
+              (!form.formState.isDirty &&
                 mode !== OFFER_WIZARD_MODE.CREATION) ||
               isClosed
             }

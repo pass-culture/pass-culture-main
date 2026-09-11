@@ -7,7 +7,6 @@ import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 
@@ -31,7 +30,6 @@ export function useSaveOfferLocation({
   const mode = useOfferWizardMode()
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   const save: SaveOfferLocationHandler = async ({
     formValues,
@@ -50,7 +48,7 @@ export function useSaveOfferLocation({
         { revalidate: false }
       )
 
-      if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
         snackBar.success('Votre offre a bien été modifiée.')
       }
 

@@ -7,7 +7,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -36,8 +35,6 @@ export function StocksCalendarActionsBar({
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
-
   function handlePreviousStep() {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       navigate(
@@ -46,7 +43,6 @@ export function StocksCalendarActionsBar({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
-          isOfferExposureEnabled,
         })
       )
       return
@@ -77,10 +73,6 @@ export function StocksCalendarActionsBar({
         isOnboarding,
       })
     )
-  }
-
-  if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
-    return
   }
 
   return (

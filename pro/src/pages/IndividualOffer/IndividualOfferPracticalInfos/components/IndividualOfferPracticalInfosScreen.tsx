@@ -18,7 +18,6 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -50,7 +49,6 @@ export const IndividualOfferPracticalInfosScreen = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
   const mode = useOfferWizardMode()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
@@ -90,7 +88,6 @@ export const IndividualOfferPracticalInfosScreen = ({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
-          isOfferExposureEnabled,
         })
       )
     }
@@ -143,7 +140,7 @@ export const IndividualOfferPracticalInfosScreen = ({
 
       form.reset(formValues)
 
-      if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
         snackBar.success('Votre offre a bien été modifiée.')
       }
 
@@ -162,8 +159,6 @@ export const IndividualOfferPracticalInfosScreen = ({
       offerId: offer.id,
       mode,
       isOnboarding,
-      isOfferExposureEnabled,
-      currentStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
       followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
     })
   const { navigationGuardedSubmitHandler, navigationGuardDialog } =

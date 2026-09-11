@@ -6,7 +6,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
@@ -53,15 +52,10 @@ export const IndividualOffersLine = ({
   offer,
   venueDepartmentCode,
 }: IndividualOffersLineProps): JSX.Element => {
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
-
   const offerLink = getIndividualOfferUrl({
     offerId: offer.id,
     mode: OFFER_WIZARD_MODE.READ_ONLY,
-    step: isOfferExposureEnabled
-      ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE
-      : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-    isOfferExposureEnabled,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
   })
 
   const offerLocalDate = getOfferLocalDate(offer, venueDepartmentCode)

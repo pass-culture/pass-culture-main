@@ -90,7 +90,7 @@ describe('getIndividualOfferUrl', () => {
         mode: OFFER_WIZARD_MODE.READ_ONLY,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
       },
-      expectedUrl: '/offre/individuelle/42/tarifs',
+      expectedUrl: '/offre/individuelle/42/edition/tarifs',
     },
     {
       props: {
@@ -113,47 +113,35 @@ describe('getIndividualOfferUrl', () => {
     expect(getIndividualOfferUrl(props)).toBe(expectedUrl)
   })
 
-  describe('when offer exposure is enabled', () => {
-    it('uses edition path for readonly step when edition path exists', () => {
+  describe('when mode is readonly', () => {
+    it('should fall back to the edition path', () => {
       expect(
         getIndividualOfferUrl({
           offerId,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-          isOfferExposureEnabled: true,
         })
       ).toBe('/offre/individuelle/42/edition/tarifs')
     })
+  })
 
-    it('keeps readonly path for readonly-only step', () => {
-      expect(
-        getIndividualOfferUrl({
-          offerId,
-          mode: OFFER_WIZARD_MODE.READ_ONLY,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
-          isOfferExposureEnabled: true,
-        })
-      ).toBe('/offre/individuelle/42/reservations')
-    })
-
-    it('uses readonly path for exposure in edition mode', () => {
+  describe('when mode is edition', () => {
+    it('should return the exposure url', () => {
       expect(
         getIndividualOfferUrl({
           offerId,
           mode: OFFER_WIZARD_MODE.EDITION,
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
-          isOfferExposureEnabled: true,
         })
       ).toBe('/offre/individuelle/42/visibilite')
     })
 
-    it('uses readonly path for bookings in edition mode', () => {
+    it('should return the bookings url', () => {
       expect(
         getIndividualOfferUrl({
           offerId,
           mode: OFFER_WIZARD_MODE.EDITION,
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
-          isOfferExposureEnabled: true,
         })
       ).toBe('/offre/individuelle/42/reservations')
     })

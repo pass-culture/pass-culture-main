@@ -9,7 +9,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
@@ -35,8 +34,6 @@ interface IndividualOfferConfirmationScreenProps {
 export const IndividualOfferConfirmationScreen = ({
   offer,
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
-
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const navigate = useNavigate()
 
@@ -49,11 +46,8 @@ export const IndividualOfferConfirmationScreen = ({
 
   const offerReadOnlyUrl = getIndividualOfferUrl({
     offerId: offer.id,
-    step: isOfferExposureEnabled
-      ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE
-      : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
     mode: OFFER_WIZARD_MODE.READ_ONLY,
-    isOfferExposureEnabled,
   })
 
   const offerCreationUrl = getIndividualOfferUrl({
