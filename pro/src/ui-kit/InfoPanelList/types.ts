@@ -52,11 +52,11 @@ export type InfoPanelItemProps =
       variant: InfoPanelVariant.ORDERED
       panel: OrderedInfoPanel
       index: number
-      Heading: 'h2' | 'h3'
+      titleLevel: '2' | '3'
     }
   | {
       variant: InfoPanelVariant.UNORDERED
       panel: UnorderedInfoPanel
       index: number
-      Heading: 'h2' | 'h3'
+      titleLevel: '2' | '3'
     }

@@ -6,11 +6,14 @@ import { ButtonVariant } from '@/design-system/Button/types'
 import strokeOfferIcon from '@/icons/stroke-offer.svg'
 import strokeProfilIcon from '@/icons/stroke-profil.svg'
 import strokeReleaseIcon from '@/icons/stroke-release.svg'
-import { InfoPanel } from '@/ui-kit/InfoPanel/InfoPanel'
-import { InfoPanelSize, InfoPanelSurface } from '@/ui-kit/InfoPanel/types'
+import { InfoPanelList } from '@/ui-kit/InfoPanelList/InfoPanelList'
+import {
+  InfoPanelSize,
+  InfoPanelSurface,
+  InfoPanelVariant,
+} from '@/ui-kit/InfoPanelList/types'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
-import styles from './WelcomeStepAdvantages.module.scss'
 
 export const WelcomeStepAdvantages = (): JSX.Element => {
   return (
@@ -21,34 +24,32 @@ export const WelcomeStepAdvantages = (): JSX.Element => {
       <h2 className={commonStyles.subtitle}>
         Découvrez les avantages pour votre structure
       </h2>
-      <div className={cn(commonStyles[`container`], styles['container'])}>
-        <InfoPanel
-          title="4 millions de jeunes"
+      <div className={cn(commonStyles[`container`])}>
+        <InfoPanelList
+          variant={InfoPanelVariant.UNORDERED}
           surface={InfoPanelSurface.FLAT}
           size={InfoPanelSize.LARGE}
-          icon={strokeProfilIcon}
-        >
-          Touchez une audience de 15-21 ans partout en France, activement à la
-          recherche d'expériences culturelles
-        </InfoPanel>
-        <InfoPanel
-          title="Une inscription simple et rapide"
-          surface={InfoPanelSurface.FLAT}
-          size={InfoPanelSize.LARGE}
-          icon={strokeReleaseIcon}
-        >
-          Contrairement aux appels à projet lourds et complexes, l'inscription à
-          pass Culture Pro est simple et guidée
-        </InfoPanel>
-        <InfoPanel
-          title="Publiez quand vous voulez"
-          surface={InfoPanelSurface.FLAT}
-          size={InfoPanelSize.LARGE}
-          icon={strokeOfferIcon}
-        >
-          Créez et modifiez vos offres, qu’elles soient gratuites ou payantes, à
-          tout moment de l’année
-        </InfoPanel>
+          panels={[
+            {
+              title: '4 millions de jeunes',
+              description:
+                "Touchez une audience de 15-21 ans partout en France, activement à la recherche d'expériences culturelles",
+              icon: strokeProfilIcon,
+            },
+            {
+              title: 'Une inscription simple et rapide',
+              description:
+                "Contrairement aux appels à projet lourds et complexes, l'inscription à pass Culture Pro est simple et guidée",
+              icon: strokeReleaseIcon,
+            },
+            {
+              title: 'Publiez quand vous voulez',
+              description:
+                'Créez et modifiez vos offres, qu’elles soient gratuites ou payantes, à tout moment de l’année',
+              icon: strokeOfferIcon,
+            },
+          ]}
+        />
       </div>
       <div className={commonStyles['actionbar-container']}>
         <Button
