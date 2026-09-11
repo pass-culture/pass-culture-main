@@ -10,11 +10,10 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
-import pcapi.routes.apis as routes_apis
 import pcapi.routes.backoffice.blueprint as backoffice_blueprint
-import pcapi.routes.pro.blueprint as pro_blueprint
 from pcapi import settings
 from pcapi.routes import UrlPrefix as UrlPrefixOld
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.utils.health_checker import read_version_from_file
 
 
@@ -195,11 +194,8 @@ def filter_transactions(event: "Event", _hint: dict[str, typing.Any]) -> "Event 
         case _ if transaction.startswith(backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME):
             sample_rate = DEFAULT_SAMPLE_RATE
 
-        # private API "Private API"
-        case _ if transaction.startswith(routes_apis.PRIVATE_API_BLUEPRINT_NAME):
-            sample_rate = DEFAULT_SAMPLE_RATE
-        # other private API "pro_private_api"
-        case _ if transaction.startswith(pro_blueprint.PRO_PRIVATE_API_BLUEPRINT_NAME):
+        # private API "pro"
+        case _ if transaction.startswith(pro_blueprint.name):
             sample_rate = DEFAULT_SAMPLE_RATE
 
         # Unmatched

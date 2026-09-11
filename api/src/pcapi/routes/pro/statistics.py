@@ -6,7 +6,7 @@ from flask_login import login_required
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.core.offers.repository import venues_have_individual_and_collective_offers
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization.statistics_serialize import AggregatedRevenueModel
 from pcapi.routes.serialization.statistics_serialize import StatisticsModel
 from pcapi.routes.serialization.statistics_serialize import StatisticsQueryModel
@@ -17,10 +17,10 @@ from pcapi.utils.transaction_manager import atomic
 from . import blueprint
 
 
-@private_api.route("/get-statistics", methods=["GET"])
+@pro_blueprint.route("/get-statistics", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=StatisticsModel, api=blueprint.pro_private_schema, query_params_as_list=["venueIds"])
+@spectree_serialize(response_model=StatisticsModel, api=blueprint.pro_schema, query_params_as_list=["venueIds"])
 def get_statistics(query: StatisticsQueryModel) -> StatisticsModel:
     venue_ids = query.venue_ids
     if not venue_ids:

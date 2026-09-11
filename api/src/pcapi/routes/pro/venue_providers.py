@@ -17,7 +17,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.api_errors import resource_not_found_error
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import venue_provider_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rest
@@ -41,13 +41,13 @@ def _get_provider_or_404(provider_id: int) -> providers_models.Provider:
     return provider
 
 
-@private_api.route("/venues/<int:venue_id>/venue-providers", methods=["GET"])
+@pro_blueprint.route("/venues/<int:venue_id>/venue-providers", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
     response_model=venue_provider_serialize.ListVenueProviderResponse,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def list_venue_providers(venue_id: int) -> venue_provider_serialize.ListVenueProviderResponse:
     venue = _get_venue_or_404(venue_id)
@@ -62,14 +62,14 @@ def list_venue_providers(venue_id: int) -> venue_provider_serialize.ListVenuePro
     )
 
 
-@private_api.route("/venues/<int:venue_id>/providers", methods=["GET"])
+@pro_blueprint.route("/venues/<int:venue_id>/providers", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=venue_provider_serialize.ListProviderResponse,
     on_success_status=200,
     on_error_statuses=[401, 404],
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_providers_by_venue(venue_id: int) -> venue_provider_serialize.ListProviderResponse:
     venue = _get_venue_or_404(venue_id)
@@ -79,13 +79,13 @@ def get_providers_by_venue(venue_id: int) -> venue_provider_serialize.ListProvid
     )
 
 
-@private_api.route("/venues/<int:venue_id>/venue-providers", methods=["POST"])
+@pro_blueprint.route("/venues/<int:venue_id>/venue-providers", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201,
     response_model=venue_provider_serialize.VenueProviderResponse,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def create_venue_provider(
     venue_id: int,
@@ -145,13 +145,13 @@ def create_venue_provider(
     return venue_provider_serialize.VenueProviderResponse.model_validate(new_venue_provider)
 
 
-@private_api.route("/venue-providers/<int:venue_provider_id>", methods=["PUT"])
+@pro_blueprint.route("/venue-providers/<int:venue_provider_id>", methods=["PUT"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
     response_model=venue_provider_serialize.VenueProviderResponse,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def update_venue_provider(
     venue_provider_id: int,
@@ -168,10 +168,10 @@ def update_venue_provider(
     return venue_provider_serialize.VenueProviderResponse.model_validate(updated)
 
 
-@private_api.route("/venue-providers/<int:venue_provider_id>", methods=["DELETE"])
+@pro_blueprint.route("/venue-providers/<int:venue_provider_id>", methods=["DELETE"])
 @atomic()
 @login_required
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_schema)
 def delete_venue_provider(venue_provider_id: int) -> None:
     try:
         venue_provider = providers_repository.get_venue_provider_by_id(venue_provider_id)

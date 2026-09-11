@@ -9,7 +9,7 @@ from pcapi.serialization.decorator import spectree_serialize
 @spectree_serialize(
     on_success_status=200,
     response_model=educational_domains_serialization.EducationalDomainsResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def list_educational_domains() -> educational_domains_serialization.EducationalDomainsResponseModel:
     educational_domains = educational_repository.get_all_educational_domains_ordered_by_name()

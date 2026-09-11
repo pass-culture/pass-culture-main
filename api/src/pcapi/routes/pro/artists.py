@@ -3,7 +3,7 @@ import logging
 from flask_login import login_required
 
 from pcapi.core.artist import repository as artist_repository
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import artist_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
@@ -14,11 +14,11 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/artists", methods=["GET"])
+@pro_blueprint.route("/artists", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=artist_serialize.ArtistsResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_artists(query: artist_serialize.ArtistQueryModel) -> artist_serialize.ArtistsResponseModel:

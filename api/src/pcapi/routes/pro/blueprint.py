@@ -8,12 +8,9 @@ from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
-PRO_PRIVATE_API_BLUEPRINT_NAME = "pro_private_api"
-
-
-pro_private_api = Blueprint(PRO_PRIVATE_API_BLUEPRINT_NAME, __name__)
+pro_blueprint = Blueprint("pro", __name__)
 CORS(
-    pro_private_api,
+    pro_blueprint,
     origins=settings.CORS_ALLOWED_ORIGINS,
     supports_credentials=True,
 )
@@ -28,7 +25,7 @@ SECURITY_SCHEMES = [
 ]
 
 
-pro_private_schema = ExtendedSpecTree(
+pro_schema = ExtendedSpecTree(
     "flask",
     title="pass Culture pro private API",
     MODE="strict",
@@ -38,4 +35,4 @@ pro_private_schema = ExtendedSpecTree(
     humanize_operation_id=True,
     version=1,
 )
-pro_private_schema.register(pro_private_api)
+pro_schema.register(pro_blueprint)

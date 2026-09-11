@@ -6,7 +6,7 @@ from pcapi.core.offerers import models as offerer_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvByInvoicesModel
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimbursement_details_by_invoices
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
@@ -16,7 +16,7 @@ from pcapi.utils.transaction_manager import atomic
 from . import blueprint
 
 
-@private_api.route("/v2/reimbursements/csv", methods=["GET"])
+@pro_blueprint.route("/v2/reimbursements/csv", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
@@ -25,7 +25,7 @@ from . import blueprint
         "Content-Type": "text/csv; charset=utf-8;",
         "Content-Disposition": "attachment; filename=remboursements_pass_culture.csv",
     },
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     query_params_as_list=["invoicesReferences"],
 )
 def get_reimbursements_csv_v2(query: ReimbursementCsvByInvoicesModel) -> bytes:

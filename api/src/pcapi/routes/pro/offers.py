@@ -30,7 +30,7 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.pro.stocks import get_stocks_with_count
 from pcapi.routes.serialization import offer_exposure_serialize
 from pcapi.routes.serialization import offers_serialize
@@ -48,11 +48,11 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/offers", methods=["GET"])
+@pro_blueprint.route("/offers", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.ListOffersResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serialize.ListOffersResponseModel:
@@ -72,12 +72,12 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     return offers_serialize.ListOffersResponseModel(__root__=offers_serialize.serialize_capped_offers(paginated_offers))
 
 
-@private_api.route("/offers/home", methods=["GET"])
+@pro_blueprint.route("/offers/home", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.ListOffersHomeResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def list_offers_home(query: offers_serialize.ListOffersHomeQueryModel) -> offers_serialize.ListOffersHomeResponseModel:
     rest.check_user_has_access_to_venues(user=current_user, venue_ids=[query.venue_id])
@@ -91,11 +91,11 @@ def list_offers_home(query: offers_serialize.ListOffersHomeQueryModel) -> offers
     )
 
 
-@private_api.route("/offers/<int:offer_id>", methods=["GET"])
+@pro_blueprint.route("/offers/<int:offer_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel:
@@ -124,12 +124,12 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/offers/<int:offer_id>/exposure", methods=["GET"])
+@pro_blueprint.route("/offers/<int:offer_id>/exposure", methods=["GET"])
 @login_required
 @atomic()
 @spectree_serialize(
     response_model=offer_exposure_serialize.GetOfferExposureResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_offer_exposure(
     offer_id: int,
@@ -153,11 +153,11 @@ def get_offer_exposure(
     return offer_exposure_serialize.GetOfferExposureResponseModel.build(offer, cumulative_views)
 
 
-@private_api.route("/offers/<int:offer_id>/stocks/", methods=["GET"])
+@pro_blueprint.route("/offers/<int:offer_id>/stocks/", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetStocksResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offers_serialize.GetStocksResponseModel:
@@ -189,10 +189,10 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     return offers_serialize.GetStocksResponseModel(stocks=stocks, total_stock_count=stocks_count, edited_stock_count=0)
 
 
-@private_api.route("/offers/<int:offer_id>/stocks/", methods=["PATCH"])
+@pro_blueprint.route("/offers/<int:offer_id>/stocks/", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    on_success_status=200, api=blueprint.pro_private_schema, response_model=offers_serialize.GetStocksResponseModel
+    on_success_status=200, api=blueprint.pro_schema, response_model=offers_serialize.GetStocksResponseModel
 )
 @atomic()
 def upsert_offer_stocks(
@@ -227,13 +227,13 @@ def upsert_offer_stocks(
     )
 
 
-@private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
+@pro_blueprint.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
     on_error_statuses=[400, 404],
     response_model=offers_serialize.GetStocksResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> offers_serialize.GetStocksResponseModel:
@@ -257,11 +257,11 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
     )
 
 
-@private_api.route("/offers/<int:offer_id>/stocks-stats", methods=["GET"])
+@pro_blueprint.route("/offers/<int:offer_id>/stocks-stats", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.StockStatsResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
@@ -288,11 +288,11 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
     )
 
 
-@private_api.route("/offers/delete-draft", methods=["POST"])
+@pro_blueprint.route("/offers/delete-draft", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
@@ -302,12 +302,12 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     offers_api.batch_delete_draft_offers(query)
 
 
-@private_api.route("/v2/offers", methods=["POST"])
+@pro_blueprint.route("/v2/offers", methods=["POST"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     on_success_status=201,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
@@ -344,12 +344,12 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/offers/publish", methods=["PATCH"])
+@pro_blueprint.route("/offers/publish", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
     on_error_statuses=[404],
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     response_model=offers_serialize.GetIndividualOfferResponseModel,
 )
 @atomic()
@@ -396,12 +396,12 @@ def patch_publish_offer(
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/offers/active-status", methods=["PATCH"])
+@pro_blueprint.route("/offers/active-status", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     response_model=None,
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
@@ -415,12 +415,12 @@ def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBody
     offers_api.batch_activate_offers(query, activate=body.is_active)
 
 
-@private_api.route("/offers/all-active-status", methods=["PATCH"])
+@pro_blueprint.route("/offers/all-active-status", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     response_model=None,
     on_success_status=202,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def patch_all_offers_active_status(
@@ -506,11 +506,11 @@ def _mandatory_extra_data_fields(subcategory_id: str) -> set[str]:
     }
 
 
-@private_api.route("/offers/<int:offer_id>", methods=["PATCH"])
+@pro_blueprint.route("/offers/<int:offer_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def patch_offer(
@@ -622,12 +622,12 @@ def patch_offer(
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/offers/<int:offer_id>/video", methods=["PUT"])
+@pro_blueprint.route("/offers/<int:offer_id>/video", methods=["PUT"])
 @atomic()
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.VideoData,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def update_offer_video(offer_id: int, body: offers_serialize.UpdateOfferVideoBodyModel) -> offers_serialize.VideoData:
     try:
@@ -666,12 +666,12 @@ def update_offer_video(offer_id: int, body: offers_serialize.UpdateOfferVideoBod
     return offers_serialize.VideoData.from_orm(offer.metaData)
 
 
-@private_api.route("/offers/thumbnails", methods=["POST"])
+@pro_blueprint.route("/offers/thumbnails", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=201,
     response_model=CreateThumbnailResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseModel:
@@ -698,11 +698,11 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     return CreateThumbnailResponseModel.model_validate(thumbnail)
 
 
-@private_api.route("/offers/thumbnails/<int:offer_id>", methods=["DELETE"])
+@pro_blueprint.route("/offers/thumbnails/<int:offer_id>", methods=["DELETE"])
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def delete_thumbnail(offer_id: int) -> None:
@@ -712,11 +712,11 @@ def delete_thumbnail(offer_id: int) -> None:
     offers_api.delete_mediations([offer_id])
 
 
-@private_api.route("/offers/categories", methods=["GET"])
+@pro_blueprint.route("/offers/categories", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.CategoriesResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_categories() -> offers_serialize.CategoriesResponseModel:
@@ -731,11 +731,11 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
     )
 
 
-@private_api.route("/offers/music-types", methods=["GET"])
+@pro_blueprint.route("/offers/music-types", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetMusicTypesResponse,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_music_types() -> offers_serialize.GetMusicTypesResponse:
@@ -749,11 +749,11 @@ def get_music_types() -> offers_serialize.GetMusicTypesResponse:
     )
 
 
-@private_api.route("/offers/<int:offer_id>/price_categories", methods=["PUT"])
+@pro_blueprint.route("/offers/<int:offer_id>/price_categories", methods=["PUT"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def replace_offer_price_categories(
@@ -797,11 +797,11 @@ def replace_offer_price_categories(
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/offers/<int:venue_id>/ean/<string:ean>", methods=["GET"])
+@pro_blueprint.route("/offers/<int:venue_id>/ean/<string:ean>", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetActiveEANOfferResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.GetActiveEANOfferResponseModel:
@@ -816,11 +816,11 @@ def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.G
     return offers_serialize.GetActiveEANOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/get_product_by_ean/<string:ean>/<int:offerer_id>", methods=["GET"])
+@pro_blueprint.route("/get_product_by_ean/<string:ean>/<int:offerer_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetProductInformations,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProductInformations:
@@ -854,11 +854,11 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
     return offers_serialize.GetProductInformations.from_orm(product=typing.cast(models.Product, product))
 
 
-@private_api.route("/get-offer-video-data", methods=["GET"])
+@pro_blueprint.route("/get-offer-video-data", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.VideoData,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_offer_video_metadata(
@@ -891,12 +891,12 @@ def get_offer_video_metadata(
     )
 
 
-@private_api.route("/offers/<int:offer_id>/highlight-requests", methods=["POST"])
+@pro_blueprint.route("/offers/<int:offer_id>/highlight-requests", methods=["POST"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     on_success_status=201,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def post_highlight_request_offer(
@@ -943,11 +943,11 @@ def post_highlight_request_offer(
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/offers/<int:offer_id>/pro_advice", methods=["GET"])
+@pro_blueprint.route("/offers/<int:offer_id>/pro_advice", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetProAdviceResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def get_offer_pro_advice(offer_id: int) -> offers_serialize.GetProAdviceResponseModel:
@@ -962,12 +962,12 @@ def get_offer_pro_advice(offer_id: int) -> offers_serialize.GetProAdviceResponse
     return offers_serialize.GetProAdviceResponseModel(pro_advice=pro_advice)
 
 
-@private_api.route("/offers/<int:offer_id>/pro_advice", methods=["POST"])
+@pro_blueprint.route("/offers/<int:offer_id>/pro_advice", methods=["POST"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.PostProAdviceResponseModel,
     on_success_status=201,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def create_offer_pro_advice(
@@ -985,11 +985,11 @@ def create_offer_pro_advice(
     return offers_serialize.PostProAdviceResponseModel(pro_advice=offers_serialize.ProAdviceModel.from_orm(pro_advice))
 
 
-@private_api.route("/offers/<int:offer_id>/pro_advice", methods=["PATCH"])
+@pro_blueprint.route("/offers/<int:offer_id>/pro_advice", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.PatchProAdviceResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def update_offer_pro_advice(
@@ -1007,10 +1007,10 @@ def update_offer_pro_advice(
     return offers_serialize.PatchProAdviceResponseModel(pro_advice=offers_serialize.ProAdviceModel.from_orm(pro_advice))
 
 
-@private_api.route("/offers/<int:offer_id>/pro_advice", methods=["DELETE"])
+@pro_blueprint.route("/offers/<int:offer_id>/pro_advice", methods=["DELETE"])
 @login_required
 @spectree_serialize(
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     on_success_status=204,
 )
 @atomic()

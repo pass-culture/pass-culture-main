@@ -29,7 +29,7 @@ PRO_FEATURES = (
 
 @misc_blueprint.route("/features", methods=["GET"])
 @atomic()
-@spectree_serialize(response_model=features_serialize.ListFeatureResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=features_serialize.ListFeatureResponseModel, api=blueprint.pro_schema)
 def list_features() -> features_serialize.ListFeatureResponseModel:
     all_features = db.session.query(Feature)
     requested_features = {feature.name for feature in PRO_FEATURES}

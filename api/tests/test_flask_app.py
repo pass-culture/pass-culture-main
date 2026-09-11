@@ -74,14 +74,10 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "native.native_v2.get_venue_v2",  # → response.status_code = 404
     "native.native_v2.sso_oauth_state",  # → response.status_code = 200
     "native.native_v3.get_offer_v3",  # → response.status_code = 404
-    "Private API.clear_email_list",  # → response.status_code = 200
-    "Private API.testing_route_with_common_errors",
-    "Private API.testing_route_with_validation_errors",
-    "pro_private_api.check_activation_token_exists",  # → response.status_code = 404
-    "Private API.connect_as",  # → response.status_code = 403
-    "pro_private_api.openapi_pro",  # → response.status_code = 200
-    "Private API.validate_user",  # → response.status_code = 404 (PATCH)
-    "Private API.check_structure",  # → response.status_code = 204
+    "pro.connect_as",  # → response.status_code = 403
+    "pro.validate_user",  # → response.status_code = 404 (PATCH)
+    "pro.check_structure",  # → response.status_code = 204
+    "pro.openapi_pro",  # → response.status_code = 200
     "public_api_deprecated.openapi_/deprecated_collective",  # → response.status_code = 200
     "saml_blueprint.on_educonnect_authentication_response",  # → response.status_code = 302
     "static",  # →  response.status_code = 404
@@ -96,6 +92,8 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "test_extended_spec_tree_blueprint.openapi_apidoc",  # → response.status_code = 200
     "test_extended_spec_tree_blueprint.spectree_get_test_endpoint",  # → response.status_code = 204
     "test_extended_spec_tree_blueprint.spectree_post_test_endpoint",  # → response.status_code = 204
+    "testing.testing_route_with_common_errors",  # → response.status_code = 500
+    "testing.testing_route_with_validation_errors",  # → response.status_code = 500
 ]
 
 SUFFIX_WHITE_LIST = [
@@ -114,13 +112,13 @@ PREFIX_WHITE_LIST = [
 ]
 
 IGNORE_ERROR_500_LIST = [
-    "Private API.testing_route_with_common_errors",
-    "Private API.testing_route_with_validation_errors",
+    "testing.testing_route_with_common_errors",
+    "testing.testing_route_with_validation_errors",
 ]
 
 
 IGNORE_LIST = [
-    "Private API.get_unique_email",  # ignore this endpoint because it raises an 500 error and it slows down the test (up to 1min)
+    "testing.get_unique_email",  # ignore this endpoint because it raises an 500 error and it slows down the test (up to 1min)
 ]
 
 

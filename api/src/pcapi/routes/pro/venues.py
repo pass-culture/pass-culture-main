@@ -26,7 +26,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import resource_not_found_error
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import venue_banners_serialize
 from pcapi.routes.serialization import venue_collective_serialize
 from pcapi.routes.serialization import venue_finance_serialize
@@ -41,10 +41,10 @@ from pcapi.utils.transaction_manager import on_commit
 from . import blueprint
 
 
-@private_api.route("/venues/<int:venue_id>/close", methods=["POST"])
+@pro_blueprint.route("/venues/<int:venue_id>/close", methods=["POST"])
 @login_required
 @atomic()
-@spectree_serialize(on_success_status=204, on_error_statuses=[404], api=blueprint.pro_private_schema)
+@spectree_serialize(on_success_status=204, on_error_statuses=[404], api=blueprint.pro_schema)
 def close_venue(venue_id: int) -> None:
     if not FeatureToggle.WIP_CLOSE_VENUE.is_active():
         raise ApiErrors(status_code=404)
@@ -54,10 +54,10 @@ def close_venue(venue_id: int) -> None:
     offerers_api.close_venue(venue, author=current_user)
 
 
-@private_api.route("/venues/<int:venue_id>", methods=["GET"])
+@pro_blueprint.route("/venues/<int:venue_id>", methods=["GET"])
 @login_required
 @atomic()
-@spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_schema)
 def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     aliased_venue = sa_orm.aliased(models.Venue)
 
@@ -98,19 +98,19 @@ def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     return _build_venue_response(venue)
 
 
-@private_api.route("/lite/venues", methods=["GET"])
+@pro_blueprint.route("/lite/venues", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=venue_serialize.GetVenueListLiteResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=venue_serialize.GetVenueListLiteResponseModel, api=blueprint.pro_schema)
 def get_venues_lite() -> venue_serialize.GetVenueListLiteResponseModel:
     splitted = venues_api.fetch_user_venues_splitted_based_on_user_offerer_status(current_user.id)
     return venue_serialize.GetVenueListLiteResponseModel.build(splitted.others, splitted.with_pending_validation)
 
 
-@private_api.route("/venues/<int:venue_id>", methods=["PATCH"])
+@pro_blueprint.route("/venues/<int:venue_id>", methods=["PATCH"])
 @login_required
 @atomic()
-@spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_schema)
 def edit_venue(venue_id: int, body: venue_serialize.EditVenueBodyModel) -> venue_serialize.GetVenueResponseModel:
     venue = get_or_404(Venue, venue_id)
     rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
@@ -194,10 +194,10 @@ def edit_venue(venue_id: int, body: venue_serialize.EditVenueBodyModel) -> venue
     return _build_venue_response(venue)
 
 
-@private_api.route("/venues/<int:venue_id>/collective-data", methods=["PATCH"])
+@pro_blueprint.route("/venues/<int:venue_id>/collective-data", methods=["PATCH"])
 @login_required
 @atomic()
-@spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_schema)
 def edit_venue_collective_data(
     venue_id: int, body: venue_collective_serialize.EditVenueCollectiveDataBodyModel
 ) -> venue_serialize.GetVenueResponseModel:
@@ -211,10 +211,10 @@ def edit_venue_collective_data(
     return _build_venue_response(venue)
 
 
-@private_api.route("/venues/<int:venue_id>/pricing-point", methods=["POST"])
+@pro_blueprint.route("/venues/<int:venue_id>/pricing-point", methods=["POST"])
 @login_required
 @atomic()
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_schema)
 def link_venue_to_pricing_point(venue_id: int, body: venue_finance_serialize.LinkVenueToPricingPointBodyModel) -> None:
     venue = get_or_404(Venue, venue_id)
     rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
@@ -226,7 +226,7 @@ def link_venue_to_pricing_point(venue_id: int, body: venue_finance_serialize.Lin
         raise ApiErrors({"code": "CANNOT_LINK_VENUE_TO_PRICING_POINT", "message": str(exc)}, status_code=400)
 
 
-@private_api.route("/venues/<int:venue_id>/banner", methods=["POST"])
+@pro_blueprint.route("/venues/<int:venue_id>/banner", methods=["POST"])
 @login_required
 @atomic()
 @spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, on_success_status=201)
@@ -259,10 +259,10 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     return _build_venue_response(venue)
 
 
-@private_api.route("/venues/<int:venue_id>/banner", methods=["DELETE"])
+@pro_blueprint.route("/venues/<int:venue_id>/banner", methods=["DELETE"])
 @login_required
 @atomic()
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_schema)
 def delete_venue_banner(venue_id: int) -> None:
     venue = get_or_404(Venue, venue_id)
     rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
@@ -270,25 +270,25 @@ def delete_venue_banner(venue_id: int) -> None:
     offerers_api.delete_venue_banner(venue)
 
 
-@private_api.route("/venues-educational-statuses", methods=["GET"])
+@pro_blueprint.route("/venues-educational-statuses", methods=["GET"])
 @login_required
 @atomic()
 @spectree_serialize(
     on_success_status=200,
     response_model=venue_collective_serialize.VenuesEducationalStatusesResponseModel,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 def get_venues_educational_statuses() -> venue_collective_serialize.VenuesEducationalStatusesResponseModel:
     statuses = offerers_api.get_venues_educational_statuses()
     return venue_collective_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)
 
 
-@private_api.route("/venues/<int:venue_id>/locations", methods=["GET"])
+@pro_blueprint.route("/venues/<int:venue_id>/locations", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
     response_model=venue_serialize.GetVenueAddressesResponseModel,
 )
 def get_venue_addresses(

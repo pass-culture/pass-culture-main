@@ -7,7 +7,7 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers import exceptions
 from pcapi.models import api_errors
-from pcapi.routes.apis import private_api
+from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import headline_offer_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rest
@@ -19,12 +19,12 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/offers/upsert_headline", methods=["POST"])
+@pro_blueprint.route("/offers/upsert_headline", methods=["POST"])
 @login_required
 @spectree_serialize(
     response_model=headline_offer_serialize.HeadLineOfferResponseModel,
     on_success_status=201,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def upsert_headline_offer(
@@ -59,11 +59,11 @@ def upsert_headline_offer(
     return headline_offer_serialize.HeadLineOfferResponseModel.model_validate(headline_offer.offer)
 
 
-@private_api.route("/offers/delete_headline", methods=["POST"])
+@pro_blueprint.route("/offers/delete_headline", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.pro_private_schema,
+    api=blueprint.pro_schema,
 )
 @atomic()
 def delete_headline_offer(body: headline_offer_serialize.HeadlineOfferDeleteBodyModel) -> None:

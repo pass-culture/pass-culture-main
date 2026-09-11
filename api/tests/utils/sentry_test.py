@@ -6,7 +6,7 @@ from pydantic.v1 import BaseModel
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.routes.apis import private_api
+from pcapi.routes.internal.blueprint import testing_blueprint
 from pcapi.utils.sentry import SCRUBBED_INFO_PLACEHOLDER
 from pcapi.utils.sentry import before_send
 from pcapi.utils.sentry import before_send_transaction
@@ -42,7 +42,7 @@ def before_send_transaction_wrapper(*args, **kwargs):
     original_before_send_transaction(*args, **kwargs)
 
 
-@private_api.route("/test/route", methods=["GET"])
+@testing_blueprint.route("/test/route", methods=["GET"])
 def testing_route_with_common_errors(*args, **kwargs):
     """Route for test purpose that raise common exception
     with default fingerprint.
@@ -50,7 +50,7 @@ def testing_route_with_common_errors(*args, **kwargs):
     _ = 1 / 0
 
 
-@private_api.route("/test/route-with-validation-error/<field_name>", methods=["GET"])
+@testing_blueprint.route("/test/route-with-validation-error/<field_name>", methods=["GET"])
 def testing_route_with_validation_errors(field_name, *args, **kwargs):
     """Route for test purpose that raise specific exception, ValidationError,
     which should be stamped with a custom fingerprint (content of exc.errors())
