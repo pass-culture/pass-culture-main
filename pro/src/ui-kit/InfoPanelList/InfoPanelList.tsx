@@ -13,8 +13,9 @@ const InfoPanelItem = ({
   variant,
   panel,
   index,
-  Heading,
+  titleLevel,
 }: InfoPanelItemProps) => {
+  const Heading: 'h2' | 'h3' = `h${titleLevel}`
   return (
     <li className={styles['info-panel-item']}>
       <div className={styles['info-panel-item-left-content']}>
@@ -57,7 +58,6 @@ export const InfoPanelList = ({
   panels,
 }: Readonly<InfoPanelListProps>): JSX.Element => {
   const List = variant === InfoPanelVariant.ORDERED ? 'ol' : 'ul'
-  const Heading: 'h2' | 'h3' = `h${titleLevel}`
 
   return (
     <List
@@ -75,7 +75,7 @@ export const InfoPanelList = ({
               variant={InfoPanelVariant.UNORDERED}
               panel={panel}
               index={index}
-              Heading={Heading}
+              titleLevel={titleLevel}
             />
           ))
         : panels.map((panel, index) => (
@@ -84,7 +84,7 @@ export const InfoPanelList = ({
               variant={InfoPanelVariant.ORDERED}
               panel={panel}
               index={index}
-              Heading={Heading}
+              titleLevel={titleLevel}
             />
           ))}
     </List>

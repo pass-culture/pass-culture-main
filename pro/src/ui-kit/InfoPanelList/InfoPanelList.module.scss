@@ -5,17 +5,8 @@
 
 @mixin small {
   .info-panel-item {
-    &-left-content {
-      width: rem.torem(32px);
-      height: rem.torem(32px);
-    }
-
     &-stepnumber {
       @include fonts.body-accent-xs;
-    }
-
-    &-icon {
-      width: rem.torem(16px);
     }
 
     &-title {
@@ -31,7 +22,6 @@
 .info-panel-list {
   display: flex;
   flex-direction: column;
-  gap: var(--size-spacing-s);
 
   // ------------------------------
   // Item
@@ -56,6 +46,7 @@
     }
 
     &-icon {
+      width: rem.torem(28px);
       color: var(--color-icon-brand-primary);
     }
 
@@ -65,12 +56,24 @@
     }
   }
 
-  &-ordered .info-panel-item-left-content {
-    border-radius: rem.torem(48px); // cercle
+  &-ordered {
+    gap: var(--size-spacing-s);
+
+    .info-panel-item-left-content {
+      border-radius: rem.torem(48px); // cercle
+      width: rem.torem(32px);
+      height: rem.torem(32px);
+    }
   }
 
-  &-unordered .info-panel-item-left-content {
-    border-radius: rem.torem(6px); // carré arrondi
+  &-unordered {
+    gap: var(--size-spacing-xxl);
+
+    .info-panel-item-left-content {
+      border-radius: rem.torem(6px); // carré arrondi
+      width: rem.torem(48px);
+      height: rem.torem(48px);
+    }
   }
 
   // ------------------------------
@@ -79,17 +82,8 @@
 
   &-large {
     .info-panel-item {
-      &-left-content {
-        width: rem.torem(48px);
-        height: rem.torem(48px);
-      }
-
       &-stepnumber {
         @include fonts.body-accent;
-      }
-
-      &-icon {
-        width: rem.torem(24px);
       }
 
       &-content {
