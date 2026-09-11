@@ -108,7 +108,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.ALERT,
       },
       expected: {
-        documentTitle: 'Grille tarifaire',
+        documentTitle: '1 -Grille tarifaire',
         bannerRole: 'alert',
         bannerTitle: /disposer d'un point de vente physique/,
       },
@@ -120,7 +120,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.ALERT,
       },
       expected: {
-        documentTitle: 'Site internet ou page de réseau social',
+        documentTitle: '1 -Site internet ou page de réseau social',
         bannerRole: 'alert',
         bannerTitle: /votre dépôt de dossier ADAGE/,
       },
@@ -132,7 +132,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.ALERT,
       },
       expected: {
-        documentTitle: 'CV et/ou portfolio',
+        documentTitle: '1 -CV et/ou portfolio',
         bannerRole: 'alert',
         bannerTitle: /activités fixées par arrêté sont éligibles/,
       },
@@ -144,7 +144,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.INFO,
       },
       expected: {
-        documentTitle: 'Diplôme(s)',
+        documentTitle: '1 -Diplôme(s)',
         bannerRole: 'status',
         bannerTitle: /disposer d'un point de vente physique/,
       },
@@ -156,7 +156,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.INFO,
       },
       expected: {
-        documentTitle: 'Diplôme et/ou attestation dans les métiers du son',
+        documentTitle: '1 -Diplôme et/ou attestation dans les métiers du son',
         bannerRole: 'status',
         bannerTitle: /votre dépôt de dossier ADAGE/,
       },
@@ -168,7 +168,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.INFO,
       },
       expected: {
-        documentTitle: 'Grille tarifaire',
+        documentTitle: '1 -Grille tarifaire',
         bannerRole: 'status',
         bannerTitle: /activités fixées par arrêté sont éligibles/,
       },
@@ -180,7 +180,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.ALERT,
       },
       expected: {
-        documentTitle: 'Photos du point de vente',
+        documentTitle: '1 -Photos du point de vente',
         bannerRole: 'alert',
         bannerTitle: /disposer d'un point de vente physique/,
       },
@@ -192,7 +192,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.ALERT,
       },
       expected: {
-        documentTitle: 'Photos des locaux et du matériel',
+        documentTitle: '1 -Photos des locaux et du matériel',
         bannerRole: 'alert',
         bannerTitle: /disposer d'un point de vente physique/,
       },
@@ -204,7 +204,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.ALERT,
       },
       expected: {
-        documentTitle: 'Extrait de casier judiciaire (bulletin n°3)',
+        documentTitle: '1 -Extrait de casier judiciaire (bulletin n°3)',
         bannerRole: 'alert',
         bannerTitle: /disposer d'un point de vente physique/,
       },
@@ -216,7 +216,7 @@ describe('<SimulatorResults />', () => {
         msgLevel: SignupSimulationMessageLevel.ALERT,
       },
       expected: {
-        documentTitle: 'Description détaillée de vos offres',
+        documentTitle: '1 -Description détaillée de vos offres',
         bannerRole: 'alert',
         bannerTitle: /disposer d'un point de vente physique/,
       },
