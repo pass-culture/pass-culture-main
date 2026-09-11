@@ -1,0 +1,184 @@
+// Backoffice design system page (dev/components)
+
+.pc-ds-toc {
+  .navbar-text {
+    display: block;
+    padding-top: $spacer;
+  }
+}
+
+.pc-ds-content {
+  min-width: 0;
+}
+
+.pc-ds-header {
+  max-width: 60rem;
+  padding-bottom: $spacer;
+}
+
+.pc-ds-section {
+  padding-top: $spacer * 1.5;
+  padding-bottom: $spacer * 1.5;
+  border-top: 1px solid $border-color;
+}
+
+.pc-ds-section-description {
+  color: var(--#{$prefix}secondary-color);
+  max-width: 60rem;
+}
+
+.pc-ds-spec {
+  margin-top: $spacer * 1.5;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+}
+
+.pc-ds-spec-header {
+  padding: $spacer * .75 $spacer;
+  border-bottom: 1px solid $border-color;
+}
+
+.pc-ds-spec-title {
+  font-size: $h5-font-size;
+  margin-bottom: 0;
+}
+
+.pc-ds-spec-description {
+  font-size: $font-size-sm;
+  color: var(--#{$prefix}secondary-color);
+  margin: $spacer * .25 0 0;
+}
+
+.pc-ds-spec-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: $spacer * 1.5;
+  padding: $spacer;
+}
+
+.pc-ds-spec-usage {
+  padding: $spacer * .5 $spacer;
+  background-color: $gray-100;
+  border-top: 1px solid $border-color;
+  font-size: $font-size-sm;
+}
+
+.pc-ds-state {
+  display: flex;
+  flex-direction: column;
+  gap: $spacer * .5;
+  min-width: 6rem;
+}
+
+.pc-ds-state-wide {
+  flex-basis: 100%;
+
+  .pc-ds-state-preview {
+    display: block;
+  }
+}
+
+.pc-ds-state-preview {
+  display: flex;
+  align-items: center;
+  gap: $spacer * .5;
+  min-height: 2.5rem;
+}
+
+.pc-ds-state-label {
+  font-size: $font-size-base * .75;
+  color: var(--#{$prefix}secondary-color);
+}
+
+.pc-ds-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: $spacer * .25;
+}
+
+.pc-ds-swatch-color {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 6rem;
+  height: 3rem;
+  border-radius: $border-radius;
+}
+
+.pc-ds-spacer {
+  width: 8rem;
+  background-color: $primary-bg-subtle;
+}
+
+.pc-ds-spacer-inner {
+  height: 1.5rem;
+  background: linear-gradient(to right, $primary 0, $primary 100%) no-repeat;
+  background-origin: content-box;
+}
+
+.pc-ds-icon {
+  width: 8rem;
+
+  .pc-ds-state-preview {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+}
+
+.pc-ds-icon-name {
+  font-size: $font-size-base * .75;
+}
+
+.pc-ds-surface {
+  width: 6rem;
+  height: 3rem;
+}
+
+.pc-ds-surface-wide {
+  width: 16rem;
+}
+
+.pc-ds-field-table {
+  th,
+  td {
+    vertical-align: top;
+  }
+
+  td {
+    min-width: 12rem;
+  }
+}
+
+.pc-ds-table-wrapper {
+  flex-basis: 100%;
+}
+
+.pc-ds-form-demo,
+.pc-ds-pills-demo {
+  width: 24rem;
+}
+
+.pc-ds-side-column {
+  width: 20rem;
+  padding-bottom: $spacer;
+}
+
+.pc-ds-progress-0 {
+  width: 0;
+}
+
+.pc-ds-progress-35 {
+  width: 35%;
+}
+
+.pc-ds-progress-100 {
+  width: 100%;
+}
+
+.pc-ds-content .pc-batch-action {
+  position: static;
+  transform: none;
+}

@@ -1,0 +1,73 @@
+{% from "dev/components/_spec.html" import ds_section, ds_spec, ds_state %}
+{% from "components/dynamic/spinner.html" import build_loading_spinner %}
+{% call ds_section("pc-ds-retours", "Retours utilisateur", "Messages, indicateurs et infobulles.") %}
+  {% call ds_spec("Alertes", 'flash("message", "catégorie") · alert alert-{catégorie} alert-dismissible', "Les messages flash s'empilent en haut à droite de la page (components/messages.html).") %}
+    <div class="vstack gap-2 w-100">
+      {% for category, message in [("success", "Les modifications ont été enregistrées."), ("info", "Le traitement est en cours."), ("warning", "Aucun résultat ne correspond à la recherche."), ("danger", "Une erreur est survenue, merci de réessayer.")] %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show mw-100"
+             role="alert">
+          {{ message }}
+          <button type="button"
+                  class="btn-close pt-3 pe-2"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endcall %}
+  {% call ds_spec("Message dans la page", "alert alert-warning", "Alerte non fermable, utilisée pour un état vide ou un avertissement contextuel.") %}
+    <div class="alert alert-warning mw-100"
+         role="alert">Aucune réservation trouvée pour ce partenaire culturel.</div>
+  {% endcall %}
+  {% call ds_spec("Infobulles", 'data-bs-toggle="tooltip" data-bs-title="…" · data-bs-custom-class="primary-tooltip"') %}
+    {% call ds_state("Par défaut") %}
+      <i class="bi bi-info-circle"
+         data-bs-toggle="tooltip"
+         data-bs-placement="top"
+         data-bs-title="Information complémentaire"></i>
+    {% endcall %}
+    {% call ds_state("Primaire") %}
+      <i class="bi bi-info-circle text-primary"
+         data-bs-toggle="tooltip"
+         data-bs-placement="top"
+         data-bs-custom-class="primary-tooltip"
+         data-bs-title="Information complémentaire"></i>
+    {% endcall %}
+    {% call ds_state("Sur un texte") %}
+      <span data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-title="Le tri ne s’applique que sur les éléments affichés">Survolez-moi</span>
+    {% endcall %}
+    {% call ds_state("Icône d'état") %}
+      <i class="bi bi-envelope-plus-fill text-warning"
+         data-bs-toggle="tooltip"
+         data-bs-placement="top"
+         data-bs-title="L'utilisateur a déjà changé d'email"></i>
+    {% endcall %}
+  {% endcall %}
+  {% call ds_spec("Chargement", "build_loading_spinner() · spinner-border", "Le premier remplace un contenu chargé par htmx ; le second habille la modale de chargement globale.") %}
+    {% call ds_state("Contenu htmx") %}{{ build_loading_spinner() }}{% endcall %}
+    {% call ds_state("Modale globale") %}
+      <div class="bg-dark rounded p-3">
+        <div class="spinner-border text-light"
+             role="status">
+          <span class="visually-hidden">Chargement…</span>
+        </div>
+      </div>
+    {% endcall %}
+  {% endcall %}
+  {% call ds_spec("Barre de progression", 'progress > progress-bar', "Crédit restant d'un bénéficiaire. La largeur est la seule exception tolérée à l'interdiction des attributs style.") %}
+    {% for value in (0, 35, 100) %}
+      {% call ds_state(value ~ " %", class="pc-ds-state-wide") %}
+        <div class="progress">
+          <div class="progress-bar pc-ds-progress-{{ value }}"
+               role="progressbar"
+               aria-label="Crédit restant"
+               aria-valuenow="{{ value }}"
+               aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+      {% endcall %}
+    {% endfor %}
+  {% endcall %}
+{% endcall %}

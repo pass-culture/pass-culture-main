@@ -1,0 +1,50 @@
+{% from "dev/components/_spec.html" import ds_section, ds_spec %}
+{% from "components/badges.html" import badges_container %}
+{% from "components/details.html" import action_bar_button, content_navbar, content_navbar_element, nav_section %}
+{% from "components/description.html" import description_detail_vertical %}
+{% call ds_section("pc-ds-pages-detail", "Pages de détail", "Modèle layouts/details.html : colonne principale (titre, badges, barre d'actions, sections ancrées) et colonne latérale ombrée.") %}
+  {% call ds_spec("En-tête", "block title · block header_extra · block action_buttons") %}
+    <div class="vstack gap-2 w-100">
+      <h2 class="mb-0">
+        Le Grand Rex
+        {% call badges_container() %}
+          {{ "Partenaire culturel permanent" | format_badge("primary") }}
+          {{ "Validé" | format_badge("success") }}
+        {% endcall %}
+      </h2>
+      <div class="btn-group align-self-start"
+           role="group">
+        {{ action_bar_button('pencil-square', 'Modifier') }}
+        {{ action_bar_button('hourglass-split', 'Suspendre') }}
+      </div>
+    </div>
+  {% endcall %}
+  {% call ds_spec("Sections ancrées", "content_navbar(name) · content_navbar_element(section, title) · details_content_wrapper(name) · nav_section(section, title)", "Barre soulignée dont l'entrée active suit le défilement (scrollspy) ; chaque section commence par un titre h4.") %}
+    <div class="vstack w-100">
+      {% call content_navbar("pc-ds-details") %}
+        {{ content_navbar_element('pc-ds-details-infos', 'Informations') }}
+        {{ content_navbar_element('pc-ds-details-history', 'Historique') }}
+      {% endcall %}
+      {% call nav_section("pc-ds-details-infos", "Informations") %}
+        <div class="row">
+          <div class="col-6">{% call description_detail_vertical("SIRET") %}123 456 789 00012{% endcall %}</div>
+          <div class="col-6">{% call description_detail_vertical("Adresse") %}1 boulevard Poissonnière, 75002 Paris{% endcall %}</div>
+        </div>
+      {% endcall %}
+      {% call nav_section("pc-ds-details-history", "Historique") %}
+        <p class="mb-0 text-secondary">Aucune action enregistrée.</p>
+      {% endcall %}
+    </div>
+  {% endcall %}
+  {% call ds_spec("Colonne latérale", "block side_column", "Données d'identité de l'objet, en listes de description verticales.") %}
+    <div class="pc-ds-side-column shadow-sm">
+      <div class="vstack gap-4 pt-4 px-3">
+        {% call description_detail_vertical("ID") %}
+          <span class="d-inline-flex align-items-center">12345</span>
+        {% endcall %}
+        {% call description_detail_vertical("Email") %}contact@legrandrex.fr{% endcall %}
+        {% call description_detail_vertical("Créé le") %}11/09/2026{% endcall %}
+      </div>
+    </div>
+  {% endcall %}
+{% endcall %}
