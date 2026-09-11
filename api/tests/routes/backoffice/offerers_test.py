@@ -1895,6 +1895,105 @@ class GetOffererBankAccountTest(GetEndpointHelper):
         )
 
 
+class GetOffererSettlementsTest(GetEndpointHelper):
+    endpoint = "backoffice.offerer.get_settlements"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # - session + authenticated user (1 query)
+    # - settlements (1 query)
+    expected_num_queries = 2
+
+    @pytest.mark.parametrize(
+        "factory,expected_settlement_amount,expected_new_settlement_amount",
+        [
+            (offerers_factories.OffererFactory, "33,50 €", "27,50 €"),
+            (
+                offerers_factories.CaledonianOffererFactory,
+                "33,50 € (4 000 CFP)",
+                "27,50 € (3 280 CFP)",
+            ),
+        ],
+    )
+    def test_get_offerer_settlements(
+        self,
+        authenticated_client,
+        factory,
+        expected_settlement_amount,
+        expected_new_settlement_amount,
+    ):
+        offerer = factory()
+        offerer_id = offerer.id
+
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        rejected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        new_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        invoice1 = finance_factories.InvoiceFactory(
+            bankAccount=bank_account, date=datetime.datetime(2023, 4, 1), amount=-1000
+        )
+        invoice2 = finance_factories.InvoiceFactory(
+            bankAccount=bank_account, date=datetime.datetime(2023, 3, 1), amount=-2350
+        )
+        invoice3 = finance_factories.InvoiceFactory(
+            bankAccount=bank_account, date=datetime.datetime(2023, 4, 1), amount=-2750
+        )
+
+        batch = finance_factories.SettlementBatchFactory(dateValidated=datetime.date(2023, 4, 4))
+        new_batch = finance_factories.SettlementBatchFactory(dateValidated=datetime.date(2023, 4, 19))
+        finance_factories.SettlementFactory(
+            bankAccount=bank_account,
+            amount=3350,
+            batch=batch,
+            invoices=[invoice1, invoice2],
+            status=finance_models.SettlementStatus.EXECUTED,
+            settlementDate=datetime.date(2023, 4, 3),
+        )
+        finance_factories.SettlementFactory(
+            bankAccount=rejected_bank_account,
+            amount=2750,
+            batch=batch,
+            invoices=[invoice3],
+            status=finance_models.SettlementStatus.REJECTED,
+            settlementDate=datetime.date(2023, 4, 3),
+        )
+        finance_factories.SettlementFactory(
+            bankAccount=new_bank_account,
+            amount=2750,
+            batch=new_batch,
+            invoices=[invoice3],
+            status=finance_models.SettlementStatus.EXECUTED,
+            settlementDate=datetime.date(2023, 4, 18),
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 3
+
+        assert rows[0]["N° de lot de virement"] == new_batch.name
+        assert rows[0]["Date d'émission"] == "19/04/2023"
+        assert rows[0]["Intitulé du compte bancaire"] == new_bank_account.label
+        assert rows[0]["État"] == "Exécuté"
+        assert rows[0]["Montant"] == expected_new_settlement_amount
+        assert rows[0]["Justificatifs"] == invoice3.reference
+
+        assert rows[1]["N° de lot de virement"] == batch.name
+        assert rows[1]["Date d'émission"] == "04/04/2023"
+        assert rows[1]["Intitulé du compte bancaire"] == rejected_bank_account.label
+        assert rows[1]["État"] == "Rejeté"
+        assert rows[1]["Montant"] == expected_new_settlement_amount
+        assert rows[1]["Justificatifs"] == invoice3.reference
+
+        assert rows[2]["N° de lot de virement"] == batch.name
+        assert rows[2]["Date d'émission"] == "04/04/2023"
+        assert rows[2]["Intitulé du compte bancaire"] == bank_account.label
+        assert rows[2]["État"] == "Exécuté"
+        assert rows[2]["Montant"] == expected_settlement_amount
+        assert set(rows[2]["Justificatifs"].split(", ")) == {invoice2.reference, invoice1.reference}
+
+
 class CommentOffererTest(PostEndpointHelper):
     endpoint = "backoffice.offerer.comment_offerer"
     endpoint_kwargs = {"offerer_id": 1}
