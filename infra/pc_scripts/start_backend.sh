@@ -30,7 +30,7 @@ function build_backend {
         RUN="$RUN --build-arg=\"network_mode=proxy\""
     fi
 
-    RUN="$RUN"
+    RUN="$RUN ${1-}"
 }
 
 function start_backend {
