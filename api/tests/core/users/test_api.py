@@ -912,11 +912,13 @@ class DomainsCreditTest:
         )
         self._price_incident(incident3)
 
+        expected_wallet_balance = Decimal(470)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(470)),
+            all=users_models.Credit(initial=Decimal(500), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
         )
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_regular_credit_with_commercial_gestures(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
@@ -1009,11 +1011,13 @@ class DomainsCreditTest:
         )
         self._price_incident(incident3)
 
+        expected_wallet_balance = Decimal(465)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(465)),
+            all=users_models.Credit(initial=Decimal(500), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
         )
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_regular_credit_with_overpayments_in_case_of_v3_deposit_transition(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
@@ -1131,8 +1135,11 @@ class DomainsCreditTest:
 
         # initial amount of active deposit + incidents amounts = 50 + (6 + 5) = 61
         # 20€ are used with booking4 => remaining = 61 - 20 = 41€
-        assert users_api.get_domains_credit(user).all == users_models.Credit(initial=Decimal(61), remaining=Decimal(41))
-        assert user.wallet_balance == Decimal(41)
+        expected_wallet_balance = Decimal(41)
+        assert users_api.get_domains_credit(user).all == users_models.Credit(
+            initial=Decimal(61), remaining=expected_wallet_balance
+        )
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_digital_credit_with_overpayments(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
@@ -1226,12 +1233,13 @@ class DomainsCreditTest:
         )
         self._price_incident(incident3)
 
+        expected_wallet_balance = Decimal(476)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(476)),
+            all=users_models.Credit(initial=Decimal(500), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(176)),
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
         )
-        assert user.wallet_balance == Decimal(476)
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_physical_credit_with_overpayments(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
@@ -1322,12 +1330,13 @@ class DomainsCreditTest:
         )
         self._price_incident(incident3)
 
+        expected_wallet_balance = Decimal(405)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(405)),
+            all=users_models.Credit(initial=Decimal(500), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(105)),
         )
-        assert user.wallet_balance == Decimal(405)
+        assert user.wallet_balance == expected_wallet_balance
 
 
 class CreateProUserTest:
