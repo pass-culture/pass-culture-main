@@ -35,6 +35,10 @@ class CollectiveBookingStatus(enum.Enum):
     REIMBURSED = "Remboursée"
 
 
+class MinistryExtraChoice(enum.Enum):
+    MEG = "MEG"
+
+
 class BaseBookingListForm(FlaskForm):
     class Meta:
         csrf = False
@@ -175,7 +179,9 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
         endpoint="backoffice_web.autocomplete_institutions",
     )
     ministry = fields.PCSelectMultipleField(
-        "Ministère", choices=utils.choices_from_enum(educational_models.Ministry), field_list_compatibility=True
+        "Ministère",
+        choices=utils.choices_from_enum(educational_models.Ministry) + utils.choices_from_enum(MinistryExtraChoice),
+        field_list_compatibility=True,
     )
     formats = fields.PCSelectMultipleField(
         "Formats", choices=utils.choices_from_enum(EacFormat), field_list_compatibility=True

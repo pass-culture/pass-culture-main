@@ -127,6 +127,48 @@ def _get_collective_bookings_query() -> sa_orm.Query:
     )
 
 
+def _get_ministry_filters(selected_ministries: list[str]) -> list[sa.ColumnElement]:
+    ministry_filters: list[sa.ColumnElement] = []
+    meg_program_filter = (
+        sa.exists()
+        .where(
+            sa.and_(
+                educational_models.EducationalInstitutionProgramAssociation.institutionId
+                == educational_models.CollectiveBooking.educationalInstitutionId,
+                educational_models.EducationalInstitutionProgram.id
+                == educational_models.EducationalInstitutionProgramAssociation.programId,
+                educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
+                    educational_models.CollectiveStock.startDatetime
+                ),
+                educational_models.EducationalInstitutionProgram.name == educational_models.PROGRAM_MARSEILLE_EN_GRAND,
+            )
+        )
+        .correlate(educational_models.CollectiveBooking, educational_models.CollectiveStock)
+    )
+
+    ministries = [
+        ministry for ministry in selected_ministries if ministry != booking_forms.MinistryExtraChoice.MEG.name
+    ]
+    if ministries:
+        if (
+            educational_models.Ministry.EDUCATION_NATIONALE.name in ministries
+            and booking_forms.MinistryExtraChoice.MEG.name not in selected_ministries
+        ):
+            ministry_filters.append(
+                sa.and_(
+                    educational_models.EducationalDeposit.ministry.in_(ministries),
+                    sa.not_(meg_program_filter),
+                )
+            )
+        else:
+            ministry_filters.append(educational_models.EducationalDeposit.ministry.in_(ministries))
+
+    if booking_forms.MinistryExtraChoice.MEG.name in selected_ministries:
+        ministry_filters.append(meg_program_filter)
+
+    return ministry_filters
+
+
 def _get_collective_booking_ids_query(form: booking_forms.GetCollectiveBookingListForm) -> sa_orm.Query:
     base_query = (
         db.session.query(educational_models.CollectiveBooking.id)
@@ -146,7 +188,7 @@ def _get_collective_booking_ids_query(form: booking_forms.GetCollectiveBookingLi
 
     if form.ministry.data:
         base_query = base_query.join(educational_models.CollectiveBooking.educationalDeposit).filter(
-            educational_models.EducationalDeposit.ministry.in_(form.ministry.data)
+            sa.or_(*_get_ministry_filters(form.ministry.data))
         )
 
     return booking_helpers.get_filtered_booking_query(

@@ -12,7 +12,9 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.utils import date as date_utils
+from pcapi.utils import db as db_utils
 
 from .helpers import flash
 from .helpers import html_parser
@@ -475,15 +477,53 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID résa"]) for row in rows} == {collective_bookings[1].id}
 
-    def test_list_bookings_by_ministry(self, authenticated_client, collective_bookings):
+    @pytest.mark.parametrize(
+        "ministry_names, expected_booking_keys",
+        [
+            ([educational_models.Ministry.AGRICULTURE.name], {"mag"}),
+            ([educational_models.Ministry.EDUCATION_NATIONALE.name], {"menjs", "menjs_former_meg"}),
+            ([booking_forms.MinistryExtraChoice.MEG.name], {"menjs_meg"}),
+            (
+                [educational_models.Ministry.EDUCATION_NATIONALE.name, booking_forms.MinistryExtraChoice.MEG.name],
+                {"menjs", "menjs_former_meg", "menjs_meg"},
+            ),
+        ],
+    )
+    def test_list_bookings_by_ministry(self, authenticated_client, ministry_names, expected_booking_keys):
+        meg_program = (
+            db.session.query(educational_models.EducationalInstitutionProgram)
+            .filter_by(name=educational_models.PROGRAM_MARSEILLE_EN_GRAND)
+            .one()
+        )
+        one_year_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=365)
+        two_years_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=365 * 2)
+        meg_institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(program=meg_program)
+            ],
+        )
+        former_meg_institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=meg_program, timespan=db_utils.make_timerange(start=two_years_ago, end=one_year_ago)
+                )
+            ],
+        )
+        bookings = {
+            "mag": educational_factories.CollectiveBookingFactory(ministry=educational_models.Ministry.AGRICULTURE),
+            "menjs": educational_factories.CollectiveBookingFactory(),
+            "menjs_meg": educational_factories.CollectiveBookingFactory(educationalInstitution=meg_institution),
+            "menjs_former_meg": educational_factories.CollectiveBookingFactory(
+                educationalInstitution=former_meg_institution
+            ),
+        }
+
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(
-                url_for(self.endpoint, ministry=educational_models.Ministry.AGRICULTURE.name)
-            )
+            response = authenticated_client.get(url_for(self.endpoint, ministry=ministry_names))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert {int(row["ID résa"]) for row in rows} == {collective_bookings[1].id}
+        assert {int(row["ID résa"]) for row in rows} == {bookings[key].id for key in expected_booking_keys}
 
     def test_additional_data_when_reimbursed(self, authenticated_client, collective_bookings):
         reimbursed = collective_bookings[4]
