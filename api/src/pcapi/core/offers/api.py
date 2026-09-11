@@ -166,20 +166,6 @@ def deserialize_extra_data(initial_extra_data: typing.Any, subcategoryId: str) -
     return extra_data
 
 
-def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> models.OfferExtraData | None:
-    """Keep only the fields that are defined in the subcategory conditional fields"""
-    if extra_data is None:
-        return None
-
-    formatted_extra_data: models.OfferExtraData = {}
-
-    for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields:
-        if extra_data.get(field_name):
-            formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
-
-    return formatted_extra_data
-
-
 def create_offer(
     body: schemas.CreateOffer,
     *,
@@ -198,7 +184,7 @@ def create_offer(
         Both should use the same entrypoint but this is still a work in
         progress since some rules are slightly different.
     """
-    body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
+    body.extra_data = validation.format_extra_data(body.subcategory_id, body.extra_data) or {}
 
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
@@ -316,7 +302,8 @@ def get_or_create_offerer_address_from_address_body(
     return offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body, venue_id=venue.id)
 
 
-def update_offer(
+# TODO (@tpommellet): replace by `update_offer`
+def old_update_offer(
     offer: models.Offer,
     body: schemas.UpdateOffer,
     venue: offerers_models.Venue | None = None,
@@ -412,7 +399,7 @@ def update_offer(
         )
 
     if "extraData" in updates or "ean" in updates:
-        formatted_extra_data = _format_extra_data(subcategory_id, body.extra_data) or {}
+        formatted_extra_data = validation.format_extra_data(subcategory_id, body.extra_data) or {}
         validation.check_offer_extra_data(
             subcategory_id, formatted_extra_data, offer.venue, is_from_private_api, offer=offer, ean=body.ean
         )
@@ -524,6 +511,122 @@ def update_offer(
     oa_updated = "offererAddress" in updates
     if should_send_mail and (withdrawal_updated or oa_updated):
         transactional_mails.send_email_for_each_ongoing_booking(offer)
+
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            reason=IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": updates_set},
+        )
+    )
+
+    return offer
+
+
+def update_offer(
+    offer: models.Offer,
+    *,
+    audio_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    booking_allowed_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    booking_contact: str | None | T_UNCHANGED = UNCHANGED,
+    booking_email: str | None | T_UNCHANGED = UNCHANGED,
+    description: str | None | T_UNCHANGED = UNCHANGED,
+    duration_minutes: int | None | T_UNCHANGED = UNCHANGED,
+    ean: str | None | T_UNCHANGED = UNCHANGED,
+    external_ticket_office_url: str | None | T_UNCHANGED = UNCHANGED,
+    extra_data: models.OfferExtraData | dict[str, typing.Any] | None | T_UNCHANGED = UNCHANGED,
+    id_at_provider: str | None | T_UNCHANGED = UNCHANGED,
+    is_duo: bool | None | T_UNCHANGED = UNCHANGED,
+    mental_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    motor_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    name: str | None | T_UNCHANGED = UNCHANGED,
+    publication_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    subcategory_id: str | T_UNCHANGED = UNCHANGED,
+    url: str | None | T_UNCHANGED = UNCHANGED,
+    visual_disability_compliant: bool | None | T_UNCHANGED = UNCHANGED,
+    withdrawal_delay: int | None | T_UNCHANGED = UNCHANGED,
+    withdrawal_details: str | None | T_UNCHANGED = UNCHANGED,
+    withdrawal_type: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
+    mandatory_extra_data_fields: typing.Collection[str],
+    venue: offerers_models.Venue | None = None,
+    offerer_address: offerers_models.OffererAddress | None = None,
+    venue_provider: providers_models.VenueProvider | None = None,
+) -> models.Offer:
+    fields: dict[str, typing.Any] = {
+        "audioDisabilityCompliant": audio_disability_compliant,
+        "bookingAllowedDatetime": booking_allowed_datetime,
+        "bookingContact": booking_contact,
+        "bookingEmail": booking_email,
+        "description": description,
+        "durationMinutes": duration_minutes,
+        "ean": ean,
+        "externalTicketOfficeUrl": external_ticket_office_url,
+        "extraData": extra_data,
+        "idAtProvider": id_at_provider,
+        # an explicit `null` disables double bookings rather than clearing the field
+        "isDuo": bool(is_duo) if is_duo is not UNCHANGED else UNCHANGED,
+        "mentalDisabilityCompliant": mental_disability_compliant,
+        "motorDisabilityCompliant": motor_disability_compliant,
+        "name": name,
+        "publicationDatetime": publication_datetime,
+        "subcategoryId": subcategory_id,
+        "url": url,
+        "visualDisabilityCompliant": visual_disability_compliant,
+        "withdrawalDelay": withdrawal_delay,
+        "withdrawalDetails": withdrawal_details,
+        "withdrawalType": withdrawal_type,
+    }
+    fields = {key: value for key, value in fields.items() if value is not UNCHANGED}
+    if venue:
+        fields["venue"] = venue
+    if offerer_address:
+        fields["offererAddress"] = offerer_address
+
+    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
+
+    validation.check_can_update_offer(
+        offer,
+        updates,
+        mandatory_extra_data_fields=mandatory_extra_data_fields,
+        venue_provider=venue_provider,
+    )
+
+    if not updates:
+        return offer
+
+    updates_set = set(updates)
+
+    changes = {}
+    for key, value in updates.items():
+        if key == "extraData" and offer.product:
+            continue
+        changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
+        setattr(offer, key, value)
+
+    db.session.add(offer)
+
+    if "bookingAllowedDatetime" in updates:
+        new_booking_allowed_datetime = updates["bookingAllowedDatetime"]
+        if not new_booking_allowed_datetime or (new_booking_allowed_datetime <= datetime.datetime.now(datetime.UTC)):
+            reminders_notifications.notify_users_offer_is_bookable(offer)
+
+    # This log is used for analytics purposes.
+    # If you need to make a 'breaking change' of this log, please contact the data team.
+    # Otherwise, you will break some dashboards
+    on_commit(
+        partial(
+            logger.info,
+            "Offer has been updated",
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "product_id": offer.productId,
+                "changes": {**changes},
+            },
+            technical_message_id="offer.updated",
+        )
+    )
 
     on_commit(
         partial(
