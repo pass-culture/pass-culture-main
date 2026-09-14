@@ -65,7 +65,6 @@ const baseOffer = listOffersOfferFactory({
 type RenderOptions = {
   isRefactoFutureOfferEnabled?: boolean
   headlineOffer?: HeadLineOfferResponseModel | null
-  isOfferExposureEnabled?: boolean
   isReadOnly?: boolean
 }
 
@@ -74,15 +73,10 @@ const renderTableWithOffer = (
   options: RenderOptions = {},
   features: string[] = []
 ) => {
-  const {
-    headlineOffer = null,
-    isOfferExposureEnabled = false,
-    isReadOnly = false,
-  } = options
+  const { headlineOffer = null, isReadOnly = false } = options
 
   const columns = getIndividualOfferColumns({
     headlineOffer,
-    isOfferExposureEnabled,
     isReadOnly,
   })
 
@@ -200,19 +194,16 @@ describe('getIndividualOfferColumns', () => {
     ).toHaveAttribute('href', expect.stringContaining('/edition/horaires'))
   })
 
-  it('should link to exposure when feature is enabled', async () => {
-    renderTableWithOffer(baseOffer, { isOfferExposureEnabled: true })
+  it('should link to the exposure page', async () => {
+    renderTableWithOffer(baseOffer)
 
     expect(
       await screen.findByRole('link', { name: 'My Offer 2 dates' })
     ).toHaveAttribute('href', expect.stringContaining('/visibilite'))
   })
 
-  it('should keep creation link for draft when feature is enabled', async () => {
-    renderTableWithOffer(
-      { ...baseOffer, status: OfferStatus.DRAFT },
-      { isOfferExposureEnabled: true }
-    )
+  it('should keep creation link for draft', async () => {
+    renderTableWithOffer({ ...baseOffer, status: OfferStatus.DRAFT })
 
     expect(
       await screen.findByRole('link', { name: 'My Offer 2 dates' })
@@ -222,7 +213,6 @@ describe('getIndividualOfferColumns', () => {
   it('should include the actions column when isReadOnly is false', () => {
     const columns = getIndividualOfferColumns({
       headlineOffer: null,
-      isOfferExposureEnabled: false,
       isReadOnly: false,
     })
 
@@ -272,7 +262,6 @@ describe('getIndividualOfferColumns', () => {
 
     const columns = getIndividualOfferColumns({
       headlineOffer: null,
-      isOfferExposureEnabled: false,
       isReadOnly: true,
     })
     expect(columns.map((column) => column.id)).not.toContain('actions')

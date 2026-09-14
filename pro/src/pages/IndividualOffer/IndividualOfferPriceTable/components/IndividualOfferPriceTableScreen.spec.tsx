@@ -185,7 +185,7 @@ describe('<IndividualOfferPriceTableScreen />', () => {
       vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
     })
 
-    it('should show edition buttons (Annuler et quitter + Enregistrer les modifications)', async () => {
+    it('should show the edition submit button', async () => {
       const offer = getIndividualOfferFactory({
         id: 14,
         isEvent: false,
@@ -196,11 +196,11 @@ describe('<IndividualOfferPriceTableScreen />', () => {
       renderPriceTableScreen({ props: { offer, offerStocks: [] } })
 
       expect(
-        await screen.findByRole('button', { name: 'Annuler et quitter' })
+        await screen.findByRole('button', { name: LABELS.saveEdition })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('button', { name: LABELS.saveEdition })
-      ).toBeInTheDocument()
+        screen.queryByRole('button', { name: 'Annuler et quitter' })
+      ).not.toBeInTheDocument()
     })
   })
 

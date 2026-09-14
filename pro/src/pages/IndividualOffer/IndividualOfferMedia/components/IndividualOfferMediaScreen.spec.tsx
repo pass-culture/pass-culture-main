@@ -145,7 +145,6 @@ const LABELS = {
   videoError:
     'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.',
   previousButtonCreationMode: 'Retour',
-  previousButtonEditionMode: 'Annuler et quitter',
   nextButtonCreationMode: 'Enregistrer et continuer',
   nextButtonEditionMode: 'Enregistrer les modifications',
   videoButton: 'Ajouter une URL Youtube',
@@ -462,22 +461,6 @@ describe('IndividualOfferMediaScreen', () => {
           `/offre/individuelle/${knownOffer.id}/creation/localisation`
         )
       })
-
-      it('on edition mode, should go back to read-only mode', async () => {
-        const knownOffer = getIndividualOfferFactory()
-        await renderIndividualOfferMediaScreen({
-          props: { offer: knownOffer },
-          mode: OFFER_WIZARD_MODE.EDITION,
-        })
-
-        const previousButton = screen.getByRole('button', {
-          name: LABELS.previousButtonEditionMode,
-        })
-        await userEvent.click(previousButton)
-        expect(mockNavigate).toHaveBeenCalledWith(
-          `/offre/individuelle/${knownOffer.id}/media`
-        )
-      })
     })
 
     describe('next step (successful submit)', () => {
@@ -513,22 +496,7 @@ describe('IndividualOfferMediaScreen', () => {
         })
       })
 
-      it('on edition mode, should go back to read-only mode', async () => {
-        const mode = OFFER_WIZARD_MODE.EDITION
-        const knownOffer = getIndividualOfferFactory()
-        await renderIndividualOfferMediaScreen({
-          props: { offer: knownOffer },
-          mode,
-        })
-
-        const label = getSubmitLabel(mode)
-        await userEvent.click(screen.getByRole('button', { name: label }))
-        expect(mockNavigate).toHaveBeenCalledWith(
-          `/offre/individuelle/${knownOffer.id}/media`
-        )
-      })
-
-      it('on edition mode with WIP_OFFER_EXPOSURE, should show success snackbar and not navigate', async () => {
+      it('on edition mode, should show success snackbar and not navigate', async () => {
         vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
           videoDuration: 3,
           videoThumbnailUrl: 'http://youtube.image.com',
@@ -541,7 +509,6 @@ describe('IndividualOfferMediaScreen', () => {
         await renderIndividualOfferMediaScreen({
           props: { offer: knownOffer },
           mode,
-          features: ['WIP_OFFER_EXPOSURE'],
         })
 
         await updateVideoUrlAndSubmit({ mode })

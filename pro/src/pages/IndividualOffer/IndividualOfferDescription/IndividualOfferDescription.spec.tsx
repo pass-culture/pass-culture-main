@@ -1,6 +1,5 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -44,23 +43,10 @@ const renderIndividualOfferDescription = (
   )
 }
 
-const waitForRecommendationCardFetch = async () => {
-  await waitFor(() => {
-    expect(api.getOfferProAdvice).toHaveBeenCalled()
-  })
-}
-
 describe('<IndividualOfferDescription />', () => {
-  beforeEach(() => {
-    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
-      proAdvice: null,
-    })
-  })
-
   it('should render the description screen within the offer layout', async () => {
     renderIndividualOfferDescription({ offer: getIndividualOfferFactory() })
-    await waitForRecommendationCardFetch()
 
-    expect(screen.getByTestId('description-screen')).toBeInTheDocument()
+    expect(await screen.findByTestId('description-screen')).toBeInTheDocument()
   })
 })

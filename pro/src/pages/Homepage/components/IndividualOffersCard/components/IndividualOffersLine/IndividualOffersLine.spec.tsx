@@ -115,8 +115,7 @@ describe('<IndividualOffersLine />', () => {
 
   describe('clickable behaviour', () => {
     const renderIndividualOffersLineWithRouter = (
-      offerStatus: OfferStatus = OfferStatus.PUBLISHED,
-      isOfferExposureEnabled = false
+      offerStatus: OfferStatus = OfferStatus.PUBLISHED
     ) => {
       const user = userEvent.setup()
       const offer: OfferHomeResponseModel = {
@@ -147,10 +146,6 @@ describe('<IndividualOffersLine />', () => {
               ),
             },
             {
-              path: '/offre/individuelle/:offerId/recapitulatif/description',
-              element: <FakeOfferDetailComponent />,
-            },
-            {
               path: '/offre/individuelle/:offerId/visibilite',
               element: <FakeOfferDetailComponent />,
             },
@@ -159,7 +154,6 @@ describe('<IndividualOffersLine />', () => {
               element: <FakeTarifEditionComponent />,
             },
           ],
-          features: isOfferExposureEnabled ? ['WIP_OFFER_EXPOSURE'] : [],
         }),
         user,
         offer,
@@ -170,11 +164,16 @@ describe('<IndividualOffersLine />', () => {
       const { user, offer } = renderIndividualOffersLineWithRouter()
       expect(screen.getByTestId('thumb-icon')).toBeVisible()
 
-      await user.click(
-        screen.getByRole('link', {
-          name: `12 réservations - ${offer.name} - Le 15/10/2021 14:00 - publiée`,
-        })
+      const offerLink = screen.getByRole('link', {
+        name: `12 réservations - ${offer.name} - Le 15/10/2021 14:00 - publiée`,
+      })
+
+      expect(offerLink).toHaveAttribute(
+        'href',
+        `/offre/individuelle/${offer.id}/visibilite`
       )
+
+      await user.click(offerLink)
 
       expect(screen.getByText(`Detail de mon offre ${offer.id}`)).toBeVisible()
     })
@@ -190,26 +189,6 @@ describe('<IndividualOffersLine />', () => {
       expect(
         screen.getByText(`Modification du tarif de mon offre ${offer.id}`)
       ).toBeVisible()
-    })
-
-    it('should redirect to exposure page when feature is enabled', async () => {
-      const { user, offer } = renderIndividualOffersLineWithRouter(
-        OfferStatus.PUBLISHED,
-        true
-      )
-
-      const offerLink = screen.getByRole('link', {
-        name: `12 réservations - ${offer.name} - Le 15/10/2021 14:00 - publiée`,
-      })
-
-      expect(offerLink).toHaveAttribute(
-        'href',
-        `/offre/individuelle/${offer.id}/visibilite`
-      )
-
-      await user.click(offerLink)
-
-      expect(screen.getByText(`Detail de mon offre ${offer.id}`)).toBeVisible()
     })
   })
 })

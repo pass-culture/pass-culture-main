@@ -11,8 +11,7 @@ import { IndividualOffersCTA } from './IndividualOffersCTA'
 const renderIndividualOffersCTA = (
   offerStatus: React.ComponentProps<
     typeof IndividualOffersCTA
-  >['offerStatus'] = OfferStatus.PUBLISHED,
-  isOfferExposureEnabled = false
+  >['offerStatus'] = OfferStatus.PUBLISHED
 ) => {
   const user = userEvent.setup()
   const props = { offerId: 12, offerStatus }
@@ -35,10 +34,6 @@ const renderIndividualOffersCTA = (
           element: <IndividualOffersCTA {...props} />,
         },
         {
-          path: '/offre/individuelle/:offerId/recapitulatif/description',
-          element: <FakeOfferDetailComponent />,
-        },
-        {
           path: '/offre/individuelle/:offerId/visibilite',
           element: <FakeOfferDetailComponent />,
         },
@@ -47,7 +42,6 @@ const renderIndividualOffersCTA = (
           element: <FakeTarifEditionComponent />,
         },
       ],
-      features: isOfferExposureEnabled ? ['WIP_OFFER_EXPOSURE'] : [],
     }),
     user,
   }
@@ -72,18 +66,8 @@ describe('<IndividualOffersCTA />', () => {
     ).toBeVisible()
   })
 
-  it('should render a CTA to see offer details otherwise', async () => {
+  it('should render a CTA to the offer exposure page otherwise', async () => {
     const { user } = renderIndividualOffersCTA()
-    const cta = screen.getByRole('link', { name: "Voir l'offre" })
-    expect(cta).toBeVisible()
-
-    await user.click(cta)
-
-    expect(screen.getByText('Detail de mon offre 12')).toBeVisible()
-  })
-
-  it('should redirect to exposure page when feature is enabled', async () => {
-    const { user } = renderIndividualOffersCTA(OfferStatus.PUBLISHED, true)
     const cta = screen.getByRole('link', { name: "Voir l'offre" })
     expect(cta).toHaveAttribute('href', '/offre/individuelle/12/visibilite')
 

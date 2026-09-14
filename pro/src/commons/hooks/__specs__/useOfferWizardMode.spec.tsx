@@ -27,9 +27,9 @@ describe('useOfferWizardMode', () => {
     expect(result.current).toEqual(OFFER_WIZARD_MODE.CREATION)
   })
 
-  it('should return mode "read only"', () => {
+  it('should return mode "edition" for any other offer url', () => {
     const { result } = renderUseOfferWizardMode('/test/test')
-    expect(result.current).toEqual(OFFER_WIZARD_MODE.READ_ONLY)
+    expect(result.current).toEqual(OFFER_WIZARD_MODE.EDITION)
   })
 
   it('should return mode "edition"', () => {
