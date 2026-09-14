@@ -7,7 +7,7 @@ import strokeErrorIcon from '@/icons/stroke-error.svg'
 
 export const BackendVersionMismatch = () => {
   const reloadUrl = new URL(window.location.href)
-  reloadUrl.searchParams.delete('_reload')
+  reloadUrl.searchParams.set('_reload', Date.now().toString())
   const reloadPath = `${reloadUrl.pathname}${reloadUrl.search}${reloadUrl.hash}`
   const errorReturnLinkId = useId()
 
