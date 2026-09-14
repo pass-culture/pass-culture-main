@@ -10,11 +10,11 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
-import pcapi.routes.backoffice.blueprint as backoffice_blueprint
 from pcapi import settings
 from pcapi.routes.adage.v1.blueprint import adage_v1 as adage_v1_blueprint
 from pcapi.routes.adage_iframe.blueprint import adage_iframe as adage_iframe_blueprint
 from pcapi.routes.auth.blueprint import discord_blueprint
+from pcapi.routes.backoffice.blueprint import backoffice as backoffice_blueprint
 from pcapi.routes.native.blueprint import native_blueprint
 from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.saml.blueprint import saml_blueprint
@@ -43,7 +43,7 @@ GDPR_SENSITIVE_MODULE_BOUNDARIES = ("pcapi.core.subscription.bonus.api",)
 
 
 class SpecificPath(enum.Enum):
-    BACKOFFICE_HOME = f"{backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME}.home"
+    BACKOFFICE_HOME = f"{backoffice_blueprint.name}.home"
     PRO_AUTOLOGIN_SIGNUP = "/users/validate_signup/"
 
 
@@ -191,7 +191,7 @@ def filter_transactions(event: "Event", _hint: dict[str, typing.Any]) -> "Event 
             sample_rate = NO_SAMPLE_RATE
 
         # backoffice
-        case _ if transaction.startswith(backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME):
+        case _ if transaction.startswith(backoffice_blueprint.name):
             sample_rate = DEFAULT_SAMPLE_RATE
 
         # private API "pro"
