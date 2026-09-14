@@ -40,6 +40,11 @@ on:
         required: false
         default: ""
         type: string
+      app_version:
+        description: "Version to expose as VITE_APP_VERSION (empty = disable backend version mismatch detection, use when the preview is not paired with a backend built from the same commit)"
+        required: false
+        default: ""
+        type: string
       source_branch:
         type: string
         required: false
@@ -136,7 +141,7 @@ jobs:
           # This is not enough for the build process when compiling sourcemaps
           # Increases the limit so that the build does not fail
           NODE_OPTIONS: --max_old_space_size=4096
-          VITE_APP_VERSION: ${{ github.sha }}
+          VITE_APP_VERSION: ${{ inputs.app_version }}
 
       - name: Deploy Pro preview
         working-directory: pro
