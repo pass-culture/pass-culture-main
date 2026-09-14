@@ -9,7 +9,8 @@ import styles from './Declaration.module.scss'
 
 export const Declaration = () => {
   return (
-    <AccessibilityLayout mainHeading="Déclaration d’accessibilité">
+    <AccessibilityLayout>
+      <h1 className={styles.title}>Déclaration d’accessibilité</h1>
       <div className={styles['back-link']}>
         <Button
           as="router-link"

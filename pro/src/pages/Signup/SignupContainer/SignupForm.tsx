@@ -2,7 +2,6 @@ import { useId } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { ProUserCreationBodyV2Model } from '@/apiClient/v1'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { AlreadyHasAccount } from '@/components/AlreadyHasAccount/AlreadyHasAccount'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -35,10 +34,7 @@ export const SignupForm = (): JSX.Element => {
       {isSignupSimulationEnabled && (
         <>
           <SignupStepper />
-          <MainHeading
-            mainHeading="Créez votre compte"
-            className={styles['main-heading']}
-          />
+          <h1 className={styles['title']}>Créez votre compte</h1>
           <p className={styles['subheading-description']}>
             Ces informations vous permettront de vous connecter à pass Culture
             Pro.

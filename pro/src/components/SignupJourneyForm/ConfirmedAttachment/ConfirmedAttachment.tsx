@@ -2,7 +2,6 @@ import cn from 'classnames'
 import { useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -36,10 +35,7 @@ export const ConfirmedAttachment = (): JSX.Element => {
       })}
     >
       <div>
-        <MainHeading
-          className={styles['main-heading']}
-          mainHeading="Votre demande a été envoyée"
-        />
+        <h1 className={styles['title']}>Votre demande a été envoyée</h1>
         <p className={styles['subheading-description']}>
           Nos équipes valideront votre rattachement par email. Vous aurez alors
           accès à l'ensemble des fonctionnalités du pass Culture Pro.

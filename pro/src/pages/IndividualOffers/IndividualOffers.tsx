@@ -4,7 +4,6 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFERS_QUERY_KEY,
@@ -23,6 +22,7 @@ import { sortByLabel } from '@/commons/utils/strings'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
 import type { IndividualOffersFilters } from './common/types'
+import styles from './IndividualOffers.module.scss'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
@@ -87,7 +87,7 @@ export const IndividualOffers = () => {
 
   return (
     <>
-      <MainHeading mainHeading="Offres individuelles" />
+      <h1 className={styles['title']}>Offres individuelles</h1>
 
       <HeadlineOfferContextProvider>
         <IndividualOffersContainer

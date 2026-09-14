@@ -25,7 +25,7 @@ const renderUseFocusRoutes = (url = '/accueil') => {
         element={
           <>
             <FocusTopPageOrBackToNavLink />
-            <BasicLayout mainHeading="Accueil">
+            <BasicLayout>
               <Link to="/connection">Log Out</Link>
             </BasicLayout>
           </>
@@ -59,8 +59,6 @@ const renderUseFocusRoutes = (url = '/accueil') => {
 describe('useFocus', () => {
   it('should always focus on top of the page after a navigation', async () => {
     renderUseFocusRoutes()
-
-    expect(screen.getByRole('heading', { name: 'Accueil' })).toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('link', { name: 'Log Out' }))
 

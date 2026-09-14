@@ -190,10 +190,8 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     ? `- ${offer.institution.postalCode}`
     : ''
   return (
-    <BasicLayout
-      mainHeading={<div className={styles['header-title']}>{offer.name}</div>}
-      isStickyActionBarInChild
-    >
+    <BasicLayout isStickyActionBarInChild>
+      <h1 className={styles['title']}>{offer.name}</h1>
       <div className={styles['header-status']}>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
       </div>

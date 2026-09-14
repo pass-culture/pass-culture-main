@@ -6,7 +6,6 @@ import type {
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -114,16 +113,11 @@ export const CollectiveOfferLayout = ({
 
   return (
     <BasicLayout isStickyActionBarInChild>
-      <MainHeading
-        mainHeading={
-          <div className={styles['eac-layout-heading-wrapper']}>
-            {isTemplate && <Tag label="Offre vitrine" />}
-            {getTitle()}
-          </div>
-        }
-        mainSubHeading={subTitle}
-      />
-
+      <div className={styles['headings-wrapper']}>
+        {isTemplate && <Tag label="Offre vitrine" />}
+        <h1 className={styles['title']}>{getTitle()}</h1>
+        {subTitle && <h2 className={styles['subtitle']}>{subTitle}</h2>}
+      </div>
       {!isClosed && (
         <>
           {/* TODO (igabriele, 2026-04-27): Isn't that the role of routing permissions to guarantee this prop is true? */}

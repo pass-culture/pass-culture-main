@@ -4,8 +4,8 @@ import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 
+import styles from './SignupContainer/SignupContainer.module.scss'
 import { SignupUnavailable } from './SignupUnavailable/SignupUnavailable'
-
 export const Signup = () => {
   const isProAccountCreationEnabled = useActiveFeature(
     'ENABLE_PRO_ACCOUNT_CREATION'
@@ -34,7 +34,8 @@ export const Signup = () => {
 
   // TODO: (jclery, 2026-05-04): Remove this with WIP_PRE_SIGNUP_SIMULATION once the feature is enabled
   return (
-    <SignUpLayout mainHeading={mainHeading}>
+    <SignUpLayout>
+      <h1 className={styles['title']}>{mainHeading}</h1>
       {isProAccountCreationEnabled ? <Outlet /> : <SignupUnavailable />}
     </SignUpLayout>
   )

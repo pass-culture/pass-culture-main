@@ -3,6 +3,13 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_size.scss" as size;
 
+.title {
+  @include fonts.title1;
+
+  overflow-wrap: anywhere;
+  margin-bottom: var(--size-spacing-xxl);
+}
+
 .buttons-field {
   display: flex;
   flex-direction: column-reverse;

@@ -66,7 +66,8 @@ export const ResetPassword = (): JSX.Element => {
   }
 
   return (
-    <SignUpLayout mainHeading="Réinitialisez votre mot de passe">
+    <SignUpLayout>
+      <h1 className={styles['title']}>Réinitialisez votre mot de passe</h1>
       <section>
         <p className={styles['mandatory-info']}>
           Veuillez définir votre nouveau mot de passe afin d’accéder à la

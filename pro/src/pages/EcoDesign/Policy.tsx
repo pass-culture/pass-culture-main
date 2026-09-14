@@ -8,7 +8,10 @@ import { EcoDesignLayout } from './EcoDesignLayout'
 
 export const EcoDesignPolicy = () => {
   return (
-    <EcoDesignLayout mainHeading="Politique d'écoconception au pass Culture">
+    <EcoDesignLayout>
+      <h1 className={styles.title}>
+        Politique d'écoconception au pass Culture
+      </h1>
       <div className={styles['back-link']}>
         <Button
           as="router-link"

@@ -24,7 +24,10 @@ export const EcoDesignMenu = () => {
   }
 
   return (
-    <EcoDesignLayout mainHeading="Déclaration d'écoconception de l'espace partenaire">
+    <EcoDesignLayout>
+      <h1 className={styles.title}>
+        Déclaration d'écoconception de l'espace partenaire
+      </h1>
       <Button
         onClick={() => backToDefault()}
         variant={ButtonVariant.TERTIARY}

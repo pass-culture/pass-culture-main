@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -13,6 +12,7 @@ import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 
+import styles from './CollectiveOffers.module.scss'
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 export const CollectiveOffers = () => {
@@ -54,7 +54,7 @@ export const CollectiveOffers = () => {
 
   return (
     <>
-      <MainHeading mainHeading="Offres réservables" />
+      <h1 className={styles['title']}>Offres réservables</h1>
 
       <CollectiveOffersScreen
         currentPageNumber={currentPageNumber}

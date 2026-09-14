@@ -74,7 +74,8 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const isNotReady = isLoading || !informations
 
   return (
-    <BasicLayout mainHeading="Récapitulatif de la demande">
+    <BasicLayout>
+      <h1 className={styles['title']}>Récapitulatif de la demande</h1>
       {isNotReady ? (
         <Spinner />
       ) : (
