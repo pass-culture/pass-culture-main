@@ -1,5 +1,4 @@
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { Button } from '@/design-system/Button/Button'
 import { AdagePreviewLayout } from '@/pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
@@ -9,6 +8,7 @@ import {
 } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { PreviewHeader } from '../components/PreviewHeader'
+import styles from './CollectiveOfferPreviewEdition.module.scss'
 
 export const CollectiveOfferPreviewEdition = ({
   offer,
@@ -19,7 +19,7 @@ export const CollectiveOfferPreviewEdition = ({
 
   return (
     <BasicLayout isStickyActionBarInChild>
-      <MainHeading mainHeading="Aperçu de l’offre" />
+      <h1 className={styles['title']}>Aperçu de l’offre</h1>
       <PreviewHeader offer={offer} />
       <AdagePreviewLayout offer={offer} />
       <ActionsBarSticky>

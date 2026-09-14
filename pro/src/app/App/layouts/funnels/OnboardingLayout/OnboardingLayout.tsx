@@ -4,7 +4,6 @@ import type React from 'react'
 
 import { ConnectedAsAside } from '@/app/App/layouts/components/ConnectedAsAside/ConnectedAsAside'
 import { Header } from '@/app/App/layouts/components/Header/Header'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Footer } from '@/components/Footer/Footer'
@@ -14,11 +13,6 @@ import styles from './OnboardingLayout.module.scss'
 
 interface OnboardingLayoutProps {
   children?: React.ReactNode
-  /**
-   * Name of the page to display in the main heading.
-   * Make sure that only one heading is displayed per page.
-   */
-  mainHeading?: React.ReactNode
   /**
    * When StickyActionBar is rendered within the children,
    * Footer needs to have a special margin-bottom to be visible
@@ -42,21 +36,11 @@ interface OnboardingLayoutProps {
 
 export const OnboardingLayout = ({
   children,
-  mainHeading,
   isStickyActionBarInChild = false,
   verticallyCentered = false,
   isEntryScreen = false,
 }: OnboardingLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
-
-  const mainHeadingWrapper = mainHeading ? (
-    <MainHeading
-      className={cn(styles['main-heading'], {
-        [styles['main-heading-centered']]: isEntryScreen,
-      })}
-      mainHeading={mainHeading}
-    />
-  ) : null
 
   const layoutVariant = isStickyActionBarInChild
     ? 'sticky-onboarding'
@@ -97,14 +81,10 @@ export const OnboardingLayout = ({
                         : undefined
                     )}
                   >
-                    {mainHeadingWrapper}
                     {children}
                   </div>
                 ) : (
-                  <>
-                    {mainHeadingWrapper}
-                    {children}
-                  </>
+                  children
                 )}
               </div>
             </main>

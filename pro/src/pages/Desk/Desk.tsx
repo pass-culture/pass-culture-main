@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form'
 import { api } from '@/apiClient/api'
 import type { ApiError } from '@/apiClient/compat'
 import type { GetBookingResponse } from '@/apiClient/v1'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -146,7 +145,7 @@ export const Desk = () => {
 
   return (
     <>
-      <MainHeading mainHeading={'Guichet'} />
+      <h1 className={styles['title']}>Guichet</h1>
       <p className={styles['desk-advice']}>
         Saisissez les contremarques présentées par les bénéficiaires afin de les
         valider ou de les invalider.

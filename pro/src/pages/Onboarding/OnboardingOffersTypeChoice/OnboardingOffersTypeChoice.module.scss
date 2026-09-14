@@ -10,6 +10,14 @@
   max-width: rem.torem(721px);
 }
 
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-border-radius-xxl);
+  overflow-wrap: anywhere;
+  align-self: center;
+}
+
 .onboarding-offer-header-subtitle {
   @include fonts.title3;
 

@@ -117,10 +117,8 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   }
 
   return (
-    <BasicLayout
-      mainHeading="Créer une offre réservable"
-      isStickyActionBarInChild
-    >
+    <BasicLayout isStickyActionBarInChild>
+      <h1 className={styles['title']}>Créer une offre réservable</h1>
       {isCreatingNewOffer ? (
         <div className="container">
           <Spinner message="Création de la nouvelle offre réservable en cours" />

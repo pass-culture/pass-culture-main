@@ -24,7 +24,8 @@ export function AccessibilityMenu() {
   }
 
   return (
-    <AccessibilityLayout mainHeading="Informations d'accessibilité">
+    <AccessibilityLayout>
+      <h1 className={styles.title}>Informations d'accessibilité</h1>
       <div className={styles['page-content']}>
         <Button
           onClick={() => backToDefault()}

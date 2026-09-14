@@ -1,13 +1,14 @@
 import { Outlet } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useCurrentUserPermissions } from '@/commons/auth/useCurrentUserPermissions'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
 import { ensureOffererNames } from '@/commons/store/user/selectors'
 import { NonAttachedBanner } from '@/components/NonAttachedBanner/NonAttachedBanner'
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
+
+import styles from './AdministrationLayout.module.scss'
 
 export const AdministrationLayout = () => {
   const offererNames = useAppSelector(ensureOffererNames)
@@ -18,7 +19,7 @@ export const AdministrationLayout = () => {
 
   return (
     <BasicLayout isAdminArea>
-      <MainHeading mainHeading={title} />
+      <h1 className={styles.title}>{title}</h1>
       {offererNames.length > 1 && <OffererSelect />}
       {userPermissions.isSelectedAdminOffererAssociated ? (
         <Outlet />

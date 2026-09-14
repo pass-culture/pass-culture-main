@@ -67,7 +67,8 @@ export const LostPassword = (): JSX.Element => {
     : 'Réinitialisez votre mot de passe'
 
   return (
-    <SignUpLayout mainHeading={mainHeading}>
+    <SignUpLayout>
+      <h1 className={styles['title']}>{mainHeading}</h1>
       {email ? (
         <section>
           <p className={styles['change-password-request-success-body']}>

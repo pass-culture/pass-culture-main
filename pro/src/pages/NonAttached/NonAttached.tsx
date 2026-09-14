@@ -17,10 +17,8 @@ const NonAttached = () => {
   const navigate = useNavigate()
 
   return (
-    <OnboardingLayout
-      isEntryScreen
-      mainHeading="Bienvenue sur votre espace partenaire"
-    >
+    <OnboardingLayout isEntryScreen>
+      <h1 className={styles.title}>Bienvenue sur votre espace partenaire</h1>
       <div className={styles['wrapper']}>
         <Button
           onClick={() => navigate('/hub')}

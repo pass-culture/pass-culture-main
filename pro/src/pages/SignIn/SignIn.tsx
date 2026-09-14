@@ -19,6 +19,7 @@ import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
+import styles from './SignIn.module.scss'
 import { SigninForm } from './SigninForm'
 import { validationSchema } from './validationSchema'
 
@@ -124,7 +125,8 @@ export const SignIn = (): JSX.Element => {
   }
 
   return (
-    <SignUpLayout mainHeading="Connectez-vous">
+    <SignUpLayout>
+      <h1 className={styles['title']}>Connectez-vous</h1>
       <MandatoryInfo areAllFieldsMandatory={true} />
       <FormProvider {...hookForm}>
         <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />

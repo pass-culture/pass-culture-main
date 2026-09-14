@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .layout {
   display: flex;
@@ -85,6 +86,13 @@
         )
     );
   }
+}
+
+.title {
+  @include fonts.title1;
+
+  overflow-wrap: anywhere;
+  margin-bottom: var(--size-spacing-xxl);
 }
 
 .logo-unlogged {

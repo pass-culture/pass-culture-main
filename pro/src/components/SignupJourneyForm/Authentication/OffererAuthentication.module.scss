@@ -44,7 +44,10 @@
   }
 }
 
-.main-heading {
+.title {
+  @include fonts.title1;
+
+  overflow-wrap: anywhere;
   margin-top: var(--size-spacing-xxl);
   margin-bottom: var(--size-spacing-s);
 }

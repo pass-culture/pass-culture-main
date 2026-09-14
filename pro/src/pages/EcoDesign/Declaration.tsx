@@ -20,7 +20,8 @@ export const EcoDesignDeclaration = () => {
     useState(false)
 
   return (
-    <EcoDesignLayout mainHeading="Déclaration RGESN">
+    <EcoDesignLayout>
+      <h1 className={styles.title}>Déclaration RGESN</h1>
       <div className={styles['back-link']}>
         <Button
           as="router-link"

@@ -4,6 +4,7 @@ import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
 
 import { OfferTypeScreen } from './OfferType/OfferType'
+import styles from './OfferType/OfferType.module.scss'
 
 export const OfferType = (): JSX.Element => {
   const { pathname } = useLocation()
@@ -12,18 +13,13 @@ export const OfferType = (): JSX.Element => {
   const children = <OfferTypeScreen />
 
   return isOnboarding ? (
-    <OnboardingLayout
-      mainHeading="Créer une offre collective"
-      isStickyActionBarInChild
-      isEntryScreen
-    >
+    <OnboardingLayout isStickyActionBarInChild isEntryScreen>
+      <h1 className={styles['title']}>Créer une offre collective</h1>
       {children}
     </OnboardingLayout>
   ) : (
-    <BasicLayout
-      mainHeading="Créer une offre collective"
-      isStickyActionBarInChild
-    >
+    <BasicLayout isStickyActionBarInChild>
+      <h1 className={styles['title']}>Créer une offre collective</h1>
       {children}
     </BasicLayout>
   )

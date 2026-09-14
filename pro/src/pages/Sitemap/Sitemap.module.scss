@@ -12,6 +12,13 @@ $max-width-percentage: 60%;
   margin-right: auto;
 }
 
+.title {
+  @include fonts.title1;
+
+  overflow-wrap: anywhere;
+  margin-bottom: var(--size-spacing-xxl);
+}
+
 .sitemap-list {
   margin-top: var(--size-spacing-xxl);
   list-style-type: disc;

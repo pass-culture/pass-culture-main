@@ -16,7 +16,7 @@ vi.mock('@/commons/hooks/useMediaQuery', async (importOriginal) => ({
 const renderBasicLayout = () => {
   renderWithProviders(
     <SkipLinksProvider>
-      <BasicLayout mainHeading="Titre" />
+      <BasicLayout />
     </SkipLinksProvider>,
     {
       storeOverrides: {
@@ -34,11 +34,10 @@ describe('BasicLayout', () => {
     window.removeEventListener = vi.fn()
   })
 
-  it('should always render a main landmark and a heading level 1', () => {
+  it('should always render a main landmark', () => {
     renderBasicLayout()
 
     expect(screen.getByRole('main')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   describe('lateral panel / side navigation', () => {
