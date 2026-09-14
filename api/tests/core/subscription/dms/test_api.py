@@ -2538,6 +2538,11 @@ class HasInactivityDelayExpiredTest:
 
 
 class CreateUbbleIdentificationTest:
+    def test_check_settings(self):
+        assert settings.DMS_ENROLLMENT_PROCEDURE_ID_ET
+        assert settings.DMS_INSTRUCTOR_ID
+        assert settings.UBBLE_USER_JOURNEY_ID_DN
+
     def _create_content(self, **kwargs):
         return subscription_factories.DMSContentFactory(
             procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
@@ -2572,6 +2577,7 @@ class CreateUbbleIdentificationTest:
             content.last_name,
             settings.WEBAPP_V2_URL,
             f"{settings.API_URL}/webhooks/ubble/sync-dn/{settings.DMS_ENROLLMENT_PROCEDURE_ID_ET}/456",
+            user_journey_id=settings.UBBLE_USER_JOURNEY_ID_DN,
         )
         execute_query.assert_called()
         assert execute_query.call_count == 4

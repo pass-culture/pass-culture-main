@@ -1117,7 +1117,11 @@ def create_ubble_identification(
     )
 
     ubble_content = ubble.create_and_start_identity_verification(
-        application_content.get_first_name(), application_content.get_last_name(), settings.WEBAPP_V2_URL, webhook_url
+        application_content.get_first_name(),
+        application_content.get_last_name(),
+        settings.WEBAPP_V2_URL,
+        webhook_url,
+        user_journey_id=settings.UBBLE_USER_JOURNEY_ID_DN,
     )
 
     client = dms_connector_api.DMSGraphQLClient()
