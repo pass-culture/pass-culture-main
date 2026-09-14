@@ -13,7 +13,6 @@ from pcapi.core.educational import models
 from pcapi.core.educational import validation
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
-from pcapi.models import feature
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
@@ -559,16 +558,6 @@ class PostCollectiveOfferBodyModel(HttpBodyModel):
     def validate_contact_phone(cls, phone_number: str | None) -> str | None:
         return utils.validate_phone_number_nullable(phone_number)
 
-    @pydantic.model_validator(mode="after")
-    def validate_additional_details(self) -> typing.Self:
-        if (
-            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "additional_details" in self.model_fields_set
-        ):
-            raise_error_from_location(None, loc="additionalDetails", msg="Ce champ ne peut pas être présent")
-
-        return self
-
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: str | None = pydantic.Field(default=None, max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH)
@@ -631,16 +620,6 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
     @pydantic.field_validator("contact_phone", mode="after")
     def validate_contact_phone(cls, phone_number: str | None) -> str | None:
         return utils.validate_phone_number_nullable(phone_number)
-
-    @pydantic.model_validator(mode="after")
-    def validate_additional_details(self) -> typing.Self:
-        if (
-            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "additional_details" in self.model_fields_set
-        ):
-            raise_error_from_location(None, loc="additionalDetails", msg="Ce champ ne peut pas être édité")
-
-        return self
 
 
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):

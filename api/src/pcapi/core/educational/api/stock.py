@@ -11,7 +11,6 @@ from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 from pcapi.core.offers import validation as offer_validation
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date
 from pcapi.utils.transaction_manager import on_commit
@@ -147,9 +146,6 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
 
     price = updatable_fields["price"]
     if price is not None:
-        if not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active():
-            updatable_fields["servicePrice"] = price
-
         if price > stock.price:
             validation.check_collective_offer_action_is_allowed(
                 stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS

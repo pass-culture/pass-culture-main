@@ -48,7 +48,6 @@ PATCH_NULLABLE_FIELDS = [
     field.alias
     for field_name, field in PatchCollectiveOfferBodyModel.model_fields.items()
     # TODO (jcicurel-pass, 2026-06-02): remove additional_details clause and test_additional_details_none
-    # when the FF WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS is deleted
     if field_name not in PatchCollectiveOfferBodyModel.NON_NULLABLE_FIELDS and field_name != "additional_details"
 ]
 
@@ -359,7 +358,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert getattr(offer, field) == None
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_additional_details(self, auth_client, venue):
         offer = factories.PublishedCollectiveOfferFactory(venue=venue, additionalDetails="some details")
 
@@ -369,7 +367,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert offer.additionalDetails == "some new details"
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_additional_details_none(self, auth_client, venue):
         offer = factories.PublishedCollectiveOfferFactory(venue=venue, additionalDetails="some details")
 
@@ -741,17 +738,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    def test_update_additional_details_ff_off(self, auth_client, venue):
-        offer = factories.PublishedCollectiveOfferFactory(venue=venue)
-
-        data = {"additionalDetails": "test"}
-        response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {"additionalDetails": ["Ce champ ne peut pas être édité"]}
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_additional_details_error(self, auth_client, venue):
         offer = factories.PublishedCollectiveOfferFactory(venue=venue)
 

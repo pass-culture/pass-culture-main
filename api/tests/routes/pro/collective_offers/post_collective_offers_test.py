@@ -137,7 +137,6 @@ class Returns200Test:
 
         assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {"user@example.com"}
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_additional_details(self, client):
         venue = offerers_factories.VenueFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
@@ -647,22 +646,6 @@ class Returns400Test:
         assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    def test_additional_details(self, client):
-        venue = offerers_factories.VenueFactory()
-        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
-
-        data = {
-            **base_offer_payload(venue=venue),
-            "additionalDetails": "details",
-        }
-        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {"additionalDetails": ["Ce champ ne peut pas être présent"]}
-        assert db.session.query(models.CollectiveOffer).count() == 0
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_additional_details_error(self, client):
         venue = offerers_factories.VenueFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
