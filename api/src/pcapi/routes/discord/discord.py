@@ -18,7 +18,7 @@ from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.routes.auth.forms.forms import SigninForm
+from pcapi.routes.discord.forms.forms import SigninForm
 from pcapi.utils import requests
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid

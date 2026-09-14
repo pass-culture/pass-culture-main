@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_cors import CORS
 
 from pcapi import settings
-from pcapi.routes.auth import utils
+from pcapi.routes.discord import utils
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
