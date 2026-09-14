@@ -166,6 +166,27 @@ class JsonFormatterTest:
         deserialized = json.loads(serialized)
         assert deserialized["impersonator_id"] == impersonator.id
 
+    def test_exc_info(self, app):
+        formatter = JsonFormatter()
+        logger = logging.getLogger("testing-logger")
+        try:
+            raise ValueError("paf")
+        except ValueError as exc:
+            record = logger.makeRecord(
+                name=logger.name,
+                level=logging.ERROR,
+                fn=None,
+                lno=None,
+                msg="Test message",
+                args=(),
+                exc_info=(ValueError, exc, None),
+            )
+            serialized = formatter.format(record)
+
+        deserialized = json.loads(serialized)
+        assert deserialized["message"] == "Test message"
+        assert deserialized["exc_info"] == "ValueError: paf"
+
 
 class LogElapsedTest:
     def test_log(self, caplog):
