@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react'
 import { CollectiveAdditionalFeeType } from '@/apiClient/v1'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getCollectiveOfferCollectiveStockFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { TOTAL_PRICE_LABEL } from '@/pages/CollectiveOffer/CollectiveOfferStock/components/OfferEducationalStock/constants/labels'
 
 import {
   CollectiveOfferStockSection,
@@ -22,8 +21,6 @@ const renderCollectiveOfferStockSection = (
 
 describe('CollectiveOfferStockSection', () => {
   it('render component', () => {
-    vi.mocked(useActiveFeature).mockReturnValue(false)
-
     const props = {
       stock: getCollectiveOfferCollectiveStockFactory(),
     }
@@ -32,13 +29,16 @@ describe('CollectiveOfferStockSection', () => {
     expect(screen.getByText('Date de début :')).toBeVisible()
     expect(screen.getByText('Date de fin :')).toBeVisible()
     expect(screen.getByText('Horaire :')).toBeVisible()
-    expect(screen.getByText('Nombre de participants :')).toBeVisible()
-    expect(screen.getByText(`${TOTAL_PRICE_LABEL} :`)).toBeVisible()
-    expect(screen.getByText('Informations sur le prix :')).toBeVisible()
-    expect(screen.getByText('Date limite de réservation :')).toBeVisible()
+    expect(
+      screen.getByRole('heading', { name: 'Date limite de réservation' })
+    ).toBeVisible()
+    expect(screen.getByText("Nombre d'élèves :")).toBeVisible()
+    expect(screen.getByText("Nombre d'accompagnateurs :")).toBeVisible()
+    expect(screen.getByText('Tarif de la prestation :')).toBeVisible()
+    expect(screen.getByText('Prix total TTC :')).toBeVisible()
   })
 
-  describe('WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS enabled', () => {
+  describe('new price details display', () => {
     beforeEach(() => {
       vi.mocked(useActiveFeature).mockReturnValue(true)
     })

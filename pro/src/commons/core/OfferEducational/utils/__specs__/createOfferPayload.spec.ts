@@ -38,34 +38,14 @@ describe('createOfferPayload', () => {
     ).toEqual(expect.not.arrayContaining(['dates']))
   })
 
-  it('when WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False: should return contactEmail, contactPhone or bookingEmails on payload for a non-template offer', () => {
-    const collectiveOfferPayload = createCollectiveOfferPayload({
-      ...getDefaultEducationalValues(),
-      bookingEmails: [{ email: 'booking@test.com' }],
-      contactEmail: 'contact@venue.com',
-      phone: '+33123456789',
-    })
-    expect(collectiveOfferPayload).toEqual(
-      expect.objectContaining({
-        bookingEmails: ['booking@test.com'],
-        contactEmail: 'contact@venue.com',
-        contactPhone: '+33123456789',
-      })
-    )
-  })
-
-  it('when WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True: should not return contactEmail, contactPhone or bookingEmails on payload for a non-template offer', () => {
+  it('should not return contactEmail, contactPhone or bookingEmails on payload for a non-template offer', () => {
     expect(
       Object.keys(
-        createCollectiveOfferPayload(
-          {
-            ...getDefaultEducationalValues(),
-            beginningDate: '2021-09-01',
-            endingDate: '2021-09-10',
-          },
-          undefined,
-          true
-        )
+        createCollectiveOfferPayload({
+          ...getDefaultEducationalValues(),
+          beginningDate: '2021-09-01',
+          endingDate: '2021-09-10',
+        })
       )
     ).toEqual(
       expect.not.arrayContaining([

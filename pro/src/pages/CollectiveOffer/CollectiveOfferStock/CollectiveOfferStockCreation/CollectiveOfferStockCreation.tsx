@@ -16,7 +16,6 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { hasStatusCodeAndErrorsCode } from '@/commons/core/OfferEducational/utils/hasStatusCode'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { objectFromEntries } from '@/commons/utils/object'
@@ -28,7 +27,6 @@ import {
   withOnlyCollectiveOfferFromParams,
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferStockForm } from '../components/CollectiveOfferStockForm/CollectiveOfferStockForm'
-import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 
 const BASE_STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] = [
   'bookingLimitDatetime',
@@ -38,23 +36,17 @@ const BASE_STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] = [
   'price',
 ]
 
-const NEW_STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] =
+const STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] =
   BASE_STOCK_KEYS.concat([
     'numberOfTeachers',
     'collectiveAdditionalFees',
     'servicePrice',
   ])
 
-const OLD_STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] =
-  BASE_STOCK_KEYS.concat(['priceDetail'])
-
 function isComplete(
-  stock: Partial<CollectiveStockCreationBodyModel>,
-  isNewCollectivePriceEnabled: boolean
+  stock: Partial<CollectiveStockCreationBodyModel>
 ): stock is CollectiveStockCreationBodyModel {
-  return (isNewCollectivePriceEnabled ? NEW_STOCK_KEYS : OLD_STOCK_KEYS).every(
-    (key) => key in stock && stock[key] !== undefined
-  )
+  return STOCK_KEYS.every((key) => key in stock && stock[key] !== undefined)
 }
 
 function handleStockError(
@@ -81,18 +73,10 @@ function handleStockError(
   onError('Une erreur est survenue lors de la création de votre stock.')
 }
 
-// TODO (mdesquilbet, 2026-07-01): remove this function along with *_STOCK_KEYS constants
-// when cleaning WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS
 function getStockVariant(
-  newCollectiveStock: CollectiveStockCreationBodyModel,
-  isNewCollectivePriceEnabled: boolean
+  newCollectiveStock: CollectiveStockCreationBodyModel
 ): CollectiveStockCreationBodyModel {
-  return objectFromEntries(
-    (isNewCollectivePriceEnabled ? NEW_STOCK_KEYS : OLD_STOCK_KEYS).map((k) => [
-      k,
-      newCollectiveStock[k],
-    ])
-  )
+  return objectFromEntries(STOCK_KEYS.map((k) => [k, newCollectiveStock[k]]))
 }
 
 export const CollectiveOfferStockCreation = ({
@@ -103,9 +87,6 @@ export const CollectiveOfferStockCreation = ({
   const isCreation = !location.pathname.includes('edition')
   const { requete: requestId } = queryParamsFromOfferer(location)
   const { mutate } = useSWRConfig()
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
 
   const { data: offerFromTemplate } = useSWR(
     offer.templateId
@@ -152,10 +133,7 @@ export const CollectiveOfferStockCreation = ({
   const departementCode = offer.venue.departementCode ?? ''
   const stepPaths = {
     previous: `/offre/collectif/${offer.id}/creation`,
-    next: `/offre/${offer.id}/collectif/etablissement`,
-  }
-  if (isNewCollectivePriceEnabled) {
-    stepPaths.next = `/offre/${offer.id}/collectif/informations-pratiques`
+    next: `/offre/${offer.id}/collectif/informations-pratiques`,
   }
   if (requestId) {
     stepPaths.previous += `?requete=${requestId}`
@@ -165,9 +143,7 @@ export const CollectiveOfferStockCreation = ({
   const handleSubmitStock = async (
     newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
   ): Promise<boolean> => {
-    if (isNewCollectivePriceEnabled) {
-      delete newCollectiveStock.priceDetail
-    }
+    delete newCollectiveStock.priceDetail
     try {
       let response: CollectiveStockResponseModel | null = null
       if (offer.collectiveStock) {
@@ -175,10 +151,10 @@ export const CollectiveOfferStockCreation = ({
           path: { collective_stock_id: offer.collectiveStock.id },
           body: newCollectiveStock,
         })
-      } else if (isComplete(newCollectiveStock, isNewCollectivePriceEnabled)) {
+      } else if (isComplete(newCollectiveStock)) {
         response = await api.createCollectiveStock({
           body: {
-            ...getStockVariant(newCollectiveStock, isNewCollectivePriceEnabled),
+            ...getStockVariant(newCollectiveStock),
             offerId: offer.id,
           },
         })
@@ -213,25 +189,14 @@ export const CollectiveOfferStockCreation = ({
       requestId={requestId}
       offer={offer}
     >
-      {isNewCollectivePriceEnabled ? (
-        <CollectiveOfferStockForm
-          initialStock={initialStock}
-          departementCode={departementCode}
-          mode={Mode.CREATION}
-          allowedActions={offer.allowedActions}
-          onAfterSubmit={handleSubmitStock}
-          stepPaths={stepPaths}
-        />
-      ) : (
-        <OfferEducationalStock
-          initialStock={initialStock}
-          departementCode={departementCode}
-          mode={Mode.CREATION}
-          allowedActions={offer.allowedActions}
-          onAfterSubmit={handleSubmitStock}
-          stepPaths={stepPaths}
-        />
-      )}
+      <CollectiveOfferStockForm
+        initialStock={initialStock}
+        departementCode={departementCode}
+        mode={Mode.CREATION}
+        allowedActions={offer.allowedActions}
+        onAfterSubmit={handleSubmitStock}
+        stepPaths={stepPaths}
+      />
     </CollectiveOfferLayout>
   )
 }

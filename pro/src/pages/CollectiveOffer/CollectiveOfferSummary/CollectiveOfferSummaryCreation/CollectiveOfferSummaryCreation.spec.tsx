@@ -124,7 +124,7 @@ describe('CollectiveOfferSummaryCreation', () => {
     expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
   })
 
-  it('should render bookable offer summary creation with three edit links (details, stock, institution)', async () => {
+  it('should render bookable offer summary creation with four edit links (details, stock, institution)', async () => {
     renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       {
@@ -140,7 +140,7 @@ describe('CollectiveOfferSummaryCreation', () => {
       }
     )
 
-    expect(await screen.findAllByText('Modifier')).toHaveLength(3)
+    expect(await screen.findAllByText('Modifier')).toHaveLength(4)
   })
 
   it('should render template offer summary creation with one edit link', async () => {

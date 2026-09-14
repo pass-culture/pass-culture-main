@@ -5,7 +5,6 @@ import {
   type GetCollectiveOfferLocationModel,
 } from '@/apiClient/adage'
 import type { GetCollectiveOfferLocationModelV2 } from '@/apiClient/v1'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 import { ADDITIONAL_FEES } from '@/pages/CollectiveOffer/CollectiveOfferStock/components/AdditionalFeesForm/constants'
@@ -16,7 +15,6 @@ import {
   getFormattedDatesForBookableOffer,
   getFormattedDatesForTemplateOffer,
 } from '../utils/adageOfferDates'
-import { getBookableOfferStockPrice } from '../utils/adageOfferStocks'
 
 export type AdageOfferInfoSectionProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
@@ -50,10 +48,6 @@ export const AdageOfferInfoSection = ({
   offer,
 }: AdageOfferInfoSectionProps) => {
   const interventionArea = offer.interventionArea
-
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
 
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
@@ -98,54 +92,20 @@ export const AdageOfferInfoSection = ({
             <h3 className={styles['offer-section-group-item-subtitle']}>
               Prix
             </h3>
-            {isNewCollectivePriceEnabled ? (
-              <div className={styles['price-details']}>
-                <p
-                  className={
-                    styles['offer-section-group-item-description-text']
-                  }
-                >
-                  Prix total TTC : {formatAmount(offer.stock.price)}
-                </p>
-                {offer.stock.collectiveAdditionalFees?.length > 0 && (
-                  <>
-                    {offer.stock.servicePrice != null && (
-                      <p
-                        className={
-                          styles['offer-section-group-item-description-text']
-                        }
-                      >
-                        Dont le tarif de la prestation :{' '}
-                        {formatAmount(offer.stock.servicePrice)}
-                      </p>
-                    )}
-                    <p
-                      className={
-                        styles['offer-section-group-item-description-text']
-                      }
-                    >
-                      Dont les frais annexes :
-                    </p>
-                    <ul className={styles['additional-fees-list']}>
-                      {offer.stock.collectiveAdditionalFees.map((fee) => (
-                        <li key={`${fee.type}-${fee.amount}`}>
-                          {fee.label ?? ADDITIONAL_FEES[fee.type]} :{' '}
-                          {formatAmount(fee.amount)}
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </div>
-            ) : (
-              <>
-                <p
-                  className={
-                    styles['offer-section-group-item-description-text']
-                  }
-                >
-                  {getBookableOfferStockPrice(offer)}
-                </p>
+            <div className={styles['price-details']}>
+              <p
+                className={styles['offer-section-group-item-description-text']}
+              >
+                {formatAmount(offer.stock.price)} pour{' '}
+                {offer.stock.numberOfTickets} participant
+                {(offer.stock.numberOfTickets ?? 0) > 1 ? 's' : ''}
+              </p>
+              <p
+                className={styles['offer-section-group-item-description-text']}
+              >
+                Prix total TTC : {formatAmount(offer.stock.price)}
+              </p>
+              {offer.stock.educationalPriceDetail && (
                 <p
                   className={
                     styles['offer-section-group-item-description-text']
@@ -153,10 +113,39 @@ export const AdageOfferInfoSection = ({
                 >
                   {offer.stock.educationalPriceDetail}
                 </p>
-              </>
-            )}
+              )}
+              {offer.stock.collectiveAdditionalFees?.length > 0 && (
+                <>
+                  {offer.stock.servicePrice != null && (
+                    <p
+                      className={
+                        styles['offer-section-group-item-description-text']
+                      }
+                    >
+                      Dont le tarif de la prestation :{' '}
+                      {formatAmount(offer.stock.servicePrice)}
+                    </p>
+                  )}
+                  <p
+                    className={
+                      styles['offer-section-group-item-description-text']
+                    }
+                  >
+                    Dont les frais annexes :
+                  </p>
+                  <ul className={styles['additional-fees-list']}>
+                    {offer.stock.collectiveAdditionalFees.map((fee) => (
+                      <li key={`${fee.type}-${fee.amount}`}>
+                        {fee.label ?? ADDITIONAL_FEES[fee.type]} :{' '}
+                        {formatAmount(fee.amount)}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
           </div>
-          {isNewCollectivePriceEnabled && offer.additionalDetails && (
+          {offer.additionalDetails && (
             <div className={styles['offer-section-group-item-description']}>
               <h3 className={styles['offer-section-group-item-subtitle']}>
                 Informations pratiques

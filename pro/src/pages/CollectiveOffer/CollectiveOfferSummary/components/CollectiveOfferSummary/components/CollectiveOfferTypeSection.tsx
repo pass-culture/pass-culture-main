@@ -2,7 +2,6 @@ import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Markdown } from '@/components/Markdown/Markdown'
 import {
   type Description,
@@ -22,10 +21,6 @@ interface CollectiveOfferSummaryProps {
 export const CollectiveOfferTypeSection = ({
   offer,
 }: CollectiveOfferSummaryProps) => {
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
-
   const offerTypeDescriptions: Description[] = []
 
   offerTypeDescriptions.push({
@@ -44,16 +39,13 @@ export const CollectiveOfferTypeSection = ({
 
   return (
     <>
-      <SummarySubSection
-        title="Type d'offre"
-        shouldShowDivider={!isNewCollectivePriceEnabled}
-      >
+      <SummarySubSection title="Type d'offre" shouldShowDivider={false}>
         <SummaryDescriptionList descriptions={offerTypeDescriptions} />
       </SummarySubSection>
 
       <SummarySubSection
         title="Informations artistiques"
-        shouldShowDivider={!isNewCollectivePriceEnabled}
+        shouldShowDivider={false}
       >
         <SummaryDescriptionList
           descriptions={[

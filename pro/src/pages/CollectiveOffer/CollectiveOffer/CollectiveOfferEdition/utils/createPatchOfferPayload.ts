@@ -59,9 +59,7 @@ const baseSerializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
   }),
   domains: (payload, offer) => ({
     ...payload,
-    domains: (offer.domains || []).map((domainIdString) =>
-      Number(domainIdString)
-    ),
+    domains: (offer.domains || []).map(Number),
   }),
   interventionArea: (payload, offer) => ({
     ...payload,
@@ -153,33 +151,31 @@ const templateSerializer: PatchOfferSerializer<PatchCollectiveOfferTemplateBodyM
 
 export const createPatchOfferPayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues,
-  isNewCollectivePriceEnabled: boolean = false
+  initialValues: OfferEducationalFormValues
 ): PatchCollectiveOfferBodyModel => {
   let changedValues: PatchCollectiveOfferBodyModel = {}
 
   const offerKeys = Object.keys(offer) as (keyof OfferEducationalFormValues)[]
 
-  const keysToOmmit: (keyof OfferEducationalFormValues)[] = [
+  const keysToOmmit: Set<keyof OfferEducationalFormValues> = new Set([
     'imageUrl',
     'imageCredit',
     'isTemplate',
     'addressAutocomplete',
-  ]
-
-  if (isNewCollectivePriceEnabled) {
-    keysToOmmit.push('contactEmail', 'phone', 'bookingEmails')
-  }
+    'contactEmail',
+    'phone',
+    'bookingEmails',
+  ])
 
   offerKeys.forEach((key) => {
     if (
       !isEqual(offer[key], initialValues[key]) &&
       !key.startsWith('search-') &&
-      !keysToOmmit.includes(key)
+      !keysToOmmit.has(key)
     ) {
       changedValues = {
         ...changedValues,
-        ...(serializer[key]?.(changedValues, offer) ?? {}),
+        ...(serializer[key]?.(changedValues, offer) ?? changedValues),
       }
     }
   })
@@ -227,7 +223,7 @@ export const createPatchOfferTemplatePayload = (
     ) {
       changedValues = {
         ...changedValues,
-        ...(templateSerializer[key]?.(changedValues, offer) ?? {}),
+        ...(templateSerializer[key]?.(changedValues, offer) ?? changedValues),
       }
     }
   })
