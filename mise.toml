@@ -1,0 +1,22 @@
+[settings]
+lockfile = true
+experimental = true
+
+[tools]
+pipx = "latest"
+python = { version = "latest", install_env = { CONFIGURE_OPTS = "--enable-optimizations" } }
+"github:argoproj/argo-workflows" = "v4.0.5"
+"pipx:pass-culture/passdirector" = "v0.7.0"
+
+[tasks.deploy-preview-stack]
+description = "Submit the passdirector workflow that deploys a PR preview environment stack"
+run = '''
+passdirector workflows submit \
+  --namespace "${NAMESPACE}" \
+  --template "${WORKFLOW_TEMPLATE}" \
+  --parameter previewId="${PREVIEW_ID}" \
+  --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}" \
+  --parameter sandboxEnabled="${SANDBOX_ENABLED}" \
+  --parameter sandboxName="${SANDBOX_NAME}" \
+  --parameter sandboxArgs="${SANDBOX_ARGS}"
+'''
