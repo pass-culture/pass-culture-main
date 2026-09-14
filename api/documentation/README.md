@@ -38,8 +38,8 @@ This command starts a local development server and opens up a browser window. Mo
 
 ### Good to know
 
-- the REST API documentation is built with spectree, so you'll need to update the python code to bring updates to the Redoc part of the documentation. The python code for the public API is [here](/api/src/pcapi/routes/public) and the folder holding the documentation constants is [here](/api/src/pcapi/routes/public/documentation_constants).
-- we have [a test](/api/tests/routes/public/blueprint_openapi_test.py) to ensure that we don't bring unwanted modification to the Open API JSON. This test compares the Open API JSON exposed by the backend to [the JSON used by docusaurus to build the REST API documentation](/api/documentation/static/openapi.json). It raises an error if there is a difference. If you bring modifications to the API, you will need to update the Open API JSON; for that, we have a command to automatically generate the JSON:
+- the REST API documentation is built with spectree, so you'll need to update the python code to bring updates to the Redoc part of the documentation. The python code for the provider API is [here](/api/src/pcapi/routes/provider) and the folder holding the documentation constants is [here](/api/src/pcapi/routes/provider/documentation_constants).
+- we have [a test](/api/tests/routes/provider/blueprint_openapi_test.py) to ensure that we don't bring unwanted modification to the Open API JSON. This test compares the Open API JSON exposed by the backend to [the JSON used by docusaurus to build the REST API documentation](/api/documentation/static/openapi.json). It raises an error if there is a difference. If you bring modifications to the API, you will need to update the Open API JSON; for that, we have a command to automatically generate the JSON:
   - if you are using docker: `pc generate_public_api_openapi_json`
   - if you running the flask application locally: `flask generate_public_api_openapi_json` (in the flask app root folder)
 

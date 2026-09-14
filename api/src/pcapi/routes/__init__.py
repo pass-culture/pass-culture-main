@@ -12,7 +12,7 @@ def install_all_routes(app: Flask) -> None:
     from pcapi.routes.internal.blueprint import testing_blueprint
     from pcapi.routes.native.blueprint import native_blueprint
     from pcapi.routes.pro.blueprint import pro_blueprint
-    from pcapi.routes.public.blueprints import provider_blueprint
+    from pcapi.routes.provider.blueprints import provider_blueprint
     from pcapi.routes.saml.blueprint import saml_blueprint
 
     from . import adage
@@ -24,7 +24,7 @@ def install_all_routes(app: Flask) -> None:
     from . import internal
     from . import native
     from . import pro
-    from . import public
+    from . import provider
     from . import saml
 
     adage.install_routes(app)
@@ -33,7 +33,7 @@ def install_all_routes(app: Flask) -> None:
     native.install_routes(app)
     discord.install_routes(app)
     pro.install_routes(app)
-    public.install_routes(app)
+    provider.install_routes(app)
     saml.install_routes(app)
     adage_iframe.install_routes(app)
     institutional.install_routes(app)

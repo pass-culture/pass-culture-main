@@ -14,7 +14,7 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.routes.public.individual_offers.v1.serializers import events as events_serializers
+from pcapi.routes.provider.individual_offers.v1.serializers import events as events_serializers
 from pcapi.utils import date as date_utils
 from pcapi.utils.repository import atomic
 

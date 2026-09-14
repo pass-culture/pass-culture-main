@@ -5,7 +5,7 @@ from flask.blueprints import Blueprint
 from pydantic import BaseModel
 from werkzeug.datastructures import MultiDict
 
-from pcapi.routes.public.documentation_constants import http_responses
+from pcapi.routes.provider.documentation_constants import http_responses
 from pcapi.serialization.decorator import _transform_query_args_to_dict
 from pcapi.serialization.decorator import feature_flag_required
 from pcapi.serialization.decorator import spectree_serialize

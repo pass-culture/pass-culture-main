@@ -10,7 +10,7 @@ from pcapi.core.providers.etls.public_api_etl import batch_update_cinema_offers_
 from pcapi.core.providers.serialization import ExternalEventBookingRequest
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
-from pcapi.routes.public.individual_offers.v1.serializers import events as events_serializers
+from pcapi.routes.provider.individual_offers.v1.serializers import events as events_serializers
 from pcapi.utils import requests
 
 
