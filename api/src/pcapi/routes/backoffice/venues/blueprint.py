@@ -1551,7 +1551,14 @@ def remove_siret(venue_id: int) -> response_utils.BackofficeResponse:
 
 
 def _suspend_venue_reimbursement(venue_id: int, suspend: bool) -> response_utils.BackofficeResponse:
-    venue = get_or_404(offerers_models.Venue, venue_id)
+    venue = (
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == venue_id)
+        .options(sa_orm.joinedload(offerers_models.Venue.managingOfferer))
+    ).one_or_none()
+
+    if not venue:
+        raise NotFound()
 
     form = forms.CommentForm()
     if not form.validate():
@@ -1563,6 +1570,7 @@ def _suspend_venue_reimbursement(venue_id: int, suspend: bool) -> response_utils
             history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED,
             author=current_user,
             venue=venue,
+            offerer=venue.managingOfferer,
             comment=form.comment.data,
             modified_info={
                 "isReimbursementSuspended": {"old_info": venue.isReimbursementSuspended, "new_info": suspend}

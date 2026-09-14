@@ -3754,6 +3754,7 @@ class SuspendReimbursementTest(PostEndpointHelper):
         assert len(venue.action_history) == 1
         assert venue.action_history[0].actionType == history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
         assert venue.action_history[0].authorUser == legit_user
+        assert venue.action_history[0].offererId == venue.managingOffererId
         assert venue.action_history[0].comment == "Test"
         assert venue.action_history[0].extraData["modified_info"] == {
             "isReimbursementSuspended": {"new_info": True, "old_info": False}
@@ -3779,6 +3780,7 @@ class UnsuspendReimbursementTest(PostEndpointHelper):
         assert len(venue.action_history) == 1
         assert venue.action_history[0].actionType == history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
         assert venue.action_history[0].authorUser == legit_user
+        assert venue.action_history[0].offererId == venue.managingOffererId
         assert venue.action_history[0].comment == "Test"
         assert venue.action_history[0].extraData["modified_info"] == {
             "isReimbursementSuspended": {"new_info": False, "old_info": True}
