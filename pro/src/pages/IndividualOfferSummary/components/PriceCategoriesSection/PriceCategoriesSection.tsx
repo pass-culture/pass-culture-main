@@ -1,10 +1,7 @@
 import { useLocation } from 'react-router'
 
 import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
-import {
-  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
-  OFFER_WIZARD_MODE,
-} from '@/commons/core/Offers/constants'
+import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -38,8 +35,7 @@ export const PriceCategoriesSection = ({
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-    mode:
-      mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
+    mode,
     isOnboarding,
   })
 

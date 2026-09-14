@@ -6,14 +6,12 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullLeftIcon from '@/icons/full-left.svg'
 
 interface ActionBarLeftProps {
   isDisabled: boolean
-  isEvent: boolean
   mode: OFFER_WIZARD_MODE
   onClickNext?: () => void
   onClickPrevious?: () => void
@@ -23,14 +21,12 @@ interface ActionBarLeftProps {
 
 export const ActionBarLeft = ({
   isDisabled,
-  isEvent,
   mode,
   onClickNext,
   onClickPrevious,
   step,
 }: Readonly<ActionBarLeftProps>) => {
   const { logEvent } = useAnalytics()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const { offerId } = useIndividualOfferContext()
 
   if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -41,20 +37,6 @@ export const ActionBarLeft = ({
         variant={ButtonVariant.SECONDARY}
         disabled={isDisabled}
         label="Retour"
-      />
-    )
-  }
-
-  if (
-    mode === OFFER_WIZARD_MODE.EDITION &&
-    step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE &&
-    isEvent
-  ) {
-    return (
-      <Button
-        onClick={onClickPrevious}
-        variant={ButtonVariant.SECONDARY}
-        label="Quitter le mode édition"
       />
     )
   }
@@ -72,26 +54,16 @@ export const ActionBarLeft = ({
   }
 
   return (
-    <>
-      {!isOfferExposureEnabled && (
-        <Button
-          onClick={onClickPrevious}
-          variant={ButtonVariant.SECONDARY}
-          color={ButtonColor.NEUTRAL}
-          label="Annuler et quitter"
-        />
-      )}
-      <Button
-        type="submit"
-        onClick={() => {
-          logEvent(Events.CLICKED_INDIVIDUAL_OFFER_MODIFICATION, {
-            offerId: offerId ?? undefined,
-          })
-          onClickNext?.()
-        }}
-        disabled={isDisabled}
-        label="Enregistrer les modifications"
-      />
-    </>
+    <Button
+      type="submit"
+      onClick={() => {
+        logEvent(Events.CLICKED_INDIVIDUAL_OFFER_MODIFICATION, {
+          offerId: offerId ?? undefined,
+        })
+        onClickNext?.()
+      }}
+      disabled={isDisabled}
+      label="Enregistrer les modifications"
+    />
   )
 }

@@ -1,4 +1,3 @@
-import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -10,12 +9,8 @@ import {
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -27,10 +22,7 @@ import fullTrashIcon from '@/icons/full-trash.svg'
 import { IndividualOfferTitle } from '@/pages/IndividualOfferWizard/IndividualOfferTitle/IndividualOfferTitle'
 
 import { IndividualOfferNavigation } from './components/IndividualOfferNavigation/IndividualOfferNavigation'
-import { OfferHeadlineCard } from './components/OfferHeadlineCard/OfferHeadlineCard'
-import { OfferHighlightCard } from './components/OfferHighlightCard/OfferHighlightCard'
 import { OfferPublicationEdition } from './components/OfferPublicationEdition/OfferPublicationEdition'
-import { OfferRecommendationCard } from './components/OfferRecommendationCard/OfferRecommendationCard'
 import { OfferStatusBanner } from './components/OfferStatusBanner/OfferStatusBanner'
 import { Status } from './components/Status/Status'
 import styles from './IndividualOfferLayout.module.scss'
@@ -45,9 +37,6 @@ export const IndividualOfferLayout = ({
   children,
   offer,
 }: IndividualOfferLayoutProps) => {
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
-
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
 
@@ -67,19 +56,10 @@ export const IndividualOfferLayout = ({
       OfferStatus.SCHEDULED,
     ].includes(offer.status)
 
-  const {
-    shouldDisplayRecommendationAction,
-    shouldDisplayHighlightAction,
-    shouldDisplayHeadlineAction,
-  } = getOfferEnhancementActionsVisibility(offer)
-
   const snackBar = useSnackBar()
   const navigate = useNavigate()
 
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
-  const shouldDisplayOfferName = isOfferExposureEnabled
-    ? mode === OFFER_WIZARD_MODE.CREATION
-    : mode !== OFFER_WIZARD_MODE.READ_ONLY
+  const shouldDisplayOfferName = mode === OFFER_WIZARD_MODE.CREATION
 
   const onDeleteOfferWithAlreadyExistingEan = async () => {
     if (!offer) {
@@ -148,42 +128,6 @@ export const IndividualOfferLayout = ({
           />
         </div>
       )}
-      {offer &&
-        mode !== OFFER_WIZARD_MODE.CREATION &&
-        !isOfferExposureEnabled && (
-          <div className={styles['banner-container']}>
-            {(shouldDisplayRecommendationAction ||
-              shouldDisplayHighlightAction ||
-              shouldDisplayHeadlineAction) && (
-              <h2 className={styles['banner-container-title']}>
-                Mises en avant de votre offre
-              </h2>
-            )}
-            <div className={styles['cards-container']}>
-              {shouldDisplayRecommendationAction && (
-                <OfferRecommendationCard
-                  isReadOnly={isClosed}
-                  offerId={offer.id}
-                />
-              )}
-              {shouldDisplayHighlightAction && (
-                <OfferHighlightCard
-                  isReadOnly={isClosed}
-                  offerId={offer.id}
-                  highlightRequests={offer.highlightRequests}
-                />
-              )}
-              {shouldDisplayHeadlineAction && (
-                <OfferHeadlineCard
-                  isReadOnly={isClosed}
-                  offerId={offer.id}
-                  hasThumb={!!offer.thumbUrl}
-                />
-              )}
-            </div>
-          </div>
-        )}
-
       <IndividualOfferNavigation />
 
       <div className={styles.content}>{children}</div>

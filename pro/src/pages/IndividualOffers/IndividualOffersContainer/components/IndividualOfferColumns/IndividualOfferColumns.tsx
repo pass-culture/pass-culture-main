@@ -18,12 +18,10 @@ import { OfferStatusCell } from './components/OfferStatusCell/OfferStatusCell'
 
 interface GetIndividualOfferColumnsProps {
   headlineOffer: HeadLineOfferResponseModel | null
-  isOfferExposureEnabled: boolean
   isReadOnly: boolean
 }
 export function getIndividualOfferColumns({
   headlineOffer,
-  isOfferExposureEnabled,
   isReadOnly,
 }: GetIndividualOfferColumnsProps): Column<ListOffersOfferResponseModel>[] {
   const columns: Column<ListOffersOfferResponseModel>[] = [
@@ -36,12 +34,11 @@ export function getIndividualOfferColumns({
           mode:
             offer.status === OfferStatus.DRAFT
               ? OFFER_WIZARD_MODE.CREATION
-              : OFFER_WIZARD_MODE.READ_ONLY,
+              : OFFER_WIZARD_MODE.EDITION,
           step:
-            offer.status === OfferStatus.DRAFT || !isOfferExposureEnabled
+            offer.status === OfferStatus.DRAFT
               ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
               : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
-          isOfferExposureEnabled,
         })
 
         return <OfferNameCell offer={offer} offerLink={offerLink} />
@@ -96,12 +93,11 @@ export function getIndividualOfferColumns({
           mode:
             offer.status === OfferStatus.DRAFT
               ? OFFER_WIZARD_MODE.CREATION
-              : OFFER_WIZARD_MODE.READ_ONLY,
+              : OFFER_WIZARD_MODE.EDITION,
           step:
-            offer.status === OfferStatus.DRAFT || !isOfferExposureEnabled
+            offer.status === OfferStatus.DRAFT
               ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
               : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
-          isOfferExposureEnabled,
         })
         const editionStockLink = getIndividualOfferUrl({
           offerId: offer.id,
