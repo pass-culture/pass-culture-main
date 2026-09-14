@@ -66,7 +66,7 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.routes.public.individual_offers.v1 import utils as public_offers_utils
+from pcapi.routes.provider.individual_offers.v1 import utils as provider_offers_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.transaction_manager import atomic
@@ -2047,7 +2047,7 @@ class UpdateOfferTest:
                 offer,
                 duration_minutes=120,
                 is_duo=True,
-                editable_fields=public_offers_utils.get_editable_fields(offer.lastProvider),
+                editable_fields=provider_offers_utils.get_editable_fields(offer.lastProvider),
                 mandatory_extra_data_fields=set(),
             )
 
@@ -2145,7 +2145,7 @@ class UpdateOfferTest:
                 duration_minutes=120,
                 is_duo=True,
                 audio_disability_compliant=False,
-                editable_fields=public_offers_utils.get_editable_fields(offer.lastProvider),
+                editable_fields=provider_offers_utils.get_editable_fields(offer.lastProvider),
                 mandatory_extra_data_fields=set(),
             )
 

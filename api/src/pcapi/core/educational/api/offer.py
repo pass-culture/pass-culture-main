@@ -43,8 +43,8 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.models.utils import get_or_404
-from pcapi.routes.public import utils as public_utils
-from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
+from pcapi.routes.provider import utils as provider_utils
+from pcapi.routes.provider.collective.serialization import offers as provider_api_collective_offers_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils import image_conversion
 from pcapi.utils import rest as rest_utils
@@ -331,26 +331,26 @@ def update_collective_offer_educational_institution(
 
 
 def _get_location_from_public_model(
-    location_body: public_api_collective_offers_serialize.CollectiveOfferLocation,
+    location_body: provider_api_collective_offers_serialize.CollectiveOfferLocation,
     venue: offerers_models.Venue,
 ) -> CollectiveOfferLocation:
     offerer_address: offerers_models.OffererAddress | None = None
     match location_body:
-        case public_api_collective_offers_serialize.CollectiveOfferLocationSchoolModel():
+        case provider_api_collective_offers_serialize.CollectiveOfferLocationSchoolModel():
             location = CollectiveOfferLocation(
                 location_type=models.CollectiveLocationType.SCHOOL,
                 location_comment=None,
                 offerer_address=None,
             )
 
-        case public_api_collective_offers_serialize.CollectiveOfferLocationToBeDefinedModel():
+        case provider_api_collective_offers_serialize.CollectiveOfferLocationToBeDefinedModel():
             location = CollectiveOfferLocation(
                 location_type=models.CollectiveLocationType.TO_BE_DEFINED,
                 location_comment=location_body.comment,
                 offerer_address=None,
             )
 
-        case public_api_collective_offers_serialize.CollectiveOfferLocationAddressVenueModel():
+        case provider_api_collective_offers_serialize.CollectiveOfferLocationAddressVenueModel():
             offerer_address = offerers_api.get_or_create_offer_location(
                 offerer_id=venue.managingOffererId,
                 venue_id=venue.id,
@@ -363,8 +363,8 @@ def _get_location_from_public_model(
                 offerer_address=offerer_address,
             )
 
-        case public_api_collective_offers_serialize.CollectiveOfferLocationAddressModel():
-            address = public_utils.get_address_or_raise_404(location_body.addressId)
+        case provider_api_collective_offers_serialize.CollectiveOfferLocationAddressModel():
+            address = provider_utils.get_address_or_raise_404(location_body.addressId)
             if address.id == venue.offererAddress.addressId and location_body.addressLabel == venue.publicName:
                 offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
                     offerers_schemas.LocationOnlyOnVenueModel(),
@@ -392,7 +392,7 @@ def _get_location_from_public_model(
 
 def create_collective_offer_public(
     requested_id: int,
-    body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
+    body: provider_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> models.CollectiveOffer:
     venue = repository.fetch_venue_for_new_offer(body.venue_id, requested_id)
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
@@ -528,7 +528,7 @@ def edit_collective_offer_public(
     provider_id: int,
     new_values: dict,
     offer: models.CollectiveOffer,
-    location_body: public_api_collective_offers_serialize.CollectiveOfferLocation | None,
+    location_body: provider_api_collective_offers_serialize.CollectiveOfferLocation | None,
 ) -> models.CollectiveOffer:
     if provider_id != offer.providerId:
         raise exceptions.CollectiveOfferNotEditable()
@@ -679,7 +679,7 @@ PATCH_DISCOUNT_FIELDS_PUBLIC = ("numberOfTickets", "numberOfTeachers", "priceDet
 # i.e all the fields except the ones that correspond to other actions
 # "price", "servicePrice" and "additionalFees" can correspond to CAN_EDIT_DETAILS or CAN_EDIT_DISCOUNT an are processed separately
 PATCH_DETAILS_FIELDS_PUBLIC = tuple(
-    public_api_collective_offers_serialize.PatchCollectiveOfferBodyModel.__fields__.keys()
+    provider_api_collective_offers_serialize.PatchCollectiveOfferBodyModel.__fields__.keys()
     - {
         *PATCH_INSTITUTION_FIELDS_PUBLIC,
         *PATCH_DATES_FIELDS_PUBLIC,

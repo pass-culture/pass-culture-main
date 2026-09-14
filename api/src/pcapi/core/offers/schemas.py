@@ -11,7 +11,7 @@ from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
 from pcapi.core.offers import models as offers_models
-from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
+from pcapi.routes.provider.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import artist_serialize
 from pcapi.serialization import utils as serialization_utils
