@@ -13,8 +13,8 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from pcapi import settings
 from pcapi.routes.adage.v1.blueprint import adage_v1 as adage_v1_blueprint
 from pcapi.routes.adage_iframe.blueprint import adage_iframe as adage_iframe_blueprint
-from pcapi.routes.auth.blueprint import discord_blueprint
 from pcapi.routes.backoffice.blueprint import backoffice as backoffice_blueprint
+from pcapi.routes.discord.blueprint import discord_blueprint
 from pcapi.routes.native.blueprint import native_blueprint
 from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.saml.blueprint import saml_blueprint
