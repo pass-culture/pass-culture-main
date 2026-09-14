@@ -1,5 +1,7 @@
+import contextlib
 import logging
 
+import psycopg2
 from flask_login import current_user
 
 from pcapi.core.cultural_survey import cultural_survey
@@ -53,7 +55,8 @@ def post_cultural_survey_answers(body: serializers.CulturalSurveyAnswersRequest)
     tasks.upload_answers_task.delay(payload.model_dump())
 
     with transaction():
-        save_cultural_survey_for_user(payload)
+        with contextlib.suppress(psycopg2.errors.UniqueViolation):
+            save_cultural_survey_for_user(payload)
 
         current_user.needsToFillCulturalSurvey = False
         current_user.culturalSurveyFilledDate = date_utils.get_naive_utc_now()
