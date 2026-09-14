@@ -1,0 +1,117 @@
+{% from "dev/components/_spec.html" import ds_section, ds_spec, ds_state %}
+{% call ds_section("pc-ds-couleurs", "Couleurs", "Palette du thème Bootstrap redéfinie dans pc/_variables.scss. Chaque couleur existe en version pleine, subtile (fond) et texte.") %}
+  {% call ds_spec("Couleurs du thème", "bg-{couleur} · bg-{couleur}-subtle · text-{couleur} · border-{couleur}") %}
+    {% for color in theme_colors %}
+      <div class="pc-ds-swatch">
+        <div class="pc-ds-swatch-color bg-{{ color }} border"></div>
+        <div class="pc-ds-swatch-color bg-{{ color }}-subtle text-{{ color }} border">Aa</div>
+        <span class="pc-ds-state-label">{{ color }}</span>
+      </div>
+    {% endfor %}
+  {% endcall %}
+  {% call ds_spec("Couleurs d'accentuation", "bg-primary-emphasis · bg-secondary-emphasis · text-primary-emphasis") %}
+    <div class="pc-ds-swatch">
+      <div class="pc-ds-swatch-color bg-primary-emphasis border"></div>
+      <span class="pc-ds-state-label">primary-emphasis</span>
+    </div>
+    <div class="pc-ds-swatch">
+      <div class="pc-ds-swatch-color bg-secondary-emphasis border"></div>
+      <span class="pc-ds-state-label">secondary-emphasis</span>
+    </div>
+    <div class="pc-ds-swatch">
+      <div class="pc-ds-swatch-color bg-body-tertiary border"></div>
+      <span class="pc-ds-state-label">body-tertiary</span>
+    </div>
+    <div class="pc-ds-swatch">
+      <div class="pc-ds-swatch-color pc-header-top border"></div>
+      <span class="pc-ds-state-label">pc-header-top</span>
+    </div>
+  {% endcall %}
+  {% call ds_spec("Couleurs de texte", "text-body · text-secondary · text-muted · text-{couleur}") %}
+    <p class="text-body mb-1">Texte principal (text-body)</p>
+    <p class="text-secondary mb-1">Texte secondaire (text-secondary)</p>
+    <p class="text-muted mb-1">Texte atténué (text-muted)</p>
+    {% for color in theme_colors if color not in ("light", "dark") %}<p class="text-{{ color }} mb-1">Texte {{ color }}</p>{% endfor %}
+  {% endcall %}
+{% endcall %}
+{% call ds_section("pc-ds-typographie", "Typographie", "Police Inter. Les titres sont en gris foncé et en graisse moyenne.") %}
+  {% call ds_spec("Titres", "<h1> à <h5> · les classes h1 à h5 appliquent le même style à n'importe quel élément") %}
+    <div class="vstack">
+      <h1>Titre de niveau 1</h1>
+      <h2>Titre de niveau 2</h2>
+      <h3>Titre de niveau 3</h3>
+      <h4>Titre de niveau 4</h4>
+      <h5>Titre de niveau 5</h5>
+    </div>
+  {% endcall %}
+  {% call ds_spec("Corps de texte", "<p> · lead · fs-7 · font-monospace · small") %}
+    <div class="vstack gap-2">
+      <p class="lead mb-0">Texte d'introduction (lead)</p>
+      <p class="mb-0">Texte courant : le pass Culture facilite l'accès des jeunes à la culture.</p>
+      <p class="fs-7 mb-0">Texte réduit (fs-7), utilisé dans les en-têtes de tableau et les mentions.</p>
+      <p class="font-monospace mb-0">Texte monospace : PC-43360</p>
+      <small>Texte small</small>
+    </div>
+  {% endcall %}
+  {% call ds_spec("Graisses", "fw-light · fw-normal · fw-medium · fw-bold") %}
+    {% for class, label in font_weights %}
+      {% call ds_state(class) %}<span class="{{ class }}">{{ label }}</span>{% endcall %}
+    {% endfor %}
+  {% endcall %}
+{% endcall %}
+{% call ds_section("pc-ds-espacements", "Espacements", "Échelle $spacers : les classes m-*, p-* et gap-* acceptent ces valeurs. Les clés 12, 32, 40 et 56 sont propres au backoffice.") %}
+  {% call ds_spec("Échelle", "p-{n} · m-{n} · gap-{n}") %}
+    {% for key, value in spacers %}
+      {% call ds_state(key ~ " · " ~ value) %}
+        <div class="pc-ds-spacer border rounded-xs">
+          <div class="pc-ds-spacer-inner ps-{{ key }}"></div>
+        </div>
+      {% endcall %}
+    {% endfor %}
+  {% endcall %}
+{% endcall %}
+{% call ds_section("pc-ds-icones", "Icônes", "Bootstrap Icons 1.11. Chaque icône a un sens convenu dans le backoffice.") %}
+  {% call ds_spec("Icônes utilisées", '<i class="bi bi-{nom}"></i>') %}
+  {% for name, meaning in icons %}
+    {% call ds_state(meaning, class="pc-ds-icon") %}
+      <i class="bi bi-{{ name }} fs-4"></i>
+      <code class="pc-ds-icon-name">{{ name }}</code>
+    {% endcall %}
+  {% endfor %}
+{% endcall %}
+{% endcall %}
+{% call ds_section("pc-ds-surfaces", "Surfaces", "Bordures, arrondis et ombres.") %}
+  {% call ds_spec("Arrondis", "rounded-xs · rounded · rounded-lg · rounded-pill") %}
+    {% call ds_state("rounded-xs") %}
+      <div class="pc-ds-surface bg-primary-subtle rounded-xs"></div>
+    {% endcall %}
+    {% call ds_state("rounded") %}
+      <div class="pc-ds-surface bg-primary-subtle rounded"></div>
+    {% endcall %}
+    {% call ds_state("rounded-lg") %}
+      <div class="pc-ds-surface bg-primary-subtle rounded-lg"></div>
+    {% endcall %}
+    {% call ds_state("rounded-pill") %}
+      <div class="pc-ds-surface bg-primary-subtle rounded-pill"></div>
+    {% endcall %}
+  {% endcall %}
+  {% call ds_spec("Bordures et ombres", "border · border-primary · shadow-sm") %}
+    {% call ds_state("border") %}
+      <div class="pc-ds-surface border rounded"></div>
+    {% endcall %}
+    {% call ds_state("border border-primary") %}
+      <div class="pc-ds-surface border border-primary rounded"></div>
+    {% endcall %}
+    {% call ds_state("shadow-sm") %}
+      <div class="pc-ds-surface bg-white shadow-sm rounded"></div>
+    {% endcall %}
+    {% call ds_state("card") %}
+      <div class="card pc-ds-surface-wide">
+        <div class="card-body">
+          <h5 class="card-title">Titre de carte</h5>
+          <p class="card-text mb-0">Contenu de la carte.</p>
+        </div>
+      </div>
+    {% endcall %}
+  {% endcall %}
+{% endcall %}

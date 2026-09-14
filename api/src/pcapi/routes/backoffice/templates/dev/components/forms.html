@@ -1,0 +1,41 @@
+{% from "dev/components/_spec.html" import ds_section, ds_spec %}
+{% macro ds_field(field) %}
+  {% for error in field.errors %}<p class="text-warning lead mb-1">{{ error }}</p>{% endfor %}
+  {{ field }}
+{% endmacro %}
+{% call ds_section("pc-ds-formulaires", "Formulaires", "Champs WTForms préfixés PC* (forms/fields.py), rendus par les gabarits components/forms/*.html. Les erreurs s'affichent au-dessus du champ.") %}
+  {% call ds_spec("Champs", "fields.PC<Type>Field(label, …)", "Un champ par ligne, un état par colonne.") %}
+    <div class="table-responsive pc-ds-table-wrapper">
+      <table class="table pc-ds-field-table">
+        <thead>
+          <tr class="bg-secondary-subtle fs-7 align-middle">
+            <th>Champ</th>
+            {% for state_label, _ in form_states %}<th>{{ state_label }}</th>{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for field in form_states[0][1] if field.name != "csrf_token" %}
+            <tr>
+              <th scope="row" class="fw-normal">
+                <code>{{ field.type }}</code>
+                <div class="fs-7 text-secondary">{{ field.label.text }}</div>
+              </th>
+              {% for _, form in form_states %}<td>{{ ds_field(form[field.name]) }}</td>{% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endcall %}
+  {% call ds_spec("Groupe de champs", "build_form_fields_group(form)", "Empile les champs d'un formulaire de modale, erreurs comprises (components/forms.html).") %}
+    <form class="pc-ds-form-demo">
+      <div class="form-group">
+        {{ ds_field(form_states[2][1].stringfield) }}
+        <div class="my-4"></div>
+        {{ ds_field(form_states[1][1].select) }}
+        <div class="my-4"></div>
+        {{ ds_field(form_states[0][1].text_area) }}
+      </div>
+    </form>
+  {% endcall %}
+{% endcall %}

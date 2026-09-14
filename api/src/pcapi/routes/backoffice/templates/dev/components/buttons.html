@@ -1,0 +1,141 @@
+{% from "dev/components/_spec.html" import ds_section, ds_spec, ds_state %}
+{% from "components/details.html" import action_bar_button, action_bar_additional_button %}
+{% call ds_section("pc-ds-boutons", "Boutons", "Un seul bouton principal par écran. Les actions secondaires utilisent la variante à fond subtil.") %}
+  {% call ds_spec("Bouton principal", "btn btn-primary") %}
+    {% call ds_state("Par défaut") %}<button type="button"
+        class="btn btn-primary">Enregistrer</button>{% endcall %}
+    {% call ds_state("Actif") %}<button type="button"
+        class="btn btn-primary active">Enregistrer</button>{% endcall %}
+    {% call ds_state("Désactivé") %}<button type="button"
+        class="btn btn-primary"
+        disabled>Enregistrer</button>{% endcall %}
+    {% call ds_state("Avec icône") %}
+      <button type="button"
+              class="btn btn-primary">
+        Rechercher<i class="bi bi-search ms-2"></i>
+      </button>
+    {% endcall %}
+    {% call ds_state("Petit") %}<button type="button"
+        class="btn btn-sm btn-primary">Enregistrer</button>{% endcall %}
+  {% endcall %}
+  {% call ds_spec("Bouton secondaire", "btn btn-outline-primary-subtle-bg", "Variante propre au backoffice (pc/_buttons.scss) : contour, fond subtil au survol. C'est le bouton des barres d'actions et des annulations de modale.") %}
+    {% call ds_state("Par défaut") %}<button type="button"
+        class="btn btn-outline-primary-subtle-bg">Annuler</button>{% endcall %}
+    {% call ds_state("Actif") %}<button type="button"
+        class="btn btn-outline-primary-subtle-bg active">Annuler</button>{% endcall %}
+    {% call ds_state("Désactivé") %}<button type="button"
+        class="btn btn-outline-primary-subtle-bg"
+        disabled>Annuler</button>{% endcall %}
+    {% call ds_state("Avec icône") %}
+      <button type="button"
+              class="btn btn-outline-primary-subtle-bg d-flex align-items-center gap-2">
+        <i class="bi bi-pencil-square"></i>
+        Modifier
+      </button>
+    {% endcall %}
+    {% call ds_state("Petit") %}<button type="button"
+        class="btn btn-sm btn-outline-primary-subtle-bg">Annuler</button>{% endcall %}
+  {% endcall %}
+  {% call ds_spec("Bouton contour", "btn btn-outline-primary fw-bold · btn btn-outline-secondary fw-bold", "Fond plein au survol. Utilisé pour les actions groupées des tableaux.") %}
+    {% call ds_state("Primaire") %}<button type="button"
+        class="btn btn-outline-primary fw-bold">Valider</button>{% endcall %}
+    {% call ds_state("Secondaire") %}<button type="button"
+        class="btn btn-outline-secondary fw-bold">Rejeter</button>{% endcall %}
+    {% call ds_state("Danger") %}<button type="button"
+        class="btn btn-outline-danger fw-bold">Supprimer</button>{% endcall %}
+    {% call ds_state("Désactivé") %}<button type="button"
+        class="btn btn-outline-primary fw-bold"
+        disabled>Valider</button>{% endcall %}
+  {% endcall %}
+  {% call ds_spec("Bouton lien", "btn btn-link", "Action discrète dans un texte ou une cellule, par exemple l'ouverture d'une modale d'édition.") %}
+    {% call ds_state("Par défaut") %}<button type="button"
+        class="btn btn-link">Modifier</button>{% endcall %}
+    {% call ds_state("Sans marge") %}<button type="button"
+        class="btn btn-link mx-0 my-0 py-0 fw-bold">Modifier</button>{% endcall %}
+    {% call ds_state("Désactivé") %}<button type="button"
+        class="btn btn-link"
+        disabled>Modifier</button>{% endcall %}
+  {% endcall %}
+  {% call ds_spec("Boutons à icône", '<a href=""><i class="bi bi-{nom}"></i></a>', "Actions unitaires dans une ligne de tableau. L'infobulle porte le libellé.") %}
+  {% call ds_state("Éditer") %}
+    <a href="#"
+       class="link-primary"
+       data-bs-toggle="tooltip"
+       data-bs-title="Éditer"><i class="bi bi-pencil-square"></i></a>
+  {% endcall %}
+  {% call ds_state("Supprimer") %}
+    <a href="#"
+       class="link-primary"
+       data-bs-toggle="tooltip"
+       data-bs-title="Supprimer"><i class="bi bi-trash3-fill"></i></a>
+  {% endcall %}
+  {% call ds_state("Voir") %}
+    <a href="#"
+       class="link-primary"
+       data-bs-toggle="tooltip"
+       data-bs-title="Voir"><i class="bi bi-eye"></i></a>
+  {% endcall %}
+  {% call ds_state("CSV") %}
+    <a href="#"
+       class="link-primary"
+       data-bs-toggle="tooltip"
+       data-bs-title="Télécharger un CSV"><i class="bi bi-filetype-csv"></i></a>
+  {% endcall %}
+  {% call ds_state("XLSX") %}
+    <a href="#"
+       class="link-primary"
+       data-bs-toggle="tooltip"
+       data-bs-title="Télécharger un XLSX"><i class="bi bi-filetype-xlsx"></i></a>
+  {% endcall %}
+  {% call ds_state("Replier / déplier") %}
+    <button type="button"
+            class="btn btn-sm btn-outline-primary-subtle-bg pc-btn-chevron-toggle"
+            data-bs-toggle="collapse"
+            data-bs-target=".pc-ds-collapse-demo"
+            aria-expanded="false">
+      <i class="bi bi-chevron-down"></i>
+    </button>
+    <div class="collapse pc-ds-collapse-demo pt-2 fs-7">Contenu déplié</div>
+  {% endcall %}
+{% endcall %}
+{% call ds_spec("Groupe de boutons", "btn-group · btn-group-sm") %}
+  {% call ds_state("Normal") %}
+    <div class="btn-group"
+         role="group">
+      <button type="button"
+              class="btn btn-outline-primary-subtle-bg">Gauche</button>
+      <button type="button"
+              class="btn btn-outline-primary-subtle-bg">Milieu</button>
+      <button type="button"
+              class="btn btn-outline-primary-subtle-bg">Droite</button>
+    </div>
+  {% endcall %}
+  {% call ds_state("Petit") %}
+    <div class="btn-group btn-group-sm"
+         role="group">
+      <button type="button"
+              class="btn btn-outline-primary">Action 1</button>
+      <button type="button"
+              class="btn btn-outline-primary">Action 2</button>
+    </div>
+  {% endcall %}
+{% endcall %}
+{% call ds_spec("Barre d'actions d'une page de détail", "action_bar_button(icon, title, modal_id) · action_bar_additional_button(icon, title, modal_id)", "Macros de components/details.html. Les actions principales sont visibles, les autres regroupées dans un menu.") %}
+  <div class="btn-group"
+       role="group">
+    {{ action_bar_button('pencil-square', 'Modifier') }}
+    {{ action_bar_button('hourglass-split', 'Suspendre') }}
+    <div class="btn-group"
+         role="group">
+      <button type="button"
+              class="btn btn-outline-primary-subtle-bg dropdown-toggle"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">Autres actions</button>
+      <ul class="dropdown-menu">
+        <li>{{ action_bar_additional_button('tag', 'Taguer') }}</li>
+        <li>{{ action_bar_additional_button('trash3-fill', 'Supprimer') }}</li>
+      </ul>
+    </div>
+  </div>
+{% endcall %}
+{% endcall %}
