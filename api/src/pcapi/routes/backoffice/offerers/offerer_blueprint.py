@@ -621,6 +621,10 @@ def get_history(offerer_id: int) -> response_utils.BackofficeResponse:
         filters.append(
             history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED,
         )
+    if not access_control.has_current_user_permission(perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION):
+        filters.append(
+            history_models.ActionHistory.actionType != history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
+        )
 
     actions_history = (
         db.session.query(history_models.ActionHistory)
