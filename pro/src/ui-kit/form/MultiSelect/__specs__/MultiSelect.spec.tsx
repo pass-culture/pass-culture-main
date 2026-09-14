@@ -31,7 +31,6 @@ describe('<MultiSelect />', () => {
         onSelectedOptionsChanged={(selectedOptions) => {
           return selectedOptions
         }}
-        name="options"
         buttonLabel="Options"
       />
     )
@@ -161,7 +160,6 @@ describe('<MultiSelect />', () => {
           options={[{ id: '1', label: 'Option 1' }]}
           buttonLabel="Options"
           label="label"
-          name="name"
           hasSearch
           searchLabel="Input label"
           onSelectedOptionsChanged={() => {}}

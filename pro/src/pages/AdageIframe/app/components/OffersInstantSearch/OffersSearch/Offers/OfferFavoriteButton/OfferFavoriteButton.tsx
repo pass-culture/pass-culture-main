@@ -34,7 +34,7 @@ export const OfferFavoriteButton = ({
     isCollectiveOfferTemplate(offer) ? offer.isFavorite : false
   )
   const [isLoading, setIsLoading] = useState(false)
-  const { setFavoriteCount } = useAdageUser()
+  const { setFavoritesCount } = useAdageUser()
 
   const snackBar = useSnackBar()
 
@@ -45,7 +45,7 @@ export const OfferFavoriteButton = ({
         path: { offer_template_id: offer.id },
       })
       //  Decrease adage user favorite count for header
-      setFavoriteCount?.((count) => count - 1)
+      setFavoritesCount?.((count) => count - 1)
 
       snackBar.success('Supprimé de vos favoris')
 
@@ -76,7 +76,7 @@ export const OfferFavoriteButton = ({
       })
 
       //  Increase adage user favorite count for header
-      setFavoriteCount?.((count) => count + 1)
+      setFavoritesCount?.((count) => count + 1)
 
       snackBar.success('Ajouté à vos favoris')
 

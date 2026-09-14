@@ -65,7 +65,6 @@ export const WithSearchInput: StoryObj<typeof MultiSelect> = {
     searchLabel: 'Rechercher des départements',
     buttonLabel: 'Départements',
     label: 'Sélectionner des départements',
-    name: 'départements',
   },
 }
 
@@ -75,7 +74,6 @@ export const WithSelectAllOption: StoryObj<typeof MultiSelect> = {
     hasSelectAllOptions: true,
     buttonLabel: 'Départements',
     label: 'Sélectionner des départements',
-    name: 'départements',
   },
 }
 
@@ -97,6 +95,5 @@ export const WithError: StoryObj<typeof MultiSelect> = {
     label: 'Sélectionner des départements',
     error: 'Veuillez sélectionner un département',
     onBlur: () => {},
-    name: 'départements',
   },
 }

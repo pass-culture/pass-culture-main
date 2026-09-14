@@ -136,7 +136,6 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
 
               <FormLayout.Row>
                 <MultiSelect
-                  name="collectiveStudents"
                   label="Public cible"
                   options={studentOptions}
                   defaultOptions={studentOptions.filter((option) =>
@@ -212,7 +211,6 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
                 className={styles['collective-intervention-area-row']}
               >
                 <MultiSelect
-                  name="collectiveInterventionArea"
                   label="Zone de mobilité"
                   options={offerInterventionOptions}
                   selectedOptions={offerInterventionOptions.filter((op) =>

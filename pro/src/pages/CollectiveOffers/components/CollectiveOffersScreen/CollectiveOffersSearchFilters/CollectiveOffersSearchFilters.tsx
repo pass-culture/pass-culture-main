@@ -196,7 +196,6 @@ export const CollectiveOffersSearchFilters = ({
       <FormLayout.Row inline mdSpaceAfter>
         <div className={styles['filter-container']}>
           <MultiSelect
-            name="status"
             label="Statut"
             options={collectiveFilterStatus}
             hasSearch

@@ -41,7 +41,6 @@ export const InterventionAreaMultiSelect = ({
     <MultiSelect
       label={label}
       required
-      name="interventionArea"
       buttonLabel="Département(s)"
       options={offerInterventionOptions}
       selectedOptions={offerInterventionOptions.filter((op) =>

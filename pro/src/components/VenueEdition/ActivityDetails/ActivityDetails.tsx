@@ -70,7 +70,6 @@ export const ActivityDetails = () => {
       {!isLoadingEducationalDomains && (
         <FormLayout.Row mdSpaceAfter>
           <MultiSelect
-            name="culturalDomains"
             options={educationalDomains.map((educationalDomain) => ({
               id: String(educationalDomain.id),
               label: educationalDomain.name,

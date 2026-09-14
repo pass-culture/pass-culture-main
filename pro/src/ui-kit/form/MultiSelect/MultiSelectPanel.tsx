@@ -8,8 +8,6 @@ import styles from './MultiSelect.module.scss'
 
 type MultiSelectPanelProps = {
   id: string
-  className?: string
-  label: string
   options: (Option & { checked: boolean })[]
   hasSelectAllOptions?: boolean
   isAllChecked: boolean
