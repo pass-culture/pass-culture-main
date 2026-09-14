@@ -11,7 +11,7 @@ from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
-native_blueprint = Blueprint("native", __name__)
+native_blueprint = Blueprint("native", __name__, url_prefix="/native")
 native_blueprint.before_request(utils.check_client_version)
 CORS(
     native_blueprint,
