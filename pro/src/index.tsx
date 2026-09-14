@@ -11,6 +11,17 @@ import { unregister } from './registerServiceWorker'
 
 const isAdageIframe = window.location.href.includes('adage-iframe')
 
+// Strip the cache-busting reload marker before any component can read it from the URL.
+const urlBeforeMount = new URL(window.location.href)
+if (urlBeforeMount.searchParams.has('_reload')) {
+  urlBeforeMount.searchParams.delete('_reload')
+  window.history.replaceState(
+    null,
+    '',
+    `${urlBeforeMount.pathname}${urlBeforeMount.search}${urlBeforeMount.hash}`
+  )
+}
+
 // Initialize Sentry
 if (SENTRY_SERVER_URL) {
   initializeSentry()
