@@ -15,8 +15,11 @@
   }
 }
 
-.main-heading {
+.title {
+  @include fonts.title1;
+
   margin-bottom: var(--size-spacing-m);
+  overflow-wrap: anywhere;
 
   @media screen and (min-width: size.$laptop) {
     margin-bottom: 0;

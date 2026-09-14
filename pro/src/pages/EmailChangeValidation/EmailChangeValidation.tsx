@@ -34,9 +34,10 @@ export const EmailChangeValidation = () => {
   }
 
   return (
-    <LoggedOutLayout
-      mainHeading={isSuccess ? 'Et voilà !' : 'Votre lien a expiré !'}
-    >
+    <LoggedOutLayout>
+      <h1 className={styles.title}>
+        {isSuccess ? 'Et voilà !' : 'Votre lien a expiré !'}
+      </h1>
       {isSuccess && (
         <>
           <p className={styles['subtitle']}>

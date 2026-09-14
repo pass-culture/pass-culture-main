@@ -1,9 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.downloads-banner {
-  margin-bottom: var(--size-spacing-l);
-}
-
 .title {
   @include fonts.title1;
 

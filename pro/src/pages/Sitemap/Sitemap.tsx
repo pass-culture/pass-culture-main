@@ -1,6 +1,5 @@
 import { Link, useNavigate } from 'react-router'
 
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { Button } from '@/design-system/Button/Button'
@@ -175,7 +174,7 @@ export const Sitemap = () => {
   return (
     <FullLayout>
       <div className={styles['content-wrapper']}>
-        <MainHeading mainHeading="Plan du site" />
+        <h1 className={styles['title']}>Plan du site</h1>
         <Button
           onClick={() => navigate(-1)}
           color={ButtonColor.NEUTRAL}

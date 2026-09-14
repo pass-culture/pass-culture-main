@@ -2,7 +2,6 @@ import { type ChangeEvent, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { type VenueListItemLiteResponseModel, VenueState } from '@/apiClient/v1'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -100,7 +99,9 @@ export const Hub = () => {
   return (
     <FullLayout headerPropsOverride={{ hideAdminButton: false }}>
       <div className={styles['content-flex']}>
-        <MainHeading mainHeading="À quelle structure souhaitez-vous accéder ?" />
+        <h1 className={styles['title']}>
+          À quelle structure souhaitez-vous accéder ?
+        </h1>
 
         {venues.length > 4 && (
           <SearchInput

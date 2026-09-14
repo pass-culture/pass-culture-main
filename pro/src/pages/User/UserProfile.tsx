@@ -1,6 +1,5 @@
 import type { JSX } from 'react'
 
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
@@ -14,7 +13,7 @@ const Profile = (): JSX.Element => {
   return (
     <FullLayout>
       <div className={styles['content-wrapper']}>
-        <MainHeading mainHeading="Profil" />
+        <h1 className={styles['title']}>Profil</h1>
         <UserProfile
           userIdentityInitialValues={{
             firstName: currentUser.firstName || '',

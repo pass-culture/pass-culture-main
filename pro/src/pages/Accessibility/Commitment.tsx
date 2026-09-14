@@ -9,7 +9,10 @@ import styles from './Commitment.module.scss'
 
 export const Commitment = () => {
   return (
-    <AccessibilityLayout mainHeading="Les engagements du pass Culture pour l’accessibilité numérique">
+    <AccessibilityLayout>
+      <h1 className={styles.title}>
+        Les engagements du pass Culture pour l’accessibilité numérique
+      </h1>
       <div className={styles['back-link']}>
         <Button
           to="/accessibilite/"

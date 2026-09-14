@@ -7,7 +7,6 @@ import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
 import type { CreateOffererBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   type Offerer,
@@ -213,10 +212,7 @@ export const Offerers = (): JSX.Element => {
         [styles['existing-offerers-container']]: isSignupSimulationEnabled,
       })}
     >
-      <MainHeading
-        className={styles['main-heading']}
-        mainHeading="Ce SIRET est déjà inscrit"
-      />
+      <h1 className={styles['title']}>Ce SIRET est déjà inscrit</h1>
       <p className={styles['subheading-description']}>
         Ce SIRET est déjà associé à{' '}
         {pluralizeFr(

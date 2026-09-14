@@ -4,7 +4,6 @@ import { type ReactNode, useRef, useState } from 'react'
 
 import { ConnectedAsAside } from '@/app/App/layouts/components/ConnectedAsAside/ConnectedAsAside'
 import { Header } from '@/app/App/layouts/components/Header/Header'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Footer } from '@/components/Footer/Footer'
@@ -15,20 +14,6 @@ import { LateralPanel } from './LateralPanel/LateralPanel'
 
 interface BasicLayoutProps {
   children?: ReactNode
-  /**
-   * Name of the page to display in the main heading.
-   * Make sure that only one heading is displayed per page.
-   *
-   * @deprecated Stop using this prop and render your heading within your page component instead.
-   */
-  mainHeading?: ReactNode
-  /**
-   * Complementary name of the page to display in the main heading,
-   * as a subheading.
-   *
-   * @deprecated Stop using this prop and render your heading within your page component instead.
-   */
-  mainSubHeading?: string
   /**
    * When StickyActionBar is rendered within the children,
    * Footer needs to have a special margin-bottom to be visible
@@ -43,8 +28,6 @@ interface BasicLayoutProps {
 
 export const BasicLayout = ({
   children,
-  mainHeading,
-  mainSubHeading,
   isStickyActionBarInChild = false,
   isAdminArea = false,
 }: BasicLayoutProps) => {
@@ -90,16 +73,7 @@ export const BasicLayout = ({
         <div id="content-wrapper" className={styles['content-wrapper']}>
           <div className={styles['content-container']}>
             <main id="content" tabIndex={-1}>
-              <div className={styles.content}>
-                {mainHeading && (
-                  <MainHeading
-                    mainHeading={mainHeading}
-                    mainSubHeading={mainSubHeading}
-                  />
-                )}
-
-                {children}
-              </div>
+              <div className={styles.content}>{children}</div>
             </main>
             <Footer
               layout={isStickyActionBarInChild ? 'sticky-basic' : 'basic'}

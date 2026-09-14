@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import {
   SignupJourneyContextProvider,
@@ -52,7 +51,7 @@ export const SignupJourneyRoutes = () => {
             {location.pathname.includes(
               '/inscription/structure/rattachement'
             ) ? null : (
-              <MainHeading mainHeading="Votre structure" />
+              <h1 className={styles['title']}>Votre structure</h1>
             )}
             <SignupJourneyStepper />
             <Outlet />

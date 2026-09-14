@@ -1,5 +1,6 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .eac-layout-heading-wrapper {
   display: flex;
@@ -9,4 +10,20 @@
   @media (min-width: size.$tablet) {
     padding-top: 0;
   }
+}
+
+.headings-wrapper {
+  margin-bottom: var(--size-spacing-xxl);
+}
+
+.title {
+  @include fonts.title1;
+
+  overflow-wrap: anywhere;
+}
+
+.subtitle {
+  @include fonts.title2;
+
+  overflow-wrap: anywhere;
 }

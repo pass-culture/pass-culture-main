@@ -6,7 +6,6 @@ import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type Offerer as OffererType,
@@ -209,10 +208,7 @@ export const Offerer = (): JSX.Element => {
       {isSignupSimulationEnabled ? (
         <>
           <SignupStepper />
-          <MainHeading
-            mainHeading="Votre numéro SIRET"
-            className={styles['main-heading']}
-          />
+          <h1 className={styles['title']}>Votre numéro SIRET</h1>
           <p className={styles['subheading-description']}>
             Le SIRET est un identifiant à 14 chiffres attribué à chaque
             structure. Vous le trouverez sur vos documents administratifs (avis

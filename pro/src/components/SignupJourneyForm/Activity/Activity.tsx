@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router'
 
 import { Target } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type ActivityContext,
@@ -173,10 +172,7 @@ export const Activity = () => {
       {isSignupSimulationEnabled && (
         <>
           <SignupStepper />
-          <MainHeading
-            mainHeading="Votre activité"
-            className={styles['main-heading']}
-          />
+          <h1 className={styles['title']}>Votre activité</h1>
           <p className={styles['subheading-description']}>
             Ces informations déterminent la visibilité de vos offres auprès des
             jeunes et des enseignants. Les champs suivis d’un * sont

@@ -5,7 +5,6 @@ import { FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type Offerer,
@@ -201,10 +200,7 @@ export const OffererAuthentication = (): JSX.Element => {
       {isSignupSimulationEnabled && (
         <>
           <SignupStepper />
-          <MainHeading
-            mainHeading="Votre structure"
-            className={styles['main-heading']}
-          />
+          <h1 className={styles['title']}>Votre structure</h1>
           <p className={styles['subheading-description']}>
             Vérifiez les informations récupérées depuis votre SIRET et complétez
             les champs manquants.

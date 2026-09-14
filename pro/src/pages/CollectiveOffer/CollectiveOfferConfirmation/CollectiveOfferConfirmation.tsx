@@ -172,10 +172,9 @@ const CollectiveOfferConfirmation = ({
       : isOfferShowcased
 
   return (
-    <BasicLayout
-      mainHeading={confirmationData.title}
-      mainSubHeading={offer.name}
-    >
+    <BasicLayout>
+      <h1 className={styles['title']}>{confirmationData.title}</h1>
+      <h2 className={styles['subtitle']}>{offer.name}</h2>
       <div className={styles['confirmation-wrapper']}>
         <div className={styles['confirmation']}>
           {confirmationData.icon}
