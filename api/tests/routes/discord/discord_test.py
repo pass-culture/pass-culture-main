@@ -156,10 +156,10 @@ class DiscordSigninTest:
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+        "pcapi.routes.discord.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.add_to_server")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.get_user_id", return_value="discord_user_id")
     def test_discord_credentials_callback_page(
         self, mock_get_user_id, mock_add_to_server, mock_retrieve_access_token, client
     ):
@@ -182,11 +182,11 @@ class DiscordSigninTest:
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+        "pcapi.routes.discord.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
+        "pcapi.routes.discord.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
     def test_error_when_adding_to_server(
         self, _mock_add_to_server, _mock_get_user_id, _mock_retrieve_access_token, client
@@ -204,8 +204,8 @@ class DiscordSigninTest:
         )
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="")
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.retrieve_access_token", return_value="")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.get_user_id", return_value="")
     def test_success_without_session_redirects_with_error(self, _mock_get_user_id, _mock_retrieve_access_token, client):
 
         user = users_factories.BeneficiaryFactory()
@@ -305,12 +305,12 @@ class DiscordSigninTest:
         assert "La tentative de connexion a échoué, réessayer." in response_data
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value=None)
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.get_user_id", return_value=None)
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+        "pcapi.routes.discord.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
+        "pcapi.routes.discord.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
     def test_error_adding_user_to_server_rollbacks(
         self, _mock_add_to_server, _mock_retrieve_access_token, _mock_get_user_id, client, db_session
@@ -331,12 +331,12 @@ class DiscordSigninTest:
         assert discord_user.discordId is None
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+        "pcapi.routes.discord.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
+        "pcapi.routes.discord.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
     def test_discord_user_has_access_if_beneficiary(
         self, _mock_add_to_server, _mock_retrieve_access_token, _mock_get_user_id, client, db_session
@@ -355,12 +355,12 @@ class DiscordSigninTest:
         assert created_discord_link.hasAccess
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+        "pcapi.routes.discord.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
+        "pcapi.routes.discord.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
     def test_discord_user_has_not_access_if_non_beneficiary(
         self, _mock_add_to_server, _mock_retrieve_access_token, _mock_get_user_id, client, db_session
@@ -374,12 +374,12 @@ class DiscordSigninTest:
         assert db.session.query(DiscordUser).filter_by(userId=non_beneficiary.id).count() == 0
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+        "pcapi.routes.discord.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
+        "pcapi.routes.discord.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
     def test_discord_user_has_not_access_if_beneficiary_under_17(
         self, _mock_add_to_server, _mock_retrieve_access_token, _mock_get_user_id, client, db_session
@@ -393,11 +393,11 @@ class DiscordSigninTest:
         assert db.session.query(DiscordUser).filter_by(userId=not_eligible_user.id).count() == 0
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+        "pcapi.routes.discord.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.add_to_server")
     def test_discord_account_already_linked_to_same_user(
         self, mock_add_to_server, _mock_retrieve_access_token, mock_get_user_id, client, db_session
     ):
@@ -421,11 +421,11 @@ class DiscordSigninTest:
         assert discord_user.discordId == "discord_user_id"
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+        "pcapi.routes.discord.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.add_to_server")
     def test_discord_account_already_linked_to_another_user(
         self, mock_add_to_server, _mock_retrieve_access_token, mock_get_user_id, client, db_session
     ):
@@ -445,11 +445,11 @@ class DiscordSigninTest:
         assert mock_add_to_server.call_count == 0
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+        "pcapi.routes.discord.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
+    @unittest.mock.patch("pcapi.routes.discord.discord.discord_connector.add_to_server")
     def test_association_errors_return_generic_message(
         self, _mock_add_to_server, _mock_retrieve_access_token, _mock_get_user_id, client, db_session
     ):

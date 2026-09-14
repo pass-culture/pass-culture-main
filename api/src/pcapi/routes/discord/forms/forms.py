@@ -1,5 +1,5 @@
-from pcapi.routes.auth.forms import fields
-from pcapi.routes.auth.utils import PCForm
+from pcapi.routes.discord.forms import fields
+from pcapi.routes.discord.utils import PCForm
 
 
 class SigninForm(PCForm):
