@@ -256,9 +256,19 @@ export function Table<
                       return null
                     }
                     const headerContent = col.header ?? col.label ?? ''
+                    const sortingMode =
+                      currentSortingMode === SortingMode.ASC
+                        ? 'ascending'
+                        : 'descending'
 
                     return (
                       <th
+                        aria-sort={
+                          currentSortingColumn === col.id &&
+                          currentSortingMode !== SortingMode.NONE
+                            ? sortingMode
+                            : undefined
+                        }
                         scope="col"
                         id={col.id}
                         colSpan={col.headerColSpan || 1}
