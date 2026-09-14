@@ -76,8 +76,8 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
             if not fraud_check.resultContent:
                 fraud_check.resultContent = {}
 
-            tomorrow = date_utils.get_naive_utc_now() + relativedelta(hours=24)
-            fraud_check.resultContent["next_retry_at"] = tomorrow
+            in_twelve_hours = date_utils.get_naive_utc_now() + relativedelta(hours=12)
+            fraud_check.resultContent["next_retry_at"] = in_twelve_hours
 
         raise
 
@@ -125,8 +125,8 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
             if not fraud_check.resultContent:
                 fraud_check.resultContent = {}
 
-            tomorrow = date_utils.get_naive_utc_now() + relativedelta(hours=24)
-            fraud_check.resultContent["next_retry_at"] = tomorrow
+            in_twelve_hours = date_utils.get_naive_utc_now() + relativedelta(hours=12)
+            fraud_check.resultContent["next_retry_at"] = in_twelve_hours
 
         raise
 
@@ -174,8 +174,8 @@ def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> 
             if not fraud_check.resultContent:
                 fraud_check.resultContent = {}
 
-            tomorrow = date_utils.get_naive_utc_now() + relativedelta(hours=24)
-            fraud_check.resultContent["next_retry_at"] = tomorrow
+            in_twelve_hours = date_utils.get_naive_utc_now() + relativedelta(hours=12)
+            fraud_check.resultContent["next_retry_at"] = in_twelve_hours
 
         raise
 
