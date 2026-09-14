@@ -147,7 +147,6 @@ class FeatureToggle(enum.Enum):
         "Activer le parcours de simulation de documents avant inscription des partenaires culturels sur le portail pro"
     )
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
-    WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS = "Active la nouvelle logique de détail du prix d'une offre réservable"
     WIP_CLOSE_VENUE = "Active la fermeture d'une venue depuis l'espace partenaire"
 
     def is_active(self) -> bool:

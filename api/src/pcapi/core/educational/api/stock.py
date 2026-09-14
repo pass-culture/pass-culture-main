@@ -11,7 +11,6 @@ from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 from pcapi.core.offers import validation as offer_validation
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date
 from pcapi.utils.transaction_manager import on_commit
@@ -33,7 +32,6 @@ def create_collective_stock(stock_data: "CollectiveStockCreationBodyModel") -> m
     service_price = stock_data.servicePrice
     number_of_tickets = stock_data.numberOfTickets
     number_of_teachers = stock_data.numberOfTeachers
-    price_detail = stock_data.priceDetail
 
     validation.check_start_and_end_dates_in_same_educational_year(start, end)
 
@@ -55,24 +53,17 @@ def create_collective_stock(stock_data: "CollectiveStockCreationBodyModel") -> m
         endDatetime=end,
         bookingLimitDatetime=booking_limit_datetime,
         price=price,
-        servicePrice=service_price if service_price is not None else price,
+        servicePrice=service_price,
         numberOfTickets=number_of_tickets,
-        numberOfTeachers=number_of_teachers if number_of_teachers is not None else 0,
-        priceDetail=price_detail,
+        numberOfTeachers=number_of_teachers,
     )
 
-    if stock_data.collectiveAdditionalFees:
-        collective_stock.collectiveAdditionalFees = [
-            models.CollectiveAdditionalFee(type=fee.type, label=fee.label, amount=fee.amount)
-            for fee in stock_data.collectiveAdditionalFees
-        ]
+    collective_stock.collectiveAdditionalFees = [
+        models.CollectiveAdditionalFee(type=fee.type, label=fee.label, amount=fee.amount)
+        for fee in stock_data.collectiveAdditionalFees
+    ]
 
     db.session.add(collective_stock)
-
-    # when we receive priceDetail, also write to offer additionalDetails
-    # long term, the priceDetail field will be removed
-    if not collective_offer.additionalDetails and price_detail:
-        collective_offer.additionalDetails = price_detail
 
     db.session.flush()
 
@@ -124,7 +115,6 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
         "collectiveAdditionalFees": stock_data.get("collectiveAdditionalFees"),
         "numberOfTickets": stock_data.get("numberOfTickets"),
         "numberOfTeachers": stock_data.get("numberOfTeachers"),
-        "priceDetail": stock_data.get("priceDetail"),
     }
 
     check_start = start_datetime or stock.startDatetime
@@ -147,9 +137,6 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
 
     price = updatable_fields["price"]
     if price is not None:
-        if not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active():
-            updatable_fields["servicePrice"] = price
-
         if price > stock.price:
             validation.check_collective_offer_action_is_allowed(
                 stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
@@ -159,7 +146,7 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
                 stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
             )
 
-    discount_fields = ("numberOfTickets", "numberOfTeachers", "servicePrice", "collectiveAdditionalFees", "priceDetail")
+    discount_fields = ("numberOfTickets", "numberOfTeachers", "servicePrice", "collectiveAdditionalFees")
     if any(field in stock_data for field in discount_fields):
         validation.check_collective_offer_action_is_allowed(
             stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
@@ -183,11 +170,6 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
     for attribute, new_value in updatable_fields.items():
         if new_value is not None and getattr(stock, attribute) != new_value:
             setattr(stock, attribute, new_value)
-
-            # when we receive priceDetail, also write to offer additionalDetails
-            # long term, the priceDetail field will be removed
-            if attribute == "priceDetail":
-                stock.collectiveOffer.additionalDetails = new_value
 
     api_shared.update_collective_stock_booking(
         stock=stock,
