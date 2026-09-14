@@ -1,0 +1,53 @@
+from pcapi.core.educational import repository
+from pcapi.routes.provider import blueprints
+from pcapi.routes.provider import spectree_schemas
+from pcapi.routes.provider.collective.serialization import institutions as institutions_serialization
+from pcapi.routes.provider.documentation_constants import http_responses
+from pcapi.routes.provider.documentation_constants import tags
+from pcapi.routes.provider.services.authentication import api_key_required
+from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.utils.transaction_manager import atomic
+
+
+@blueprints.provider_blueprint.route("/v2/collective/educational-institutions/", methods=["GET"])
+@atomic()
+@api_key_required
+@spectree_serialize(
+    api=spectree_schemas.public_api_schema,
+    tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],
+    resp=SpectreeResponse(
+        **(
+            {
+                "HTTP_200": (
+                    institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel,
+                    http_responses.HTTP_200_MESSAGE,
+                ),
+            }
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+        )
+    ),
+)
+def list_educational_institutions(
+    query: institutions_serialization.GetListEducationalInstitutionsQueryModel,
+) -> institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel:
+    """
+    Get Educational Institutions
+    """
+
+    institutions = repository.search_educational_institution(
+        name=query.name,
+        city=query.city,
+        postal_code=query.postal_code,
+        educational_institution_id=query.id,
+        institution_type=query.institution_type,
+        uai=query.uai,
+        limit=query.limit,
+    )
+    return institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel(
+        __root__=[
+            institutions_serialization.CollectiveOffersEducationalInstitutionResponseModel.from_orm(institution)
+            for institution in institutions
+        ]
+    )

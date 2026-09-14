@@ -1,4 +1,4 @@
-from pcapi.routes.public.documentation_constants.fields import fields
+from pcapi.routes.provider.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 

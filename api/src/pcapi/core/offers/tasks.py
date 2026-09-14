@@ -22,9 +22,9 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
-from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_v1_utils
-from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
+from pcapi.routes.provider.individual_offers.v1 import serialization as individual_offers_v1_serialization
+from pcapi.routes.provider.individual_offers.v1 import utils as individual_offers_v1_utils
+from pcapi.routes.provider.individual_offers.v1.serializers import products as products_serializers
 from pcapi.utils import date as utils_date
 from pcapi.utils import repository
 

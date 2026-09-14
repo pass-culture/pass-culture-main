@@ -1,0 +1,845 @@
+import decimal
+from datetime import UTC
+from datetime import datetime
+from datetime import timedelta
+from pathlib import Path
+from unittest.mock import patch
+
+import pytest
+import time_machine
+
+from pcapi import settings
+from pcapi.core.categories.models import EacFormat
+from pcapi.core.educational import exceptions
+from pcapi.core.educational import factories
+from pcapi.core.educational import models
+from pcapi.core.educational import testing
+from pcapi.core.geography import factories as geography_factories
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.providers import factories as provider_factories
+from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
+
+import tests
+from tests.routes import image_data
+from tests.routes.provider.helpers import PublicAPIEndpointBaseHelper
+
+
+IMAGES_DIR = Path(tests.__path__[0]) / "files"
+UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / models.CollectiveOffer.FOLDER
+
+time_travel_str = "2021-10-01 15:00:00"
+
+INVALID_PRICE_FIELDS_ERROR = {
+    "__root__": [
+        "Vous devez renseigner soit ('totalPrice', 'educationalPriceDetail'), soit ('additionalDetails', 'servicePrice', 'additionalFees', 'numberOfTeachers')"
+    ]
+}
+
+PRICE_TOO_HIGH_ERROR = {"__root__": [f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}"]}
+
+MISSING_OLD_FIELD_ERROR = {"__root__": ["Vous devez renseigner le champ 'totalPrice'"]}
+
+MISSING_NEW_FIELD_ERROR = {
+    "__root__": ["Vous devez renseigner les champs 'servicePrice', 'additionalFees', 'numberOfTeachers'"]
+}
+
+
+@pytest.fixture(name="venue_provider")
+def venue_provider_fixture():
+    return provider_factories.VenueProviderFactory()
+
+
+@pytest.fixture(name="api_key")
+def api_key_fixture(venue_provider):
+    return offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+
+@pytest.fixture(name="venue")
+def venue_fixture(venue_provider):
+    return venue_provider.venue
+
+
+@pytest.fixture(name="national_program")
+def national_program_fixture():
+    return factories.NationalProgramFactory()
+
+
+@pytest.fixture(name="domain")
+def domain_fixture(national_program):
+    return factories.EducationalDomainFactory(nationalPrograms=[national_program])
+
+
+@pytest.fixture(name="institution")
+def institution_fixture():
+    return factories.EducationalInstitutionFactory()
+
+
+@pytest.fixture(name="payload")
+def payload_fixture(minimal_payload, venue_provider, domain, institution, national_program, venue):
+    return {
+        **minimal_payload,
+        "name": "Some offer",
+        "description": "une description d'offre",
+        "durationMinutes": 183,
+        "audioDisabilityCompliant": True,
+        "mentalDisabilityCompliant": True,
+        "motorDisabilityCompliant": False,
+        "visualDisabilityCompliant": False,
+        "nationalProgramId": national_program.id,
+        "educationalPriceDetail": "Justification du prix",
+        "imageCredit": "pouet",
+        "imageFile": image_data.GOOD_IMAGE,
+        "endDatetime": minimal_payload["startDatetime"],
+    }
+
+
+@pytest.fixture(name="minimal_payload")
+@time_machine.travel(time_travel_str)
+def minimal_payload_fixture(domain, institution, venue):
+    factories.EducationalCurrentYearFactory()
+
+    booking_beginning = datetime.now(UTC) + timedelta(days=10)
+    booking_limit = booking_beginning - timedelta(days=2)
+
+    return {
+        "venueId": venue.id,
+        "name": "Some offer with minimal payload",
+        "description": "description",
+        "formats": [EacFormat.CONCERT.value],
+        "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
+        "contactEmail": "offerer-contact@example.com",
+        "contactPhone": "+33100992798",
+        "domains": [domain.id],
+        "students": [models.StudentLevels.COLLEGE4.name],
+        "location": {"type": "SCHOOL"},
+        "startDatetime": booking_beginning.isoformat(timespec="seconds"),
+        "bookingLimitDatetime": booking_limit.isoformat(timespec="seconds"),
+        "totalPrice": 600,
+        "numberOfTickets": 30,
+        "educationalInstitutionId": institution.id,
+    }
+
+
+@pytest.fixture(name="public_client")
+def public_client_fixture(client, api_key):
+    return client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+
+
+@pytest.mark.usefixtures("db_session")
+class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/v2/collective/offers/"
+    endpoint_method = "post"
+
+    def teardown_method(self, *args):
+        """clear images after each tests"""
+        storage_folder = UPLOAD_FOLDER / models.CollectiveOffer.__name__.lower()
+        if storage_folder.exists():
+            for child in storage_folder.iterdir():
+                if not child.is_file():
+                    continue
+                child.unlink()
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers(self, public_client, payload, venue_provider, domain, institution, national_program, venue):
+        num_queries = 1  # fetch api key
+        num_queries += 1  # fetch venue
+        num_queries += 1  # fetch offerer
+        num_queries += 1  # fetch educational domain
+        num_queries += 1  # fetch national program
+        num_queries += 1  # fetch educational institution
+        num_queries += 1  # fetch educational year
+
+        num_queries += 1  # insert collective offer
+        num_queries += 1  # insert collective offer domain
+        num_queries += 1  # insert collective stock
+
+        num_queries += 1  # fetch offer for validation
+        num_queries += 1  # fetch offer validation rule
+        num_queries += 1  # update collective offer validation
+
+        num_queries += 1  # fetch collective offer
+        num_queries += 1  # update collective offer image
+        num_queries += 1  # fetch collective offer for serialization
+        num_queries += 1  # fetch collective additional fees (selectinload)
+
+        with assert_num_queries(num_queries):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+            assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        assert offer.students == [models.StudentLevels.COLLEGE4]
+        assert offer.venueId == venue.id
+        assert offer.name == payload["name"]
+        assert offer.domains == [domain]
+        assert offer.institutionId == institution.id
+        assert offer.interventionArea == []
+        assert offer.locationType == models.CollectiveLocationType.SCHOOL
+        assert offer.providerId == venue_provider.providerId
+        assert offer.hasImage is True
+        assert offer.isPublicApi
+        assert offer.nationalProgramId == national_program.id
+        assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
+        assert offer.formats == [EacFormat.CONCERT]
+
+        # check double-writing stock.priceDetail -> offer.additionalDetails
+        assert offer.additionalDetails == payload["educationalPriceDetail"]
+
+        # stock data
+        assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"]).replace(
+            tzinfo=None
+        )
+        assert offer.collectiveStock.endDatetime == datetime.fromisoformat(payload["endDatetime"]).replace(tzinfo=None)
+        assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(
+            payload["bookingLimitDatetime"]
+        ).replace(tzinfo=None)
+        assert offer.collectiveStock.price == decimal.Decimal(payload["totalPrice"])
+        assert offer.collectiveStock.servicePrice == decimal.Decimal(payload["totalPrice"])
+        assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
+
+        json = response.json
+        assert json["name"] == "Some offer"
+        assert "location" in json
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_with_school_location(
+        self, public_client, payload, venue_provider, domain, institution, national_program, venue
+    ):
+        payload["location"] = {"type": "SCHOOL"}
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+
+        assert offer.locationType == models.CollectiveLocationType.SCHOOL
+
+        assert offer.students == [models.StudentLevels.COLLEGE4]
+        assert offer.venueId == venue.id
+        assert offer.name == payload["name"]
+        assert offer.domains == [domain]
+        assert offer.institutionId == institution.id
+        assert offer.interventionArea == []
+        assert offer.providerId == venue_provider.providerId
+        assert offer.hasImage is True
+        assert offer.isPublicApi
+        assert offer.nationalProgramId == national_program.id
+        assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
+        assert offer.formats == [EacFormat.CONCERT]
+
+        # stock data
+        assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"]).replace(
+            tzinfo=None
+        )
+        assert offer.collectiveStock.endDatetime == datetime.fromisoformat(payload["endDatetime"]).replace(tzinfo=None)
+        assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(
+            payload["bookingLimitDatetime"]
+        ).replace(tzinfo=None)
+        assert offer.collectiveStock.price == decimal.Decimal(payload["totalPrice"])
+        assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
+
+        json = response.json
+        assert json["name"] == "Some offer"
+        assert json["location"] == {"type": "SCHOOL"}
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_without_end_datetime(self, public_client, payload):
+        del payload["endDatetime"]
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"]).replace(
+            tzinfo=None
+        )
+        assert offer.collectiveStock.endDatetime == datetime.fromisoformat(payload["startDatetime"]).replace(
+            tzinfo=None
+        )
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_with_uai(self, public_client, payload, venue_provider, domain, institution, venue):
+        payload["educationalInstitution"] = institution.institutionId
+        del payload["educationalInstitutionId"]
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        assert offer.students == [models.StudentLevels.COLLEGE4]
+        assert offer.venueId == venue.id
+        assert offer.name == payload["name"]
+        assert offer.domains == [domain]
+        assert offer.institutionId == institution.id
+        assert offer.interventionArea == []
+        assert offer.providerId == venue_provider.providerId
+        assert offer.hasImage is True
+        assert offer.isPublicApi
+        assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_location_to_be_defined(self, public_client, minimal_payload):
+        payload = {
+            **minimal_payload,
+            "location": {"type": "TO_BE_DEFINED", "comment": "In Paris"},
+        }
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+
+        assert offer.offererAddressId is None
+        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
+        assert offer.locationComment == "In Paris"
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_location_address_on_venue(self, public_client, minimal_payload, venue):
+        payload = {
+            **minimal_payload,
+            "location": {"type": "ADDRESS", "isVenueAddress": True},
+        }
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+
+        assert offer.offererAddress != venue.offererAddress
+        assert offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+        assert offer.offererAddress.label == None
+        assert offer.offererAddress.address == venue.offererAddress.address
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
+        assert offer.locationComment is None
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_location_address_other_address(self, public_client, minimal_payload, venue):
+        address = geography_factories.AddressFactory()
+
+        payload = {
+            **minimal_payload,
+            "location": {
+                "type": "ADDRESS",
+                "addressLabel": "My second address",
+                "addressId": address.id,
+                "isVenueAddress": False,
+            },
+        }
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        offerer_address = (
+            db.session.query(offerers_models.OffererAddress)
+            .filter_by(addressId=address.id, offererId=venue.managingOffererId)
+            .one()
+        )
+
+        assert offer.offererAddressId == offerer_address.id
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
+        assert offer.locationComment is None
+
+        assert offerer_address.label == "My second address"
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_location_address_other_not_existing_venue(self, public_client, minimal_payload):
+        not_existing_address_id = -1
+
+        payload = {
+            **minimal_payload,
+            "location": {
+                "type": "ADDRESS",
+                "addressLabel": "My second address",
+                "addressId": not_existing_address_id,
+                "isVenueAddress": False,
+            },
+        }
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 404
+        assert response.json == {"location.AddressLocation.addressId": ["There is no address with id -1"]}
+
+    @time_machine.travel(time_travel_str)
+    @pytest.mark.parametrize(
+        "location,error",
+        [
+            (None, "Le champ location doit être un objet"),
+            (1, "Le champ location doit être un objet"),
+            ({}, "Le champ type est requis"),
+            ({"type": "bloup"}, "Les valeurs autorisées pour le champ type sont SCHOOL, ADDRESS, TO_BE_DEFINED"),
+            ({"type": "SCHOOL", "isVenueAddress": True}, "Quand type=SCHOOL, aucun autre champ n'est accepté"),
+            (
+                {"type": "ADDRESS", "locationComment": "hello"},
+                "Quand type=ADDRESS, seuls les champs isVenueAddress, addressId, addressLabel sont acceptés",
+            ),
+            ({"type": "ADDRESS"}, "Quand type=ADDRESS, isVenueAddress est requis"),
+            (
+                {"type": "ADDRESS", "isVenueAddress": True, "addressId": 1},
+                "Quand type=ADDRESS et isVenueAddress=true, aucun autre champ n'est accepté",
+            ),
+            (
+                {"type": "ADDRESS", "isVenueAddress": False},
+                "Quand type=ADDRESS et isVenueAddress=false, le champ addressId est requis",
+            ),
+            ({"type": "TO_BE_DEFINED", "addressId": 1}, "Quand type=TO_BE_DEFINED, seul le champ comment est accepté"),
+        ],
+    )
+    def test_post_offers_location_errors(self, public_client, minimal_payload, location, error):
+        payload = {**minimal_payload, "location": location}
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"location": [error]}
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_without_location(self, public_client, minimal_payload):
+        del minimal_payload["location"]
+
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+
+        assert response.status_code == 400
+        assert response.json == {"location": ["field required"]}
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_with_uai_and_institution_id(self, public_client, payload, institution):
+        payload["educationalInstitution"] = institution.institutionId
+        payload["educationalInstitutionId"] = institution.id
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert "__root__" in response.json
+
+    @time_machine.travel(time_travel_str)
+    def test_invalid_api_key(self, client, payload):
+        public_client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        response = public_client.post("/v2/collective/offers/", json=payload)
+        assert response.status_code == 401
+
+    @time_machine.travel(time_travel_str)
+    def test_user_cannot_create_collective_offer(self, public_client, payload):
+        with patch(
+            testing.PATCH_CAN_CREATE_OFFER_PATH,
+            side_effect=exceptions.CulturalPartnerNotFoundException,
+        ):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 403
+
+    @time_machine.travel(time_travel_str)
+    def test_bad_educational_institution(self, public_client, payload):
+        payload["educationalInstitutionId"] = -1
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 404
+
+    @time_machine.travel(time_travel_str)
+    def test_unlinked_venue(self, public_client, payload):
+        payload["venueId"] = offerers_factories.VenueFactory().id
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 404
+        assert response.json == {"venueId": ["Ce lieu n'à pas été trouvé."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_venue_id_not_found(self, public_client, payload):
+        payload["venueId"] = 0
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+        assert response.status_code == 404
+        assert response.json == {"venueId": ["Ce lieu n'à pas été trouvé."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_invalid_image_size(self, public_client, payload):
+        payload["imageFile"] = image_data.WRONG_IMAGE_SIZE
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert "imageFile" in response.json
+
+    @time_machine.travel(time_travel_str)
+    def test_invalid_image_type(self, public_client, payload):
+        payload["imageFile"] = image_data.WRONG_IMAGE_TYPE
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert "imageFile" in response.json
+
+    @time_machine.travel(time_travel_str)
+    def test_should_raise_400_because_startDatetime_is_after_endDatetime(self, public_client, payload):
+        start_datetime = datetime.now(UTC) + timedelta(days=10)
+        end_datetime = start_datetime - timedelta(days=1)
+        payload["startDatetime"] = start_datetime.isoformat(timespec="seconds")
+        payload["endDatetime"] = end_datetime.isoformat(timespec="seconds")
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"endDatetime": ["La date de fin de l'évènement ne peut précéder la date de début."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_institution_not_active(self, public_client, payload):
+        institution = factories.EducationalInstitutionFactory(isActive=False)
+        payload["educationalInstitutionId"] = institution.id
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 403
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_invalid_domain_without_program(self, public_client, payload):
+        payload["nationalProgramId"] = None
+        payload["domains"] = [-1]
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 404
+        assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_invalid_domain_with_program(self, public_client, payload):
+        payload["nationalProgramId"] = factories.NationalProgramFactory().id
+        payload["domains"] = [-1]
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 404
+        assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_unknown_national_program(self, public_client, payload):
+        payload["nationalProgramId"] = -1
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 404
+        assert response.json == {"nationalProgramId": ["Dispositif national non trouvé."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_national_program_not_linked_to_domains(self, public_client, payload):
+        payload["nationalProgramId"] = factories.NationalProgramFactory().id
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"nationalProgramId": ["Dispositif national non valide."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_national_program_inactive(self, public_client, payload):
+        payload["nationalProgramId"] = factories.NationalProgramFactory(isActive=False).id
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"nationalProgramId": ["Dispositif national inactif."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_missing_formats(self, public_client, payload):
+        del payload["formats"]
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"formats": ["field required"]}
+
+    @time_machine.travel(time_travel_str)
+    def test_description_invalid(self, public_client, payload):
+        payload["description"] = "too_long" * 200
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_missing_start_datetime(self, public_client, payload):
+        del payload["startDatetime"]
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"startDatetime": ["field required"]}
+
+    @time_machine.travel(time_travel_str)
+    def test_booking_limit_after_start(self, public_client, payload):
+        payload["bookingLimitDatetime"] = (
+            datetime.fromisoformat(payload["startDatetime"]) + timedelta(days=1)
+        ).isoformat(timespec="seconds")
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingLimitDatetime": [
+                "La date limite de réservation ne peut être postérieure à la date de début de l'évènement"
+            ]
+        }
+
+    @time_machine.travel(time_travel_str)
+    def test_different_educational_years(self, public_client, minimal_payload):
+        start = datetime.fromisoformat(minimal_payload["startDatetime"])
+        end = start.replace(year=start.year + 1)
+        factories.create_educational_year(end)
+
+        minimal_payload["endDatetime"] = end.isoformat()
+
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_educational_year_missing_start(self, public_client, minimal_payload):
+        start = datetime.fromisoformat(minimal_payload["startDatetime"])
+        minimal_payload["startDatetime"] = start.replace(year=start.year + 1).isoformat()
+
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+
+        assert response.status_code == 400
+        assert response.json == {"startDatetime": ["Année scolaire manquante pour la date de début."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_educational_year_missing_end(self, public_client, minimal_payload):
+        start = datetime.fromisoformat(minimal_payload["startDatetime"])
+        minimal_payload["endDatetime"] = start.replace(year=start.year + 1).isoformat()
+
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+
+        assert response.status_code == 400
+        assert response.json == {"endDatetime": ["Année scolaire manquante pour la date de fin."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_price_fields(self, public_client, minimal_payload):
+        del minimal_payload["totalPrice"]
+        fees = [
+            {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10.003},
+            {"type": models.CollectiveAdditionalFeeType.ACCOMMODATION.name, "label": None, "amount": 15.003},
+            {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "custom fee", "amount": 20.504},
+            {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "other custom fee", "amount": 25},
+        ]
+        minimal_payload = {
+            **minimal_payload,
+            "additionalDetails": "Some nice details",
+            "servicePrice": 40,
+            "additionalFees": fees,
+            "numberOfTeachers": 10,
+        }
+
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        stock = offer.collectiveStock
+
+        assert offer.additionalDetails == "Some nice details"
+        assert stock.priceDetail is None
+        assert stock.numberOfTeachers == 10
+        assert stock.price == 110.50
+        assert stock.servicePrice == 40
+
+        expected = [
+            {**fee, "amount": decimal.Decimal(str(fee["amount"])).quantize(decimal.Decimal("1.00"))} for fee in fees
+        ]
+        actual = [
+            {"type": fee.type.name, "label": fee.label, "amount": fee.amount}
+            for fee in sorted(stock.collectiveAdditionalFees, key=lambda f: f.amount)
+        ]
+        assert actual == expected
+
+        # each amount is rounded to 2 decimals before the sum is computed
+        total_fees = sum(fee.amount for fee in stock.collectiveAdditionalFees)
+        assert total_fees == 70.50
+        assert total_fees + stock.servicePrice == stock.price
+
+    @time_machine.travel(time_travel_str)
+    def test_price_fields_no_fees(self, public_client, minimal_payload):
+        del minimal_payload["totalPrice"]
+        minimal_payload = {
+            **minimal_payload,
+            "servicePrice": 10.99,
+            "additionalFees": [],
+            "numberOfTeachers": 10,
+        }
+
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        stock = offer.collectiveStock
+
+        assert offer.additionalDetails is None
+        assert stock.priceDetail is None
+        assert stock.numberOfTeachers == 10
+        assert stock.price == decimal.Decimal("10.99")
+        assert stock.servicePrice == decimal.Decimal("10.99")
+        assert stock.collectiveAdditionalFees == []
+
+    @time_machine.travel(time_travel_str)
+    @pytest.mark.parametrize(
+        "payload,error",
+        (
+            # no price field
+            ({}, INVALID_PRICE_FIELDS_ERROR),
+            # old and new price fields
+            ({"totalPrice": 10, "servicePrice": 10}, INVALID_PRICE_FIELDS_ERROR),
+            # old and new (non-required) price fields
+            ({"educationalPriceDetail": 10, "additionalDetails": "bloup"}, INVALID_PRICE_FIELDS_ERROR),
+            # old and new (null) price fields
+            ({"totalPrice": 10, "servicePrice": None}, INVALID_PRICE_FIELDS_ERROR),
+            # missing servicePrice
+            ({"additionalFees": [], "numberOfTeachers": 10}, MISSING_NEW_FIELD_ERROR),
+            # missing additionalFees
+            ({"servicePrice": 10, "numberOfTeachers": 10}, MISSING_NEW_FIELD_ERROR),
+            # missing numberOfTeachers
+            ({"servicePrice": 10, "additionalFees": []}, MISSING_NEW_FIELD_ERROR),
+            # missing totalPrice
+            ({"educationalPriceDetail": "bloup"}, MISSING_OLD_FIELD_ERROR),
+            # totalPrice None
+            ({"totalPrice": None}, MISSING_OLD_FIELD_ERROR),
+            # servicePrice None
+            ({"servicePrice": None, "numberOfTeachers": 10, "additionalFees": []}, MISSING_NEW_FIELD_ERROR),
+            # additionalFees None
+            ({"servicePrice": 10, "numberOfTeachers": 10, "additionalFees": None}, MISSING_NEW_FIELD_ERROR),
+            # numberOfTeachers None
+            ({"servicePrice": 10, "numberOfTeachers": None, "additionalFees": []}, MISSING_NEW_FIELD_ERROR),
+            # total price too high
+            (
+                {"servicePrice": settings.EAC_OFFER_PRICE_LIMIT + 1, "numberOfTeachers": 1, "additionalFees": []},
+                PRICE_TOO_HIGH_ERROR,
+            ),
+            (
+                {
+                    "servicePrice": settings.EAC_OFFER_PRICE_LIMIT - 1000,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [{"type": models.CollectiveAdditionalFeeType.MEAL.value, "amount": 1001}],
+                },
+                PRICE_TOO_HIGH_ERROR,
+            ),
+            # additionalFees invalid label
+            (
+                {
+                    "servicePrice": 10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": "hello", "amount": 10}
+                    ],
+                },
+                {"additionalFees.0.__root__": ["Le champ label n'est pas autorisé quand le type n'est pas OTHER"]},
+            ),
+            # additionalFees missing label
+            (
+                {
+                    "servicePrice": 10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": None, "amount": 10}
+                    ],
+                },
+                {"additionalFees.0.__root__": ["Le champ label est requis quand le type est OTHER"]},
+            ),
+            # additionalFees type duplicate
+            (
+                {
+                    "servicePrice": 10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
+                    ],
+                },
+                {"__root__": ["Un type de frais annexe est en doublon"]},
+            ),
+            # additionalFees label duplicate
+            (
+                {
+                    "servicePrice": 10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                        {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                    ],
+                },
+                {"__root__": ["Un label de frais annexe est en doublon"]},
+            ),
+            # additionalFees negative amount
+            (
+                {
+                    "servicePrice": 10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": -10}
+                    ],
+                },
+                {"additionalFees.0.amount": ["ensure this value is greater than or equal to 0"]},
+            ),
+            # servicePrice too low
+            (
+                {
+                    "servicePrice": -10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 19}
+                    ],
+                },
+                {"servicePrice": ["ensure this value is greater than or equal to 0"]},
+            ),
+        ),
+    )
+    def test_price_fields_error(self, public_client, minimal_payload, payload, error):
+        del minimal_payload["totalPrice"]
+
+        minimal_payload = {**minimal_payload, **payload}
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+
+        assert response.status_code == 400
+        assert response.json == error
+
+
+@pytest.mark.usefixtures("db_session")
+class CollectiveOffersPublicPostOfferMinimalTest:
+    @time_machine.travel(time_travel_str)
+    def test_mandatory_information_only(self, public_client, minimal_payload):
+        self.assert_expected_offer_is_created(public_client, minimal_payload)
+
+    @time_machine.travel(time_travel_str)
+    def test_institution_instead_of_institution_id(self, public_client, minimal_payload, institution):
+        del minimal_payload["educationalInstitutionId"]
+
+        minimal_payload["name"] = "Some offer with minimal payload (institution)"
+        minimal_payload["educationalInstitution"] = institution.institutionId
+
+        self.assert_expected_offer_is_created(public_client, minimal_payload)
+
+    @time_machine.travel(time_travel_str)
+    def test_missing_field(self, public_client, minimal_payload):
+        for key in minimal_payload:
+            payload = {k: v for k, v in minimal_payload.items() if k != key}
+
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+            assert response.status_code == 400
+            assert key in response.json or "__root__" in response.json
+
+    def assert_expected_offer_is_created(self, public_client, payload):
+        response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        assert offer.name == payload["name"]

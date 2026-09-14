@@ -43,8 +43,8 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.models.utils import get_or_404
-from pcapi.routes.public import utils as public_utils
-from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
+from pcapi.routes.provider import utils as public_utils
+from pcapi.routes.provider.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils import image_conversion
 from pcapi.utils import rest as rest_utils
