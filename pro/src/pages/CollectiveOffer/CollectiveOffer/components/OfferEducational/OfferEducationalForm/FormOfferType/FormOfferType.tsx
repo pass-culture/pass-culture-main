@@ -104,7 +104,6 @@ export const FormOfferType = ({
           <FormLayout.Row>
             <MultiSelect
               label="Ajoutez un ou plusieurs domaines artistiques"
-              name="domains"
               hasSearch
               searchLabel="Rechercher un domaine artistique"
               options={domains}
@@ -152,7 +151,6 @@ export const FormOfferType = ({
             buttonLabel="Formats"
             hasSearch
             searchLabel="Rechercher un format"
-            name="formats"
             onSelectedOptionsChanged={(selectedOptions) =>
               setValue(
                 'formats',

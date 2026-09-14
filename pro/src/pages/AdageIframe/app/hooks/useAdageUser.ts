@@ -7,7 +7,7 @@ import { AdageUserContext } from '../providers/AdageUserContext'
 export const useAdageUser = () => {
   const {
     adageUser,
-    setFavoriteCount,
+    setFavoritesCount,
     favoritesCount,
     institutionOfferCount,
     setInstitutionOfferCount,
@@ -19,7 +19,7 @@ export const useAdageUser = () => {
 
   return {
     adageUser,
-    setFavoriteCount,
+    setFavoritesCount,
     favoritesCount,
     institutionOfferCount,
     setInstitutionOfferCount,

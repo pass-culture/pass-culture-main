@@ -11,7 +11,7 @@ export enum Consents {
 
 export const LOCAL_STORAGE_DEVICE_ID_KEY = 'DEVICE_ID'
 
-const mandatoryCookies = ['sentry']
+const mandatoryCookies = new Set(['sentry'])
 
 export const orejimeConfig = {
   privacyPolicyUrl: 'https://pass.culture.fr/politique-de-cookies/',
@@ -19,7 +19,7 @@ export const orejimeConfig = {
     duration: 182,
     stringify: (contents: { [id: string]: boolean }) => {
       const nonMandatoryConsents = Object.entries(contents).filter(([app]) => {
-        return !mandatoryCookies.includes(app)
+        return !mandatoryCookies.has(app)
       })
       const cookieConsent = {
         choiceDatetime: toISOStringWithoutMilliseconds(new Date()),
@@ -33,7 +33,7 @@ export const orejimeConfig = {
             }),
           mandatory: Object.entries(contents)
             .filter(([app]) => {
-              return mandatoryCookies.includes(app)
+              return mandatoryCookies.has(app)
             })
             .map(([app]) => {
               return app

@@ -29,7 +29,6 @@ describe('<MultiSelectPanel />', () => {
     return render(
       <MultiSelectPanel
         options={options}
-        label={''}
         onOptionSelect={onOptionSelect}
         onSelectAll={onSelectAll}
         hasSelectAllOptions={hasSelectAllOptions}

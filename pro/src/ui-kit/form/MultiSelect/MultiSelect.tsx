@@ -54,8 +54,6 @@ type MultiSelectProps = {
   ) => void
   /** Error message to display */
   error?: string
-  /** Name attribute for the form field */
-  name: string
   /** Label for the dropdown button */
   buttonLabel: string
   /** field is required */
@@ -64,7 +62,6 @@ type MultiSelectProps = {
   requiredIndicator?: RequiredIndicator
   /** this class offers the possibility of limiting the size of the multiselect  */
   className?: string
-
   /** Trigger function to display error message when element is unfocus */
   onBlur?: () => void
 } & (
@@ -78,7 +75,7 @@ type MultiSelectProps = {
     }
   /* If `hasSearch` is `false` or undefined, `searchLabel` should not be provided. */
   | {
-      hasSearch?: false | undefined
+      hasSearch?: false
       searchLabel?: never
     }
 )
@@ -221,7 +218,6 @@ export const MultiSelect = forwardRef(
             {isOpen && (
               <MultiSelectPanel
                 id={id}
-                label={label}
                 options={options.map((option) => ({
                   ...option,
                   checked: selectedItems.some((item) => item.id === option.id),

@@ -256,7 +256,7 @@ describe('Collaborators', () => {
     })
   })
 
-  it('should disable add collaborator button if venue is closed', async () => {
+  it('should disable add collaborator button if venue is closed', () => {
     renderCollaborators({
       storeOverrides: {
         user: {
@@ -272,7 +272,7 @@ describe('Collaborators', () => {
       },
     })
 
-    const addButton = await screen.getByRole('button', {
+    const addButton = screen.getByRole('button', {
       name: 'Ajouter un collaborateur',
     })
 

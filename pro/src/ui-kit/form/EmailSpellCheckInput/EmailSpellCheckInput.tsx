@@ -18,7 +18,7 @@ type EmailSpellCheckInputProps = {
   label: string
   onApplyTip(tip: string): void
   required?: boolean
-  requiredIndicator?: TextInputProps['requiredIndicator']
+  requiredIndicator: TextInputProps['requiredIndicator'] | undefined
   error?: string
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
 }
