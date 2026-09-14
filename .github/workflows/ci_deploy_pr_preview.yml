@@ -83,6 +83,7 @@ jobs:
     with:
       cache_bucket_name: passculture-infra-prod-github-runner-cache
       backend_url: ${{ needs.deploy-preview-env-init.outputs.backend_url_for_pro }}
+      app_version: ${{ inputs.front-only == false && needs.deploy-preview-env-init.outputs.commit_sha || '' }}
       source_branch: ${{ inputs.source_branch }}
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
