@@ -1,4 +1,9 @@
-import { API_URL, IS_DEV, VITE_APP_VERSION } from '@/commons/utils/config'
+import {
+  API_URL,
+  IS_DEV,
+  IS_TESTING,
+  VITE_APP_VERSION,
+} from '@/commons/utils/config'
 
 export const BACKEND_VERSION_MISMATCH_EVENT = 'backend-version-mismatch'
 
@@ -10,6 +15,7 @@ export async function notifyIfBackendVersionChanged(
   if (
     !VITE_APP_VERSION ||
     IS_DEV ||
+    IS_TESTING ||
     !BACKEND_VERSION_MISMATCH_CANDIDATE_STATUSES.has(response.status)
   ) {
     return

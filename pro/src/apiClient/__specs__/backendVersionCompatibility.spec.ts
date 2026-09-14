@@ -7,6 +7,7 @@ vi.mock('@/commons/utils/config', () => ({
   API_URL: 'https://backend.example',
   VITE_APP_VERSION: 'current-version',
   IS_DEV: false,
+  IS_TESTING: false,
 }))
 
 describe('notifyIfBackendVersionChanged', () => {
@@ -46,6 +47,27 @@ describe('notifyIfBackendVersionChanged', () => {
       expect(mismatchEventSpy).not.toHaveBeenCalled()
     }
   )
+
+  it('should not check the backend version on the testing environment', async () => {
+    vi.resetModules()
+    vi.doMock('@/commons/utils/config', () => ({
+      API_URL: 'https://backend.example',
+      VITE_APP_VERSION: 'current-version',
+      IS_DEV: false,
+      IS_TESTING: true,
+    }))
+    const { notifyIfBackendVersionChanged: notify } = await import(
+      '../backendVersionCompatibility'
+    )
+    const mismatchEventSpy = vi.spyOn(window, 'dispatchEvent')
+
+    await notify(new Response(null, { status: 404 }))
+
+    expect(fetch).not.toHaveBeenCalled()
+    expect(mismatchEventSpy).not.toHaveBeenCalled()
+
+    vi.doUnmock('@/commons/utils/config')
+  })
 
   it('should not emit an event when backend and frontend versions match', async () => {
     vi.mocked(fetch).mockResolvedValue({
