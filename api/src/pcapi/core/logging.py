@@ -193,6 +193,10 @@ class JsonFormatter(logging.Formatter):
             "extra": extra,
             "pid": os.getpid(),
         }
+        if record.exc_info:
+            json_record["exc_info"] = self.formatException(record.exc_info)
+        if record.stack_info:
+            json_record["stack_info"] = self.formatStack(record.stack_info)
         if impersonator_id:
             json_record["impersonator_id"] = impersonator_id
         try:
