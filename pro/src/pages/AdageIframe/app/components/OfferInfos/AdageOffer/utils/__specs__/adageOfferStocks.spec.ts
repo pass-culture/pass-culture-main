@@ -20,46 +20,38 @@ describe('adageOfferStocks', () => {
       expect(stockText).toEqual('1\xa0€ pour 20 participants')
     })
 
-    describe('WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS', () => {
-      it('should include numberOfTeachers in the total participants count', () => {
-        const stockText = getBookableOfferStockPrice(
-          {
-            ...defaultCollectiveOffer,
-            stock: {
-              id: 1,
-              price: 14500,
-              servicePrice: 10000,
-              collectiveAdditionalFees: [
-                { type: CollectiveAdditionalFeeType.TRAVEL, amount: 4500 },
-              ],
-              numberOfTickets: 28,
-              numberOfTeachers: 2,
-            },
-          },
-          true
-        )
-
-        expect(stockText).toEqual('145\xa0€ pour 30 participants')
+    it('should include numberOfTeachers in the total participants count', () => {
+      const stockText = getBookableOfferStockPrice({
+        ...defaultCollectiveOffer,
+        stock: {
+          id: 1,
+          price: 14500,
+          servicePrice: 10000,
+          collectiveAdditionalFees: [
+            { type: CollectiveAdditionalFeeType.TRAVEL, amount: 4500 },
+          ],
+          numberOfTickets: 28,
+          numberOfTeachers: 2,
+        },
       })
 
-      it('should handle numberOfTeachers = 0', () => {
-        const stockText = getBookableOfferStockPrice(
-          {
-            ...defaultCollectiveOffer,
-            stock: {
-              id: 1,
-              price: 10000,
-              servicePrice: 10000,
-              collectiveAdditionalFees: [],
-              numberOfTickets: 10,
-              numberOfTeachers: 0,
-            },
-          },
-          true
-        )
+      expect(stockText).toEqual('145\xa0€ pour 30 participants')
+    })
 
-        expect(stockText).toEqual('100\xa0€ pour 10 participants')
+    it('should handle numberOfTeachers = 0', () => {
+      const stockText = getBookableOfferStockPrice({
+        ...defaultCollectiveOffer,
+        stock: {
+          id: 1,
+          price: 10000,
+          servicePrice: 10000,
+          collectiveAdditionalFees: [],
+          numberOfTickets: 10,
+          numberOfTeachers: 0,
+        },
       })
+
+      expect(stockText).toEqual('100\xa0€ pour 10 participants')
     })
   })
 })

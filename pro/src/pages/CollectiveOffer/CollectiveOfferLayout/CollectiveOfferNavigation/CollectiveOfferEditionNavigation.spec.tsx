@@ -27,7 +27,7 @@ describe('<CollectiveOfferEditionNavigation />', () => {
     )
 
     const tabs = screen.getAllByRole('listitem')
-    expect(tabs).toHaveLength(3)
+    expect(tabs).toHaveLength(4)
     expect(tabs[0]).toHaveAttribute('id', 'selected')
     expect(
       within(tabs[0]).getByRole('link', { name: /Détails de l'offre/ })
@@ -37,19 +37,23 @@ describe('<CollectiveOfferEditionNavigation />', () => {
     ).toBeVisible()
     expect(
       within(tabs[2]).getByRole('link', {
+        name: 'Informations pratiques',
+      })
+    ).toBeVisible()
+    expect(
+      within(tabs[3]).getByRole('link', {
         name: 'Établissement et enseignant',
       })
     ).toBeVisible()
   })
 
-  it('should show the INFORMATIONS step if WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS is enabled', () => {
+  it('should show the INFORMATIONS step', () => {
     const offerId = 1
     renderWithProviders(
       <CollectiveOfferEditionNavigation
         activeStep={CollectiveOfferStep.INFORMATION}
         offerId={offerId}
-      />,
-      { features: ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'] }
+      />
     )
 
     const tabs = screen.getAllByRole('listitem')

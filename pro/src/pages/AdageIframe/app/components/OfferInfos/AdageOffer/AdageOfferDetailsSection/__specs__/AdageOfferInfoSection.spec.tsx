@@ -205,26 +205,19 @@ describe('AdageOfferInfoSection', () => {
     expect(screen.getByText('123 Rue de Meaux, 75000, Paris')).toBeVisible()
   })
 
-  describe('WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS', () => {
-    const ffOptions: RenderWithProvidersOptions = {
-      features: ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'],
-    }
-
+  describe('price details', () => {
     it('should display total price TTC only when no additional fees', () => {
-      renderAdageOfferInfoSection(
-        {
-          offer: {
-            ...defaultCollectiveOffer,
-            stock: {
-              ...defaultCollectiveOffer.stock,
-              price: 10000,
-              servicePrice: 10000,
-              collectiveAdditionalFees: [],
-            },
+      renderAdageOfferInfoSection({
+        offer: {
+          ...defaultCollectiveOffer,
+          stock: {
+            ...defaultCollectiveOffer.stock,
+            price: 10000,
+            servicePrice: 10000,
+            collectiveAdditionalFees: [],
           },
         },
-        ffOptions
-      )
+      })
 
       expect(screen.getByText(/Prix total TTC : 100 €/)).toBeVisible()
       expect(
@@ -236,37 +229,34 @@ describe('AdageOfferInfoSection', () => {
     })
 
     it('should display price breakdown when additional fees exist', () => {
-      renderAdageOfferInfoSection(
-        {
-          offer: {
-            ...defaultCollectiveOffer,
-            stock: {
-              ...defaultCollectiveOffer.stock,
-              price: 14500,
-              servicePrice: 10000,
-              collectiveAdditionalFees: [
-                {
-                  // TODO: (jcicurel 2026-07-08) the label should be null
-                  // but for now the schema has label?: string
-                  // when the backend model is migrated it should be label: string | null
-                  type: CollectiveAdditionalFeeType.TRAVEL,
-                  amount: 3000,
-                },
-                {
-                  type: CollectiveAdditionalFeeType.MEAL,
-                  amount: 1500,
-                },
-                {
-                  type: CollectiveAdditionalFeeType.OTHER,
-                  label: 'Annexe',
-                  amount: 1515,
-                },
-              ],
-            },
+      renderAdageOfferInfoSection({
+        offer: {
+          ...defaultCollectiveOffer,
+          stock: {
+            ...defaultCollectiveOffer.stock,
+            price: 14500,
+            servicePrice: 10000,
+            collectiveAdditionalFees: [
+              {
+                // TODO: (jcicurel 2026-07-08) the label should be null
+                // but for now the schema has label?: string
+                // when the backend model is migrated it should be label: string | null
+                type: CollectiveAdditionalFeeType.TRAVEL,
+                amount: 3000,
+              },
+              {
+                type: CollectiveAdditionalFeeType.MEAL,
+                amount: 1500,
+              },
+              {
+                type: CollectiveAdditionalFeeType.OTHER,
+                label: 'Annexe',
+                amount: 1515,
+              },
+            ],
           },
         },
-        ffOptions
-      )
+      })
 
       expect(screen.getByText(/Prix total TTC : 145 €/)).toBeVisible()
       expect(
@@ -281,19 +271,16 @@ describe('AdageOfferInfoSection', () => {
     })
 
     it('should display informations pratiques section when additionalDetails exists', () => {
-      renderAdageOfferInfoSection(
-        {
-          offer: {
-            ...defaultCollectiveOffer,
-            additionalDetails: "Détail pratique de l'offre",
-            stock: {
-              ...defaultCollectiveOffer.stock,
-              educationalPriceDetail: 'Détail du prix', // check that we do not read the old field
-            },
+      renderAdageOfferInfoSection({
+        offer: {
+          ...defaultCollectiveOffer,
+          additionalDetails: "Détail pratique de l'offre",
+          stock: {
+            ...defaultCollectiveOffer.stock,
+            educationalPriceDetail: 'Détail du prix', // check that we do not read the old field
           },
         },
-        ffOptions
-      )
+      })
 
       expect(
         screen.getByRole('heading', { name: 'Informations pratiques' })
@@ -302,19 +289,16 @@ describe('AdageOfferInfoSection', () => {
     })
 
     it('should not display informations pratiques section when additionalDetails is missing', () => {
-      renderAdageOfferInfoSection(
-        {
-          offer: {
-            ...defaultCollectiveOffer,
-            additionalDetails: undefined,
-            stock: {
-              ...defaultCollectiveOffer.stock,
-              educationalPriceDetail: 'prix',
-            },
+      renderAdageOfferInfoSection({
+        offer: {
+          ...defaultCollectiveOffer,
+          additionalDetails: undefined,
+          stock: {
+            ...defaultCollectiveOffer.stock,
+            educationalPriceDetail: 'prix',
           },
         },
-        ffOptions
-      )
+      })
 
       expect(
         screen.queryByRole('heading', { name: 'Informations pratiques' })

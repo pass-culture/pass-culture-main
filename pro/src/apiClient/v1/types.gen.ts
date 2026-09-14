@@ -855,7 +855,7 @@ export type CollectiveStockCreationBodyModel = {
     /**
      * Collectiveadditionalfees
      */
-    collectiveAdditionalFees?: Array<CollectiveAdditionalFeeModel> | null;
+    collectiveAdditionalFees: Array<CollectiveAdditionalFeeModel>;
     /**
      * Enddatetime
      */
@@ -863,7 +863,7 @@ export type CollectiveStockCreationBodyModel = {
     /**
      * Numberofteachers
      */
-    numberOfTeachers?: number | null;
+    numberOfTeachers: number;
     /**
      * Numberoftickets
      */
@@ -877,13 +877,9 @@ export type CollectiveStockCreationBodyModel = {
      */
     price: number;
     /**
-     * Pricedetail
-     */
-    priceDetail?: string | null;
-    /**
      * Serviceprice
      */
-    servicePrice?: number | null;
+    servicePrice: number;
     /**
      * Startdatetime
      */
@@ -918,10 +914,6 @@ export type CollectiveStockEditionBodyModel = {
      * Price
      */
     price?: number | null;
-    /**
-     * Pricedetail
-     */
-    priceDetail?: string | null;
     /**
      * Serviceprice
      */
@@ -5317,17 +5309,9 @@ export enum PhoneValidationStatusType {
  */
 export type PostCollectiveOfferBodyModel = {
     /**
-     * Additionaldetails
-     */
-    additionalDetails?: string | null;
-    /**
      * Audiodisabilitycompliant
      */
     audioDisabilityCompliant: boolean;
-    /**
-     * Bookingemails
-     */
-    bookingEmails?: Array<string> | null;
     /**
      * Contactemail
      */

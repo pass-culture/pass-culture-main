@@ -89,11 +89,7 @@ describe('AdagePreviewLayout', () => {
     expect(screen.queryByText('email')).not.toBeInTheDocument()
   })
 
-  it('should handle offer price fields with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS', async () => {
-    const ffOptions: RenderWithProvidersOptions = {
-      features: ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'],
-    }
-
+  it('should handle offer price fields', async () => {
     renderAdagePreviewLayout(
       getCollectiveOfferFactory({
         collectiveStock: {
@@ -113,8 +109,7 @@ describe('AdagePreviewLayout', () => {
             },
           ],
         },
-      }),
-      ffOptions
+      })
     )
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

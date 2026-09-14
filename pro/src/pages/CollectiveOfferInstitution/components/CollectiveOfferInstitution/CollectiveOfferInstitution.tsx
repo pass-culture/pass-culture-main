@@ -29,7 +29,6 @@ import {
   SENT_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -83,10 +82,6 @@ export const CollectiveOfferInstitutionScreen = ({
   offer,
   requestId = '',
 }: CollectiveOfferInstitutionProps) => {
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
-
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
 
@@ -362,9 +357,7 @@ export const CollectiveOfferInstitutionScreen = ({
   }, 400)
 
   const requestIdQueryParam = requestId ? `?requete=${requestId}` : ''
-  const previousStepPath = isNewCollectivePriceEnabled
-    ? `/offre/${offer.id}/collectif/informations-pratiques${requestIdQueryParam}`
-    : `/offre/${offer.id}/collectif/stocks${requestIdQueryParam}`
+  const previousStepPath = `/offre/${offer.id}/collectif/informations-pratiques${requestIdQueryParam}`
 
   return (
     <>
