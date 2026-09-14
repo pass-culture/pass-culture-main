@@ -652,3 +652,24 @@ Au moins un message de statut n'est pas correctement restitué aux technologies 
 TBD
 
 </details>
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.1 - RGAA - Colonnes de tri des tableaux</summary>
+
+**RAWeb** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43547](https://passculture.atlassian.net/browse/PC-43547)  
+**PR** : [#24328](https://github.com/pass-culture/pass-culture-main/pull/24328)
+
+**Problème** 😱  
+Dans les tableaux, lors de l’activation d'un bouton de tri, aucune information indiquant le nouvel ordre de classement n’est restituée aux technologies d’assistance.
+
+
+**Correction** 💡  
+- Ajout de l'attribut aria-sort sur la colonne
+
+**Retours audit** 🔥  
+TBD
+
+</details>
