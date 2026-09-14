@@ -65,9 +65,6 @@ describe('screens | OfferEducational: edition', () => {
       }),
       screen.getByLabelText('Collège'), // one of every option
       screen.getByLabelText('Visuel'), // one of every option
-      screen.getByLabelText('Téléphone', { exact: false }),
-      screen.getAllByLabelText(/Email/)[0],
-      screen.getByLabelText(/Email auquel envoyer les notifications/),
     ]
     const submitButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',

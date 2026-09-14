@@ -6,7 +6,6 @@ import type { CollectiveStockEditionBodyModel } from '@/apiClient/v1'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { isCollectiveStockEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -19,7 +18,6 @@ import {
   withOnlyCollectiveOfferFromParams,
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferStockForm } from '../components/CollectiveOfferStockForm/CollectiveOfferStockForm'
-import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 import styles from './CollectiveOfferStockEdition.module.scss'
 
 export const CollectiveOfferStockEdition = ({
@@ -28,9 +26,6 @@ export const CollectiveOfferStockEdition = ({
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
   const { syncVenue } = useSyncVenueCache()
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
 
   const departementCode = offer.venue.departementCode ?? ''
   const stepPaths = {
@@ -41,9 +36,6 @@ export const CollectiveOfferStockEdition = ({
   const handleSubmitStock = async (
     newCollectiveStock: CollectiveStockEditionBodyModel
   ): Promise<boolean> => {
-    if (isNewCollectivePriceEnabled) {
-      delete newCollectiveStock.priceDetail
-    }
     if (!offer.collectiveStock) {
       snackBar.error('Impossible de mettre à jour le stock.')
 
@@ -86,25 +78,14 @@ export const CollectiveOfferStockEdition = ({
       {offer.isPublicApi && (
         <BannerPublicApi className={styles['banner-space']} />
       )}
-      {isNewCollectivePriceEnabled ? (
-        <CollectiveOfferStockForm
-          initialStock={offer.collectiveStock ?? {}}
-          departementCode={departementCode}
-          allowedActions={offer.allowedActions}
-          mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
-          onAfterSubmit={handleSubmitStock}
-          stepPaths={stepPaths}
-        />
-      ) : (
-        <OfferEducationalStock
-          initialStock={offer.collectiveStock ?? {}}
-          departementCode={departementCode}
-          allowedActions={offer.allowedActions}
-          mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
-          onAfterSubmit={handleSubmitStock}
-          stepPaths={stepPaths}
-        />
-      )}
+      <CollectiveOfferStockForm
+        initialStock={offer.collectiveStock ?? {}}
+        departementCode={departementCode}
+        allowedActions={offer.allowedActions}
+        mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
+        onAfterSubmit={handleSubmitStock}
+        stepPaths={stepPaths}
+      />
     </CollectiveOfferLayout>
   )
 }

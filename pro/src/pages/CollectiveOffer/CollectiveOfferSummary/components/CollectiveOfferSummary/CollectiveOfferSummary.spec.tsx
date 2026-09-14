@@ -184,7 +184,7 @@ describe('CollectiveOfferSummary', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display one edition button when the offer description is editable', () => {
+  it('should display two edition buttons when only the offer description is editable', () => {
     renderCollectiveOfferSummary({
       offer: getCollectiveOfferFactory({
         allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
@@ -192,10 +192,10 @@ describe('CollectiveOfferSummary', () => {
       offerEditLink: '123',
     })
 
-    expect(screen.getByRole('link', { name: 'Modifier' })).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(2)
   })
 
-  it('should display two edition buttons when the offer description and price are editable', () => {
+  it('should display three edition buttons when the offer description and price are editable', () => {
     renderCollectiveOfferSummary({
       offer: getCollectiveOfferFactory({
         allowedActions: [
@@ -207,10 +207,10 @@ describe('CollectiveOfferSummary', () => {
       stockEditLink: '234',
     })
 
-    expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(2)
+    expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(3)
   })
 
-  it('should display two edition buttons when the offer description and dates are editable', () => {
+  it('should display three edition buttons when the offer description and dates are editable', () => {
     renderCollectiveOfferSummary({
       offer: getCollectiveOfferFactory({
         allowedActions: [
@@ -222,10 +222,10 @@ describe('CollectiveOfferSummary', () => {
       stockEditLink: '234',
     })
 
-    expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(2)
+    expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(3)
   })
 
-  it('should display three edition buttons when the offer description, dates and institution are editable', () => {
+  it('should display four edition buttons when the offer description, dates and institution are editable', () => {
     renderCollectiveOfferSummary({
       offer: getCollectiveOfferFactory({
         allowedActions: [
@@ -239,7 +239,7 @@ describe('CollectiveOfferSummary', () => {
       institutionEditLink: '345',
     })
 
-    expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(3)
+    expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(4)
   })
 
   it('should not display any edition button when the selected venue is closed', () => {
@@ -263,16 +263,9 @@ describe('CollectiveOfferSummary', () => {
     expect(screen.queryAllByRole('link', { name: 'Modifier' })).toHaveLength(0)
   })
 
-  describe('WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS', () => {
-    const ffOverrides: RenderWithProvidersOptions = {
-      features: ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'],
-    }
-
+  describe('informations pratiques', () => {
     it('should display the 4 main sections for a bookable offer', () => {
-      renderCollectiveOfferSummary(
-        { offer: getCollectiveOfferFactory() },
-        ffOverrides
-      )
+      renderCollectiveOfferSummary({ offer: getCollectiveOfferFactory() })
 
       expect(
         screen.getByRole('heading', { name: 'Détails de l’offre' })
@@ -292,16 +285,13 @@ describe('CollectiveOfferSummary', () => {
     })
 
     it('should display priceDetail in "Informations pratiques" when it exists', () => {
-      renderCollectiveOfferSummary(
-        {
-          offer: getCollectiveOfferFactory({
-            collectiveStock: getCollectiveOfferCollectiveStockFactory({
-              priceDetail: 'Détail du prix pratique',
-            }),
+      renderCollectiveOfferSummary({
+        offer: getCollectiveOfferFactory({
+          collectiveStock: getCollectiveOfferCollectiveStockFactory({
+            priceDetail: 'Détail du prix pratique',
           }),
-        },
-        ffOverrides
-      )
+        }),
+      })
 
       const heading = screen.getByRole('heading', {
         name: 'Informations pratiques',
@@ -315,16 +305,13 @@ describe('CollectiveOfferSummary', () => {
     })
 
     it('should not display priceDetail subsection when priceDetail is null', () => {
-      renderCollectiveOfferSummary(
-        {
-          offer: getCollectiveOfferFactory({
-            collectiveStock: getCollectiveOfferCollectiveStockFactory({
-              priceDetail: null,
-            }),
+      renderCollectiveOfferSummary({
+        offer: getCollectiveOfferFactory({
+          collectiveStock: getCollectiveOfferCollectiveStockFactory({
+            priceDetail: null,
           }),
-        },
-        ffOverrides
-      )
+        }),
+      })
 
       expect(
         screen.queryByText('Détail du prix pratique')
@@ -332,14 +319,11 @@ describe('CollectiveOfferSummary', () => {
     })
 
     it('should display notification section when bookingEmails exist', () => {
-      renderCollectiveOfferSummary(
-        {
-          offer: getCollectiveOfferFactory({
-            bookingEmails: ['test-booking-email@example.com'],
-          }),
-        },
-        ffOverrides
-      )
+      renderCollectiveOfferSummary({
+        offer: getCollectiveOfferFactory({
+          bookingEmails: ['test-booking-email@example.com'],
+        }),
+      })
       expect(
         screen.getByRole('heading', { name: 'Dates et prix' })
       ).toBeVisible()
@@ -347,14 +331,11 @@ describe('CollectiveOfferSummary', () => {
     })
 
     it('should not display notification section when bookingEmails is empty', () => {
-      renderCollectiveOfferSummary(
-        {
-          offer: getCollectiveOfferFactory({
-            bookingEmails: [],
-          }),
-        },
-        ffOverrides
-      )
+      renderCollectiveOfferSummary({
+        offer: getCollectiveOfferFactory({
+          bookingEmails: [],
+        }),
+      })
 
       expect(
         screen.queryByText('Notifications des réservations :')
@@ -362,10 +343,9 @@ describe('CollectiveOfferSummary', () => {
     })
 
     it('should fall back to old layout for a template offer', () => {
-      renderCollectiveOfferSummary(
-        { offer: getCollectiveOfferTemplateFactory() },
-        ffOverrides
-      )
+      renderCollectiveOfferSummary({
+        offer: getCollectiveOfferTemplateFactory(),
+      })
 
       expect(
         screen.queryByRole('heading', { name: 'Dates et prix' })

@@ -80,9 +80,6 @@ export const OfferEducational = ({
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
 
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
@@ -108,62 +105,70 @@ export const OfferEducational = ({
         )
       : baseInitialValues
 
-  if (!isTemplate && isNewCollectivePriceEnabled) {
+  if (!isTemplate) {
     initialValues.bookingEmails = null
     initialValues.phone = undefined
     initialValues.contactEmail = undefined
   }
 
+  const saveTemplateOffer = async (
+    offerValues: OfferEducationalFormValues
+  ): Promise<
+    CollectiveOfferResponseIdModel | GetCollectiveOfferTemplateResponseModel
+  > => {
+    if (offer === undefined) {
+      const payload = createCollectiveOfferTemplatePayload(offerValues)
+      const createdOffer = await api.createCollectiveOfferTemplate({
+        body: payload,
+      })
+      offerIdRef.current = createdOffer.id
+      return createdOffer
+    }
+
+    const payload = createPatchOfferTemplatePayload(offerValues, initialValues)
+    return api.editCollectiveOfferTemplate({
+      path: { offer_id: offer.id },
+      body: payload,
+    })
+  }
+
+  const saveBookableOffer = async (
+    offerValues: OfferEducationalFormValues
+  ): Promise<
+    CollectiveOfferResponseIdModel | GetCollectiveOfferResponseModel
+  > => {
+    if (offer === undefined) {
+      const payload = createCollectiveOfferPayload(offerValues)
+      const createdOffer = await api.createCollectiveOffer({
+        body: payload,
+      })
+      offerIdRef.current = createdOffer.id
+      return createdOffer
+    }
+
+    const payload = createPatchOfferPayload(offerValues, initialValues)
+    return api.editCollectiveOffer({
+      path: { offer_id: offer.id },
+      body: payload,
+    })
+  }
+
+  const saveOffer = (
+    offerValues: OfferEducationalFormValues
+  ): Promise<
+    | CollectiveOfferResponseIdModel
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
+  > => {
+    return isTemplate
+      ? saveTemplateOffer(offerValues)
+      : saveBookableOffer(offerValues)
+  }
+
   const onSubmit = async (): Promise<boolean> => {
-    let newOrUpdatedOffer:
-      | CollectiveOfferResponseIdModel
-      | GetCollectiveOfferTemplateResponseModel
-      | GetCollectiveOfferResponseModel
-      | null = null
     const offerValues = form.watch()
     try {
-      if (isTemplate) {
-        if (offer === undefined) {
-          const payload = createCollectiveOfferTemplatePayload(offerValues)
-
-          newOrUpdatedOffer = await api.createCollectiveOfferTemplate({
-            body: payload,
-          })
-
-          offerIdRef.current = newOrUpdatedOffer.id
-        } else {
-          const payload = createPatchOfferTemplatePayload(
-            offerValues,
-            initialValues
-          )
-          newOrUpdatedOffer = await api.editCollectiveOfferTemplate({
-            path: { offer_id: offer.id },
-            body: payload,
-          })
-        }
-      } else if (offer === undefined) {
-        const payload = createCollectiveOfferPayload(
-          offerValues,
-          undefined,
-          isNewCollectivePriceEnabled
-        )
-        newOrUpdatedOffer = await api.createCollectiveOffer({
-          body: payload,
-        })
-
-        offerIdRef.current = newOrUpdatedOffer.id
-      } else {
-        const payload = createPatchOfferPayload(
-          offerValues,
-          initialValues,
-          isNewCollectivePriceEnabled
-        )
-
-        newOrUpdatedOffer = await api.editCollectiveOffer({
-          path: { offer_id: offer.id },
-          body: payload,
-        })
-      }
+      const newOrUpdatedOffer = await saveOffer(offerValues)
 
       assertOrFrontendError(
         offerIdRef.current,
@@ -215,9 +220,7 @@ export const OfferEducational = ({
 
   const form = useForm<OfferEducationalFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(
-      getOfferEducationalValidationSchema(isNewCollectivePriceEnabled)
-    ),
+    resolver: yupResolver(getOfferEducationalValidationSchema()),
     shouldFocusError: false,
     mode: 'onTouched',
   })

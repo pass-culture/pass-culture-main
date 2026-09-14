@@ -142,16 +142,8 @@ export const createCollectiveOfferTemplatePayload = (
 
 export const createCollectiveOfferPayload = (
   offer: OfferEducationalFormValues,
-  offerTemplateId?: number,
-  isNewCollectivePriceEnabled: boolean = false
+  offerTemplateId?: number
 ): PostCollectiveOfferBodyModel => ({
   ...getCommonOfferPayload(offer),
   templateId: offerTemplateId,
-  ...(isNewCollectivePriceEnabled
-    ? {}
-    : {
-        contactEmail: offer.contactEmail,
-        contactPhone: offer.phone,
-        bookingEmails: offer.bookingEmails?.map((email) => email.email) ?? [''],
-      }),
 })

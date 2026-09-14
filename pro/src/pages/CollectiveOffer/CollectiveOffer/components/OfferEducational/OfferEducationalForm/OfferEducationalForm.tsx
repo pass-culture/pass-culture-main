@@ -16,7 +16,6 @@ import {
   type OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -70,10 +69,8 @@ export const OfferEducationalForm = ({
 }: OfferEducationalFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const [isEligible, setIsEligible] = useState<boolean>()
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
-  const shouldShowContactFields = isTemplate || !isNewCollectivePriceEnabled
+
+  const shouldShowContactFields = isTemplate
   const { formState, watch, setValue } =
     useFormContext<OfferEducationalFormValues>()
 

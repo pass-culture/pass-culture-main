@@ -2,10 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import type {
-  CollectiveStockCreationBodyModel,
-  CollectiveStockResponseModel,
-} from '@/apiClient/v1'
+import type { CollectiveStockResponseModel } from '@/apiClient/v1'
 import {
   defaultGetCollectiveOfferRequest,
   getCollectiveOfferCollectiveStockFactory,
@@ -18,7 +15,6 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { CollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferStockForm } from '../components/CollectiveOfferStockForm/CollectiveOfferStockForm'
-import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 import { CollectiveOfferStockCreation } from './CollectiveOfferStockCreation'
 
 vi.mock('@/apiClient/api', () => ({
@@ -31,10 +27,6 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-vi.mock('../components/OfferEducationalStock/OfferEducationalStock', () => ({
-  OfferEducationalStock: vi.fn(() => <div data-testid="stock-form" />),
-}))
-
 vi.mock(
   '../components/CollectiveOfferStockForm/CollectiveOfferStockForm',
   () => ({
@@ -43,7 +35,7 @@ vi.mock(
 )
 
 const setSubmitResponse = (
-  newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
+  newCollectiveStock: Partial<CollectiveStockResponseModel>
 ) => {
   const formMock = vi.fn(({ onAfterSubmit }) => {
     return (
@@ -52,7 +44,6 @@ const setSubmitResponse = (
       </button>
     )
   })
-  vi.mocked(OfferEducationalStock).mockImplementationOnce(formMock)
   vi.mocked(CollectiveOfferStockForm).mockImplementationOnce(formMock)
 }
 
@@ -100,8 +91,8 @@ describe('CollectiveOfferStockCreation', () => {
     await waitFor(() => {
       expect(api.getCollectiveOfferTemplate).toHaveBeenCalledTimes(1)
     })
-    expect(OfferEducationalStock).toHaveBeenCalledTimes(2) // first render before api request resolves
-    expect(OfferEducationalStock).toHaveBeenLastCalledWith(
+    expect(CollectiveOfferStockForm).toHaveBeenCalled()
+    expect(CollectiveOfferStockForm).toHaveBeenLastCalledWith(
       expect.objectContaining({
         initialStock: { priceDetail: 'Details from template' },
       }),
@@ -157,8 +148,8 @@ describe('CollectiveOfferStockCreation', () => {
       await waitFor(() => {
         expect(api.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
       })
-      expect(OfferEducationalStock).toHaveBeenCalledTimes(2) // first render before api request resolves
-      expect(OfferEducationalStock).toHaveBeenLastCalledWith(
+      expect(CollectiveOfferStockForm).toHaveBeenCalled()
+      expect(CollectiveOfferStockForm).toHaveBeenLastCalledWith(
         expect.objectContaining({
           initialStock: expectedStock,
         }),
@@ -181,21 +172,17 @@ describe('CollectiveOfferStockCreation', () => {
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
     expect(api.editCollectiveStock).not.toHaveBeenCalled()
-    const {
-      servicePrice,
-      numberOfTeachers,
-      collectiveAdditionalFees,
-      ...oldStock
-    } = collectiveStock
+    const expectedStockSent = { ...collectiveStock }
+    delete expectedStockSent.priceDetail
     expect(api.createCollectiveStock).toHaveBeenCalledExactlyOnceWith({
       body: {
-        ...oldStock,
+        ...expectedStockSent,
         offerId: offer.id,
       },
     })
   })
 
-  it('on submit : should call creation endpoint with additionalFees/servicePrice if no stock exists yet on offer when FF is on', async () => {
+  it('on submit : should call creation endpoint with additionalFees/servicePrice if no stock exists yet on offer', async () => {
     const user = userEvent.setup()
     const offer = getCollectiveOfferFactory({ collectiveStock: null })
     const collectiveStock: Partial<CollectiveStockResponseModel> =
@@ -203,9 +190,7 @@ describe('CollectiveOfferStockCreation', () => {
     delete collectiveStock.id
     delete collectiveStock.priceDetail
     setSubmitResponse(collectiveStock)
-    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer }, [
-      'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
-    ])
+    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer })
 
     expect(api.createCollectiveStock).not.toHaveBeenCalled()
 
@@ -255,16 +240,14 @@ describe('CollectiveOfferStockCreation', () => {
     expect(api.editCollectiveStock).not.toHaveBeenCalled()
   })
 
-  it('on submit with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS enabled: should not send priceDetail on stock post', async () => {
+  it('on submit: should not send priceDetail on stock post', async () => {
     const user = userEvent.setup()
     const offer = getCollectiveOfferFactory({ collectiveStock: null })
     const collectiveStock: Partial<CollectiveStockResponseModel> =
       getCollectiveOfferCollectiveStockFactory()
     delete collectiveStock.id
     setSubmitResponse(collectiveStock)
-    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer }, [
-      'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
-    ])
+    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer })
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
@@ -275,22 +258,6 @@ describe('CollectiveOfferStockCreation', () => {
         ...expectedStockSent,
         offerId: offer.id,
       },
-    })
-  })
-
-  it('on submit with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS enabled: should not send priceDetail on stock patch', async () => {
-    const user = userEvent.setup()
-    const offer = getCollectiveOfferFactory()
-    setSubmitResponse({ numberOfTickets: 12, priceDetail: 'test' })
-
-    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer }, [
-      'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
-    ])
-
-    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
-    expect(api.editCollectiveStock).toHaveBeenCalledExactlyOnceWith({
-      path: { collective_stock_id: offer.collectiveStock?.id },
-      body: { numberOfTickets: 12 },
     })
   })
 })
