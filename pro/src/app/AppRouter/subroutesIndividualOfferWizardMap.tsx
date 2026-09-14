@@ -21,18 +21,6 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummaryDetails/IndividualOfferSummaryDetails'
-      ),
-    path: '/offre/individuelle/:offerId/recapitulatif/description',
-    handle: {
-      title: 'Détails de l’offre - Consulter une offre individuelle',
-    },
-    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-  },
   // Exposure
   {
     lazy: () =>
@@ -43,7 +31,6 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Visibilité - Consulter une offre individuelle',
     },
-    featureName: 'WIP_OFFER_EXPOSURE',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   //  Description
@@ -127,18 +114,6 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummaryLocation/IndividualOfferSummaryLocation'
-      ),
-    path: '/offre/individuelle/:offerId/localisation',
-    handle: {
-      title: 'Localisation - Consulter une offre individuelle',
-    },
-    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-  },
   // Image & video (media) pages
   {
     lazy: () =>
@@ -162,18 +137,6 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummaryMedia/IndividualOfferSummaryMedia'
-      ),
-    path: '/offre/individuelle/:offerId/media',
-    handle: {
-      title: 'Image et vidéo - Consulter une offre individuelle',
-    },
-    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-  },
   // Price categories pages
   {
     lazy: () =>
@@ -195,18 +158,6 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Tarifs - Modifier une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-  },
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummaryPriceCategories/IndividualOfferSummaryPriceCategories'
-      ),
-    path: '/offre/individuelle/:offerId/tarifs',
-    handle: {
-      title: 'Tarifs - Consulter une offre individuelle',
-    },
-    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Timetable
@@ -235,18 +186,6 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummaryStocks/IndividualOfferSummaryStocks'
-      ),
-    path: '/offre/individuelle/:offerId/horaires',
-    handle: {
-      title: 'Horaires - Consulter une offre individuelle',
-    },
-    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-  },
-  {
-    lazy: () =>
-      import(
         '@/pages/IndividualOffer/IndividualOfferPracticalInfos/IndividualOfferPracticalInfos'
       ),
     path: '/offre/individuelle/:offerId/creation/informations_pratiques',
@@ -264,18 +203,6 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Informations pratiques - Modifier une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-  },
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummaryPracticalInfos/IndividualOfferSummaryPracticalInfos'
-      ),
-    path: '/offre/individuelle/:offerId/informations_pratiques',
-    handle: {
-      title: 'Informations pratiques - Consulter une offre individuelle',
-    },
-    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Booking summary page

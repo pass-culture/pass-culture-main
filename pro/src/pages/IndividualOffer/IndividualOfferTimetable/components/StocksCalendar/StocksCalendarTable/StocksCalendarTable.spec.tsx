@@ -96,18 +96,10 @@ describe('StocksCalendarTable', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not render stocks checkboxes options when the page is read only', () => {
-    renderStocksCalendarTable({ mode: OFFER_WIZARD_MODE.READ_ONLY })
+  it('should not render stocks checkboxes options outside of the creation mode', () => {
+    renderStocksCalendarTable({ mode: OFFER_WIZARD_MODE.EDITION })
 
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
-  })
-
-  it('should not render stocks deletion options when the page is read only', () => {
-    renderStocksCalendarTable({ mode: OFFER_WIZARD_MODE.READ_ONLY })
-
-    expect(
-      screen.queryByRole('button', { name: 'Supprimer la date' })
-    ).not.toBeInTheDocument()
   })
 
   it('should not render the delete options when the stocks cannot be deleted', () => {

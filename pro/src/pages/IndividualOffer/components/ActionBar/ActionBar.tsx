@@ -13,7 +13,6 @@ import { ActionBarRight } from './ActionBarRight'
 export interface ActionBarProps {
   dirtyForm?: boolean
   isDisabled?: boolean
-  isEvent?: boolean
   onClickNext?: () => void
   onClickPrevious?: () => void
   publicationMode?: 'later' | 'now'
@@ -25,7 +24,6 @@ export const ActionBar = ({
   onClickNext,
   onClickPrevious,
   isDisabled = false,
-  isEvent = false,
   publicationMode = 'now',
   step,
 }: ActionBarProps) => {
@@ -38,7 +36,6 @@ export const ActionBar = ({
       <ActionsBarSticky.Left>
         <ActionBarLeft
           isDisabled={isDisabled}
-          isEvent={isEvent}
           mode={mode}
           onClickNext={onClickNext}
           onClickPrevious={onClickPrevious}

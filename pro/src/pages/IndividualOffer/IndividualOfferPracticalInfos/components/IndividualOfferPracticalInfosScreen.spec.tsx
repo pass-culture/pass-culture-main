@@ -50,8 +50,7 @@ const LABELS = {
 }
 
 function renderIndividualOfferPracticalInfosScreen(
-  props?: Partial<IndividualOfferPracticalInfosScreenProps>,
-  features?: string[]
+  props?: Partial<IndividualOfferPracticalInfosScreenProps>
 ) {
   renderWithProviders(
     <IndividualOfferContext.Provider
@@ -80,7 +79,6 @@ function renderIndividualOfferPracticalInfosScreen(
           selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
         },
       },
-      features,
     }
   )
 }
@@ -202,13 +200,13 @@ describe('IndividualOfferPracticalInfosScreen', () => {
     )
   })
 
-  it('should show a success snackbar and not navigate in edition mode when WIP_OFFER_EXPOSURE is enabled', async () => {
+  it('should show a success snackbar and not navigate in edition mode', async () => {
     vi.spyOn(useOfferWizardMode, 'useOfferWizardMode').mockImplementation(
       () => OFFER_WIZARD_MODE.EDITION
     )
     vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
 
-    renderIndividualOfferPracticalInfosScreen({}, ['WIP_OFFER_EXPOSURE'])
+    renderIndividualOfferPracticalInfosScreen({})
 
     await waitFor(() => {
       screen.getByRole('heading', { name: LABELS.heading })
@@ -229,25 +227,5 @@ describe('IndividualOfferPracticalInfosScreen', () => {
       ).toBeGreaterThan(0)
     })
     expect(mockNavigate).not.toHaveBeenCalled()
-  })
-
-  it('should navigate to the practical info summary page whern clicking cancel while on edition mode', async () => {
-    vi.spyOn(useOfferWizardMode, 'useOfferWizardMode').mockImplementation(
-      () => OFFER_WIZARD_MODE.EDITION
-    )
-
-    renderIndividualOfferPracticalInfosScreen({})
-
-    await waitFor(() => {
-      screen.getByRole('heading', { name: LABELS.heading })
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Annuler et quitter' })
-    )
-
-    expect(mockNavigate).toHaveBeenCalledWith(
-      expect.stringContaining('/informations_pratiques')
-    )
   })
 })

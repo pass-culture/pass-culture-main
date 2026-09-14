@@ -17,7 +17,6 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -74,7 +73,6 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   })
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
@@ -215,24 +213,19 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
       {isOfferSynchronized(offer) && (
         <SynchronizedBanner providerName={offer?.lastProvider?.name} />
       )}
-      {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
-        //  When the mode is read only, the title is already inside the SummarySection layout
-        <div className={styles['header']}>
-          <h2 className={styles['title']}>{'Horaires et stocks'}</h2>
-          {hasStocks && !isOfferSynchronized(offer) && (
-            <RecurrenceModalButton
-              triggerLabel="Ajouter une ou plusieurs dates"
-              triggerVariant={ButtonVariant.SECONDARY}
-              offer={offer}
-              handleSubmitRecurrenceFormDrawer={
-                handleSubmitRecurrenceFormDrawer
-              }
-              isDialogOpen={isDialogOpen}
-              setIsDialogOpen={setIsDialogOpen}
-            />
-          )}
-        </div>
-      )}
+      <div className={styles['header']}>
+        <h2 className={styles['title']}>{'Horaires et stocks'}</h2>
+        {hasStocks && !isOfferSynchronized(offer) && (
+          <RecurrenceModalButton
+            triggerLabel="Ajouter une ou plusieurs dates"
+            triggerVariant={ButtonVariant.SECONDARY}
+            offer={offer}
+            handleSubmitRecurrenceFormDrawer={handleSubmitRecurrenceFormDrawer}
+            isDialogOpen={isDialogOpen}
+            setIsDialogOpen={setIsDialogOpen}
+          />
+        )}
+      </div>
       {mode !== OFFER_WIZARD_MODE.CREATION && !isOfferDisabled(offer) && (
         <div className={styles['cancel-banner']}>
           <StocksCalendarCancelBanner />
@@ -317,31 +310,27 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
                 onPageClick: setPage,
               }}
             >
-              {(!isOfferExposureEnabled ||
-                mode === OFFER_WIZARD_MODE.CREATION) && (
+              {mode === OFFER_WIZARD_MODE.CREATION && (
                 <StocksCalendarActionsBar
                   checkedStocks={checkedStocks}
                   hasStocks={offer.hasStocks}
                   deleteStocks={deleteStocks}
                   updateCheckedStocks={setCheckedStocks}
-                  mode={mode}
                   offerId={offer.id}
                 />
               )}
             </StocksCalendarTable>
           </div>
         )}
-        {hasNoStocks &&
-          (!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION) && (
-            <StocksCalendarActionsBar
-              checkedStocks={checkedStocks}
-              hasStocks={offer.hasStocks}
-              deleteStocks={deleteStocks}
-              updateCheckedStocks={setCheckedStocks}
-              mode={mode}
-              offerId={offer.id}
-            />
-          )}
+        {hasNoStocks && mode === OFFER_WIZARD_MODE.CREATION && (
+          <StocksCalendarActionsBar
+            checkedStocks={checkedStocks}
+            hasStocks={offer.hasStocks}
+            deleteStocks={deleteStocks}
+            updateCheckedStocks={setCheckedStocks}
+            offerId={offer.id}
+          />
+        )}
       </div>
     </>
   )

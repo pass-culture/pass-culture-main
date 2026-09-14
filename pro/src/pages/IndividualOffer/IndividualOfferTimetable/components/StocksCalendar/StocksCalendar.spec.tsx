@@ -724,21 +724,4 @@ describe('StocksCalendar', () => {
       screen.queryByRole('button', { name: LABEL.dateAction })
     ).not.toBeInTheDocument()
   })
-
-  it('should not show header section in read only mode', async () => {
-    renderStocksCalendar(defaultStocks, {
-      mode: OFFER_WIZARD_MODE.READ_ONLY,
-    })
-
-    await waitFor(() => {
-      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
-    })
-
-    expect(
-      screen.queryByRole('heading', { name: 'Horaires' })
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: LABEL.noDateAction })
-    ).not.toBeInTheDocument()
-  })
 })

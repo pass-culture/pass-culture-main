@@ -4,7 +4,6 @@ import {
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Link } from 'react-router'
 import useSWR from 'swr'
 
@@ -26,7 +25,6 @@ import styles from './HeadlineOffer.module.scss'
 
 export function HeadlineOffer() {
   const { logEvent } = useAnalytics()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   const { headlineOffer } = useHeadlineOfferContext()
 
@@ -45,12 +43,11 @@ export function HeadlineOffer() {
     mode:
       offerQuery.data.status === OfferStatus.DRAFT
         ? OFFER_WIZARD_MODE.CREATION
-        : OFFER_WIZARD_MODE.READ_ONLY,
+        : OFFER_WIZARD_MODE.EDITION,
     step:
-      offerQuery.data.status === OfferStatus.DRAFT || !isOfferExposureEnabled
+      offerQuery.data.status === OfferStatus.DRAFT
         ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
         : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
-    isOfferExposureEnabled,
   })
 
   return (
