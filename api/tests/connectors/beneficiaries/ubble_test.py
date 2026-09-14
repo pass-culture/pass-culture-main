@@ -37,6 +37,29 @@ class StartIdentificationTest:
             "redirect_url": "https://redirect.example.com",
         }
 
+    def test_start_identification_with_user_journey(self, requests_mock):
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
+            json=fixtures.ID_VERIFICATION_CREATION_RESPONSE,
+        )
+
+        response = ubble.create_and_start_identity_verification(
+            first_name="Catherine",
+            last_name="Destivelle",
+            webhook_url="https://webhook.example.com",
+            redirect_url="https://redirect.example.com",
+            user_journey_id="usj_abcd12345",
+        )
+
+        assert isinstance(response, ubble_schemas.UbbleContent)
+        assert requests_mock.call_count == 1
+        assert requests_mock.last_request.json() == {
+            "declared_data": {"name": "Catherine Destivelle"},
+            "webhook_url": "https://webhook.example.com",
+            "redirect_url": "https://redirect.example.com",
+            "user_journey_id": "usj_abcd12345",
+        }
+
     def test_start_identification_connection_error(self, requests_mock):
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", exc=requests.exceptions.ConnectionError)
 

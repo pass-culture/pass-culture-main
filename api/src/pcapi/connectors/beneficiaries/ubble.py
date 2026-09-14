@@ -184,18 +184,22 @@ def create_identity_verification_attempt(identification_id: str, redirect_url: s
 @log_and_handle_ubble_response("create-and-start-idv")
 @ubble_rate_limit
 def create_and_start_identity_verification(
-    first_name: str, last_name: str, redirect_url: str, webhook_url: str
+    first_name: str, last_name: str, redirect_url: str, webhook_url: str, *, user_journey_id: str | None = None
 ) -> ubble_schemas.UbbleContent:
+    """
+    Ubble API documentation:
+    https://docs.ubble.ai/api#tag/Identity-verifications/operation/create_and_start_identity_verification
+    """
+    data = {
+        "declared_data": {"name": f"{first_name} {last_name}"},
+        "webhook_url": webhook_url,
+        "redirect_url": redirect_url,
+    }
+    if user_journey_id:
+        data["user_journey_id"] = user_journey_id
+
     session = _configure_v2_session()
-    response = session.post(
-        build_url("/v2/create-and-start-idv"),
-        json={
-            "declared_data": {"name": f"{first_name} {last_name}"},
-            "webhook_url": webhook_url,
-            "redirect_url": redirect_url,
-        },
-        timeout=60,
-    )
+    response = session.post(build_url("/v2/create-and-start-idv"), json=data, timeout=60)
     response.raise_for_status()
 
     ubble_identification = ubble_serializers.UbbleV2IdentificationResponse.model_validate(response.json())
