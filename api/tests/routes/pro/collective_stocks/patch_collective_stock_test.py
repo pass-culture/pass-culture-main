@@ -30,7 +30,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Return200Test:
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock(self, client):
         factories.EducationalYearFactory(beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31))
@@ -38,9 +37,10 @@ class Return200Test:
         stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
+            servicePrice=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
-            priceDetail="Détail du prix",
+            priceDetail=None,
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -52,8 +52,9 @@ class Return200Test:
             "endDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "price": 1500,
+            "servicePrice": 1500,
+            "collectiveAdditionalFees": [],
             "numberOfTickets": 38,
-            "priceDetail": "Nouvelle description du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -64,11 +65,8 @@ class Return200Test:
         assert edited_stock.startDatetime == datetime(2022, 1, 17, 22)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 31, 20)
         assert edited_stock.price == 1500
+        assert edited_stock.servicePrice == 1500
         assert edited_stock.numberOfTickets == 38
-        assert edited_stock.priceDetail == "Nouvelle description du prix"
-
-        # check double-writing stock.priceDetail -> offer.additionalDetails
-        assert edited_stock.collectiveOffer.additionalDetails == "Nouvelle description du prix"
 
         assert response.json == {
             "startDatetime": "2022-01-17T22:00:00Z",
@@ -80,7 +78,7 @@ class Return200Test:
             "collectiveAdditionalFees": [],
             "numberOfTickets": 38,
             "numberOfTeachers": 5,
-            "priceDetail": "Nouvelle description du prix",
+            "priceDetail": None,
         }
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -289,7 +287,6 @@ class Return200Test:
         assert booking.cancellationReason == None
         assert booking.cancellationDate == None
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_number_of_teachers(self, client):
         stock = factories.CollectiveStockFactory(numberOfTeachers=30)
         offerers_factories.UserOffererFactory(
@@ -303,7 +300,6 @@ class Return200Test:
 
         assert stock.numberOfTeachers == 38
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_price_fields(self, client):
         stock = factories.CollectiveStockFactory(price=10, servicePrice=10)
         offerers_factories.UserOffererFactory(
@@ -332,7 +328,6 @@ class Return200Test:
             for fee in sorted(stock.collectiveAdditionalFees, key=lambda f: f.amount)
         ] == fees
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_price_fields_no_fees(self, client):
         stock = factories.CollectiveStockFactory(price=20, servicePrice=10)
         factories.CollectiveAdditionalFeeFactory(
@@ -493,30 +488,6 @@ class Return400Test:
 
         assert response.status_code == 400
         assert response.json == {field: ["Ce champ ne peut pas être null"]}
-
-    @time_machine.travel("2020-11-17 15:00:00")
-    def should_raise_error_when_educational_price_detail_length_is_greater_than_1000(self, client):
-        stock = factories.CollectiveStockFactory(
-            startDatetime=datetime(2021, 12, 18),
-            price=1200,
-            numberOfTickets=32,
-            bookingLimitDatetime=datetime(2021, 12, 1),
-            priceDetail="Détail du prix",
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
-        )
-
-        stock_edition_payload = {
-            "priceDetail": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sodales commodo tellus, at dictum odio vulputate nec. Donec iaculis rutrum nunc. Nam euismod, odio vel iaculis tincidunt, enim ante iaculis purus, ac vehicula ex lacus sit amet nisl. Aliquam et diam tellus. Curabitur in pharetra augue. Nunc scelerisque lectus non diam efficitur, eu porta neque vestibulum. Nullam elementum purus ac ligula viverra tincidunt. Etiam tincidunt metus nec nibh tempor tincidunt. Pellentesque ac ipsum purus. Duis vestibulum mollis nisi a vulputate. Nullam malesuada eros eu convallis rhoncus. Maecenas eleifend ex at posuere maximus. Suspendisse faucibus egestas dolor, sit amet dignissim odio condimentum vitae. Pellentesque ultricies eleifend nisi, quis pellentesque nisi faucibus finibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse potenti. Aliquam convallis diam nisl, eget ullamcorper odio convallis ac. Ut quis nulla fringilla, commodo tellus ut.",
-        }
-
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
-
-        assert response.status_code == 400
-        assert response.json == {"priceDetail": ["Le détail du prix ne doit pas excéder 1000 caractères."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_valid_stock_for_collective_offer(self, client):
@@ -777,21 +748,6 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"numberOfTickets": [error]}
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
-    def test_price_detail_not_editable(self, client):
-        stock = factories.CollectiveStockFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
-        )
-
-        payload = {"priceDetail": "details"}
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=payload)
-
-        assert response.status_code == 400
-        assert response.json == {"priceDetail": ["Ce champ ne peut pas être édité"]}
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     @pytest.mark.parametrize(
         "number_of_teachers,error",
         (
@@ -812,24 +768,6 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"numberOfTeachers": [error]}
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    @pytest.mark.parametrize(
-        "field,value", (("numberOfTeachers", 10), ("servicePrice", 10), ("collectiveAdditionalFees", []))
-    )
-    def test_price_fields_not_allowed(self, client, field, value):
-        stock = factories.CollectiveStockFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
-        )
-
-        payload = {field: value}
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=payload)
-
-        assert response.status_code == 400
-        assert response.json == {field: ["Ce champ ne peut pas être édité"]}
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     @pytest.mark.parametrize(
         "payload,error",
         (
@@ -988,7 +926,6 @@ class Return400Test:
 
 
 class Returns403Test:
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_error_if_venue_is_closed(self, client):
         factories.EducationalYearFactory(beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31))
@@ -1009,8 +946,9 @@ class Returns403Test:
             "endDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "price": 1500,
+            "servicePrice": 1500,
+            "collectiveAdditionalFees": [],
             "numberOfTickets": 38,
-            "priceDetail": "Nouvelle description du prix",
         }
 
         client.with_session_auth("user@example.com")

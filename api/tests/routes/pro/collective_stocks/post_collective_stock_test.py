@@ -19,21 +19,11 @@ from pcapi.utils import date as date_utils
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
-BASE_PAYLOAD_NO_DETAIL = {
+BASE_PAYLOAD = {
     "startDatetime": "2022-01-17T22:00:00Z",
     "endDatetime": "2022-01-17T22:00:00Z",
     "bookingLimitDatetime": "2021-12-31T20:00:00Z",
-    "price": 1500.12,
     "numberOfTickets": 38,
-}
-
-BASE_PAYLOAD = {**BASE_PAYLOAD_NO_DETAIL, "priceDetail": "Détail du prix"}
-
-# when WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS FF is removed:
-# - rename this BASE_PAYLOAD_WITH_SERVICE_PRICE to BASE_PAYLOAD
-# - delete BASE_PAYLOAD_NO_DETAIL and BASE_PAYLOAD above
-BASE_PAYLOAD_WITH_SERVICE_PRICE = {
-    **BASE_PAYLOAD_NO_DETAIL,
     "numberOfTeachers": 10,
     "price": 10.99,
     "servicePrice": 10.99,
@@ -47,7 +37,6 @@ def _create_educational_year():
 
 class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
     def test_create_valid_stock_for_collective_offer(self, client):
         _create_educational_year()
         offer = factories.DraftCollectiveOfferFactory(additionalDetails=None)
@@ -59,21 +48,18 @@ class Return200Test:
         assert response.status_code == 201
         created_stock = db.session.query(CollectiveStock).filter_by(id=response.json["id"]).one()
         assert offer.id == created_stock.collectiveOfferId
-        assert created_stock.price == decimal.Decimal("1500.12")
-        assert created_stock.servicePrice == decimal.Decimal("1500.12")
+        assert created_stock.price == decimal.Decimal("10.99")
+        assert created_stock.servicePrice == decimal.Decimal("10.99")
         assert created_stock.collectiveAdditionalFees == []
         assert created_stock.numberOfTickets == 38
-        assert created_stock.numberOfTeachers == 0
-        assert created_stock.priceDetail == "Détail du prix"
+        assert created_stock.numberOfTeachers == 10
+        assert created_stock.priceDetail is None
         assert offer.validation == OfferValidationStatus.DRAFT
         assert created_stock.startDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
         assert created_stock.endDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
-
-        # check double-writing stock.priceDetail -> offer.additionalDetails
-        assert offer.additionalDetails == "Détail du prix"
+        assert offer.additionalDetails is None
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_price_fields(self, client):
         _create_educational_year()
         offer = factories.DraftCollectiveOfferFactory()
@@ -86,9 +72,8 @@ class Return200Test:
             {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "other custom fee", "amount": 25},
         ]
         stock_payload = {
-            **BASE_PAYLOAD_NO_DETAIL,
+            **BASE_PAYLOAD,
             "offerId": offer.id,
-            "numberOfTeachers": 10,
             "price": 110.50,
             "servicePrice": 40,
             "collectiveAdditionalFees": fees,
@@ -119,16 +104,14 @@ class Return200Test:
         assert total_fees + created_stock.servicePrice == created_stock.price
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_price_fields_no_fees(self, client):
         _create_educational_year()
         offer = factories.DraftCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
-            **BASE_PAYLOAD_NO_DETAIL,
+            **BASE_PAYLOAD,
             "offerId": offer.id,
-            "numberOfTeachers": 10,
             "price": 10.99,
             "servicePrice": 10.99,
             "collectiveAdditionalFees": [],
@@ -150,7 +133,7 @@ class Return404Test:
         offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
-        stock_payload = {**BASE_PAYLOAD_WITH_SERVICE_PRICE, "offerId": offer.id}
+        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 404
@@ -160,7 +143,7 @@ class Return404Test:
     def test_create_collective_stocks_should_not_be_available_if_offer_not_found(self, client):
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
-        stock_payload = {**BASE_PAYLOAD_WITH_SERVICE_PRICE, "offerId": 123456789}
+        stock_payload = {**BASE_PAYLOAD, "offerId": 123456789}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 404
@@ -264,27 +247,12 @@ class Return400Test:
         }
 
     @time_machine.travel("2020-11-17 15:00:00")
-    def test_should_not_accept_payload_with_price_details_with_more_than_1000_caracters(self, client):
-        offer = factories.CollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        stock_payload = {
-            **BASE_PAYLOAD,
-            "offerId": offer.id,
-            "priceDetail": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sodales commodo tellus, at dictum odio vulputate nec. Donec iaculis rutrum nunc. Nam euismod, odio vel iaculis tincidunt, enim ante iaculis purus, ac vehicula ex lacus sit amet nisl. Aliquam et diam tellus. Curabitur in pharetra augue. Nunc scelerisque lectus non diam efficitur, eu porta neque vestibulum. Nullam elementum purus ac ligula viverra tincidunt. Etiam tincidunt metus nec nibh tempor tincidunt. Pellentesque ac ipsum purus. Duis vestibulum mollis nisi a vulputate. Nullam malesuada eros eu convallis rhoncus. Maecenas eleifend ex at posuere maximus. Suspendisse faucibus egestas dolor, sit amet dignissim odio condimentum vitae. Pellentesque ultricies eleifend nisi, quis pellentesque nisi faucibus finibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse potenti. Aliquam convallis diam nisl, eget ullamcorper odio convallis ac. Ut quis nulla fringilla, commodo tellus ut.",
-        }
-        response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
-
-        assert response.status_code == 400
-        assert response.json == {"priceDetail": ["Le détail du prix ne doit pas excéder 1000 caractères."]}
-
-    @time_machine.travel("2020-11-17 15:00:00")
     def test_should_not_allow_multiple_stocks(self, client):
         _create_educational_year()
         offer = factories.CollectiveStockFactory().collectiveOffer
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD_WITH_SERVICE_PRICE, "offerId": offer.id}
+        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
@@ -330,7 +298,7 @@ class Return400Test:
         offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD_WITH_SERVICE_PRICE, "offerId": offer.id}
+        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
         response = client.with_session_auth("user@example.com").post("/collective/stocks", json=stock_payload)
 
         assert response.status_code == 400
@@ -349,7 +317,7 @@ class Return400Test:
         )
 
         stock_payload = {
-            **BASE_PAYLOAD_WITH_SERVICE_PRICE,
+            **BASE_PAYLOAD,
             "offerId": offer.id,
             "startDatetime": "2022-01-17T22:00:00Z",
             "endDatetime": "2023-01-18T18:00:00Z",
@@ -398,57 +366,30 @@ class Return400Test:
         offer = factories.CollectiveOfferFactory(validation=status)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD_WITH_SERVICE_PRICE, "offerId": offer.id}
+        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
         assert response.json == {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
-    def test_price_detail_not_allowed(self, client):
-        _create_educational_year()
-        offer = factories.DraftCollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
-        response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
-
-        assert response.status_code == 400
-        assert response.json == {"priceDetail": ["Ce champ ne peut pas être présent"]}
-
-    @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    def test_price_detail_required(self, client):
-        _create_educational_year()
-        offer = factories.DraftCollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        stock_payload = {**BASE_PAYLOAD_NO_DETAIL, "offerId": offer.id}
-        response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
-
-        assert response.status_code == 400
-        assert response.json == {"priceDetail": ["Ce champ est requis"]}
-
-    @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_number_of_teachers_required(self, client):
         _create_educational_year()
         offer = factories.DraftCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD_NO_DETAIL, "offerId": offer.id}
+        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
+        del stock_payload["numberOfTeachers"]
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
-        assert response.json == {"numberOfTeachers": ["Ce champ est requis"]}
+        assert response.json == {"numberOfTeachers": ["Ce champ est obligatoire"]}
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     @pytest.mark.parametrize(
         "number_of_teachers,error",
         (
-            (None, "Ce champ est requis"),
+            (None, "Saisissez un entier valide"),
             (-1, "Saisissez un nombre supérieur ou égal à 0"),
             (60, "Saisissez un nombre inférieur ou égal à 50"),
         ),
@@ -458,35 +399,18 @@ class Return400Test:
         offer = factories.DraftCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD_NO_DETAIL, "offerId": offer.id, "numberOfTeachers": number_of_teachers}
+        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id, "numberOfTeachers": number_of_teachers}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
         assert response.json == {"numberOfTeachers": [error]}
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    @pytest.mark.parametrize(
-        "field,value", (("numberOfTeachers", 10), ("servicePrice", 10), ("collectiveAdditionalFees", []))
-    )
-    def test_price_fields_not_allowed(self, client, field, value):
-        _create_educational_year()
-        offer = factories.DraftCollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id, field: value}
-        response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
-
-        assert response.status_code == 400
-        assert response.json == {field: ["Ce champ ne peut pas être présent"]}
-
-    @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     @pytest.mark.parametrize(
         "payload,error",
         (
             # missing collectiveAdditionalFees
-            ({"price": 10, "servicePrice": 10}, {"collectiveAdditionalFees": ["Ce champ est requis"]}),
+            ({"price": 10, "servicePrice": 10}, {"collectiveAdditionalFees": ["Ce champ est obligatoire"]}),
             # missing servicePrice
             (
                 {
@@ -495,17 +419,17 @@ class Return400Test:
                         {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10}
                     ],
                 },
-                {"servicePrice": ["Ce champ est requis"]},
+                {"servicePrice": ["Ce champ est obligatoire"]},
             ),
             # servicePrice = None
             (
                 {"price": 10, "servicePrice": None, "collectiveAdditionalFees": []},
-                {"servicePrice": ["Ce champ est requis"]},
+                {"servicePrice": ["Decimal input should be an integer, float, string or Decimal object"]},
             ),
             # collectiveAdditionalFees = None
             (
                 {"price": 10, "servicePrice": 10, "collectiveAdditionalFees": None},
-                {"collectiveAdditionalFees": ["Ce champ est requis"]},
+                {"collectiveAdditionalFees": ["Input should be a valid list"]},
             ),
             # collectiveAdditionalFees invalid label
             (
@@ -607,7 +531,13 @@ class Return400Test:
         offer = factories.DraftCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD_NO_DETAIL, "offerId": offer.id, "numberOfTeachers": 10, **payload}
+        stock_payload = {
+            **BASE_PAYLOAD,
+            "offerId": offer.id,
+        }
+        del stock_payload["servicePrice"]
+        del stock_payload["collectiveAdditionalFees"]
+        stock_payload.update(payload)
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
@@ -616,7 +546,6 @@ class Return400Test:
 
 class Returns403Test:
     @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
     def test_error_if_venue_is_closed(self, client):
         _create_educational_year()
         offer = factories.DraftCollectiveOfferFactory(

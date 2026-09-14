@@ -43,7 +43,6 @@ def base_offer_payload(
     return {
         "venueId": venue.id,
         "description": "Ma super description",
-        "bookingEmails": ["offer1@example.com", "offer2@example.com"],
         "domains": domain_ids,
         "durationMinutes": 60,
         "name": "La pièce de théâtre",
@@ -67,15 +66,7 @@ def base_offer_payload(
 
 
 def assert_offer_values(offer: models.CollectiveOffer, data, user, offerer):
-    if "bookingEmails" not in data and not data["templateId"]:
-        assert offer.bookingEmails == []
-    elif not data["bookingEmails"] and data["templateId"]:
-        if data["contactEmail"]:
-            assert offer.bookingEmails == [data["contactEmail"]]
-        else:
-            assert offer.bookingEmails == []
-    else:
-        assert set(offer.bookingEmails) == set(data["bookingEmails"])
+    assert offer.bookingEmails == []
     assert offer.venueId == data["venueId"]
     assert offer.durationMinutes == data["durationMinutes"]
     assert offer.venue.managingOffererId == offerer.id
@@ -115,43 +106,7 @@ class Returns200Test:
 
         assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {
             user.email,
-            *offer.bookingEmails,
         }
-
-    def test_bookingEmails_not_required(self, client, clear_redis):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
-
-        data = {k: v for k, v in base_offer_payload(venue=venue).items() if k != "bookingEmails"}
-        auth_client = client.with_session_auth("user@example.com")
-
-        response = auth_client.post("/collective/offers", json=data)
-
-        assert response.status_code == 201
-
-        offer_id = response.json["id"]
-        offer = db.session.get(models.CollectiveOffer, offer_id)
-
-        assert_offer_values(offer, data, user, offerer)
-
-        assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {"user@example.com"}
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
-    def test_additional_details(self, client):
-        venue = offerers_factories.VenueFactory()
-        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
-
-        data = {
-            **base_offer_payload(venue=venue),
-            "additionalDetails": "details",
-        }
-        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
-
-        assert response.status_code == 201
-        offer_id = response.json["id"]
-        offer = db.session.get(models.CollectiveOffer, offer_id)
-        assert offer.additionalDetails == "details"
 
     def test_create_collective_offer_allowed_one_adage(self, client):
         # offerer is allowed on adage but has no venue with adageId
@@ -388,33 +343,6 @@ class Returns403Test:
 
 
 class Returns400Test:
-    def test_create_collective_offer_booking_emails_invalid(self, client):
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user=user)
-
-        data = base_offer_payload(venue=venue)
-        data["bookingEmails"] = ["test@testmail.com", "test@test", "test"]
-        response = client.with_session_auth(user.email).post("/collective/offers", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {
-            "bookingEmails.1": ["Saisissez un email valide"],
-            "bookingEmails.2": ["Saisissez un email valide"],
-        }
-        assert db.session.query(models.CollectiveOffer).count() == 0
-
-    def test_create_collective_offer_no_booking_email(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
-
-        data = {**base_offer_payload(venue=venue), "bookingEmails": []}
-        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {"bookingEmails": ["Cette liste doit avoir une taille minimum de 1"]}
-        assert db.session.query(models.CollectiveOffer).count() == 0
-
     def test_create_collective_offer_empty_contact_email(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
@@ -645,35 +573,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
-        assert db.session.query(models.CollectiveOffer).count() == 0
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    def test_additional_details(self, client):
-        venue = offerers_factories.VenueFactory()
-        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
-
-        data = {
-            **base_offer_payload(venue=venue),
-            "additionalDetails": "details",
-        }
-        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {"additionalDetails": ["Ce champ ne peut pas être présent"]}
-        assert db.session.query(models.CollectiveOffer).count() == 0
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
-    def test_additional_details_error(self, client):
-        venue = offerers_factories.VenueFactory()
-        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
-
-        data = {**base_offer_payload(venue=venue), "additionalDetails": "too_long" * 150}
-        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {
-            "additionalDetails": ["Cette chaîne de caractères doit avoir une taille maximum de 1000 caractères"]
-        }
         assert db.session.query(models.CollectiveOffer).count() == 0
 
 

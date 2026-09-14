@@ -195,6 +195,8 @@ def create_collective_offer_template(
             offer_data.dates.start, offer_data.dates.end
         )
 
+    _update_external_pro(collective_offer_template.bookingEmails)
+
     db.session.add(collective_offer_template)
     db.session.flush()
 
@@ -236,7 +238,6 @@ def create_collective_offer(
         venueId=venue.id,
         name=offer_data.name,
         description=offer_data.description,
-        additionalDetails=offer_data.additional_details,
         domains=educational_domains,
         nationalProgramId=national_program_id,
         durationMinutes=offer_data.duration_minutes,
@@ -250,16 +251,13 @@ def create_collective_offer(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         templateId=offer_data.template_id,
-        bookingEmails=offer_data.booking_emails or [],
+        bookingEmails=[],
         formats=offer_data.formats,
         author=user,
         locationType=offer_data.location.location_type if offer_data.location else None,
         locationComment=offer_data.location.location_comment if offer_data.location else None,
         offererAddressId=offerer_address.id if offerer_address else None,
     )
-
-    if collective_offer.bookingEmails is not None:
-        _update_external_pro(collective_offer.bookingEmails)
 
     db.session.add(collective_offer)
     db.session.flush()

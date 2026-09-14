@@ -9,7 +9,6 @@ import pydantic
 from pcapi import settings
 from pcapi.core.educational import constants
 from pcapi.core.educational import models
-from pcapi.models import feature
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization.utils import raise_error_from_location
 from pcapi.serialization.exceptions import PydanticError
@@ -39,14 +38,6 @@ def validate_end_datetime(end_datetime: datetime, info: pydantic.ValidationInfo)
         raise PydanticError("La date de fin de l'évènement ne peut précéder la date de début.")
 
     return end_datetime
-
-
-def validate_price_detail(price_detail: str | None) -> str | None:
-    if price_detail and len(price_detail) > constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH:
-        raise PydanticError(
-            f"Le détail du prix ne doit pas excéder {constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH} caractères."
-        )
-    return price_detail
 
 
 class CollectiveAdditionalFeeModel(HttpBodyModel):
@@ -101,44 +92,18 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
     endDatetime: typing.Annotated[datetime, pydantic.AfterValidator(validate_end_datetime)]
     bookingLimitDatetime: typing.Annotated[datetime | None, pydantic.AfterValidator(validate_booking_limit_datetime)]
     price: DecimalPrice = pydantic.Field(ge=0, le=settings.EAC_OFFER_PRICE_LIMIT)
-    servicePrice: DecimalPrice | None = pydantic.Field(default=None, ge=0)
-    collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic.Field(
-        default=None, max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
+    servicePrice: DecimalPrice = pydantic.Field(ge=0)
+    collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] = pydantic.Field(
+        max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
     )
     numberOfTickets: int = pydantic.Field(ge=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
-    numberOfTeachers: int | None = pydantic.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
-    priceDetail: typing.Annotated[str | None, pydantic.AfterValidator(validate_price_detail)] = None
+    numberOfTeachers: int = pydantic.Field(ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
 
     @pydantic.model_validator(mode="after")
     def validate_model(self) -> typing.Self:
-        new_price_ff_is_active = feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-
-        # priceDetail must be present only when FF is OFF
-        if new_price_ff_is_active and "priceDetail" in self.model_fields_set:
-            raise_error_from_location(None, loc="priceDetail", msg="Ce champ ne peut pas être présent")
-
-        if not new_price_ff_is_active and "priceDetail" not in self.model_fields_set:
-            raise_error_from_location(None, loc="priceDetail", msg="Ce champ est requis")
-
-        # numberOfTeachers, servicePrice, collectiveAdditionalFees must be present and not None only when FF is ON
-        for field_name, field_value in (
-            ("numberOfTeachers", self.numberOfTeachers),
-            ("servicePrice", self.servicePrice),
-            ("collectiveAdditionalFees", self.collectiveAdditionalFees),
-        ):
-            if new_price_ff_is_active and field_value is None:
-                raise_error_from_location(None, loc=field_name, msg="Ce champ est requis")
-
-            if not new_price_ff_is_active and field_name in self.model_fields_set:
-                raise_error_from_location(None, loc=field_name, msg="Ce champ ne peut pas être présent")
-
-        if new_price_ff_is_active:
-            assert self.servicePrice is not None  # checked above when ff is active
-            assert self.collectiveAdditionalFees is not None  # same
-
-            _validate_total_price(
-                price=self.price, service_price=self.servicePrice, additional_fees=self.collectiveAdditionalFees
-            )
+        _validate_total_price(
+            price=self.price, service_price=self.servicePrice, additional_fees=self.collectiveAdditionalFees
+        )
 
         return self
 
@@ -156,7 +121,6 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
     )
     numberOfTickets: int | None = pydantic.Field(default=None, ge=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
     numberOfTeachers: int | None = pydantic.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
-    priceDetail: typing.Annotated[str | None, pydantic.AfterValidator(validate_price_detail)] = None
 
     NON_NULLABLE_FIELDS: typing.ClassVar = (
         "startDatetime",
@@ -179,32 +143,19 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
 
     @pydantic.model_validator(mode="after")
     def validate_model(self) -> typing.Self:
-        new_price_ff_is_active = feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+        # price, servicePrice and collectiveAdditionalFees must all be present or all absent
+        updated_count = len({"price", "servicePrice", "collectiveAdditionalFees"} - self.model_fields_set)
+        if updated_count not in (0, 3):
+            raise_error_from_location(
+                None,
+                loc="price",
+                msg="Les champs price, servicePrice et collectiveAdditionalFees doivent tous être modifiés simultanément",
+            )
 
-        # priceDetail must not be present when FF is ON
-        if new_price_ff_is_active and "priceDetail" in self.model_fields_set:
-            raise_error_from_location(None, loc="priceDetail", msg="Ce champ ne peut pas être édité")
-
-        if not new_price_ff_is_active:
-            # these fields must not be present when FF is OFF
-            for field_name in ("numberOfTeachers", "servicePrice", "collectiveAdditionalFees"):
-                if field_name in self.model_fields_set:
-                    raise_error_from_location(None, loc=field_name, msg="Ce champ ne peut pas être édité")
-
-        if new_price_ff_is_active:
-            # price, servicePrice and collectiveAdditionalFees must all be present or all absent
-            updated_count = len({"price", "servicePrice", "collectiveAdditionalFees"} - self.model_fields_set)
-            if updated_count not in (0, 3):
-                raise_error_from_location(
-                    None,
-                    loc="price",
-                    msg="Les champs price, servicePrice et collectiveAdditionalFees doivent tous être modifiés simultanément",
-                )
-
-            if self.price is not None and self.servicePrice is not None and self.collectiveAdditionalFees is not None:
-                _validate_total_price(
-                    price=self.price, service_price=self.servicePrice, additional_fees=self.collectiveAdditionalFees
-                )
+        if self.price is not None and self.servicePrice is not None and self.collectiveAdditionalFees is not None:
+            _validate_total_price(
+                price=self.price, service_price=self.servicePrice, additional_fees=self.collectiveAdditionalFees
+            )
 
         return self
 

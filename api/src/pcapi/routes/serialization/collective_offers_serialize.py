@@ -13,7 +13,6 @@ from pcapi.core.educational import models
 from pcapi.core.educational import validation
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
-from pcapi.models import feature
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
@@ -533,7 +532,6 @@ def validate_students(students: list[models.StudentLevels]) -> list[models.Stude
 class PostCollectiveOfferBodyModel(HttpBodyModel):
     venue_id: int
     name: str = pydantic.Field(min_length=1, max_length=constants.MAX_COLLECTIVE_NAME_LENGTH)
-    booking_emails: list[pydantic.EmailStr] | None = pydantic.Field(min_length=1, max_length=6, default=None)
     description: str = pydantic.Field(max_length=constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH)
     domains: list[int] = pydantic.Field(min_length=1)
     duration_minutes: int | None = None
@@ -551,23 +549,10 @@ class PostCollectiveOfferBodyModel(HttpBodyModel):
     template_id: int | None = None
     national_program_id: int | None = None
     formats: list[EacFormat] = pydantic.Field(min_length=1)
-    additional_details: str | None = pydantic.Field(
-        max_length=constants.MAX_COLLECTIVE_ADDITIONAL_DETAILS_LENGTH, default=None
-    )
 
     @pydantic.field_validator("contact_phone", mode="after")
     def validate_contact_phone(cls, phone_number: str | None) -> str | None:
         return utils.validate_phone_number_nullable(phone_number)
-
-    @pydantic.model_validator(mode="after")
-    def validate_additional_details(self) -> typing.Self:
-        if (
-            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "additional_details" in self.model_fields_set
-        ):
-            raise_error_from_location(None, loc="additionalDetails", msg="Ce champ ne peut pas être présent")
-
-        return self
 
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
@@ -576,8 +561,6 @@ class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     contact_form: models.OfferContactFormEnum | None = None
     dates: PostDateRangeModel | None = None
 
-    # TODO (jcicurel-pass, 2026-06-05): decorrelate the two models to avoid an overlap like this one
-    additional_details: SkipJsonSchema[str | None] = pydantic.Field(default=None, exclude=True)
     booking_emails: list[pydantic.EmailStr] = pydantic.Field(min_length=1, max_length=6)
 
 
@@ -631,16 +614,6 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
     @pydantic.field_validator("contact_phone", mode="after")
     def validate_contact_phone(cls, phone_number: str | None) -> str | None:
         return utils.validate_phone_number_nullable(phone_number)
-
-    @pydantic.model_validator(mode="after")
-    def validate_additional_details(self) -> typing.Self:
-        if (
-            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "additional_details" in self.model_fields_set
-        ):
-            raise_error_from_location(None, loc="additionalDetails", msg="Ce champ ne peut pas être édité")
-
-        return self
 
 
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
