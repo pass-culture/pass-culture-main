@@ -8,7 +8,7 @@ from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
-adage_iframe = Blueprint("adage_iframe", __name__)
+adage_iframe = Blueprint("adage_iframe", __name__, url_prefix="/adage-iframe")
 CORS(
     adage_iframe,
     origins=settings.CORS_ALLOWED_ORIGINS_ADAGE_IFRAME,
