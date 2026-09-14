@@ -7792,6 +7792,10 @@
                         "title": "Idcheckaddressautocompletion",
                         "type": "boolean"
                     },
+                    "imageResizingUrl": {
+                        "title": "Imageresizingurl",
+                        "type": "string"
+                    },
                     "ineligiblePostalCodes": {
                         "items": {
                             "type": "string"
@@ -7823,6 +7827,7 @@
                     "depositAmountsByAge",
                     "displayDmsRedirection",
                     "enableFrontImageResizing",
+                    "imageResizingUrl",
                     "enableNativeCulturalSurvey",
                     "idCheckAddressAutocompletion",
                     "ineligiblePostalCodes",
