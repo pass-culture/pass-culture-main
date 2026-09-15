@@ -1,5 +1,4 @@
 import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { OfferRecommendationModal } from 'components/IndividualOfferLayout/components/OfferRecommendationCard/OfferRecommendationModal'
 import { Button } from 'design-system/Button/Button'
 import {
@@ -28,7 +27,6 @@ import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Dropdown } from '@/design-system/Dropdown/Dropdown'
 import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
-import fullBoostedIcon from '@/icons/full-boosted.svg'
 import penIcon from '@/icons/full-edit.svg'
 import fullMessageIcon from '@/icons/full-message.svg'
 import fullStarIcon from '@/icons/full-star.svg'
@@ -69,8 +67,6 @@ export const IndividualActionsCells = ({
     ...(storedFilters as Partial<IndividualOffersFilters>),
     venueId: selectedPartnerVenue.id,
   }
-  const isNewProAdviceAccess = useActiveFeature('WIP_NEW_PRO_ADVICE_ACCESS')
-
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
   const headlineButtonTriggerRef = useRef<HTMLButtonElement>(null)
 
@@ -181,17 +177,6 @@ export const IndividualActionsCells = ({
     }
   }
 
-  const isActive = offer.status === OfferStatus.ACTIVE
-  const isProduct = !!offer.productId
-  const hasImage = !!offer.thumbUrl
-  // If an offer without an image is product-based, it cannot become
-  // a headline offer since product-based offers cannot have their images
-  // updated & headline offers without images are prohibited.
-  const isNotAProductWithoutImage = !isProduct || hasImage
-
-  const isHeadlineActionDisplayed =
-    !isNewProAdviceAccess && isActive && isNotAProductWithoutImage
-
   const logOfferNavigation = (source: INDIVIDUAL_OFFERS_NAVIGATION_SOURCE) => {
     logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       used: source,
@@ -202,63 +187,55 @@ export const IndividualActionsCells = ({
   return (
     <>
       <div className={styles['actions-column']}>
-        {isNewProAdviceAccess && (
-          <>
-            <Button
-              color={isHeadline ? ButtonColor.BRAND : ButtonColor.NEUTRAL}
-              variant={ButtonVariant.SECONDARY}
-              size={ButtonSize.SMALL}
-              icon={
-                isHeadline && shouldDisplayHeadlineAction
-                  ? fullStarIcon
-                  : strokeStarIcon
-              }
-              onClick={onClickAddHeadlineOffer}
-              tooltip={
-                isHeadline ? 'Ne plus mettre à la une' : 'Mettre à la une'
-              }
-              ref={headlineButtonTriggerRef}
-            />
+        <Button
+          color={isHeadline ? ButtonColor.BRAND : ButtonColor.NEUTRAL}
+          variant={ButtonVariant.SECONDARY}
+          size={ButtonSize.SMALL}
+          icon={
+            isHeadline && shouldDisplayHeadlineAction
+              ? fullStarIcon
+              : strokeStarIcon
+          }
+          onClick={onClickAddHeadlineOffer}
+          tooltip={isHeadline ? 'Ne plus mettre à la une' : 'Mettre à la une'}
+          ref={headlineButtonTriggerRef}
+        />
 
-            <OfferRecommendationModal
-              onOpenChange={() => {
-                if (shouldDisplayRecommendationAction) {
-                  setIsProAdviceOpen(!isProAdviceOpen)
-                }
-              }}
-              offerId={offer.id}
-              isOpen={isProAdviceOpen}
-              proAdvice={null}
-              onSubmit={async () => {
-                await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
-                setIsProAdviceOpen(false)
-              }}
-              submitLabel={'Enregistrer la recommandation'}
-              loadAdviceFromOffer={offer.hasProAdvice}
-            />
+        <OfferRecommendationModal
+          onOpenChange={() => {
+            if (shouldDisplayRecommendationAction) {
+              setIsProAdviceOpen(!isProAdviceOpen)
+            }
+          }}
+          offerId={offer.id}
+          isOpen={isProAdviceOpen}
+          proAdvice={null}
+          onSubmit={async () => {
+            await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
+            setIsProAdviceOpen(false)
+          }}
+          submitLabel={'Enregistrer la recommandation'}
+          loadAdviceFromOffer={offer.hasProAdvice}
+        />
 
-            <Button
-              color={
-                offer.hasProAdvice && shouldDisplayRecommendationAction
-                  ? ButtonColor.BRAND
-                  : ButtonColor.NEUTRAL
-              }
-              variant={ButtonVariant.SECONDARY}
-              size={ButtonSize.SMALL}
-              icon={
-                offer.hasProAdvice && shouldDisplayRecommendationAction
-                  ? fullMessageIcon
-                  : strokeMessageIcon
-              }
-              onClick={onClickAddProAdvice}
-              tooltip={
-                offer.hasProAdvice
-                  ? 'Modifier la recommandation'
-                  : 'Recommander'
-              }
-            />
-          </>
-        )}
+        <Button
+          color={
+            offer.hasProAdvice && shouldDisplayRecommendationAction
+              ? ButtonColor.BRAND
+              : ButtonColor.NEUTRAL
+          }
+          variant={ButtonVariant.SECONDARY}
+          size={ButtonSize.SMALL}
+          icon={
+            offer.hasProAdvice && shouldDisplayRecommendationAction
+              ? fullMessageIcon
+              : strokeMessageIcon
+          }
+          onClick={onClickAddProAdvice}
+          tooltip={
+            offer.hasProAdvice ? 'Modifier la recommandation' : 'Recommander'
+          }
+        />
         <Dropdown
           label="Voir les actions"
           trigger={
@@ -309,18 +286,6 @@ export const IndividualActionsCells = ({
                       },
                     },
                   ]),
-              ...(isHeadlineActionDisplayed
-                ? [
-                    {
-                      text:
-                        offer.id === headlineOffer?.id
-                          ? 'Ne plus mettre à la une'
-                          : 'Mettre à la une',
-                      icon: fullBoostedIcon,
-                      onClick: onClickAddHeadlineOffer,
-                    },
-                  ]
-                : []),
             ],
           ]}
         />
@@ -350,9 +315,7 @@ export const IndividualActionsCells = ({
         title="Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre."
         isOpen={isConfirmDialogReplaceHeadlineOfferOpen}
         onClose={closeReplaceHeadlineOfferDialog}
-        refToFocusOnClose={
-          isNewProAdviceAccess ? headlineButtonTriggerRef : dropdownTriggerRef
-        }
+        refToFocusOnClose={headlineButtonTriggerRef}
         actionButtons={[
           <Button
             onClick={closeReplaceHeadlineOfferDialog}
@@ -372,9 +335,7 @@ export const IndividualActionsCells = ({
         offerId={offer.id}
         isFirstDialogOpen={isDialogForHeadlineOfferWithoutImageOpen}
         setIsFirstDialogOpen={setIsDialogForHeadlineOfferWithoutImageOpen}
-        refToFocusOnClose={
-          isNewProAdviceAccess ? headlineButtonTriggerRef : dropdownTriggerRef
-        }
+        refToFocusOnClose={headlineButtonTriggerRef}
       />
     </>
   )

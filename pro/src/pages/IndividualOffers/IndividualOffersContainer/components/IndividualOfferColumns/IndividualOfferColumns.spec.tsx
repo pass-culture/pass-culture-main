@@ -149,14 +149,6 @@ describe('getIndividualOfferColumns', () => {
     expect(await screen.findByText('Illimité')).toBeInTheDocument()
   })
 
-  it('displays boosted icon when offer is headline', async () => {
-    renderTableWithOffer(baseOffer, {
-      isRefactoFutureOfferEnabled: false,
-      headlineOffer,
-    })
-    expect(await screen.findByText('Offre à la une')).toBeInTheDocument()
-  })
-
   it('renders bookings column if refacto feature is enabled', async () => {
     renderTableWithOffer(baseOffer, {
       isRefactoFutureOfferEnabled: true,
@@ -267,7 +259,7 @@ describe('getIndividualOfferColumns', () => {
     expect(columns.map((column) => column.id)).not.toContain('actions')
   })
 
-  describe('With WIP_NEW_PRO_ADVICE_ACCESS FF', () => {
+  describe('Headline and pro advice actions', () => {
     const snackBarSuccess = vi.fn()
     const snackBarError = vi.fn()
 
@@ -278,10 +270,8 @@ describe('getIndividualOfferColumns', () => {
       }))
     })
 
-    it('should omit the headline button in the dropdown with the FF', async () => {
-      renderTableWithOffer({ ...baseOffer, isEvent: false }, {}, [
-        'WIP_NEW_PRO_ADVICE_ACCESS',
-      ])
+    it('should omit the headline button in the dropdown', async () => {
+      renderTableWithOffer({ ...baseOffer, isEvent: false }, {})
 
       expect(await screen.findByText('My Offer')).toBeVisible()
 
@@ -299,9 +289,7 @@ describe('getIndividualOfferColumns', () => {
     it('should upsert headline', async () => {
       const upsertMock = vi.fn()
       vi.spyOn(api, 'upsertHeadlineOffer').mockImplementation(upsertMock)
-      renderTableWithOffer({ ...baseOffer, isEvent: false }, {}, [
-        'WIP_NEW_PRO_ADVICE_ACCESS',
-      ])
+      renderTableWithOffer({ ...baseOffer, isEvent: false }, {})
 
       expect(await screen.findByText('My Offer')).toBeVisible()
       await userEvent.click(screen.getByLabelText('Mettre à la une'))
@@ -314,8 +302,7 @@ describe('getIndividualOfferColumns', () => {
 
       renderTableWithOffer(
         { ...baseOffer, isEvent: false, id: headlineOffer.id },
-        { headlineOffer: headlineOffer },
-        ['WIP_NEW_PRO_ADVICE_ACCESS']
+        { headlineOffer: headlineOffer }
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
@@ -330,8 +317,7 @@ describe('getIndividualOfferColumns', () => {
       vi.spyOn(api, 'createOfferProAdvice').mockImplementation(createMock)
       renderTableWithOffer(
         { ...baseOffer, isEvent: false, id: headlineOffer.id },
-        {},
-        ['WIP_NEW_PRO_ADVICE_ACCESS']
+        {}
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
@@ -363,8 +349,7 @@ describe('getIndividualOfferColumns', () => {
           id: headlineOffer.id,
           status: OfferStatus.REJECTED,
         },
-        {},
-        ['WIP_NEW_PRO_ADVICE_ACCESS']
+        {}
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
@@ -384,8 +369,7 @@ describe('getIndividualOfferColumns', () => {
           id: headlineOffer.id,
           status: OfferStatus.PENDING,
         },
-        {},
-        ['WIP_NEW_PRO_ADVICE_ACCESS']
+        {}
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
@@ -405,8 +389,7 @@ describe('getIndividualOfferColumns', () => {
           id: headlineOffer.id,
           status: OfferStatus.DRAFT,
         },
-        {},
-        ['WIP_NEW_PRO_ADVICE_ACCESS']
+        {}
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
@@ -435,8 +418,7 @@ describe('getIndividualOfferColumns', () => {
           id: headlineOffer.id,
           hasProAdvice: true,
         },
-        {},
-        ['WIP_NEW_PRO_ADVICE_ACCESS']
+        {}
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
