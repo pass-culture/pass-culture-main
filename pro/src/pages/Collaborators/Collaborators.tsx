@@ -14,7 +14,6 @@ import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -42,20 +41,10 @@ const Collaborators = () => {
   const formId = useId()
 
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
-  const selectedPartnerVenue = useAppSelector(
-    (state) => state.user.selectedPartnerVenue
-  )
   const hasOpenedVenues = selectedAdminOfferer?.managedVenues.some(
     (venue) => !venue.state
   )
   const userPermissions = useCurrentUserPermissions()
-
-  const isAddCollaboratorDisabled = () => {
-    const isVenueClosed = selectedPartnerVenue
-      ? withVenueHelpers(selectedPartnerVenue).isClosed
-      : false
-    return selectedAdminOfferer.isClosed || !hasOpenedVenues || isVenueClosed
-  }
 
   const offererId = selectedAdminOfferer.id
 
@@ -195,7 +184,7 @@ const Collaborators = () => {
           setIsDialogOpen(true)
         }}
         label="Ajouter un collaborateur"
-        disabled={isAddCollaboratorDisabled()}
+        disabled={selectedAdminOfferer.isClosed || !hasOpenedVenues}
       />
 
       <DetailedModal
