@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 export const IS_DEV = import.meta.env.MODE === 'development'
+export const IS_TESTING = import.meta.env.MODE === 'testing'
 
 export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 
