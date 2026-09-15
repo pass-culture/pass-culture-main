@@ -56,6 +56,8 @@ def setup_public_api_log_extra(route: typing.Callable) -> None:
 
     if hasattr(g, "current_api_key") and g.current_api_key is not None:
         g.public_api_log_request_details_extra["technical_message_id"] = "public_api.call"
+        g.public_api_log_request_details_extra["feature"] = "public_api"
+        g.public_api_log_request_details_extra["action"] = "call"
         g.public_api_log_request_details_extra["public_api"] = {
             "api_key": g.current_api_key.id,
             "provider_id": g.current_api_key.providerId,

@@ -1382,6 +1382,8 @@ class UserProfileUpdateTest:
             },
             "analyticsSource": "app-native",
             "origin": "profile",
+            "feature": "subscription",
+            "action": "update",
         }
         assert caplog.records[0].technical_message_id == "subscription_update"
 

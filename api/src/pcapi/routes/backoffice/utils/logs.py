@@ -18,7 +18,7 @@ def log_backoffice_tracking_data(
 
     logger.info(
         event_name,
-        extra={"analyticsSource": "backoffice", **extra_data},
+        extra={"analyticsSource": "backoffice", "feature": "analytics", "action": "event", **extra_data},
         technical_message_id="backoffice_analytics_event",
     )
 
