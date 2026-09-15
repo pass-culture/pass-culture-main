@@ -35,12 +35,24 @@ def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUs
     client_secret = _generate_client_secret(client_id)
 
     try:
-        apple_payload = _fetch_identity_response(client_id, client_secret, authorization_code)
-        token_payload = _decrypt_token(apple_payload.id_token, client_id)
+        payload = {
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "code": authorization_code,
+            "grant_type": "authorization_code",
+        }
+        response = _fetch_response(settings.APPLE_TOKEN_ENDPOINT, payload)
     except Exception as e:
         raise AppleSignInException("Could not fetch identity token from Apple") from e
 
-    return _parse_identity_token(token_payload, apple_payload)
+    try:
+        auth_response = AppleSignInAuthenticationResponse(**response)
+    except ValidationError as e:
+        raise AppleSignInException("Unexpected response format from Apple Token API") from e
+
+    token_payload = _decrypt_token(auth_response.id_token, client_id)
+
+    return _parse_identity_token(token_payload, auth_response)
 
 
 def _decrypt_token(token: str, client_id: str, verify: bool | None = None) -> dict[str, typing.Any]:
@@ -66,7 +78,7 @@ def _decrypt_token(token: str, client_id: str, verify: bool | None = None) -> di
         logger.error("Apple identity token validation failed", extra={"error": str(e), "error_type": type(e).__name__})
         raise AppleSignInException("Invalid identity token") from e
 
-    return _parse_identity_token(token_payload)
+    return token_payload
 
 
 def _generate_client_secret(client_id: str) -> str:
@@ -84,20 +96,9 @@ def _generate_client_secret(client_id: str) -> str:
     return jwt.encode(payload, settings.APPLE_PRIVATE_KEY, headers=headers)
 
 
-def _fetch_identity_response(
-    client_id: str,
-    client_secret: str,
-    authorization_code: str,
-) -> AppleSignInAuthenticationResponse:
-    payload = {
-        "client_id": client_id,
-        "client_secret": client_secret,
-        "code": authorization_code,
-        "grant_type": "authorization_code",
-    }
-
+def _fetch_response(url: str, payload: dict) -> dict:
     try:
-        response = requests.post(settings.APPLE_TOKEN_ENDPOINT, data=payload)
+        response = requests.post(url, data=payload)
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
         status = e.response.status_code
@@ -114,15 +115,11 @@ def _fetch_identity_response(
 
     try:
         json_payload = response.json()
-        typed_response = AppleSignInAuthenticationResponse(**json_payload)
     except requests.exceptions.JSONDecodeError as e:
         logger.error("Malformed response from Apple Token API", extra={"error": str(e)})
         raise
-    except ValidationError as e:
-        logger.error("Unexpected response format from Apple Token API", extra={"error": str(e)})
-        raise
 
-    return typed_response
+    return json_payload
 
 
 def _parse_identity_token(
