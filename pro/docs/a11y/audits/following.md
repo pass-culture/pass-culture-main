@@ -645,7 +645,7 @@ Au moins un message de statut n'est pas correctement restitué aux technologies 
 
 
 **Correction** 💡  
-- Les blocs avec les rôles status sont maintenant toujours visibles, et le contenu change en fonction de l'alerte ou status à afficher.
+- Les blocs avec les rôles status sont maintenant toujours présents dans le DOM, et le contenu change en fonction de l'alerte ou status à afficher. Ils sont cachés quand ils ne contiennent rien.
 - Ajout du rôle status aux blocs représentant des résultats de tableaux vides.
 
 **Retours audit** 🔥  

@@ -28,7 +28,10 @@ export const TableNoFilterResult = ({
   <tr>
     <td
       colSpan={colSpan}
-      className={cn({ [styles['search-no-results']]: hasNoResult })}
+      className={cn({
+        [styles['search-no-results']]: hasNoResult,
+        [styles['visually-hidden']]: !hasNoResult,
+      })}
       role="status"
     >
       {hasNoResult ? (

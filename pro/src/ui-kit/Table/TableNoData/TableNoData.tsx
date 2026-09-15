@@ -15,6 +15,7 @@ export const TableNoData = ({
     <div
       className={cn({
         [styles['no-data']]: noData.hasNoData,
+        [styles['visually-hidden']]: !noData.hasNoData,
       })}
       role="status"
     >
