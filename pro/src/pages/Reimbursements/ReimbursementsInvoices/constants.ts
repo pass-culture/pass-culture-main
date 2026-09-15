@@ -11,5 +11,7 @@ export const DEFAULT_INVOICES_FILTERS = {
   periodEndingDate: format(startOfDay(getToday()), FORMAT_ISO_DATE_ONLY),
 }
 
+export const DOWNLOAD_INVOICE_LABEL = 'Télécharger le justificatif (.pdf)'
+
 export const DOWNLOAD_REIMBURSEMENTS_LABEL =
-  'Télécharger le détail des remboursements (.csv)'
+  'Télécharger les remboursements (.csv)'

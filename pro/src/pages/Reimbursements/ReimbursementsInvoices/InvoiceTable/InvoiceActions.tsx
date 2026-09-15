@@ -19,13 +19,28 @@ import fullDownIcon from '@/icons/full-down.svg'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 
-import { DOWNLOAD_REIMBURSEMENTS_LABEL } from '../constants'
+import {
+  DOWNLOAD_INVOICE_LABEL,
+  DOWNLOAD_REIMBURSEMENTS_LABEL,
+} from '../constants'
+import styles from './InvoiceActions.module.scss'
+
+export const InvoiceActionVariant = {
+  DROPDOWN: 'DROPDOWN',
+  BUTTONS: 'BUTTONS',
+} as const
+
+export type InvoiceActionVariant = keyof typeof InvoiceActionVariant
 
 type InvoiceActionsProps = {
   invoice: InvoiceResponseV2Model
+  variant?: InvoiceActionVariant
 }
 
-export function InvoiceActions({ invoice }: Readonly<InvoiceActionsProps>) {
+export function InvoiceActions({
+  invoice,
+  variant = InvoiceActionVariant.DROPDOWN,
+}: Readonly<InvoiceActionsProps>) {
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
 
@@ -68,13 +83,32 @@ export function InvoiceActions({ invoice }: Readonly<InvoiceActionsProps>) {
     }
   }
 
+  if (variant === InvoiceActionVariant.BUTTONS) {
+    return (
+      <div className={styles['invoice-action-buttons']}>
+        <Button
+          label={DOWNLOAD_INVOICE_LABEL}
+          onClick={() => downloadPDFFile(invoice.url)}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+        />
+        <Button
+          label={DOWNLOAD_REIMBURSEMENTS_LABEL}
+          onClick={() => downloadCSVFile(invoice.reference)}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+        />
+      </div>
+    )
+  }
+
   return (
     <Dropdown
       label="Télécharger"
       items={[
         [
           {
-            text: 'Télécharger le justificatif (.pdf)',
+            text: DOWNLOAD_INVOICE_LABEL,
             icon: fullDownloadIcon,
             onSelect: () => downloadPDFFile(invoice.url),
           },
@@ -85,7 +119,7 @@ export function InvoiceActions({ invoice }: Readonly<InvoiceActionsProps>) {
           },
         ],
       ]}
-      width={420}
+      width={353}
       trigger={
         <Button
           label="Télécharger"

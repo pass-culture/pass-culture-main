@@ -8,6 +8,10 @@ import {
   SettlementStatus,
 } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import {
+  TABLET_MEDIA_QUERY,
+  useMediaQuery,
+} from '@/commons/hooks/useMediaQuery'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import {
   convertEuroToPacificFranc,
@@ -30,6 +34,7 @@ import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
+import { SettlementRowInvoicesModal } from '../SettlementRowInvoicesModal/SettlementRowInvoicesModal'
 import { SettlementRowInvoicesTable } from '../SettlementRowInvoicesTable/SettlementRowInvoicesTable'
 import { SETTLEMENT_STATUS_LABELS } from './constants'
 import styles from './SettlementTable.module.scss'
@@ -42,7 +47,7 @@ type SettlementTableProps = {
   onFilterReset: () => void
 }
 
-type ExtendedSettlementResponseModel = SettlementResponseModel & {
+export type ExtendedSettlementResponseModel = SettlementResponseModel & {
   id: number
   isCaledonian: boolean
   invoicesCount: number
@@ -98,10 +103,14 @@ export const SettlementTable = ({
   onFilterReset,
 }: SettlementTableProps): JSX.Element => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
-  const [expandedId, setExpandedId] = useState<string | number | null>(null)
+  const isTabletOrSmaller = useMediaQuery(TABLET_MEDIA_QUERY)
+  const [rowInvoicesToDisplay, setRowInvoicesToDisplay] =
+    useState<ExtendedSettlementResponseModel | null>(null)
 
-  function toggleExpandedRow(rowId: string | number | null) {
-    setExpandedId((expId) => (expId === rowId ? null : rowId))
+  function toggleRowToDisplay(row: ExtendedSettlementResponseModel) {
+    setRowInvoicesToDisplay((currentDisplayedRow) =>
+      currentDisplayedRow?.id === row.id ? null : row
+    )
   }
 
   const columns: Column<ExtendedSettlementResponseModel>[] = [
@@ -188,7 +197,7 @@ export const SettlementTable = ({
                 color={ButtonColor.NEUTRAL}
                 iconPosition={IconPositionEnum.RIGHT}
                 icon={fullDownIcon}
-                onClick={() => toggleExpandedRow(settlement.id)}
+                onClick={() => toggleRowToDisplay(settlement)}
               />
             )}
           {settlement.status !== SettlementStatus.EXECUTED && (
@@ -209,47 +218,53 @@ export const SettlementTable = ({
   ]
 
   const getInvoiceTable = (row: SettlementResponseModel) => {
-    if (expandedId !== row.id) {
+    if (rowInvoicesToDisplay?.id !== row.id || isTabletOrSmaller) {
       return null
     }
     return {
       content: (
         <SettlementRowInvoicesTable
-          invoices={row.invoices.map((i) => ({
-            ...i,
-            id: i.reference,
-            isCaledonian: selectedAdminOfferer.isCaledonian,
-          }))}
+          invoices={rowInvoicesToDisplay?.invoices || []}
         />
       ),
       headerId: 'actions',
       rawDisplay: true,
     }
   }
+
   return (
-    <Table
-      title="Virements"
-      columns={columns}
-      data={settlements.map((s) => ({
-        ...s,
-        isCaledonian: selectedAdminOfferer.isCaledonian,
-        invoicesCount: s.invoices.length,
-      }))}
-      selectable={true}
-      getRowSelectionDateTime={getSettlementDateLabel}
-      isLoading={isLoading}
-      variant={TableVariant.COLLAPSE}
-      noResult={{
-        message: 'Aucun virement ne correspond à votre recherche',
-        subtitle: 'Essayez de modifier vos critères de recherche.',
-        resetMessage: 'Réinitialiser les filtres',
-        onFilterReset,
-      }}
-      noData={{
-        hasNoData: !hasBankAccount || !hasSettlement,
-        message: getEmptyStateMessage(hasBankAccount),
-      }}
-      getFullRow={getInvoiceTable}
-    />
+    <>
+      <Table
+        title="Virements"
+        columns={columns}
+        data={settlements.map((s) => ({
+          ...s,
+          isCaledonian: selectedAdminOfferer.isCaledonian,
+          invoicesCount: s.invoices.length,
+        }))}
+        selectable={true}
+        getRowSelectionDateTime={getSettlementDateLabel}
+        isLoading={isLoading}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: 'Aucun virement ne correspond à votre recherche',
+          subtitle: 'Essayez de modifier vos critères de recherche.',
+          resetMessage: 'Réinitialiser les filtres',
+          onFilterReset,
+        }}
+        noData={{
+          hasNoData: !hasBankAccount || !hasSettlement,
+          message: getEmptyStateMessage(hasBankAccount),
+        }}
+        getFullRow={getInvoiceTable}
+      />
+      {isTabletOrSmaller && (
+        <SettlementRowInvoicesModal
+          isOpen={!!rowInvoicesToDisplay?.id}
+          onClose={() => setRowInvoicesToDisplay(null)}
+          settlementRow={rowInvoicesToDisplay}
+        />
+      )}
+    </>
   )
 }
