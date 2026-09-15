@@ -1101,6 +1101,18 @@ def format_invoice_status(status: finance_models.InvoiceStatus) -> str:
             return status.value
 
 
+def format_settlement_status(status: finance_models.SettlementStatus) -> str:
+    match status:
+        case finance_models.SettlementStatus.ISSUED:
+            return format_badge("Émis", "info")
+        case finance_models.SettlementStatus.EXECUTED:
+            return format_badge("Exécuté", "success")
+        case finance_models.SettlementStatus.REJECTED:
+            return format_badge("Rejeté", "danger")
+        case _:
+            return status.value
+
+
 def format_user_account_update_flag(flag: users_models.UserAccountUpdateFlag) -> str:
     match flag:
         case users_models.UserAccountUpdateFlag.MISSING_VALUE:
@@ -2372,6 +2384,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_dms_application_status"] = format_dms_application_status
     app.jinja_env.filters["format_dms_application_status_badge"] = format_dms_application_status_badge
     app.jinja_env.filters["format_invoice_status"] = format_invoice_status
+    app.jinja_env.filters["format_settlement_status"] = format_settlement_status
     app.jinja_env.filters["format_user_account_update_flags"] = format_user_account_update_flags
     app.jinja_env.filters["format_user_account_update_type"] = format_user_account_update_type
     app.jinja_env.filters["format_registration_step_description"] = format_registration_step_description
