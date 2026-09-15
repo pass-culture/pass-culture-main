@@ -450,11 +450,12 @@ def format_amount(
 def format_cents(
     amount_in_cents: int | None,
     target: users_models.User | offerers_models.Offerer | offerers_models.Venue | None = None,
+    is_signed: bool = False,
 ) -> str:
     if amount_in_cents is None:
         amount_in_cents = 0
 
-    return format_amount(finance_utils.cents_to_full_unit(amount_in_cents), target=target)
+    return format_amount(finance_utils.cents_to_full_unit(amount_in_cents), target=target, is_signed=is_signed)
 
 
 def format_count(number: int) -> str:
@@ -1094,9 +1095,9 @@ def format_invoice_status(status: finance_models.InvoiceStatus) -> str:
         case finance_models.InvoiceStatus.PENDING:
             return format_badge("En attente de synchronisation", "info")
         case finance_models.InvoiceStatus.PENDING_PAYMENT:
-            return format_badge("En attente de paiement", "secondary")
+            return format_badge("En attente de règlement", "secondary")
         case finance_models.InvoiceStatus.PAID:
-            return format_badge("Payé", "success")
+            return format_badge("Réglé", "success")
         case _:
             return status.value
 

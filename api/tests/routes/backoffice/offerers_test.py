@@ -5030,12 +5030,12 @@ class GetOffererInvoicesTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "factory,expected_invoice1_amount,expected_later_invoice1_amount,expected_invoice2_amount",
         [
-            (offerers_factories.OffererFactory, "10,00 €", "12,50 €", "23,50 €"),
+            (offerers_factories.OffererFactory, "+ 10,00 €", "+ 12,50 €", "+ 23,50 €"),
             (
                 offerers_factories.CaledonianOffererFactory,
-                "10,00 € (1 195 CFP)",
-                "12,50 € (1 490 CFP)",
-                "23,50 € (2 805 CFP)",
+                "+ 10,00 € (+ 1 195 CFP)",
+                "+ 12,50 € (+ 1 490 CFP)",
+                "+ 23,50 € (+ 2 805 CFP)",
             ),
         ],
     )
@@ -5088,24 +5088,24 @@ class GetOffererInvoicesTest(GetEndpointHelper):
         assert len(rows) == 3
 
         assert rows[0]["N° de virement"] == "VIR992"
-        assert rows[0]["N° du justificatif"] == later_invoice1.reference
-        assert rows[0]["Date du justificatif"] == "01/05/2023"
-        assert rows[0]["État du justificatif"] == "Payé"
-        assert rows[0]["Montant remboursé"] == expected_later_invoice1_amount
+        assert rows[0]["Référence"] == later_invoice1.reference
+        assert rows[0]["Date d'émission"] == "01/05/2023"
+        assert rows[0]["État du justificatif"] == "Réglé"
+        assert rows[0]["Montant"] == expected_later_invoice1_amount
         assert rows[0]["Compte bancaire d'origine"] == bank_account1.label
 
         assert rows[1]["N° de virement"] == "VIR991"
-        assert rows[1]["N° du justificatif"] == invoice1.reference
-        assert rows[1]["Date du justificatif"] == "01/04/2023"
-        assert rows[1]["État du justificatif"] == "Payé"
-        assert rows[1]["Montant remboursé"] == expected_invoice1_amount
+        assert rows[1]["Référence"] == invoice1.reference
+        assert rows[1]["Date d'émission"] == "01/04/2023"
+        assert rows[1]["État du justificatif"] == "Réglé"
+        assert rows[1]["Montant"] == expected_invoice1_amount
         assert rows[1]["Compte bancaire d'origine"] == bank_account1.label
 
         assert rows[2]["N° de virement"] == "VIR991"
-        assert rows[2]["N° du justificatif"] == invoice2.reference
-        assert rows[2]["Date du justificatif"] == "01/04/2023"
-        assert rows[2]["État du justificatif"] == "Payé"
-        assert rows[2]["Montant remboursé"] == expected_invoice2_amount
+        assert rows[2]["Référence"] == invoice2.reference
+        assert rows[2]["Date d'émission"] == "01/04/2023"
+        assert rows[2]["État du justificatif"] == "Réglé"
+        assert rows[2]["Montant"] == expected_invoice2_amount
         assert rows[2]["Compte bancaire d'origine"] == bank_account2.label
 
 
