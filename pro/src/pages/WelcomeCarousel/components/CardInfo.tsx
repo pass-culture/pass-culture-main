@@ -22,6 +22,6 @@ export const CardInfo = ({
       <h3 className={styles['card-info-header-title']}>{title}</h3>
     </div>
 
-    <div className={styles['card-info-description']}>{children}</div>
+    <p className={styles['card-info-description']}>{children}</p>
   </div>
 )

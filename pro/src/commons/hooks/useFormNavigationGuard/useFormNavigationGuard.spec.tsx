@@ -319,20 +319,19 @@ describe('useFormNavigationGuard', () => {
               screen.getByRole('link', { name: 'Go to another page' })
             )
 
-            await user.click(
-              await screen.findByRole('button', {
-                name: 'Enregistrer et quitter',
-              })
-            )
+            const saveAndLeaveButton = await screen.findByRole('button', {
+              name: 'Enregistrer et quitter',
+            })
+            const ignoreChangesButton = screen.getByRole('button', {
+              name: 'Ignorer les modifications',
+            })
+
+            await user.click(saveAndLeaveButton)
 
             await waitFor(() => {
-              expect(
-                screen.getByRole('button', { name: 'Enregistrer et quitter' })
-              ).toBeDisabled()
+              expect(saveAndLeaveButton).toBeDisabled()
             })
-            expect(
-              screen.getByRole('button', { name: 'Ignorer les modifications' })
-            ).toBeDisabled()
+            expect(ignoreChangesButton).toBeDisabled()
 
             resolveOnSubmit(true)
 

@@ -99,10 +99,14 @@ describe('CollectiveOffersScreen', () => {
     })
 
     expect(
-      screen.getByRole('checkbox', { name: firstOffer.name })
+      screen.getByRole('checkbox', {
+        name: `Sélectionner la ligne ${firstOffer.name}`,
+      })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('checkbox', { name: secondOffer.name })
+      screen.getByRole('checkbox', {
+        name: `Sélectionner la ligne ${secondOffer.name}`,
+      })
     ).toBeInTheDocument()
   })
 
@@ -158,7 +162,9 @@ describe('CollectiveOffersScreen', () => {
     })
 
     expect(
-      screen.getByRole('checkbox', { name: offersRecap[0].name })
+      screen.getByRole('checkbox', {
+        name: `Sélectionner la ligne ${offersRecap[0].name}`,
+      })
     ).toBeInTheDocument()
     expect(screen.getByText('2 offres')).toBeInTheDocument()
   })
@@ -170,7 +176,9 @@ describe('CollectiveOffersScreen', () => {
     })
 
     expect(
-      screen.getByRole('checkbox', { name: offersRecap[0].name })
+      screen.getByRole('checkbox', {
+        name: `Sélectionner la ligne ${offersRecap[0].name}`,
+      })
     ).toBeInTheDocument()
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
   })
@@ -184,7 +192,9 @@ describe('CollectiveOffersScreen', () => {
     })
 
     expect(
-      screen.getByRole('checkbox', { name: offersRecap[0].name })
+      screen.getByRole('checkbox', {
+        name: `Sélectionner la ligne ${offersRecap[0].name}`,
+      })
     ).toBeInTheDocument()
     expect(await screen.findByText('100+ offres')).toBeInTheDocument()
   })
@@ -245,7 +255,9 @@ describe('CollectiveOffersScreen', () => {
   it('should display actionsBar when at least one offer is selected', async () => {
     renderOffers(props)
 
-    const checkbox = screen.getByRole('checkbox', { name: offersRecap[0].name })
+    const checkbox = screen.getByRole('checkbox', {
+      name: `Sélectionner la ligne ${offersRecap[0].name}`,
+    })
     await userEvent.click(checkbox)
 
     const actionBar = await screen.findByTestId('actions-bar')
@@ -270,16 +282,16 @@ describe('CollectiveOffersScreen', () => {
     })
 
     const firstOfferCheckbox = screen.getByRole('checkbox', {
-      name: offers[0].name,
+      name: `Sélectionner la ligne ${offers[0].name}`,
     })
     const secondOfferCheckbox = screen.getByRole('checkbox', {
-      name: offers[1].name,
+      name: `Sélectionner la ligne ${offers[1].name}`,
     })
     const thirdOfferCheckbox = screen.getByRole('checkbox', {
-      name: offers[2].name,
+      name: `Sélectionner la ligne ${offers[2].name}`,
     })
     const fourthOfferCheckbox = screen.getByRole('checkbox', {
-      name: offers[3].name,
+      name: `Sélectionner la ligne ${offers[3].name}`,
     })
 
     await userEvent.click(screen.getByLabelText('Tout sélectionner'))

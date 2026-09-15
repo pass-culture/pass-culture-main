@@ -314,6 +314,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
               size={ButtonSize.SMALL}
               color={ButtonColor.NEUTRAL}
               tooltip="Voir les actions"
+              id={actionButtonId}
             />
           }
           align="end"

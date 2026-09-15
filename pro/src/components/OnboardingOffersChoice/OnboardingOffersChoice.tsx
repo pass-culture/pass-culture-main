@@ -35,23 +35,20 @@ export const OnboardingOffersChoice = ({
     <>
       <div className={styles['card-container']}>
         <Card>
-          <Card.Image
-            src={individuelle}
-            alt="Illustration avec un smartphone affichant le logo pass Culture, un sac à dos et des écouteurs"
-          />
+          <Card.Image src={individuelle} alt="" />
           <Card.Header
             title="Sur l’application mobile à destination des jeunes"
             titleTag="h3"
           />
           <Card.Content>
-            <span>
+            <p>
               Vos offres seront visibles par{' '}
               <strong className={styles['card-description-highlight']}>
                 + de 4 millions de jeunes
               </strong>
               {NBSP}
               inscrits sur l’application mobile pass Culture.
-            </span>
+            </p>
           </Card.Content>
           <Card.Footer>
             <Button
@@ -69,22 +66,19 @@ export const OnboardingOffersChoice = ({
         </Card>
 
         <Card>
-          <Card.Image
-            src={collective}
-            alt="Illustration avec un ordinateur affichant ADAGE, un tableau noir et des livres"
-          />
+          <Card.Image src={collective} alt="" />
           <Card.Header
             title="Sur ADAGE à destination des enseignants"
             titleTag="h3"
           />
           <Card.Content>
-            <span>
+            <p>
               Vos offres seront visibles{' '}
               <strong className={styles['card-description-highlight']}>
                 par tous les enseignants
               </strong>{' '}
               des collèges et lycées publics et privés sous contrat.
-            </span>
+            </p>
           </Card.Content>
           <Card.Footer>
             <Button

@@ -58,7 +58,7 @@ export const CollectiveOffersBookableLine = ({
             stock={offer.collectiveStock}
           />
         )}
-        <h4 className={styles['offer-line-content-primary']}>
+        <h3 className={styles['offer-line-content-primary']}>
           <Link
             className={styles['offer-line-link']}
             to={offerLink}
@@ -73,7 +73,7 @@ export const CollectiveOffersBookableLine = ({
           >
             {offer.name}
           </Link>
-        </h4>
+        </h3>
         <p className={styles['offer-line-content-secondary']}>
           {dateAndTicketsCount}
         </p>

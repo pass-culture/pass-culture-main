@@ -17,7 +17,13 @@ export const Skeleton = ({
 }: SkeletonProps): JSX.Element => {
   return (
     <div>
-      <div className={styles['visually-hidden']}>Chargement en cours</div>
+      <div
+        className={styles['visually-hidden']}
+        aria-live="polite"
+        role="status"
+      >
+        Chargement en cours
+      </div>
       <div
         data-testid={`skeleton`}
         aria-hidden={true}
