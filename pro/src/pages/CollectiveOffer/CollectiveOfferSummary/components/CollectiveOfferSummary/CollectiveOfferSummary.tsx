@@ -6,7 +6,6 @@ import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
 } from '@/commons/core/OfferEducational/types'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
@@ -48,11 +47,7 @@ type LayoutProps = {
   institutionEditLink?: string
 }
 
-type NewPriceLayoutProps = Omit<LayoutProps, 'offer'> & {
-  offer: GetCollectiveOfferResponseModel
-}
-
-function _renderNewPriceLayout({
+function _renderPriceLayout({
   offer,
   canEditDetails,
   canEditDatesAndPrice,
@@ -60,7 +55,9 @@ function _renderNewPriceLayout({
   offerEditLink,
   stockEditLink,
   institutionEditLink,
-}: NewPriceLayoutProps) {
+}: LayoutProps) {
+  const isTemplate = isCollectiveOfferTemplate(offer)
+
   return (
     <>
       <SummarySection
@@ -70,118 +67,68 @@ function _renderNewPriceLayout({
         <CollectiveOfferVenueSection venue={offer.venue} />
         <CollectiveOfferTypeSection offer={offer} />
         <CollectiveOfferImagePreview offer={offer} />
+        {isTemplate && <CollectiveOfferDateSection offer={offer} />}
         <CollectiveOfferLocationSection offer={offer} />
+        {isTemplate && <CollectiveOfferPriceSection offer={offer} />}
         <CollectiveOfferParticipantSection students={offer.students} />
         <AccessibilitySummarySection
           accessibleItem={offer}
           accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
-          shouldShowDivider
+          shouldShowDivider={isTemplate}
         />
-      </SummarySection>
-      <SummarySection
-        title="Dates et prix"
-        editLink={canEditDatesAndPrice ? stockEditLink : null}
-      >
-        <CollectiveOfferStockSection
-          stock={offer.collectiveStock}
-          venueDepartmentCode={offer.venue.departementCode}
-        />
-      </SummarySection>
-      <SummarySection
-        title="Informations pratiques"
-        editLink={canEditDetails ? offerEditLink : null}
-      >
-        {offer.bookingEmails.length > 0 && (
-          <CollectiveOfferNotificationSection
-            bookingEmails={offer.bookingEmails}
-          />
+        {isTemplate && (
+          <>
+            <CollectiveOfferContactSection offer={offer} />
+            {offer.bookingEmails.length > 0 && (
+              <CollectiveOfferNotificationSection
+                bookingEmails={offer.bookingEmails}
+              />
+            )}
+          </>
         )}
-        <CollectiveOfferContactSection offer={offer} />
-        {offer.collectiveStock?.priceDetail && (
-          <SummarySubSection title="Informations pratiques" shouldShowDivider>
-            <SummaryDescriptionList
-              descriptions={[{ text: offer.collectiveStock.priceDetail }]}
+      </SummarySection>
+      {isCollectiveOffer(offer) && (
+        <>
+          <SummarySection
+            title="Dates et prix"
+            editLink={canEditDatesAndPrice ? stockEditLink : null}
+          >
+            <CollectiveOfferStockSection
+              stock={offer.collectiveStock}
+              venueDepartmentCode={offer.venue.departementCode}
             />
-          </SummarySubSection>
-        )}
-      </SummarySection>
-      <SummarySection
-        title="Établissement et enseignant"
-        editLink={canEditInstitution ? institutionEditLink : null}
-      >
-        <CollectiveOfferInstitutionSection
-          institution={offer.institution}
-          teacher={offer.teacher}
-        />
-      </SummarySection>
-    </>
-  )
-}
-
-type OldLayoutProps = LayoutProps & {
-  shouldShowAccessibilityDivider: boolean
-}
-
-function _renderOldLayout({
-  offer,
-  canEditDetails,
-  canEditDatesAndPrice,
-  canEditInstitution,
-  shouldShowAccessibilityDivider,
-  offerEditLink,
-  stockEditLink,
-  institutionEditLink,
-}: OldLayoutProps) {
-  return (
-    <>
-      <SummarySection
-        title="Détails de l’offre"
-        editLink={canEditDetails ? offerEditLink : null}
-      >
-        <CollectiveOfferVenueSection venue={offer.venue} />
-        <CollectiveOfferTypeSection offer={offer} />
-        <CollectiveOfferImagePreview offer={offer} />
-        {isCollectiveOfferTemplate(offer) && (
-          <CollectiveOfferDateSection offer={offer} />
-        )}
-        <CollectiveOfferLocationSection offer={offer} />
-        {isCollectiveOfferTemplate(offer) && (
-          <CollectiveOfferPriceSection offer={offer} />
-        )}
-        <CollectiveOfferParticipantSection students={offer.students} />
-        <AccessibilitySummarySection
-          accessibleItem={offer}
-          accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
-          shouldShowDivider={shouldShowAccessibilityDivider}
-        />
-        <CollectiveOfferContactSection offer={offer} />
-        {offer.bookingEmails.length > 0 && (
-          <CollectiveOfferNotificationSection
-            bookingEmails={offer.bookingEmails}
-          />
-        )}
-      </SummarySection>
-      {isCollectiveOffer(offer) && (
-        <SummarySection
-          title="Dates & Prix"
-          editLink={canEditDatesAndPrice ? stockEditLink : null}
-        >
-          <CollectiveOfferStockSection
-            stock={offer.collectiveStock}
-            venueDepartmentCode={offer.venue.departementCode}
-          />
-        </SummarySection>
-      )}
-      {isCollectiveOffer(offer) && (
-        <SummarySection
-          title="Établissement et enseignant"
-          editLink={canEditInstitution ? institutionEditLink : null}
-        >
-          <CollectiveOfferInstitutionSection
-            institution={offer.institution}
-            teacher={offer.teacher}
-          />
-        </SummarySection>
+          </SummarySection>
+          <SummarySection
+            title="Informations pratiques"
+            editLink={canEditDetails ? offerEditLink : null}
+          >
+            {offer.bookingEmails.length > 0 && (
+              <CollectiveOfferNotificationSection
+                bookingEmails={offer.bookingEmails}
+              />
+            )}
+            <CollectiveOfferContactSection offer={offer} />
+            {offer.collectiveStock?.priceDetail && (
+              <SummarySubSection
+                title="Informations pratiques"
+                shouldShowDivider
+              >
+                <SummaryDescriptionList
+                  descriptions={[{ text: offer.collectiveStock.priceDetail }]}
+                />
+              </SummarySubSection>
+            )}
+          </SummarySection>
+          <SummarySection
+            title="Établissement et enseignant"
+            editLink={canEditInstitution ? institutionEditLink : null}
+          >
+            <CollectiveOfferInstitutionSection
+              institution={offer.institution}
+              teacher={offer.teacher}
+            />
+          </SummarySection>
+        </>
       )}
     </>
   )
@@ -202,10 +149,6 @@ export const CollectiveOfferSummary = ({
   stockEditLink,
   institutionEditLink,
 }: CollectiveOfferSummaryProps) => {
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
-
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
@@ -233,12 +176,7 @@ export const CollectiveOfferSummary = ({
             />
           </div>
         )}
-        {isNewCollectivePriceEnabled && isCollectiveOffer(offer)
-          ? _renderNewPriceLayout({ ...layoutProps, offer })
-          : _renderOldLayout({
-              ...layoutProps,
-              shouldShowAccessibilityDivider: !isNewCollectivePriceEnabled,
-            })}
+        {_renderPriceLayout(layoutProps)}
       </SummaryContent>
     </SummaryLayout>
   )

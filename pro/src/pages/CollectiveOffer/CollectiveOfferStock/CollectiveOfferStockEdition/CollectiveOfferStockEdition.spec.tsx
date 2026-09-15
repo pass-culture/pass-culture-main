@@ -16,7 +16,6 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { CollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferStockForm } from '../components/CollectiveOfferStockForm/CollectiveOfferStockForm'
-import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 import { CollectiveOfferStockEdition } from './CollectiveOfferStockEdition'
 
 const mockSyncVenue = vi.fn()
@@ -40,10 +39,6 @@ vi.mock(
     CollectiveOfferStockForm: vi.fn(),
   })
 )
-
-vi.mock('../components/OfferEducationalStock/OfferEducationalStock', () => ({
-  OfferEducationalStock: vi.fn(),
-}))
 
 const defaultUseLocationValue = {
   state: { offer: '', queryId: '' },
@@ -86,13 +81,6 @@ describe('CollectiveOfferStockEdition', () => {
 
   beforeEach(async () => {
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-
-    const actualOld = await vi.importActual<
-      typeof import('../components/OfferEducationalStock/OfferEducationalStock')
-    >('../components/OfferEducationalStock/OfferEducationalStock')
-    vi.mocked(OfferEducationalStock).mockImplementation(
-      actualOld.OfferEducationalStock
-    )
 
     const actualNew = await vi.importActual<
       typeof import('../components/CollectiveOfferStockForm/CollectiveOfferStockForm')
@@ -231,7 +219,7 @@ describe('CollectiveOfferStockEdition', () => {
     ).toBeVisible()
   })
 
-  it('on submit with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS enabled: should not send priceDetail on stock patch', async () => {
+  it('on submit: should not send priceDetail on stock patch', async () => {
     const user = userEvent.setup()
     vi.spyOn(api, 'editCollectiveStock').mockResolvedValueOnce({} as any)
     const formMock = vi.fn(({ onAfterSubmit }) => {
@@ -241,13 +229,10 @@ describe('CollectiveOfferStockEdition', () => {
       )
     })
     vi.mocked(CollectiveOfferStockForm).mockImplementationOnce(formMock)
-    vi.mocked(OfferEducationalStock).mockImplementationOnce(formMock)
 
-    renderCollectiveStockEdition(
-      '/offre/A1/collectif/stocks/edition',
-      { offer: defaultOffer },
-      ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS']
-    )
+    renderCollectiveStockEdition('/offre/A1/collectif/stocks/edition', {
+      offer: defaultOffer,
+    })
 
     const submitButton = await screen.findByRole('button', {
       name: /Enregistrer/,

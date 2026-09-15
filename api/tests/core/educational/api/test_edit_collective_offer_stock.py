@@ -163,24 +163,6 @@ class EditCollectiveOfferStocksTest:
         assert booking.cancellationDate == None
         assert booking.confirmationLimitDate == new_limit
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DETAILS)
-    def test_can_increase_price(self, status):
-        offer = factories.create_collective_offer_by_status(status)
-
-        if offer.collectiveStock is None:
-            factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        price = offer.collectiveStock.price
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(price=price + 100)
-
-        educational_api_stock.edit_collective_stock(
-            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
-        )
-
-        assert offer.collectiveStock.price == price + 100
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DETAILS)
     def test_can_increase_service_price(self, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -202,7 +184,6 @@ class EditCollectiveOfferStocksTest:
         assert offer.collectiveStock.servicePrice == service_price + 50
         assert offer.collectiveStock.collectiveAdditionalFees == []
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DETAILS)
     def test_can_add_fee(self, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -257,43 +238,6 @@ class EditCollectiveOfferStocksTest:
         if booking:
             assert booking.confirmationLimitDate == new_limit.replace(tzinfo=None)
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DISCOUNT)
-    def test_can_lower_price_and_edit_price_details(self, status):
-        offer = factories.create_collective_offer_by_status(status)
-
-        if offer.collectiveStock is None:
-            factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        new_price = offer.collectiveStock.price - 100
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            price=new_price, priceDetail="yes", numberOfTickets=1200
-        )
-        educational_api_stock.edit_collective_stock(
-            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
-        )
-
-        assert offer.collectiveStock.price == new_price
-        assert offer.collectiveStock.priceDetail == "yes"
-        assert offer.collectiveStock.numberOfTickets == 1200
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    def test_can_lower_price_and_edit_price_details_ended(self):
-        offer = factories.EndedCollectiveOfferConfirmedBookingFactory()
-
-        new_price = offer.collectiveStock.price - 100
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            price=new_price, priceDetail="yes", numberOfTickets=1200
-        )
-        educational_api_stock.edit_collective_stock(
-            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
-        )
-
-        assert offer.collectiveStock.price == new_price
-        assert offer.collectiveStock.priceDetail == "yes"
-        assert offer.collectiveStock.numberOfTickets == 1200
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DISCOUNT)
     def test_can_lower_service_price(self, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -315,7 +259,6 @@ class EditCollectiveOfferStocksTest:
         assert offer.collectiveStock.servicePrice == service_price - 10
         assert offer.collectiveStock.collectiveAdditionalFees == []
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DISCOUNT)
     def test_can_lower_fee(self, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -342,7 +285,6 @@ class EditCollectiveOfferStocksTest:
             for fee in offer.collectiveStock.collectiveAdditionalFees
         ] == new_fees
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_additional_fees(self):
         offer = factories.CollectiveOfferFactory()
         stock = factories.CollectiveStockFactory(collectiveOffer=offer, price=150, servicePrice=50)
@@ -385,7 +327,6 @@ class EditCollectiveOfferStocksTest:
             for fee in sorted(stock.collectiveAdditionalFees, key=lambda f: f.amount)
         ] == new_fees
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_remove_additional_fees(self):
         offer = factories.CollectiveOfferFactory()
         stock = factories.CollectiveStockFactory(collectiveOffer=offer, price=150, servicePrice=50)
@@ -509,7 +450,6 @@ class ReturnErrorTest:
                     stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
                 )
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
     @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_EDIT_DISCOUNT)
     def test_cannot_lower_price_and_edit_price_details(self, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -518,8 +458,11 @@ class ReturnErrorTest:
             factories.CollectiveStockFactory(collectiveOffer=offer)
 
         changes = [
-            {"price": offer.collectiveStock.price - 100},
-            {"priceDetail": "yes"},
+            {
+                "price": offer.collectiveStock.price - 100,
+                "servicePrice": offer.collectiveStock.servicePrice - 100,
+                "collectiveAdditionalFees": [],
+            },
             {"numberOfTickets": 1200},
         ]
         for change in changes:
@@ -530,7 +473,6 @@ class ReturnErrorTest:
                     stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
                 )
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_EDIT_DISCOUNT)
     def test_cannot_edit_price_fields(self, status):
         offer = factories.create_collective_offer_by_status(status)

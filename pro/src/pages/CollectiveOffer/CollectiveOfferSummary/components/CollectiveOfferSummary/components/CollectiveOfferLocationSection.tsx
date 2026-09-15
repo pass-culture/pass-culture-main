@@ -3,7 +3,6 @@ import {
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
 import {
   type Description,
@@ -57,10 +56,6 @@ const getLocationInformation = ({
 export const CollectiveOfferLocationSection = ({
   offer,
 }: CollectiveOfferLocationSectionProps) => {
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
-
   const descriptions: Description[] = [
     { text: getLocationInformation({ offer }), isBlock: true },
   ]
@@ -68,7 +63,7 @@ export const CollectiveOfferLocationSection = ({
   return (
     <SummarySubSection
       title="Localisation de l'événement"
-      shouldShowDivider={!isNewCollectivePriceEnabled}
+      shouldShowDivider={false}
     >
       <SummaryDescriptionList descriptions={descriptions} />
     </SummarySubSection>

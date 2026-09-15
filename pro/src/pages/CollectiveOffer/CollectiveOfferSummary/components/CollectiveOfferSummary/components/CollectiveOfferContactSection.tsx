@@ -3,7 +3,6 @@ import type {
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import {
   type Description,
@@ -20,10 +19,6 @@ interface CollectiveOfferContactSectionProps {
 export const CollectiveOfferContactSection = ({
   offer,
 }: CollectiveOfferContactSectionProps) => {
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
-
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
   const description: Description[] = [
@@ -45,10 +40,7 @@ export const CollectiveOfferContactSection = ({
   }
 
   return (
-    <SummarySubSection
-      title="Contact"
-      shouldShowDivider={!isNewCollectivePriceEnabled}
-    >
+    <SummarySubSection title="Contact" shouldShowDivider={false}>
       <SummaryDescriptionList descriptions={description} />
     </SummarySubSection>
   )

@@ -42,8 +42,7 @@ function renderOfferEducational(
     offer,
     isTemplate,
   }: Pick<OfferEducationalProps, 'mode' | 'isTemplate' | 'offer'>,
-  customVenue?: Partial<GetVenueResponseModel>,
-  features?: string[]
+  customVenue?: Partial<GetVenueResponseModel>
 ) {
   const domainsOptions = [
     {
@@ -64,7 +63,6 @@ function renderOfferEducational(
       storeOverrides: {
         user: { selectedPartnerVenue: { ...defaultGetVenue, ...customVenue } },
       },
-      features,
     }
   )
 }
@@ -156,20 +154,11 @@ describe('OfferEducational > submission', () => {
       const user = userEvent.setup()
       renderOfferEducational({ mode: Mode.CREATION, isTemplate: false })
 
-      await fillForm(user, {
-        ...baseFormValues,
-        contactEmail: 'test@venue.com',
-        bookingEmails: [{ email: 'booking@venue.com' }],
-      })
+      await fillForm(user, baseFormValues)
       await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
       expect(api.createCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
-        body: {
-          ...baseBodyPayload,
-          bookingEmails: ['booking@venue.com'],
-          contactEmail: 'test@venue.com',
-          contactPhone: '',
-        },
+        body: baseBodyPayload,
       })
     })
 
@@ -181,27 +170,6 @@ describe('OfferEducational > submission', () => {
           collectiveEmail: 'contact@venue.com',
           collectivePhone: '+33100000000',
         }
-      )
-
-      await fillForm(user, baseFormValues)
-      await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
-
-      expect(api.createCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
-        body: {
-          ...baseBodyPayload,
-          bookingEmails: ['contact@venue.com'],
-          contactEmail: 'contact@venue.com',
-          contactPhone: '+33100000000',
-        },
-      })
-    })
-
-    it('should not send contactEmail, bookingEmails and contactPhone when WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS is enabled', async () => {
-      const user = userEvent.setup()
-      renderOfferEducational(
-        { mode: Mode.CREATION, isTemplate: false },
-        { collectiveEmail: 'test@venue.com', collectivePhone: '+33100000000' },
-        ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS']
       )
 
       await fillForm(user, baseFormValues)

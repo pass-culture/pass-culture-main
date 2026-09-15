@@ -110,10 +110,7 @@ describe('createPatchOfferPayload', () => {
     motorDisabilityCompliant: true,
     audioDisabilityCompliant: false,
     visualDisabilityCompliant: true,
-    bookingEmails: ['test3@email.com', 'test4@email.com'],
     students: [],
-    contactPhone: '0123456788',
-    contactEmail: 'test2@email.com',
     interventionArea: ['2B'],
     domains: [123],
     nationalProgramId: 1,
@@ -125,16 +122,6 @@ describe('createPatchOfferPayload', () => {
 
     expect(payload).toMatchObject({
       ...patchOfferPayload,
-      venueId,
-    })
-  })
-
-  it('when WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True: should not return contactEmail, contactPhone on payload for a non-template offer', () => {
-    const payload = createPatchOfferPayload({ ...offer }, initialValues, true)
-    const { contactEmail, contactPhone, bookingEmails, ...restPayload } =
-      patchOfferPayload
-    expect(payload).toMatchObject({
-      ...restPayload,
       venueId,
     })
   })

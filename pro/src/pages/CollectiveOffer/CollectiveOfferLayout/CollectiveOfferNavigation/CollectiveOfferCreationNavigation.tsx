@@ -1,6 +1,5 @@
 import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { type StepItem, Stepper } from '@/design-system/Stepper/Stepper'
 
 import styles from './CollectiveOfferNavigation.module.scss'
@@ -19,20 +18,14 @@ export const CollectiveOfferCreationNavigation = ({
 }: CollectiveOfferCreationNavigationProps): JSX.Element => {
   const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
-
   const hasPassedDetailsStep = offer
   const hasPassedStocksStep = hasPassedDetailsStep && offer.collectiveStock
   const hasPassedInstitutionStep = hasPassedStocksStep && offer.institution
   const hasPassedInformationsSteps =
     hasPassedStocksStep &&
-    (!isNewCollectivePriceEnabled ||
-      !!offer.additionalDetails ||
-      !!hasPassedInstitutionStep)
+    (!!offer.additionalDetails || !!hasPassedInstitutionStep)
 
-  let steps: StepItem[] = [
+  const steps: StepItem[] = [
     {
       id: CollectiveOfferStep.DETAILS,
       label: "Détails de l'offre",
@@ -77,10 +70,6 @@ export const CollectiveOfferCreationNavigation = ({
         : '',
     },
   ]
-
-  if (!isNewCollectivePriceEnabled) {
-    steps = steps.filter((s) => s.id !== CollectiveOfferStep.INFORMATION)
-  }
 
   return (
     <div className={styles['eac-stepper-wrapper']}>

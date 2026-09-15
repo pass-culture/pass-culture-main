@@ -1,13 +1,8 @@
-import { type APIRequestContext, expect, type Page } from '@playwright/test'
-import { request as playwrightRequest } from 'playwright-core'
+import type { APIRequestContext, Page } from '@playwright/test'
 
 import { mockAddressSearch } from '../helpers/address'
-import { setFeatureFlags } from '../helpers/features'
 import { navigateToHubAndPickVenue } from '../helpers/navigation'
-import {
-  BASE_API_URL,
-  createProUserWithCollectiveOffers,
-} from '../helpers/sandbox'
+import { createProUserWithCollectiveOffers } from '../helpers/sandbox'
 import { test as base } from './common'
 
 export const test = base.extend<{
@@ -21,16 +16,6 @@ export const test = base.extend<{
       ...testInfo.project.use,
     })
     const page = await context.newPage()
-
-    const requestContext = await playwrightRequest.newContext({
-      baseURL: BASE_API_URL,
-    })
-    await setFeatureFlags(requestContext, [
-      {
-        name: 'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
-        isActive: true,
-      },
-    ])
     const venueName = 'Mon Lieu A'
     await navigateToHubAndPickVenue(page, venueName)
     await page.goto('/offre/creation')
@@ -53,4 +38,4 @@ export const test = base.extend<{
   },
 })
 
-export { expect }
+export { expect } from '@playwright/test'

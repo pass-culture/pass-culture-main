@@ -1,6 +1,6 @@
 import type { CollectiveStockResponseModel } from '@/apiClient/v1'
 
-import type { CollectiveOfferStockFormValues } from '../OfferEducationalStock/validationSchema'
+import type { CollectiveOfferStockFormValues } from '../CollectiveOfferStockForm/validationSchema'
 
 export type CollectiveStockFormDates = Pick<
   CollectiveOfferStockFormValues,

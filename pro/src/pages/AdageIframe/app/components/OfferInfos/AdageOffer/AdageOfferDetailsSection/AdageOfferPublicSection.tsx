@@ -2,7 +2,6 @@ import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 
 import styles from '../AdageOffer.module.scss'
@@ -36,7 +35,7 @@ const getAccessibilityLevels = ({
 
 export function AdageOfferPublicSection({
   offer,
-}: AdageOfferPublicSectionProps) {
+}: Readonly<AdageOfferPublicSectionProps>) {
   const studentLevels = offer.students
 
   const a11yLevels = getAccessibilityLevels(offer)
@@ -57,12 +56,7 @@ export function AdageOfferPublicSection({
       a11yLevels[0]
     )
   }
-  const isNewCollectivePriceEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
-  )
-
-  const shouldDisplayNumberOfTeachers =
-    isCollectiveOfferBookable(offer) && isNewCollectivePriceEnabled
+  const shouldDisplayNumberOfTeachers = isCollectiveOfferBookable(offer)
 
   return (
     <>

@@ -32,12 +32,13 @@ describe('<CollectiveOfferCreationNavigation />', () => {
 
     const listItems = await screen.findAllByRole('listitem')
 
-    expect(listItems).toHaveLength(5)
+    expect(listItems).toHaveLength(6)
     expect(listItems[0]).toHaveTextContent("Détails de l'offre")
     expect(listItems[1]).toHaveTextContent('Dates et prix')
-    expect(listItems[2]).toHaveTextContent('Établissement et enseignant')
-    expect(listItems[3]).toHaveTextContent('Récapitulatif')
-    expect(listItems[4]).toHaveTextContent('Aperçu')
+    expect(listItems[2]).toHaveTextContent('Informations pratiques')
+    expect(listItems[3]).toHaveTextContent('Établissement et enseignant')
+    expect(listItems[4]).toHaveTextContent('Récapitulatif')
+    expect(listItems[5]).toHaveTextContent('Aperçu')
 
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(0)
@@ -51,12 +52,15 @@ describe('<CollectiveOfferCreationNavigation />', () => {
     // Only the steps preceding the active one are navigable, the active step
     // never links to the page currently displayed.
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(2)
+    expect(links).toHaveLength(3)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offer.id}/creation`
     )
     expect(links[1].getAttribute('href')).toBe(
       `/offre/${offer.id}/collectif/stocks`
+    )
+    expect(links[2].getAttribute('href')).toBe(
+      `/offre/${offer.id}/collectif/informations-pratiques`
     )
   })
 
@@ -76,7 +80,7 @@ describe('<CollectiveOfferCreationNavigation />', () => {
     renderCollectiveOfferNavigation({ activeStep, offer })
 
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(3)
+    expect(links).toHaveLength(4)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offer.id}/creation`
     )
@@ -84,6 +88,9 @@ describe('<CollectiveOfferCreationNavigation />', () => {
       `/offre/${offer.id}/collectif/stocks`
     )
     expect(links[2].getAttribute('href')).toBe(
+      `/offre/${offer.id}/collectif/informations-pratiques`
+    )
+    expect(links[3].getAttribute('href')).toBe(
       `/offre/${offer.id}/collectif/etablissement`
     )
   })
@@ -98,7 +105,17 @@ describe('<CollectiveOfferCreationNavigation />', () => {
 
   it('should be able to go back to the institution and stocks step if the institution and stock are already filled', () => {
     const activeStep = CollectiveOfferStep.PREVIEW
-    const offer = getCollectiveOfferFactory()
+    const offer = getCollectiveOfferFactory({
+      institution: {
+        city: '',
+        id: 1,
+        institutionId: '2',
+        name: '',
+        phoneNumber: '',
+        postalCode: '',
+        institutionType: '',
+      },
+    })
     renderCollectiveOfferNavigation({ activeStep, offer })
 
     expect(
@@ -122,9 +139,7 @@ describe('<CollectiveOfferCreationNavigation />', () => {
     expect(screen.getByRole('link', { name: /Dates et prix/ })).toBeVisible()
   })
 
-  describe('with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS FF', () => {
-    const features = ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS']
-
+  describe('with informations pratiques step', () => {
     it('should keep the Établissement step reachable when the institution is set but additional details are empty', () => {
       const activeStep = CollectiveOfferStep.SUMMARY
       const offer = getCollectiveOfferFactory({
@@ -140,7 +155,7 @@ describe('<CollectiveOfferCreationNavigation />', () => {
         },
       })
 
-      renderCollectiveOfferNavigation({ activeStep, offer }, features)
+      renderCollectiveOfferNavigation({ activeStep, offer })
 
       expect(
         screen.getByRole('link', { name: /Établissement et enseignant/ })
@@ -151,7 +166,7 @@ describe('<CollectiveOfferCreationNavigation />', () => {
       const activeStep = CollectiveOfferStep.INSTITUTION
       const offer = getCollectiveOfferFactory()
 
-      renderCollectiveOfferNavigation({ offer, activeStep }, features)
+      renderCollectiveOfferNavigation({ offer, activeStep })
 
       const listItems = screen.getAllByRole('listitem')
       expect(listItems).toHaveLength(6)

@@ -24,9 +24,7 @@ const isOneTrue = (values: Record<string, boolean>): boolean =>
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
 
-export function getOfferEducationalValidationSchema(
-  isNewCollectivePriceEnabled: boolean = false
-): ObjectSchema<OfferEducationalFormValues> {
+export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducationalFormValues> {
   return yup.object().shape({
     title: yup.string().max(110).required('Veuillez renseigner un titre'),
     description: yup
@@ -110,8 +108,7 @@ export function getOfferEducationalValidationSchema(
       is: (
         contactOptions: OfferEducationalFormValues['contactOptions'],
         isTemplate: boolean
-      ) =>
-        (!isTemplate && !isNewCollectivePriceEnabled) || contactOptions?.email,
+      ) => Boolean(isTemplate && contactOptions?.email),
       then: (schema) =>
         schema
           .required('Veuillez renseigner une adresse email')

@@ -90,23 +90,18 @@ describe('AdageOfferPublicSection', () => {
     expect(screen.getByText('Non accessible')).toBeVisible()
   })
 
-  describe('WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS', () => {
-    const features = ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS']
-
+  describe('participants section', () => {
     it('should display the number of participants section for a bookable offer', () => {
-      renderAdageOfferPublicSection(
-        {
-          offer: {
-            ...defaultCollectiveOffer,
-            stock: {
-              ...defaultCollectiveOffer.stock,
-              numberOfTickets: 28,
-              numberOfTeachers: 2,
-            },
+      renderAdageOfferPublicSection({
+        offer: {
+          ...defaultCollectiveOffer,
+          stock: {
+            ...defaultCollectiveOffer.stock,
+            numberOfTickets: 28,
+            numberOfTeachers: 2,
           },
         },
-        features
-      )
+      })
 
       expect(
         screen.getByRole('heading', { name: 'Nombre de participants' })
@@ -116,29 +111,23 @@ describe('AdageOfferPublicSection', () => {
     })
 
     it('should not display accompagnateurs when numberOfTeachers is 0', () => {
-      renderAdageOfferPublicSection(
-        {
-          offer: {
-            ...defaultCollectiveOffer,
-            stock: {
-              ...defaultCollectiveOffer.stock,
-              numberOfTickets: 28,
-              numberOfTeachers: 0,
-            },
+      renderAdageOfferPublicSection({
+        offer: {
+          ...defaultCollectiveOffer,
+          stock: {
+            ...defaultCollectiveOffer.stock,
+            numberOfTickets: 28,
+            numberOfTeachers: 0,
           },
         },
-        features
-      )
+      })
 
       expect(screen.getByText('28 élèves')).toBeVisible()
       expect(screen.queryByText(/accompagnateur/)).not.toBeInTheDocument()
     })
 
     it('should not display the number of participants section for a template offer', () => {
-      renderAdageOfferPublicSection(
-        { offer: defaultCollectiveTemplateOffer },
-        features
-      )
+      renderAdageOfferPublicSection({ offer: defaultCollectiveTemplateOffer })
 
       expect(
         screen.queryByRole('heading', { name: 'Nombre de participants' })
