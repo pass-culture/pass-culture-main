@@ -57,7 +57,8 @@ def _generate_client_secret(client_id: str) -> str:
     payload = {
         "iss": settings.APPLE_TEAM_ID,
         "iat": now,
-        "exp": now + 3600,
+        "jti": uuid4(),
+        "exp": now + int(settings.APPLE_TOKEN_EXPIRATION),
         "aud": settings.APPLE_ISSUER_URL,
         "sub": client_id,
     }

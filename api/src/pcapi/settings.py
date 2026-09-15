@@ -395,6 +395,7 @@ APPLE_KEY_ID = secrets_utils.get("APPLE_KEY_ID", "")
 APPLE_WEB_CLIENT_ID = secrets_utils.get("APPLE_WEB_CLIENT_ID", "")
 APPLE_MOBILE_CLIENT_ID = secrets_utils.get("APPLE_MOBILE_CLIENT_ID", "")
 APPLE_PRIVATE_KEY = secrets_utils.get("APPLE_PRIVATE_KEY", "")
+APPLE_TOKEN_EXPIRATION = secrets_utils.get("APPLE_TOKEN_EXPIRATION", "180")
 
 # Native app Google SSO
 NATIVE_APP_GOOGLE_CLIENT_ID = secrets_utils.get("NATIVE_APP_GOOGLE_CLIENT_ID")
