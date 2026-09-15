@@ -7,11 +7,7 @@ import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setSelectedPartnerVenueById } from '@/commons/store/user/dispatchers/setSelectedPartnerVenueById'
-import {
-  ensureOffererNames,
-  ensureSelectedAdminOfferer,
-  ensureVenues,
-} from '@/commons/store/user/selectors'
+import { ensureVenues } from '@/commons/store/user/selectors'
 import { normalizeStrForSearch } from '@/commons/utils/normalizeStrForSearch'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
@@ -32,9 +28,11 @@ export const Hub = () => {
   const dispatch = useAppDispatch()
   const venues = useAppSelector(ensureVenues)
   const navigate = useNavigate()
-  const offererNames = useAppSelector(ensureOffererNames)
-  const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
-  const isSingleOfferer = offererNames.length === 1
+  const offererNames = useAppSelector((state) => state.user.offererNames)
+  const selectedAdminOfferer = useAppSelector(
+    (state) => state.user.selectedAdminOfferer
+  )
+  const isSingleOfferer = offererNames?.length === 1
 
   const [filteredVenues, setFilteredVenues] = useState(venues)
   const [isLoading, setIsLoading] = useState(false)
