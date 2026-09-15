@@ -1,0 +1,56 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+.settlement-row-invoice-table {
+  padding: var(--size-spacing-s) var(--size-spacing-l);
+  background-color: var(--color-background-subtle);
+  border-top: 1px solid var(--color-border-subtle);
+
+  /* stylelint-disable-next-line selector-max-type */
+  tr {
+    border-bottom: none;
+  }
+
+  /* stylelint-disable-next-line selector-max-type */
+  th {
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  @media (min-width: size.$tablet) {
+    /* stylelint-disable-next-line selector-max-type */
+    td:last-of-type {
+      width: rem.torem(157px);
+    }
+  }
+
+  .cell-reference {
+    margin-left: calc(-1 * var(--size-spacing-s));
+  }
+
+  .cell-reference-header {
+    @include fonts.body-accent-xs;
+
+    margin-left: calc(-1 * var(--size-spacing-s));
+  }
+
+  .cell-actions {
+    margin-right: calc(-1 * var(--size-spacing-s));
+    text-align: right;
+  }
+
+  .cell-actions-header {
+    @include fonts.body-accent-xs;
+
+    margin-right: calc(-1 * var(--size-spacing-l));
+    text-align: right;
+  }
+
+  .negative-amount {
+    color: var(--color-text-error);
+  }
+
+  .positive-amount {
+    color: var(--color-text-success);
+  }
+}

@@ -129,6 +129,10 @@
 
 .table-fullrow-content {
   padding: var(--size-spacing-xl) var(--size-spacing-s);
+
+  &-raw {
+    padding: 0;
+  }
 }
 
 @media (max-width: size.$tablet) {

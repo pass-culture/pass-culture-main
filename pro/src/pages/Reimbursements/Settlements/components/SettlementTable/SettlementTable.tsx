@@ -1,4 +1,6 @@
+import cn from 'classnames'
 import { format } from 'date-fns'
+import { useState } from 'react'
 
 import {
   type SettlementListResponseModel,
@@ -28,6 +30,7 @@ import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
+import { SettlementRowInvoicesTable } from '../SettlementRowInvoicesTable/SettlementRowInvoicesTable'
 import { SETTLEMENT_STATUS_LABELS } from './constants'
 import styles from './SettlementTable.module.scss'
 
@@ -87,102 +90,6 @@ function getEmptyStateMessage(hasBankAccount: boolean) {
 const getSettlementDateLabel = (settlement: ExtendedSettlementResponseModel) =>
   settlement.date ? format(new Date(settlement.date), FORMAT_DD_MM_YYYY) : '-'
 
-const columns: Column<ExtendedSettlementResponseModel>[] = [
-  {
-    id: 'label',
-    label: 'N° de virement',
-    sortable: true,
-    ordererField: 'label',
-    render: (settlement) => (
-      <p className={styles['cell-label']}>{settlement.label}</p>
-    ),
-  },
-  {
-    id: 'date',
-    label: "Date d'émission",
-    sortable: true,
-    ordererField: 'date',
-    render: (settlement) => (
-      <p className={styles['cell-date']}>
-        {getSettlementDateLabel(settlement)}
-      </p>
-    ),
-  },
-  {
-    id: 'bankAccount',
-    label: 'Compte bancaire',
-    sortable: true,
-    ordererField: 'bankAccount',
-    render: (settlement) => (
-      <Tooltip content={settlement.bankAccount}>
-        <p className={styles['cell-bank-account']}>{settlement.bankAccount}</p>
-      </Tooltip>
-    ),
-  },
-  {
-    id: 'status',
-    label: 'Statut',
-    sortable: true,
-    ordererField: 'status',
-    render: (settlement) => {
-      const { label, variant } = SETTLEMENT_STATUS_LABELS[settlement.status]
-      return (
-        <div className={styles['cell-status']}>
-          <Tag label={label} variant={variant} />
-        </div>
-      )
-    },
-  },
-  {
-    id: 'amount',
-    label: 'Montant',
-    sortable: true,
-    ordererField: 'amount',
-    render: (settlement: ExtendedSettlementResponseModel) => (
-      <p className={styles['cell-amount']}>
-        {settlement.isCaledonian
-          ? formatPacificFranc(convertEuroToPacificFranc(settlement.amount))
-          : formatPrice(settlement.amount)}
-      </p>
-    ),
-  },
-  {
-    id: 'invoicesCount',
-    label: 'Justificatifs',
-    sortable: true,
-    ordererField: 'invoicesCount',
-    render: (settlement) =>
-      settlement.status === SettlementStatus.EXECUTED &&
-      settlement.invoicesCount,
-  },
-  {
-    id: 'actions',
-    label: 'Actions',
-    render: (settlement) => (
-      <div className={styles['cell-actions']}>
-        {settlement.status === SettlementStatus.EXECUTED ? (
-          <Button
-            label="Voir plus"
-            variant={ButtonVariant.TERTIARY}
-            size={ButtonSize.SMALL}
-            color={ButtonColor.NEUTRAL}
-            iconPosition={IconPositionEnum.RIGHT}
-            icon={fullDownIcon}
-            disabled // TODO(mdesquilbet, 19/08/2026): to remove when creating the accordeon
-          />
-        ) : (
-          <Button
-            label="Remplacer le compte"
-            size={ButtonSize.SMALL}
-            disabled // TODO(mdesquilbet, 02/09/2026): to remove when resolving incidents
-          />
-        )}
-      </div>
-    ),
-    header: <div className={styles['cell-actions']}>Actions</div>,
-  },
-]
-
 export const SettlementTable = ({
   settlements,
   isLoading,
@@ -191,32 +98,158 @@ export const SettlementTable = ({
   onFilterReset,
 }: SettlementTableProps): JSX.Element => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
+  const [expandedId, setExpandedId] = useState<string | number | null>(null)
 
+  function toggleExpandedRow(rowId: string | number | null) {
+    setExpandedId((expId) => (expId === rowId ? null : rowId))
+  }
+
+  const columns: Column<ExtendedSettlementResponseModel>[] = [
+    {
+      id: 'label',
+      label: 'N° de virement',
+      sortable: true,
+      ordererField: 'label',
+      render: (settlement) => (
+        <p className={styles['cell-label']}>{settlement.label}</p>
+      ),
+    },
+    {
+      id: 'date',
+      label: "Date d'émission",
+      sortable: true,
+      ordererField: 'date',
+      render: (settlement) => (
+        <p className={styles['cell-date']}>
+          {getSettlementDateLabel(settlement)}
+        </p>
+      ),
+    },
+    {
+      id: 'bankAccount',
+      label: 'Compte bancaire',
+      sortable: true,
+      ordererField: 'bankAccount',
+      render: (settlement) => (
+        <Tooltip content={settlement.bankAccount}>
+          <p className={styles['cell-bank-account']}>
+            {settlement.bankAccount}
+          </p>
+        </Tooltip>
+      ),
+    },
+    {
+      id: 'status',
+      label: 'Statut',
+      sortable: true,
+      ordererField: 'status',
+      render: (settlement) => {
+        const { label, variant } = SETTLEMENT_STATUS_LABELS[settlement.status]
+        return (
+          <div className={styles['cell-status']}>
+            <Tag label={label} variant={variant} />
+          </div>
+        )
+      },
+    },
+    {
+      id: 'amount',
+      label: 'Montant',
+      sortable: true,
+      ordererField: 'amount',
+      render: (settlement: ExtendedSettlementResponseModel) => (
+        <p className={styles['cell-amount']}>
+          {settlement.isCaledonian
+            ? formatPacificFranc(convertEuroToPacificFranc(settlement.amount))
+            : formatPrice(settlement.amount)}
+        </p>
+      ),
+    },
+    {
+      id: 'invoicesCount',
+      label: 'Justificatifs',
+      sortable: true,
+      ordererField: 'invoicesCount',
+      render: (settlement) =>
+        settlement.status === SettlementStatus.EXECUTED &&
+        settlement.invoicesCount,
+    },
+    {
+      id: 'actions',
+      label: 'Actions',
+      render: (settlement) => (
+        <div className={styles['cell-actions']}>
+          {settlement.status === SettlementStatus.EXECUTED &&
+            settlement.invoicesCount > 0 && (
+              <Button
+                label="Voir plus"
+                variant={ButtonVariant.TERTIARY}
+                size={ButtonSize.SMALL}
+                color={ButtonColor.NEUTRAL}
+                iconPosition={IconPositionEnum.RIGHT}
+                icon={fullDownIcon}
+                onClick={() => toggleExpandedRow(settlement.id)}
+              />
+            )}
+          {settlement.status !== SettlementStatus.EXECUTED && (
+            <Button
+              label="Remplacer le compte"
+              size={ButtonSize.SMALL}
+              disabled // TODO(mdesquilbet, 02/09/2026): to remove when resolving incidents
+            />
+          )}
+        </div>
+      ),
+      header: (
+        <p className={cn(styles['cell-header'], styles['cell-actions'])}>
+          Actions
+        </p>
+      ),
+    },
+  ]
+
+  const getInvoiceTable = (row: SettlementResponseModel) => {
+    if (expandedId !== row.id) {
+      return null
+    }
+    return {
+      content: (
+        <SettlementRowInvoicesTable
+          invoices={row.invoices.map((i) => ({
+            ...i,
+            id: i.reference,
+            isCaledonian: selectedAdminOfferer.isCaledonian,
+          }))}
+        />
+      ),
+      headerId: 'actions',
+      rawDisplay: true,
+    }
+  }
   return (
-    <div className={styles[`settlement-table`]}>
-      <Table
-        title="Virements"
-        columns={columns}
-        data={settlements.map((s) => ({
-          ...s,
-          isCaledonian: selectedAdminOfferer.isCaledonian,
-          invoicesCount: s.invoices.length,
-        }))}
-        selectable={true}
-        getRowSelectionDateTime={getSettlementDateLabel}
-        isLoading={isLoading}
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: 'Aucun virement ne correspond à votre recherche',
-          subtitle: 'Essayez de modifier vos critères de recherche.',
-          resetMessage: 'Réinitialiser les filtres',
-          onFilterReset,
-        }}
-        noData={{
-          hasNoData: !hasBankAccount || !hasSettlement,
-          message: getEmptyStateMessage(hasBankAccount),
-        }}
-      />
-    </div>
+    <Table
+      title="Virements"
+      columns={columns}
+      data={settlements.map((s) => ({
+        ...s,
+        isCaledonian: selectedAdminOfferer.isCaledonian,
+        invoicesCount: s.invoices.length,
+      }))}
+      selectable={true}
+      getRowSelectionDateTime={getSettlementDateLabel}
+      isLoading={isLoading}
+      variant={TableVariant.COLLAPSE}
+      noResult={{
+        message: 'Aucun virement ne correspond à votre recherche',
+        subtitle: 'Essayez de modifier vos critères de recherche.',
+        resetMessage: 'Réinitialiser les filtres',
+        onFilterReset,
+      }}
+      noData={{
+        hasNoData: !hasBankAccount || !hasSettlement,
+        message: getEmptyStateMessage(hasBankAccount),
+      }}
+      getFullRow={getInvoiceTable}
+    />
   )
 }

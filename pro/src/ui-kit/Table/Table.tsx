@@ -56,6 +56,7 @@ export interface Column<T> {
 export type FullRow = {
   content: React.ReactNode
   headerId: string
+  rawDisplay?: boolean
 }
 
 interface TableProps<T extends { id: string | number }> {
@@ -399,7 +400,15 @@ export function Table<
                           isTabletOrSmaller ? undefined : tableFullRow.headerId
                         }
                       >
-                        <div className={styles['table-fullrow-content']}>
+                        <div
+                          className={classNames(
+                            styles['table-fullrow-content'],
+                            {
+                              [styles['table-fullrow-content-raw']]:
+                                tableFullRow?.rawDisplay,
+                            }
+                          )}
+                        >
                           {tableFullRow?.content}
                         </div>
                       </td>
