@@ -36,25 +36,31 @@ def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUs
 
     try:
         apple_payload = _fetch_identity_response(client_id, client_secret, authorization_code)
+        token_payload = _decrypt_token(apple_payload.id_token, client_id)
     except Exception as e:
         raise AppleSignInException("Could not fetch identity token from Apple") from e
 
+    return _parse_identity_token(token_payload, apple_payload)
+
+
+def _decrypt_token(token: str, client_id: str, verify: bool | None = None) -> dict[str, typing.Any]:
     jwks_client = PyJWKClient(settings.APPLE_KEYS_URL)
 
     try:
-        signing_key = jwks_client.get_signing_key_from_jwt(apple_payload.id_token)
+        signing_key = jwks_client.get_signing_key_from_jwt(token)
     except (jwt.PyJWTError, Exception) as e:
         logger.error("Apple JWKS fetch failed", extra={"error": str(e)})
         raise AppleSignInException("Failed to verify Apple signing keys") from e
 
     try:
         token_payload = jwt.decode(
-            apple_payload.id_token,
+            token,
             signing_key.key,
             algorithms=["RS256"],
             audience=client_id,
             issuer=settings.APPLE_ISSUER_URL,
             options=types.Options(verify_signature=True),
+            verify=verify,
         )
     except jwt.PyJWTError as e:
         logger.error("Apple identity token validation failed", extra={"error": str(e), "error_type": type(e).__name__})
