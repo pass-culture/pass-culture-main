@@ -28,11 +28,6 @@ export const Hub = () => {
   const dispatch = useAppDispatch()
   const venues = useAppSelector(ensureVenues)
   const navigate = useNavigate()
-  const offererNames = useAppSelector((state) => state.user.offererNames)
-  const selectedAdminOfferer = useAppSelector(
-    (state) => state.user.selectedAdminOfferer
-  )
-  const isSingleOfferer = offererNames?.length === 1
 
   const [filteredVenues, setFilteredVenues] = useState(venues)
   const [isLoading, setIsLoading] = useState(false)
@@ -182,7 +177,6 @@ export const Hub = () => {
             to="/inscription/structure/recherche"
             variant={ButtonVariant.SECONDARY}
             label="Ajouter une structure"
-            disabled={isSingleOfferer && selectedAdminOfferer?.isClosed}
           />
         </div>
       </div>

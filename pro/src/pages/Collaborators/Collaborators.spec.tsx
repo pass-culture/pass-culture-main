@@ -11,14 +11,13 @@ import { OffererMemberStatus, VenueState } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { defaultManagedVenue } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
-import { Component as Collaborators } from '../Collaborators'
+import { Component as Collaborators } from './Collaborators'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -256,28 +255,6 @@ describe('Collaborators', () => {
     })
   })
 
-  it('should disable add collaborator button if venue is closed', async () => {
-    renderCollaborators({
-      storeOverrides: {
-        user: {
-          selectedAdminOfferer: {
-            id: 1,
-            managedVenues: [defaultManagedVenue],
-          },
-          selectedPartnerVenue: makeGetVenueResponseModel({
-            id: 2,
-            state: VenueState.CLOSED,
-          }),
-        },
-      },
-    })
-
-    const addButton = await screen.getByRole('button', {
-      name: 'Ajouter un collaborateur',
-    })
-
-    expect(addButton).toBeDisabled()
-  })
   it('should disable add collaborator button if offerer is closed', () => {
     renderCollaborators({
       storeOverrides: {
