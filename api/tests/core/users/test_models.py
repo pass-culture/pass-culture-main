@@ -398,12 +398,12 @@ class UserWalletBalanceTest:
     def test_balance_is_0_with_no_deposits_and_no_bookings(self):
         user = users_factories.UserFactory()
 
-        assert user.wallet_balance == 0
+        assert user.wallet_balance is None
 
     def test_balance_ignores_expired_deposits(self):
         user = users_factories.BeneficiaryGrant18Factory(deposit__expirationDate=datetime(2000, 1, 1))
 
-        assert user.wallet_balance == 0
+        assert user.wallet_balance is None
 
     def test_balance(self):
         user = users_factories.BeneficiaryFactory(deposit__amount=300)
@@ -426,7 +426,7 @@ class UserWalletBalanceTest:
         deposit = user.deposit
         deposit.expirationDate = datetime(2000, 1, 1)
 
-        assert user.wallet_balance == 0
+        assert user.wallet_balance is None
 
 
 @pytest.mark.usefixtures("db_session")
@@ -446,13 +446,12 @@ class SQLFunctionsTest:
         bookings_factories.UsedBookingFactory(user=user, amount=10)
         bookings_factories.BookingFactory(user=user, amount=1)
 
-        assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == decimal.Decimal(289)
-        assert db.session.query(sa.func.get_wallet_balance(user.id, True)).first()[0] == decimal.Decimal(290)
+        assert db.session.query(sa.func.get_wallet_balance(user.id)).first()[0] == decimal.Decimal(289)
 
     def test_wallet_balance_no_deposit(self):
         user = users_factories.UserFactory()
 
-        assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == 0
+        assert db.session.query(sa.func.get_wallet_balance(user.id)).first()[0] is None
 
     def test_wallet_balance_multiple_deposits(self):
         user = users_factories.UserFactory(age=18)
@@ -470,9 +469,7 @@ class SQLFunctionsTest:
             amount=decimal.Decimal(123),
         )
 
-        (wallet_balance,) = db.session.query(sa.func.get_wallet_balance(user.id, False)).first()
-
-        assert wallet_balance == newest_deposit.amount
+        assert db.session.query(sa.func.get_wallet_balance(user.id)).first()[0] == newest_deposit.amount
 
     def test_wallet_balance_expired_deposit(self):
         with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=2, days=2)):
@@ -484,7 +481,7 @@ class SQLFunctionsTest:
             bookings_factories.BookingFactory(user=user, amount=18)
             db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
 
-        assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == 0
+        assert db.session.query(sa.func.get_wallet_balance(user.id)).first()[0] is None
 
     @pytest.mark.parametrize(
         "initial_amount", (decimal.Decimal(150), decimal.Decimal("152.45"), decimal.Decimal("152.55"))
