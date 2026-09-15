@@ -132,7 +132,10 @@ describe('useSaveOfferPriceTable', () => {
     expect(hasSucceeded).toBe(true)
     expect(saveNonEventOfferPriceTable).not.toHaveBeenCalled()
     expect(saveEventOfferPriceTable).not.toHaveBeenCalled()
-    expect(snackBarSuccess).toHaveBeenCalled()
+    // The message is carried through `afterSubmitState` instead of being
+    // dispatched immediately, so it isn't dismissed by a racing navigation.
+    expect(result.current.pendingSuccessMessageRef.current).toBeTruthy()
+    expect(snackBarSuccess).not.toHaveBeenCalled()
   })
 
   it('should save non-event offer (creation) and return success', async () => {

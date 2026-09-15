@@ -20,29 +20,26 @@ const WelcomeStepCollective = (): JSX.Element => {
       <h1 className={commonStyles.title}>Offres pour les groupes scolaires</h1>
       <h2 className={commonStyles.subtitle}>Intervenez auprès des classes</h2>
       <div className={cn(commonStyles[`container`], styles['container'])}>
-        <CardInfo icon={strokeEventIcon} title="Qui réserve ?">
-          <p>
-            Le corps enseignant réserve pour les classes (de la 6e à la
-            Terminale) via la plateforme ADAGE.
-          </p>
-        </CardInfo>
-        <CardInfo icon={strokeEuroIcon} title="Comment ça fonctionne ?">
-          <p>
-            Déposez votre dossier ADAGE pour obtenir un référencement. Les
-            établissements paient avec leur budget pass Culture. Vous recevez le
-            paiement sous 2 à 3 semaines.
-          </p>
-        </CardInfo>
+        <CardInfo
+          icon={strokeEventIcon}
+          title="Qui réserve ?"
+          description="Le corps enseignant réserve pour les classes (de la 6e à la Terminale)
+          via la plateforme ADAGE."
+        ></CardInfo>
+        <CardInfo
+          icon={strokeEuroIcon}
+          title="Comment ça fonctionne ?"
+          description="Déposez votre dossier ADAGE pour obtenir un référencement. Les
+          établissements paient avec leur budget pass Culture. Vous recevez le
+          paiement sous 2 à 3 semaines."
+        ></CardInfo>
         <CardInfo
           icon={strokeHourglassIcon}
           title="Combien de temps ça prend ?"
-        >
-          <p>
-            pass Culture Pro : quelques jours. Référencement ADAGE : 2 à 9 mois
-            (selon commissions régionales). Vous pouvez démarrer avec des offres
-            via l’application destinée aux jeunes en attendant.
-          </p>
-        </CardInfo>
+          description="pass Culture Pro : quelques jours. Référencement ADAGE : 2 à 9 mois
+          (selon commissions régionales). Vous pouvez démarrer avec des offres
+          via l’application destinée aux jeunes en attendant."
+        ></CardInfo>
         <div className={styles['footer']}>
           <Button
             as="a"

@@ -35,17 +35,20 @@ const renderCollectiveOfferPreviewCreation = (
   props: CollectiveOfferSummaryCreationProps,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(<CollectiveOfferPreviewCreationScreen {...props} />, {
-    ...options,
-    storeOverrides: {
-      ...options?.storeOverrides,
-      user: {
-        currentUser: sharedCurrentUserFactory(),
-        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
-        ...options?.storeOverrides?.user,
+  return renderWithProviders(
+    <CollectiveOfferPreviewCreationScreen {...props} />,
+    {
+      ...options,
+      storeOverrides: {
+        ...options?.storeOverrides,
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+          ...options?.storeOverrides?.user,
+        },
       },
-    },
-  })
+    }
+  )
 }
 
 const defaultProps = {
@@ -126,8 +129,17 @@ describe('CollectiveOfferConfirmation', () => {
     )
   })
 
-  it('should redirect to list offer with success notification on press "Sauvegarder le brouillon et quitter"', async () => {
-    renderCollectiveOfferPreviewCreation(defaultProps)
+  it('should redirect to list offer and carry the success message through navigation state on press "Sauvegarder le brouillon et quitter"', async () => {
+    const { router } = renderCollectiveOfferPreviewCreation(defaultProps, {
+      routes: [
+        {
+          path: '/',
+          element: <CollectiveOfferPreviewCreationScreen {...defaultProps} />,
+        },
+        { path: '/offres/collectives', element: <div>Offers list</div> },
+      ],
+      initialRouterEntries: ['/'],
+    })
 
     const saveAndQuitButton = screen.getByRole('link', {
       name: 'Sauvegarder le brouillon et quitter',
@@ -137,9 +149,10 @@ describe('CollectiveOfferConfirmation', () => {
 
     await userEvent.click(saveAndQuitButton)
 
-    expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Brouillon sauvegardé dans la liste des offres'
-    )
+    expect(router.state.location.pathname).toBe('/offres/collectives')
+    expect(router.state.location.state).toEqual({
+      successMessage: 'Brouillon sauvegardé dans la liste des offres',
+    })
   })
 
   it('should notify of an error if the offer booking limit date is in the past on press "Publier l’offre"', async () => {

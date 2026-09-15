@@ -141,13 +141,14 @@ export const CollectiveOfferPreviewCreationScreen = ({
             as="router-link"
             to="/offres/collectives"
             variant={ButtonVariant.SECONDARY}
+            state={{
+              successMessage: 'Brouillon sauvegardé dans la liste des offres',
+            }}
             onClick={() => {
               logEvent(Events.CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER, {
                 offerId: offer.id,
                 offerType: 'collective',
               })
-
-              snackBar.success('Brouillon sauvegardé dans la liste des offres')
             }}
             label="Sauvegarder le brouillon et quitter"
           />

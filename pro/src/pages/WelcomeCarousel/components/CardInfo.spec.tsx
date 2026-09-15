@@ -7,12 +7,12 @@ import { CardInfo } from './CardInfo'
 describe('<CardInfo />', () => {
   it('should render without accessibility violations', async () => {
     const { container } = render(
-      <CardInfo icon={strokeEventsIcon} title="Qui réserve ?">
-        <p>
-          Les jeunes de 15 à 21 ans réservent directement via l'application pass
-          Culture.
-        </p>
-      </CardInfo>
+      <CardInfo
+        icon={strokeEventsIcon}
+        title="Qui réserve ?"
+        description="Les jeunes de 15 à 21 ans réservent directement via l'application pass
+        Culture."
+      ></CardInfo>
     )
 
     expect(await axe(container)).toHaveNoViolations()

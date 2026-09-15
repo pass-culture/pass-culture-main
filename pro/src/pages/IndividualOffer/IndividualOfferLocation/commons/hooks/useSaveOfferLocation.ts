@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import type { UseFormSetError } from 'react-hook-form'
 import { useSWRConfig } from 'swr'
 
@@ -26,10 +27,14 @@ export function useSaveOfferLocation({
   setError: UseFormSetError<LocationFormValues>
 }): {
   save: SaveOfferLocationHandler
+  /** Set on a successful edition save; read by `afterSubmitState` so the
+   * message is shown once the destination page has taken over. */
+  hasSavedRef: React.RefObject<boolean>
 } {
   const mode = useOfferWizardMode()
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
+  const hasSavedRef = useRef(false)
 
   const save: SaveOfferLocationHandler = async ({
     formValues,
@@ -49,7 +54,7 @@ export function useSaveOfferLocation({
       )
 
       if (mode === OFFER_WIZARD_MODE.EDITION) {
-        snackBar.success('Votre offre a bien été modifiée.')
+        hasSavedRef.current = true
       }
 
       return true
@@ -68,5 +73,5 @@ export function useSaveOfferLocation({
     }
   }
 
-  return { save }
+  return { save, hasSavedRef }
 }

@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import useSWR, { useSWRConfig } from 'swr'
 import { useDebouncedCallback } from 'use-debounce'
@@ -94,6 +94,9 @@ export const CollectiveOfferInstitutionScreen = ({
   const { mutate } = useSWRConfig()
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
+  // Read by `afterSubmitState` so the success message is shown by the next
+  // screen once it has taken over, instead of racing with the navigation.
+  const hasSavedInstitutionRef = useRef(false)
 
   const canEditInstitution = isActionAllowedOnCollectiveOffer(
     offer,
@@ -187,9 +190,7 @@ export const CollectiveOfferInstitutionScreen = ({
         ...extractInitialInstitutionValues(collectiveOffer.institution),
       })
 
-      snackBar.success(
-        'Les paramètres de visibilité de votre offre ont bien été enregistrés'
-      )
+      hasSavedInstitutionRef.current = true
 
       return true
     } catch (error) {
@@ -239,8 +240,20 @@ export const CollectiveOfferInstitutionScreen = ({
           offer.id,
           false
         )}/collectif/recapitulatif`
+  const afterSubmitState = () =>
+    hasSavedInstitutionRef.current
+      ? {
+          successMessage:
+            'Les paramètres de visibilité de votre offre ont bien été enregistrés',
+        }
+      : undefined
   const { navigationGuardDialog, navigationGuardedSubmitHandler } =
-    useFormNavigationGuard({ afterSubmitPath, form, onSubmit })
+    useFormNavigationGuard({
+      afterSubmitPath,
+      afterSubmitState,
+      form,
+      onSubmit,
+    })
 
   const institution = watch('educationalInstitution')
   const selectedInstitution = institutionsOptions.find(

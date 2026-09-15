@@ -73,7 +73,8 @@ describe('CumulatedViews', () => {
 
     renderCumulatedViews({ dailyViews, totalViewsLast30Days: 0 })
 
-    expect(screen.getByRole('img')).toBeInTheDocument()
+    // Chart is aria-hidden: the visually-hidden table is its accessible equivalent.
+    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument()
     expect(screen.getByRole('table')).toBeInTheDocument()
   })
 
@@ -119,6 +120,6 @@ describe('CumulatedViews', () => {
 
     renderCumulatedViews({ dailyViews, totalViewsLast30Days: 0 })
 
-    expect(screen.getByRole('img')).toBeInTheDocument()
+    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument()
   })
 })

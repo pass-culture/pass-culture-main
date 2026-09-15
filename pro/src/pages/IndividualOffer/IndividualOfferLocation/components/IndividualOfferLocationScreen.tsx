@@ -73,7 +73,7 @@ export const IndividualOfferLocationScreen = ({
     resolver: yupResolver(validationSchema),
   })
 
-  const { save } = useSaveOfferLocation({
+  const { save, hasSavedRef } = useSaveOfferLocation({
     offer,
     setError: form.setError,
   })
@@ -117,9 +117,14 @@ export const IndividualOfferLocationScreen = ({
     isOnboarding,
     followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
   })
+  const afterSubmitState = () =>
+    hasSavedRef.current
+      ? { successMessage: 'Votre offre a bien été modifiée.' }
+      : undefined
   const { navigationGuardedSubmitHandler, navigationGuardDialog } =
     useFormNavigationGuard({
       afterSubmitPath,
+      afterSubmitState,
       form,
       onSubmit: updateOffer,
     })

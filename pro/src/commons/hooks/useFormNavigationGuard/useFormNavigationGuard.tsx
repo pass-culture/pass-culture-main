@@ -2,10 +2,15 @@ import { useState } from 'react'
 import type { FieldValues, UseFormReturn } from 'react-hook-form'
 import { useBlocker, useLocation, useNavigate } from 'react-router'
 
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokeErrorIcon from '@/icons/stroke-error.svg'
+
+/** State carried by `afterSubmitState`, shown as a snack bar either immediately
+ * (no navigation) or by the destination page once it has taken over. */
+type AfterSubmitState = { successMessage?: string }
 
 /** @link https://app.notion.com/p/passcultureapp/Modale-de-pr-vention-de-changement-de-page-sur-les-formulaires-non-sauvegard-s-38bad4e0ff9880a89338f302f1361f38 */
 export const useFormNavigationGuard = <
@@ -15,11 +20,14 @@ export const useFormNavigationGuard = <
   TTransformedValues extends TFieldValues = TFieldValues,
 >({
   afterSubmitPath,
+  afterSubmitState,
   form,
   isExternallyDirty = false,
   onSubmit,
 }: {
   afterSubmitPath?: string | (() => string | undefined)
+  /** Success message sent along the `afterSubmitPath` navigation (or shown immediately when there is none), so it isn't dismissed by a navigation racing with it. Can also be a function, resolved at submit time. */
+  afterSubmitState?: AfterSubmitState | (() => AfterSubmitState | undefined)
   form: UseFormReturn<TFieldValues, TContext, TTransformedValues>
   /** Used to pass an additional custom dirty state to the navigation guard, in addition to the RHF dirty state. */
   isExternallyDirty?: boolean
@@ -43,6 +51,7 @@ export const useFormNavigationGuard = <
     () => !isSubmitting && (isDirty || isExternallyDirty)
   )
   const navigate = useNavigate()
+  const snackBar = useSnackBar()
   const [pendingNavigationPath, setPendingNavigationPath] = useState<
     string | null
   >(null)
@@ -68,12 +77,29 @@ export const useFormNavigationGuard = <
     return blockedPath === currentPath
   }
 
-  const proceedBlockedNavigationSafely = () => {
+  // When there is a success message to carry, `blocker.proceed()` is swapped
+  // for an explicit reset + navigate (as already done in the catch fallback
+  // below), since `proceed()` cannot be given a `state` for the next page to read.
+  const proceedBlockedNavigationSafely = (
+    state?: AfterSubmitState | undefined
+  ) => {
     if (blocker.state !== 'blocked') {
       return false
     }
 
     const isSamePath = isTargetSameAsCurrentPath()
+
+    if (state) {
+      const blockedPath = getBlockedPath()
+      blocker.reset()
+      if (blockedPath) {
+        navigate(blockedPath, { state })
+      }
+      if (isSamePath) {
+        form.reset()
+      }
+      return true
+    }
 
     try {
       blocker.proceed()
@@ -115,15 +141,28 @@ export const useFormNavigationGuard = <
         typeof afterSubmitPath === 'function'
           ? afterSubmitPath()
           : afterSubmitPath
+      const resolvedAfterSubmitState =
+        typeof afterSubmitState === 'function'
+          ? afterSubmitState()
+          : afterSubmitState
 
-      if (proceedBlockedNavigationSafely()) {
+      if (proceedBlockedNavigationSafely(resolvedAfterSubmitState)) {
         return
       }
 
       if (resolvedAfterSubmitPath) {
-        navigate(resolvedAfterSubmitPath)
+        if (resolvedAfterSubmitState) {
+          navigate(resolvedAfterSubmitPath, { state: resolvedAfterSubmitState })
+        } else {
+          navigate(resolvedAfterSubmitPath)
+        }
       } else {
         isSamePath ? form.reset() : form.reset(transformedFormValues)
+        // No navigation is happening: show the message right away instead of
+        // carrying it through a `state` no page will ever read.
+        if (resolvedAfterSubmitState?.successMessage) {
+          snackBar.success(resolvedAfterSubmitState.successMessage)
+        }
       }
     },
     () => {

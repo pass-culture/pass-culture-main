@@ -37,6 +37,7 @@ export const ImageConstraintCheck = ({
         <SvgIcon
           className={styles['image-drag-and-drop-description-icon']}
           src={hasError ? fullClearIcon : fullValidateIcon}
+          alt={hasError ? 'Critère non respecté' : 'Critère respecté'}
           width="16"
         />
       )}
