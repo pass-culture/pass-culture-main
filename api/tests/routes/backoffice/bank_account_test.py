@@ -398,14 +398,16 @@ class GetBankAccountInvoicesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
-        assert rows[0]["Date du justificatif"] == "01/05/2023"
-        assert rows[0]["N° du justificatif"] == invoice2.reference
         assert rows[0]["N° de virement"] == "TEST123"
+        assert rows[0]["N° du justificatif"] == invoice2.reference
+        assert rows[0]["Date du justificatif"] == "01/05/2023"
+        assert rows[0]["État du justificatif"] == "Payé"
         assert rows[0]["Montant remboursé"] == expected_invoice2_amount
 
-        assert rows[1]["Date du justificatif"] == "01/04/2023"
-        assert rows[1]["N° du justificatif"] == invoice1.reference
         assert rows[1]["N° de virement"] == "TEST123"
+        assert rows[1]["N° du justificatif"] == invoice1.reference
+        assert rows[1]["Date du justificatif"] == "01/04/2023"
+        assert rows[1]["État du justificatif"] == "Payé"
         assert rows[1]["Montant remboursé"] == expected_invoice1_amount
 
 
