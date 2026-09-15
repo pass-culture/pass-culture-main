@@ -46,12 +46,12 @@
                name="pc-table-multi-select-check-all" />
       </th>
       <th scope="col">N° de virement</th>
-      <th scope="col">N° du justificatif</th>
-      <th scope="col">Date du justificatif</th>
+      <th scope="col">Référence</th>
+      <th scope="col">Date d'émission</th>
       <th scope="col">État du justificatif</th>
-      <th scope="col">Montant remboursé</th>
+      <th scope="col">Montant</th>
       <th scope="col">Compte bancaire d'origine</th>
-      <th scope="col">Justificatif</th>
+      <th scope="col">Télécharger</th>
     </tr>
   </thead>
   <tbody>
@@ -67,10 +67,11 @@
         <td>{{ invoice.reference }}</td>
         <td>{{ invoice.date | format_date }}</td>
         <td>{{ invoice.status | format_invoice_status }}</td>
-        <td>{{ -invoice.amount | format_cents(target=invoice.bankAccount.offerer) }}</td>
+        <td>{{ -invoice.amount | format_cents(target=invoice.bankAccount.offerer, is_signed=true) }}</td>
         <td>{{ links.build_bank_account_name_to_details_link(invoice.bankAccount, text_attr="label") }}</td>
         <td>
           <a class="link-primary"
+             target="_blank"
              download
              href="{{ invoice.url }}"><i class="bi bi-cloud-download-fill"></i> PDF</a>
         </td>
