@@ -119,7 +119,10 @@ def _fetch_identity_response(
     return typed_response
 
 
-def _parse_identity_token(payload: dict[str, typing.Any]) -> users_schemas.SSOUser:
+def _parse_identity_token(
+    payload: dict[str, typing.Any],
+    token_response: AppleSignInAuthenticationResponse,
+) -> users_schemas.SSOUser:
     # Doc on id_token content: https://developer.apple.com/documentation/signinwithapplejs/authorizationi/id_token
     is_private_email = payload.get("is_private_email")
     if isinstance(is_private_email, str):
@@ -134,4 +137,5 @@ def _parse_identity_token(payload: dict[str, typing.Any]) -> users_schemas.SSOUs
         email=payload.get("email"),
         email_verified=email_verified,
         is_private_email=is_private_email,
+        extra_data={"refresh_token": token_response.refresh_token},
     )
