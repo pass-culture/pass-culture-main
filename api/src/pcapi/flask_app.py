@@ -136,6 +136,15 @@ def setup_sentry_before_request() -> None:
     if device_id := request.headers.get("device-id", None):
         sentry_sdk.set_tag("device.id", device_id)
     sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
+    try:
+        if (
+            settings.BUG_BOUNTY_USER_AGENT
+            and settings.BUG_BOUNTY_USER_AGENT.lower() in request.user_agent.string.lower()
+        ):
+            sentry_sdk.set_tag("YWH_hunter", True)
+    except RuntimeError:
+        # not in a request, therefrore therefore it cannot be from a  bug bounty user
+        pass
     g.request_start = time.perf_counter()
     g.public_api_log_request_details_extra = {}
 
