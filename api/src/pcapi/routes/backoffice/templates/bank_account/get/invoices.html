@@ -42,11 +42,12 @@
                  type="checkbox"
                  name="pc-table-multi-select-check-all" />
         </th>
-        <th scope="col">Date du justificatif</th>
-        <th scope="col">N° du justificatif</th>
         <th scope="col">N° de virement</th>
+        <th scope="col">N° du justificatif</th>
+        <th scope="col">Date du justificatif</th>
+        <th scope="col">État du justificatif</th>
         <th scope="col">Montant remboursé</th>
-        <th scope="col">Téléchargement</th>
+        <th scope="col">Justificatif</th>
       </tr>
     </thead>
     <tbody>
@@ -58,9 +59,10 @@
                    name="pc-table-multi-select-check-{invoice.id}"
                    data-id="{{ invoice.id }}" />
           </td>
-          <td>{{ invoice.date | format_date }}</td>
-          <td>{{ invoice.reference }}</td>
           <td>{{ invoice.cashflows | map(attribute="batch.label") | join(", ") | escape }}</td>
+          <td>{{ invoice.reference }}</td>
+          <td>{{ invoice.date | format_date }}</td>
+          <td>{{ invoice.status | format_invoice_status }}</td>
           <td>{{ -invoice.amount | format_cents(target=invoice.bankAccount.offerer) }}</td>
           <td>
             <a class="link-primary"
