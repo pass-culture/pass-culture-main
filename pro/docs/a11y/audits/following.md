@@ -673,3 +673,25 @@ Dans les tableaux, lors de l’activation d'un bouton de tri, aucune information
 TBD
 
 </details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.1 - RGAA - Adapter le graphique des stats</summary>
+
+**RAWeb** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43618](https://passculture.atlassian.net/browse/PC-43618)  
+**PR** : [#24336](https://github.com/pass-culture/pass-culture-main/pull/24336)
+
+**Problème** 😱  
+Le graphique « Nombre de vues cumulées de toutes vos offres sur les 6 derniers mois » est rendu à l’aide d’un élément <canvas>. Les utilisateurs ne pouvant pas exploiter la représentation graphique ne disposent donc pas d’un moyen simple d’accéder aux données représentées. 
+
+
+**Correction** 💡  
+Le graphique est maintenant focusable, le tableau est lisible au lecteur d'écran.
+
+**Retours audit** 🔥  
+TBD
+
+</details>

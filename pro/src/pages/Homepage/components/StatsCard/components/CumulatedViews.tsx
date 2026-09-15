@@ -139,6 +139,7 @@ export const CumulatedViews = ({
             role="img"
             aria-labelledby={`chart-title-${chartId}`}
             aria-details={`chart-description-${chartId}`}
+            tabIndex={0}
           />
           {/* We wrap in a div, because the .visually-hidden class doesn't work on Chrome on <table> element */}{' '}
           <div className={styles['visually-hidden']}>
