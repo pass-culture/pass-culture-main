@@ -5,7 +5,12 @@ import styles from './Spinner.module.scss'
 
 export const Spinner = () => {
   return (
-    <div className={styles['spinner-icon']} data-testid="spinner">
+    <div
+      className={styles['spinner-icon']}
+      data-testid="spinner"
+      role="status"
+      aria-live="polite"
+    >
       <SvgIcon
         src={loadingIcon}
         alt=""
@@ -13,6 +18,7 @@ export const Spinner = () => {
         className={styles['spinner-svg']}
         data-testid="spinner-svg"
       />
+      <span className={styles['visually-hidden']}>Chargement en cours</span>
     </div>
   )
 }

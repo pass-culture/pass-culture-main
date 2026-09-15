@@ -132,13 +132,15 @@ export const CumulatedViews = ({
         <CumulatedViewsEmptyState />
       ) : (
         <div className={styles['chart']}>
+          {/* The visually-hidden table below is the accessible equivalent of this chart,
+              so the chart itself is hidden from assistive technologies to avoid
+              announcing the same data twice. */}
           <Line
             ref={chartRef}
             data={data}
             options={graphOptions}
             role="img"
-            aria-labelledby={`chart-title-${chartId}`}
-            aria-details={`chart-description-${chartId}`}
+            aria-hidden={true}
           />
           {/* We wrap in a div, because the .visually-hidden class doesn't work on Chrome on <table> element */}{' '}
           <div className={styles['visually-hidden']}>

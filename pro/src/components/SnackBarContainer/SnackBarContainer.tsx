@@ -36,8 +36,12 @@ export const SnackBarContainer = (): JSX.Element => {
   const previousSnackBarIdsRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
+    // For RGAA 9.2, element must be in region, and for RGAA 7.5, must read snackbar entirely
+    // "principal" being shorter to read than "zone de notification, complémentaire" that <aside> would introduce,
+    // this was the best possible option
     setPortalTarget(
       document.querySelector('dialog[data-snackbar-portal][open]') ??
+        document.getElementById('content') ??
         document.body
     )
   }, [snackBars.length])
@@ -90,9 +94,7 @@ export const SnackBarContainer = (): JSX.Element => {
           {announcement || '\u00A0'}
         </div>
       </div>
-      {/* Landmark for keyboard/AT navigation; safe since nothing focuses into it automatically. */}
-      <aside
-        aria-label="Zone de notifications"
+      <div
         className={cn(
           styles['snack-bar-container'],
           isStickyBarOpen && styles['with-sticky-action-bar']
@@ -108,7 +110,7 @@ export const SnackBarContainer = (): JSX.Element => {
             targetFocusId={snackBar.targetFocusId}
           />
         ))}
-      </aside>
+      </div>
     </>,
     portalTarget
   )

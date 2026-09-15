@@ -69,7 +69,7 @@ export const IndividualOffersLine = ({
           offer={offer}
           venueDepartmentCode={venueDepartmentCode}
         />
-        <h4 className={styles['offer-line-content-primary']}>
+        <h3 className={styles['offer-line-content-primary']}>
           <Link
             className={styles['offer-line-link']}
             to={offerLink}
@@ -84,7 +84,7 @@ export const IndividualOffersLine = ({
           >
             {offer.name}
           </Link>
-        </h4>
+        </h3>
         <p className={styles['offer-line-content-secondary']}>
           {offerLocalDate}
         </p>

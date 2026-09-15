@@ -225,7 +225,7 @@ export const IndividualOfferMediaScreen = ({
                   title="Ajoutez une vidéo"
                   className={styles['media-sub-section']}
                 >
-                  <VideoUploader aria-describedby={tipsVideoUploaderId} />
+                  <VideoUploader uploadTipsId={tipsVideoUploaderId} />
                   {!videoData?.videoThumbnailUrl && (
                     <div id={tipsVideoUploaderId}>
                       <VideoUploaderTips />

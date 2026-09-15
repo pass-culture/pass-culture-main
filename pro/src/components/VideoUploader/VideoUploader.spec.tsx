@@ -20,7 +20,7 @@ const defaultStoreOverrides = {
 
 describe('VideoUploader', () => {
   it('should render a button and a text when no video has been provided', () => {
-    renderWithProviders(<VideoUploader />, {
+    renderWithProviders(<VideoUploader uploadTipsId="123" />, {
       storeOverrides: defaultStoreOverrides,
     })
 
@@ -47,7 +47,7 @@ describe('VideoUploader', () => {
         offerId={offer.id}
         initialVideoData={offer.videoData}
       >
-        <VideoUploader />
+        <VideoUploader uploadTipsId="123" />
       </VideoUploaderContextProvider>,
       { storeOverrides: defaultStoreOverrides }
     )
@@ -65,7 +65,7 @@ describe('VideoUploader', () => {
   })
 
   it('should open modal on click on add video button', async () => {
-    renderWithProviders(<VideoUploader />, {
+    renderWithProviders(<VideoUploader uploadTipsId="123" />, {
       storeOverrides: defaultStoreOverrides,
     })
 
@@ -87,7 +87,7 @@ describe('VideoUploader', () => {
       state: VenueState.CLOSED,
     })
 
-    renderWithProviders(<VideoUploader />, {
+    renderWithProviders(<VideoUploader uploadTipsId="123" />, {
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory(),

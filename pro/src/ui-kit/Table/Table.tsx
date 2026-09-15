@@ -242,9 +242,6 @@ export function Table<
                             className={styles['table-checkbox-label']}
                           />
                         </Tooltip>
-                        <span className={styles['visually-hidden']}>
-                          Sélectionner toutes les lignes
-                        </span>
                         <div>{selectedNumber}</div>
                       </div>
                     </th>
@@ -358,6 +355,7 @@ export function Table<
                         <Checkbox
                           label={rowCheckboxLabel}
                           title={rowSelectionLabel}
+                          ariaLabel={rowSelectionLabel}
                           checked={isSelected}
                           onChange={() => toggleSelectRow(row)}
                           className={styles['table-checkbox-label']}
@@ -365,9 +363,6 @@ export function Table<
                             isRowSelectable ? !isRowSelectable(row) : false
                           }
                         />
-                        <span className={styles['visually-hidden']}>
-                          {rowSelectionLabel}
-                        </span>
                       </td>
                     )}
 
