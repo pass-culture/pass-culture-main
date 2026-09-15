@@ -29,6 +29,7 @@ export type DetailedModalProps = {
   loadingState?: DetailedModalLoadingState
   ariaDescribedBy?: string
   children: ReactNode
+  refToFocusOnClose?: React.RefObject<HTMLElement | null>
 }
 
 export const DetailedModal = ({
@@ -46,6 +47,7 @@ export const DetailedModal = ({
   loadingState,
   ariaDescribedBy,
   children,
+  refToFocusOnClose,
 }: DetailedModalProps): JSX.Element => {
   const titleId = useId()
   const descriptionId = useId()
@@ -92,6 +94,7 @@ export const DetailedModal = ({
       ariaLabelledBy={titleId}
       ariaDescribedBy={dialogAriaDescribedBy}
       isSnackBarPortalTarget
+      refToFocusOnClose={refToFocusOnClose}
     >
       <div
         className={cx(styles['detailed-modal'], {

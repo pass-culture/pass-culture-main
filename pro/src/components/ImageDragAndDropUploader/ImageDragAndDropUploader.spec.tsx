@@ -233,10 +233,11 @@ describe('ImageDragAndDropUploader', () => {
 
     expect(mockUpload).toHaveBeenCalled()
     expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Votre image a bien été importée'
+      'Votre image a bien été importée',
+      expect.any(String)
     )
 
-    expect(screen.queryByText('Modifier une image')).not.toBeInTheDocument()
+    expect(screen.getByText('Modifier une image')).not.toBeVisible()
   })
 
   it('should display an error toaster and not success when onImageUpload fails', async () => {
@@ -259,7 +260,8 @@ describe('ImageDragAndDropUploader', () => {
 
     await waitFor(() => {
       expect(snackBarError).toHaveBeenCalledWith(
-        "Une erreur est survenue lors de l'importation de votre image"
+        "Une erreur est survenue lors de l'importation de votre image",
+        expect.any(String)
       )
     })
     expect(snackBarSuccess).not.toHaveBeenCalled()
@@ -282,7 +284,7 @@ describe('ImageDragAndDropUploader', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
     await waitFor(() => {
-      expect(screen.queryByText('Modifier une image')).not.toBeInTheDocument()
+      expect(screen.getByText('Modifier une image')).not.toBeVisible()
       expect(screen.getByLabelText('Importez une image')).toHaveFocus()
     })
 
@@ -366,7 +368,10 @@ describe('ImageDragAndDropUploader', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Supprimer/i }))
     expect(mockDelete).toHaveBeenCalled()
-    expect(snackBarSuccess).toHaveBeenCalledWith('L’image a bien été supprimée')
+    expect(snackBarSuccess).toHaveBeenCalledWith(
+      'L’image a bien été supprimée',
+      expect.any(String)
+    )
   })
 
   it('should display a warning dialog if needed', async () => {
@@ -397,7 +402,10 @@ describe('ImageDragAndDropUploader', () => {
       screen.getByRole('button', { name: "Supprimer l'image" })
     )
     expect(mockDelete).toHaveBeenCalled()
-    expect(snackBarSuccess).toHaveBeenCalledWith('L’image a bien été supprimée')
+    expect(snackBarSuccess).toHaveBeenCalledWith(
+      'L’image a bien été supprimée',
+      expect.any(String)
+    )
   })
 
   it('should close the warning dialog when clicking Annuler', async () => {

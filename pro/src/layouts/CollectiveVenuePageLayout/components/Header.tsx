@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -33,6 +35,9 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
 
   const snackBar = useSnackBar()
 
+  const focusedButtonId = useId()
+  const importInputId = useId()
+
   const { imageValues, setImageValues, handleOnImageUpload } =
     useOnVenueImageUpload(
       selectedPartnerVenue.id,
@@ -50,10 +55,11 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
       setImageValues(buildInitialVenueImageValues(null, null))
       await syncVenue(selectedPartnerVenue.id)
 
-      snackBar.success('Votre image a bien été supprimée')
+      snackBar.success('Votre image a bien été supprimée', importInputId)
     } catch {
       snackBar.error(
-        "Une erreur est survenue lors de la suppression de l'image"
+        "Une erreur est survenue lors de la suppression de l'image",
+        focusedButtonId
       )
     }
   }
@@ -79,8 +85,9 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
         hideActionButtons
         onImageDropOrSelected={logButtonAddClick}
         disabled={isClosed}
+        focusTargetId={focusedButtonId}
+        importInputId={importInputId}
       />
-
       <div className={styles['venue-details']}>
         <div className={styles['venue-details-main']}>
           <div className={styles['venue-type']}>
@@ -114,6 +121,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
               onImageDelete={handleOnImageDelete}
               onClickButtonImage={logButtonAddClick}
               label="Modifier l’image"
+              id={focusedButtonId}
             />
           )}
         </div>

@@ -24,7 +24,7 @@ export type OffersTableSearchProps = {
   }
   onResetFilters: () => void
   children: React.ReactNode
-  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
+  searchButtonId?: string
 }
 
 export const OffersTableSearch = ({
@@ -35,7 +35,7 @@ export const OffersTableSearch = ({
   nameInputProps,
   onResetFilters,
   children,
-  searchButtonRef,
+  searchButtonId,
 }: OffersTableSearchProps) => {
   const { onFiltersToggle, filtersVisibility } = useStoredFilterConfig(type)
   const [isExpanded, setIsExpanded] = useState(filtersVisibility)
@@ -89,7 +89,7 @@ export const OffersTableSearch = ({
         <Button
           type="submit"
           disabled={isDisabled}
-          ref={searchButtonRef}
+          id={searchButtonId}
           label="Rechercher"
         />
         <div className={styles['offers-table-search-separator-element']} />

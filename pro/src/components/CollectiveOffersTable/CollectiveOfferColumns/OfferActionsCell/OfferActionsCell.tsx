@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -88,6 +88,8 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
     isInTemplateOffersPage: isTemplateTable,
   })
 
+  const actionButtonId = useId()
+
   const { mutate } = useSWRConfig()
 
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
@@ -154,7 +156,10 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
 
   const cancelBooking = async () => {
     if (!offer.id) {
-      snackBar.error('L’identifiant de l’offre n’est pas valide.')
+      snackBar.error(
+        'L’identifiant de l’offre n’est pas valide.',
+        actionButtonId
+      )
       return
     }
     try {
@@ -165,24 +170,30 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       setIsCancelledBookingModalOpen(false)
 
       snackBar.success(
-        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
+        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
+        actionButtonId
       )
     } catch (error) {
       if (isErrorAPIError(error) && getErrorCode(error) === 'NO_BOOKING') {
         snackBar.error(
-          'Cette offre n’a aucune réservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.'
+          'Cette offre n’a aucune réservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.',
+          actionButtonId
         )
         return
       }
       snackBar.error(
-        'Une erreur est survenue lors de l’annulation de la réservation.'
+        'Une erreur est survenue lors de l’annulation de la réservation.',
+        actionButtonId
       )
     }
   }
 
   const archiveOffer = async () => {
     if (!offer.id) {
-      snackBar.error('L’identifiant de l’offre n’est pas valide.')
+      snackBar.error(
+        'L’identifiant de l’offre n’est pas valide.',
+        actionButtonId
+      )
       return
     }
     try {
@@ -196,9 +207,12 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       await mutate(collectiveOffersQueryKeys)
 
       setIsArchivedModalOpen(false)
-      snackBar.success('Une offre a bien été archivée')
+      snackBar.success('Une offre a bien été archivée', actionButtonId)
     } catch {
-      snackBar.error('Une erreur est survenue lors de l’archivage de l’offre')
+      snackBar.error(
+        'Une erreur est survenue lors de l’archivage de l’offre',
+        actionButtonId
+      )
     }
   }
 
@@ -272,13 +286,15 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       snackBar.success(
         isActive
           ? 'Votre offre est maintenant active et visible dans ADAGE'
-          : 'Votre offre est mise en pause et n’est plus visible sur ADAGE'
+          : 'Votre offre est mise en pause et n’est plus visible sur ADAGE',
+        actionButtonId
       )
     } catch {
       return snackBar.error(
         `Une erreur est survenue lors de ${
           isActive ? 'l’activation' : 'la désactivation'
-        } de votre offre.`
+        } de votre offre.`,
+        actionButtonId
       )
     }
 
@@ -388,6 +404,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
           offerId={offer.id}
           open={isShareLinkDrawerOpen}
           onOpenChange={setIsShareLinkDrawerOpen}
+          triggerButtonRef={dropdownTriggerRef}
         />
       )}
       <DuplicateOfferDialog

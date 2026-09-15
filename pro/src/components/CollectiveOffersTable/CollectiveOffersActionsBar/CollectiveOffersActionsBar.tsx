@@ -29,7 +29,7 @@ export type CollectiveOffersActionsBarProps<T> = {
   clearSelectedOfferIds: () => void
   selectedOffers: T[]
   areTemplateOffers: boolean
-  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
+  searchButtonId?: string
 }
 
 const computeDeactivationSuccessMessage = (nbSelectedOffers: number) =>
@@ -89,7 +89,7 @@ export function CollectiveOffersActionsBar<
   clearSelectedOfferIds,
   areAllOffersSelected,
   areTemplateOffers,
-  searchButtonRef,
+  searchButtonId,
 }: Readonly<CollectiveOffersActionsBarProps<T>>) {
   const snackBar = useSnackBar()
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
@@ -121,10 +121,11 @@ export function CollectiveOffersActionsBar<
           )
           await mutate(collectiveOffersQueryKeys)
           snackBar.success(
-            computeDeactivationSuccessMessage(selectedOffers.length)
+            computeDeactivationSuccessMessage(selectedOffers.length),
+            searchButtonId
           )
         } catch {
-          snackBar.error('Une erreur est survenue')
+          snackBar.error('Une erreur est survenue', searchButtonId)
         }
         setIsDeactivationDialogOpen(false)
         break
@@ -136,11 +137,13 @@ export function CollectiveOffersActionsBar<
           snackBar.success(
             selectedOffers.length > 1
               ? `${selectedOffers.length} offres ont bien été archivées`
-              : 'Une offre a bien été archivée'
+              : 'Une offre a bien été archivée',
+            searchButtonId
           )
         } catch {
           snackBar.error(
-            'Une erreur est survenue lors de l’archivage de l’offre'
+            'Une erreur est survenue lors de l’archivage de l’offre',
+            searchButtonId
           )
         }
         setIsArchiveDialogOpen(false)
@@ -162,7 +165,8 @@ export function CollectiveOffersActionsBar<
     })
     if (archivableOffers.length < selectedOffers.length) {
       snackBar.error(
-        'Les offres déjà archivées ou liées à des réservations ne peuvent pas être archivées'
+        'Les offres déjà archivées ou liées à des réservations ne peuvent pas être archivées',
+        searchButtonId
       )
       clearSelectedOfferIds()
     } else {
@@ -179,7 +183,8 @@ export function CollectiveOffersActionsBar<
         )
       ) {
         snackBar.error(
-          `Seules les offres vitrines au statut publié peuvent être mises en pause.`
+          `Seules les offres vitrines au statut publié peuvent être mises en pause.`,
+          searchButtonId
         )
         clearSelectedOfferIds()
       }
@@ -198,7 +203,8 @@ export function CollectiveOffersActionsBar<
 
     if (offersWithCanPublishAction.length < 1) {
       snackBar.error(
-        `Seules les offres vitrines au statut en pause peuvent être publiées.`
+        `Seules les offres vitrines au statut en pause peuvent être publiées.`,
+        searchButtonId
       )
       clearSelectedOfferIds()
       return
@@ -216,7 +222,8 @@ export function CollectiveOffersActionsBar<
     await mutate(collectiveOffersQueryKeys)
 
     snackBar.success(
-      computeActivationSuccessMessage(offersWithCanPublishAction.length)
+      computeActivationSuccessMessage(offersWithCanPublishAction.length),
+      searchButtonId
     )
 
     clearSelectedOfferIds()
@@ -301,9 +308,6 @@ export function CollectiveOffersActionsBar<
         nbSelectedOffers={selectedOffers.length}
         onConfirm={async () => {
           await updateOfferStatus(CollectiveOfferDisplayedStatus.HIDDEN)
-          setTimeout(() => {
-            searchButtonRef?.current?.focus()
-          })
         }}
         onCancel={() => setIsDeactivationDialogOpen(false)}
         isDialogOpen={isDeactivationDialogOpen}
@@ -313,9 +317,6 @@ export function CollectiveOffersActionsBar<
         onDismiss={() => setIsArchiveDialogOpen(false)}
         onValidate={async () => {
           await updateOfferStatus(CollectiveOfferDisplayedStatus.ARCHIVED)
-          setTimeout(() => {
-            searchButtonRef?.current?.focus()
-          })
         }}
         hasMultipleOffers={selectedOffers.length > 1}
         selectedOffers={selectedOffers}

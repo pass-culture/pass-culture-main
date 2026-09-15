@@ -62,6 +62,7 @@ describe('ButtonImageEdit', () => {
       onImageUpload: vi.fn(),
       onImageDelete: vi.fn(),
       onClickButtonImage: vi.fn(),
+      id: '123',
     }
   })
 
@@ -108,7 +109,8 @@ describe('ButtonImageEdit', () => {
 
     expect(props.onImageUpload).toHaveBeenCalledTimes(1)
     expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Votre image a bien été importée'
+      'Votre image a bien été importée',
+      '123'
     )
   })
 
@@ -121,7 +123,8 @@ describe('ButtonImageEdit', () => {
     await userEvent.click(screen.getByRole('button', { name: /Importer/ }))
 
     expect(snackBarError).toHaveBeenCalledWith(
-      "Une erreur est survenue lors de l'importation de votre image"
+      "Une erreur est survenue lors de l'importation de votre image",
+      '123'
     )
     expect(snackBarSuccess).not.toHaveBeenCalled()
   })

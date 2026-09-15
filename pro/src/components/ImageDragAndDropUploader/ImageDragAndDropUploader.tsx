@@ -1,7 +1,6 @@
 import cn from 'classnames'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 
-import { usePrevious } from '@/commons/hooks/usePrevious'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
   UploaderModeEnum,
@@ -38,6 +37,18 @@ export interface ImageDragAndDropUploaderProps {
   onImageDropOrSelected?: () => void
   hideActionButtons?: boolean
   disabled?: boolean
+  /**
+   * Element to give focus back to after a snackbar triggered from this component closes.
+   * Use this when `hideActionButtons` is true and a parent renders its own trigger button,
+   * since the internal edit/import buttons (the default focus targets) are never rendered.
+   */
+  focusTargetId?: string
+  /**
+   * Overrides the id of the internal import dropzone. Use this when a parent needs to
+   * target it directly (e.g. to restore focus there once an image it deleted elsewhere
+   * has been removed and this dropzone becomes the only remaining focusable element).
+   */
+  importInputId?: string
 }
 
 export const ImageDragAndDropUploader = ({
@@ -51,10 +62,15 @@ export const ImageDragAndDropUploader = ({
   onImageDropOrSelected,
   hideActionButtons = false,
   disabled = false,
+  focusTargetId,
+  importInputId,
 }: ImageDragAndDropUploaderProps) => {
   const snackBar = useSnackBar()
-  const updateImageRef = useRef<HTMLButtonElement>(null)
-  const inputDragAndDropRef = useRef<HTMLInputElement>(null)
+  const editButtonId = useId()
+  const generatedImportButtonId = useId()
+  const importButtonId = importInputId ?? generatedImportButtonId
+  const editButtonRef = useRef<HTMLButtonElement>(null)
+  const importButtonRef = useRef<HTMLInputElement>(null)
 
   const { croppedImageUrl, originalImageUrl, credit } = initialValues
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
@@ -62,8 +78,6 @@ export const ImageDragAndDropUploader = ({
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
   const [draftCredit, setDraftCredit] = useState<string | undefined>(credit)
   const [dragDropResetKey, setDragDropResetKey] = useState(0)
-  const previousDraftImage = usePrevious(draftImage)
-  const previousIsModalImageOpen = usePrevious(isModalImageOpen)
 
   const imageUrl = croppedImageUrl || originalImageUrl
   const hasImage = !!imageUrl
@@ -72,23 +86,6 @@ export const ImageDragAndDropUploader = ({
   useEffect(() => {
     setDraftCredit(credit)
   }, [credit])
-
-  useEffect(() => {
-    // This is to manage the focus when ImageDragAndDropUploader is re-rendered
-    // after an image deletion (after a button action click, not as a result
-    // of a deletion from the modal options)
-    const hasDeletedImage = previousDraftImage && !draftImage
-    const hasClosedEditor = previousIsModalImageOpen && !isModalImageOpen
-
-    if (hasDeletedImage || hasClosedEditor) {
-      inputDragAndDropRef.current?.focus()
-    }
-  }, [
-    draftImage,
-    previousDraftImage,
-    isModalImageOpen,
-    previousIsModalImageOpen,
-  ])
 
   const onImageDeleteHandler = () => {
     if (warnBeforeDeleting && !isDeleteImageOpen) {
@@ -100,7 +97,10 @@ export const ImageDragAndDropUploader = ({
     setDraftImage(undefined)
     setDraftCredit(undefined)
     onImageDelete()
-    snackBar.success('L’image a bien été supprimée')
+    snackBar.success(
+      'L’image a bien été supprimée',
+      focusTargetId ?? importButtonId
+    )
   }
 
   const onImageUploadHandler = async (
@@ -112,16 +112,20 @@ export const ImageDragAndDropUploader = ({
     setDraftCredit(values.credit ?? '')
     try {
       await Promise.resolve(onImageUpload(values))
-      snackBar.success(successMessage)
+      snackBar.success(successMessage, focusTargetId ?? editButtonId)
     } catch {
       snackBar.error(
-        "Une erreur est survenue lors de l'importation de votre image"
+        "Une erreur est survenue lors de l'importation de votre image",
+        focusTargetId ?? importButtonId
       )
     }
   }
 
   return (
-    <div className={cn(styles['image-uploader-image-container'], className)}>
+    <div
+      className={cn(styles['image-uploader-image-container'], className)}
+      tabIndex={-1}
+    >
       {hasImage && (
         <SafeImage
           alt="Prévisualisation de l’image"
@@ -153,7 +157,7 @@ export const ImageDragAndDropUploader = ({
       >
         {shouldDisplayActions && (
           <Button
-            ref={updateImageRef}
+            ref={editButtonRef}
             onClick={() => setIsModalImageOpen(true)}
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
@@ -161,6 +165,7 @@ export const ImageDragAndDropUploader = ({
             aria-label="Modifier l’image"
             icon={fullEditIcon}
             label="Modifier"
+            id={editButtonId}
           />
         )}
         <ModalImageUpsertOrEdit
@@ -172,6 +177,7 @@ export const ImageDragAndDropUploader = ({
             draftImage,
             credit: draftCredit,
           }}
+          refToFocusOnClose={hasImage ? editButtonRef : importButtonRef}
           onOpenChange={(open) => {
             if (!open) {
               setDragDropResetKey((prev) => prev + 1)
@@ -193,14 +199,15 @@ export const ImageDragAndDropUploader = ({
       </div>
       {!hasImage && (
         <ImageDragAndDrop
+          ref={importButtonRef}
           key={dragDropResetKey}
-          ref={inputDragAndDropRef}
           className={dragAndDropClassName}
           onDropOrSelected={(draftImage) => {
             onImageDropOrSelected?.()
             setDraftImage(draftImage)
             setIsModalImageOpen(true)
           }}
+          id={importButtonId}
           disabled={disabled}
           {...(mode === UploaderModeEnum.OFFER_COLLECTIVE
             ? {

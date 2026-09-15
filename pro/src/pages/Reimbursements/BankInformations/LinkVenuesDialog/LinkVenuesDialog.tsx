@@ -27,8 +27,10 @@ interface LinkVenuesDialogProps {
   offererId: number
   selectedBankAccount: BankAccountResponseModel
   managedVenues: Array<ManagedVenue>
-  closeDialog: (update?: boolean) => void
+  closeDialog: (update?: boolean) => Promise<void>
   updateBankAccountVenuePricingPoint: (venueId: number) => void
+  editLinkId: string
+  addLinkId: string
 }
 
 export const LinkVenuesDialog = ({
@@ -37,6 +39,8 @@ export const LinkVenuesDialog = ({
   managedVenues,
   closeDialog,
   updateBankAccountVenuePricingPoint,
+  editLinkId,
+  addLinkId,
 }: LinkVenuesDialogProps) => {
   const [showDiscardDialog, setShowDiscardDialog] = useState<boolean>(false)
   const [showUnlinkDialog, setShowUnlinkDialog] = useState<boolean>(false)
@@ -100,8 +104,11 @@ export const LinkVenuesDialog = ({
         HasUncheckedVenue: hasUnchecked,
       })
 
-      snackBar.success('Vos modifications ont bien été prises en compte.')
-      closeDialog(true)
+      await closeDialog(true)
+      snackBar.success(
+        'Vos modifications ont bien été prises en compte.',
+        venuesIds.length > 0 ? editLinkId : addLinkId
+      )
     } catch (error) {
       if (isErrorAPIError(error) && error.status === 400) {
         serializeApiErrors(error.body, methods.setError)

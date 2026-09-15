@@ -31,6 +31,7 @@ interface TemplateOffersSearchFiltersProps {
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters: boolean
   resetFilters: () => void
+  searchButtonId?: string
 }
 
 const collectiveFilterStatus = [
@@ -69,6 +70,7 @@ export const TemplateOffersSearchFilters = ({
   resetFilters,
   offererId,
   disableAllFilters,
+  searchButtonId,
 }: TemplateOffersSearchFiltersProps): JSX.Element => {
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY
@@ -196,6 +198,7 @@ export const TemplateOffersSearchFilters = ({
         value: selectedFilters.name,
       }}
       onResetFilters={resetCollectiveFilters}
+      searchButtonId={searchButtonId}
     >
       <FormLayout.Row inline mdSpaceAfter>
         <div className={styles['filter-container']}>

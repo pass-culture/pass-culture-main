@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
@@ -9,7 +9,11 @@ import {
   isStickyBarOpenSelector,
   listSelector,
 } from '@/commons/store/snackBar/selectors'
-import { SnackBar } from '@/design-system/SnackBar/SnackBar'
+import {
+  SnackBar,
+  type SnackBarVariant,
+  VARIANT_CONFIG,
+} from '@/design-system/SnackBar/SnackBar'
 
 import styles from './SnackBarContainer.module.scss'
 
@@ -28,6 +32,8 @@ export const SnackBarContainer = (): JSX.Element => {
   const dispatch = useAppDispatch()
   const isStickyBarOpen = useAppSelector(isStickyBarOpenSelector)
   const [portalTarget, setPortalTarget] = useState<Element>(() => document.body)
+  const [announcement, setAnnouncement] = useState('')
+  const previousSnackBarIdsRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     setPortalTarget(
@@ -36,6 +42,32 @@ export const SnackBarContainer = (): JSX.Element => {
     )
   }, [snackBars.length])
 
+  useEffect(() => {
+    const newSnackBars = snackBars.filter(
+      (snackBar) => !previousSnackBarIdsRef.current.has(snackBar.id)
+    )
+    previousSnackBarIdsRef.current = new Set(
+      snackBars.map((snackBar) => snackBar.id)
+    )
+
+    if (newSnackBars.length === 0) {
+      return
+    }
+
+    setAnnouncement('')
+    const timeoutId = setTimeout(() => {
+      setAnnouncement(
+        newSnackBars
+          .map((snackBar) =>
+            getSnackBarAnnouncement(snackBar.variant, snackBar.description)
+          )
+          .join('. ')
+      )
+    }, 100)
+
+    return () => clearTimeout(timeoutId)
+  }, [snackBars])
+
   const sortedSnackBars = snackBars
     .slice()
     .sort(
@@ -43,60 +75,41 @@ export const SnackBarContainer = (): JSX.Element => {
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     )
 
-  const errorSnackBars = sortedSnackBars.filter(
-    (snackBar) => snackBar.variant === 'error'
-  )
-  const successSnackBars = sortedSnackBars.filter(
-    (snackBar) => snackBar.variant === 'success'
-  )
+  // Single source of truth for the accessible text of a snack bar, so any
+  // place that needs to announce it (the snack bar itself, the always-present
+  // live region in SnackBarContainer) stays in sync.
+  const getSnackBarAnnouncement = (
+    variant: SnackBarVariant,
+    description: string
+  ): string => `${VARIANT_CONFIG[variant].ariaLabel} : ${description}`
 
   return createPortal(
-    <aside
-      aria-label="Zone de notifications"
-      className={cn(
-        styles['snack-bar-container'],
-        isStickyBarOpen && styles['with-sticky-action-bar']
-      )}
-    >
-      {/*
-        The `role=alert` block should always be present for the announcer to watch its changes and read them.
-      */}
+    <>
       <div className={styles['visually-hidden']}>
         <div role="alert" aria-live="assertive" aria-atomic="true">
-          {errorSnackBars.length > 0 ? (
-            errorSnackBars.map((snackBar) => (
-              <div key={snackBar.id}>{snackBar.description}</div>
-            ))
-          ) : (
-            /* The screen reader won't react to the same alert twice if we do not have a "default" state.
-               The `&nbsp;` is needed.
-            */
-            <div>&nbsp;</div>
-          )}
-        </div>
-        <div role="status" aria-live="polite" aria-atomic="true">
-          {successSnackBars.length > 0 ? (
-            successSnackBars.map((snackBar) => (
-              <div key={snackBar.id}>{snackBar.description}</div>
-            ))
-          ) : (
-            /* The screen reader won't react to the same alert twice if we do not have a "default" state.
-             The `&nbsp;` is needed.
-          */
-            <div>&nbsp;</div>
-          )}
+          {announcement || '\u00A0'}
         </div>
       </div>
-      {sortedSnackBars.map((snackBar, index) => (
-        <SnackBar
-          key={snackBar.id}
-          variant={snackBar.variant}
-          description={snackBar.description}
-          onClose={() => dispatch(removeSnackBar(snackBar.id))}
-          testId={`global-snack-bar-${snackBar.variant}-${index}`}
-        />
-      ))}
-    </aside>,
+      {/* Landmark for keyboard/AT navigation; safe since nothing focuses into it automatically. */}
+      <aside
+        aria-label="Zone de notifications"
+        className={cn(
+          styles['snack-bar-container'],
+          isStickyBarOpen && styles['with-sticky-action-bar']
+        )}
+      >
+        {sortedSnackBars.map((snackBar, index) => (
+          <SnackBar
+            key={snackBar.id}
+            variant={snackBar.variant}
+            description={snackBar.description}
+            onClose={() => dispatch(removeSnackBar(snackBar.id))}
+            testId={`global-snack-bar-${snackBar.variant}-${index}`}
+            targetFocusId={snackBar.targetFocusId}
+          />
+        ))}
+      </aside>
+    </>,
     portalTarget
   )
 }

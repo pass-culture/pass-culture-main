@@ -18,7 +18,7 @@ interface IndividualOffersSearchFiltersProps {
   resetFilters: () => void
   venueAddresses: SelectOption<number>[]
   categories?: SelectOption[]
-  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
+  searchButtonId?: string
 }
 
 const individualFilterStatus: SelectOption<OfferStatus>[] = [
@@ -46,7 +46,7 @@ export const IndividualOffersSearchFilters = ({
   disableAllFilters,
   venueAddresses,
   categories,
-  searchButtonRef,
+  searchButtonId,
 }: Readonly<IndividualOffersSearchFiltersProps>) => {
   const updateSearchFilters = (patch: Partial<IndividualOffersFilters>) => {
     setSelectedFilters((prev) => ({ ...prev, ...patch }))
@@ -82,7 +82,7 @@ export const IndividualOffersSearchFilters = ({
         value: selectedFilters.nameOrIsbn ?? '',
       }}
       onResetFilters={resetFilters}
-      searchButtonRef={searchButtonRef}
+      searchButtonId={searchButtonId}
     >
       <FormLayout.Row inline mdSpaceAfter>
         <TypedSelect

@@ -504,7 +504,8 @@ describe('OfferActionsCells', () => {
     )
 
     expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Votre offre est mise en pause et n’est plus visible sur ADAGE'
+      'Votre offre est mise en pause et n’est plus visible sur ADAGE',
+      expect.any(String)
     )
   })
 
@@ -527,7 +528,8 @@ describe('OfferActionsCells', () => {
     )
 
     expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Votre offre est maintenant active et visible dans ADAGE'
+      'Votre offre est maintenant active et visible dans ADAGE',
+      expect.any(String)
     )
   })
 
@@ -551,7 +553,8 @@ describe('OfferActionsCells', () => {
     )
 
     expect(snackBarError).toHaveBeenCalledWith(
-      'Une erreur est survenue lors de la désactivation de votre offre.'
+      'Une erreur est survenue lors de la désactivation de votre offre.',
+      expect.any(String)
     )
   })
 
@@ -573,7 +576,8 @@ describe('OfferActionsCells', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Publier' }))
 
     expect(snackBarError).toHaveBeenCalledWith(
-      'Une erreur est survenue lors de l’activation de votre offre.'
+      'Une erreur est survenue lors de l’activation de votre offre.',
+      expect.any(String)
     )
   })
 
@@ -599,7 +603,8 @@ describe('OfferActionsCells', () => {
       path: { offer_id: 200 },
     })
     expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
+      'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
+      expect.any(String)
     )
   })
 
@@ -627,7 +632,8 @@ describe('OfferActionsCells', () => {
     )
 
     expect(snackBarError).toHaveBeenCalledWith(
-      'Cette offre n’a aucune réservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.'
+      'Cette offre n’a aucune réservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.',
+      expect.any(String)
     )
   })
 
@@ -653,7 +659,8 @@ describe('OfferActionsCells', () => {
     )
 
     expect(snackBarError).toHaveBeenCalledWith(
-      'Une erreur est survenue lors de l’annulation de la réservation.'
+      'Une erreur est survenue lors de l’annulation de la réservation.',
+      expect.any(String)
     )
   })
 
@@ -677,7 +684,8 @@ describe('OfferActionsCells', () => {
     )
 
     expect(snackBarError).toHaveBeenCalledWith(
-      'Une erreur est survenue lors de l’archivage de l’offre'
+      'Une erreur est survenue lors de l’archivage de l’offre',
+      expect.any(String)
     )
   })
   it('should archive a template offer on click on the action', async () => {
@@ -700,7 +708,8 @@ describe('OfferActionsCells', () => {
       body: { ids: [200] },
     })
     expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Une offre a bien été archivée'
+      'Une offre a bien été archivée',
+      expect.any(String)
     )
   })
 
@@ -725,7 +734,8 @@ describe('OfferActionsCells', () => {
     )
 
     expect(snackBarError).toHaveBeenCalledWith(
-      'Une erreur est survenue lors de l’archivage de l’offre'
+      'Une erreur est survenue lors de l’archivage de l’offre',
+      expect.any(String)
     )
   })
 })
