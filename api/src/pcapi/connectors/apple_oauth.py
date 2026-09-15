@@ -30,9 +30,12 @@ class AppleSignInException(Exception):
     pass
 
 
+class AppleRevokeException(Exception):
+    pass
+
+
 def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUser:
-    client_id = settings.APPLE_WEB_CLIENT_ID if is_web else settings.APPLE_MOBILE_CLIENT_ID
-    client_secret = _generate_client_secret(client_id)
+    client_id, client_secret = _generate_client_secret(is_web)
 
     try:
         payload = {
@@ -55,7 +58,21 @@ def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUs
     return _parse_identity_token(token_payload, auth_response)
 
 
-def _decrypt_token(token: str, client_id: str, verify: bool | None = None) -> dict[str, typing.Any]:
+def revoke_apple_user(refresh_token: str, is_web: bool) -> None:
+    client_id, client_secret = _generate_client_secret(is_web)
+
+    try:
+        payload = {
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "token": refresh_token,
+        }
+        _fetch_response(settings.APPLE_REVOKE_TOKEN_ENDPOINT, payload)
+    except Exception as e:
+        raise AppleSignInException("Could not revoke user from Apple") from e
+
+
+def _decrypt_token(token: str, client_id: str) -> dict[str, typing.Any]:
     jwks_client = PyJWKClient(settings.APPLE_KEYS_URL)
 
     try:
@@ -72,7 +89,6 @@ def _decrypt_token(token: str, client_id: str, verify: bool | None = None) -> di
             audience=client_id,
             issuer=settings.APPLE_ISSUER_URL,
             options=types.Options(verify_signature=True),
-            verify=verify,
         )
     except jwt.PyJWTError as e:
         logger.error("Apple identity token validation failed", extra={"error": str(e), "error_type": type(e).__name__})
@@ -81,8 +97,10 @@ def _decrypt_token(token: str, client_id: str, verify: bool | None = None) -> di
     return token_payload
 
 
-def _generate_client_secret(client_id: str) -> str:
+def _generate_client_secret(is_web: bool) -> tuple[str, str]:
     # Doc on how to generate a client secret: https://developer.apple.com/documentation/AccountOrganizationalDataSharing/creating-a-client-secret
+    client_id = settings.APPLE_WEB_CLIENT_ID if is_web else settings.APPLE_MOBILE_CLIENT_ID
+
     now = int(time.time())
     payload = {
         "iss": settings.APPLE_TEAM_ID,
@@ -93,7 +111,10 @@ def _generate_client_secret(client_id: str) -> str:
         "sub": client_id,
     }
     headers = {"alg": "ES256", "kid": settings.APPLE_KEY_ID}
-    return jwt.encode(payload, settings.APPLE_PRIVATE_KEY, headers=headers)
+
+    client_secret = jwt.encode(payload, settings.APPLE_PRIVATE_KEY, headers=headers)
+
+    return client_id, client_secret
 
 
 def _fetch_response(url: str, payload: dict) -> dict:
