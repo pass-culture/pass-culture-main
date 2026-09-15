@@ -46,5 +46,5 @@ class CulturalSurveyAnswerTest:
         save_cultural_survey_for_user(payload)
         save_cultural_survey_for_user(payload)
 
-        has_count = db_session.query(UserCulturalSurvey).filter_by(userId=user.id).count()
-        assert has_count == 1
+        row_count = db_session.query(UserCulturalSurvey).filter_by(userId=user.id).count()
+        assert row_count == 1
