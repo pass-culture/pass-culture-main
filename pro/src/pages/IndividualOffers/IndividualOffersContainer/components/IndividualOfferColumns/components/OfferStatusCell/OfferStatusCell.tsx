@@ -1,4 +1,3 @@
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isAfter } from 'date-fns'
 
 import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
@@ -9,24 +8,16 @@ import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { StatusLabel } from '@/components/StatusLabel/StatusLabel'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
-import fullBoostedIcon from '@/icons/full-boosted.svg'
 import waitFullIcon from '@/icons/full-wait.svg'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
 import styles from './OfferStatusCell.module.scss'
 
 export type OfferStatusCellProps = {
   offer: ListOffersOfferResponseModel
-  isHeadline?: boolean
 }
 
-export const OfferStatusCell = ({
-  offer,
-  isHeadline,
-}: OfferStatusCellProps) => {
+export const OfferStatusCell = ({ offer }: OfferStatusCellProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isNewProAdviceAccess = useActiveFeature('WIP_NEW_PRO_ADVICE_ACCESS')
 
   const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
 
@@ -51,23 +42,6 @@ export const OfferStatusCell = ({
         />
       ) : (
         <StatusLabel status={offer.status} />
-      )}
-      {!isNewProAdviceAccess && isHeadline && (
-        <div className={styles['status-column-headline-offer-star']}>
-          <Tooltip content="Offre à la une">
-            <button
-              type="button"
-              aria-label="Information sur les offres à la une"
-              className={styles['status-column-headline-offer-button']}
-            >
-              <SvgIcon
-                src={fullBoostedIcon}
-                width="20"
-                className={styles['status-column-headline-offer-star-icon']}
-              />
-            </button>
-          </Tooltip>
-        </div>
       )}
     </div>
   )

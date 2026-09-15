@@ -148,7 +148,6 @@ class FeatureToggle(enum.Enum):
     )
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS = "Active la nouvelle logique de détail du prix d'une offre réservable"
-    WIP_NEW_PRO_ADVICE_ACCESS = "Active les nouveaux points d'accès pour la mise à la une et l'ajout de recommendation"
     WIP_CLOSE_VENUE = "Active la fermeture d'une venue depuis l'espace partenaire"
 
     def is_active(self) -> bool:
@@ -208,7 +207,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
     FeatureToggle.WIP_CLOSE_VENUE,
-    FeatureToggle.WIP_NEW_PRO_ADVICE_ACCESS,
     FeatureToggle.WIP_IMGPROXY_PRO,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     # Please keep alphabetic order
