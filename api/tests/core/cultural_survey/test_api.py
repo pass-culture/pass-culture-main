@@ -1,6 +1,3 @@
-import pytest
-from sqlalchemy.exc import IntegrityError
-
 from pcapi.core.cultural_survey import tasks
 from pcapi.core.cultural_survey.api import save_cultural_survey_for_user
 from pcapi.core.cultural_survey.models import UserCulturalSurvey
@@ -30,7 +27,7 @@ class CulturalSurveyAnswerTest:
         has_count = db_session.query(UserCulturalSurvey).filter_by(userId=user.id).count()
         assert has_count == 1
 
-    def test_should_raise_an_exception_for_submitting_twice_the_survey(self, db_session):
+    def test_should_overwrite_answers_for_submitting_twice_the_survey(self, db_session):
         submit_time = date_utils.get_naive_utc_now().isoformat()
 
         user = users_factories.UserFactory.create()
@@ -47,6 +44,7 @@ class CulturalSurveyAnswerTest:
         )
 
         save_cultural_survey_for_user(payload)
+        save_cultural_survey_for_user(payload)
 
-        with pytest.raises(IntegrityError):
-            save_cultural_survey_for_user(payload)
+        row_count = db_session.query(UserCulturalSurvey).filter_by(userId=user.id).count()
+        assert row_count == 1
