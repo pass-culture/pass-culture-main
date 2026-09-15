@@ -43,11 +43,11 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
 
   return (
     <OnboardingLayout
-      mainHeading="Offre à destination des jeunes"
       verticallyCentered={draftOffers.length <= 1}
       isStickyActionBarInChild
       isEntryScreen
     >
+      <h1 className={styles.title}>Offre à destination des jeunes</h1>
       <h2 className={styles['offers-subtitle']}>
         Comment souhaitez-vous créer votre 1ère offre ?
       </h2>

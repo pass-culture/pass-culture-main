@@ -1,3 +1,12 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
 .eac-section {
+  margin-bottom: var(--size-spacing-xxl);
+}
+
+.title {
+  @include fonts.title1;
+
+  overflow-wrap: anywhere;
   margin-bottom: var(--size-spacing-xxl);
 }

@@ -3,7 +3,6 @@ import cn from 'classnames'
 import type React from 'react'
 import { NavLink } from 'react-router'
 
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { Footer } from '@/components/Footer/Footer'
 import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
 import logoPassCultureProFullIcon from '@/icons/logo-pass-culture-pro-full.svg'
@@ -16,14 +15,9 @@ import styles from './SignUpLayout.module.scss'
 
 interface SignUpLayoutProps {
   children?: React.ReactNode
-  /**
-   * Name of the page to display in the main heading.
-   * Make sure that only one heading is displayed per page.
-   */
-  mainHeading: React.ReactNode
 }
 
-export const SignUpLayout = ({ children, mainHeading }: SignUpLayoutProps) => {
+export const SignUpLayout = ({ children }: SignUpLayoutProps) => {
   return (
     <div className={styles.layout}>
       <SkipLinks />
@@ -92,7 +86,6 @@ export const SignUpLayout = ({ children, mainHeading }: SignUpLayoutProps) => {
             </NavLink>
             <main id="content" tabIndex={-1}>
               <div className={cn(styles.content, styles['content-sign-up'])}>
-                <MainHeading mainHeading={mainHeading} />
                 {children}
               </div>
             </main>

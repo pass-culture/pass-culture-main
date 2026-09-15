@@ -2,7 +2,6 @@
 import cn from 'classnames'
 import type React from 'react'
 
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { Footer } from '@/components/Footer/Footer'
 import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
 import logoPassCultureProFullIcon from '@/icons/logo-pass-culture-pro-full.svg'
@@ -12,17 +11,9 @@ import styles from './LoggedOutLayout.module.scss'
 
 interface LoggedOutLayoutProps {
   children?: React.ReactNode
-  /**
-   * Name of the page to display in the main heading.
-   * Make sure that only one heading is displayed per page.
-   */
-  mainHeading: React.ReactNode
 }
 
-export const LoggedOutLayout = ({
-  children,
-  mainHeading,
-}: LoggedOutLayoutProps) => {
+export const LoggedOutLayout = ({ children }: LoggedOutLayoutProps) => {
   return (
     <div className={styles.layout}>
       <SkipLinks />
@@ -46,7 +37,6 @@ export const LoggedOutLayout = ({
           <div className={styles['content-container']}>
             <main id="content" tabIndex={-1}>
               <div className={cn(styles.content, styles['content-logged-out'])}>
-                <MainHeading mainHeading={mainHeading} />
                 {children}
               </div>
             </main>

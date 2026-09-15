@@ -1,9 +1,9 @@
 import { Outlet, useLocation } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 
 import { Header } from '../CollectiveVenuePageLayout/components/Header'
+import styles from './VenuePageLayout.module.scss'
 
 export const VenuePageLayout = () => {
   const location = useLocation()
@@ -16,7 +16,7 @@ export const VenuePageLayout = () => {
 
   return (
     <BasicLayout>
-      <MainHeading mainHeading={titleText} />
+      <h1 className={styles.title}>{titleText}</h1>
       <div>
         <Header context={context} />
 

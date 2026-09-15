@@ -6,7 +6,6 @@ import {
   type GetIndividualOfferResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -80,10 +79,9 @@ export const IndividualOfferLayout = ({
   return (
     <>
       <div className={styles['header-container']}>
-        <MainHeading
-          mainHeading={<IndividualOfferTitle offer={offer} mode={mode} />}
-          className={styles['main-heading']}
-        />
+        <h1 className={styles.title}>
+          <IndividualOfferTitle offer={offer} mode={mode} />
+        </h1>
         <div className={styles['status-container']}>
           {offer &&
             mode !== OFFER_WIZARD_MODE.CREATION &&

@@ -2,7 +2,6 @@ import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
 import { DMSApplicationstatus, VenueState } from '@/apiClient/v1'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
@@ -121,9 +120,9 @@ export const Homepage = (): JSX.Element => {
 
   return (
     <>
-      <MainHeading
-        mainHeading={`Votre espace ${selectedPartnerVenue.publicName}`}
-      />
+      <h1 className={styles['title']}>
+        Votre espace {selectedPartnerVenue.publicName}
+      </h1>
       {!isOffererClosed && selectedPartnerVenue.state === VenueState.CLOSED && (
         <div className={styles['venue-banner']}>
           <Banner variant={BannerVariants.ERROR} title="Structure fermée" />

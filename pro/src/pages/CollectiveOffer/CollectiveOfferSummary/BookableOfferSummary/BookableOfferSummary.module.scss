@@ -2,7 +2,12 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
-.header-title {
+.title {
+  @include fonts.title1;
+
+  overflow-wrap: anywhere;
+  margin-bottom: var(--size-spacing-xxl);
+
   @media (min-width: size.$tablet) {
     max-width: rem.torem(588px);
   }

@@ -1,7 +1,6 @@
 import cn from 'classnames'
 import { useLocation } from 'react-router'
 
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { ReSendEmailCallout } from '@/components/ReSendEmailCallout/ReSendEmailCallout'
 
@@ -20,7 +19,7 @@ export const SignupConfirmation = () => {
       })}
     >
       {isSignupSimulationEnabled && (
-        <MainHeading mainHeading="Validez votre adresse email" />
+        <h1 className={styles['title']}>Validez votre adresse email</h1>
       )}
       <p className={styles['signup-confirmation']}>
         Cliquez sur le lien envoyé par email
