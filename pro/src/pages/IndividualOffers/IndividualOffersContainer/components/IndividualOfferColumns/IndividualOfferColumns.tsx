@@ -68,12 +68,7 @@ export function getIndividualOfferColumns({
     {
       id: 'status',
       label: 'Publication',
-      render: (offer) => (
-        <OfferStatusCell
-          offer={offer}
-          isHeadline={offer.id === headlineOffer?.id}
-        />
-      ),
+      render: (offer) => <OfferStatusCell offer={offer} />,
     },
     {
       id: 'bookingsCount',
