@@ -59,7 +59,7 @@ export const Tag = ({
       {finalIcon && (
         <SvgIcon className={styles.icon} src={finalIcon} width="16" />
       )}
-      <p className={styles.tag}>{label}</p>
+      <p className={styles.label}>{label}</p>
     </span>
   )
 }
