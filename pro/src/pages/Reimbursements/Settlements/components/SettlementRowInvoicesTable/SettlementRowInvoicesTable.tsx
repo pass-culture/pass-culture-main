@@ -15,15 +15,11 @@ import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { InvoiceActions } from '@/pages/Reimbursements/ReimbursementsInvoices/InvoiceTable/InvoiceActions'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
+import type { ExtendedInvoiceResponseV2Model } from '../../types'
 import styles from './SettlementRowInvoicesTable.module.scss'
 
 type SettlementRowInvoicesTableProps = {
   invoices: InvoiceResponseV2Model[]
-}
-
-type ExtendedInvoiceResponseV2Model = InvoiceResponseV2Model & {
-  id: string
-  isCaledonian?: boolean
 }
 
 const columns = [

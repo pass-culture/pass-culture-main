@@ -1,0 +1,32 @@
+.modal-content {
+  gap: 0;
+
+  &-description {
+    text-align: center;
+  }
+
+  &-invoice-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.invoice-date {
+  color: var(--color-text-subtle);
+}
+
+.negative-amount {
+  color: var(--color-text-error);
+}
+
+.positive-amount {
+  color: var(--color-text-success);
+}
+
+.invoice-actions {
+  width: 100%;
+  margin-top: var(--size-spacing-s);
+
+  --btn-width: 100%;
+}
