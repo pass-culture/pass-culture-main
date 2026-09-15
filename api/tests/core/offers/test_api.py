@@ -66,7 +66,7 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.routes.public.individual_offers.v1 import utils as public_offers_utils
+from pcapi.routes.provider.individual_offers.v1 import utils as public_offers_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.transaction_manager import atomic

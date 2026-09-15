@@ -10,10 +10,14 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
-import pcapi.routes.backoffice.blueprint as backoffice_blueprint
 from pcapi import settings
-from pcapi.routes import UrlPrefix as UrlPrefixOld
+from pcapi.routes.adage.v1.blueprint import adage_v1 as adage_v1_blueprint
+from pcapi.routes.adage_iframe.blueprint import adage_iframe as adage_iframe_blueprint
+from pcapi.routes.backoffice.blueprint import backoffice as backoffice_blueprint
+from pcapi.routes.discord.blueprint import discord_blueprint
+from pcapi.routes.native.blueprint import native_blueprint
 from pcapi.routes.pro.blueprint import pro_blueprint
+from pcapi.routes.saml.blueprint import saml_blueprint
 from pcapi.utils.health_checker import read_version_from_file
 
 
@@ -39,7 +43,7 @@ GDPR_SENSITIVE_MODULE_BOUNDARIES = ("pcapi.core.subscription.bonus.api",)
 
 
 class SpecificPath(enum.Enum):
-    BACKOFFICE_HOME = f"{backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME}.home"
+    BACKOFFICE_HOME = f"{backoffice_blueprint.name}.home"
     PRO_AUTOLOGIN_SIGNUP = "/users/validate_signup/"
 
 
@@ -101,12 +105,6 @@ def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     return event
 
 
-# TODO rpa use real url_prefix instead of an enum
-class UrlPrefix(enum.StrEnum):
-    AUTH = "/auth"
-    ADAGE_V1 = "/adage/v1"
-
-
 def custom_traces_sampler(sampling_context: dict) -> float:
     """
     This sampler defines a fraction of the DEFAULT_SAMPLE_RATE according to the requested path
@@ -145,24 +143,26 @@ def custom_traces_sampler(sampling_context: dict) -> float:
             score = LOWEST_SAMPLE_RATE
 
         # native routes
-        case _ if path.startswith(UrlPrefixOld.NATIVE.value):
+        case _ if native_blueprint.url_prefix and path.startswith(native_blueprint.url_prefix):
             score = LOWER_SAMPLE_RATE
 
         # Discord Auth
-        case _ if path.startswith(UrlPrefix.AUTH.value):
+        case _ if discord_blueprint.url_prefix and path.startswith(discord_blueprint.url_prefix):
             score = LOW_SAMPLE_RATE
-        # adage V1
-        case _ if path.startswith(UrlPrefix.ADAGE_V1.value):
+
+        # adage v1
+        case _ if adage_v1_blueprint.url_prefix and path.startswith(adage_v1_blueprint.url_prefix):
             score = LOW_SAMPLE_RATE
 
         # SAML
-        case _ if path.startswith(UrlPrefixOld.SAML.value):
-            score = DEFAULT_SAMPLE_RATE
-        # adage
-        case _ if path.startswith(UrlPrefixOld.ADAGE_IFRAME.value):
+        case _ if saml_blueprint.url_prefix and path.startswith(saml_blueprint.url_prefix):
             score = DEFAULT_SAMPLE_RATE
 
-        # `Private API` or `pro_private_api` blueprints or a 404. We will filter them later
+        # adage-iframe
+        case _ if adage_iframe_blueprint.url_prefix and path.startswith(adage_iframe_blueprint.url_prefix):
+            score = DEFAULT_SAMPLE_RATE
+
+        # `pro` blueprints or a 404. We will filter them later
         case _:
             score = DEFAULT_SAMPLE_RATE
 
@@ -191,7 +191,7 @@ def filter_transactions(event: "Event", _hint: dict[str, typing.Any]) -> "Event 
             sample_rate = NO_SAMPLE_RATE
 
         # backoffice
-        case _ if transaction.startswith(backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME):
+        case _ if transaction.startswith(backoffice_blueprint.name):
             sample_rate = DEFAULT_SAMPLE_RATE
 
         # private API "pro"

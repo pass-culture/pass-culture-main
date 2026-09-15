@@ -19,7 +19,7 @@ app.config["JWT_SECRET_KEY"] = settings.JWT_SECRET_KEY
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = settings.JWT_ACCESS_TOKEN_EXPIRES
 # CSRF is disabled by default because it's used nowhere in the API except for the discord signin page.
 # The SigninForm in charge of gathering the username/password has the csrf protection explicitly activated
-# cf. pcapi.routes.auth.forms.forms.SigninForm used by this endpoint : `/auth/discord/signin`
+# cf. pcapi.routes.discord.forms.forms.SigninForm used by this endpoint : `/auth/discord/signin`
 app.config["WTF_CSRF_ENABLED"] = False
 app.config["USE_GLOBAL_ATOMIC"] = False
 app.config["NAME"] = settings.BACKEND_APP_NAME

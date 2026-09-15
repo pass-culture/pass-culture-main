@@ -1,0 +1,199 @@
+import logging
+from urllib.parse import quote
+
+import flask
+import jwt
+from flask import redirect
+from flask import render_template
+from flask import request
+from werkzeug.wrappers.response import Response
+
+from pcapi import settings
+from pcapi.connectors import discord as discord_connector
+from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
+from pcapi.connectors.api_recaptcha import ReCaptchaException
+from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
+from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import models as user_models
+from pcapi.core.users import repository as users_repo
+from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
+from pcapi.routes.discord.forms.forms import SigninForm
+from pcapi.utils import requests
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+
+from . import blueprint
+
+
+logger = logging.getLogger(__name__)
+
+ERROR_STRING_PREFIX = "Erreur d'authentification Discord: "
+GENERIC_ASSOCIATION_ERROR = "Impossible d'associer ton compte Discord. Contacte le support pour plus d'informations."
+GENERIC_AUTHENTICATION_ERROR = (
+    "La connexion a ton compte pass Culture a échoué. Réessaye ou contacte le support pour plus d'informations."
+)
+
+
+@blueprint.discord_blueprint.route("/signin", methods=["GET"])
+def discord_signin() -> str:
+    if FeatureToggle.DISCORD_ENABLE_NEW_ACCESS.is_active():
+        form = SigninForm()
+        if error_message := request.args.get("error"):
+            form.error_message = error_message
+
+        return render_template("discord_signin.html", form=form)
+
+    return render_template("discord_signin_disabled.html")
+
+
+@blueprint.discord_blueprint.route("/callback", methods=["GET"])
+@atomic()
+def discord_call_back() -> Response | str:
+    code = request.args.get("code")
+    state = request.args.get("state")
+
+    if not code:
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}code non récupéré")
+    if not state:
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}état de la requête non récupéré")
+
+    try:
+        user_id = str(discord_connector.verify_state(state))
+    except (jwt.PyJWTError, KeyError):
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}lien invalide ou expiré")
+
+    try:
+        access_token = discord_connector.retrieve_access_token(code)
+    except requests.exceptions.HTTPError:
+        return redirect_with_error(
+            f"{ERROR_STRING_PREFIX}Une erreur s'est produite. Tu peux réessayer ou contacter le support."
+        )
+
+    if not access_token or not user_id:
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}session invalide ou expirée")
+
+    try:
+        user_discord_id = discord_connector.get_user_id(access_token)
+    except requests.exceptions.HTTPError:
+        return render_retry_template(
+            code=code,
+            state=state,
+            error_message="Erreur lors de la récupération de l'identifiant Discord",
+        )
+
+    if not user_discord_id:
+        return render_retry_template(
+            code=code,
+            state=state,
+            error_message="Erreur lors de la récupération de l'identifiant Discord",
+        )
+    try:
+        update_discord_user(user_id, user_discord_id)
+    except (
+        users_exceptions.DiscordUserAlreadyLinked,
+        users_exceptions.UserNotEligible,
+        users_exceptions.UserNotABeneficiary,
+        users_exceptions.UserNotAllowed,
+    ) as exc:
+        logger.warning("Discord association error for user_id=%s: %s", user_id, type(exc).__name__)
+        return redirect_with_error(GENERIC_ASSOCIATION_ERROR)
+
+    try:
+        discord_connector.add_to_server(access_token, user_discord_id)
+    except requests.exceptions.HTTPError:
+        return render_retry_template(
+            code=code,
+            state=state,
+            error_message="Erreur lors de l'ajout au serveur Discord",
+        )
+    return redirect(discord_connector.DISCORD_HOME_URI, code=303)
+
+
+def update_discord_user(user_id: str, discord_id: str) -> None:
+    already_linked_user: user_models.DiscordUser | None = (
+        db.session.query(user_models.DiscordUser).filter_by(discordId=discord_id).first()
+    )
+    if already_linked_user and already_linked_user.userId != int(user_id):
+        raise users_exceptions.DiscordUserAlreadyLinked()
+
+    user: user_models.User | None = db.session.get(user_models.User, user_id)
+    assert user  # helps mypy
+    discord_user = user.discordUser
+
+    if discord_user is None:
+        discord_user = user_models.DiscordUser(userId=user.id, discordId=discord_id, hasAccess=False)
+
+    discord_user.hasAccess = bool(user.is_beneficiary and user.age and user.age >= 17)
+    logger.info("Discord user %s has access: %s", discord_user.discordId, discord_user.hasAccess)
+
+    if not discord_user.hasAccess:
+        if not user.is_beneficiary:
+            raise users_exceptions.UserNotABeneficiary()
+
+        if user.age and user.age < 17:
+            logger.info("User %s is underage and not allowed to access Discord", user.id)
+            raise users_exceptions.UserNotEligible()
+        raise users_exceptions.UserNotAllowed()
+
+    db.session.add(discord_user)
+    db.session.flush()
+
+    discord_user.discordId = discord_id
+
+
+@blueprint.discord_blueprint.route("/signin", methods=["POST"])
+def discord_signin_post() -> Response | str:
+    if not FeatureToggle.DISCORD_ENABLE_NEW_ACCESS.is_active():
+        return render_template("discord_signin_disabled.html")
+
+    form = SigninForm()
+    if not form.validate():
+        form.error_message = "La tentative de connexion a échoué, réessayer."
+        return render_template("discord_signin.html", form=form)
+
+    email = form.email.data
+    password = form.password.data
+    recaptcha_token = form.recaptcha_token.data
+
+    try:
+        check_web_recaptcha_token(
+            recaptcha_token,
+            settings.DISCORD_RECAPTCHA_SECRET_KEY,
+            original_action="discordSignin",
+            minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
+        )
+    except (ReCaptchaException, InvalidRecaptchaTokenException):
+        form.error_message = "La vérification a échoué. Recharge la page et réessaie"
+        return render_template("discord_signin.html", form=form)
+
+    try:
+        user = users_repo.get_user_with_credentials(email, password, allow_inactive=True)
+    except users_exceptions.UnvalidatedAccount:
+        form.error_message = GENERIC_AUTHENTICATION_ERROR
+        return render_template("discord_signin.html", form=form)
+
+    except users_exceptions.CredentialsException:
+        form.error_message = GENERIC_AUTHENTICATION_ERROR
+        return render_template("discord_signin.html", form=form)
+
+    if user.account_state.is_deleted:
+        form.error_message = GENERIC_AUTHENTICATION_ERROR
+        return render_template("discord_signin.html", form=form)
+
+    if user.account_state == user_models.AccountState.ANONYMIZED:
+        form.error_message = GENERIC_AUTHENTICATION_ERROR
+        return render_template("discord_signin.html", form=form)
+
+    url_redirection = discord_connector.build_discord_redirection_uri(user.id)
+    return redirect(url_redirection)
+
+
+def redirect_with_error(error_message: str) -> Response:
+    mark_transaction_as_invalid()
+    return redirect(f"/auth/discord/signin?error={quote(error_message)}", code=303)
+
+
+def render_retry_template(code: str, state: str, error_message: str) -> str:
+    auth_success_url = flask.url_for("discord.discord_call_back", code=code, state=state)
+    return render_template("discord_retry.html", error=error_message, url=auth_success_url)

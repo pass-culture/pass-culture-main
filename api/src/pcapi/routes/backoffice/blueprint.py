@@ -16,8 +16,7 @@ from .utils import static as static_utils
 from .utils.access_control import _check_any_permission_of
 
 
-BACKOFFICE_WEB_BLUEPRINT_NAME = "backoffice"
-backoffice = Blueprint(BACKOFFICE_WEB_BLUEPRINT_NAME, __name__, url_prefix="/", template_folder="templates")
+backoffice = Blueprint("backoffice", __name__, url_prefix="/", template_folder="templates")
 CORS(
     backoffice,
     origins=settings.CORS_ALLOWED_ORIGINS,
