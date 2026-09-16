@@ -1,3 +1,4 @@
+import json
 import logging
 
 import pytest
@@ -31,12 +32,12 @@ class BonusAttemptCountersTest:
         log_record = caplog.records[0]
         assert log_record.technical_message_id == statistics_api.COUNTERS_TECHNICAL_MESSAGE_ID
 
-        log_extra = log_record.extra
-        assert log_extra["counters"]["errors"] == {
+        logged_counters = json.loads(log_record.extra["counters"])
+        assert logged_counters["errors"] == {
             "qf_bonus_credit": {"quotient_familial_too_high": 1},
             "aah_bonus_credit": {"not_recipient": 1},
         }
-        assert log_extra["counters"]["grants"] == {
+        assert logged_counters["grants"] == {
             "qf_bonus_credit": settings.MIN_QUOTIENT_FAMILIAL_BONUSES_TO_PUBLISH,
         }
 
@@ -58,7 +59,7 @@ class BonusAttemptCountersTest:
         log_record = caplog.records[0]
         assert log_record.technical_message_id == statistics_api.COUNTERS_TECHNICAL_MESSAGE_ID
 
-        assert log_record.extra["counters"]["attempts_until_grant"] == {"0": 1, "1": 6, "29": 1}
+        assert json.loads(log_record.extra["counters"])["attempts_until_grant"] == {"0": 1, "1": 6, "29": 1}
 
     def test_published_counters_are_consumed(self, caplog):
         for i in range(settings.MIN_QUOTIENT_FAMILIAL_BONUSES_TO_PUBLISH):
@@ -77,7 +78,7 @@ class BonusAttemptCountersTest:
 
         first_log_record = caplog.records[0]
         assert first_log_record.technical_message_id == statistics_api.COUNTERS_TECHNICAL_MESSAGE_ID
-        assert first_log_record.extra["counters"] != {}
+        assert json.loads(first_log_record.extra["counters"]) != {}
         assert first_log_record.extra["counters_since"] is None
 
         # the attempts recorded afterwards are the only ones left to report
@@ -96,7 +97,7 @@ class BonusAttemptCountersTest:
             statistics_api.log_bonus_credit_counters()
 
         second_log_record = caplog.records[-1]
-        assert second_log_record.extra["counters"] == {
+        assert json.loads(second_log_record.extra["counters"]) == {
             "errors": {"qf_bonus_credit": {"not_in_tax_household": 1}},
             "grants": {"qf_bonus_credit": 3},
             "attempts_until_grant": {"2": 3},
@@ -139,7 +140,7 @@ class BonusAttemptCountersTest:
             statistics_api.log_bonus_credit_counters()
 
         log_record = caplog.records[-1]
-        assert log_record.extra["counters"] == {
+        assert json.loads(log_record.extra["counters"]) == {
             "attempts_until_grant": {"0": 2, "1": 6},
             "errors": {},
             "grants": {"aah_bonus_credit": 1, "aeeh_bonus_credit": 1, "qf_bonus_credit": 6},
@@ -161,4 +162,4 @@ class FirstApplicationDelaysTest:
             statistics_api.log_first_bonus_credit_attempt_delays()
 
         log_record = caplog.records[-1]
-        assert log_record.extra["first_attempt_delays"] == {"0": 3, "3600": 1, "2419200": 1}
+        assert json.loads(log_record.extra["first_attempt_delays"]) == {"0": 3, "3600": 1, "2419200": 1}
