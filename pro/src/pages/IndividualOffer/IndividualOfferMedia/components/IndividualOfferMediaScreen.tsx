@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -65,6 +65,9 @@ export const IndividualOfferMediaScreen = ({
 
   const { handleVideoOnSubmit, videoUrl, videoData } = useVideoUploaderContext()
   const snackBar = useSnackBar()
+  // Read by `afterSubmitState` so the success message is shown once the
+  // destination page (or this same page) has taken over, instead of racing with the navigation.
+  const hasSavedOfferRef = useRef(false)
 
   const isProductBased = isOfferProductBasedButNotSynchronized(offer)
 
@@ -166,7 +169,7 @@ export const IndividualOfferMediaScreen = ({
     }
 
     if (mode === OFFER_WIZARD_MODE.EDITION) {
-      snackBar.success('Votre offre a bien été modifiée.')
+      hasSavedOfferRef.current = true
     }
 
     return true
@@ -179,9 +182,14 @@ export const IndividualOfferMediaScreen = ({
       isOnboarding,
       followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
     })
+  const afterSubmitState = () =>
+    hasSavedOfferRef.current
+      ? { successMessage: 'Votre offre a bien été modifiée.' }
+      : undefined
   const { navigationGuardedSubmitHandler, navigationGuardDialog } =
     useFormNavigationGuard({
       afterSubmitPath,
+      afterSubmitState,
       form,
       isExternallyDirty: isFormDirty,
       onSubmit,
@@ -225,7 +233,7 @@ export const IndividualOfferMediaScreen = ({
                   title="Ajoutez une vidéo"
                   className={styles['media-sub-section']}
                 >
-                  <VideoUploader aria-describedby={tipsVideoUploaderId} />
+                  <VideoUploader uploadTipsId={tipsVideoUploaderId} />
                   {!videoData?.videoThumbnailUrl && (
                     <div id={tipsVideoUploaderId}>
                       <VideoUploaderTips />

@@ -30,7 +30,6 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -70,6 +69,9 @@ export const IndividualOfferDescriptionScreen = () => {
     hasPublishedOfferWithSameEan,
   } = useIndividualOfferContext()
   const offerIdRef = useRef(initialOffer?.id)
+  // Read by `afterSubmitState` so the success message is shown once the
+  // destination page (or this same page) has taken over, instead of racing with the navigation.
+  const hasSavedOfferRef = useRef(false)
 
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -78,7 +80,6 @@ export const IndividualOfferDescriptionScreen = () => {
   const { mutate } = useSWRConfig()
   const mode = useOfferWizardMode()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const snackBar = useSnackBar()
 
   const initialOfferImage = getIndividualOfferImage(initialOffer)
   const extraData = initialOffer?.extraData as OfferExtraData | undefined
@@ -163,7 +164,7 @@ export const IndividualOfferDescriptionScreen = () => {
       }
 
       if (mode === OFFER_WIZARD_MODE.EDITION) {
-        snackBar.success('Votre offre a bien été modifiée.')
+        hasSavedOfferRef.current = true
       }
 
       logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -193,9 +194,14 @@ export const IndividualOfferDescriptionScreen = () => {
       isOnboarding,
       followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
     })
+  const afterSubmitState = () =>
+    hasSavedOfferRef.current
+      ? { successMessage: 'Votre offre a bien été modifiée.' }
+      : undefined
   const { navigationGuardedSubmitHandler, navigationGuardDialog } =
     useFormNavigationGuard({
       afterSubmitPath,
+      afterSubmitState,
       form,
       onSubmit,
     })

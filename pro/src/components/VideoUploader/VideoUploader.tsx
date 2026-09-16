@@ -21,7 +21,11 @@ import { VideoPreview } from '../VideoPreview/VideoPreview'
 import { ModalVideo } from './components/ModalVideo/ModalVideo'
 import styles from './VideoUploader.module.scss'
 
-export const VideoUploader = () => {
+type VideoUploaderProps = {
+  uploadTipsId: string
+}
+
+export const VideoUploader = ({ uploadTipsId }: VideoUploaderProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const { videoData, onVideoDelete } = useVideoUploaderContext()
   const { videoDuration, videoTitle, videoThumbnailUrl } = videoData ?? {}
@@ -98,6 +102,7 @@ export const VideoUploader = () => {
             label="Ajouter une URL Youtube"
             onClick={() => setIsOpen(true)}
             disabled={isClosed}
+            aria-describedby={uploadTipsId}
             ref={addVideoRef}
           />
           <ModalVideo

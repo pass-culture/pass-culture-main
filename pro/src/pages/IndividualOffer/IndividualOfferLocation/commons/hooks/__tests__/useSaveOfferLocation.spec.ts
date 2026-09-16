@@ -1,3 +1,4 @@
+import { renderHook } from '@testing-library/react'
 import type { UseFormSetError } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -79,11 +80,13 @@ describe('useSaveOfferLocation', () => {
 
     const formValues = makeLocationFormValues({ location: null })
 
-    const { save } = useSaveOfferLocation({
-      offer: offerBase,
-      setError: setErrorMock,
-    })
-    const hasSucceeded = await save({
+    const { result } = renderHook(() =>
+      useSaveOfferLocation({
+        offer: offerBase,
+        setError: setErrorMock,
+      })
+    )
+    const hasSucceeded = await result.current.save({
       formValues,
       shouldSendMail: true,
     })
@@ -115,11 +118,13 @@ describe('useSaveOfferLocation', () => {
 
     const formValues = makeLocationFormValues({ location: null })
 
-    const { save } = useSaveOfferLocation({
-      offer: offerBase,
-      setError: setErrorMock,
-    })
-    const hasSucceeded = await save({ formValues })
+    const { result } = renderHook(() =>
+      useSaveOfferLocation({
+        offer: offerBase,
+        setError: setErrorMock,
+      })
+    )
+    const hasSucceeded = await result.current.save({ formValues })
 
     expect(hasSucceeded).toBe(true)
     expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
@@ -144,11 +149,13 @@ describe('useSaveOfferLocation', () => {
 
     const formValues = makeLocationFormValues({ location: null })
 
-    const { save } = useSaveOfferLocation({
-      offer: offerBase,
-      setError: setErrorMock,
-    })
-    await save({ formValues })
+    const { result } = renderHook(() =>
+      useSaveOfferLocation({
+        offer: offerBase,
+        setError: setErrorMock,
+      })
+    )
+    await result.current.save({ formValues })
 
     expect(api.patchOffer).not.toHaveBeenCalled()
     expect(mutateMock).not.toHaveBeenCalled()
@@ -168,11 +175,13 @@ describe('useSaveOfferLocation', () => {
     vi.mocked(api.patchOffer).mockRejectedValueOnce(apiError)
     vi.mocked(isErrorAPIError).mockReturnValue(true)
 
-    const { save } = useSaveOfferLocation({
-      offer: offerBase,
-      setError: setErrorMock,
-    })
-    await save({
+    const { result } = renderHook(() =>
+      useSaveOfferLocation({
+        offer: offerBase,
+        setError: setErrorMock,
+      })
+    )
+    await result.current.save({
       formValues: makeLocationFormValues({ location: null }),
     })
 
@@ -186,18 +195,21 @@ describe('useSaveOfferLocation', () => {
     expect(navigateMock).not.toHaveBeenCalled()
   })
 
-  it('should show success snackbar without navigating in EDITION mode', async () => {
+  it('should mark the offer as saved (via hasSavedRef) without navigating in EDITION mode', async () => {
     const formValues = makeLocationFormValues({ location: null })
 
-    const { save } = useSaveOfferLocation({
-      offer: offerBase,
-      setError: setErrorMock,
-    })
-    await save({ formValues })
-
-    expect(notificationMock.success).toHaveBeenCalledWith(
-      'Votre offre a bien été modifiée.'
+    const { result } = renderHook(() =>
+      useSaveOfferLocation({
+        offer: offerBase,
+        setError: setErrorMock,
+      })
     )
+    await result.current.save({ formValues })
+
+    // The message is carried through `afterSubmitState` instead of being
+    // dispatched immediately, so it isn't dismissed by a racing navigation.
+    expect(result.current.hasSavedRef.current).toBe(true)
+    expect(notificationMock.success).not.toHaveBeenCalled()
     expect(getIndividualOfferUrl).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()
   })
@@ -206,11 +218,13 @@ describe('useSaveOfferLocation', () => {
     vi.mocked(api.patchOffer).mockRejectedValueOnce(new Error('network'))
     vi.mocked(isErrorAPIError).mockReturnValue(false)
 
-    const { save } = useSaveOfferLocation({
-      offer: offerBase,
-      setError: setErrorMock,
-    })
-    await save({
+    const { result } = renderHook(() =>
+      useSaveOfferLocation({
+        offer: offerBase,
+        setError: setErrorMock,
+      })
+    )
+    await result.current.save({
       formValues: makeLocationFormValues({ location: null }),
     })
 

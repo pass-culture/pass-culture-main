@@ -1,5 +1,3 @@
-import type React from 'react'
-
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CardInfo.module.scss'
@@ -7,12 +5,12 @@ import styles from './CardInfo.module.scss'
 type CardInfoProps = {
   icon: string
   title: string
-  children?: React.ReactNode
+  description: string
 }
 export const CardInfo = ({
   icon,
   title,
-  children,
+  description,
 }: CardInfoProps): JSX.Element => (
   <div className={styles['card-info']}>
     <div className={styles['card-info-header']}>
@@ -22,6 +20,6 @@ export const CardInfo = ({
       <h3 className={styles['card-info-header-title']}>{title}</h3>
     </div>
 
-    <div className={styles['card-info-description']}>{children}</div>
+    <p className={styles['card-info-description']}>{description}</p>
   </div>
 )

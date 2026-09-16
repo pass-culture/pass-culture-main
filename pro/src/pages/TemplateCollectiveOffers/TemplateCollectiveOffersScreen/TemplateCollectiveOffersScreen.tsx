@@ -184,6 +184,7 @@ export const TemplateCollectiveOffersScreen = ({
         liveMessage={`Page ${page} sur ${pageCount}`}
       >
         <Table
+          title="Offres vitrines"
           columns={columns}
           data={currentPageItems}
           allData={sortedOffers}

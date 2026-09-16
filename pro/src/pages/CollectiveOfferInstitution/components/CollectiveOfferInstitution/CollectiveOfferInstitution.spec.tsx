@@ -203,7 +203,7 @@ describe('CollectiveOfferInstitution', () => {
         },
       ])
 
-    renderInstitutionStep(props)
+    const { router } = renderInstitutionStep(props)
 
     const institutionInput = screen.getByLabelText(
       /Nom de l’établissement scolaire ou code UAI/
@@ -234,9 +234,15 @@ describe('CollectiveOfferInstitution', () => {
         teacherEmail: 'compte.test@education.gouv.fr',
       },
     })
-    expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Les paramètres de visibilité de votre offre ont bien été enregistrés'
+    // The success message is carried through navigation state and shown
+    // by the next step, not dispatched from this screen.
+    expect(router.state.location.pathname).toBe(
+      `/offre/${offerId}/collectif/creation/recapitulatif`
     )
+    expect(router.state.location.state).toEqual({
+      successMessage:
+        'Les paramètres de visibilité de votre offre ont bien été enregistrés',
+    })
   })
 
   it('should display an error when the institution could not be saved', async () => {

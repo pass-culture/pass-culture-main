@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import type { UseFormReturn } from 'react-hook-form'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
@@ -23,15 +24,19 @@ export const useSaveOfferPriceTable = ({
   offer: GetIndividualOfferResponseModel
 }): {
   save: (formValues: PriceTableFormValues) => Promise<boolean>
+  /** Set on a successful save; read by `afterSubmitState` so the message is
+   * shown once the destination page has taken over. */
+  pendingSuccessMessageRef: React.RefObject<string | undefined>
 } => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const mode = useOfferWizardMode()
   const snackBar = useSnackBar()
   const { syncVenue } = useSyncVenueCache()
+  const pendingSuccessMessageRef = useRef<string | undefined>(undefined)
 
   const save = async (formValues: PriceTableFormValues): Promise<boolean> => {
     if (!form.formState.isDirty && mode === OFFER_WIZARD_MODE.EDITION) {
-      snackBar.success(getSuccessMessage(mode))
+      pendingSuccessMessageRef.current = getSuccessMessage(mode)
 
       return true
     }
@@ -53,7 +58,7 @@ export const useSaveOfferPriceTable = ({
       form.reset(formValues)
 
       if (mode === OFFER_WIZARD_MODE.EDITION) {
-        snackBar.success('Votre offre a bien été modifiée.')
+        pendingSuccessMessageRef.current = 'Votre offre a bien été modifiée.'
       }
 
       return true
@@ -68,5 +73,5 @@ export const useSaveOfferPriceTable = ({
     }
   }
 
-  return { save }
+  return { save, pendingSuccessMessageRef }
 }

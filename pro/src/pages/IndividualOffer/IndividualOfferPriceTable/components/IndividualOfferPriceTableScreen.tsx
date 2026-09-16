@@ -86,7 +86,7 @@ export const IndividualOfferPriceTableScreen = ({
     resolver: yupResolver(PriceTableValidationSchema),
   })
 
-  const { save } = useSaveOfferPriceTable({
+  const { save, pendingSuccessMessageRef } = useSaveOfferPriceTable({
     form,
     offer,
   })
@@ -99,9 +99,14 @@ export const IndividualOfferPriceTableScreen = ({
       ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
       : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
   })
+  const afterSubmitState = () =>
+    pendingSuccessMessageRef.current
+      ? { successMessage: pendingSuccessMessageRef.current }
+      : undefined
   const { navigationGuardedSubmitHandler, navigationGuardDialog } =
     useFormNavigationGuard({
       afterSubmitPath,
+      afterSubmitState,
       form,
       onSubmit: save,
     })

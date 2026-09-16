@@ -25,18 +25,18 @@ const WelcomeStepIndividual = (): JSX.Element => {
 
       <div className={commonStyles['container']}>
         <div className={styles['cards']}>
-          <CardInfo icon={strokeEventsIcon} title="Qui réserve ?">
-            <p>
-              Les jeunes de 15 à 21 ans réservent directement via l'application
-              pass Culture.
-            </p>
-          </CardInfo>
-          <CardInfo icon={strokeEuroIcon} title="Comment ça fonctionne ?">
-            <p>
-              Les jeunes paient avec leur crédit personnel (50€ à 200€). Vous
-              recevez le paiement sous 2 à 3 semaines.
-            </p>
-          </CardInfo>
+          <CardInfo
+            icon={strokeEventsIcon}
+            title="Qui réserve ?"
+            description="Les jeunes de 15 à 21 ans réservent directement via l'application
+            pass Culture."
+          ></CardInfo>
+          <CardInfo
+            icon={strokeEuroIcon}
+            title="Comment ça fonctionne ?"
+            description="Les jeunes paient avec leur crédit personnel (50€ à 200€). Vous
+            recevez le paiement sous 2 à 3 semaines."
+          ></CardInfo>
         </div>
 
         <div className={styles['helplink']}>

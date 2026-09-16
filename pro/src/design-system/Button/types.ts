@@ -132,6 +132,8 @@ type ButtonAsRouterLinkProps = ButtonBaseProps & {
   type?: never
   to: string
   opensInNewTab?: never
+  /** Router `state` forwarded to the underlying `Link`, e.g. so the target page can read it once it takes over. */
+  state?: unknown
 } & Omit<
     React.AnchorHTMLAttributes<HTMLAnchorElement>,
     'className' | 'href' | 'style'
