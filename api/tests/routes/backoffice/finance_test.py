@@ -1,5 +1,6 @@
 import datetime
 import decimal
+from dataclasses import asdict
 from secrets import compare_digest
 from unittest.mock import patch
 
@@ -2719,9 +2720,16 @@ class ValidateSettlementBatchTest(PostEndpointHelper):
 
     @patch("pcapi.core.finance.api.validate_invoices")
     def test_validate_settlement_batch(self, mock_validate_invoices, authenticated_client):
-        batch = finance_factories.SettlementBatchFactory()
-        invoices = finance_factories.InvoiceFactory.create_batch(2, status=finance_models.InvoiceStatus.PENDING_PAYMENT)
-        settlement = finance_factories.SettlementFactory(batch=batch, invoices=invoices)
+        batch = finance_factories.SettlementBatchFactory(name="VIR123-2")
+        bank_account = offerers_factories.VenueBankAccountLinkFactory(
+            venue__bookingEmail="settlement@example.com"
+        ).bankAccount
+        invoices = finance_factories.InvoiceFactory.create_batch(
+            2, status=finance_models.InvoiceStatus.PENDING_PAYMENT, bankAccount=bank_account
+        )
+        settlement = finance_factories.SettlementFactory(
+            batch=batch, invoices=invoices, bankAccount=bank_account, amount=3150
+        )
 
         other_batch = finance_factories.SettlementBatchFactory()
         other_invoice = finance_factories.InvoiceFactory(status=finance_models.InvoiceStatus.PENDING_PAYMENT)
@@ -2744,6 +2752,15 @@ class ValidateSettlementBatchTest(PostEndpointHelper):
             f"Le lot {batch.name} a été validé. Les virements, factures et réservations sont en cours de mise à jour"
             in alerts["success"]
         )
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "settlement@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.SETTLEMENT_VALIDATED.value)
+        assert mails_testing.outbox[0]["params"] == {
+            "FORMATTED_MONTANT_REMBOURSEMENT": "31,50 €",
+            "LIBELLE_VIREMENT": "VIR123",
+            "REFERENCES_FACTURES": ", ".join(sorted([invoices[0].reference, invoices[1].reference])),
+        }
 
     def test_validate_settlement_batch_not_found(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client, batch_id=99999, expected_num_queries=3)
