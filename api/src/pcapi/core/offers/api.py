@@ -334,7 +334,6 @@ def update_offer(
     mandatory_extra_data_fields: typing.Collection[str],
     editable_fields: typing.Collection[str] | None = None,
     not_editable_fields: typing.Collection[str] = (),
-    venue: offerers_models.Venue | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
     venue_provider: providers_models.VenueProvider | None = None,
     should_send_mail: bool = False,
@@ -371,8 +370,6 @@ def update_offer(
 
     fields = {key: value for key, value in fields.items() if value is not UNCHANGED}
 
-    if venue:
-        fields["venue"] = venue
     if offerer_address:
         fields["offererAddress"] = offerer_address
 
