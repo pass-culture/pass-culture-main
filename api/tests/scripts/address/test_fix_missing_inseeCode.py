@@ -1,6 +1,7 @@
 from pcapi.core.geography.factories import AddressFactory
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers.factories import OfferLocationFactory
+from pcapi.core.offers.factories import OfferFactory
 from pcapi.models import db
 
 
@@ -55,12 +56,17 @@ def test_with_duplicate_offer_location(db_session):
         timezone=address.timezone,
     )
     location = OfferLocationFactory(address=address)
-    OfferLocationFactory(address=good_address, offerer=location.offerer, venue=location.venue, label=location.label)
+    good_location = OfferLocationFactory(
+        address=good_address, offerer=location.offerer, venue=location.venue, label=location.label
+    )
+    offer = OfferFactory(offererAddress=location, venue=location.venue)
     assert location.addressId == address.id
     from pcapi.scripts.address.main import main
 
     main(apply=False)
     main(apply=True)
+    main(apply=True)
 
-    assert db.session.query(Address).filter(Address.city == "Perceval").count() == 2
-    assert location.addressId == address.id
+    assert db.session.query(Address).filter(Address.city == "Perceval").count() == 1
+    assert offer.offererAddressId == good_location.id
+    assert not db.session.query(Address).filter(Address.id == address.id).one_or_none()
