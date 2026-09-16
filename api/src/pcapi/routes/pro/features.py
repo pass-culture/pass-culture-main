@@ -22,6 +22,7 @@ PRO_FEATURES = (
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS,
     FeatureToggle.WIP_IMGPROXY_PRO,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
+    FeatureToggle.WIP_HOME_STATS_V2,
 )
 
 
