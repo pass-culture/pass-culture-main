@@ -79,7 +79,7 @@ def get_jwt_token() -> str:
 
 def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
     try:
-        url = f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean13}"
+        url = f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean13}?base=paper"
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {get_jwt_token()}"}
         response = requests.get(url, headers=headers)
     except requests.exceptions.Timeout:

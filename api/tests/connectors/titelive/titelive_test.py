@@ -24,7 +24,7 @@ class TiteliveTest:
         )
         if "ean" in kwargs:
             requests_mock.get(
-                f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{kwargs['ean']}",
+                f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{kwargs['ean']}?base=paper",
                 json=kwargs.get("fixture", fixtures.BOOK_BY_SINGLE_EAN_FIXTURE),
             )
 
