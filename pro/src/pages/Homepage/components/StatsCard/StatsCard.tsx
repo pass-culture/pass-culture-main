@@ -25,6 +25,7 @@ import { Card } from '@/ui-kit/Card/Card'
 
 import { CumulatedViews } from './components/CumulatedViews'
 import { MostViewedOffers } from './components/MostViewedOffers'
+import { OldMostViewedOffers } from './components/OldMostViewedOffers'
 import styles from './StatsCard.module.scss'
 
 interface StatsCardProps {
@@ -70,7 +71,9 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
             totalViewsLast30Days={totalViewsLast30Days}
             showTitle={false}
           />
-          {topOffers.length > 0 && <MostViewedOffers topOffers={topOffers} />}
+          {topOffers.length > 0 && (
+            <OldMostViewedOffers topOffers={topOffers} />
+          )}
         </div>
       </Card.Content>
     </Card>
