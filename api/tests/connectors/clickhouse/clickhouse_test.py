@@ -110,3 +110,57 @@ class OfferCumulativeViewCountsTest:
         empty = clickhouse_queries.OfferCumulativeViewCounts([])
         assert empty.count_at(datetime.datetime(2026, 1, 1)) is None
         assert empty.count_on_period(datetime.datetime(2026, 1, 1), datetime.datetime(2026, 3, 1)) is None
+
+
+class VenueTopOffersByPeriodQueryTest:
+    def test_venue_top_offers_by_period_query(self):
+        results = clickhouse_queries.VenueTopOffersByPeriodQuery().execute({"venue_id": 1})
+
+        assert len(results) == 4
+
+        first_offer = results[0]
+        assert first_offer.offer_id == "1"
+        assert first_offer.consultation_cnt_3m == 150
+        assert first_offer.consultation_cnt_6m == 300
+        assert first_offer.rank_3m == 1
+        assert first_offer.rank_6m == 1
+
+        second_offer = results[1]
+        assert second_offer.offer_id == "2"
+        assert second_offer.consultation_cnt_3m == 120
+        assert second_offer.consultation_cnt_6m == 200
+        assert second_offer.rank_3m == 2
+        assert second_offer.rank_6m == 3
+
+        third_offer = results[2]
+        assert third_offer.offer_id == "3"
+        assert third_offer.consultation_cnt_3m == 100
+        assert third_offer.consultation_cnt_6m == 250
+        assert third_offer.rank_3m == 3
+        assert third_offer.rank_6m == 2
+
+        fourth_offer = results[3]
+        assert fourth_offer.offer_id == "4"
+        assert fourth_offer.consultation_cnt_3m is None
+        assert fourth_offer.consultation_cnt_6m == 180
+        assert fourth_offer.rank_3m is None
+        assert fourth_offer.rank_6m == 4
+
+
+class VenueOffersViewsByMonthQueryTest:
+    def test_venue_offers_views_by_month_query(self):
+        results = clickhouse_queries.VenueOffersViewsByMonthQuery().execute({"venue_id": 1})
+
+        assert len(results) == 6
+        assert results[0].month == datetime.date(2026, 4, 1)
+        assert results[0].views == 10
+        assert results[1].month == datetime.date(2026, 5, 1)
+        assert results[1].views == 20
+        assert results[2].month == datetime.date(2026, 6, 1)
+        assert results[2].views == 30
+        assert results[3].month == datetime.date(2026, 7, 1)
+        assert results[3].views == 40
+        assert results[4].month == datetime.date(2026, 8, 1)
+        assert results[4].views == 50
+        assert results[5].month == datetime.date(2026, 9, 1)
+        assert results[5].views == 60
