@@ -18,6 +18,7 @@ import schwifty
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from dateutil.relativedelta import relativedelta
 
 import pcapi.connectors.acceslibre as accessibility_provider
 import pcapi.connectors.thumb_storage as storage
@@ -2175,6 +2176,94 @@ def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
         daily_views=[DailyViewsModel(day=row.day, views=row.views) for row in sorted_daily_views],
         total_views_last_30_days=views_count[0].total if len(views_count) > 0 else 0,
         top_offers=[OfferViewsModel(offer_id=row.id, views=row.views, rank=row.rank) for row in top_offers],
+    )
+
+
+@dataclasses.dataclass
+class MonthlyViewsModel:
+    month: date
+    views: int
+
+
+@dataclasses.dataclass
+class TopOfferModel:
+    offer: offers_models.Offer
+    views: int
+    rank: int
+
+    @property
+    def offer_id(self) -> int:
+        return self.offer.id
+
+    @property
+    def name(self) -> str:
+        return self.offer.name
+
+    @property
+    def is_headline_offer(self) -> bool:
+        return self.offer.is_headline_offer
+
+    @property
+    def image(self) -> offers_models.OfferImage | None:
+        return self.offer.image
+
+
+@dataclasses.dataclass
+class VenueOffersPeriodStatisticsModel:
+    top_offers: list[TopOfferModel]
+    cumulated_views: int
+    views_by_month: list[MonthlyViewsModel]
+
+
+@dataclasses.dataclass
+class VenueOffersStatisticsV2Model:
+    venue_id: int
+    last_3_months: VenueOffersPeriodStatisticsModel
+    last_6_months: VenueOffersPeriodStatisticsModel
+
+
+def _get_views_by_month(rows: list[clickhouse_queries.VenueOffersViewsByMonthModel]) -> list[MonthlyViewsModel]:
+    current_month = date.today().replace(day=1)
+    last_6_months = [current_month - relativedelta(months=delta) for delta in reversed(range(6))]
+    views_per_month = {row.month: row.views for row in rows}
+    return [MonthlyViewsModel(month=month, views=views_per_month.get(month, 0)) for month in last_6_months]
+
+
+def _get_top_offers_views(venue_id: int, months: int) -> list[OfferViewsModel]:
+    rows = clickhouse_queries.VenueTopOffersByPeriodQuery(months=months).execute({"venue_id": str(venue_id)})
+    return [OfferViewsModel(offer_id=row.offer_id, views=row.views, rank=row.rank) for row in rows]
+
+
+def _build_period_statistics(
+    top_offers_views: list[OfferViewsModel],
+    offers_mapping: dict[OfferViewsModel, offers_models.Offer],
+    views_by_month: list[MonthlyViewsModel],
+) -> VenueOffersPeriodStatisticsModel:
+    return VenueOffersPeriodStatisticsModel(
+        top_offers=[
+            TopOfferModel(offer=offers_mapping[top_offer], views=top_offer.views, rank=top_offer.rank)
+            for top_offer in top_offers_views
+            if top_offer in offers_mapping
+        ],
+        cumulated_views=sum(row.views for row in views_by_month),
+        views_by_month=views_by_month,
+    )
+
+
+def get_venue_offers_statistics_v2(venue_id: int) -> VenueOffersStatisticsV2Model:
+    top_offers_3_months = _get_top_offers_views(venue_id=venue_id, months=3)
+    top_offers_6_months = _get_top_offers_views(venue_id=venue_id, months=6)
+    views_by_month_rows = clickhouse_queries.VenueOffersViewsByMonthQuery().execute({"venue_id": str(venue_id)})
+
+    offers_mapping = map_top_offers_to_existing_offers({*top_offers_3_months, *top_offers_6_months})
+
+    views_by_month_6_months = _get_views_by_month(views_by_month_rows)
+    views_by_month_3_months = views_by_month_6_months[-3:]
+
+    return VenueOffersStatisticsV2Model(
+        venue_id=venue_id,
+        last_3_months=_build_period_statistics(top_offers_3_months, offers_mapping, views_by_month_3_months),
+        last_6_months=_build_period_statistics(top_offers_6_months, offers_mapping, views_by_month_6_months),
     )
 
 

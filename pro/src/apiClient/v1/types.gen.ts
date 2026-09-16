@@ -3313,6 +3313,18 @@ export type GetVenueManagingOffererResponseModel = {
 };
 
 /**
+ * GetVenueOffersStatsV2ResponseModel
+ */
+export type GetVenueOffersStatsV2ResponseModel = {
+    last3Months: VenueOffersPeriodStatsModel;
+    last6Months: VenueOffersPeriodStatsModel;
+    /**
+     * Venueid
+     */
+    venueId: number;
+};
+
+/**
  * GetVenuePricingPointResponseModel
  */
 export type GetVenuePricingPointResponseModel = {
@@ -6610,6 +6622,29 @@ export type ThingStocksBulkUpsertBodyModel = {
 };
 
 /**
+ * TopOfferResponseModel
+ */
+export type TopOfferResponseModel = {
+    image: OfferImage | null;
+    /**
+     * Isheadlineoffer
+     */
+    isHeadlineOffer: boolean;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Offerid
+     */
+    offerId: number;
+    /**
+     * Views
+     */
+    views: number;
+};
+
+/**
  * TopOffersResponseData
  */
 export type TopOffersResponseData = {
@@ -6877,6 +6912,20 @@ export type VenueListItemLiteResponseModel = {
 };
 
 /**
+ * VenueMonthlyViewModel
+ */
+export type VenueMonthlyViewModel = {
+    /**
+     * Month
+     */
+    month: string;
+    /**
+     * Views
+     */
+    views: number;
+};
+
+/**
  * VenueOfOffererFromSiretResponseModel
  */
 export type VenueOfOffererFromSiretResponseModel = {
@@ -6900,6 +6949,24 @@ export type VenueOfOffererFromSiretResponseModel = {
      * Siret
      */
     siret?: string | null;
+};
+
+/**
+ * VenueOffersPeriodStatsModel
+ */
+export type VenueOffersPeriodStatsModel = {
+    /**
+     * Cumulatedviews
+     */
+    cumulatedViews: number;
+    /**
+     * Topoffers
+     */
+    topOffers: Array<TopOfferResponseModel>;
+    /**
+     * Viewsbymonth
+     */
+    viewsByMonth: Array<VenueMonthlyViewModel>;
 };
 
 /**
@@ -11498,6 +11565,37 @@ export type getVenuesByVenueIdOffersStatisticsResponses = {
 };
 
 export type getVenuesByVenueIdOffersStatisticsResponse = getVenuesByVenueIdOffersStatisticsResponses[keyof getVenuesByVenueIdOffersStatisticsResponses];
+
+export type getVenuesByVenueIdOffersStatisticsV2Data = {
+    body?: never;
+    path: {
+        venue_id: number;
+    };
+    query?: never;
+    url: '/venues/{venue_id}/offers-statistics-v2';
+};
+
+export type getVenuesByVenueIdOffersStatisticsV2Errors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getVenuesByVenueIdOffersStatisticsV2Error = getVenuesByVenueIdOffersStatisticsV2Errors[keyof getVenuesByVenueIdOffersStatisticsV2Errors];
+
+export type getVenuesByVenueIdOffersStatisticsV2Responses = {
+    /**
+     * OK
+     */
+    200: GetVenueOffersStatsV2ResponseModel;
+};
+
+export type getVenuesByVenueIdOffersStatisticsV2Response = getVenuesByVenueIdOffersStatisticsV2Responses[keyof getVenuesByVenueIdOffersStatisticsV2Responses];
 
 export type postVenuesByVenueIdPricingPointData = {
     body: LinkVenueToPricingPointBodyModel;
