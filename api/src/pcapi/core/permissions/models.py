@@ -117,6 +117,8 @@ class Permissions(enum.Enum):
     MANAGE_ACCOUNT_TAGS = "gérer les tags jeunes et créer des catégories"
     MANAGE_ACCOUNT_TAGS_N2 = "supprimer un tag jeune"
 
+    READ_TECH_LOGS = "Explorer et lire les logs techniques"
+
     @classmethod
     def exists(cls, name: str) -> bool:
         try:

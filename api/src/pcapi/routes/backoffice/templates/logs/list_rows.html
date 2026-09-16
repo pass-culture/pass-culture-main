@@ -1,0 +1,79 @@
+{% from "components/dynamic/spinner.html" import build_loading_spinner %}
+{% from "components/links.html" import build_public_user_name_to_details_link %}
+{% for log in logs %}
+  <tr id="insert-id-{{ log.insert_id }}">
+    <td>{{ log.insert_id }}</td>
+    <td>{{ log.severity | format_log_severity }}</td>
+    <td>{{ log.timestamp | format_timestamp }}</td>
+    {% if log.user_id in users %}
+      <td>{{ build_public_user_name_to_details_link(users[log.user_id]) }}</td>
+    {% else %}
+      <td>{{ log.user_id | empty_string_if_null }}</td>
+    {% endif %}
+    {% if log.impersonator_id in users %}
+      <td>{{ build_public_user_name_to_details_link(users[log.impersonator_id]) }}</td>
+    {% else %}
+      <td>{{ log.impersonator_id | empty_string_if_null }}</td>
+    {% endif %}
+    <td>{{ log.text }}</td>
+    <td>
+      <button class="btn btn-light"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#extra-{{ log.insert_id }}">
+        <i class="bi bi-zoom-in"></i>
+      </button>
+      <div class="modal modal-lg fade text-start"
+           id="extra-{{ log.insert_id }}"
+           tabindex="-1"
+           aria-labelledby="view-technical-details"
+           aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Log extra</h5>
+            </div>
+            <div class="modal-body">
+              <div class="form-floating my-3">
+                <pre>
+                 <code><br />{{ log.extra  | tojson(indent=4) | empty_string_if_null }}</code>
+                </pre>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button"
+                      class="btn btn-outline-primary-subtle-bg"
+                      data-bs-dismiss="modal">Fermer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </td>
+  </tr>
+{% endfor %}
+<tr id="token-{{ token }}"
+    class="border-0">{# hide previous button #}</tr>
+<tr id="token-{{ next_page_token }}"
+    class="border-bottom-0">
+  <td colspan="6"
+      class="border-bottom-0">
+    <div class="d-flex justify-content-center w100">
+      {% if auto_next %}
+        <div id="spin-{{ next_page_token }}"
+             hx-get="{{ url_for('backoffice.logs.list_logs_rows', search_token=next_page_token) }}"
+             hx-trigger="load">{{ build_loading_spinner() }}</div>
+      {% else %}
+        <button id="btn-{{ next_page_token }}"
+                class="btn py-2 px-3 btn-primary"
+                hx-get="{{ url_for('backoffice.logs.list_logs_rows', search_token=next_page_token) }}"
+                hx-trigger="click"
+                {# TODO dirty solution to hide the button should make a better generic one #}
+                onclick="document.getElementById('btn-{{ next_page_token }}').classList.add('d-none'); document.getElementById('spin-{{ next_page_token }}').classList.remove('d-none')">
+          Plus de résultats
+        </button>
+        <div id="spin-{{ next_page_token }}"
+             class="d-none">{{ build_loading_spinner() }}</div>
+      {% endif %}
+    </div>
+  </td>
+</tr>

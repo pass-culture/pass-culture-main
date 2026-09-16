@@ -38,6 +38,7 @@ class TokenType(enum.Enum):
     DISCORD_OAUTH = "discord_oauth"
     PASSWORDLESS_LOGIN = "passwordless_login"
     CONNECT_AS = "connect_as"
+    LOG_SEARCH = "log_search"
 
 
 @dataclasses.dataclass(frozen=True)
