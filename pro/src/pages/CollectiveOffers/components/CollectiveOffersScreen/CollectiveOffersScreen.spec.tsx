@@ -204,8 +204,8 @@ describe('CollectiveOffersScreen', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
-    const eventPeriodSelect = screen.queryAllByLabelText(/période/)
-    expect(eventPeriodSelect).toHaveLength(2)
+    expect(screen.getByLabelText(/Date de début/)).toBeVisible()
+    expect(screen.getByLabelText(/Date de fin/)).toBeVisible()
   })
 
   it('should display status checkboxes on press status filter', async () => {

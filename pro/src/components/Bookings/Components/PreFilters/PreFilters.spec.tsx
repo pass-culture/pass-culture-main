@@ -85,14 +85,12 @@ describe('filter bookings by bookings period', () => {
 
   it('should select 30 days before today as period beginning date by default', () => {
     renderPreFilters(props)
-    expect(screen.getByLabelText('Début de la période')).toHaveValue(
-      '2020-11-15'
-    )
+    expect(screen.getByLabelText('Date de début')).toHaveValue('2020-11-15')
   })
 
   it('should select today as period ending date by default', () => {
     renderPreFilters(props)
-    expect(screen.getByLabelText('Fin de la période')).toHaveValue('2020-12-15')
+    expect(screen.getByLabelText('Date de fin')).toHaveValue('2020-12-15')
   })
 
   it('should allow to select booking status filter', async () => {
@@ -119,10 +117,8 @@ describe('filter bookings by bookings period', () => {
     const offererAddressInput = screen.getByLabelText('Localisation')
     await user.selectOptions(offererAddressInput, '21')
 
-    const periodBeginningDateInput = screen.getByLabelText(
-      'Début de la période'
-    )
-    const periodEndingDateInput = screen.getByLabelText('Fin de la période')
+    const periodBeginningDateInput = screen.getByLabelText('Date de début')
+    const periodEndingDateInput = screen.getByLabelText('Date de fin')
 
     await user.clear(periodBeginningDateInput)
     await user.type(periodBeginningDateInput, '2020-12-01')

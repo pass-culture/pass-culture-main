@@ -272,8 +272,8 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Localisation'),
       venueAddress[0].id.toString()
     )
-    const beginningPeriodInput = screen.getByLabelText('Début de la période')
-    const endingPeriodInput = screen.getByLabelText('Fin de la période')
+    const beginningPeriodInput = screen.getByLabelText('Date de début')
+    const endingPeriodInput = screen.getByLabelText('Date de fin')
     expect(beginningPeriodInput).toHaveDisplayValue(['2020-05-16'])
     expect(endingPeriodInput).toHaveDisplayValue(['2020-06-15'])
 
@@ -499,8 +499,8 @@ describe('components | BookingsRecap | Pro user', () => {
     renderBookingsRecap()
     await waitForCompleteLoading()
 
-    const beginningPeriodInput = screen.getByLabelText('Début de la période')
-    const endingPeriodInput = screen.getByLabelText('Fin de la période')
+    const beginningPeriodInput = screen.getByLabelText('Date de début')
+    const endingPeriodInput = screen.getByLabelText('Date de fin')
 
     await userEvent.clear(beginningPeriodInput)
     await userEvent.clear(endingPeriodInput)

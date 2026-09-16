@@ -315,9 +315,11 @@ describe('IndividualOffersScreen', () => {
       creationMode: 'imported',
     })
 
-    expect(screen.getByText(/Période de l’évènement/)).toBeInTheDocument()
+    expect(screen.getByLabelText('Date de début')).toBeInTheDocument()
+    expect(screen.getByLabelText('Date de fin')).toBeInTheDocument()
 
-    const [beginningDate, endingDate] = screen.queryAllByLabelText(/période/)
+    const beginningDate = screen.getByLabelText('Date de début')
+    const endingDate = screen.getByLabelText('Date de fin')
     await userEvent.type(beginningDate, '2025-02-02')
     await userEvent.type(endingDate, '2025-02-03')
     expect(beginningDate).toHaveValue('2025-02-02')
@@ -382,7 +384,7 @@ describe('IndividualOffersScreen', () => {
     expect(addressSelect).not.toBeDisabled()
 
     const addressOptions = addressSelect.querySelectorAll('option')
-    expect(addressOptions.length).toBe(expectedSelectOptions.length)
+    expect(addressOptions).toHaveLength(expectedSelectOptions.length)
   })
 
   it('should render creation mode filter with given creation mode selected', async () => {
@@ -430,8 +432,8 @@ describe('IndividualOffersScreen', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
-    const eventPeriodSelect = screen.queryAllByLabelText(/période/)
-    expect(eventPeriodSelect).toHaveLength(2)
+    expect(screen.getByLabelText('Date de début')).toBeVisible()
+    expect(screen.getByLabelText('Date de fin')).toBeVisible()
   })
 
   it('should not display status filters modal', async () => {
