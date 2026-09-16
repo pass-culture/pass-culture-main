@@ -14,6 +14,7 @@
   overflow-y: auto;
   position: fixed;
   bottom: 0;
+  left: 0;
 
   @media screen and (prefers-reduced-motion: no-preference) and (max-width: size.$tablet) {
     animation: slide-in-up 500ms;
