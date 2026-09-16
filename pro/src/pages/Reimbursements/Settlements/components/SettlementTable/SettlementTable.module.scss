@@ -32,3 +32,9 @@
 .cell-header {
   @include fonts.body-accent-xs;
 }
+
+.cell-rejected {
+  @include fonts.body-xs;
+
+  color: var(--color-text-subtle);
+}
