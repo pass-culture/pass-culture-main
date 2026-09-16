@@ -36,6 +36,7 @@ dependencies = [
   "google-auth==2.59.1",
   "google-cloud-bigquery==3.45.2",
   "google-cloud-iam==2.25.0",
+  "google-cloud-logging==3.16.3",
   "google-cloud-secret-manager>=2.30.0",
   "google-cloud-storage==3.15.1",
   "googleapis-common-protos==1.75.5",
