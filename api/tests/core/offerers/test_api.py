@@ -4825,7 +4825,7 @@ class GetVenueOffersStatisticsV2Test:
 
         offerers_api.get_venue_offers_statistics_v2(venue_id=12)
 
-        mock_map_top_offers.assert_called_once_with({*top_offers_3_months, *top_offers_6_months})
+        mock_map_top_offers.assert_called_once_with({*top_offers_3_months, *top_offers_6_months}, 12)
 
     @patch("pcapi.core.offerers.api._get_views_by_month", return_value=[])
     @patch("pcapi.connectors.clickhouse.queries.VenueOffersViewsByMonthQuery.execute")
