@@ -18,6 +18,7 @@ interface CardHeaderProps {
   titleClassName?: string
   subtitleClassName?: string
   icon?: string
+  children?: ReactNode
 }
 
 interface CardContentProps {
@@ -44,6 +45,7 @@ const CardHeader = ({
   titleClassName,
   subtitleClassName,
   icon,
+  children,
 }: CardHeaderProps) => (
   <div
     className={cn(
@@ -55,14 +57,17 @@ const CardHeader = ({
   >
     {icon && <SvgIcon src={icon} className={styles['card-header-icon']} />}
     <div className={styles['card-header']}>
-      <TitleTag className={cn(styles['card-title'], titleClassName)}>
-        {title}
-      </TitleTag>
-      {subtitle && (
-        <p className={cn(styles['card-subtitle'], subtitleClassName)}>
-          {subtitle}
-        </p>
-      )}
+      <div className={styles['card-title-wrapper']}>
+        <TitleTag className={cn(styles['card-title'], titleClassName)}>
+          {title}
+        </TitleTag>
+        {subtitle && (
+          <p className={cn(styles['card-subtitle'], subtitleClassName)}>
+            {subtitle}
+          </p>
+        )}
+      </div>
+      {children}
     </div>
   </div>
 )
