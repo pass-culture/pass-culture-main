@@ -5,8 +5,8 @@ import { axe } from 'vitest-axe'
 
 import {
   InvoiceStatus,
+  SettlementDisplayedStatus,
   type SettlementResponseModel,
-  SettlementStatus,
 } from '@/apiClient/v1'
 import * as useMediaQueryModule from '@/commons/hooks/useMediaQuery'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
@@ -46,7 +46,7 @@ const baseSettlement = {
   label: 'VIR001',
   date: '2024-06-01',
   bankAccount: 'Compte principal',
-  status: SettlementStatus.EXECUTED,
+  status: SettlementDisplayedStatus.EXECUTED,
   amount: 150,
   invoices: [
     {
@@ -71,6 +71,7 @@ const baseSettlement = {
       status: InvoiceStatus.PAID,
     },
   ],
+  resolvedBy: [],
 } as SettlementResponseModel
 
 const renderSettlementTable = (
@@ -124,7 +125,7 @@ describe('<SettlementTable />', () => {
   it('renders the rejected settlement differently', () => {
     renderSettlementTable({
       settlements: [
-        { ...baseSettlement, status: SettlementStatus.REJECTED },
+        { ...baseSettlement, status: SettlementDisplayedStatus.REJECTED },
       ] as never,
     })
 
@@ -133,7 +134,46 @@ describe('<SettlementTable />', () => {
       screen.queryByRole('button', { name: 'Voir plus' })
     ).not.toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Remplacer le compte' })
+      screen.getByRole('link', { name: 'Remplacer le compte' })
+    ).toBeVisible()
+  })
+
+  it('renders the rejected processed settlement differently', () => {
+    renderSettlementTable({
+      settlements: [
+        {
+          ...baseSettlement,
+          status: SettlementDisplayedStatus.REJECTED_PROCESSED,
+        },
+      ] as never,
+    })
+
+    expect(screen.queryByRole('cell', { name: '3' })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Voir plus' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('cell', { name: 'En attente de réémission' })
+    ).toBeVisible()
+  })
+
+  it('renders the rejected solved settlement differently', () => {
+    renderSettlementTable({
+      settlements: [
+        {
+          ...baseSettlement,
+          status: SettlementDisplayedStatus.REJECTED_SOLVED,
+          resolvedBy: ['VIR1', 'VIR2'],
+        },
+      ] as never,
+    })
+
+    expect(screen.queryByRole('cell', { name: '3' })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Voir plus' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('cell', { name: 'Voir VIR1, VIR2' })
     ).toBeVisible()
   })
 

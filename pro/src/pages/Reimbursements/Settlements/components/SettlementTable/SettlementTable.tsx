@@ -3,9 +3,9 @@ import { format } from 'date-fns'
 import { useState } from 'react'
 
 import {
+  SettlementDisplayedStatus,
   type SettlementListResponseModel,
   type SettlementResponseModel,
-  SettlementStatus,
 } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
@@ -95,6 +95,11 @@ function getEmptyStateMessage(hasBankAccount: boolean) {
 const getSettlementDateLabel = (settlement: ExtendedSettlementResponseModel) =>
   settlement.date ? format(new Date(settlement.date), FORMAT_DD_MM_YYYY) : '-'
 
+const getResolvedByLabel = (settlement: ExtendedSettlementResponseModel) =>
+  settlement.resolvedBy.length > 0
+    ? `Voir ${settlement.resolvedBy.join(', ')}`
+    : null
+
 export const SettlementTable = ({
   settlements,
   isLoading,
@@ -180,7 +185,7 @@ export const SettlementTable = ({
       sortable: true,
       ordererField: 'invoicesCount',
       render: (settlement) =>
-        settlement.status === SettlementStatus.EXECUTED &&
+        settlement.status === SettlementDisplayedStatus.EXECUTED &&
         settlement.invoicesCount,
     },
     {
@@ -188,25 +193,53 @@ export const SettlementTable = ({
       label: 'Actions',
       render: (settlement) => (
         <div className={styles['cell-actions']}>
-          {settlement.status === SettlementStatus.EXECUTED &&
-            settlement.invoicesCount > 0 && (
+          {
+            // EXECUTED -> display a button to show the invoices
+            settlement.status === SettlementDisplayedStatus.EXECUTED &&
+              settlement.invoicesCount > 0 && (
+                <Button
+                  label="Voir plus"
+                  variant={ButtonVariant.TERTIARY}
+                  size={ButtonSize.SMALL}
+                  color={ButtonColor.NEUTRAL}
+                  iconPosition={IconPositionEnum.RIGHT}
+                  icon={fullDownIcon}
+                  onClick={() => toggleRowToDisplay(settlement)}
+                />
+              )
+          }
+
+          {
+            // REJECTED -> link to the bank accounts tab
+            settlement.status === SettlementDisplayedStatus.REJECTED && (
               <Button
-                label="Voir plus"
-                variant={ButtonVariant.TERTIARY}
+                as="router-link"
+                variant={ButtonVariant.PRIMARY}
+                to="/administration/remboursements/informations-bancaires"
+                label="Remplacer le compte"
                 size={ButtonSize.SMALL}
-                color={ButtonColor.NEUTRAL}
-                iconPosition={IconPositionEnum.RIGHT}
-                icon={fullDownIcon}
-                onClick={() => toggleRowToDisplay(settlement)}
               />
-            )}
-          {settlement.status !== SettlementStatus.EXECUTED && (
-            <Button
-              label="Remplacer le compte"
-              size={ButtonSize.SMALL}
-              disabled // TODO(mdesquilbet, 02/09/2026): to remove when resolving incidents
-            />
-          )}
+            )
+          }
+
+          {
+            // REJECTED_PROCESSED -> link to the bank accounts tab
+            settlement.status ===
+              SettlementDisplayedStatus.REJECTED_PROCESSED && (
+              <p className={styles['cell-rejected']}>
+                En attente de réémission
+              </p>
+            )
+          }
+
+          {
+            // REJECTED_SOLVED -> link to the bank accounts tab
+            settlement.status === SettlementDisplayedStatus.REJECTED_SOLVED && (
+              <p className={styles['cell-rejected']}>
+                {getResolvedByLabel(settlement)}
+              </p>
+            )
+          }
         </div>
       ),
       header: (

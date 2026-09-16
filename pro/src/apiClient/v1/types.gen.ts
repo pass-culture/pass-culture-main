@@ -5826,6 +5826,16 @@ export type SaveNewOnboardingDataQueryModel = {
 };
 
 /**
+ * SettlementDisplayedStatus
+ */
+export enum SettlementDisplayedStatus {
+    EXECUTED = 'EXECUTED',
+    REJECTED = 'REJECTED',
+    REJECTED_PROCESSED = 'REJECTED_PROCESSED',
+    REJECTED_SOLVED = 'REJECTED_SOLVED'
+}
+
+/**
  * SettlementListQueryModel
  */
 export type SettlementListQueryModel = {
@@ -5884,19 +5894,12 @@ export type SettlementResponseModel = {
      * Label
      */
     label: string;
-    status: SettlementStatus;
+    /**
+     * Resolvedby
+     */
+    resolvedBy: Array<string>;
+    status: SettlementDisplayedStatus;
 };
-
-/**
- * SettlementStatus
- *
- * A settlement is issued when imported, then is executed, and eventually rejected
- */
-export enum SettlementStatus {
-    ISSUED = 'issued',
-    EXECUTED = 'executed',
-    REJECTED = 'rejected'
-}
 
 /**
  * SharedCurrentUserResponseModel

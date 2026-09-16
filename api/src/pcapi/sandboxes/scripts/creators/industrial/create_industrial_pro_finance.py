@@ -134,6 +134,11 @@ def create_various_settlements(user: users_models.User) -> None:
         amount=30000,
         bankAccount=refused_bank_account,
         batch=batch_4,
+        invoices=[
+            factories.InvoiceFactory.create(
+                amount=-30000, bankAccount=refused_bank_account, date=batch_4.dateValidated
+            ),
+        ],
     )
 
 
@@ -221,7 +226,7 @@ def create_rejected_processed_solved_settlements(user: users_models.User) -> Non
     new_batch = factories.SettlementBatchFactory.create(name="VIR13", dateValidated=now - datetime.timedelta(days=3))
     factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
-        amount=10000,
+        amount=5000,
         bankAccount=new_bank_account,
         batch=new_batch,
         invoices=[invoice_2],
