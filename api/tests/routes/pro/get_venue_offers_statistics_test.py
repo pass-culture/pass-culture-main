@@ -122,24 +122,26 @@ class GetVenueOfferStatisticsTest:
 
 class GetOffersWithHeadlinesAndMediationsTest:
     def test_get_offers_with_their_mediations_and_headline_offers(self):
-        offer_with_mediation_and_headline = offers_factories.OfferFactory()
+        venue = offerers_factories.VenueFactory()
+        offer_with_mediation_and_headline = offers_factories.OfferFactory(venue=venue)
         # builds both headline offer and mediation
         offers_factories.HeadlineOfferFactory(offer=offer_with_mediation_and_headline)
 
         product_mediation = offers_factories.ProductMediationFactory()
-        offer_with_product_mediation = offers_factories.OfferFactory(product=product_mediation.product)
+        offer_with_product_mediation = offers_factories.OfferFactory(venue=venue, product=product_mediation.product)
 
-        offer_with_nothing_more = offers_factories.OfferFactory()
+        offer_with_nothing_more = offers_factories.OfferFactory(venue=venue)
 
         offers = {offer_with_mediation_and_headline, offer_with_product_mediation, offer_with_nothing_more}
         offer_ids = {o.id for o in offers}
+        venue_id = venue.id
 
         # fetch offers
         # fetch offers' mediations
         # fetch offers' products' mediations
         # fetch offers' headline offers information
         with assert_num_queries(4):
-            res = offers_repository.get_offers_with_headlines_and_mediations(offer_ids)
+            res = offers_repository.get_offers_with_headlines_and_mediations(offer_ids, venue_id=venue_id)
             assert {o.id for o in res} == offer_ids
             assert len(res) == len(offers)
 
@@ -155,3 +157,14 @@ class GetOffersWithHeadlinesAndMediationsTest:
                 else:
                     assert not offer.headlineOffers
                     assert not offer.mediations
+
+    def test_another_venue_offer_is_not_returned(self):
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.OfferFactory(venue=venue)
+        another_venue_offer = offers_factories.OfferFactory()
+
+        res = offers_repository.get_offers_with_headlines_and_mediations(
+            [offer.id, another_venue_offer.id], venue_id=venue.id
+        )
+
+        assert [o.id for o in res] == [offer.id]

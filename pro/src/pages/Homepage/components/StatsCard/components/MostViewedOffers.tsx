@@ -1,7 +1,9 @@
 import cn from 'classnames'
 import { useId } from 'react'
+import { Link } from 'react-router'
 
-import type { TopOffersResponseData } from '@/apiClient/v1'
+import type { TopOfferResponseModel } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -11,20 +13,32 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import strokeOfferIcon from '@/icons/stroke-offer.svg'
+import strokeSignalIcon from '@/icons/stroke-signal.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './MostViewedOffers.module.scss'
 
 export interface MostViewedOffersProps {
-  topOffers: TopOffersResponseData[]
+  topOffers: TopOfferResponseModel[]
+  hasActiveIndividualOffer: boolean
 }
 
-export const MostViewedOffers = ({ topOffers }: MostViewedOffersProps) => {
+export const MostViewedOffers = ({
+  topOffers,
+  hasActiveIndividualOffer,
+}: MostViewedOffersProps) => {
   const titleId = useId()
+  const { logEvent } = useAnalytics()
 
   return (
-    <section className={styles.container} aria-labelledby={titleId}>
-      <h3 id={titleId} className={styles.title}>
+    <section
+      className={cn(styles.container, {
+        [styles['has-empty-state']]:
+          !hasActiveIndividualOffer || topOffers.length === 0,
+      })}
+      aria-labelledby={titleId}
+    >
+      <p id={titleId} className={styles.title}>
         Top offres
       </p>
       {!hasActiveIndividualOffer || topOffers.length === 0 ? (

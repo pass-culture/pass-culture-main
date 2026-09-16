@@ -8,6 +8,7 @@ import {
   ButtonSize,
   ButtonVariant,
 } from 'design-system/Button/types'
+import { useState } from 'react'
 import useSWR from 'swr'
 import { Select } from 'ui-kit/form/Select/Select'
 import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
@@ -35,6 +36,9 @@ interface StatsCardProps {
 export const StatsCard = ({ venue }: StatsCardProps) => {
   const isStatsV2 = useActiveFeature('WIP_HOME_STATS_V2')
   const { logEvent } = useAnalytics()
+  const [statsPeriod, setStatsPeriod] = useState<'last3Months' | 'last6Months'>(
+    'last3Months'
+  )
 
   const { data: oldStats } = useSWR(
     [GET_VENUES_STATS_QUERY_KEY, venue.id],
@@ -49,13 +53,14 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
       })
   )
 
-  const dailyViews = oldStats?.jsonData.dailyViews ?? []
+  const dailyViews = oldStats?.jsonData?.dailyViews ?? []
 
-  if (!oldStats || dailyViews.length < 2) {
+  if (!isStatsV2 && (!oldStats || dailyViews.length < 2)) {
     return null
   }
 
-  const { topOffers, totalViewsLast30Days } = oldStats.jsonData
+  const { topOffers = [], totalViewsLast30Days = 0 } = oldStats?.jsonData ?? {}
+  const periodStats = stats?.[statsPeriod]
 
   const oldStatsComponent = (
     <Card>
@@ -93,19 +98,18 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
                 { value: 'last3Months', label: '3 derniers mois' },
                 { value: 'last6Months', label: '6 derniers mois' },
               ]}
-              onChange={(event) =>
-                logEvent(HomepageEvents.CHANGED_STATS_V2_PERIOD, {
-                  period: event.target.value,
-                })
-              }
+              value={statsPeriod}
+              onChange={(event) => {
+                const period = event.target.value as
+                  | 'last3Months'
+                  | 'last6Months'
+                setStatsPeriod(period)
+                logEvent(HomepageEvents.CHANGED_STATS_V2_PERIOD, { period })
+              }}
             />
           </Card.Header>
           <Card.Content>
-            <div
-              className={cn(styles['stats-wrapper'], {
-                [styles['has-top-offers']]: topOffers.length > 0,
-              })}
-            >
+            <div className={styles['stats-wrapper']}>
               <div>
                 <div className={styles['stats-chart-title']}>
                   <div className={styles['stats-chart-title-icon']}>
@@ -113,7 +117,7 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
                   </div>
                   <div>
                     <h3 className={styles['stats-chart-title-main']}>
-                      {stats?.last3Months.cumulatedViews} consultations
+                      {periodStats?.cumulatedViews ?? 0} consultations
                     </h3>
                     <p className={styles['stats-chart-title-sub']}>
                       sur les XXXXX
@@ -122,9 +126,10 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
                 </div>
                 GRAPHE
               </div>
-              {topOffers.length > 0 && (
-                <MostViewedOffers topOffers={topOffers} />
-              )}
+              <MostViewedOffers
+                topOffers={periodStats?.topOffers ?? []}
+                hasActiveIndividualOffer={venue.hasActiveIndividualOffer}
+              />
             </div>
             <div>
               <h3 className={styles['stats-headline-offer-head']}>
