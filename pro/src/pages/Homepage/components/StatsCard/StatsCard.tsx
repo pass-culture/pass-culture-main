@@ -9,6 +9,7 @@ import {
   ButtonVariant,
 } from 'design-system/Button/types'
 import { CumulatedViews } from 'pages/Homepage/components/StatsCard/components/CumulatedViews'
+import { OldMostViewedOffers } from 'pages/Homepage/components/StatsCard/components/OldMostViewedOffers'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -98,7 +99,9 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
             showTitle={false}
           />
           {(oldStats?.jsonData?.topOffers?.length ?? 0) > 0 && (
-            <MostViewedOffers topOffers={oldStats?.jsonData?.topOffers ?? []} />
+            <OldMostViewedOffers
+              topOffers={oldStats?.jsonData?.topOffers ?? []}
+            />
           )}
         </div>
       </Card.Content>
@@ -160,11 +163,10 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
                 </div>
                 <CumulatedViews periodStats={periodStats} />
               </div>
-              {(oldStats?.jsonData?.topOffers?.length ?? 0) > 0 && (
-                <MostViewedOffers
-                  topOffers={oldStats?.jsonData?.topOffers ?? []}
-                />
-              )}
+              <MostViewedOffers
+                topOffers={periodStats?.topOffers ?? []}
+                hasActiveIndividualOffer={venue.hasActiveIndividualOffer}
+              />
             </div>
             <div>
               <h3 className={styles['stats-headline-offer-head']}>
