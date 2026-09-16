@@ -1,0 +1,1 @@
+import{t as e}from"./iframe-CwXelegl.js";e();
