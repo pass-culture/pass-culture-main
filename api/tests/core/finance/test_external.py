@@ -1,11 +1,13 @@
 import datetime
 import logging
+from dataclasses import asdict
 from operator import attrgetter
 from unittest.mock import patch
 
 import pytest
 import time_machine
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.finance import external
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -18,6 +20,7 @@ from pcapi.core.finance.backend.dummy import DummyFinanceBackend
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
 from pcapi.core.finance.backend.dummy import invoices as test_invoices
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -230,6 +233,7 @@ class GetSettlementsTest:
             settlementDate=datetime.date.today() - datetime.timedelta(days=5),
             invoices=[additional_invoice],
             status=finance_models.SettlementStatus.EXECUTED,
+            batch__dateValidated=datetime.date.today() - datetime.timedelta(days=4),
         )
 
         now = date_utils.get_naive_utc_now()
@@ -378,6 +382,19 @@ class GetSettlementsTest:
         assert additional_bank_account.venueLinks[0].timespan.upper is not None
         assert additional_bank_account.status == finance_models.BankAccountApplicationStatus.REFUSED
         assert additional_bank_account.label == "REJET BANCAIRE - Additional"
+
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0]["To"] == first_bank_account.venueLinks[0].venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.SETTLEMENT_REJECTED.value)
+        assert mails_testing.outbox[0]["params"] == {
+            "DATE_VIREMENT": date_utils.get_date_formatted_for_email(existing_settlement.batch.dateValidated)
+        }
+
+        assert mails_testing.outbox[1]["To"] == additional_bank_account.venueLinks[0].venue.bookingEmail
+        assert mails_testing.outbox[1]["template"] == asdict(TransactionalEmail.SETTLEMENT_REJECTED.value)
+        assert mails_testing.outbox[1]["params"] == {
+            "DATE_VIREMENT": date_utils.get_date_formatted_for_email(existing_settlement.batch.dateValidated)
+        }
 
     def test_get_settlements_create_new_batch(self):
         bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount

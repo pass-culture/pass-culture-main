@@ -3,6 +3,7 @@ import logging
 import sqlalchemy as sa
 from pydantic import BaseModel as BaseModelV2
 
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core.finance import api as finance_api
 from pcapi.core.internal_notifications.transactional import notify_settlements_executed
@@ -48,6 +49,7 @@ def settlement_batch_validation_task(payload: ValidateSettlementBatchRequest) ->
 
     db.session.flush()
 
-    # TODO (prouzet, 2026-06-15) Send a mail to pro -- when template is ready
+    for settlement in settlement_batch.settlements:
+        transactional_mails.send_settlement_validated_email_to_pro(settlement)
 
     notify_settlements_executed.send(settlement_batch)

@@ -13,6 +13,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend import constants as finance_backend_constants
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.core.internal_notifications.transactional import notify_invoices_finished
+from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -337,8 +338,8 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                 bank_account.status = finance_models.BankAccountApplicationStatus.REFUSED
                 bank_account.label = "REJET BANCAIRE - " + bank_account.label
             db.session.add(bank_account)
+            transactional_mails.send_settlement_rejected_email_to_pro(settlement)
             finance_api.deprecate_venue_bank_account_links(bank_account, comment)
-            # TODO (PC-40443) send transactional mail explaining closed bank account
         finance_api.revert_invoices_validation(list(invoice_ids))
 
     db.session.commit()
