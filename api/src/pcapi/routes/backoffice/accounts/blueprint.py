@@ -563,17 +563,15 @@ def list_public_accounts() -> response_utils.BackofficeResponse:
 def _get_current_registration_step_description(
     user: users_models.User,
 ) -> str | None:
-    """Get the last active registration step description.
-
-    Even though it looks overkill to build the entire tunnel to only pick its last active step label,
-    it's acceptable in comparison with rewriting the full verbose resolution.
-    """
-    eligibility_history = get_eligibility_history(user)
-    tunnel = _get_tunnel(user, eligibility_history)
-    if tunnel["type"] is TunnelType.NOT_ELIGIBLE:
+    """Get the last active registration step description."""
+    tunnel_type = _get_tunnel_type(user)
+    if tunnel_type is TunnelType.NOT_ELIGIBLE:
         return TunnelType.NOT_ELIGIBLE.value
 
-    current_active_step = next((step for step in tunnel["steps"] if step.status["active"]), None)
+    eligibility_history = get_eligibility_history(user)
+    subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
+    steps = _get_steps_for_tunnel(user, tunnel_type, subscription_item_status)
+    current_active_step = next((step for step in steps if step.status["active"]), None)
     if current_active_step and current_active_step.description in subscription_schemas.SubscriptionStep:
         return current_active_step.description
 
