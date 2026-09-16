@@ -1,9 +1,20 @@
-@use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_size.scss" as size;
 
 .period-filter {
   display: flex;
+  flex-direction: row;
   gap: var(--size-spacing-s);
+}
+
+@media (max-width: size.$tablet) {
+  .period-filter {
+    flex-wrap: wrap;
+
+    &-type {
+      width: 100%;
+    }
+  }
 }
 
 .visually-hidden {

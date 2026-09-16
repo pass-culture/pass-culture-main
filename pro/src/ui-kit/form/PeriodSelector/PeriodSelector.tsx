@@ -6,7 +6,6 @@ import { BaseDatePicker } from '@/ui-kit/form/shared/BaseDatePicker/BaseDatePick
 import styles from './PeriodSelector.module.scss'
 
 interface PeriodSelectorProps {
-  legend?: string
   className?: string
   onBeginningDateChange: (date: string) => void
   onEndingDateChange: (date: string) => void
@@ -22,7 +21,6 @@ interface PeriodSelectorProps {
 }
 
 export const PeriodSelector = ({
-  legend,
   className,
   onBeginningDateChange,
   onEndingDateChange,
@@ -37,21 +35,9 @@ export const PeriodSelector = ({
 
   return (
     <fieldset disabled={isDisabled}>
-      <legend
-        className={cn({
-          [styles['visually-hidden']]: legend === undefined,
-        })}
-      >
-        {legend ?? 'Période'}
-      </legend>
       <div className={cn(styles['period-filter-inputs'], className)}>
-        <div>
-          <label
-            htmlFor={`field-date-begin-${ariaId}`}
-            className={styles['visually-hidden']}
-          >
-            Début de la période
-          </label>
+        <div className={styles['period-filter-inputs-datepicker']}>
+          <label htmlFor={`field-date-begin-${ariaId}`}>Date de début</label>
           <BaseDatePicker
             className={cn(
               styles['period-filter-input'],
@@ -70,13 +56,8 @@ export const PeriodSelector = ({
           )}
         </div>
 
-        <div>
-          <label
-            htmlFor={`field-date-end-${ariaId}`}
-            className={styles['visually-hidden']}
-          >
-            Fin de la période
-          </label>
+        <div className={styles['period-filter-inputs-datepicker']}>
+          <label htmlFor={`field-date-end-${ariaId}`}>Date de fin</label>
           <BaseDatePicker
             className={cn(
               styles['period-filter-input'],

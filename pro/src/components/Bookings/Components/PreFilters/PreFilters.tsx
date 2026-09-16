@@ -112,7 +112,7 @@ export const PreFilters = ({
             />
           </FormLayout.Row>
 
-          <FormLayout.Row inline>
+          <FormLayout.Row inline mdSpaceAfter>
             <FilterByBookingStatusPeriod
               isDisabled={isFiltersDisabled}
               selectedBookingBeginningDate={

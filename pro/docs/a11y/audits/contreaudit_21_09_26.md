@@ -538,6 +538,40 @@ TBD
 
 <details>
 
+<summary> ⏳ Critère 11.1 - RGAA - Chaque champ de formulaire a-t-il une étiquette ?</summary>
+
+**RAWeb/RGAA** : [Critère 11.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-1)
+**Ticket** : [PC-42861](https://passculture.atlassian.net/browse/PC-42861)  
+**PR** : [#24341](https://github.com/pass-culture/pass-culture-main/pull/24341)
+
+**Problème** 😱  
+P09 → Les offres  
+
+P10 → Les réservations
+
+P13 → Les offres réservables
+
+Au moins un champ de formulaire ne possède pas d'étiquette, son étiquette n'est pas visible ou son étiquette n'est pas correctement liée.
+
+Par exemple :
+
+- Les champs de date « Début de la période » et « Fin de la période » possèdent uniquement des étiquettes masquées. Aucun intitulé visible accolé, texte affiché au focus ou attribut title ne permet de comprendre la nature de la saisie attendue.
+- Le sélecteur de type de période dans la page de Réservations n’a pas d’intitulé.
+
+**Correction** 💡  
+
+- Séparation de la légende en deux label "Date de début" et "Date de fin" sur le composant PeriodSelector. 
+- Ajout d'un label sur le champs "Type de période" dans la page Réservation (en plus des deux labels ajoutés ci dessus)
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 11.2 - RGAA - Chaque étiquette associée à un champ de formulaire est-elle pertinente ?</summary>
 
 **RAWeb/RGAA** : [Critère 11.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-2)
