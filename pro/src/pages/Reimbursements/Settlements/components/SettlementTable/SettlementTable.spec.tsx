@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import type { ComponentProps } from 'react'
 import { axe } from 'vitest-axe'
 
@@ -7,11 +8,38 @@ import {
   type SettlementResponseModel,
   SettlementStatus,
 } from '@/apiClient/v1'
+import * as useMediaQueryModule from '@/commons/hooks/useMediaQuery'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SettlementTable } from './SettlementTable'
+
+vi.mock('../SettlementRowInvoicesTable/SettlementRowInvoicesTable', () => ({
+  SettlementRowInvoicesTable: ({ invoices }: { invoices: unknown[] }) => (
+    <div data-testid="invoices-table">Invoices count: {invoices.length}</div>
+  ),
+}))
+
+vi.mock('../SettlementRowInvoicesModal/SettlementRowInvoicesModal', () => ({
+  SettlementRowInvoicesModal: ({
+    isOpen,
+    onClose,
+    settlementRow,
+  }: {
+    isOpen: boolean
+    onClose: () => void
+    settlementRow: SettlementResponseModel | null
+  }) =>
+    isOpen ? (
+      <div data-testid="invoices-modal">
+        <p>Modal content: {settlementRow?.label}</p>
+        <button type="button" onClick={onClose}>
+          Fermer la modale
+        </button>
+      </div>
+    ) : null,
+}))
 
 const baseSettlement = {
   id: 1,
@@ -153,5 +181,45 @@ describe('<SettlementTable />', () => {
     expect(
       screen.queryByText('Aucun compte bancaire rattaché')
     ).not.toBeInTheDocument()
+  })
+
+  it('toggles the embedded invoices table when clicking "Voir plus" on desktop', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(useMediaQueryModule, 'useMediaQuery').mockReturnValue(false)
+
+    renderSettlementTable()
+
+    expect(screen.queryByTestId('invoices-table')).not.toBeInTheDocument()
+
+    const seeMoreButton = screen.getByRole('button', { name: 'Voir plus' })
+    await user.click(seeMoreButton)
+
+    expect(screen.getByTestId('invoices-table')).toBeInTheDocument()
+    expect(screen.getByText('Invoices count: 3')).toBeInTheDocument()
+
+    // Un second clic doit refermer la ligne affichée
+    await user.click(seeMoreButton)
+    expect(screen.queryByTestId('invoices-table')).not.toBeInTheDocument()
+  })
+
+  it('opens the invoices modal when clicking "Voir plus" on mobile/tablet viewport', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(useMediaQueryModule, 'useMediaQuery').mockReturnValue(true)
+
+    renderSettlementTable()
+
+    expect(screen.queryByTestId('invoices-modal')).not.toBeInTheDocument()
+
+    const seeMoreButton = screen.getByRole('button', { name: 'Voir plus' })
+    await user.click(seeMoreButton)
+
+    expect(screen.getByTestId('invoices-modal')).toBeInTheDocument()
+    expect(screen.getByText('Modal content: VIR001')).toBeInTheDocument()
+
+    // Fermeture de la modale via le bouton de fermeture
+    const closeButton = screen.getByRole('button', { name: 'Fermer la modale' })
+    await user.click(closeButton)
+
+    expect(screen.queryByTestId('invoices-modal')).not.toBeInTheDocument()
   })
 })
