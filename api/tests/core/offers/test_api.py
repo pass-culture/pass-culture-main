@@ -3910,7 +3910,7 @@ class WhitelistExistingProductTest:
             json={"token": "XYZ"},
         )
         requests_mock.get(
-            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean}",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean}?base=paper",
             json=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
         )
 
@@ -3965,7 +3965,7 @@ class WhitelistExistingProductTest:
             json={"token": "XYZ"},
         )
         requests_mock.get(
-            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean}",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean}?base=paper",
             json=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
         )
         assert not db.session.query(models.Product).filter(models.Product.ean == ean).one_or_none()

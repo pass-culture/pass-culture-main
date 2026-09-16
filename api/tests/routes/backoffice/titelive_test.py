@@ -274,7 +274,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
             json={"token": "XYZ"},
         )
         requests_mock.get(
-            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{self.endpoint_kwargs['ean']}",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{self.endpoint_kwargs['ean']}?base=paper",
             json=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
         )
         assert (
@@ -304,7 +304,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
             json={"token": "XYZ"},
         )
         requests_mock.get(
-            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{fixtures.NO_RESULT_BY_EAN_FIXTURE['ean']}",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{fixtures.NO_RESULT_BY_EAN_FIXTURE['ean']}?base=paper",
             json=fixtures.NO_RESULT_BY_EAN_FIXTURE,
             status_code=404,
         )
@@ -327,7 +327,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
             json={"token": "XYZ"},
         )
         requests_mock.get(
-            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{fixtures.NO_GTL_IN_RESULT_FIXTURE['ean']}",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{fixtures.NO_GTL_IN_RESULT_FIXTURE['ean']}?base=paper",
             json=fixtures.NO_GTL_IN_RESULT_FIXTURE,
             status_code=200,
         )
