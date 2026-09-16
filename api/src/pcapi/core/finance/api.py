@@ -2124,8 +2124,6 @@ def generate_and_store_invoice(bank_account_id: int, cashflow_ids: list[int], is
             invoice_html = _generate_invoice_html(invoice, batch)
     with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
         _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
-    with log_elapsed(logger, "Sent invoice", log_extra):
-        transactional_mails.send_invoice_available_to_pro_email(invoice, batch)
 
 
 def _generate_invoice(

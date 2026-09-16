@@ -123,7 +123,6 @@ class TransactionalEmail(Enum):
     FRAUDULENT_BOOKING_SUSPICION = models.TemplatePro(id_prod=237, id_not_prod=64)
     HIGHLIGHT_COMMUNICATION_TO_PRO = models.TemplatePro(id_prod=443, id_not_prod=77)
     ANONYMIZATION_CONFIRMATION = models.TemplatePro(id_prod=473, id_not_prod=78)
-    INVOICE_AVAILABLE_TO_PRO = models.TemplatePro(id_prod=27, id_not_prod=27)
     NEW_BOOKING_TO_PRO = models.TemplatePro(id_prod=21, id_not_prod=21)
     NEW_OFFERER_VALIDATION = models.TemplatePro(id_prod=3, id_not_prod=3)
     NEW_OFFERER_REJECTION = models.TemplatePro(id_prod=8, id_not_prod=8)
