@@ -2,13 +2,20 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .container {
+  width: 100%;
   min-width: 0;
+
+  &.has-empty-state {
+    border: 1px dashed var(--color-border-subtle);
+    border-radius: var(--size-border-radius-m);
+    padding: var(--size-spacing-l);
+  }
 }
 
 .title {
-  @include fonts.title3;
+  @include fonts.title4;
 
-  margin-bottom: var(--size-spacing-l);
+  margin-bottom: var(--size-spacing-s);
 }
 
 .list {
@@ -20,11 +27,45 @@
   list-style: none;
 }
 
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-xl);
+  min-height: rem.torem(320px);
+
+  &-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: rem.torem(56px);
+    height: rem.torem(56px);
+    border-radius: 50%;
+    background-color: var(--color-background-subtle);
+    margin-bottom: var(--size-spacing-l);
+  }
+
+  p {
+    @include fonts.body;
+
+    margin: 0;
+  }
+}
+
 .item {
+  min-width: 0;
+}
+
+.link {
   display: flex;
   align-items: flex-start;
   gap: var(--size-spacing-l);
   min-width: 0;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .thumbnail {

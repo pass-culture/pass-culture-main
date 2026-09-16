@@ -233,7 +233,7 @@ def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsRes
 
     # top offers come from ClickHouse but need extra data from Postgres
     # offers for serialization.
-    offers_mapping = api.map_top_offers_to_existing_offers(stats.top_offers)
+    offers_mapping = api.map_top_offers_to_existing_offers(stats.top_offers, venue_id)
 
     # filter top offer without a known offer, just in case.
     # -> a missing offer is very (very) unlikely but it can happen
