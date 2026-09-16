@@ -29,15 +29,8 @@ describe('PeriodSelector', () => {
   it('should call onBeginningDateChange and onEndingDateChange', async () => {
     renderPeriodSelector()
 
-    await userEvent.type(
-      screen.getByLabelText('Début de la période'),
-      '2020-10-20'
-    )
-
-    await userEvent.type(
-      screen.getByLabelText('Fin de la période'),
-      '2020-12-24'
-    )
+    await userEvent.type(screen.getByLabelText('Date de début'), '2020-10-20')
+    await userEvent.type(screen.getByLabelText('Date de fin'), '2020-12-24')
 
     expect(mockOnBeginningDateChange).toHaveBeenCalledWith('2020-10-20')
     expect(mockOnEndingDateChange).toHaveBeenCalledWith('2020-12-24')
@@ -51,8 +44,8 @@ describe('PeriodSelector', () => {
       },
     })
 
-    const beginInput = screen.getByLabelText('Début de la période')
-    const endInput = screen.getByLabelText('Fin de la période')
+    const beginInput = screen.getByLabelText('Date de début')
+    const endInput = screen.getByLabelText('Date de fin')
 
     expect(beginInput).toHaveAttribute('aria-invalid', 'true')
     expect(endInput).toHaveAttribute('aria-invalid', 'true')

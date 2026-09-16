@@ -1,12 +1,15 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_forms.scss" as form;
 
 .period-filter-inputs {
   display: flex;
   height: var(--input-height-m);
   margin-top: var(--size-spacing-xs);
+
+  &-datepicker {
+    flex: 1;
+  }
 }
 
 .field-date-begin {
@@ -23,14 +26,9 @@
 }
 
 .period-filter-input {
-  width: rem.torem(145px);
+  width: 100%;
 }
 
 .field-date-error {
-  max-width: rem.torem(145px);
   color: var(--color-text-error);
-}
-
-.visually-hidden {
-  @include a11y.visually-hidden;
 }

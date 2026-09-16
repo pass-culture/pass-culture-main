@@ -34,6 +34,7 @@ export const FilterByBookingStatusPeriod = ({
       <legend className={styles['visually-hidden']}>Période</legend>
 
       <Select
+        className={styles['period-filter-type']}
         onChange={(event) =>
           updateFilters({
             bookingStatusFilter: event.target.value as BookingStatusFilter,
@@ -43,8 +44,7 @@ export const FilterByBookingStatusPeriod = ({
         name="statusFilter"
         options={BOOKING_STATUS_FILTER_OPTIONS}
         value={selectedBookingFilter}
-        ariaLabel={'Type de période'}
-        label=""
+        label="Type de période"
       />
 
       <PeriodSelector

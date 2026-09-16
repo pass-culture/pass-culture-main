@@ -126,7 +126,6 @@ export const InvoicesFilters = ({
           />
 
           <PeriodSelector
-            legend="Période d'émission"
             onBeginningDateChange={setPeriodBeginningDate}
             onEndingDateChange={setPeriodEndingDate}
             maxDateEnding={getToday()}
