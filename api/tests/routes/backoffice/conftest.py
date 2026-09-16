@@ -293,6 +293,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN,
         perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
         perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION,
+        perm_models.Permissions.READ_TECH_LOGS,
     ],
     "dpo": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,

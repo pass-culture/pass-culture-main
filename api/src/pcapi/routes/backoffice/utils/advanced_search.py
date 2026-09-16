@@ -1,9 +1,11 @@
 import datetime
 import enum
 import operator as op
+import time
 import typing
 from collections import defaultdict
 from collections.abc import Iterable
+from dataclasses import dataclass
 
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
@@ -72,6 +74,61 @@ LLM_OPERATOR_DICT: dict[str, str] = {
     "GREATER_THAN_OR_EQUAL_TO": ">=",
     "LESS_THAN": "<",
     "LESS_THAN_OR_EQUAL_TO": "=<",
+}
+
+GCP_LOGS_OPERATOR_DICT: dict[str, str] = {
+    "EQUALS": "=",
+    "GREATER_THAN_OR_EQUAL_TO": ">=",
+    "LESS_THAN": "<",
+}
+
+
+# TODO maybe use pydantic instead
+@dataclass(slots=True, frozen=True, kw_only=True)
+class FilterLog:
+    field: str
+    operator: str
+    value: str
+
+    def dict(self) -> dict:
+        return {
+            "field": self.field,
+            "operator": self.operator,
+            "value": self.value,
+        }
+
+
+@dataclass(slots=True, kw_only=True)
+class FilterLogContainer:
+    filters: list[FilterLog]
+    end_date: float
+    start_date: float
+    original_start_date: float
+    last_insert_id: str
+
+    def dict(self) -> dict:
+        return {
+            "filters": [f.dict() for f in self.filters],
+            "end_date": self.end_date,
+            "start_date": self.start_date,
+            "original_start_date": self.original_start_date,
+            "last_insert_id": self.last_insert_id,
+        }
+
+    @classmethod
+    def from_dict(cls, d: typing.Dict) -> "FilterLogContainer":
+        filters = [FilterLog(**f) for f in d.pop("filters")]
+        return cls(filters=filters, **d)
+
+
+GCP_LOGS_SEARCH_TYPES: dict[str, tuple[FilterLog]] = {
+    "OFFER_CREATION": (
+        FilterLog(  # TODO use new syntaxe after alpha
+            field="jsonPayload.technical_message_id",
+            operator="=",
+            value="offer.created",
+        ),
+    )
 }
 
 
@@ -311,3 +368,78 @@ def generate_llm_search_dict(
         )
 
     return filters, warnings
+
+
+def generate_gcp_search_dict(
+    search_type: str,
+    search_parameters: Iterable[dict[str, typing.Any]],
+    fields_definition: dict[str, dict[str, typing.Any]],
+) -> tuple[FilterLogContainer, set[str]]:
+    filters: list[FilterLog] = []
+    filters.extend(GCP_LOGS_SEARCH_TYPES[search_type])
+
+    filter_dict = {}
+
+    warnings: set[str] = set()
+    for search_data in search_parameters:
+        search_field = search_data.get("search_field")
+        if not search_field:
+            # field is empty
+            continue
+
+        operator = search_data.get("operator", "")
+        if operator not in GCP_LOGS_OPERATOR_DICT:
+            breakpoint()
+            warnings.add(f"L'operateur '{operator}' n'est pas supporté, merci de prévenir les devs")
+            continue
+
+        meta_field = fields_definition.get(search_field)
+        if not meta_field:
+            warnings.add(f"La règle de recherche '{search_field}' n'est pas supportée, merci de prévenir les devs")
+            continue
+
+        field_value = meta_field.get("special", lambda x: x)(search_data.get(meta_field["field"]))
+
+        if search_field == "LOG_DATE":
+            # manage dates separatly for pagination purpose
+            if operator.startswith("GREATER"):
+                if "start_date" in filter_dict:
+                    warnings.add("Plusieurs dates de début ont été spécifiées, seule la première sera prise en compte")
+                else:
+                    filter_dict["start_date"] = field_value
+            elif operator.startswith("LESS"):
+                if "end_date" in filter_dict:
+                    warnings.add("Plusieurs dates de fin ont été spécifiées, seule la première sera prise en compte")
+                else:
+                    filter_dict["end_date"] = field_value
+            else:
+                warnings.add(f"L'operateur '{operator}' n'est pas supporté pour les dates, merci de prévenir les devs")
+            continue
+
+        operator_string = GCP_LOGS_OPERATOR_DICT[operator]
+        field_name = meta_field["log_field_name"]
+        filters.append(
+            FilterLog(
+                field=field_name,
+                operator=operator_string,
+                value=field_value,
+            )
+        )
+
+    filter_dict["filters"] = filters
+    if "end_date" not in filter_dict:
+        filter_dict["end_date"] = time.time()
+    if "start_date" not in filter_dict:
+        filter_dict["start_date"] = filter_dict["end_date"] - (60 * 60)  # 1 hour of logs by default
+    filter_dict["original_start_date"] = filter_dict["start_date"]
+    filter_dict["last_insert_id"] = ""
+    return FilterLogContainer(**filter_dict), warnings
+
+
+def generate_gcp_search_string_from_list(gcp_search: FilterLogContainer) -> str:
+    search = ""
+    for filter_field in gcp_search.filters:
+        search += f'{filter_field.field}{filter_field.operator}"{filter_field.value}"\n'
+    search += f'timestamp>"{datetime.datetime.fromtimestamp(gcp_search.start_date).isoformat()}Z"\n'
+    search += f'timestamp<"{datetime.datetime.fromtimestamp(gcp_search.end_date).isoformat()}Z"\n'
+    return search

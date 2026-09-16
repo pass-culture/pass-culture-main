@@ -310,6 +310,11 @@ MENU_SECTIONS = [
                 url_name="backoffice.dev.components",
                 settings=["ENABLE_BO_COMPONENT_PAGE"],
             ),
+            MenuItem(  # only here as an alpha version
+                label="Explorer les logs",
+                url_name="backoffice.logs.list_logs",
+                permissions=["READ_TECH_LOGS"],
+            ),
         ],
     ),
 ]
