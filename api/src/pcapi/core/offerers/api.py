@@ -18,6 +18,7 @@ import schwifty
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from dateutil.relativedelta import relativedelta
 
 import pcapi.connectors.acceslibre as accessibility_provider
 import pcapi.connectors.thumb_storage as storage
@@ -2178,6 +2179,104 @@ def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
     )
 
 
+@dataclasses.dataclass
+class MonthlyViewsModel:
+    month: date
+    views: int
+
+
+@dataclasses.dataclass
+class TopOfferModel:
+    offer: offers_models.Offer
+    views: int
+    rank: int
+
+    @property
+    def offer_id(self) -> int:
+        return self.offer.id
+
+    @property
+    def name(self) -> str:
+        return self.offer.name
+
+    @property
+    def is_headline_offer(self) -> bool:
+        return self.offer.is_headline_offer
+
+    @property
+    def image(self) -> offers_models.OfferImage | None:
+        return build_offer_image(self.offer)
+
+
+@dataclasses.dataclass
+class VenueOffersPeriodStatisticsModel:
+    top_offers: list[TopOfferModel]
+    cumulated_views: int
+    views_by_month: list[MonthlyViewsModel]
+
+
+@dataclasses.dataclass
+class VenueOffersStatisticsV2Model:
+    venue_id: int
+    last_3_months: VenueOffersPeriodStatisticsModel
+    last_6_months: VenueOffersPeriodStatisticsModel
+
+
+def _get_views_by_month(rows: list[clickhouse_queries.VenueOffersViewsByMonthModel]) -> list[MonthlyViewsModel]:
+    current_month = date.today().replace(day=1)
+    last_6_months = [current_month - relativedelta(months=delta) for delta in reversed(range(6))]
+    views_per_month = {row.month: row.views for row in rows}
+    return [MonthlyViewsModel(month=month, views=views_per_month.get(month, 0)) for month in last_6_months]
+
+
+def _get_top_offers_views(
+    rows: list[clickhouse_queries.VenueTopOfferByPeriodModel], months: int
+) -> list[OfferViewsModel]:
+    top_offers = []
+    for row in rows:
+        rank = getattr(row, f"rank_{months}m")
+        if rank is None:
+            continue
+        views = getattr(row, f"consultation_cnt_{months}m") or 0
+        top_offers.append(OfferViewsModel(offer_id=row.offer_id, views=views, rank=rank))
+    return sorted(top_offers, key=lambda o: o.rank)[:3]
+
+
+def _build_period_statistics(
+    top_offers_views: list[OfferViewsModel],
+    offers_mapping: dict[OfferViewsModel, offers_models.Offer],
+    views_by_month: list[MonthlyViewsModel],
+) -> VenueOffersPeriodStatisticsModel:
+    return VenueOffersPeriodStatisticsModel(
+        top_offers=[
+            TopOfferModel(offer=offers_mapping[top_offer], views=top_offer.views, rank=top_offer.rank)
+            for top_offer in top_offers_views
+            if top_offer in offers_mapping
+        ],
+        cumulated_views=sum(row.views for row in views_by_month),
+        views_by_month=views_by_month,
+    )
+
+
+def get_venue_offers_statistics_v2(venue_id: int) -> VenueOffersStatisticsV2Model:
+    params = {"venue_id": str(venue_id)}
+    top_offers_rows = clickhouse_queries.VenueTopOffersByPeriodQuery().execute(params)
+    views_by_month_rows = clickhouse_queries.VenueOffersViewsByMonthQuery().execute(params)
+
+    top_offers_3_months = _get_top_offers_views(top_offers_rows, months=3)
+    top_offers_6_months = _get_top_offers_views(top_offers_rows, months=6)
+    offers_mapping = map_top_offers_to_existing_offers({*top_offers_3_months, *top_offers_6_months})
+
+    views_by_month_6_months = _get_views_by_month(views_by_month_rows)
+    views_by_month_3_months = views_by_month_6_months[-3:]
+
+    return VenueOffersStatisticsV2Model(
+        venue_id=venue_id,
+        last_3_months=_build_period_statistics(top_offers_3_months, offers_mapping, views_by_month_3_months),
+        last_6_months=_build_period_statistics(top_offers_6_months, offers_mapping, views_by_month_6_months),
+    )
+
+
 def map_top_offers_to_existing_offers(
     top_offers: typing.Collection[OfferViewsModel],
 ) -> dict[OfferViewsModel, offers_models.Offer]:
@@ -2187,6 +2286,33 @@ def map_top_offers_to_existing_offers(
     top_offers_to_offers_mapping = {top_offer: offers_mapping.get(int(top_offer.offer_id)) for top_offer in top_offers}
 
     return {top_offer: offer for top_offer, offer in top_offers_to_offers_mapping.items() if offer is not None}
+
+
+def _get_offer_mediation_url(offer: offers_models.Offer) -> tuple[str | None, str | None]:
+    """Fetch the most recent mediation url from the offer or its product
+
+    Try to fetch the most recent mediation from the offer's product first. If
+    nothing is found, search from the offer's mediations.
+    """
+    product = offer.product
+
+    if product:
+        product_mediations = sorted(product.productMediations, key=lambda m: m.id, reverse=True)
+        if product_mediations:
+            return product_mediations[0].url, None
+
+    mediations = sorted(offer.mediations, key=lambda m: m.id, reverse=True)
+    if mediations:
+        return mediations[0].thumbUrl, mediations[0].credit
+
+    return None, None
+
+
+def build_offer_image(offer: offers_models.Offer) -> offers_models.OfferImage | None:
+    url, credit = _get_offer_mediation_url(offer)
+    if not url:
+        return None
+    return offers_models.OfferImage(url=url, credit=credit)
 
 
 def count_offerers_by_validation_status() -> dict[str, int]:
