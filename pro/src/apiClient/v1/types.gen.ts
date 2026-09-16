@@ -6815,25 +6815,6 @@ export type VenueDailyViewModel = {
 };
 
 /**
- * VenueLabelListResponseModel
- */
-export type VenueLabelListResponseModel = Array<VenueLabelResponseModel>;
-
-/**
- * VenueLabelResponseModel
- */
-export type VenueLabelResponseModel = {
-    /**
-     * Id
-     */
-    id: number;
-    /**
-     * Label
-     */
-    label: string;
-};
-
-/**
  * VenueListItemLiteManagingOffererResponseModel
  */
 export type VenueListItemLiteManagingOffererResponseModel = {
@@ -11110,35 +11091,6 @@ export type getV2ReimbursementsCsvResponses = {
      */
     200: unknown;
 };
-
-export type getVenueLabelsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/venue-labels';
-};
-
-export type getVenueLabelsErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getVenueLabelsError = getVenueLabelsErrors[keyof getVenueLabelsErrors];
-
-export type getVenueLabelsResponses = {
-    /**
-     * OK
-     */
-    200: VenueLabelListResponseModel;
-};
-
-export type getVenueLabelsResponse = getVenueLabelsResponses[keyof getVenueLabelsResponses];
 
 export type deleteVenueProvidersByVenueProviderIdData = {
     body?: never;

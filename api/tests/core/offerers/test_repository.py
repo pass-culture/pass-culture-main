@@ -20,14 +20,6 @@ from pcapi.utils import date as date_utils
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class GetAllVenueLabelsTest:
-    def test_get_all_venue_labels(self):
-        label1 = offerers_factories.VenueLabelFactory()
-        label2 = offerers_factories.VenueLabelFactory()
-
-        assert set(repository.get_all_venue_labels()) == {label1, label2}
-
-
 class GetAllOfferersForUserTest:
     def should_return_all_offerers_for_an_admin(self) -> None:
         # Given

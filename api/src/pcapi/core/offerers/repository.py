@@ -28,10 +28,6 @@ MAX_OFFERS_PER_OFFERER_FOR_COUNT = 500
 MAX_OFFERS_PER_VENUE_FOR_COUNT = 500
 
 
-def get_all_venue_labels() -> list[models.VenueLabel]:
-    return db.session.query(models.VenueLabel).all()
-
-
 def get_all_offerers_for_user(
     user: users_models.User,
     validated_offerers_only: bool = False,
