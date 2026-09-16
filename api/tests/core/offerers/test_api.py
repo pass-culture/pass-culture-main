@@ -4776,6 +4776,44 @@ class BuildPeriodStatisticsTest:
         assert stats.views_by_month == views_by_month
 
 
+class MapTopOffersToExistingOffersTest:
+    @pytest.mark.settings(IS_DEV=False, IS_STAGING=True)
+    @patch("pcapi.core.offers.repository.get_offers_with_headlines_and_mediations", return_value=[])
+    def test_offers_are_filtered_on_venue_on_staging(self, mock_get_offers):
+        top_offer = offerers_api.OfferViewsModel(offer_id="1", views=20, rank=1)
+
+        offerers_api.map_top_offers_to_existing_offers([top_offer], venue_id=12)
+
+        mock_get_offers.assert_called_once_with([1], venue_id=12)
+
+    @pytest.mark.settings(IS_DEV=False, IS_PROD=True)
+    @patch("pcapi.core.offers.repository.get_offers_with_headlines_and_mediations", return_value=[])
+    def test_offers_are_filtered_on_venue_on_production(self, mock_get_offers):
+        top_offer = offerers_api.OfferViewsModel(offer_id="1", views=20, rank=1)
+
+        offerers_api.map_top_offers_to_existing_offers([top_offer], venue_id=12)
+
+        mock_get_offers.assert_called_once_with([1], venue_id=12)
+
+    @pytest.mark.settings(IS_DEV=True)
+    @patch("pcapi.core.offers.repository.get_offers_with_headlines_and_mediations", return_value=[])
+    def test_offers_are_not_filtered_on_venue_on_development(self, mock_get_offers):
+        top_offer = offerers_api.OfferViewsModel(offer_id="1", views=20, rank=1)
+
+        offerers_api.map_top_offers_to_existing_offers([top_offer], venue_id=12)
+
+        mock_get_offers.assert_called_once_with([1], venue_id=None)
+
+    @pytest.mark.settings(IS_DEV=False, IS_TESTING=True)
+    @patch("pcapi.core.offers.repository.get_offers_with_headlines_and_mediations", return_value=[])
+    def test_offers_are_not_filtered_on_venue_on_testing(self, mock_get_offers):
+        top_offer = offerers_api.OfferViewsModel(offer_id="1", views=20, rank=1)
+
+        offerers_api.map_top_offers_to_existing_offers([top_offer], venue_id=12)
+
+        mock_get_offers.assert_called_once_with([1], venue_id=None)
+
+
 class GetVenueOffersStatisticsV2Test:
     @patch("pcapi.connectors.clickhouse.queries.VenueOffersViewsByMonthQuery.execute", return_value=[])
     @patch("pcapi.core.offerers.api._get_top_offers_views", return_value=[])
@@ -4799,7 +4837,7 @@ class GetVenueOffersStatisticsV2Test:
 
         offerers_api.get_venue_offers_statistics_v2(venue_id=12)
 
-        mock_map_top_offers.assert_called_once_with({*top_offers_3_months, *top_offers_6_months})
+        mock_map_top_offers.assert_called_once_with({*top_offers_3_months, *top_offers_6_months}, 12)
 
     @patch("pcapi.core.offerers.api._get_views_by_month", return_value=[])
     @patch("pcapi.connectors.clickhouse.queries.VenueOffersViewsByMonthQuery.execute")
