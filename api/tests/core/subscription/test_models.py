@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core.mails.transactional.users import dms_subscription_emails
 from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.dms import messages as dms_subscription_messages
@@ -72,3 +73,29 @@ class DmsErrorKeyLabelTest:
     def test_dms_subscription_messages(self):
         for key in dms_schemas.DmsFieldErrorKeyEnum:
             assert dms_subscription_messages.FIELD_ERROR_LABELS.get(key) is not None
+
+
+class BeneficiaryFraudCheckTest:
+    @pytest.mark.parametrize(
+        "raw,parsed",
+        [
+            (0, 0),
+            ("0", 0),
+            (1, 1),
+            ("1", 1),
+            (None, None),
+            ("", None),
+            ("abc", None),
+        ],
+    )
+    def test_source_data_parses_jouve_level(self, raw, parsed):
+        beneficiary_fraud_check = subscription_models.BeneficiaryFraudCheck(
+            type=subscription_models.FraudCheckType.JOUVE,
+            resultContent={
+                "id": 1,
+                "bodyBirthDateLevel": raw,
+            },
+        )
+
+        source_data = beneficiary_fraud_check.source_data()
+        assert source_data.bodyBirthDateLevel == parsed

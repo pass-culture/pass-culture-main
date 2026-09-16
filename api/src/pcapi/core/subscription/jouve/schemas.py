@@ -9,7 +9,7 @@ from pcapi.core.subscription import schemas as subscription_schemas
 
 
 def _parse_level(level: str | None) -> int | None:
-    if not level:
+    if level is None or level == "":
         return None
     try:
         return int(level)
@@ -59,17 +59,17 @@ def _parse_jouve_datetime(date: str | None) -> datetime.datetime | None:
 class JouveContent(subscription_schemas.IdentityCheckContent):
     activity: str | None = None
     address: str | None = None
-    birthDateTxt: Annotated[datetime.datetime, BeforeValidator(_parse_jouve_date)] | None = None
+    birthDateTxt: Annotated[datetime.datetime | None, BeforeValidator(_parse_jouve_date)] = None
     birthLocationCtrl: str | None = None
     bodyBirthDateCtrl: str | None = None
-    bodyBirthDateLevel: Annotated[int, BeforeValidator(_parse_level)] | None = None
+    bodyBirthDateLevel: Annotated[int | None, BeforeValidator(_parse_level)] = None
     bodyFirstnameCtrl: str | None = None
-    bodyFirstnameLevel: Annotated[int, BeforeValidator(_parse_level)] | None = None
+    bodyFirstnameLevel: Annotated[int | None, BeforeValidator(_parse_level)] = None
     bodyNameCtrl: str | None = None
-    bodyNameLevel: Annotated[int, BeforeValidator(_parse_level)] | None = None
+    bodyNameLevel: Annotated[int | None, BeforeValidator(_parse_level)] = None
     bodyPieceNumber: str | None = None
     bodyPieceNumberCtrl: str | None = None
-    bodyPieceNumberLevel: Annotated[int, BeforeValidator(_parse_level)] | None = None
+    bodyPieceNumberLevel: Annotated[int | None, BeforeValidator(_parse_level)] = None
     city: str | None = None
     creatorCtrl: str | None = None
     email: str | None = None
@@ -82,7 +82,7 @@ class JouveContent(subscription_schemas.IdentityCheckContent):
     phoneNumber: str | None = None
     postalCode: str | None = None
     posteCodeCtrl: str | None = None
-    registrationDate: Annotated[datetime.datetime, BeforeValidator(_parse_jouve_datetime)] | None = None
+    registrationDate: Annotated[datetime.datetime | None, BeforeValidator(_parse_jouve_datetime)] = None
     serviceCodeCtrl: str | None = None
 
     def get_birth_date(self) -> datetime.date | None:
