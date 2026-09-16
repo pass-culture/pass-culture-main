@@ -100,7 +100,7 @@ class TestingBackend:
 
 class HttpBackend:
     def _request(self, method: str, path: str, params: dict, body: dict | None = None) -> bytes:
-        params["token"] = settings.RECOMMENDATION_API_AUTHENTICATION_TOKEN
+        headers = {"X-API-Key": settings.RECOMMENDATION_API_AUTHENTICATION_TOKEN}
         url = "/".join((settings.RECOMMENDATION_API_URL.rstrip("/"), path.lstrip("/")))
         # Calls to recommendation api are made with `verify=False` because:
         # The certificates are google-managed and seen as self-signed.
@@ -108,12 +108,23 @@ class HttpBackend:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", urllib_execptions.InsecureRequestWarning)
                 if method == "get":
-                    response = requests.get(
-                        url, params=params, disable_synchronous_retry=True, verify=False, log_info=False
+                    response = requests.get(  # nosemgrep: python.requests.security.disabled-cert-validation.disabled-cert-validation
+                        url,
+                        params=params,
+                        headers=headers,
+                        disable_synchronous_retry=True,
+                        verify=False,
+                        log_info=False,
                     )
                 elif method == "post":
-                    response = requests.post(
-                        url, params=params, json=body, disable_synchronous_retry=True, verify=False, log_info=False
+                    response = requests.post(  # nosemgrep: python.requests.security.disabled-cert-validation.disabled-cert-validation
+                        url,
+                        params=params,
+                        json=body,
+                        headers=headers,
+                        disable_synchronous_retry=True,
+                        verify=False,
+                        log_info=False,
                     )
                 else:
                     raise ValueError(f"Unexpected method: {method}")
