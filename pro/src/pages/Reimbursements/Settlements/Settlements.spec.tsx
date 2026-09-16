@@ -11,8 +11,8 @@ import { api } from '@/apiClient/api'
 import {
   type BankAccountResponseModel,
   InvoiceStatus,
+  SettlementDisplayedStatus,
   type SettlementResponseModel,
-  SettlementStatus,
 } from '@/apiClient/v1'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -38,7 +38,7 @@ const BASE_SETTLEMENTS = [
     label: 'VIR001',
     date: '2024-06-01',
     bankAccount: 'Compte principal',
-    status: SettlementStatus.EXECUTED,
+    status: SettlementDisplayedStatus.EXECUTED,
     amount: 150,
     invoices: [
       {

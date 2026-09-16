@@ -1,4 +1,5 @@
 import datetime
+import enum
 import logging
 import typing
 
@@ -10,6 +11,7 @@ from pcapi.core.finance.utils import cents_to_full_unit
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
+from pcapi.utils.date import get_naive_utc_now
 
 
 logger = logging.getLogger(__name__)
@@ -77,14 +79,70 @@ class InvoiceListV2ResponseModel(RootModel):
     root: list[InvoiceResponseV2Model]
 
 
+class SettlementDisplayedStatus(enum.Enum):
+    EXECUTED = "EXECUTED"
+    REJECTED = "REJECTED"
+    REJECTED_PROCESSED = "REJECTED_PROCESSED"
+    REJECTED_SOLVED = "REJECTED_SOLVED"
+
+
+def _get_settlement_data(
+    settlement: models.Settlement,
+) -> tuple[SettlementDisplayedStatus, list[models.Settlement]]:
+    """
+    Return the settlement displayed status and the settlements that "resolve" the current one
+    i.e that includes its invoices when the current settlement is rejected
+
+    Note: when a settlement is rejected, the corresponding bank account becomes invalid and the venues are detached from the bank account
+
+    The settlement displayed status is:
+
+    - EXECUTED = the settlement is not rejected
+    - REJECTED = the settlement is rejected and the venues previously linked to the bank account are not linked to another bank account
+    - REJECTED_PROCESSED = the settlement is rejected and the venues are linked to another bank account
+    - REJECTED_SOLVED = the settlement is rejected, the venues are linked to another bank account and the invoices are linked to a new (non-rejected) settlement
+
+    Note: this "python-side" processing trades efficiency for clarity
+    If a performance issue appears, the logic can be translated in SQL
+    """
+    now = get_naive_utc_now()
+
+    if settlement.status != models.SettlementStatus.REJECTED:
+        return SettlementDisplayedStatus.EXECUTED, []
+
+    # check that all detached venues are linked to another bank account
+    detached_venues = [link.venue for link in settlement.bankAccount.venueLinks if not link.is_active_at(now)]
+    one_venue_not_attached = any(venue.current_bank_account_link is None for venue in detached_venues)
+
+    if one_venue_not_attached:
+        return SettlementDisplayedStatus.REJECTED, []
+
+    resolving_settlements = []
+    for invoice in settlement.invoices:
+        resolving_settlement = next(
+            (s for s in invoice.settlements if s.status == models.SettlementStatus.EXECUTED), None
+        )
+
+        if resolving_settlement:
+            resolving_settlements.append(resolving_settlement)
+        else:
+            # the invoice is not linked to any valid settlement
+            return SettlementDisplayedStatus.REJECTED_PROCESSED, []
+
+    # all venues are linked to a valid bank account
+    # all invoices are linked to a valid settlement
+    return SettlementDisplayedStatus.REJECTED_SOLVED, resolving_settlements
+
+
 class SettlementResponseModel(HttpBodyModel):
     id: int
     label: str
     date: datetime.date | None
     amount: float
     bank_account: str
-    status: models.SettlementStatus
+    status: SettlementDisplayedStatus
     invoices: list[InvoiceResponseV2Model]
+    resolved_by: list[str]
 
     @classmethod
     def build(cls, settlement: models.Settlement) -> typing.Self:
@@ -95,14 +153,18 @@ class SettlementResponseModel(HttpBodyModel):
             reverse=True,
         )
 
+        status, resolving_settlements = _get_settlement_data(settlement)
+        resolved_by = {s.batch.get_displayed_name() for s in resolving_settlements}
+
         return cls(
             id=settlement.id,
             label=settlement.batch.get_displayed_name(),
             date=settlement.batch.dateValidated.date() if settlement.batch.dateValidated else None,
             amount=float(cents_to_full_unit(settlement.amount)),
             bank_account=settlement.bankAccount.label,
-            status=settlement.status,
+            status=status,
             invoices=[InvoiceResponseV2Model.build(invoice) for invoice in invoices],
+            resolved_by=sorted(resolved_by),
         )
 
 

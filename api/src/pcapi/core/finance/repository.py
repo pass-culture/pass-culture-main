@@ -661,11 +661,27 @@ def get_settlements_query(
             models.Settlement.status != models.SettlementStatus.ISSUED,
         )
         .options(
-            sa_orm.contains_eager(models.Settlement.bankAccount).load_only(models.BankAccount.label),
+            # load the bank account
+            sa_orm.contains_eager(models.Settlement.bankAccount).options(
+                sa_orm.load_only(models.BankAccount.label),
+                # and its links
+                sa_orm.selectinload(models.BankAccount.venueLinks)
+                # for each link, load its venue and the venue links
+                .joinedload(offerers_models.VenueBankAccountLink.venue)
+                .load_only()
+                .selectinload(offerers_models.Venue.bankAccountLinks),
+            ),
+            # load the settlement batch
             sa_orm.contains_eager(models.Settlement.batch).load_only(
                 models.SettlementBatch.name, models.SettlementBatch.dateValidated
             ),
-            sa_orm.selectinload(models.Settlement.invoices),
+            # load the invoices
+            sa_orm.selectinload(models.Settlement.invoices)
+            # for each invoice, load its settlements and the settlement batch
+            .selectinload(models.Invoice.settlements)
+            .load_only(models.Settlement.status)
+            .joinedload(models.Settlement.batch)
+            .load_only(models.SettlementBatch.name),
         )
         .order_by(models.SettlementBatch.dateValidated.desc())
     )

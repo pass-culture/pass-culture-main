@@ -815,10 +815,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         now = date_utils.get_naive_utc_now()
 
         for link in self.bankAccountLinks:
-            lower = link.timespan.lower
-            upper = link.timespan.upper
-
-            if lower <= now and (not upper or now <= upper):
+            if link.is_active_at(now):
                 return link
 
         return None
@@ -1100,6 +1097,12 @@ class VenueBankAccountLink(PcObject, Model):
     def __init__(self, **kwargs: typing.Any) -> None:
         kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
         super().__init__(**kwargs)
+
+    def is_active_at(self, date_time: datetime) -> bool:
+        lower = self.timespan.lower
+        upper = self.timespan.upper
+
+        return lower <= date_time and (not upper or date_time <= upper)
 
 
 class VenueEducationalStatus(Model):
