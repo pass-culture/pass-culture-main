@@ -14,6 +14,7 @@ attempt timestamp. The only timestamps published are the ones of the cron runs.
 """
 
 import datetime
+import json
 import logging
 import typing
 
@@ -131,7 +132,7 @@ def log_bonus_credit_counters() -> None:
         extra={
             "published_at": now.isoformat(),
             "counters_since": counters_published_at,
-            "counters": _build_counters_payload(counters) if can_publish_counters else None,
+            "counters": json.dumps(_build_counters_payload(counters)),
             "feature": "bonus_credit",
             "action": "statistics.counters",
         },
@@ -162,7 +163,7 @@ def log_first_bonus_credit_attempt_delays() -> None:
         extra={
             "published_at": now.isoformat(),
             "first_attempt_delays_since": delays_published_at,
-            "first_attempt_delays": delays,
+            "first_attempt_delays": json.dumps(delays),
             "feature": "bonus_credit",
             "action": "statistics.first_attempt_delays",
         },
@@ -215,9 +216,13 @@ def _build_counters_payload(counters: dict[str, int]) -> dict[str, typing.Any]:
     for field, count in counters.items():
         field_parts = field.split("|")
 
-        if len(field_parts) == 2 and field_parts[0] in (_GRANTS_FIELD, _ATTEMPTS_FIELD):
+        if len(field_parts) == 2 and field_parts[0] == _GRANTS_FIELD:
             field, bonus_type = field_parts
             payload[field][bonus_type] = count
+
+        elif len(field_parts) == 2 and field_parts[0] == _ATTEMPTS_FIELD:
+            field, attempt_until_grant = field_parts
+            payload[field][attempt_until_grant] = count
 
         elif len(field_parts) == 3 and field_parts[0] == _ERRORS_FIELD:
             error_field, bonus_type, reason_code = field_parts
