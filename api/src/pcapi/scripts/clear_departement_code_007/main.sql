@@ -1,0 +1,1 @@
+update "user" set "departementCode" = null where "departementCode" = '007' and "postalCode" is null
