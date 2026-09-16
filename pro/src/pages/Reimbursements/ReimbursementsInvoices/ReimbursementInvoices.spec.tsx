@@ -229,8 +229,8 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByLabelText('Type de justificatif')).toBeEnabled()
-    expect(screen.getByLabelText('Début de la période')).toBeEnabled()
-    expect(screen.getByLabelText('Fin de la période')).toBeEnabled()
+    expect(screen.getByLabelText('Date de début')).toBeEnabled()
+    expect(screen.getByLabelText('Date de fin')).toBeEnabled()
   })
 
   it('should let perform actions on invoices', async () => {
@@ -429,11 +429,11 @@ describe('reimbursementsWithFilters', () => {
     })
     expect(searchButton).toBeDisabled()
 
-    const beginPeriod = screen.getByLabelText('Début de la période')
+    const beginPeriod = screen.getByLabelText('Date de début')
     await user.clear(beginPeriod)
     await user.type(beginPeriod, '2020-11-17')
 
-    const endPeriod = screen.getByLabelText('Fin de la période')
+    const endPeriod = screen.getByLabelText('Date de fin')
     await user.clear(endPeriod)
     await user.type(endPeriod, '2020-11-19')
 
@@ -456,10 +456,10 @@ describe('reimbursementsWithFilters', () => {
       screen.getByRole('button', { name: 'Réinitialiser les filtres' })
     )
 
-    expect(await screen.findByLabelText('Début de la période')).toHaveValue(
+    expect(await screen.findByLabelText('Date de début')).toHaveValue(
       '2020-11-15'
     )
-    expect(screen.getByLabelText('Fin de la période')).toHaveValue('2020-12-15')
+    expect(screen.getByLabelText('Date de fin')).toHaveValue('2020-12-15')
   })
 
   it('should filter by amount type', async () => {
@@ -505,7 +505,7 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    const beginPeriod = screen.getByLabelText('Début de la période')
+    const beginPeriod = screen.getByLabelText('Date de début')
     await user.clear(beginPeriod)
 
     expect(
@@ -527,7 +527,7 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    const endPeriod = screen.getByLabelText('Fin de la période')
+    const endPeriod = screen.getByLabelText('Date de fin')
     await user.clear(endPeriod)
 
     expect(

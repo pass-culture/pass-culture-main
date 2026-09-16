@@ -152,8 +152,8 @@ test.describe('Search individual offers', () => {
     await page.getByText('Filtrer').click()
 
     const dateSearch = format(addDays(new Date(), 30), 'yyyy-MM-dd')
-    await page.getByLabel('Début de la période').fill(dateSearch)
-    await page.getByLabel('Fin de la période').fill(dateSearch)
+    await page.getByLabel('Date de début').fill(dateSearch)
+    await page.getByLabel('Date de fin').fill(dateSearch)
 
     const searchOffersPromise = page.waitForResponse((response) =>
       response.url().includes('/offers?')
@@ -280,8 +280,8 @@ test.describe('Search individual offers', () => {
     await expect(page.getByRole('combobox', { name: 'Statut' })).toHaveValue(
       EMPTY_OPTION_VALUE
     )
-    await expect(page.getByLabel('Début de la période')).toHaveValue('')
-    await expect(page.getByLabel('Fin de la période')).toHaveValue('')
+    await expect(page.getByLabel('Date de début')).toHaveValue('')
+    await expect(page.getByLabel('Date de fin')).toHaveValue('')
 
     await page.getByRole('searchbox', { name: /Nom de l’offre/ }).clear()
     await expect(

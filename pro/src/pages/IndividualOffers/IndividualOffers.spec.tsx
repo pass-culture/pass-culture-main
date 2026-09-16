@@ -337,7 +337,7 @@ describe('IndividualOffers', () => {
         expect(api.listOffers).toHaveBeenCalledTimes(1)
 
         await userEvent.type(
-          screen.getByLabelText('Début de la période'),
+          screen.getByLabelText('Date de début'),
           '2020-12-25'
         )
 
@@ -356,10 +356,7 @@ describe('IndividualOffers', () => {
 
         await renderIndividualOffers()
 
-        await userEvent.type(
-          screen.getByLabelText('Fin de la période'),
-          '2020-12-27'
-        )
+        await userEvent.type(screen.getByLabelText('Date de fin'), '2020-12-27')
         await userEvent.click(screen.getByText('Rechercher'))
 
         await waitFor(() => {

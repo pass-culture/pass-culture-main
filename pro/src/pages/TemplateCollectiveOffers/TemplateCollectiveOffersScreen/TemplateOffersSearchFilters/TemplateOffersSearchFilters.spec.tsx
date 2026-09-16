@@ -38,6 +38,7 @@ describe('TemplateOffersSearchFilters', () => {
     expect(screen.getByLabelText('Nom de l’offre')).toBeInTheDocument()
     expect(screen.getByLabelText('Statut')).toBeInTheDocument()
     expect(screen.getByLabelText('Format')).toBeInTheDocument()
-    expect(screen.getByText('Période de l’évènement')).toBeInTheDocument()
+    expect(screen.getByLabelText('Date de début')).toBeInTheDocument()
+    expect(screen.getByLabelText('Date de fin')).toBeInTheDocument()
   })
 })

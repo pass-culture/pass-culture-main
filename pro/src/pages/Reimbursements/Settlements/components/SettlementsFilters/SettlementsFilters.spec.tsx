@@ -59,8 +59,8 @@ describe('<SettlementsFilters />', () => {
     expect(screen.getByLabelText('N° de virement')).toBeInTheDocument()
     expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
 
-    const beginPeriod = screen.getByLabelText('Début de la période')
-    const endPeriod = screen.getByLabelText('Fin de la période')
+    const beginPeriod = screen.getByLabelText('Date de début')
+    const endPeriod = screen.getByLabelText('Date de fin')
 
     expect(beginPeriod).toBeInTheDocument()
     expect(beginPeriod).toHaveValue('2020-11-15')
@@ -80,10 +80,8 @@ describe('<SettlementsFilters />', () => {
 
     expect(screen.getByLabelText('N° de virement')).toHaveValue('VIR-8888')
     expect(screen.getByLabelText('Compte bancaire')).toHaveValue('2')
-    expect(screen.getByLabelText('Début de la période')).toHaveValue(
-      '2020-10-01'
-    )
-    expect(screen.getByLabelText('Fin de la période')).toHaveValue('2020-10-31')
+    expect(screen.getByLabelText('Date de début')).toHaveValue('2020-10-01')
+    expect(screen.getByLabelText('Date de fin')).toHaveValue('2020-10-31')
 
     expect(
       screen.getByRole('button', { name: 'Réinitialiser les filtres' })
@@ -125,7 +123,7 @@ describe('<SettlementsFilters />', () => {
     )
     expect(searchButton).toBeDisabled()
 
-    const endPeriod = screen.getByLabelText('Fin de la période')
+    const endPeriod = screen.getByLabelText('Date de fin')
     await user.clear(endPeriod)
     await user.type(endPeriod, '2020-12-20')
     expect(searchButton).toBeEnabled()
@@ -140,7 +138,7 @@ describe('<SettlementsFilters />', () => {
 
     await user.selectOptions(screen.getByLabelText('Compte bancaire'), '1')
 
-    const beginPeriod = screen.getByLabelText('Début de la période')
+    const beginPeriod = screen.getByLabelText('Date de début')
     await user.clear(beginPeriod)
     await user.type(beginPeriod, '2020-11-01')
 
@@ -162,7 +160,7 @@ describe('<SettlementsFilters />', () => {
     const user = userEvent.setup()
     renderSettlementsFilters()
 
-    const beginPeriod = screen.getByLabelText('Début de la période')
+    const beginPeriod = screen.getByLabelText('Date de début')
     await user.clear(beginPeriod)
 
     expect(
@@ -179,7 +177,7 @@ describe('<SettlementsFilters />', () => {
     const user = userEvent.setup()
     renderSettlementsFilters()
 
-    const endPeriod = screen.getByLabelText('Fin de la période')
+    const endPeriod = screen.getByLabelText('Date de fin')
     await user.clear(endPeriod)
 
     expect(

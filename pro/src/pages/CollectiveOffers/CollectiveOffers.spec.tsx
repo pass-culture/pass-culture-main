@@ -328,7 +328,7 @@ describe('CollectiveOffers', () => {
         await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
         await userEvent.type(
-          screen.getByLabelText('Début de la période'),
+          screen.getByLabelText('Date de début'),
           '2020-12-25'
         )
 
@@ -343,10 +343,7 @@ describe('CollectiveOffers', () => {
       it('should load offers with selected period ending date', async () => {
         renderOffers()
         await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
-        await userEvent.type(
-          screen.getByLabelText('Fin de la période'),
-          '2020-12-27'
-        )
+        await userEvent.type(screen.getByLabelText('Date de fin'), '2020-12-27')
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
