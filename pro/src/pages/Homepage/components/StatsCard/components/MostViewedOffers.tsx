@@ -1,9 +1,11 @@
 import cn from 'classnames'
+import { useId } from 'react'
 
 import type { TopOffersResponseData } from '@/apiClient/v1'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
-import { Thumb } from '@/ui-kit/Thumb/Thumb'
+import strokeOfferIcon from '@/icons/stroke-offer.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './MostViewedOffers.module.scss'
 
@@ -12,32 +14,42 @@ export interface MostViewedOffersProps {
 }
 
 export const MostViewedOffers = ({ topOffers }: MostViewedOffersProps) => {
-  return (
-    <div className={styles['container']}>
-      <div>
-        <h3 className={styles['block-title']}>Top offres</h3>
-      </div>
+  const titleId = useId()
 
-      <ol className={styles['top-offers']}>
+  return (
+    <section className={styles.container} aria-labelledby={titleId}>
+      <h3 id={titleId} className={styles.title}>
+        Top offres
+      </h3>
+      <ol className={styles.list}>
         {topOffers.map((topOffer) => (
-          <li key={topOffer.offerId} className={styles['top-offer']}>
-            <Thumb
-              url={topOffer.image?.url}
-              className={cn(styles['top-offer-thumbnail'], {
-                [styles['top-offer-thumbnail-placeholder']]:
-                  !topOffer.image?.url,
+          <li key={topOffer.offerId} className={styles.item}>
+            <div
+              className={cn(styles.thumbnail, {
+                [styles['thumbnail-placeholder']]: !topOffer.image?.url,
               })}
-            />
-            <div className={styles['top-offer-details']}>
-              {topOffer.isHeadlineOffer && (
-                <div className={styles['top-offer-headline-tag']}>
-                  <Tag label="Offre à la une" variant={TagVariant.HEADLINE} />
-                </div>
+            >
+              {topOffer.image?.url ? (
+                <img
+                  src={topOffer.image.url}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                />
+              ) : (
+                <SvgIcon
+                  src={strokeOfferIcon}
+                  alt=""
+                  className={styles['thumbnail-icon']}
+                />
               )}
-              <span className={styles['top-offer-title']}>
-                {topOffer.offerName}
-              </span>{' '}
-              <span className={styles['top-offer-views']}>
+            </div>
+            <div className={styles.details}>
+              {!topOffer.isHeadlineOffer && (
+                <Tag label="À la une" variant={TagVariant.HEADLINE} />
+              )}
+              <span className={styles.name}>{topOffer.offerName}</span>
+              <span className={styles.views}>
                 {topOffer.numberOfViews.toLocaleString('fr-FR')}{' '}
                 {pluralizeFr(topOffer.numberOfViews, 'vue', 'vues')}
               </span>
@@ -45,6 +57,6 @@ export const MostViewedOffers = ({ topOffers }: MostViewedOffersProps) => {
           </li>
         ))}
       </ol>
-    </div>
+    </section>
   )
 }
