@@ -148,8 +148,8 @@ test.describe('Search collective offers', () => {
     await page.getByText('Filtrer').click()
 
     const dateSearch = format(addWeeks(new Date(), 2), 'yyyy-MM-dd')
-    await page.getByLabel('Début de la période').fill(dateSearch)
-    await page.getByLabel('Fin de la période').fill(dateSearch)
+    await page.getByLabel('Date de début').fill(dateSearch)
+    await page.getByLabel('Date de fin').fill(dateSearch)
 
     const responsePromise = page.waitForResponse(
       (response) =>

@@ -29,7 +29,7 @@
   }
 
   &.has-value {
-    border: solid size.$input-border-width var(--color-border-selected);
+    border-width: size.$input-border-width;
   }
 
   &:disabled {
