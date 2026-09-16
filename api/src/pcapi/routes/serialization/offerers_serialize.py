@@ -364,6 +364,31 @@ class GetVenueStatsResponseModel(HttpBodyModel):
     json_data: VenueStatsDataModel
 
 
+class VenueMonthlyViewModel(HttpBodyModel):
+    month: date
+    views: int
+
+
+class TopOfferResponseModel(HttpBodyModel):
+    offer_id: int
+    name: str
+    views: int
+    image: offers_models.OfferImage | None
+    is_headline_offer: bool
+
+
+class VenueOffersPeriodStatsModel(HttpBodyModel):
+    top_offers: list[TopOfferResponseModel]
+    cumulated_views: int
+    views_by_month: list[VenueMonthlyViewModel]
+
+
+class GetVenueOffersStatsV2ResponseModel(HttpBodyModel):
+    venue_id: int
+    last_3_months: VenueOffersPeriodStatsModel
+    last_6_months: VenueOffersPeriodStatsModel
+
+
 class LinkVenueToBankAccountBodyModel(HttpBodyModel):
     venues_ids: set[int]
 
