@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { type InvoiceResponseV2Model, InvoiceStatus } from '@/apiClient/v1'
@@ -10,8 +10,11 @@ import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import * as downloadFileModule from '@/commons/utils/downloadFile'
 
-import { DOWNLOAD_REIMBURSEMENTS_LABEL } from '../constants'
-import { InvoiceActions } from './InvoiceActions'
+import {
+  DOWNLOAD_INVOICE_LABEL,
+  DOWNLOAD_REIMBURSEMENTS_LABEL,
+} from '../constants'
+import { InvoiceActions, InvoiceActionVariant } from './InvoiceActions'
 
 vi.mock('@/app/App/analytics/firebase', () => ({
   useAnalytics: vi.fn(),
@@ -49,126 +52,222 @@ beforeEach(() => {
   })
 })
 
-describe('InvoiceActions', () => {
-  it('should display error message when PDF download fails', async () => {
-    const user = userEvent.setup()
+describe('<InvoiceActions />', () => {
+  it('should render without accessibility violations in dropdown mode', async () => {
+    const { container } = render(<InvoiceActions invoice={mockInvoice} />)
 
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
-
-    render(<InvoiceActions invoice={mockInvoice} />)
-
-    const triggerButton = screen.getByRole('button', { name: 'Télécharger' })
-    await user.click(triggerButton)
-
-    const pdfDownloadMenuItem = screen.getByRole('menuitem', {
-      name: 'Télécharger le justificatif (.pdf)',
-    })
-    await user.click(pdfDownloadMenuItem)
-
-    await waitFor(() => {
-      expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
-    })
-    expect(downloadFileModule.downloadFile).not.toHaveBeenCalled()
+    expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should successfully download PDF when fetch succeeds', async () => {
-    const user = userEvent.setup()
-
-    const mockBlob = new Blob(['dummy-pdf-content'], {
-      type: 'application/pdf',
-    })
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      blob: () => Promise.resolve(mockBlob),
-    } as Response)
-
-    render(<InvoiceActions invoice={mockInvoice} />)
-
-    const triggerButton = screen.getByRole('button', { name: 'Télécharger' })
-    await user.click(triggerButton)
-
-    const pdfDownloadMenuItem = screen.getByRole('menuitem', {
-      name: 'Télécharger le justificatif (.pdf)',
-    })
-    await user.click(pdfDownloadMenuItem)
-
-    // Wait for the download to complete
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(mockInvoice.url)
-    })
-    expect(downloadFileModule.downloadFile).toHaveBeenCalledWith(
-      mockBlob,
-      'justificatif_comptable.pdf'
+  it('should render without accessibility violations in buttons mode', async () => {
+    const { container } = render(
+      <InvoiceActions
+        invoice={mockInvoice}
+        variant={InvoiceActionVariant.BUTTONS}
+      />
     )
 
-    expect(mockLogEvent).toHaveBeenCalledWith(
-      Events.CLICKED_INVOICES_DOWNLOAD,
-      {
-        fileType: 'justificatif',
-        filesCount: 1,
-        buttonType: 'unique',
-      }
-    )
-    expect(snackBarError).not.toHaveBeenCalled()
+    expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should display error message when CSV download fails', async () => {
-    const user = userEvent.setup()
+  describe('Dropdown Variant', () => {
+    it('should display error message when PDF download fails', async () => {
+      const user = userEvent.setup()
 
-    vi.mocked(api.getReimbursementsCsvV2).mockRejectedValueOnce(
-      new Error('Network error')
-    )
+      global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
 
-    render(<InvoiceActions invoice={mockInvoice} />)
+      render(<InvoiceActions invoice={mockInvoice} />)
 
-    const triggerButton = screen.getByRole('button', { name: 'Télécharger' })
-    await user.click(triggerButton)
+      const triggerButton = screen.getByRole('button', { name: 'Télécharger' })
+      await user.click(triggerButton)
 
-    const csvDownloadMenuItem = screen.getByRole('menuitem', {
-      name: DOWNLOAD_REIMBURSEMENTS_LABEL,
-    })
-    await user.click(csvDownloadMenuItem)
-
-    await waitFor(() => {
-      expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
-    })
-    expect(downloadFileModule.downloadFile).not.toHaveBeenCalled()
-  })
-
-  it('should successfully download the CSV details for this invoice only', async () => {
-    const user = userEvent.setup()
-
-    vi.mocked(api.getReimbursementsCsvV2).mockResolvedValueOnce(
-      'csv-blob' as never
-    )
-
-    render(<InvoiceActions invoice={mockInvoice} />)
-
-    const triggerButton = screen.getByRole('button', { name: 'Télécharger' })
-    await user.click(triggerButton)
-
-    const csvDownloadMenuItem = screen.getByRole('menuitem', {
-      name: DOWNLOAD_REIMBURSEMENTS_LABEL,
-    })
-    await user.click(csvDownloadMenuItem)
-
-    await waitFor(() => {
-      expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith({
-        query: { invoicesReferences: [mockInvoice.reference] },
-        parseAs: 'blob',
+      const pdfMenuItem = screen.getByRole('menuitem', {
+        name: DOWNLOAD_INVOICE_LABEL,
       })
+      await user.click(pdfMenuItem)
+
+      await waitFor(() => {
+        expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
+      })
+      expect(downloadFileModule.downloadFile).not.toHaveBeenCalled()
     })
-    expect(downloadFileModule.downloadFile).toHaveBeenCalledWith(
-      'csv-blob',
-      'remboursements_pass_culture.csv'
-    )
-    expect(mockLogEvent).toHaveBeenCalledWith(
-      Events.CLICKED_INVOICES_DOWNLOAD,
-      {
-        fileType: 'details',
-        filesCount: 1,
-        buttonType: 'unique',
-      }
-    )
-    expect(snackBarError).not.toHaveBeenCalled()
+
+    it('should successfully download PDF when fetch succeeds', async () => {
+      const user = userEvent.setup()
+
+      const mockBlob = new Blob(['dummy-pdf-content'], {
+        type: 'application/pdf',
+      })
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        blob: () => Promise.resolve(mockBlob),
+      } as Response)
+
+      render(<InvoiceActions invoice={mockInvoice} />)
+
+      const triggerButton = screen.getByRole('button', { name: 'Télécharger' })
+      await user.click(triggerButton)
+
+      const pdfMenuItem = screen.getByRole('menuitem', {
+        name: DOWNLOAD_INVOICE_LABEL,
+      })
+      await user.click(pdfMenuItem)
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(mockInvoice.url)
+      })
+      expect(downloadFileModule.downloadFile).toHaveBeenCalledWith(
+        mockBlob,
+        'justificatif_comptable.pdf'
+      )
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_INVOICES_DOWNLOAD,
+        {
+          fileType: 'justificatif',
+          filesCount: 1,
+          buttonType: 'unique',
+        }
+      )
+      expect(snackBarError).not.toHaveBeenCalled()
+    })
+
+    it('should display error message when CSV download fails', async () => {
+      const user = userEvent.setup()
+
+      vi.mocked(api.getReimbursementsCsvV2).mockRejectedValueOnce(
+        new Error('Network error')
+      )
+
+      render(<InvoiceActions invoice={mockInvoice} />)
+
+      const triggerButton = screen.getByRole('button', { name: 'Télécharger' })
+      await user.click(triggerButton)
+
+      const csvMenuItem = screen.getByRole('menuitem', {
+        name: DOWNLOAD_REIMBURSEMENTS_LABEL,
+      })
+      await user.click(csvMenuItem)
+
+      await waitFor(() => {
+        expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
+      })
+      expect(downloadFileModule.downloadFile).not.toHaveBeenCalled()
+    })
+
+    it('should successfully download the CSV details for this invoice only', async () => {
+      const user = userEvent.setup()
+
+      vi.mocked(api.getReimbursementsCsvV2).mockResolvedValueOnce(
+        'csv-blob' as never
+      )
+
+      render(<InvoiceActions invoice={mockInvoice} />)
+
+      const triggerButton = screen.getByRole('button', { name: 'Télécharger' })
+      await user.click(triggerButton)
+
+      const csvMenuItem = screen.getByRole('menuitem', {
+        name: DOWNLOAD_REIMBURSEMENTS_LABEL,
+      })
+      await user.click(csvMenuItem)
+
+      await waitFor(() => {
+        expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith({
+          query: { invoicesReferences: [mockInvoice.reference] },
+          parseAs: 'blob',
+        })
+      })
+      expect(downloadFileModule.downloadFile).toHaveBeenCalledWith(
+        'csv-blob',
+        'remboursements_pass_culture.csv'
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_INVOICES_DOWNLOAD,
+        {
+          fileType: 'details',
+          filesCount: 1,
+          buttonType: 'unique',
+        }
+      )
+      expect(snackBarError).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Buttons Variant', () => {
+    it('should render two action buttons directly', () => {
+      render(
+        <InvoiceActions
+          invoice={mockInvoice}
+          variant={InvoiceActionVariant.BUTTONS}
+        />
+      )
+
+      expect(
+        screen.getByRole('button', { name: DOWNLOAD_INVOICE_LABEL })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: DOWNLOAD_REIMBURSEMENTS_LABEL })
+      ).toBeInTheDocument()
+    })
+
+    it('should trigger PDF download when clicking PDF button', async () => {
+      const user = userEvent.setup()
+      const mockBlob = new Blob(['dummy-pdf-content'], {
+        type: 'application/pdf',
+      })
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        blob: () => Promise.resolve(mockBlob),
+      } as Response)
+
+      render(
+        <InvoiceActions
+          invoice={mockInvoice}
+          variant={InvoiceActionVariant.BUTTONS}
+        />
+      )
+
+      const pdfButton = screen.getByRole('button', {
+        name: DOWNLOAD_INVOICE_LABEL,
+      })
+      await user.click(pdfButton)
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(mockInvoice.url)
+      })
+      expect(downloadFileModule.downloadFile).toHaveBeenCalledWith(
+        mockBlob,
+        'justificatif_comptable.pdf'
+      )
+    })
+
+    it('should trigger CSV download when clicking CSV button', async () => {
+      const user = userEvent.setup()
+      vi.mocked(api.getReimbursementsCsvV2).mockResolvedValueOnce(
+        'csv-blob' as never
+      )
+
+      render(
+        <InvoiceActions
+          invoice={mockInvoice}
+          variant={InvoiceActionVariant.BUTTONS}
+        />
+      )
+
+      const csvButton = screen.getByRole('button', {
+        name: DOWNLOAD_REIMBURSEMENTS_LABEL,
+      })
+      await user.click(csvButton)
+
+      await waitFor(() => {
+        expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith({
+          query: { invoicesReferences: [mockInvoice.reference] },
+          parseAs: 'blob',
+        })
+      })
+      expect(downloadFileModule.downloadFile).toHaveBeenCalledWith(
+        'csv-blob',
+        'remboursements_pass_culture.csv'
+      )
+    })
   })
 })
