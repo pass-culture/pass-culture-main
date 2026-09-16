@@ -26,7 +26,7 @@ class GetSimilarOffersTest:
         assert response == b"raw response"
         query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
         assert query["user_id"] == str(user.id)
-        assert query["token"] == "secret token"
+        assert mocked.last_request.headers["X-API-Key"] == "secret token"
 
     def test_without_user(self, requests_mock):
         mocked = requests_mock.get(
@@ -38,7 +38,8 @@ class GetSimilarOffersTest:
 
         assert response == b"raw response"
         query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
-        assert query == {"token": "secret token"}
+        assert query == {}
+        assert mocked.last_request.headers["X-API-Key"] == "secret token"
 
     def test_params(self, requests_mock):
         mocked = requests_mock.get(
@@ -50,7 +51,8 @@ class GetSimilarOffersTest:
 
         assert response == b"raw response"
         query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
-        assert query == {"token": "secret token", "foo": "bar"}
+        assert query == {"foo": "bar"}
+        assert mocked.last_request.headers["X-API-Key"] == "secret token"
 
     def test_timeout_failure(self, requests_mock):
         requests_mock.get(
@@ -94,8 +96,7 @@ class GetPlaylistTest:
         response = recommendation.get_playlist(user)
 
         assert response == b"raw response"
-        query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
-        assert query["token"] == "secret token"
+        assert mocked.last_request.headers["X-API-Key"] == "secret token"
 
     def test_params(self, requests_mock):
         user = users_factories.UserFactory(id=1)
@@ -112,7 +113,7 @@ class GetPlaylistTest:
 
         assert response == b"raw response"
         query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
-        assert query["token"] == "secret token"
+        assert mocked.last_request.headers["X-API-Key"] == "secret token"
         assert query["query_param"] == "foo"
         body = json.loads(mocked.last_request.body)
         assert body == {"body_param": "bar"}
