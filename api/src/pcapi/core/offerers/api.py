@@ -2265,7 +2265,7 @@ def get_venue_offers_statistics_v2(venue_id: int) -> VenueOffersStatisticsV2Mode
 
     top_offers_3_months = _get_top_offers_views(top_offers_rows, months=3)
     top_offers_6_months = _get_top_offers_views(top_offers_rows, months=6)
-    offers_mapping = map_top_offers_to_existing_offers({*top_offers_3_months, *top_offers_6_months})
+    offers_mapping = map_top_offers_to_existing_offers({*top_offers_3_months, *top_offers_6_months}, venue_id)
 
     views_by_month_6_months = _get_views_by_month(views_by_month_rows)
     views_by_month_3_months = views_by_month_6_months[-3:]
@@ -2279,8 +2279,13 @@ def get_venue_offers_statistics_v2(venue_id: int) -> VenueOffersStatisticsV2Mode
 
 def map_top_offers_to_existing_offers(
     top_offers: typing.Collection[OfferViewsModel],
+    venue_id: int,
 ) -> dict[OfferViewsModel, offers_models.Offer]:
-    offers = offers_repository.get_offers_with_headlines_and_mediations([int(o.offer_id) for o in top_offers])
+    # ClickHouse rows are already filtered on the venue: filtering again
+    # here guarantees that no other venue's offer can leak
+    offers = offers_repository.get_offers_with_headlines_and_mediations(
+        [int(o.offer_id) for o in top_offers], venue_id=venue_id
+    )
     offers_mapping = {offer.id: offer for offer in offers}
 
     top_offers_to_offers_mapping = {top_offer: offers_mapping.get(int(top_offer.offer_id)) for top_offer in top_offers}
