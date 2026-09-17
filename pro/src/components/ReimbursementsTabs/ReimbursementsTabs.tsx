@@ -40,6 +40,11 @@ export const ReimbursementsTabs = ({
         url: '/administration/remboursements',
       },
       {
+        id: STEP_ID_SETTLEMENTS,
+        label: 'Virements',
+        url: '/administration/remboursements/virements',
+      },
+      {
         id: STEP_ID_BANK_INFORMATIONS,
         label: (
           <>
@@ -63,15 +68,9 @@ export const ReimbursementsTabs = ({
       },
     ]
 
-    if (isNewSettlementsActivated) {
-      steps.unshift({
-        id: STEP_ID_SETTLEMENTS,
-        label: 'Virements',
-        url: '/administration/remboursements/virements',
-      })
-    }
-
-    return steps
+    return steps.filter(
+      (s) => isNewSettlementsActivated || s.id !== STEP_ID_SETTLEMENTS
+    )
   }
 
   const tabs: NavLinkItem<string>[] = getSteps().map(({ id, label, url }) => ({
