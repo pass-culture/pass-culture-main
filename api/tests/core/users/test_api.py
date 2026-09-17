@@ -662,6 +662,7 @@ class DomainsCreditTest:
             digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(120)),
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(50)),
         )
+        assert user.wallet_balance == Decimal(215)
 
     def test_get_domains_credit(self):
         user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_18)
@@ -673,11 +674,13 @@ class DomainsCreditTest:
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
+        expected_wallet_balance = Decimal(50)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(300), remaining=Decimal(50)),
+            all=users_models.Credit(initial=Decimal(300), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(100), remaining=Decimal(50)),
             physical=None,
         )
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_credit_grant_17_18_digital_cap_v1(self):
         with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME - relativedelta(minutes=1)):
@@ -690,11 +693,13 @@ class DomainsCreditTest:
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
+        expected_wallet_balance = Decimal(100)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(150), remaining=Decimal(100)),
+            all=users_models.Credit(initial=Decimal(150), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(100), remaining=Decimal(100)),
             physical=None,
         )
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_credit_grant_17_18_digital_cap_v2(self):
         with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME + relativedelta(minutes=1)):
@@ -706,11 +711,14 @@ class DomainsCreditTest:
             amount=50,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
+
+        expected_wallet_balance = Decimal(100)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(150), remaining=Decimal(100)),
+            all=users_models.Credit(initial=Decimal(150), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(50), remaining=Decimal(50)),
             physical=None,
         )
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_credit_deposit_expired(self):
         with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME):
@@ -730,10 +738,67 @@ class DomainsCreditTest:
                 physical=None,
             )
 
+    def test_get_domains_credit_deposit_expired_for_wallet_balance(self):
+        user = users_factories.BeneficiaryFactory()
+        bookings_factories.BookingFactory(
+            user=user,
+            amount=user.deposit.amount - 10,
+        )
+        user.deposit.expirationDate = date_utils.get_naive_utc_now() - datetime.timedelta(hours=1)
+
+        db.session.flush()
+
+        assert user.wallet_balance is None
+
     def test_get_domains_credit_no_deposit(self):
         user = users_factories.UserFactory()
 
         assert not users_api.get_domains_credit(user)
+        assert user.wallet_balance is None
+
+    def test_get_domains_credit_ignores_incidents_that_are_neither_validated_nor_invoiced(self):
+        user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_18)
+        booking = bookings_factories.UsedBookingFactory(user=user, stock__price=Decimal(20))
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking,
+            incident=finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CANCELLED),
+            newTotalAmount=500,
+        )
+
+        expected_wallet_balance = Decimal(280)
+        assert users_api.get_domains_credit(user).all.remaining == expected_wallet_balance
+        assert user.wallet_balance == expected_wallet_balance
+
+    def test_get_domains_credit_keeps_cents_of_partial_incident(self):
+        user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_18)
+        booking = bookings_factories.UsedBookingFactory(user=user, stock__price=Decimal(20))
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking,
+            incident=finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED),
+            newTotalAmount=1234,
+        )
+
+        expected_wallet_balance = Decimal("287.66")
+        assert users_api.get_domains_credit(user).all.remaining == expected_wallet_balance
+        assert user.wallet_balance == expected_wallet_balance
+
+    def test_get_domains_credit_counts_booking_with_several_incidents_once(self):
+        user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_18)
+        booking = bookings_factories.UsedBookingFactory(user=user, stock__price=Decimal(20))
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking,
+            incident=finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CANCELLED),
+            newTotalAmount=1500,
+        )
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking,
+            incident=finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED),
+            newTotalAmount=1000,
+        )
+
+        expected_wallet_balance = Decimal(290)
+        assert users_api.get_domains_credit(user).all.remaining == expected_wallet_balance
+        assert user.wallet_balance == expected_wallet_balance
 
     @staticmethod
     def _price_booking(booking):
@@ -847,11 +912,13 @@ class DomainsCreditTest:
         )
         self._price_incident(incident3)
 
+        expected_wallet_balance = Decimal(470)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(470)),
+            all=users_models.Credit(initial=Decimal(500), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
         )
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_regular_credit_with_commercial_gestures(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
@@ -944,11 +1011,13 @@ class DomainsCreditTest:
         )
         self._price_incident(incident3)
 
+        expected_wallet_balance = Decimal(465)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(465)),
+            all=users_models.Credit(initial=Decimal(500), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
         )
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_regular_credit_with_overpayments_in_case_of_v3_deposit_transition(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
@@ -1066,7 +1135,11 @@ class DomainsCreditTest:
 
         # initial amount of active deposit + incidents amounts = 50 + (6 + 5) = 61
         # 20€ are used with booking4 => remaining = 61 - 20 = 41€
-        assert users_api.get_domains_credit(user).all == users_models.Credit(initial=Decimal(61), remaining=Decimal(41))
+        expected_wallet_balance = Decimal(41)
+        assert users_api.get_domains_credit(user).all == users_models.Credit(
+            initial=Decimal(61), remaining=expected_wallet_balance
+        )
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_digital_credit_with_overpayments(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
@@ -1160,11 +1233,13 @@ class DomainsCreditTest:
         )
         self._price_incident(incident3)
 
+        expected_wallet_balance = Decimal(476)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(476)),
+            all=users_models.Credit(initial=Decimal(500), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(176)),
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
         )
+        assert user.wallet_balance == expected_wallet_balance
 
     def test_get_domains_physical_credit_with_overpayments(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
@@ -1255,11 +1330,13 @@ class DomainsCreditTest:
         )
         self._price_incident(incident3)
 
+        expected_wallet_balance = Decimal(405)
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(405)),
+            all=users_models.Credit(initial=Decimal(500), remaining=expected_wallet_balance),
             digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(200)),
             physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(105)),
         )
+        assert user.wallet_balance == expected_wallet_balance
 
 
 class CreateProUserTest:
