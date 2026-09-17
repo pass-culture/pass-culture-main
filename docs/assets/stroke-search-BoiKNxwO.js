@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-DkW27tQK.js";var t;function n(){return(n=e((()=>{t=``+new URL(`stroke-search-DAloA4g3.svg`,import.meta.url).href})))()}export{t as n,n as t};
