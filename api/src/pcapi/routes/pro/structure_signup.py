@@ -152,9 +152,6 @@ def simulate_signup(
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
 
-    if data.ape_code is None:
-        raise ApiErrors(errors={"global": ["Impossible d'effectuer une simulation pour ce SIRET."]})
-
     result = structure_signup_api.get_signup_documents_and_messages(
         ape_code=data.ape_code,
         legal_category_code=data.legal_category_code,
@@ -186,9 +183,6 @@ def send_signup_simulation_summary(body: sirene_serialize.SignupSimulationSummar
         data = offerers_api.find_structure_data(body.siret)
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
-
-    if data.ape_code is None:
-        raise ApiErrors(errors={"global": ["Impossible d'effectuer une simulation pour ce SIRET."]})
 
     activity = offerers_models.Activity[body.activity.name]
     signup_link = structure_signup_api.build_signup_link(
