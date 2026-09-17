@@ -171,7 +171,7 @@ def test_get_siren_without_ape():
         siren_info = api.get_siren(siren, with_address=False)
         assert siren_info.siren == siren
         assert siren_info.name == "LYCEE D'ENSEIGNEMENT PROFESSIONNEL"
-        assert siren_info.ape_code is None
+        assert siren_info.ape_code == "0000Z"
 
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
