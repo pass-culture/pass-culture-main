@@ -1,0 +1,1 @@
+import{t as e}from"./iframe-BUC-vKtJ.js";e();
