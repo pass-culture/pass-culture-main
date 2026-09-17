@@ -16,6 +16,12 @@ logger = logging.getLogger(__name__)
 
 target_metadata = Model.metadata
 
+# the detection of check constraints must be explicitely enabled since alembic 1.19.2
+AUTOGENERATE_PLUGINS = (
+    "alembic.autogenerate.*",
+    "alembic.ext.checkconstraint_byname",
+)
+
 
 def _is_enum_column(type_: str, object_: schema.SchemaItem) -> bool:
     return type_ == "column" and isinstance(object_.type, sqlalchemy.types.Enum)  # type: ignore[attr-defined]
@@ -88,6 +94,7 @@ def run_online_migrations() -> None:
                     transaction_per_migration=True,
                     compare_server_default=True,
                     on_version_apply=reset_attempt,
+                    autogenerate_plugins=AUTOGENERATE_PLUGINS,
                 )
                 with context.begin_transaction():
                     context.run_migrations()
@@ -115,5 +122,10 @@ def run_online_migrations() -> None:
 
 def run_offline_migrations() -> None:
     """Run migrations *without* a SQL connection."""
-    context.configure(url=settings.DATABASE_URL, literal_binds=True, transaction_per_migration=True)
+    context.configure(
+        url=settings.DATABASE_URL,
+        literal_binds=True,
+        transaction_per_migration=True,
+        autogenerate_plugins=AUTOGENERATE_PLUGINS,
+    )
     context.run_migrations()
