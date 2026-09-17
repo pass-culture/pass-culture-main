@@ -253,6 +253,7 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
         venue=venue,
         content=venue_banner.content,
         image_credit=venue_banner.image_credit,  # type: ignore[arg-type]
+        image_alternative_text=venue_banner.image_alternative_text,
         crop_params=venue_banner.crop_params,
     )
 

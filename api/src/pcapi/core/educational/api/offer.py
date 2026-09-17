@@ -805,10 +805,12 @@ def attach_image(
     image: bytes,
     crop_params: image_conversion.CropParams,
     credit: str,
+    alternative_text: str | None = None,
 ) -> None:
     obj.set_image(
         image=image,
         credit=credit,
+        alternative_text=alternative_text,
         crop_params=crop_params,
         ratio=image_conversion.ImageRatio.PORTRAIT,
         keep_original=False,
@@ -864,6 +866,7 @@ def duplicate_offer_and_stock(original_offer: models.CollectiveOffer) -> models.
         mentalDisabilityCompliant=original_offer.mentalDisabilityCompliant,
         motorDisabilityCompliant=original_offer.motorDisabilityCompliant,
         visualDisabilityCompliant=original_offer.visualDisabilityCompliant,
+        imageAlternativeText=original_offer.imageAlternativeText,
         imageCredit=original_offer.imageCredit,
         imageHasOriginal=original_offer.imageHasOriginal,
         institutionId=original_offer.institutionId,

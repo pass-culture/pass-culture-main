@@ -2433,6 +2433,7 @@ class VenueBannerTest:
         assert updated_venue.bannerMeta == {
             "author_id": user.id,
             "image_credit": "none",
+            "image_alternative_text": None,
             "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
             "updated_at": "2020-10-15T00:00:00",
         }
@@ -2462,6 +2463,7 @@ class VenueBannerTest:
         assert updated_venue.bannerMeta == {
             "author_id": user.id,
             "image_credit": "none",
+            "image_alternative_text": None,
             "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
             "updated_at": "2020-10-15T00:00:00",
         }

@@ -255,6 +255,7 @@ class GetCollectiveOfferBaseResponseModel(HttpBodyModel):
     displayedStatus: models.CollectiveOfferDisplayedStatus
     domains: list[OfferDomain]
     interventionArea: list[str]
+    imageAlternativeText: str | None
     imageCredit: str | None
     imageUrl: str | None
     nationalProgram: national_programs.NationalProgramResponseModel | None
@@ -301,6 +302,7 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
             displayedStatus=offer.displayedStatus,
             domains=[OfferDomain.model_validate(domain) for domain in offer.domains],
             interventionArea=offer.interventionArea,
+            imageAlternativeText=offer.imageAlternativeText,
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
             nationalProgram=national_program,
@@ -413,6 +415,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
             displayedStatus=offer.displayedStatus,
             domains=[OfferDomain.model_validate(domain) for domain in offer.domains],
             interventionArea=offer.interventionArea,
+            imageAlternativeText=offer.imageAlternativeText,
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
             nationalProgram=national_program,
@@ -657,6 +660,7 @@ class AttachImageFormModel(HttpBodyModel):
     # but it is not present in the model received by the route itself
     thumb: BaseFile | None = None
     credit: str
+    alternative_text: str | None = pydantic.Field(default=None, max_length=150)
     cropping_rect_x: float
     cropping_rect_y: float
     cropping_rect_height: float
