@@ -524,7 +524,7 @@ RESPONSE_SIREN_WITHOUT_APE = {
         "activite_principale": {
             "code": None,
             "nomenclature": None,
-            "libelle": "ancienne r\u00e9vision NAF () non support\u00e9e",
+            "libelle": "non référencé",
         },
         "tranche_effectif_salarie": {
             "de": None,

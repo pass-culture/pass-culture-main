@@ -255,7 +255,9 @@ class EntrepriseBackend(BaseBackend):
             siren=siren_data["siren"],
             name=self._get_name_from_sirene_data(siren_data),
             head_office_siret=head_office_siret,
-            ape_code=self._format_ape_code(siren_data["activite_principale"].get("code")),
+            ape_code=self._format_ape_code(
+                siren_data["activite_principale"].get("code"), data["activite_principale"]["libelle"]
+            ),
             ape_label=data["activite_principale"]["libelle"],
             active=self._is_active(siren_data, closure_date),
             diffusible=self._is_diffusible(siren_data),
@@ -293,7 +295,9 @@ class EntrepriseBackend(BaseBackend):
             siren=siren_data["siren"],
             name=self._get_name_from_sirene_data(siren_data),
             head_office_siret=head_office_siret,
-            ape_code=self._format_ape_code(siren_data["activite_principale"].get("code")),
+            ape_code=self._format_ape_code(
+                siren_data["activite_principale"].get("code"), data["activite_principale"]["libelle"]
+            ),
             ape_label=data["activite_principale"]["libelle"],
             active=self._is_active(siren_data, closure_date),
             diffusible=is_diffusible,
@@ -303,9 +307,13 @@ class EntrepriseBackend(BaseBackend):
             closure_date=closure_date,
         )
 
-    def _format_ape_code(self, ape_code: str | None) -> str | None:
-        if not ape_code:
-            return None
+    def _format_ape_code(self, ape_code: str | None, libelle: str) -> str:
+        if (
+            not ape_code and libelle == "non référencé"
+        ):  # entrepise api can send null for ape code not referenced in current nomenclature (so very old ape codes). We substitute with their temporary code, but it should never happen
+            ape_code = "0000Z"
+        elif not ape_code:
+            raise exceptions.ApiException("Aucun code APE pour ce siret/siren")
         return ape_code.replace(".", "")
 
     def get_siret_open_data(self, siret: str) -> models.SiretInfo:
@@ -326,7 +334,9 @@ class EntrepriseBackend(BaseBackend):
             diffusible=self._is_diffusible(data),
             name=self._get_name_from_sirene_data(data["unite_legale"]),
             address=self._get_address_from_sirene_data(data["adresse"]),
-            ape_code=self._format_ape_code(data["activite_principale"].get("code")),
+            ape_code=self._format_ape_code(
+                data["activite_principale"].get("code"), data["activite_principale"]["libelle"]
+            ),
             ape_label=data["activite_principale"]["libelle"],
             legal_category_code=data["unite_legale"]["forme_juridique"]["code"],
         )
@@ -353,7 +363,9 @@ class EntrepriseBackend(BaseBackend):
             diffusible=is_diffusible,
             name=self._get_name_from_sirene_data(data["unite_legale"]),
             address=self._get_address_from_sirene_data(data["adresse"]),
-            ape_code=self._format_ape_code(data["activite_principale"].get("code")),
+            ape_code=self._format_ape_code(
+                data["activite_principale"].get("code"), data["activite_principale"]["libelle"]
+            ),
             ape_label=data["activite_principale"]["libelle"],
             legal_category_code=data["unite_legale"]["forme_juridique"]["code"],
         )
