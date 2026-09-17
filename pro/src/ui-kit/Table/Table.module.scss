@@ -54,11 +54,18 @@
   &-cell {
     padding: var(--size-spacing-s);
     text-align: left;
+
+    &:last-of-type {
+      width: var(--last-cell-width, inherit);
+    }
   }
 }
 
 .table-row {
-  border-bottom: 1px solid var(--color-border-subtle);
+  border-bottom: var(
+    --table-row-border-bottom,
+    1px solid var(--color-border-subtle)
+  );
 }
 
 .table-header {
@@ -73,6 +80,7 @@
   }
 
   &-th {
+    border-bottom: var(--table-header-th-border-bottom, none);
     text-align: left;
     padding: var(--size-spacing-s);
     white-space: nowrap;
