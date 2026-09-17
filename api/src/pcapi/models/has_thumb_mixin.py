@@ -11,7 +11,6 @@ class HasThumbMixin:
     # (possibly through another mixin), and that this mixin can use it
     # in its own functions.
     id: sa_orm.Mapped[int]
-
     thumbCount: sa_orm.Mapped[int] = sa_orm.mapped_column(Integer(), nullable=False, default=0)
 
     @property

@@ -201,6 +201,7 @@ class Returns200Test:
                 },
                 "image_credit": None,
                 "original_image_url": None,
+                "image_alternative_text": None,
             },
             "id": venue.id,
             "canDisplayHighlights": True,
@@ -300,6 +301,7 @@ class Returns200Test:
                     "height_crop_percent": 0.42,
                     "width_crop_percent": 0.42,
                 },
+                "image_alternative_text": "A venue banner",
                 "random": "content",
                 "should": "be_ignored",
             },
@@ -323,6 +325,7 @@ class Returns200Test:
                 "width_crop_percent": 0.42,
             },
             "image_credit": None,
+            "image_alternative_text": "A venue banner",
             "original_image_url": None,
         }
 
@@ -385,7 +388,10 @@ class Returns200Test:
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
             bannerUrl="http://example.com/image_cropped.png",
-            bannerMeta={"original_image_url": "http://example.com/original_image.png"},
+            bannerMeta={
+                "original_image_url": "http://example.com/original_image.png",
+                "image_alternative_text": "an alt text",
+            },
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
@@ -407,6 +413,7 @@ class Returns200Test:
             },
             "image_credit": None,
             "original_image_url": "http://example.com/original_image.png",
+            "image_alternative_text": "an alt text",
         }
 
     def should_not_override_metadata_when_venue_picture_has_crop_params(self, client):
@@ -444,6 +451,7 @@ class Returns200Test:
             },
             "image_credit": None,
             "original_image_url": None,
+            "image_alternative_text": None,
         }
 
     def should_complete_crop_params_when_venue_picture_has_incomplete_crop_params(self, client):

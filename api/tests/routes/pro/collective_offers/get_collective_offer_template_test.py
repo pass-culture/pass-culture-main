@@ -22,7 +22,10 @@ class Returns200Test:
 
     def test_get_collective_offer_template(self, client):
         national_program = educational_factories.NationalProgramFactory()
-        offer = educational_factories.CollectiveOfferTemplateFactory(nationalProgramId=national_program.id)
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            nationalProgramId=national_program.id,
+            imageAlternativeText="A collective offer template image",
+        )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         client = client.with_session_auth(email="user@example.com")
@@ -46,6 +49,7 @@ class Returns200Test:
         assert "priceDetail" in response_json
         assert response_json["imageCredit"] is None
         assert response_json["imageUrl"] is None
+        assert response_json["imageAlternativeText"] == "A collective offer template image"
         assert response_json["name"] == offer.name
         assert response_json["id"] == offer.id
         assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}

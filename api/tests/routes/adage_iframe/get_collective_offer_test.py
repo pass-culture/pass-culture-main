@@ -37,7 +37,7 @@ class CollectiveOfferTest:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_get_collective_offer(self, eac_client, redactor):
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(bannerMeta={"image_alternative_text": "A venue banner"})
         institution = factories.EducationalInstitutionFactory(institutionId="12890AI")
         stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 5, 15),
@@ -54,6 +54,9 @@ class CollectiveOfferTest:
             collectiveOffer__venue=venue,
             collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
             collectiveOffer__offererAddress=venue.offererAddress,
+            collectiveOffer__imageAlternativeText="An image alternative text",
+            collectiveOffer__imageCredit="An image credit",
+            collectiveOffer__imageId="00000000000000001",
         )
         offer = stock.collectiveOffer
 
@@ -90,6 +93,7 @@ class CollectiveOfferTest:
                     "longitude": float(venue.offererAddress.address.longitude),
                 },
                 "id": offer.venue.id,
+                "imgAlternativeText": "A venue banner",
                 "imgUrl": None,
                 "managingOfferer": {"name": offer.venue.managingOfferer.name},
                 "name": offer.venue.name,
@@ -133,8 +137,9 @@ class CollectiveOfferTest:
                 "postalCode": institution.postalCode,
             },
             "interventionArea": ["93", "94", "95"],
-            "imageUrl": None,
-            "imageCredit": None,
+            "imageAlternativeText": "An image alternative text",
+            "imageUrl": offer.imageUrl,
+            "imageCredit": "An image credit",
             "teacher": {
                 "email": offer.teacher.email,
                 "firstName": offer.teacher.firstName,

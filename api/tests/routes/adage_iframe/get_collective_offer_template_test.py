@@ -52,6 +52,9 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
             "city": venue_address.city,
             "coordinates": coordinates,
             "id": offer.venue.id,
+            "imgAlternativeText": (
+                offer.venue.bannerMeta.get("image_alternative_text") if offer.venue.bannerMeta else None
+            ),
             "imgUrl": offer.venue.bannerUrl,
             "managingOfferer": {"name": offer.venue.managingOfferer.name},
             "name": offer.venue.name,
@@ -94,6 +97,7 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
         "domains": [{"id": domain.id, "name": domain.name} for domain in offer.domains],
         "imageUrl": offer.imageUrl,
         "imageCredit": offer.imageCredit,
+        "imageAlternativeText": offer.imageAlternativeText,
         "nationalProgram": {"id": national_program.id, "name": national_program.name} if national_program else None,
         "isFavorite": is_favorite,
         "dates": {
@@ -114,6 +118,7 @@ class CollectiveOfferTemplateTest:
         venue = offerers_factories.VenueFactory()
         offer = factories.CollectiveOfferTemplateFactory(
             venue__bannerUrl=IMG_URL,
+            venue__bannerMeta={"image_alternative_text": "A venue banner"},
             name="offer name",
             description="offer description",
             priceDetail="détail du prix",

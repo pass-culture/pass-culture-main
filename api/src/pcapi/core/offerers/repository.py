@@ -372,7 +372,7 @@ def get_venue_by_collective_offer_id(collective_offer_id: int) -> models.Venue:
         db.session.query(models.Venue)
         .join(models.Venue.collectiveOffers)
         .filter(educational_models.CollectiveOffer.id == collective_offer_id)
-        .options(sa_orm.joinedload(models.Venue.managingOfferer))
+        .options(sa_orm.joinedload(models.Venue.managingOfferer), sa_orm.joinedload(models.Venue.googlePlacesInfo))
         .one_or_none()
     )
     if not venue:

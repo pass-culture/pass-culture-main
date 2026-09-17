@@ -25,7 +25,10 @@ class Returns200Test:
     def test_one_collective_offer_template(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offer = factories.CollectiveOfferTemplateFactory(venue=venue)
+        offer = factories.CollectiveOfferTemplateFactory(
+            venue=venue,
+            imageAlternativeText="A collective offer template image",
+        )
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
@@ -52,6 +55,7 @@ class Returns200Test:
                     "locationType": "TO_BE_DEFINED",
                 },
                 "name": offer.name,
+                "imageAlternativeText": "A collective offer template image",
                 "imageUrl": None,
                 "displayedStatus": "PUBLISHED",
             }

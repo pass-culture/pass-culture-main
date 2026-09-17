@@ -111,6 +111,7 @@ class OfferVenueResponse(BaseModel):
     managingOfferer: OfferManagingOffererResponse
     adageId: str | None
     bannerUrl: str | None = Field(alias="imgUrl")
+    imageAlternativeText: str | None = Field(alias="imgAlternativeText")
 
     class Config:
         orm_mode = True
@@ -133,6 +134,7 @@ class OfferVenueResponse(BaseModel):
             managingOfferer=venue.managingOfferer,  # type: ignore [arg-type]
             adageId=venue.adageId,
             imgUrl=venue.bannerUrl,
+            imgAlternativeText=venue.bannerMeta.get("image_alternative_text") if venue.bannerMeta else None,
         )
 
 
@@ -182,6 +184,7 @@ class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComp
     interventionArea: list[str]
     imageUrl: str | None
     imageCredit: str | None
+    imageAlternativeText: str | None
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[EacFormat]
     isTemplate: bool
@@ -222,6 +225,7 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             interventionArea=offer.interventionArea,
             imageUrl=offer.imageUrl,
             imageCredit=offer.imageCredit,
+            imageAlternativeText=offer.imageAlternativeText,
             teacher=offer.teacher,  # type: ignore [arg-type]
             nationalProgram=offer.nationalProgram,  # type: ignore [arg-type]
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
@@ -271,6 +275,7 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
             interventionArea=offer.interventionArea,
             imageUrl=offer.imageUrl,
             imageCredit=offer.imageCredit,
+            imageAlternativeText=offer.imageAlternativeText,
             nationalProgram=offer.nationalProgram,  # type: ignore [arg-type]
             isFavorite=is_favorite,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,

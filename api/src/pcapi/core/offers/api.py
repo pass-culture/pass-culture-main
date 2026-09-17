@@ -1188,6 +1188,7 @@ def create_mediation(
     credit: str | None,
     image_as_bytes: bytes,
     *,
+    alternative_text: str | None = None,
     crop_params: image_conversion.CropParams | None = None,
     keep_ratio: bool = False,
     min_width: int | None = validation.MIN_THUMBNAIL_WIDTH,
@@ -1200,7 +1201,7 @@ def create_mediation(
         image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
     )
 
-    mediation = models.Mediation(author=user, offer=offer, credit=credit)
+    mediation = models.Mediation(author=user, offer=offer, credit=credit, alternativeText=alternative_text)
 
     db.session.add(mediation)
     db.session.flush()  # `create_thumb()` requires the object to have an id, so we must flush now.

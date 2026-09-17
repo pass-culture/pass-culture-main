@@ -56,6 +56,7 @@ class CreateThumbnailFromFileTest:
         data = {
             "offerId": offer.id,
             "credit": "John Do",
+            "alternativeText": "A mediation image",
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
@@ -64,10 +65,12 @@ class CreateThumbnailFromFileTest:
         assert response.status_code == 201
         mediation = db.session.query(Mediation).one()
         assert mediation.thumbCount == 1
+        assert mediation.alternativeText == "A mediation image"
         assert response.json == {
             "credit": "John Do",
             "id": mediation.id,
             "url": f"http://localhost/storage/thumbs/mediations/{humanize(mediation.id)}",
+            "alternativeText": "A mediation image",
         }
 
     def test_wrong_content_type_from_file(self, client, offer, offerer):
