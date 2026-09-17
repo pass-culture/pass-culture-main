@@ -47,10 +47,6 @@
   border-collapse: collapse;
   border-spacing: 0 rem.torem(24px);
 
-  &:last-child {
-    border-bottom: none;
-  }
-
   &-cell {
     padding: var(--size-spacing-s);
     text-align: left;
