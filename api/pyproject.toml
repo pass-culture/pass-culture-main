@@ -51,7 +51,7 @@ dependencies = [
   "phonenumberslite==9.0.38",
   "pillow==12.3.0",
   "prometheus-flask-exporter ==0.23.2",
-  "psycopg2==2.9.12",
+  "psycopg2==2.9.13",
   "py7zr==1.1.3",
   # required by schwifty, upgraded manually because of setuptools
   "pycountry ==26.2.16",
