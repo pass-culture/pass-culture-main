@@ -40,7 +40,7 @@ jobs:
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@6483091347df28b22c7b10d39bb6e3e058d7278a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5
 
       - name: "Cache the node_modules"
         uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
@@ -94,7 +94,7 @@ jobs:
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@6483091347df28b22c7b10d39bb6e3e058d7278a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5
 
       - uses: KengoTODA/actions-setup-docker-compose@477353946803dd64eaa44008b865b6bfc88cab4e # v1.2.4
         with:
@@ -233,7 +233,7 @@ jobs:
           cache: pnpm
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@6483091347df28b22c7b10d39bb6e3e058d7278a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5
 
       - name: "Install dependencies (3 attempts)"
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
