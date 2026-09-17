@@ -2882,10 +2882,10 @@ def set_accessibility_provider_id(
                 externalAccessibilityId=id_at_provider,
                 externalAccessibilityUrl=url_at_provider,
             )
+            db.session.add(venue.accessibilityProvider)
         else:
             venue.accessibilityProvider.externalAccessibilityId = id_at_provider
             venue.accessibilityProvider.externalAccessibilityUrl = url_at_provider
-        db.session.add(venue.accessibilityProvider)
 
 
 def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
@@ -2896,59 +2896,48 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
         if last_update and accessibility_data:
             venue.accessibilityProvider.externalAccessibilityData = accessibility_data.dict()
             venue.accessibilityProvider.lastUpdateAtProvider = last_update
-            db.session.add(venue.accessibilityProvider)
 
 
-def count_open_to_public_venues_with_accessibility_provider() -> int:
-    return (
-        db.session.query(offerers_models.Venue)
-        .join(offerers_models.AccessibilityProvider)
-        .filter(
-            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
+def get_open_to_public_venue_ids(with_accessibility_provider: bool) -> list[int]:
+    stmt = sa.select(offerers_models.Venue.id).filter(offerers_models.Venue.isOpenToPublic.is_(True))
+
+    if with_accessibility_provider:
+        stmt = stmt.join(offerers_models.AccessibilityProvider)
+    else:
+        stmt = stmt.outerjoin(offerers_models.Venue.accessibilityProvider).filter(
+            offerers_models.AccessibilityProvider.id.is_(None)
         )
-        .count()
-    )
+
+    stmt = stmt.order_by(offerers_models.Venue.id.asc())
+    return list(db.session.scalars(stmt).all())
 
 
-def get_open_to_public_venues_with_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
-    return (
-        db.session.query(offerers_models.Venue)
-        .join(offerers_models.Venue.accessibilityProvider)
-        .filter(
-            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
+def get_open_to_public_venues_by_ids(
+    venue_ids: list[int], with_accessibility_provider: bool
+) -> list[offerers_models.Venue]:
+    if not venue_ids:
+        return []
+
+    stmt = sa.select(offerers_models.Venue).filter(offerers_models.Venue.id.in_(venue_ids))
+
+    if with_accessibility_provider:
+        stmt = stmt.join(offerers_models.Venue.accessibilityProvider).options(
+            sa_orm.contains_eager(offerers_models.Venue.accessibilityProvider),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
         )
-        .options(sa_orm.contains_eager(offerers_models.Venue.accessibilityProvider))
-        .order_by(offerers_models.Venue.id.asc())
-        .limit(batch_size)
-        .offset(batch_num * batch_size)
-        .all()
-    )
-
-
-def get_open_to_public_venues_without_accessibility_provider() -> list[models.Venue]:
-    return (
-        db.session.query(offerers_models.Venue)
-        .outerjoin(offerers_models.Venue.accessibilityProvider)
-        .filter(
-            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
-            offerers_models.AccessibilityProvider.id.is_(None),
-        )
-        .options(
+    else:
+        stmt = stmt.options(
             sa_orm.load_only(
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,
+                offerers_models.Venue.isOpenToPublic,
             ),
-            sa_orm.joinedload(offerers_models.Venue.offererAddress)
-            .joinedload(offerers_models.OffererAddress.address)
-            .load_only(
-                geography_models.Address.street,
-                geography_models.Address.banId,
-            ),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
         )
-        .order_by(offerers_models.Venue.id.asc())
-        .all()
-    )
+
+    stmt = stmt.order_by(offerers_models.Venue.id.asc())
+    return list(db.session.scalars(stmt).unique().all())
 
 
 def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = False) -> None:
@@ -3060,15 +3049,18 @@ def synchronize_accessibility_with_acceslibre(
 
     If externalAccessibilityId can't be found at acceslibre, we try to find a new match, cf. synchronize_accessibility_provider()
     """
-    venues_count = count_open_to_public_venues_with_accessibility_provider()
-    num_batches = ceil(venues_count / batch_size)
+    venue_ids_to_proceed = get_open_to_public_venue_ids(with_accessibility_provider=True)
+    num_batches = ceil(len(venue_ids_to_proceed) / batch_size)
+
     if start_from_batch > num_batches:
         logger.error("Start from batch must be less than %d", num_batches)
         return
 
     start_batch_index = start_from_batch - 1
     for i in range(start_batch_index, num_batches):
-        venues_list = get_open_to_public_venues_with_accessibility_provider(batch_size=batch_size, batch_num=i)
+        batch_ids = venue_ids_to_proceed[i * batch_size : (i + 1) * batch_size]
+
+        venues_list = get_open_to_public_venues_by_ids(batch_ids, with_accessibility_provider=True)
         for venue in venues_list:
             synchronize_accessibility_provider(venue, force_sync)
 
@@ -3080,6 +3072,9 @@ def synchronize_accessibility_with_acceslibre(
                 db.session.rollback()
         else:
             db.session.rollback()
+
+        db.session.expunge_all()  # free sql memory when batch has been proceeded
+
     logger.info("Accessibility data synchronization with acceslibre complete successfully")
 
 
@@ -3158,11 +3153,14 @@ def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_d
     If we use the --start-from-batch option, it will start synchronization from the given batch number
     Use case: synchronization has failed with message "Could not update batch <n>"
     """
-    synchronized_venues_count_before_matching = count_open_to_public_venues_with_accessibility_provider()
-    venues_list = get_open_to_public_venues_without_accessibility_provider()
-    num_batches = ceil(len(venues_list) / batch_size)
+    venues_ids_with_accessibility_provider = get_open_to_public_venue_ids(with_accessibility_provider=True)
+    synchronized_venues_count_before_matching = len(venues_ids_with_accessibility_provider)
+
+    venues_ids_without_accessibility_provider = get_open_to_public_venue_ids(with_accessibility_provider=False)
+    num_batches = ceil(len(venues_ids_without_accessibility_provider) / batch_size)
+
     if start_from_batch > num_batches:
-        logger.info("Start from batch must be less than %d", num_batches)
+        logger.error("Start from batch must be less than %d", num_batches)
         return
 
     results_list = []
@@ -3172,10 +3170,11 @@ def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_d
             results_list.extend(results_by_activity)
 
     start_batch_index = start_from_batch - 1
+
     for i in range(start_batch_index, num_batches):
-        batch_start = i * batch_size
-        batch_end = (i + 1) * batch_size
-        match_venue_with_new_entries(venues_list[batch_start:batch_end], results_list)
+        batch_ids = venues_ids_without_accessibility_provider[i * batch_size : (i + 1) * batch_size]
+        venues_list = get_open_to_public_venues_by_ids(batch_ids, with_accessibility_provider=False)
+        match_venue_with_new_entries(venues_list, results_list)
 
         if apply:
             try:
@@ -3183,9 +3182,10 @@ def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_d
             except sa_exc.SQLAlchemyError:
                 logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
-    new_match_found = (
-        count_open_to_public_venues_with_accessibility_provider() - synchronized_venues_count_before_matching
-    )
+        else:
+            db.session.rollback()
+
+    new_match_found = len(venues_ids_with_accessibility_provider) - synchronized_venues_count_before_matching
     logger.info("%d new match found over last %d days", new_match_found, n_days_to_fetch)
     if apply:
         logger.info("Matching with acceslibre complete")

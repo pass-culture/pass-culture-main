@@ -3532,6 +3532,131 @@ class DeleteExpiredOffererInvitationsTest:
 
 
 class AccessibilityProviderTest:
+    def test_synchronize_accessibility_with_acceslibre_num_queries(self):
+        address = geography_factories.AddressFactory()
+        for _ in range(3):
+            venue = offerers_factories.VenueFactory(
+                isOpenToPublic=True,
+                accessibilityProvider=offerers_factories.AccessibilityProviderFactory(),
+                offererAddress__address=address,
+            )
+            assert venue.offererAddress.address
+
+        # 1. COUNT (=3 venues)
+        # 2. SELECT batch 1
+        # 3. SELECT batch 2
+        expected_queries_sync = 3
+
+        with assert_num_queries(expected_queries_sync):
+            offerers_api.synchronize_accessibility_with_acceslibre(
+                apply=True,
+                force_sync=False,
+                batch_size=2,
+                start_from_batch=1,
+            )
+
+    @patch("pcapi.core.offerers.api.synchronize_accessibility_provider")
+    def test_batch_count_call_for_synchronize_accessibility_with_acceslibre(
+        self,
+        mock_synchronize_accessibility_provider,
+    ):
+        address = geography_factories.AddressFactory()
+        for _ in range(5):
+            venue = offerers_factories.VenueFactory(
+                isOpenToPublic=True,
+                accessibilityProvider=offerers_factories.AccessibilityProviderFactory(),
+                offererAddress__address=address,
+            )
+            assert venue.offererAddress.address
+
+        for _ in range(15):
+            venue = offerers_factories.VenueFactory(
+                isOpenToPublic=True, accessibilityProvider=None, offererAddress__address=address
+            )
+            assert venue.offererAddress.address
+
+        # batch_size = 2 to force 3 batches
+        offerers_api.synchronize_accessibility_with_acceslibre(
+            apply=True,
+            force_sync=False,
+            batch_size=2,
+            start_from_batch=1,
+        )
+
+        # We have 5 synchronized venues, we should call 5 times synchronize_accessibility_provider
+        assert mock_synchronize_accessibility_provider.call_count == 5
+
+    @patch("pcapi.connectors.acceslibre.get_accessibility_infos")
+    @patch("pcapi.connectors.acceslibre.find_new_entries_by_activity")
+    def test_acceslibre_matching_num_queries(
+        self,
+        mock_find_new_entries,
+        mock_get_accessibility_infos,
+    ):
+        mock_get_accessibility_infos.return_value = (None, None)
+        mock_find_new_entries.return_value = []
+
+        address = geography_factories.AddressFactory()
+        for _ in range(5):  # 5 venues without acceslibre synchronization
+            venue = offerers_factories.VenueFactory(
+                isOpenToPublic=True,
+                accessibilityProvider=offerers_factories.AccessibilityProviderFactory(),
+                offererAddress__address=address,
+            )
+            assert venue.offererAddress.address
+
+        for _ in range(15):  # 15 venues without acceslibre synchronization
+            venue = offerers_factories.VenueFactory(
+                isOpenToPublic=True, accessibilityProvider=None, offererAddress__address=address
+            )
+            assert venue.offererAddress.address
+
+        # 1. SELECT venues ids with accessibility_provider
+        # 2. SELECT venues ids without accessibility_provider
+        # 3. SELECT batch 1 venues + joinedload offererAddress + joinedload address
+        # 4. SELECT batch 2 venues + joinedload offererAddress + joinedload address
+
+        expected_queries_matching = 4
+
+        with assert_num_queries(expected_queries_matching):
+            offerers_api.acceslibre_matching(
+                batch_size=10,
+                apply=True,
+                start_from_batch=1,
+                n_days_to_fetch=7,
+            )
+
+    @patch("pcapi.connectors.acceslibre.match_venue_with_acceslibre")
+    def test_batch_count_call_for_acceslibre_matching(
+        self,
+        mock_match_venue_with_acceslibre,
+    ):
+        address = geography_factories.AddressFactory()
+        for _ in range(5):
+            venue = offerers_factories.VenueFactory(
+                isOpenToPublic=True,
+                accessibilityProvider=offerers_factories.AccessibilityProviderFactory(),
+                offererAddress__address=address,
+            )
+            assert venue.offererAddress.address
+
+        for _ in range(15):
+            venue = offerers_factories.VenueFactory(
+                isOpenToPublic=True, accessibilityProvider=None, offererAddress__address=address
+            )
+            assert venue.offererAddress.address
+
+        # batch_size = 4 to force 4 batches
+        offerers_api.acceslibre_matching(
+            batch_size=4,
+            apply=True,
+            start_from_batch=1,
+            n_days_to_fetch=7,
+        )
+
+        # We have 15 unsynchronized venues, we should call 15 times match_venue_with_acceslibre
+        assert mock_match_venue_with_acceslibre.call_count == 15
+
     def test_set_accessibility_provider_id(self):
         venue = offerers_factories.VenueFactory(name="Une librairie de test", accessibilityProvider=None)
         offerers_api.set_accessibility_provider_id(venue)
@@ -3654,24 +3779,25 @@ class AccessibilityProviderTest:
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        count = offerers_api.count_open_to_public_venues_with_accessibility_provider()
+        count = len(offerers_api.get_open_to_public_venue_ids(with_accessibility_provider=True))
         assert count == 1
 
     def test_get_open_to_public_venues_with_accessibility_provider(self):
         offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
+        venue_id = venue.id
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_open_to_public_venues_with_accessibility_provider(batch_size=10, batch_num=0)
+        venues_list = offerers_api.get_open_to_public_venue_ids(with_accessibility_provider=True)
         assert len(venues_list) == 1
-        assert venues_list[0] == venue
+        assert venues_list[0] == venue_id
 
     def test_get_open_to_public_venues_without_accessibility_provider(self):
         offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_open_to_public_venues_without_accessibility_provider()
+        venues_list = offerers_api.get_open_to_public_venue_ids(with_accessibility_provider=False)
         assert len(venues_list) == 3
 
     @patch("pcapi.connectors.acceslibre.find_new_entries_by_activity")
