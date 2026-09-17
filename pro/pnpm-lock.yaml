@@ -451,8 +451,8 @@ importers:
         specifier: 0.1.0
         version: 0.1.0(vitest@4.1.11)
       vitest-canvas-mock:
-        specifier: 1.1.5
-        version: 1.1.5(vitest@4.1.11)
+        specifier: 1.2.0
+        version: 1.2.0(vitest@4.1.11)
       vitest-fail-on-console:
         specifier: 0.10.1
         version: 0.10.1(@vitest/utils@4.1.11)(vite@8.2.2(@types/node@26.4.1)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.103.1)(terser@5.51.2)(yaml@2.9.0))(vitest@4.1.11)
@@ -4487,10 +4487,10 @@ packages:
     peerDependencies:
       vitest: '>=0.16.0'
 
-  vitest-canvas-mock@1.1.5:
-    resolution: {integrity: sha512-PWtzolkO/GsG9I9qsLxJ8HzdXQKNz1iRVUcCDJbNBiDuxMp50NC1MWwz2UmDYS4vJqNeKyoLWm7RgjfKWIoQOQ==}
+  vitest-canvas-mock@1.2.0:
+    resolution: {integrity: sha512-gTy8+dL7aDFZq2EOGCk5krSVsvszTW/M+58efNzybehZNakON2HiPfi3bDBAp85L8DL+D+f/cNtQ5N60rZEL7A==}
     peerDependencies:
-      vitest: ^3.0.0 || ^4.0.0
+      vitest: ^3.0.0 || ^4.0.0 || ^5.0.0
 
   vitest-fail-on-console@0.10.1:
     resolution: {integrity: sha512-Xjy2SpgND547qSy0s0zYVnh1G/WyGtdjAbi4PFV8mkYRmTq+6NzRUJYdc08BHrw7HJLpO2kMxHFB8PWn7FOVsg==}
@@ -8377,7 +8377,7 @@ snapshots:
       redent: 3.0.0
       vitest: 4.1.11(@types/node@26.4.1)(@vitest/coverage-istanbul@4.1.11)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.1)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.103.1)(terser@5.51.2)(yaml@2.9.0))
 
-  vitest-canvas-mock@1.1.5(vitest@4.1.11):
+  vitest-canvas-mock@1.2.0(vitest@4.1.11):
     dependencies:
       cssfontparser: 1.2.1
       moo-color: 1.0.3
