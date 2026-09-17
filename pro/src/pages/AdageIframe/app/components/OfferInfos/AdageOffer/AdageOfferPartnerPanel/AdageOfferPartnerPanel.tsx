@@ -27,7 +27,7 @@ export function AdageOfferPartnerPanel({
   adageUser,
   isPreview = false,
   playlistId,
-}: AdageOfferPartnerPanelProps) {
+}: Readonly<AdageOfferPartnerPanelProps>) {
   const venue = offer.venue
 
   const venueCoords =
@@ -64,7 +64,7 @@ export function AdageOfferPartnerPanel({
         {venue.imgUrl ? (
           <img
             src={venue.imgUrl}
-            alt=""
+            alt={venue.imgAlternativeText || ''}
             aria-hidden
             className={styles['partner-panel-info-image']}
           />

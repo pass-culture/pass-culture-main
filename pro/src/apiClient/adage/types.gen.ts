@@ -272,6 +272,10 @@ export type CollectiveOfferResponseModel = {
      */
     id: number;
     /**
+     * Imagealternativetext
+     */
+    imageAlternativeText?: string;
+    /**
      * Imagecredit
      */
     imageCredit?: string;
@@ -366,6 +370,10 @@ export type CollectiveOfferTemplateResponseModel = {
      * Id
      */
     id: number;
+    /**
+     * Imagealternativetext
+     */
+    imageAlternativeText?: string;
     /**
      * Imagecredit
      */
@@ -1012,6 +1020,10 @@ export type OfferVenueResponse = {
      * Id
      */
     id: number;
+    /**
+     * Imgalternativetext
+     */
+    imgAlternativeText?: string;
     /**
      * Imgurl
      */

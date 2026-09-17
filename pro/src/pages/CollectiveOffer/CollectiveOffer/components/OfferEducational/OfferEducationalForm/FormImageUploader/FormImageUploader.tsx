@@ -21,6 +21,7 @@ const buildInitialValues = (
 ): UploadImageValues => ({
   croppedImageUrl: imageOffer?.url || '',
   credit: imageOffer?.credit || '',
+  alternativeText: imageOffer?.alternativeText || '',
 })
 
 export const FormImageUploader = ({

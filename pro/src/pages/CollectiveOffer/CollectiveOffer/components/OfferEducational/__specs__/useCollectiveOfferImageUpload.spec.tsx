@@ -72,6 +72,20 @@ describe('useCollectiveOfferImageUpload', () => {
     expect(result.current.imageOffer?.url).toBe(offer.imageUrl)
   })
 
+  it('should initialize with current image alternative text', () => {
+    const offerWithAlternativeText = getCollectiveOfferFactory({
+      imageAlternativeText: 'Vue de la salle principale',
+    })
+
+    const { result } = renderUseCollectiveOfferImageUploadWrapper({
+      offer: offerWithAlternativeText,
+    })
+
+    expect(result.current.imageOffer?.alternativeText).toBe(
+      'Vue de la salle principale'
+    )
+  })
+
   it('should submit uploaded image in case of normal offer', async () => {
     const image = imageUploadArgsFactory()
     vi.spyOn(api, 'attachOfferImage').mockResolvedValue({
@@ -226,9 +240,10 @@ describe('useCollectiveOfferImageUpload', () => {
     )
   })
 
-  it('should pass crop parameters when uploading image', async () => {
+  it('should pass crop parameters and alternative text when uploading image', async () => {
     const image = imageUploadArgsFactory()
     image.credit = 'Test credit'
+    image.alternativeText = 'Vue de la salle principale'
     image.cropParams = {
       x: 10,
       y: 20,
@@ -253,6 +268,7 @@ describe('useCollectiveOfferImageUpload', () => {
       body: {
         thumb: image.imageFile,
         credit: 'Test credit',
+        alternativeText: 'Vue de la salle principale',
         croppingRectHeight: 300,
         croppingRectWidth: 200,
         croppingRectX: 10,
@@ -265,6 +281,7 @@ describe('useCollectiveOfferImageUpload', () => {
     const image = imageUploadArgsFactory()
     image.credit = ''
     image.cropParams = undefined
+    image.alternativeText = null
     vi.spyOn(api, 'attachOfferImage').mockResolvedValue({
       imageUrl: 'https://example.com/image.jpg',
     })
@@ -282,6 +299,7 @@ describe('useCollectiveOfferImageUpload', () => {
       body: {
         thumb: image.imageFile,
         credit: '',
+        alternativeText: '',
         croppingRectHeight: 0,
         croppingRectWidth: 0,
         croppingRectX: 0,

@@ -14,7 +14,7 @@ export const postCollectiveOfferImage = async ({
   snackBar,
   id,
 }: PostCollectiveOfferImageProps) => {
-  const { imageUrl, imageCredit } = initialValues
+  const { imageUrl, imageCredit, imageAlternativeText } = initialValues
   const imageErrorMessage = 'Impossible de dupliquer l’image'
   /* istanbul ignore next: DEBT to fix */
   if (imageUrl) {
@@ -38,6 +38,7 @@ export const postCollectiveOfferImage = async ({
           croppingRectWidth: 1,
           croppingRectX: 0,
           croppingRectY: 0,
+          alternativeText: imageAlternativeText ?? '',
         },
       })
     } catch {

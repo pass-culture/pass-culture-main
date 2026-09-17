@@ -49,6 +49,7 @@ const offerVenue: GetCollectiveOfferVenueResponseModel = {
   publicName: 'Nom public de la structure 2',
   departementCode: '33',
   imgUrl: null,
+  imgAlternativeText: null,
 }
 
 describe('computeInitialValuesFromOffer', () => {

@@ -192,6 +192,7 @@ export const OfferEducational = ({
             ...newOrUpdatedOffer,
             imageUrl: imageOffer?.url,
             imageCredit: imageOffer?.credit,
+            imageAlternativeText: imageOffer?.alternativeText,
           },
           { revalidate: false }
         )

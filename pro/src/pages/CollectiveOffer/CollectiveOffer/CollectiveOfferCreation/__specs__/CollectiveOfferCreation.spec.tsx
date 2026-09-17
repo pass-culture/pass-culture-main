@@ -60,6 +60,7 @@ describe('CollectiveOfferCreation', () => {
         managingOfferer: { ...offerer, siren: '123456789' },
         departementCode: '33',
         imgUrl: null,
+        imgAlternativeText: null,
       },
     }),
     isTemplate: false,
