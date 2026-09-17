@@ -23,6 +23,10 @@ class BannerMetaModel(HttpBodyModel):
         ]
         | None
     )
+    image_alternative_text: str | None = pydantic_v2.Field(
+        default=None, max_length=offerers_schemas.VENUE_IMAGE_ALTERNATIVE_TEXT_MAX_LENGTH
+    )
+
     original_image_url: str | None = None  # TODO: move to HttpUrl ?
     crop_params: CropParamsV2 = CropParamsV2()
 
@@ -39,6 +43,9 @@ class VenueBannerContentModel(HttpBodyModel):
         pydantic_v2.Field(min_length=2, max_length=VENUE_BANNER_MAX_SIZE),
     ]
     image_credit: typing.Annotated[str, pydantic_v2.Field(min_length=1, max_length=255)] | None = None
+    image_alternative_text: str | None = pydantic_v2.Field(
+        default=None, max_length=offerers_schemas.VENUE_IMAGE_ALTERNATIVE_TEXT_MAX_LENGTH
+    )
 
     # cropping parameters must be a % (between 0 and 1) of the original
     # bottom right corner and the original height
@@ -84,6 +91,7 @@ class VenueBannerContentModel(HttpBodyModel):
         return VenueBannerContentModel(
             content=file.read(VENUE_BANNER_MAX_SIZE),
             image_credit=request.args.get("image_credit"),
+            image_alternative_text=request.args.get("image_alternative_text"),
             x_crop_percent=request.args.get("x_crop_percent"),
             y_crop_percent=request.args.get("y_crop_percent"),
             height_crop_percent=request.args.get("height_crop_percent"),

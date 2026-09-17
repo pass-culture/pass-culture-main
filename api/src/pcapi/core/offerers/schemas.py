@@ -124,6 +124,7 @@ VENUE_CITY_MAX_LENGTH = 200
 VENUE_COMMENT_MAX_LENGTH = 500
 VENUE_DESCRIPTION_MAX_LENGTH = 1000
 VENUE_IMAGE_CREDIT_MAX_LENGTH = 255
+VENUE_IMAGE_ALTERNATIVE_TEXT_MAX_LENGTH = 150
 VENUE_NAME_MAX_LENGTH = 140
 VENUE_POSTAL_CODE_MAX_LENGTH = 5
 VENUE_POSTAL_CODE_MIN_LENGTH = 5
@@ -203,6 +204,7 @@ class LocationModel(BaseModel):
 class BannerMetaModel(typing.TypedDict, total=False):
     image_credit: VenueImageCredit | None
     image_credit_url: str | None
+    image_alternative_text: str | None
     is_from_google: bool
 
 

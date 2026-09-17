@@ -51,6 +51,7 @@ class Returns200Test:
             venue=venue,
             imageId="00000125999998",
             imageCredit="vision d'horreur selon Hitchcock",
+            imageAlternativeText="Une mouette en plein vol",
             imageCrop={"gnagna": "Non"},
             imageHasOriginal=False,
         )
@@ -65,6 +66,7 @@ class Returns200Test:
         assert response.status_code == 201
         assert response.json["imageCredit"] == offer.imageCredit
         assert response.json["imageUrl"] == duplicate.imageUrl
+        assert response.json["imageAlternativeText"] == offer.imageAlternativeText
 
     def test_duplicate_collective_offer(self, client):
         offerer = offerers_factories.OffererFactory()
@@ -124,6 +126,7 @@ class Returns200Test:
                     "siren": venue.managingOfferer.siren,
                 },
                 "id": venue.id,
+                "imgAlternativeText": None,
                 "imgUrl": None,
                 "name": venue.name,
                 "publicName": venue.publicName,
@@ -131,6 +134,7 @@ class Returns200Test:
             "displayedStatus": "DRAFT",
             "domains": [{"id": domain.id, "name": domain.name}],
             "interventionArea": ["93", "94", "95"],
+            "imageAlternativeText": None,
             "imageCredit": None,
             "imageUrl": None,
             "collectiveStock": {
