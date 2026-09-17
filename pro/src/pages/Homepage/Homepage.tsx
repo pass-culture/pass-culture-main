@@ -1,3 +1,4 @@
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
@@ -38,6 +39,8 @@ import { WebinarCard } from './components/WebinarCard/WebinarCard'
 import styles from './Homepage.module.scss'
 
 export const Homepage = (): JSX.Element => {
+  const isStatsV2 = useActiveFeature('WIP_HOME_STATS_V2')
+
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
   const isOffererClosed = selectedPartnerVenue.managingOfferer.isClosed
@@ -186,10 +189,12 @@ export const Homepage = (): JSX.Element => {
               }
             />
             <StatsCard venue={selectedPartnerVenue} />
-            <EditoCard
-              canDisplayHighlights={selectedPartnerVenue.canDisplayHighlights}
-              isReadOnly={isClosed}
-            />
+            {!isStatsV2 && (
+              <EditoCard
+                canDisplayHighlights={selectedPartnerVenue.canDisplayHighlights}
+                isReadOnly={isClosed}
+              />
+            )}
           </div>
 
           <div className={styles['side']}>
