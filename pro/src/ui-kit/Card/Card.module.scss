@@ -30,9 +30,13 @@
 
   &-header {
     display: flex;
-    flex-direction: row;
+    flex-flow: row wrap;
     align-items: center;
     justify-content: space-between;
+
+    @media (min-width: size.$tablet) {
+      flex-wrap: nowrap;
+    }
 
     &-container {
       display: flex;
