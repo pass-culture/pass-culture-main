@@ -23,6 +23,10 @@ updates:
     ignore:
       - dependency-name: "openapi-typescript-codegen"
     groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
       sentry/*:
         patterns:
           - "@sentry/browser"
