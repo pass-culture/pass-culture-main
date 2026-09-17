@@ -9,6 +9,7 @@ import {
 } from '@/commons/utils/convertEuroToPacificFranc'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -157,6 +158,8 @@ export const InvoiceTable = ({
       }))
     : []
 
+  const bulkActionsDescrition = `${checkedInvoices.length} ${pluralizeFr(checkedInvoices.length, 'justificatif sélectionné', 'justificatifs sélectionnés')}`
+
   return (
     <div className={styles['invoices-table']}>
       <Table
@@ -181,7 +184,10 @@ export const InvoiceTable = ({
           message: getEmptyStateMessage(hasBankAccount),
         }}
       >
-        <InvoiceDownloadActionsBar checkedInvoices={checkedInvoices} />
+        <InvoiceDownloadActionsBar
+          invoiceReferences={checkedInvoices}
+          description={bulkActionsDescrition}
+        />
       </Table>
     </div>
   )

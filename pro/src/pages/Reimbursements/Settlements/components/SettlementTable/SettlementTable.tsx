@@ -19,6 +19,7 @@ import {
 } from '@/commons/utils/convertEuroToPacificFranc'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -31,6 +32,7 @@ import fullDownIcon from '@/icons/full-down.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
+import { InvoiceDownloadActionsBar } from '@/pages/Reimbursements/ReimbursementsInvoices/InvoiceTable/InvoiceDownloadActionsBar'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
@@ -108,6 +110,9 @@ export const SettlementTable = ({
   onFilterReset,
 }: SettlementTableProps): JSX.Element => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
+  const [checkedSettlements, setCheckedSettlements] = useState<
+    ExtendedSettlementResponseModel[]
+  >([])
   const isTabletOrSmaller = useMediaQuery(TABLET_MEDIA_QUERY)
   const [rowInvoicesToDisplay, setRowInvoicesToDisplay] =
     useState<ExtendedSettlementResponseModel | null>(null)
@@ -250,7 +255,7 @@ export const SettlementTable = ({
     },
   ]
 
-  const getInvoiceTable = (row: SettlementResponseModel) => {
+  const getInvoiceTable = (row: ExtendedSettlementResponseModel) => {
     if (rowInvoicesToDisplay?.id !== row.id || isTabletOrSmaller) {
       return null
     }
@@ -265,32 +270,42 @@ export const SettlementTable = ({
     }
   }
 
+  const isSettlementSelectable = (row: ExtendedSettlementResponseModel) =>
+    row.status === SettlementDisplayedStatus.EXECUTED && row.invoicesCount > 0
+
+  const invoicesToDownload = checkedSettlements.flatMap((s) =>
+    s.invoices.map((i) => i.reference)
+  )
+
+  const bulkActionsDescrition = `${checkedSettlements.length} ${pluralizeFr(checkedSettlements.length, 'virement sélectionné', 'virements sélectionnés')}`
+
   return (
-    <>
-      <Table
-        title="Virements"
-        columns={columns}
-        data={settlements.map((s) => ({
-          ...s,
-          isCaledonian: selectedAdminOfferer.isCaledonian,
-          invoicesCount: s.invoices.length,
-        }))}
-        selectable={true}
-        getRowSelectionDateTime={getSettlementDateLabel}
-        isLoading={isLoading}
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: 'Aucun virement ne correspond à votre recherche',
-          subtitle: 'Essayez de modifier vos critères de recherche.',
-          resetMessage: 'Réinitialiser les filtres',
-          onFilterReset,
-        }}
-        noData={{
-          hasNoData: !hasSettlement,
-          message: getEmptyStateMessage(hasBankAccount),
-        }}
-        getFullRow={getInvoiceTable}
-      />
+    <Table
+      title="Virements"
+      columns={columns}
+      data={settlements.map((s) => ({
+        ...s,
+        isCaledonian: selectedAdminOfferer.isCaledonian,
+        invoicesCount: s.invoices.length,
+      }))}
+      selectable={true}
+      getRowSelectionDateTime={getSettlementDateLabel}
+      onSelectionChange={setCheckedSettlements}
+      isRowSelectable={isSettlementSelectable}
+      isLoading={isLoading}
+      variant={TableVariant.COLLAPSE}
+      noResult={{
+        message: 'Aucun virement ne correspond à votre recherche',
+        subtitle: 'Essayez de modifier vos critères de recherche.',
+        resetMessage: 'Réinitialiser les filtres',
+        onFilterReset,
+      }}
+      noData={{
+        hasNoData: !hasSettlement,
+        message: getEmptyStateMessage(hasBankAccount),
+      }}
+      getFullRow={getInvoiceTable}
+    >
       {isTabletOrSmaller && (
         <SettlementRowInvoicesModal
           isOpen={!!rowInvoicesToDisplay?.id}
@@ -298,6 +313,10 @@ export const SettlementTable = ({
           settlementRow={rowInvoicesToDisplay}
         />
       )}
-    </>
+      <InvoiceDownloadActionsBar
+        invoiceReferences={invoicesToDownload}
+        description={bulkActionsDescrition}
+      />
+    </Table>
   )
 }

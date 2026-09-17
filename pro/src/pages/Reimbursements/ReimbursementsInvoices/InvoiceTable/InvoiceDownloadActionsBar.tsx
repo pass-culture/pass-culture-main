@@ -4,7 +4,6 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadFile } from '@/commons/utils/downloadFile'
-import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -13,13 +12,15 @@ import { DOWNLOAD_REIMBURSEMENTS_LABEL } from '../constants'
 import styles from './InvoiceDownloadActionsBar.module.scss'
 
 type InvoiceDownloadActionsBarProps = {
-  checkedInvoices: string[]
+  invoiceReferences: string[]
+  description: string
 }
 
 export const MAX_ITEMS_DOWNLOAD = 75
 
 export const InvoiceDownloadActionsBar = ({
-  checkedInvoices,
+  invoiceReferences,
+  description,
 }: InvoiceDownloadActionsBarProps) => {
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
@@ -76,26 +77,24 @@ export const InvoiceDownloadActionsBar = ({
     }
   }
 
-  const checkedInvoicesCountText = `${checkedInvoices.length} ${pluralizeFr(checkedInvoices.length, 'justificatif sélectionné', 'justificatifs sélectionnés')}`
-
   return (
     <div aria-live="polite">
-      {checkedInvoices.length > 0 && (
-        <ActionsBarSticky isEmbedded>
+      {invoiceReferences.length > 0 && (
+        <ActionsBarSticky>
           <ActionsBarSticky.Left>
-            <p className={styles['checked-invoice-count']}>
-              {checkedInvoicesCountText}
+            <p className={styles['invoices-download-description']}>
+              {description}
             </p>
           </ActionsBarSticky.Left>
           <ActionsBarSticky.Right>
             <Button
               variant={ButtonVariant.SECONDARY}
-              onClick={() => downloadCSVFiles(checkedInvoices)}
+              onClick={() => downloadCSVFiles(invoiceReferences)}
               label={DOWNLOAD_REIMBURSEMENTS_LABEL}
             />
             <Button
               variant={ButtonVariant.PRIMARY}
-              onClick={() => downloadInvoices(checkedInvoices)}
+              onClick={() => downloadInvoices(invoiceReferences)}
               label="Télécharger les justificatifs (.pdf)"
             />
           </ActionsBarSticky.Right>
