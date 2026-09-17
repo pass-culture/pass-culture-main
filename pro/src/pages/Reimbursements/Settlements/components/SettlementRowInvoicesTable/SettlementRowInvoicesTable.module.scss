@@ -7,22 +7,9 @@
   background-color: var(--color-background-subtle);
   border-top: 1px solid var(--color-border-subtle);
 
-  /* stylelint-disable-next-line selector-max-type */
-  tr {
-    border-bottom: none;
-  }
-
-  /* stylelint-disable-next-line selector-max-type */
-  th {
-    border-bottom: 1px solid var(--color-border-subtle);
-  }
-
-  @media (min-width: size.$tablet) {
-    /* stylelint-disable-next-line selector-max-type */
-    td:last-of-type {
-      width: rem.torem(157px);
-    }
-  }
+  --table-row-border-bottom: none;
+  --table-header-th-border-bottom: 1px solid var(--color-border-subtle);
+  --last-cell-width: #{rem.torem(157px)};
 
   .cell-reference {
     margin-left: calc(-1 * var(--size-spacing-s));
