@@ -102,6 +102,7 @@ describe('CollectiveOfferStockEdition', () => {
       managingOfferer: { ...offerer, siren: '123456789' },
       departementCode: '33',
       imgUrl: null,
+      imgAlternativeText: null,
     },
     allowedActions: [
       CollectiveOfferAllowedAction.CAN_EDIT_DATES,

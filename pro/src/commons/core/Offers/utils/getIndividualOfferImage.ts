@@ -13,13 +13,15 @@ export const getIndividualOfferImage = (
       return {
         url: offer.activeMediation.thumbUrl,
         credit: offer.activeMediation.credit || '',
+        alternativeText: offer.activeMediation.alternativeText || '',
       }
     }
   } else if (offer.thumbUrl) {
-    // synchronized offers have thumbUrl but no mediation
+    // synchronized offers have thumbUrl but no mediation and no alternative text
     return {
       url: offer.thumbUrl,
       credit: '',
+      alternativeText: '',
     }
   }
 

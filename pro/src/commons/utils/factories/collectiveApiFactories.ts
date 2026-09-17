@@ -50,6 +50,7 @@ export const collectiveOfferFactory = (
     },
     educationalInstitution: null,
     imageUrl: null,
+    imageAlternativeText: null,
     stock: {
       bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
       numberOfTickets: 10,
@@ -80,6 +81,7 @@ export const collectiveOfferTemplateFactory = (
       end: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     },
     imageUrl: null,
+    imageAlternativeText: null,
     allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
     location: {
       locationType: CollectiveLocationType.SCHOOL,
@@ -105,6 +107,7 @@ const sharedCollectiveOfferData = {
   students: [StudentLevels.COLL_GE_3E],
   imageUrl: 'https://example.com/image.jpg',
   imageCredit: 'image credit',
+  imageAlternativeText: 'alternative text',
   nationalProgram: {
     id: 1,
     name: 'Collège au cinéma',
@@ -215,6 +218,7 @@ export const getCollectiveOfferTemplateFactory = (
   contactForm: null,
   contactUrl: null,
   priceDetail: null,
+  imageAlternativeText: null,
   ...customCollectiveOfferTemplate,
 })
 
@@ -229,6 +233,7 @@ export const getCollectiveOfferVenueFactory = (
     id: currentVenueId,
     departementCode: '973',
     imgUrl: null,
+    imgAlternativeText: null,
     ...customGetCollectiveOfferVenue,
   }
 }

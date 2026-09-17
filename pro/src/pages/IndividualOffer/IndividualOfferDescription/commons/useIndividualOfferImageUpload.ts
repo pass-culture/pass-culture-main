@@ -39,6 +39,7 @@ export const useIndividualOfferImageUpload = (
         // Credit isn't defined in Product - images property,
         // is not needed for the preview anyway.
         credit: null,
+        alternativeText: null,
       })
     } else {
       setImageOffer(undefined)
@@ -51,7 +52,12 @@ export const useIndividualOfferImageUpload = (
       const shouldDeleteThumbnail = hasUpsertedImage && !imageToUpsert
 
       if (shouldUploadThumbnail) {
-        const { imageFile: thumb, credit, cropParams } = imageToUpsert
+        const {
+          imageFile: thumb,
+          credit,
+          cropParams,
+          alternativeText,
+        } = imageToUpsert
         const {
           height: croppingRectHeight,
           width: croppingRectWidth,
@@ -62,6 +68,7 @@ export const useIndividualOfferImageUpload = (
         const thumbnail = {
           thumb,
           credit: credit ?? '',
+          alternativeText: alternativeText ?? '',
           croppingRectHeight,
           croppingRectWidth,
           croppingRectX,
@@ -73,6 +80,7 @@ export const useIndividualOfferImageUpload = (
         setImageOffer({
           url: result.url,
           credit: result.credit ?? null,
+          alternativeText: result.alternativeText ?? null,
         })
         setImageToUpsert(undefined)
         setHasUpsertedImage(false)

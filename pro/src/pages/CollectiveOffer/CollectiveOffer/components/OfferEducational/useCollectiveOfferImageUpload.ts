@@ -20,7 +20,11 @@ export const useCollectiveOfferImageUpload = (
   const snackBar = useSnackBar()
   const [imageOffer, setImageOffer] = useState<OfferCollectiveImage | null>(
     offer !== undefined
-      ? { url: offer.imageUrl, credit: offer.imageCredit }
+      ? {
+          url: offer.imageUrl,
+          credit: offer.imageCredit,
+          alternativeText: offer.imageAlternativeText ?? '',
+        }
       : null
   )
   const [imageToUpload, setImageToUpload] = useState<OnImageUploadArgs | null>(
@@ -29,7 +33,11 @@ export const useCollectiveOfferImageUpload = (
 
   const onImageUpload = useCallback((image: OnImageUploadArgs) => {
     setImageToUpload(image)
-    setImageOffer({ url: image.imageCroppedDataUrl, credit: image.credit })
+    setImageOffer({
+      url: image.imageCroppedDataUrl,
+      credit: image.credit,
+      alternativeText: image.alternativeText ?? '',
+    })
   }, [])
 
   const onImageDelete = useCallback(() => {
@@ -72,6 +80,7 @@ export const useCollectiveOfferImageUpload = (
         const params = {
           thumb: imageToUpload.imageFile,
           credit: imageToUpload.credit ?? '',
+          alternativeText: imageToUpload.alternativeText ?? '',
           croppingRectHeight: imageToUpload.cropParams?.height ?? 0,
           croppingRectWidth: imageToUpload.cropParams?.width ?? 0,
           croppingRectX: imageToUpload.cropParams?.x ?? 0,
@@ -90,6 +99,7 @@ export const useCollectiveOfferImageUpload = (
         setImageOffer({
           url: payload.imageUrl,
           credit: imageToUpload.credit,
+          alternativeText: imageToUpload.alternativeText ?? '',
         })
       } catch (error) {
         sendSentryCustomError(error)

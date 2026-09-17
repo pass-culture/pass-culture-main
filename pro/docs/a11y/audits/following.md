@@ -148,3 +148,28 @@ Texte
 </details>
 
 <br>
+
+<details>
+
+<summary> ⏳ Critère 15.1 - RAWeb - Chaque outil d’édition permet-il de définir les informations d’accessibilité nécessaires pour créer un contenu conforme aux règles d’accessibilité numérique ?</summary>
+
+**RAWeb** : [Critère 15.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#topic-15)
+**Ticket** : [PC-42868](https://passculture.atlassian.net/browse/PC-42866)  
+**PR** : [#24389](https://github.com/pass-culture/pass-culture-main/pull/24389)
+
+**Problème** 😱  
+
+Impossible d'ajouter un texte alternatif sur les images, il n'est pas lu ailleurs dans l'app. 
+
+P05 : Création offre réservable
+P06 : Création offre individuelle
+P08 : Page d'accueil
+P13 : Les offres réservables (collectif)
+
+**Correction** 💡  
+Ajout de la possibilité d'ajouté un texte alternatif sur les images (collectif, individuel et partenaire culturel), ce texte alternatif est restitué.
+
+**Retours audit** 🔥  
+TBD
+
+</details>

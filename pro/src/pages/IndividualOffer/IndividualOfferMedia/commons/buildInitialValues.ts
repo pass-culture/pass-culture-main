@@ -8,6 +8,7 @@ export const buildInitialValues = (
   const defaultInitialValues = {
     croppedImageUrl: '',
     credit: '',
+    alternativeText: '',
     cropParams: {
       xCropPercent: 1,
       yCropPercent: 1,
@@ -26,6 +27,7 @@ export const buildInitialValues = (
     return {
       croppedImageUrl: imageOffer.imageCroppedDataUrl ?? '',
       credit: imageOffer.credit ?? '',
+      alternativeText: imageOffer.alternativeText ?? '',
       cropParams: {
         xCropPercent: 1,
         yCropPercent: 1,
@@ -41,6 +43,7 @@ export const buildInitialValues = (
     return {
       croppedImageUrl: imageOffer.url,
       credit: imageOffer.credit ?? '',
+      alternativeText: imageOffer.alternativeText ?? '',
       cropParams: imageOffer.cropParams ?? {
         xCropPercent: 1,
         yCropPercent: 1,
