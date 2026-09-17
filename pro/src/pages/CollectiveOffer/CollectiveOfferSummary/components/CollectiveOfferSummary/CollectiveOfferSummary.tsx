@@ -108,13 +108,13 @@ function _renderPriceLayout({
               />
             )}
             <CollectiveOfferContactSection offer={offer} />
-            {offer.collectiveStock?.priceDetail && (
+            {offer.additionalDetails && (
               <SummarySubSection
                 title="Informations pratiques"
                 shouldShowDivider
               >
                 <SummaryDescriptionList
-                  descriptions={[{ text: offer.collectiveStock.priceDetail }]}
+                  descriptions={[{ text: offer.additionalDetails }]}
                 />
               </SummarySubSection>
             )}
