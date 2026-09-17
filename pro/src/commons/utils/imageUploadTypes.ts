@@ -11,6 +11,7 @@ export interface UploadImageValues {
   originalImageUrl?: string
   credit?: string
   cropParams?: CropParams
+  alternativeText?: string
 }
 
 export enum UploaderModeEnum {

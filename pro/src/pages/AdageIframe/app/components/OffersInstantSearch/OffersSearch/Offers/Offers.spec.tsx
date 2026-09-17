@@ -173,6 +173,7 @@ describe('offers', () => {
       name: 'Coco channel',
       location: { ...defaultCollectiveOffer.location },
       durationMinutes: null,
+      imageAlternativeText: null,
       imageUrl: null,
       imageCredit: null,
       nationalProgram: null,
@@ -189,6 +190,7 @@ describe('offers', () => {
       venue: {
         id: 1,
         adageId: '1',
+        imgAlternativeText: null,
         imgUrl: null,
         address: '1 boulevard Poissonnière',
         city: 'Cayenne',
@@ -226,6 +228,7 @@ describe('offers', () => {
       name: 'Un autre titre',
       location: { ...defaultCollectiveOffer.location },
       durationMinutes: null,
+      imageAlternativeText: null,
       imageUrl: null,
       imageCredit: null,
       nationalProgram: null,
@@ -242,6 +245,7 @@ describe('offers', () => {
       venue: {
         id: 1,
         adageId: '1',
+        imgAlternativeText: null,
         imgUrl: null,
         address: '1 boulevard Poissonnière',
         city: 'Paris',

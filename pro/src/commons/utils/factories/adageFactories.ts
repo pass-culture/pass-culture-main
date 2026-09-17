@@ -32,6 +32,7 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
     description: '',
     durationMinutes: null,
     educationalPriceDetail: null,
+    imageAlternativeText: null,
     imageCredit: null,
     imageUrl: null,
     nationalProgram: null,
@@ -63,6 +64,7 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
     venue: {
       id: 1,
       imgUrl: null,
+      imgAlternativeText: null,
       adageId: '1',
       address: '1 boulevard Poissonnière',
       city: 'Paris',
@@ -93,6 +95,7 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
   durationMinutes: null,
   imageCredit: null,
   imageUrl: null,
+  imageAlternativeText: null,
   nationalProgram: null,
   location: {
     locationType: CollectiveLocationType.SCHOOL,
@@ -114,6 +117,7 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
   venue: {
     id: 1,
     imgUrl: null,
+    imgAlternativeText: null,
     adageId: '1',
     address: '1 boulevard Poissonnière',
     city: 'Paris',

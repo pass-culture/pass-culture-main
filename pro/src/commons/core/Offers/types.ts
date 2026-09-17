@@ -49,10 +49,12 @@ export interface CategorySubtypeItem {
 export interface OfferCollectiveImage {
   url?: string | null
   credit?: string | null
+  alternativeText?: string | null
 }
 
 export interface IndividualOfferImage {
   url?: string
   credit: string | null
+  alternativeText: string | null
   cropParams?: CropParams
 }

@@ -218,6 +218,64 @@ describe('ModalImageUpsertOrEdit', () => {
       expect(creditInput).toHaveValue('John Doe')
     })
 
+    it('should allow entering alternative text when the image is informative', async () => {
+      const mockImageUrl = 'http://example.com/image.jpg'
+      renderModalImageCrop({
+        initialValues: {
+          croppedImageUrl: mockImageUrl,
+          originalImageUrl: mockImageUrl,
+          alternativeText: '',
+        },
+      })
+      await waitForRender()
+
+      const informativeCheckbox = await screen.findByRole('checkbox', {
+        name: /L’image est porteuse d’informations/,
+      })
+      await userEvent.click(informativeCheckbox)
+
+      const alternativeTextInput = screen.getByLabelText(
+        'Texte alternatif de l’image'
+      )
+      await userEvent.type(alternativeTextInput, 'Le train arrive en gare')
+
+      await userEvent.click(screen.getByRole('button', { name: 'Importer' }))
+
+      expect(onImageUpload).toHaveBeenCalledWith(
+        expect.objectContaining({
+          alternativeText: 'Le train arrive en gare',
+        }),
+        'Vos modifications ont bien été prises en compte'
+      )
+    })
+
+    it('should save a null alternative text when the image is not informative', async () => {
+      const mockImageUrl = 'http://example.com/image.jpg'
+      renderModalImageCrop({
+        initialValues: {
+          croppedImageUrl: mockImageUrl,
+          originalImageUrl: mockImageUrl,
+          alternativeText: 'Ancien texte',
+        },
+      })
+      await waitForRender()
+
+      const informativeCheckbox = await screen.findByRole('checkbox', {
+        name: /L’image est porteuse d’informations/,
+      })
+      expect(informativeCheckbox).toBeChecked()
+
+      await userEvent.click(informativeCheckbox)
+      await userEvent.click(screen.getByRole('button', { name: 'Importer' }))
+
+      expect(onImageUpload).toHaveBeenCalledWith(
+        expect.objectContaining({
+          alternativeText: null,
+        }),
+        'Vos modifications ont bien été prises en compte'
+      )
+    })
+
     describe('when the image has small dimensions', () => {
       it('should not display any warning message for venues', async () => {
         vi.spyOn(imageUtils, 'getImageBitmap').mockResolvedValue({
