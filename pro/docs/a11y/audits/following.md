@@ -804,3 +804,36 @@ Dans les tableaux, lors de l’activation d'un bouton de tri, aucune information
 TBD
 
 </details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43621](https://passculture.atlassian.net/browse/PC-43621)  
+**PR** : [#24383](https://github.com/pass-culture/pass-culture-main/pull/24383)
+
+**Problème** 😱  
+
+P08 → Page d'accueil
+
+Le bloc « Sous menu - page d'accueil » est implémenté sous la forme d'un composant d'onglets avec les rôles ARIA `tablist` et `tab`.
+
+Cependant, le comportement clavier attendu pour ce type de composant n'est pas respecté :
+
+- la navigation entre les onglets avec les touches fléchées n'est pas possible ;
+- chaque onglet possède un `tabindex="0"`, alors que, selon le motif de conception ARIA Tabs, seul l'onglet actif doit être présent dans le parcours de tabulation.
+
+**Correction** 💡  
+
+Respect du motif de conception ARIA Tabs sur le composant `ui-kit/Tabs` :
+
+- ajout de la navigation entre les onglets avec les touches flèches gauche/droite ainsi que `Home`/`End` ;
+- application de `tabindex="0"` uniquement sur l'onglet actif, et `tabindex="-1"` sur les autres.
+
+**Retours audit** 🔥  
+Texte
+
+</details>

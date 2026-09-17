@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useRef } from 'react'
 
 import type { BaseTabsProps } from '../Tabs'
 import styles from './TabItems.module.scss'
@@ -47,6 +48,41 @@ export const TabItems = <T extends string>({
   selectedKey,
   className,
 }: TabItemsProps<T>): JSX.Element => {
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+
+  const focusTab = (key: T) => {
+    tabRefs.current[key]?.focus()
+  }
+
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    let newIndex: number | null = null
+
+    switch (event.key) {
+      case 'ArrowRight':
+        newIndex = (index + 1) % tabs.length
+        break
+      case 'ArrowLeft':
+        newIndex = (index - 1 + tabs.length) % tabs.length
+        break
+      case 'Home':
+        newIndex = 0
+        break
+      case 'End':
+        newIndex = tabs.length - 1
+        break
+      default:
+        return
+    }
+
+    event.preventDefault()
+    const newTab = tabs[newIndex]
+    focusTab(newTab.key)
+    onChange(newTab.key)
+  }
+
   return (
     <div>
       <div
@@ -54,7 +90,7 @@ export const TabItems = <T extends string>({
         aria-label={navLabel}
         className={cn(styles['menu-list'], className)}
       >
-        {tabs.map(({ key, label, baseId }) => {
+        {tabs.map(({ key, label, baseId }, index) => {
           const isSelected = selectedKey === key
 
           return (
@@ -65,15 +101,19 @@ export const TabItems = <T extends string>({
             <button
               id={getTabId(baseId ?? key)}
               key={key}
+              ref={(el) => {
+                tabRefs.current[key] = el
+              }}
               type="button"
               role="tab"
               onClick={() => onChange(key)}
+              onKeyDown={(event) => handleKeyDown(event, index)}
               aria-selected={isSelected}
               aria-controls={getPanelId(baseId ?? key)}
-              tabIndex={0}
+              tabIndex={isSelected ? 0 : -1}
               className={cn(
                 styles['menu-list-item'],
-                // the syle line below reset default button styling
+                // the style line below reset default button styling
                 // so that it doesn't conflict with 'menu-list-item' style
                 styles['menu-list-item-button'],
                 {
