@@ -226,13 +226,13 @@ importers:
         version: 1.19.10(@algolia/client-search@5.59.0)(algoliasearch@5.59.0)
       '@firebase/analytics':
         specifier: 0.10.25
-        version: 0.10.25(@firebase/app@0.16.1)
+        version: 0.10.25(@firebase/app@0.16.2)
       '@firebase/app':
-        specifier: 0.16.1
-        version: 0.16.1
+        specifier: 0.16.2
+        version: 0.16.2
       '@firebase/remote-config':
         specifier: 0.9.1
-        version: 0.9.1(@firebase/app@0.16.1)
+        version: 0.9.1(@firebase/app@0.16.2)
       '@hookform/resolvers':
         specifier: 5.7.1
         version: 5.7.1(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.87.0(react@19.3.0))(yup@1.7.1)(zod@4.6.1)
@@ -998,8 +998,8 @@ packages:
     peerDependencies:
       '@firebase/app': 0.x
 
-  '@firebase/app@0.16.1':
-    resolution: {integrity: sha512-tjUEorFyKrurH7PbLWv9zDHRuU4mLefgD/yY38D584ziorIRlQz/PVjx4c/SCGyCuUlmyzt72mK+Lh+COAywNQ==}
+  '@firebase/app@0.16.2':
+    resolution: {integrity: sha512-fyCLPahl3r0Zb7Wzm+JLWcOOH3SaDgAyJzJ8EWIDiv51aNiv+2Pjbpa6myEuP7iXxjmJqrcbVm0GUF7h229T1Q==}
     engines: {node: '>=20.0.0'}
 
   '@firebase/component@0.7.4':
@@ -5246,16 +5246,16 @@ snapshots:
 
   '@exodus/bytes@1.15.1': {}
 
-  '@firebase/analytics@0.10.25(@firebase/app@0.16.1)':
+  '@firebase/analytics@0.10.25(@firebase/app@0.16.2)':
     dependencies:
-      '@firebase/app': 0.16.1
+      '@firebase/app': 0.16.2
       '@firebase/component': 0.7.5
-      '@firebase/installations': 0.6.24(@firebase/app@0.16.1)
+      '@firebase/installations': 0.6.24(@firebase/app@0.16.2)
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
       tslib: 2.8.1
 
-  '@firebase/app@0.16.1':
+  '@firebase/app@0.16.2':
     dependencies:
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
@@ -5273,17 +5273,17 @@ snapshots:
       '@firebase/util': 1.15.3
       tslib: 2.8.1
 
-  '@firebase/installations@0.6.23(@firebase/app@0.16.1)':
+  '@firebase/installations@0.6.23(@firebase/app@0.16.2)':
     dependencies:
-      '@firebase/app': 0.16.1
+      '@firebase/app': 0.16.2
       '@firebase/component': 0.7.4
       '@firebase/util': 1.15.2
       idb: 7.1.1
       tslib: 2.8.1
 
-  '@firebase/installations@0.6.24(@firebase/app@0.16.1)':
+  '@firebase/installations@0.6.24(@firebase/app@0.16.2)':
     dependencies:
-      '@firebase/app': 0.16.1
+      '@firebase/app': 0.16.2
       '@firebase/component': 0.7.5
       '@firebase/util': 1.15.3
       idb: 7.1.1
@@ -5297,11 +5297,11 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@firebase/remote-config@0.9.1(@firebase/app@0.16.1)':
+  '@firebase/remote-config@0.9.1(@firebase/app@0.16.2)':
     dependencies:
-      '@firebase/app': 0.16.1
+      '@firebase/app': 0.16.2
       '@firebase/component': 0.7.4
-      '@firebase/installations': 0.6.23(@firebase/app@0.16.1)
+      '@firebase/installations': 0.6.23(@firebase/app@0.16.2)
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.2
       tslib: 2.8.1
