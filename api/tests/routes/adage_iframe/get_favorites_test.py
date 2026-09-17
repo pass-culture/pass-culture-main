@@ -56,6 +56,7 @@ class GetFavoriteOfferTest:
                             "longitude": float(collective_offer_template.venue.offererAddress.address.longitude),
                         },
                         "id": collective_offer_template.venue.id,
+                        "imgAlternativeText": None,
                         "imgUrl": None,
                         "managingOfferer": {"name": collective_offer_template.venue.managingOfferer.name},
                         "name": collective_offer_template.venue.name,
@@ -82,6 +83,7 @@ class GetFavoriteOfferTest:
                         }
                     ],
                     "interventionArea": ["2A", "2B"],
+                    "imageAlternativeText": None,
                     "imageUrl": None,
                     "imageCredit": None,
                     "nationalProgram": None,

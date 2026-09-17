@@ -159,6 +159,7 @@ class GetVenueResponseModel(HttpBodyModel):
 
                 banner_meta = venue_banners_serialize.BannerMetaModel(
                     image_credit=venue.bannerMeta.get("image_credit"),
+                    image_alternative_text=venue.bannerMeta.get("image_alternative_text"),
                     original_image_url=venue.bannerMeta.get("original_image_url"),
                     crop_params=crop_params,
                 )

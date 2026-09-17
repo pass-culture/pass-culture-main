@@ -445,6 +445,7 @@ class GetOfferMediationResponseModel(BaseModel):
     authorId: str | None
     credit: str | None
     thumbUrl: str | None
+    alternativeText: str | None
 
     class Config:
         orm_mode = True

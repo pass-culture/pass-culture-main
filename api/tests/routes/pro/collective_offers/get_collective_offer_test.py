@@ -36,7 +36,10 @@ class Returns200Test:
         teacher = factories.EducationalRedactorFactory()
         national_program = factories.NationalProgramFactory()
         provider = providers_factories.ProviderFactory()
-        venue = offerers_factories.VenueFactory(bannerUrl="http://localhost/image.png")
+        venue = offerers_factories.VenueFactory(
+            bannerUrl="http://localhost/image.png",
+            bannerMeta={"image_credit": "John Doe", "image_alternative_text": "An alternative text"},
+        )
         offer = factories.CollectiveOfferFactory(
             collectiveStock=stock,
             teacher=teacher,
@@ -45,6 +48,7 @@ class Returns200Test:
             provider=provider,
             venue=venue,
             additionalDetails="some details",
+            imageAlternativeText="A collective offer image",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -102,6 +106,7 @@ class Returns200Test:
                 "past": [{"datetime": format_into_utc_date(offer.lastValidationDate), "status": "PUBLISHED"}],
             },
             "id": offer.id,
+            "imageAlternativeText": "A collective offer image",
             "imageCredit": None,
             "imageUrl": None,
             "institution": None,
@@ -134,6 +139,7 @@ class Returns200Test:
             "venue": {
                 "departementCode": "75",
                 "id": venue.id,
+                "imgAlternativeText": "An alternative text",
                 "imgUrl": "http://localhost/image.png",
                 "managingOfferer": {
                     "id": venue.managingOfferer.id,

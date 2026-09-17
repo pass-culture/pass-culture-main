@@ -681,6 +681,7 @@ def attach_offer_image(
             image=image_as_bytes,
             crop_params=_get_crop_params(form),
             credit=form.credit,
+            alternative_text=form.alternative_text,
         )
     except UnidentifiedImageError:
         logger.exception("Error on collective offer image upload")
@@ -718,6 +719,7 @@ def attach_offer_template_image(
             image=image_as_bytes,
             crop_params=_get_crop_params(form),
             credit=form.credit,
+            alternative_text=form.alternative_text,
         )
     except UnidentifiedImageError:
         logger.exception("Error on collective offer image upload")

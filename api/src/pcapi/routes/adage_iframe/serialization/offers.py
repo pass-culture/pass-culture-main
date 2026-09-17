@@ -71,6 +71,7 @@ class OfferVenueResponse(HttpBodyModel):
     managingOfferer: OfferManagingOffererResponse
     adageId: str | None
     imgUrl: str | None
+    imgAlternativeText: str | None
 
     @classmethod
     def build(cls, venue: offerers_models.Venue) -> typing.Self:
@@ -89,6 +90,7 @@ class OfferVenueResponse(HttpBodyModel):
             managingOfferer=OfferManagingOffererResponse(name=venue.managingOfferer.name),
             adageId=venue.adageId,
             imgUrl=venue.bannerUrl,
+            imgAlternativeText=venue.bannerMeta.get("image_alternative_text") if venue.bannerMeta else None,
         )
 
 
@@ -129,6 +131,7 @@ class CollectiveOfferBaseReponseModel(HttpBodyModel):
     imageCredit: str | None
     nationalProgram: NationalProgramResponseModel | None
     formats: list[EacFormat]
+    imageAlternativeText: str | None
     isTemplate: bool
     # accessibility fields
     audioDisabilityCompliant: bool | None
@@ -176,6 +179,7 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             imageCredit=offer.imageCredit,
             teacher=teacher,
             nationalProgram=program,
+            imageAlternativeText=offer.imageAlternativeText,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
@@ -222,6 +226,7 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
             imageUrl=offer.imageUrl,
             imageCredit=offer.imageCredit,
             nationalProgram=program,
+            imageAlternativeText=offer.imageAlternativeText,
             isFavorite=is_favorite,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,

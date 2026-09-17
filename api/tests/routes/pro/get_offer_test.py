@@ -91,7 +91,7 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
 
-        mediation = offers_factories.MediationFactory(offer=offer)
+        mediation = offers_factories.MediationFactory(offer=offer, alternativeText="A mediation image")
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
@@ -100,6 +100,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert f"/thumbs/mediations/{humanize(mediation.id)}" in response.json["activeMediation"]["thumbUrl"]
+        assert response.json["activeMediation"]["alternativeText"] == "A mediation image"
 
     @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_an_event_stock(self, client):

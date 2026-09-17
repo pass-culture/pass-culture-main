@@ -7,6 +7,7 @@ from pcapi.utils.image_conversion import CropParams
 class CreateThumbnailBodyModel(HttpBodyModel):
     offer_id: int
     credit: str | None = None
+    alternative_text: str | None = pydantic_v2.Field(default=None, max_length=150)
     cropping_rect_x: float | None = None
     cropping_rect_y: float | None = None
     cropping_rect_height: float | None = None
@@ -32,3 +33,4 @@ class CreateThumbnailResponseModel(HttpBodyModel):
     id: int
     thumbUrl: str = pydantic_v2.Field(alias="url")
     credit: str | None = None
+    alternative_text: str | None
