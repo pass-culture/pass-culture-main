@@ -64,6 +64,7 @@ export const GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY =
   'getVenuesOfOffererFromSiret'
 export const GET_VENUE_PROVIDERS_QUERY_KEY = 'getVenueProviders'
 export const GET_VENUES_STATS_QUERY_KEY = 'getVenueOffersStats'
+export const GET_VENUES_OFFERS_STATS_V2 = 'getVenueOffersStatsV2'
 export const LOG_CATALOG_VIEW_QUERY_KEY = 'logCatalogView'
 export const LOG_TRACKING_FILTER_QUERY_KEY = 'logTrackingFilter'
 export const GET_STATISTICS_QUERY_KEY = 'getStatistics'
