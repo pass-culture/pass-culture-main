@@ -80,7 +80,6 @@ jobs:
     with:
       ENV: "development"
       tag: ${{ github.sha }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   # If the following jobs have failed: lint-github-actions, test_pro_result, test_backend_result
   # this job will return '["GitHub actions","Front Pro","Backend"]' in `failed-tests-matrix` output

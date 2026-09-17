@@ -34,9 +34,9 @@ jobs:
           bucket: ${{ vars.CACHE_BUCKET }}
           path: |
             **/node_modules
-          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('pro/pnpm-lock.yaml') }}
           restore-keys: |
-            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('pro/pnpm-lock.yaml') }}
       - name: "Install dependencies (3 attempts)"
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
@@ -92,9 +92,9 @@ jobs:
           bucket: ${{ vars.CACHE_BUCKET }}
           path: |
             **/node_modules
-          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('pro/pnpm-lock.yaml') }}
           restore-keys: |
-            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('pro/pnpm-lock.yaml') }}
 
       - name: "Install dependencies (3 attempts)"
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -161,9 +161,9 @@ jobs:
           bucket: ${{ vars.CACHE_BUCKET }}
           path: |
             **/node_modules
-          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('pro/pnpm-lock.yaml') }}
           restore-keys: |
-            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('pro/pnpm-lock.yaml') }}
 
       - name: "Install dependencies (3 attempts)"
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -209,6 +209,12 @@ jobs:
           secrets: |-
             SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
 
+      - name: "Compute project version from the latest production release"
+        id: project-version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "version=$(gh release view --json tagName -q .tagName | sed 's/^v//')" >> "$GITHUB_OUTPUT"
+
       - name: SonarCloud scan
         uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8.2.1
         if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
@@ -217,4 +223,4 @@ jobs:
           SONAR_TOKEN: ${{ steps.secrets.outputs.SONAR_TOKEN }}
         with:
           projectBaseDir: pro
-          args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }}
+          args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }} -Dsonar.projectVersion=${{ steps.project-version.outputs.version }}

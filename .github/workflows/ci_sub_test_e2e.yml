@@ -13,9 +13,6 @@ on:
       tag:
         type: string
         required: true
-      CACHE_BUCKET_NAME:
-        type: string
-        required: true
 
 defaults:
   run:
@@ -45,6 +42,16 @@ jobs:
 
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@6483091347df28b22c7b10d39bb6e3e058d7278a
 
+      - name: "Cache the node_modules"
+        uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
+        with:
+          compression-method: "gzip"
+          path: |
+            **/node_modules
+          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('pro/pnpm-lock.yaml') }}
+          restore-keys: |
+            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('pro/pnpm-lock.yaml') }}
+
       - name: Install dependencies
         run: pnpm ci
 
@@ -59,26 +66,6 @@ jobs:
           name: build-playwright
           if-no-files-found: error
           path: pro/build
-
-      - name: Cache Docker layers
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile', '**/docker-compose*.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Cache uv
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/uv
-          key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-
-
-      # FIXME: remove deprecated GH action
-      - name: "Cache Workflow Conclusion"
-        uses: technote-space/workflow-conclusion-action@45ce8e0eb155657ab8ccf346ade734257fd196a5 # v3.0.3
 
   run-playwright-tests:
     name: Run Playwright tests
@@ -120,8 +107,24 @@ jobs:
           PCAPI_UID: 1000
           PCAPI_GID: 1000
 
+      - name: "Cache the node_modules"
+        uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
+        with:
+          compression-method: "gzip"
+          path: |
+            **/node_modules
+          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('pro/pnpm-lock.yaml') }}
+          restore-keys: |
+            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('pro/pnpm-lock.yaml') }}
+
       - name: Install dependencies
         run: pnpm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pro/pnpm-lock.yaml') }}
 
       - name: Install Playwright browsers
         run: pnpm playwright install chromium --with-deps
