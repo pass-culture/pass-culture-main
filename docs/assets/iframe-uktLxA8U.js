@@ -1,1 +1,0 @@
-import{t as e}from"./iframe-iScJ-2Ka.js";e();
