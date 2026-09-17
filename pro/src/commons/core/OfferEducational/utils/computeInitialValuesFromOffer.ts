@@ -284,6 +284,9 @@ export const computeInitialValuesFromOffer = (
         : defaultEducationalFormValues.priceDetail,
     imageUrl: offer.imageUrl || defaultEducationalFormValues.imageUrl,
     imageCredit: offer.imageCredit || defaultEducationalFormValues.imageCredit,
+    imageAlternativeText:
+      offer.imageAlternativeText ||
+      defaultEducationalFormValues.imageAlternativeText,
     'search-domains': '',
     'search-formats': '',
     'search-interventionArea': '',

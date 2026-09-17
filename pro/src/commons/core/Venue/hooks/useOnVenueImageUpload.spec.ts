@@ -92,6 +92,7 @@ describe('useOnVenueImageUpload', () => {
       imageFile: new File(['img'], 'photo.jpg', { type: 'image/jpeg' }),
       credit: 'new-credit',
       cropParams: { x: 10, y: 20, height: 100, width: 200 },
+      alternativeText: 'new alt text',
     }
 
     await act(async () => {
@@ -102,6 +103,7 @@ describe('useOnVenueImageUpload', () => {
       venue.id,
       uploadArgs.imageFile,
       uploadArgs.credit,
+      uploadArgs.alternativeText,
       uploadArgs.cropParams.x,
       uploadArgs.cropParams.y,
       uploadArgs.cropParams.height,

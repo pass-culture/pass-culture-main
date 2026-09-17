@@ -25,12 +25,14 @@ export const useOnVenueImageUpload = (
   const handleOnImageUpload = async ({
     imageFile,
     credit,
+    alternativeText,
     cropParams,
   }: OnImageUploadArgs) => {
     const editedVenue = await postImageToVenue(
       venueId,
       imageFile,
       credit,
+      alternativeText,
       cropParams?.x,
       cropParams?.y,
       cropParams?.height,
