@@ -76,7 +76,10 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             label="Se connecter"
           />
         </div>
-        <aside className={styles['no-account']}>
+        <aside
+          aria-label="Pas encore de compte"
+          className={styles['no-account']}
+        >
           <p className={styles['no-account-text']}>
             Vous n’avez pas encore de compte ?
           </p>

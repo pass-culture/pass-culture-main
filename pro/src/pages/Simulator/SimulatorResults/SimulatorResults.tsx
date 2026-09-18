@@ -204,7 +204,10 @@ export const SimulatorResults = (): JSX.Element => {
       </div>
 
       {!showErrorBanner && (
-        <aside className={styles['signup-later']}>
+        <aside
+          aria-label="S'inscrire plus tard"
+          className={styles['signup-later']}
+        >
           <p className={styles['signup-later-text']}>
             Vous souhaitez vous inscrire plus tard ?
           </p>
