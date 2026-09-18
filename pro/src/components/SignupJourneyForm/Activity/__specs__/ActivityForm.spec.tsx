@@ -248,7 +248,9 @@ describe('screens:SignupJourney::ActivityForm', () => {
     await userEvent.click(screen.getByText(/domaine 1/))
     expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
     await userEvent.click(screen.getByText(/domaine III/))
-    expect(screen.getByLabelText('domaines sélectionnés')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'domaines sélectionnés' })
+    ).toBeInTheDocument()
   })
 
   it('should display other activity comment input when activity is OTHER', async () => {

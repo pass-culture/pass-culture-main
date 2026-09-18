@@ -36,6 +36,7 @@ describe('<MultiSelectPanel />', () => {
         hasSearch={hasSearch}
         searchLabel={searchLabel}
         id={''}
+        label="Options"
       />
     )
   }

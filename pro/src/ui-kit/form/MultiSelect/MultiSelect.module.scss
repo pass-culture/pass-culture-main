@@ -123,8 +123,13 @@
   left: 0;
   right: 0;
   top: rem.torem(42px);
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  margin: 0;
   box-shadow: var(--shadow-overlay);
-  padding-top: var(--size-spacing-l);
+  padding: var(--size-spacing-l) 0 0;
+  border: none;
   border-radius: var(--size-border-radius-m);
 }
 

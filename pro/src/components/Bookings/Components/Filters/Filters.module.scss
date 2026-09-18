@@ -1,3 +1,4 @@
+@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
@@ -29,6 +30,7 @@
   background-color: transparent;
   border: none;
   vertical-align: middle;
+  cursor: pointer;
 }
 
 .table-head-label {
@@ -62,4 +64,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-l);
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
