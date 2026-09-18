@@ -149,25 +149,6 @@ describe('Hub', () => {
     expect(screen.getByText('Structure fermée')).toBeInTheDocument()
   })
 
-  it('should display venues with a closed managing offerer', () => {
-    renderHub({
-      venues: [
-        makeVenueListItemLiteResponseModel({
-          id: 101,
-          publicName: 'Lieu rattaché à une entité fermée',
-          managingOfferer: {
-            id: 100,
-            isClosed: true,
-          },
-          state: null,
-        }),
-      ],
-    })
-
-    expect(screen.getByText('Entité juridique fermée')).toBeInTheDocument()
-    expect(screen.queryByText('Structure fermée')).not.toBeInTheDocument()
-  })
-
   it('should display venues in closing process', () => {
     renderHub({
       venues: [

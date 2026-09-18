@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -30,7 +30,7 @@ export const VideoUploader = ({ uploadTipsId }: VideoUploaderProps) => {
   const { videoData, onVideoDelete } = useVideoUploaderContext()
   const { videoDuration, videoTitle, videoThumbnailUrl } = videoData ?? {}
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const editVideoRef = useRef<HTMLButtonElement>(null)
   const addVideoRef = useRef<HTMLButtonElement>(null)
   const hasVideo = !!videoThumbnailUrl

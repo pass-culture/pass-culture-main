@@ -34,8 +34,8 @@ import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/u
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { searchPatternInOptions } from '@/commons/utils/searchPatternInOptions'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -83,7 +83,7 @@ export const CollectiveOfferInstitutionScreen = ({
   requestId = '',
 }: CollectiveOfferInstitutionProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
 
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()

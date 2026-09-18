@@ -2,8 +2,8 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
@@ -11,7 +11,7 @@ import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 export const CollectiveVenuePage = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
 
   return (
     <SummarySection

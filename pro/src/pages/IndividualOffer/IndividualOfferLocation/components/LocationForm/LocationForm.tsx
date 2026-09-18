@@ -6,7 +6,7 @@ import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 
@@ -19,7 +19,7 @@ export const LocationForm = () => {
     formState: { errors },
   } = useFormContext<LocationFormValues>()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const { hasPublishedOfferWithSameEan, offer } = useIndividualOfferContext()
   assertOrFrontendError(offer, '`offer` is undefined in LocationForm.')
 

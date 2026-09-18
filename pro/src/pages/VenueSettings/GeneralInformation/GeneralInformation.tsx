@@ -15,8 +15,8 @@ import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenTo
 import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
 import { getMapKeys } from '@/commons/mappings/helpers'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
@@ -43,7 +43,7 @@ import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrC
 
 const GeneralInformation = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(venue)
+  const isClosed = withVenueHelpers(venue).isClosedOrClosing
   const addressFieldKey = useKey()
 
   const formContext: VenueSettingsFormContext = {

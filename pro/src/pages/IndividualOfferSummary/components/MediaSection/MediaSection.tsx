@@ -8,7 +8,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ImagePlaceholder } from '@/components/SafeImage/ImagePlaceholder/ImagePlaceholder'
 import { SafeImage } from '@/components/SafeImage/SafeImage'
 import { VideoPreview } from '@/components/VideoPreview/VideoPreview'
@@ -34,7 +34,7 @@ export const MediaSection = ({
   isOnCreation = false,
 }: MediaSectionProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const imageCreditId = useId()
 
   const { videoDuration, videoTitle, videoThumbnailUrl, videoUrl } =

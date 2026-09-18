@@ -1,8 +1,8 @@
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { toStringOrNull } from '@/commons/utils/toStringOrNull'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
@@ -13,7 +13,7 @@ import { AddressAndOpeningHourSubSection } from './AddressAndOpeningHourSubSecti
 
 export const IndividualVenuePageScreen = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
 
   return (
     <SummarySection

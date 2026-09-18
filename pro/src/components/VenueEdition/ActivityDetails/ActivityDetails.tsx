@@ -10,8 +10,8 @@ import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenTo
 import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
 import { toSelectOptions } from '@/commons/mappings/helpers'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Select } from '@/ui-kit/form/Select/Select'
@@ -27,7 +27,7 @@ interface ActivityFormFields {
 
 export const ActivityDetails = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(venue)
+  const isClosed = withVenueHelpers(venue).isClosedOrClosing
   const { register, watch, setValue, formState } =
     useFormContext<ActivityFormFields>()
 

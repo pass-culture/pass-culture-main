@@ -128,15 +128,12 @@ export const Hub = () => {
                 onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
                 type="button"
               >
-                {venue.state === VenueState.CLOSED &&
-                  !venue.managingOfferer.isClosed && (
-                    <div className={styles['venue-item-state']}>
-                      <Tag
-                        variant={TagVariant.ERROR}
-                        label="Structure fermée"
-                      />
-                    </div>
-                  )}
+                {(venue.managingOfferer.isClosed ||
+                  venue.state === VenueState.CLOSED) && (
+                  <div className={styles['venue-item-state']}>
+                    <Tag variant={TagVariant.ERROR} label="Structure fermée" />
+                  </div>
+                )}
                 {venue.state === VenueState.CLOSING &&
                   !venue.managingOfferer.isClosed && (
                     <div className={styles['venue-item-state']}>
@@ -146,15 +143,6 @@ export const Hub = () => {
                       />
                     </div>
                   )}
-
-                {venue.managingOfferer.isClosed && (
-                  <div className={styles['venue-item-state']}>
-                    <Tag
-                      variant={TagVariant.ERROR}
-                      label="Entité juridique fermée"
-                    />
-                  </div>
-                )}
 
                 <span
                   className={styles['venue-item-name']}

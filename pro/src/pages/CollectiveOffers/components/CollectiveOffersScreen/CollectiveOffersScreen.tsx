@@ -22,9 +22,9 @@ import { usePagination } from '@/commons/hooks/usePagination'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/ExpirationCell/ExpirationCell'
@@ -72,7 +72,7 @@ export const CollectiveOffersScreen = ({
   offers,
 }: Readonly<CollectiveOffersScreenProps>) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferResponseModel[]

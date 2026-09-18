@@ -10,7 +10,7 @@ import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeadin
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Tag } from '@/design-system/Tag/Tag'
 import {
   getCollectiveOfferActiveStep,
@@ -99,7 +99,7 @@ export const CollectiveOfferLayout = ({
   const location = useLocation()
   const pathname = location.pathname
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
 
   const isSummaryPage = pathname.includes('recapitulatif')
   const getTitle = () => {

@@ -11,8 +11,8 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { serializeDateTimeToUTCFromLocalDepartment } from '@/commons/utils/timezone'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -73,7 +73,7 @@ export function OfferPublicationEdition({
   offer,
 }: Readonly<OfferPublicationEditionProps>) {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const snackBar = useSnackBar()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)

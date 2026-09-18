@@ -4,7 +4,7 @@ import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
 import { OfferHighlightCard } from '@/components/IndividualOfferLayout/components/OfferHighlightCard/OfferHighlightCard'
@@ -33,7 +33,7 @@ export const IndividualOfferExposureScreen = ({
 }: Readonly<IndividualOfferExposureScreenProps>) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const {
     shouldDisplayRecommendationAction,
     shouldDisplayHighlightAction,

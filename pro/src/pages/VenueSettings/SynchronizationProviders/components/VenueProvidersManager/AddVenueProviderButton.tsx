@@ -9,8 +9,8 @@ import {
   GET_VENUE_PROVIDERS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { sortByLabel } from '@/commons/utils/strings'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
@@ -41,7 +41,7 @@ export const AddVenueProviderButton = ({
       api.getProvidersByVenue({ path: { venue_id: venueIdParam } })
   )
   const providers = providersQuery.data
-  const isClosed = isSelectedPartnerOrOffererClosed(venue)
+  const isClosed = withVenueHelpers(venue).isClosedOrClosing
   const { logEvent } = useAnalytics()
   const [isCreationMode, setIsCreationMode] = useState(false)
   const [selectedProviderId, setSelectedProviderId] = useState(

@@ -13,7 +13,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { isDateValid } from '@/commons/utils/date'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
 import { OfferHighlightCard } from '@/components/IndividualOfferLayout/components/OfferHighlightCard/OfferHighlightCard'
@@ -66,7 +66,7 @@ export const IndividualOfferConfirmationScreen = ({
     shouldDisplayHeadlineAction,
   } = getOfferEnhancementActionsVisibility(offer)
 
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const shouldDisplayCardsSection =
     shouldDisplayRecommendationAction ||
     shouldDisplayHighlightAction ||

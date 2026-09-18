@@ -12,8 +12,8 @@ import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { noop } from '@/commons/utils/noop'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { ButtonImageEdit } from '@/components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
 import { Button } from '@/design-system/Button/Button'
@@ -45,7 +45,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
       selectedPartnerVenue.bannerMeta
     )
 
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
 
   const handleOnImageDelete = async () => {
     try {

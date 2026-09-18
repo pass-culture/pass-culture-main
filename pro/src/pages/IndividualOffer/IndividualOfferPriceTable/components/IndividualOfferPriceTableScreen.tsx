@@ -21,7 +21,7 @@ import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/u
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -49,7 +49,7 @@ export const IndividualOfferPriceTableScreen = ({
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
 
