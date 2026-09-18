@@ -55,10 +55,19 @@ def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUs
 
     token_payload = _decrypt_token(auth_response.id_token, client_id)
 
-    return _parse_identity_token(token_payload, auth_response)
+    return _parse_identity_token(token_payload, auth_response, is_web)
 
 
 def revoke_apple_user(refresh_token: str, is_web: bool) -> None:
+    """
+    Revoke Apple SignIn User on Apple-side, with the user's Apple refresh token.
+
+    Refresh token have no expiry date, so we can just use the one from account creation
+
+    Users can remove their SSO from their Apple Account: https://support.apple.com/en-us/102571
+
+    Revoke documentation: https://developer.apple.com/documentation/signinwithapplerestapi/revoke-tokens
+    """
     client_id, client_secret = _generate_client_secret(is_web)
 
     try:
@@ -66,6 +75,7 @@ def revoke_apple_user(refresh_token: str, is_web: bool) -> None:
             "client_id": client_id,
             "client_secret": client_secret,
             "token": refresh_token,
+            "token_type_hint": "refresh_token",
         }
         _fetch_response(settings.APPLE_REVOKE_TOKEN_ENDPOINT, payload)
     except Exception as e:
@@ -98,7 +108,10 @@ def _decrypt_token(token: str, client_id: str) -> dict[str, typing.Any]:
 
 
 def _generate_client_secret(is_web: bool) -> tuple[str, str]:
-    # Doc on how to generate a client secret: https://developer.apple.com/documentation/AccountOrganizationalDataSharing/creating-a-client-secret
+    """
+    Apple documentation on how to generate a client secret:
+    https://developer.apple.com/documentation/AccountOrganizationalDataSharing/creating-a-client-secret
+    """
     client_id = settings.APPLE_WEB_CLIENT_ID if is_web else settings.APPLE_MOBILE_CLIENT_ID
 
     now = int(time.time())
@@ -146,8 +159,14 @@ def _fetch_response(url: str, payload: dict) -> dict:
 def _parse_identity_token(
     payload: dict[str, typing.Any],
     token_response: AppleSignInAuthenticationResponse,
+    is_web: bool,
 ) -> users_schemas.SSOUser:
-    # Doc on id_token content: https://developer.apple.com/documentation/signinwithapplejs/authorizationi/id_token
+    """
+    Retrieve identity from Apple ID Token.
+
+    Doc on id_token content:
+        https://developer.apple.com/documentation/signinwithapplejs/authorizationi/id_token
+    """
     is_private_email = payload.get("is_private_email")
     if isinstance(is_private_email, str):
         is_private_email = is_private_email.lower() == "true"
@@ -161,5 +180,7 @@ def _parse_identity_token(
         email=payload.get("email"),
         email_verified=email_verified,
         is_private_email=is_private_email,
-        extra_data={"refresh_token": token_response.refresh_token},
+        extra_data={
+            "web" if is_web else "mobile": token_response.refresh_token,
+        },
     )
