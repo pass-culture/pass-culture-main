@@ -4,6 +4,7 @@ from hashlib import sha256
 from flask import g
 from flask import request
 from flask_login import current_user
+from sqlalchemy.ext.mutable import MutableDict
 
 import pcapi.core.token as token_utils
 from pcapi.connectors import api_recaptcha
@@ -195,6 +196,8 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) 
         raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
 
     sso_user_id = sso_user.sub
+    sso_extra_data = sso_user.extra_data
+
     with transaction():
         if not user.isEmailValidated:
             # An account registered with a password and with its email not validated is a symptom
@@ -203,14 +206,23 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) 
             user.password = None
             user.isEmailValidated = True
 
-        current_provider_sso = None
-        user_ssos_for_provider = [sso for sso in user.single_sign_ons if sso.ssoProvider == sso_provider]
-        if user_ssos_for_provider:
-            current_provider_sso = user_ssos_for_provider[0]
-            current_provider_sso.ssoUserId = sso_user.sub
-        else:
-            current_provider_sso = users_repo.create_single_sign_on(user, sso_provider, sso_user_id)
-            db.session.add(current_provider_sso)
+        current_provider_sso = users_repo.get_single_sign_on(sso_provider, sso_user_id)
+
+        if current_provider_sso is None:
+            current_provider_sso = users_repo.create_single_sign_on(user, sso_provider, sso_user_id, sso_extra_data)
+
+        # For Apple SSO, we need to save in DB the refresh token for each Apple client (web and mobile)
+        # This is used for revocation.
+        if sso_provider == "apple":
+            client_type = "web" if is_web else "mobile"
+
+            if not current_provider_sso.ssoExtraData:
+                current_provider_sso.ssoExtraData = MutableDict()
+
+            if client_type not in current_provider_sso.ssoExtraData:
+                current_provider_sso.ssoExtraData.update(sso_extra_data)
+
+        db.session.add(current_provider_sso)
 
     users_api.save_device_info_and_notify_user(user, body.device_info)
 
