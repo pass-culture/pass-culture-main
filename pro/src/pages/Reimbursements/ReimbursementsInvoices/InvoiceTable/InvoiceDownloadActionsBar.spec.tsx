@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import * as analyticsHook from '@/app/App/analytics/firebase'
@@ -34,42 +34,61 @@ vi.mock('@/apiClient/api', () => ({
 const snackBarError = vi.fn()
 const mockLogEvent = vi.fn()
 
-beforeEach(() => {
-  vi.clearAllMocks()
+describe('<InvoiceDownloadActionsBar />', () => {
+  beforeEach(() => {
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      success: vi.fn(),
+      error: snackBarError,
+    }))
 
-  vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
-    success: vi.fn(),
-    error: snackBarError,
-  }))
-
-  vi.spyOn(analyticsHook, 'useAnalytics').mockReturnValue({
-    logEvent: mockLogEvent,
+    vi.spyOn(analyticsHook, 'useAnalytics').mockReturnValue({
+      logEvent: mockLogEvent,
+    })
   })
-})
 
-describe('InvoiceDownloadActionsBar', () => {
+  it('should render without accessibility violations when displayed', async () => {
+    const { container } = renderWithProviders(
+      <InvoiceDownloadActionsBar invoiceReferences={['INV-1']} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should not render the actions bar when no invoice is checked', () => {
-    renderWithProviders(<InvoiceDownloadActionsBar checkedInvoices={[]} />)
+    renderWithProviders(<InvoiceDownloadActionsBar invoiceReferences={[]} />)
 
     expect(
       screen.queryByText('Télécharger les justificatifs (.pdf)')
     ).not.toBeInTheDocument()
   })
 
-  it('should display the count with a singular label when only one invoice is checked', () => {
+  it('should display the default count with a singular label when only one invoice is checked', () => {
     renderWithProviders(
-      <InvoiceDownloadActionsBar checkedInvoices={['INV-1']} />
+      <InvoiceDownloadActionsBar invoiceReferences={['INV-1']} />
     )
 
     expect(screen.getByText('1 justificatif sélectionné')).toBeInTheDocument()
   })
 
-  it('should display the count with a plural label when several invoices are checked', () => {
+  it('should display the default count with a plural label when several invoices are checked', () => {
     renderWithProviders(
-      <InvoiceDownloadActionsBar checkedInvoices={['INV-1', 'INV-2']} />
+      <InvoiceDownloadActionsBar invoiceReferences={['INV-1', 'INV-2']} />
     )
 
     expect(screen.getByText('2 justificatifs sélectionnés')).toBeInTheDocument()
+  })
+
+  it('should display a custom description when provided', () => {
+    renderWithProviders(
+      <InvoiceDownloadActionsBar
+        invoiceReferences={['INV-1', 'INV-2']}
+        description="2 justificatifs pour un total de 150,00 €"
+      />
+    )
+
+    expect(
+      screen.getByText('2 justificatifs pour un total de 150,00 €')
+    ).toBeInTheDocument()
   })
 
   it('should download the PDF justificatifs and log the event on success', async () => {
@@ -79,10 +98,14 @@ describe('InvoiceDownloadActionsBar', () => {
     )
 
     renderWithProviders(
-      <InvoiceDownloadActionsBar checkedInvoices={['INV-1', 'INV-2']} />
+      <InvoiceDownloadActionsBar invoiceReferences={['INV-1', 'INV-2']} />
     )
 
-    await user.click(screen.getByText('Télécharger les justificatifs (.pdf)'))
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Télécharger les justificatifs (.pdf)',
+      })
+    )
 
     expect(api.getCombinedInvoices).toHaveBeenCalledWith({
       query: { invoiceReferences: ['INV-1', 'INV-2'] },
@@ -107,10 +130,14 @@ describe('InvoiceDownloadActionsBar', () => {
     vi.mocked(api.getCombinedInvoices).mockRejectedValueOnce(new Error('boom'))
 
     renderWithProviders(
-      <InvoiceDownloadActionsBar checkedInvoices={['INV-1']} />
+      <InvoiceDownloadActionsBar invoiceReferences={['INV-1']} />
     )
 
-    await user.click(screen.getByText('Télécharger les justificatifs (.pdf)'))
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Télécharger les justificatifs (.pdf)',
+      })
+    )
 
     expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
     expect(downloadFile).not.toHaveBeenCalled()
@@ -124,14 +151,19 @@ describe('InvoiceDownloadActionsBar', () => {
     )
 
     renderWithProviders(
-      <InvoiceDownloadActionsBar checkedInvoices={manyInvoices} />
+      <InvoiceDownloadActionsBar invoiceReferences={manyInvoices} />
     )
 
-    await user.click(screen.getByText('Télécharger les justificatifs (.pdf)'))
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Télécharger les justificatifs (.pdf)',
+      })
+    )
 
     expect(snackBarError).toHaveBeenCalledWith(
       `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`
     )
+    expect(api.getCombinedInvoices).not.toHaveBeenCalled()
   })
 
   it('should download the CSV details and log the event on success', async () => {
@@ -141,10 +173,12 @@ describe('InvoiceDownloadActionsBar', () => {
     )
 
     renderWithProviders(
-      <InvoiceDownloadActionsBar checkedInvoices={['INV-1', 'INV-2']} />
+      <InvoiceDownloadActionsBar invoiceReferences={['INV-1', 'INV-2']} />
     )
 
-    await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
+    await user.click(
+      screen.getByRole('button', { name: DOWNLOAD_REIMBURSEMENTS_LABEL })
+    )
 
     expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith({
       query: { invoicesReferences: ['INV-1', 'INV-2'] },
@@ -172,10 +206,12 @@ describe('InvoiceDownloadActionsBar', () => {
     )
 
     renderWithProviders(
-      <InvoiceDownloadActionsBar checkedInvoices={['INV-1']} />
+      <InvoiceDownloadActionsBar invoiceReferences={['INV-1']} />
     )
 
-    await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
+    await user.click(
+      screen.getByRole('button', { name: DOWNLOAD_REIMBURSEMENTS_LABEL })
+    )
 
     expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
     expect(downloadFile).not.toHaveBeenCalled()
@@ -189,13 +225,16 @@ describe('InvoiceDownloadActionsBar', () => {
     )
 
     renderWithProviders(
-      <InvoiceDownloadActionsBar checkedInvoices={manyInvoices} />
+      <InvoiceDownloadActionsBar invoiceReferences={manyInvoices} />
     )
 
-    await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
+    await user.click(
+      screen.getByRole('button', { name: DOWNLOAD_REIMBURSEMENTS_LABEL })
+    )
 
     expect(snackBarError).toHaveBeenCalledWith(
       `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`
     )
+    expect(api.getReimbursementsCsvV2).not.toHaveBeenCalled()
   })
 })

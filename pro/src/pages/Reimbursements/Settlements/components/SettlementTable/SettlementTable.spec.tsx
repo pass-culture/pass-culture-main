@@ -41,6 +41,25 @@ vi.mock('../SettlementRowInvoicesModal/SettlementRowInvoicesModal', () => ({
     ) : null,
 }))
 
+vi.mock(
+  '@/pages/Reimbursements/ReimbursementsInvoices/InvoiceTable/InvoiceDownloadActionsBar',
+  () => ({
+    InvoiceDownloadActionsBar: ({
+      invoiceReferences,
+      description,
+    }: {
+      invoiceReferences: string[]
+      description?: string
+    }) =>
+      invoiceReferences.length > 0 ? (
+        <div data-testid="download-actions-bar">
+          <p>{description}</p>
+          <p>Invoices count: {invoiceReferences.length}</p>
+        </div>
+      ) : null,
+  })
+)
+
 const baseSettlement = {
   id: 1,
   label: 'VIR001',
@@ -221,5 +240,66 @@ describe('<SettlementTable />', () => {
     await user.click(closeButton)
 
     expect(screen.queryByTestId('invoices-modal')).not.toBeInTheDocument()
+  })
+  it('should handle row selection and display InvoiceDownloadActionsBar with correct count and references', async () => {
+    const user = userEvent.setup()
+    renderSettlementTable({
+      settlements: [
+        baseSettlement,
+        {
+          ...baseSettlement,
+          id: 2,
+          label: 'VIR002',
+          invoices: [
+            {
+              reference: 'J000000000',
+              date: '2024-06-02',
+              amount: 200,
+              url: 'J000000000.invoice',
+              status: InvoiceStatus.PAID,
+            },
+          ],
+        },
+      ] as never,
+    })
+
+    expect(screen.queryByTestId('download-actions-bar')).not.toBeInTheDocument()
+
+    // Sélection du premier virement (contient 3 justificatifs)
+    const checkboxes = screen.getAllByRole('checkbox')
+    await user.click(checkboxes[1])
+
+    expect(screen.getByTestId('download-actions-bar')).toBeInTheDocument()
+    expect(screen.getByText('1 virement sélectionné')).toBeInTheDocument()
+    expect(screen.getByText('Invoices count: 3')).toBeInTheDocument()
+
+    // Sélection du second virement (ajoute 1 justificatif -> total 4)
+    await user.click(checkboxes[2])
+
+    expect(screen.getByText('2 virements sélectionnés')).toBeInTheDocument()
+    expect(screen.getByText('Invoices count: 4')).toBeInTheDocument()
+  })
+
+  it('should disable selection checkbox for non-executed settlements or settlements without invoices', () => {
+    renderSettlementTable({
+      settlements: [
+        {
+          ...baseSettlement,
+          id: 2,
+          label: 'VIR_REJECTED',
+          status: SettlementStatus.REJECTED,
+        },
+        {
+          ...baseSettlement,
+          id: 3,
+          label: 'VIR_EMPTY',
+          invoices: [],
+        },
+      ] as never,
+    })
+
+    const checkboxes = screen.getAllByRole('checkbox')
+    expect(checkboxes[1]).toBeDisabled()
+    expect(checkboxes[2]).toBeDisabled()
   })
 })
