@@ -15,7 +15,8 @@ const InfoPanelItem = ({
   index,
   titleLevel,
 }: InfoPanelItemProps) => {
-  const Heading: 'h2' | 'h3' = `h${titleLevel}`
+  const Heading = `h${titleLevel}` satisfies React.ElementType
+
   return (
     <li className={styles['info-panel-item']}>
       <div className={styles['info-panel-item-left-content']}>

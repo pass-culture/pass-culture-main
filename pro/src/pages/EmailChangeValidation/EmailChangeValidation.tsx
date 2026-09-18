@@ -6,6 +6,7 @@ import { LoggedOutLayout } from '@/app/App/layouts/logged-out/LoggedOutLayout/Lo
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { parse } from '@/commons/utils/query-string'
 import { Button } from '@/design-system/Button/Button'
+import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './EmailChangeValidation.module.scss'
 
@@ -35,9 +36,11 @@ export const EmailChangeValidation = () => {
 
   return (
     <LoggedOutLayout>
-      <h1 className={styles.title}>
-        {isSuccess ? 'Et voilà !' : 'Votre lien a expiré !'}
-      </h1>
+      <Title
+        level="1"
+        title={isSuccess ? 'Et voilà !' : 'Votre lien a expiré !'}
+        marginBottom="xxl"
+      />
       {isSuccess && (
         <>
           <p className={styles['subtitle']}>

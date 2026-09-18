@@ -13,12 +13,6 @@
     text-align: center;
     padding: 0 rem.torem(20px) rem.torem(20px);
 
-    &-title {
-      @include fonts.title2;
-
-      margin: var(--size-spacing-xl) 0 var(--size-spacing-xxl) 0;
-    }
-
     &-svg {
       color: var(--color-icon-subtle);
     }

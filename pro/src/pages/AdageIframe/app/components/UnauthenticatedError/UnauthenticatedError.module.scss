@@ -16,12 +16,5 @@
 
   &-content {
     padding: var(--size-spacing-xxl);
-
-    &-title {
-      @include fonts.title1;
-
-      font-size: rem.torem(40px);
-      margin-bottom: var(--size-spacing-l);
-    }
   }
 }

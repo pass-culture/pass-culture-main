@@ -7,9 +7,8 @@
   margin-right: auto;
 }
 
-.title {
-  @include fonts.title1;
+.subheading-description {
+  @include fonts.body;
 
-  overflow-wrap: anywhere;
-  margin-bottom: var(--size-spacing-l);
+  margin-bottom: var(--size-spacing-xxl);
 }

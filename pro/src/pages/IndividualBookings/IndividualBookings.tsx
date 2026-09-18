@@ -18,6 +18,7 @@ import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { DownloadsMovedBanner } from '@/components/DownloadsMovedBanner/DownloadsMovedBanner'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { Title } from '@/ui-kit/Title/Title'
 
 import {
   ALL_BOOKING_STATUS,
@@ -155,7 +156,7 @@ export const IndividualBookings = () => {
 
   return (
     <>
-      <h1 className={styles['title']}>Réservations individuelles</h1>
+      <Title level="1" title="Réservations individuelles" marginBottom="xxl" />
 
       <PreFilters
         selectedPreFilters={selectedPreFilters}

@@ -24,9 +24,7 @@ test.describe('Redirections', () => {
   test('`/inscription` path redirections', async ({ page }) => {
     await page.goto('/inscription')
     await expect(
-      page.getByRole('heading', {
-        name: 'Commençons par identifier votre profil',
-      })
+      page.getByText('Commençons par identifier votre profil')
     ).toBeVisible()
   })
   test('No structure : should add a new structure', async ({ page }) => {

@@ -21,6 +21,7 @@ import { Button } from '@/design-system/Button/Button'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
+import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './CollectiveOfferFromRequest.module.scss'
 
@@ -75,7 +76,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
 
   return (
     <BasicLayout>
-      <h1 className={styles['title']}>Récapitulatif de la demande</h1>
+      <Title level="1" title="Récapitulatif de la demande" marginBottom="xxl" />
       {isNotReady ? (
         <Spinner />
       ) : (

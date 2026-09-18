@@ -6,6 +6,7 @@ import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
+import { Title } from '@/ui-kit/Title/Title'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import { CardInfo } from '../components/CardInfo'
@@ -15,25 +16,31 @@ const WelcomeStepIndividual = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   return (
     <>
-      <h1 className={commonStyles.title}>
-        Offres pour les jeunes via l’application
-      </h1>
+      <div className={commonStyles['title-wrapper']}>
+        <Title
+          level="1"
+          title="Offres pour les jeunes via l’application"
+          marginBottom="s"
+        />
+      </div>
 
-      <h2 className={commonStyles.subtitle}>
+      <p className={commonStyles.subtitle}>
         Diffusez vos offres gratuites ou payantes auprès des 15-21 ans
-      </h2>
+      </p>
 
       <div className={commonStyles['container']}>
         <div className={styles['cards']}>
           <CardInfo
             icon={strokeEventsIcon}
             title="Qui réserve ?"
+            titleLevel="2"
             description="Les jeunes de 15 à 21 ans réservent directement via l'application
             pass Culture."
           ></CardInfo>
           <CardInfo
             icon={strokeEuroIcon}
             title="Comment ça fonctionne ?"
+            titleLevel="2"
             description="Les jeunes paient avec leur crédit personnel (50€ à 200€). Vous
             recevez le paiement sous 2 à 3 semaines."
           ></CardInfo>

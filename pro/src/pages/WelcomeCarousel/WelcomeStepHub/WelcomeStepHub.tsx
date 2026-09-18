@@ -13,6 +13,7 @@ import strokeBagIcon from '@/icons/stroke-bag.svg'
 import strokeBookIcon from '@/icons/stroke-book.svg'
 import strokeComedyIcon from '@/icons/stroke-comedy.svg'
 import strokeLocationIcon from '@/icons/stroke-location.svg'
+import { Title } from '@/ui-kit/Title/Title'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import styles from './WelcomeStepHub.module.scss'
@@ -32,13 +33,15 @@ export const WelcomeStepHub = (): JSX.Element => {
             className={cn(commonStyles[`container`], styles['icon-container'])}
           >
             <Icon iconClassName={styles.icon} icon={strokeLocationIcon} />
-            <h1 className={commonStyles.title}>
-              Mince, vous êtes au mauvais endroit !
-            </h1>
-            <h2 className={commonStyles.subtitle}>
+            <Title
+              level="1"
+              title="Mince, vous êtes au mauvais endroit !"
+              marginBottom="s"
+            />
+            <p className={commonStyles.subtitle}>
               Pour réserver des activités culturelles avec vos classes, utilisez
               la plateforme ADAGE.
-            </h2>
+            </p>
           </div>
           <div
             className={cn(
@@ -69,10 +72,16 @@ export const WelcomeStepHub = (): JSX.Element => {
       )}
       {!showErrorContainer && (
         <>
-          <h1 className={commonStyles.title}>Bienvenue sur pass Culture Pro</h1>
-          <h2 className={commonStyles.subtitle}>
+          <div className={commonStyles['title-wrapper']}>
+            <Title
+              level="1"
+              title="Bienvenue sur pass Culture Pro"
+              marginBottom="s"
+            />
+          </div>
+          <p className={commonStyles.subtitle}>
             Commençons par identifier votre profil
-          </h2>
+          </p>
           <div className={commonStyles[`container`]}>
             <RadioButtonGroup
               name="group"

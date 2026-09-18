@@ -1,16 +1,17 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
+import { Title } from '@/ui-kit/Title/Title'
 
 export const SimulatorEmailConfirmation = (): JSX.Element => {
   return (
     <div className={commonStyles['content']}>
-      <h1 className={commonStyles['title']}>C'est envoyé !</h1>
-      <h2 className={commonStyles['subtitle']}>
+      <Title level="1" title="C'est envoyé !" marginBottom="l" />
+      <p className={commonStyles['subtitle']}>
         Votre liste personnalisée a bien été envoyée. Préparez sereinement vos
         justificatifs et reprenez votre inscription quand vous le souhaitez, en
         cliquant sur le lien inclus dans l’email.
-      </h2>
+      </p>
       <Button
         as="a"
         to="/inscription/preparation/resultats"

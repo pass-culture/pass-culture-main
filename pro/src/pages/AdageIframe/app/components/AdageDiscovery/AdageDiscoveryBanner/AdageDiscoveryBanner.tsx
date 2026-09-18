@@ -38,6 +38,7 @@ export function AdageDiscoveryBanner() {
 
   return (
     <div className={styles['discovery-banner']}>
+      {/** biome-ignore lint/correctness/noRestrictedElements: Can't use Title component here as it accepts a simple string */}
       <h1 className={styles['discovery-banner-title']}>
         Découvrez{' '}
         <span className={styles['discovery-banner-title-highlight']}>

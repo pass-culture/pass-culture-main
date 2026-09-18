@@ -17,12 +17,6 @@
     color: var(--color-icon-brand-primary);
   }
 
-  .title {
-    @include fonts.title1;
-
-    margin: var(--size-spacing-xxl) 0 var(--size-spacing-l);
-  }
-
   .description {
     @include fonts.title4;
   }

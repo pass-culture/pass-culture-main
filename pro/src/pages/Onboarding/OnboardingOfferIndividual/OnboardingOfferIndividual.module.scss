@@ -3,19 +3,6 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_size.scss" as size;
 
-.title {
-  @include fonts.title1;
-
-  margin-bottom: var(--size-spacing-xxl);
-  overflow-wrap: anywhere;
-}
-
-.offers-subtitle {
-  @include fonts.title3;
-
-  margin-bottom: var(--size-spacing-xxl);
-}
-
 .offer-choices {
   display: flex;
   gap: var(--size-spacing-xl);

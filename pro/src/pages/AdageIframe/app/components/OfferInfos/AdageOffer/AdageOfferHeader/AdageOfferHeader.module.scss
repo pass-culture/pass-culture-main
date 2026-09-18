@@ -43,10 +43,6 @@
   justify-content: space-between;
 }
 
-.offer-header-title {
-  @include fonts.title4;
-}
-
 .offer-header-details-structure {
   margin-top: var(--size-spacing-l);
 }
@@ -92,10 +88,6 @@
 }
 
 @container (min-width: #{size.$tablet}) {
-  .offer-header-title {
-    @include fonts.title3;
-  }
-
   .offer-header-title-container {
     flex-direction: row;
   }
@@ -106,8 +98,3 @@
   }
 }
 
-@container (min-width: #{size.$tablet}) {
-  .offer-header-title {
-    @include fonts.title1;
-  }
-}

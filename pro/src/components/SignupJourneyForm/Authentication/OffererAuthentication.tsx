@@ -41,6 +41,7 @@ import {
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './OffererAuthentication.module.scss'
@@ -200,7 +201,12 @@ export const OffererAuthentication = (): JSX.Element => {
       {isSignupSimulationEnabled && (
         <>
           <SignupStepper />
-          <h1 className={styles['title']}>Votre structure</h1>
+          <Title
+            level="1"
+            title="Votre structure"
+            marginTop="xxl"
+            marginBottom="s"
+          />
           <p className={styles['subheading-description']}>
             Vérifiez les informations récupérées depuis votre SIRET et complétez
             les champs manquants.
@@ -217,9 +223,11 @@ export const OffererAuthentication = (): JSX.Element => {
           >
             {!isSignupSimulationEnabled && (
               <>
-                <h2 className={styles['subtitle']}>
-                  Complétez les informations de votre structure
-                </h2>
+                <Title
+                  level="2"
+                  title="Complétez les informations de votre structure"
+                  marginBottom="l"
+                />
                 <FormLayout.MandatoryInfo />
               </>
             )}
@@ -251,9 +259,9 @@ export const OffererAuthentication = (): JSX.Element => {
             )}
             <div className={styles['displaying-data']}>
               <div className={styles['displaying-data-header']}>
-                <h2 className={styles['displaying-data-title']}>
-                  Informations
-                </h2>
+                <div className={styles['displaying-data-title-wrapper']}>
+                  <Title level="2" title="Informations" />
+                </div>
                 <Button
                   as="router-link"
                   to="/inscription/structure/recherche"

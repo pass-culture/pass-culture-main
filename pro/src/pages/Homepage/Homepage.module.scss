@@ -62,19 +62,7 @@
   margin-bottom: var(--size-spacing-xl);
 }
 
-.onboarding-title {
-  @include fonts.title2;
-
-  margin-bottom: var(--size-spacing-xl);
-}
-
 .onboarding-container {
   max-width: rem.torem(721px);
 }
 
-.title {
-  @include fonts.title1;
-
-  overflow-wrap: anywhere;
-  margin-bottom: var(--size-spacing-xxl);
-}

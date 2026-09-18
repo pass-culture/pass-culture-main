@@ -6,9 +6,9 @@ import {
   type MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { PreviewHeader } from '../components/PreviewHeader'
-import styles from './CollectiveOfferPreviewEdition.module.scss'
 
 export const CollectiveOfferPreviewEdition = ({
   offer,
@@ -19,7 +19,7 @@ export const CollectiveOfferPreviewEdition = ({
 
   return (
     <BasicLayout isStickyActionBarInChild>
-      <h1 className={styles['title']}>Aperçu de l’offre</h1>
+      <Title level="1" title="Aperçu de l’offre" marginBottom="xxl" />
       <PreviewHeader offer={offer} />
       <AdagePreviewLayout offer={offer} />
       <ActionsBarSticky>

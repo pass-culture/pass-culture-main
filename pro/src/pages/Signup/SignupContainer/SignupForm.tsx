@@ -14,6 +14,7 @@ import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { EmailSpellCheckInput } from '@/ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
+import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './SignupContainer.module.scss'
 export const SignupForm = (): JSX.Element => {
@@ -34,7 +35,12 @@ export const SignupForm = (): JSX.Element => {
       {isSignupSimulationEnabled && (
         <>
           <SignupStepper />
-          <h1 className={styles['title']}>Créez votre compte</h1>
+          <Title
+            level="1"
+            title="Créez votre compte"
+            marginBottom="s"
+            marginTop="xxl"
+          />
           <p className={styles['subheading-description']}>
             Ces informations vous permettront de vous connecter à pass Culture
             Pro.

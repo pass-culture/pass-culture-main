@@ -5,6 +5,7 @@ import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './ErrorLayout.module.scss'
 
@@ -13,7 +14,7 @@ interface BaseErrorLayoutProps {
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
    */
-  mainHeading: React.ReactNode
+  mainHeading: string
   /**
    * Description paragraph to display below the main heading.
    */
@@ -56,7 +57,7 @@ export const ErrorLayout = ({
     <main className={styles['content-wrapper']}>
       <div className={styles['content']}>
         <SvgIcon className={styles['error-icon']} src={errorIcon} alt="" />
-        <h1 className={styles['title']}>{mainHeading}</h1>
+        <Title level="1" title={mainHeading} marginTop="xxl" marginBottom="l" />
         <p className={styles.description}>{paragraph}</p>
         <div className={styles['nm-redirection-link']}>
           {cta ?? (

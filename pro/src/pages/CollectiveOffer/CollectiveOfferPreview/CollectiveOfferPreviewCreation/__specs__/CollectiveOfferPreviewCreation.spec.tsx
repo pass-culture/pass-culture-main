@@ -113,6 +113,7 @@ describe('CollectiveOfferPreviewCreation', () => {
 
     expect(
       screen.getByRole('heading', {
+        level: 1,
         name: defaultProps.offer.name,
       })
     ).toBeInTheDocument()

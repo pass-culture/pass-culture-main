@@ -23,6 +23,7 @@ import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
+import { Title } from '@/ui-kit/Title/Title'
 
 export interface SimulatorActivity {
   activity?: ActivityOpenToPublic | ActivityNotOpenToPublic
@@ -68,9 +69,11 @@ export const SimulatorActivity = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['content']}>
-        <h1 className={commonStyles['title']}>
-          Quelle est votre activité principale ?
-        </h1>
+        <Title
+          level="1"
+          title="Quelle est votre activité principale ?"
+          marginBottom="l"
+        />
       </div>
       <FormLayout>
         <form onSubmit={methods.handleSubmit(onSubmit)}>

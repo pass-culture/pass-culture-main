@@ -2,9 +2,9 @@ import { useLocation } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { OfferTypeScreen } from './OfferType/OfferType'
-import styles from './OfferType/OfferType.module.scss'
 
 export const OfferType = (): JSX.Element => {
   const { pathname } = useLocation()
@@ -14,12 +14,12 @@ export const OfferType = (): JSX.Element => {
 
   return isOnboarding ? (
     <OnboardingLayout isStickyActionBarInChild isEntryScreen>
-      <h1 className={styles['title']}>Créer une offre collective</h1>
+      <Title level="1" title="Créer une offre collective" marginBottom="xxl" />
       {children}
     </OnboardingLayout>
   ) : (
     <BasicLayout isStickyActionBarInChild>
-      <h1 className={styles['title']}>Créer une offre collective</h1>
+      <Title level="1" title="Créer une offre collective" marginBottom="xxl" />
       {children}
     </BasicLayout>
   )
