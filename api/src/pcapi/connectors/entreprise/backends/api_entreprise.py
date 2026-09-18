@@ -319,6 +319,12 @@ class EntrepriseBackend(BaseBackend):
         # declared closing date of the SIRET (may be in the future)
         closure_date = self._convert_timestamp_to_date(data.get("date_fermeture"))
 
+        # TODO bulle
+        ape_code = self._format_ape_code(data["activite_principale"].get("code"))
+        if (
+            not ape_code and data["activite_principale"]["libelle"] == "non référencé"
+        ):  # entrepise api can send null for ape code not referenced, so we make sure to substitute with temporary code
+            ape_code = "0000Z"
         return models.SiretInfo(
             siret=siret,
             siren=data["unite_legale"]["siren"],
@@ -326,7 +332,7 @@ class EntrepriseBackend(BaseBackend):
             diffusible=self._is_diffusible(data),
             name=self._get_name_from_sirene_data(data["unite_legale"]),
             address=self._get_address_from_sirene_data(data["adresse"]),
-            ape_code=self._format_ape_code(data["activite_principale"].get("code")),
+            ape_code=ape_code,
             ape_label=data["activite_principale"]["libelle"],
             legal_category_code=data["unite_legale"]["forme_juridique"]["code"],
         )

@@ -69,6 +69,43 @@ class Returns200Test:
             ],
         }
 
+    @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+    def test_siret_with_no_ape(self, requests_mock, client: TestClient):
+        siret = "77789988100026"
+        json = copy.deepcopy(api_entreprise_test_data.RESPONSE_SIRET_COMPANY)
+        json["data"]["activite_principale"]["code"] = None
+        json["data"]["activite_principale"]["libelle"] = "non référencé"
+
+        requests_mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/diffusibles/{siret}", json=json
+        )
+        data = {
+            "siret": siret,
+            "isOpenToPublic": True,
+            "targets": ["COLLECTIVE", "INDIVIDUAL"],
+            "activity": "BOOKSTORE",
+        }
+        response = client.post("/structure/simulate-signup", json=data)
+
+        assert response.status_code == 200
+        assert response.json == {
+            "eligibilityDocuments": [
+                EligibilityDocument.WEBSITE.name,
+                EligibilityDocument.DESCRIPTION.name,
+                # EligibilityDocument.RESUME_OR_PORTFOLIO.name,
+                # EligibilityDocument.DIPLOMAS.name,
+                EligibilityDocument.SHOP_PICTURES.name,
+            ],
+            "messages": [
+                {"level": SignupSimulationMessageLevel.INFO.name, "type": SignupSimulationMessageType.COLLECTIVE.name},
+                {
+                    "level": SignupSimulationMessageLevel.ALERT.name,
+                    "type": SignupSimulationMessageType.UNUSUAL_APE_CODE.name,
+                },
+                {"level": SignupSimulationMessageLevel.ALERT.name, "type": SignupSimulationMessageType.BOOKSTORE.name},
+            ],
+        }
+
 
 @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
 class Returns400Test:
@@ -110,7 +147,9 @@ class Returns400Test:
     def test_siret_with_no_ape(self, requests_mock, client: TestClient):
         siret = "77789988100026"
         json = copy.deepcopy(api_entreprise_test_data.RESPONSE_SIRET_COMPANY)
+        # json["data"]["activite_principale"]["code"] = None
         json["data"]["activite_principale"]["code"] = None
+        json["data"]["activite_principale"]["libelle"] = "non référencé"
 
         requests_mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/diffusibles/{siret}", json=json
@@ -123,8 +162,9 @@ class Returns400Test:
         }
         response = client.post("/structure/simulate-signup", json=data)
 
-        assert response.status_code == 400
-        assert response.json == {"global": ["Impossible d'effectuer une simulation pour ce SIRET."]}
+        assert response.status_code == 204
+        # assert response.status_code == 400
+        # assert response.json == {"global": ["Impossible d'effectuer une simulation pour ce SIRET."]}
 
     def test_invalid_siret(self, client: TestClient):
         data = {

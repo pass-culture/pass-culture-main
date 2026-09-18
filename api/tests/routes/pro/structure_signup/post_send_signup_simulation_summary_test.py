@@ -40,6 +40,21 @@ class Returns200Test:
         )
         assert mails_testing.outbox[0]["params"]["ELIGIBILITY_DOCUMENTS"] == ["WEBSITE"]
 
+    @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+    def test_siret_with_no_ape(self, requests_mock, client: TestClient):
+        json = copy.deepcopy(api_entreprise_test_data.RESPONSE_SIRET_COMPANY)
+        json["data"]["activite_principale"]["code"] = None
+        json["data"]["activite_principale"]["libelle"] = "non référencé"
+        requests_mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/diffusibles/{VALID_SIRET}", json=json
+        )
+
+        response = client.post(URL, json=VALID_PAYLOAD)
+
+        # assert response.status_code == 400
+        assert response.status_code == 204
+        # assert response.json == {"global": ["Impossible d'effectuer une simulation pour ce SIRET."]}
+
 
 @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
 class Returns400Test:
@@ -65,19 +80,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"global": ["Ce SIRET n'est pas actif."]}
-
-    @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
-    def test_siret_with_no_ape(self, requests_mock, client: TestClient):
-        json = copy.deepcopy(api_entreprise_test_data.RESPONSE_SIRET_COMPANY)
-        json["data"]["activite_principale"]["code"] = None
-        requests_mock.get(
-            f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/diffusibles/{VALID_SIRET}", json=json
-        )
-
-        response = client.post(URL, json=VALID_PAYLOAD)
-
-        assert response.status_code == 400
-        assert response.json == {"global": ["Impossible d'effectuer une simulation pour ce SIRET."]}
 
     def test_invalid_siret(self, client: TestClient):
         data = {
