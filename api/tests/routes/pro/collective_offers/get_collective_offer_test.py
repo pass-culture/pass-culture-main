@@ -45,6 +45,7 @@ class Returns200Test:
             provider=provider,
             venue=venue,
             additionalDetails="some details",
+            imageAlternativeText="A collective offer image",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -102,6 +103,7 @@ class Returns200Test:
                 "past": [{"datetime": format_into_utc_date(offer.lastValidationDate), "status": "PUBLISHED"}],
             },
             "id": offer.id,
+            "imageAlternativeText": "A collective offer image",
             "imageCredit": None,
             "imageUrl": None,
             "institution": None,

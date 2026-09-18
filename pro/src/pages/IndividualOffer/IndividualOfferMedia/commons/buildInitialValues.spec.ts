@@ -15,6 +15,7 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
         heightCropPercent: 0,
         widthCropPercent: 0,
       },
+      alternativeText: '',
     })
   })
 
@@ -28,11 +29,13 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
         heightCropPercent: 0.5,
         widthCropPercent: 0.5,
       },
+      alternativeText: 'my alt text',
     }
     const initialValues = buildInitialValues(imageOffer)
     expect(initialValues).toEqual({
       croppedImageUrl: imageOffer.url,
       credit: imageOffer.credit,
+      alternativeText: imageOffer.alternativeText,
       cropParams: {
         xCropPercent: 0.5,
         yCropPercent: 0.5,
@@ -53,11 +56,13 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
         height: 100,
       },
       credit: 'John Do',
+      alternativeText: 'my alt text',
     }
     const initialValues = buildInitialValues(imageOffer)
     expect(initialValues).toEqual({
       croppedImageUrl: imageOffer.imageCroppedDataUrl,
       credit: imageOffer.credit,
+      alternativeText: imageOffer.alternativeText,
       cropParams: {
         xCropPercent: 1,
         yCropPercent: 1,

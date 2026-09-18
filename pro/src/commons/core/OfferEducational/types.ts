@@ -60,6 +60,7 @@ export interface OfferEducationalFormValues
   priceDetail?: string
   imageUrl?: string
   imageCredit?: string
+  imageAlternativeText?: string
   nationalProgramId?: string
   isTemplate: boolean
   datesType?: OfferDatesType

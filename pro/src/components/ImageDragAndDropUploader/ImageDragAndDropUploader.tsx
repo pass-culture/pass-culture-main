@@ -72,11 +72,15 @@ export const ImageDragAndDropUploader = ({
   const editButtonRef = useRef<HTMLButtonElement>(null)
   const importButtonRef = useRef<HTMLInputElement>(null)
 
-  const { croppedImageUrl, originalImageUrl, credit } = initialValues
+  const { croppedImageUrl, originalImageUrl, credit, alternativeText } =
+    initialValues
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
   const [isDeleteImageOpen, setIsDeleteImageOpen] = useState(false)
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
   const [draftCredit, setDraftCredit] = useState<string | undefined>(credit)
+  const [draftAlternativeText, setDraftAlternativeText] = useState<
+    string | undefined
+  >(alternativeText)
   const [dragDropResetKey, setDragDropResetKey] = useState(0)
 
   const imageUrl = croppedImageUrl || originalImageUrl
@@ -86,6 +90,9 @@ export const ImageDragAndDropUploader = ({
   useEffect(() => {
     setDraftCredit(credit)
   }, [credit])
+  useEffect(() => {
+    setDraftAlternativeText(alternativeText)
+  }, [alternativeText])
 
   const onImageDeleteHandler = () => {
     if (warnBeforeDeleting && !isDeleteImageOpen) {
@@ -110,6 +117,7 @@ export const ImageDragAndDropUploader = ({
     setIsModalImageOpen(false)
     setDraftImage(values.imageFile)
     setDraftCredit(values.credit ?? '')
+    setDraftAlternativeText(values.alternativeText ?? '')
     try {
       await Promise.resolve(onImageUpload(values))
       snackBar.success(successMessage, focusTargetId ?? editButtonId)
@@ -128,7 +136,10 @@ export const ImageDragAndDropUploader = ({
     >
       {hasImage && (
         <SafeImage
-          alt="Prévisualisation de l’image"
+          alt={
+            // Cannot use ?? coalescing operator because default value is empty string
+            alternativeText ? alternativeText : 'Prévisualisation de l’image'
+          }
           testId="image-preview"
           className={cn(styles['image-preview'], {
             [styles['preview-venue']]: mode === UploaderModeEnum.VENUE,
@@ -176,6 +187,7 @@ export const ImageDragAndDropUploader = ({
             ...initialValues,
             draftImage,
             credit: draftCredit,
+            alternativeText: draftAlternativeText,
           }}
           refToFocusOnClose={hasImage ? editButtonRef : importButtonRef}
           onOpenChange={(open) => {

@@ -265,6 +265,7 @@ describe('OfferActionsCells', () => {
         getCollectiveOfferFactory({
           imageUrl: 'https://http.cat/201',
           imageCredit: 'chats',
+          imageAlternativeText: 'alternative text',
         })
       )
 
@@ -290,6 +291,7 @@ describe('OfferActionsCells', () => {
         path: { offer_id: 201 },
         body: {
           credit: 'chats',
+          alternativeText: 'alternative text',
           croppingRectHeight: 1,
           croppingRectWidth: 1,
           croppingRectX: 0,
@@ -339,6 +341,7 @@ describe('OfferActionsCells', () => {
       const collectiveOfferTemplate = getCollectiveOfferTemplateFactory({
         imageUrl: 'https://http.cat/201',
         imageCredit: 'chats',
+        imageAlternativeText: 'alternative text',
         venue: getCollectiveOfferVenueFactory({ id: 4 }),
         location: {
           locationType: CollectiveLocationType.ADDRESS,
@@ -397,6 +400,7 @@ describe('OfferActionsCells', () => {
       expect(api.attachOfferImage).toHaveBeenCalledWith({
         path: { offer_id: 202 },
         body: {
+          alternativeText: 'alternative text',
           credit: 'chats',
           croppingRectHeight: 1,
           croppingRectWidth: 1,

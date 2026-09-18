@@ -105,6 +105,7 @@ const sharedCollectiveOfferData = {
   students: [StudentLevels.COLL_GE_3E],
   imageUrl: 'https://example.com/image.jpg',
   imageCredit: 'image credit',
+  imageAlternativeText: 'alternative text',
   nationalProgram: {
     id: 1,
     name: 'Collège au cinéma',
@@ -215,6 +216,7 @@ export const getCollectiveOfferTemplateFactory = (
   contactForm: null,
   contactUrl: null,
   priceDetail: null,
+  imageAlternativeText: null,
   ...customCollectiveOfferTemplate,
 })
 

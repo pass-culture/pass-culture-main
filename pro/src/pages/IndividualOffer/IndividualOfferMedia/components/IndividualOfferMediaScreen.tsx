@@ -118,6 +118,7 @@ export const IndividualOfferMediaScreen = ({
                     ...offer?.activeMediation,
                     thumbUrl: thumbnailResult.url,
                     credit: thumbnailResult.credit,
+                    alternativeText: thumbnailResult.alternativeText,
                   },
                 }
               } else {
@@ -128,6 +129,7 @@ export const IndividualOfferMediaScreen = ({
                     ...offer?.activeMediation,
                     thumbUrl: '',
                     credit: '',
+                    alternativeText: '',
                   },
                 }
               }

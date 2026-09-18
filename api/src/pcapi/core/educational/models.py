@@ -306,6 +306,7 @@ class HasImageMixin:
         sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=True
     )
     imageCredit = sa_orm.mapped_column(sa.Text, nullable=True)
+    imageAlternativeText = sa_orm.mapped_column(sa.Text, nullable=True)
     # Whether or not we also stored the original image in the storage bucket.
     imageHasOriginal = sa_orm.mapped_column(sa.Boolean, nullable=True)
 
@@ -356,6 +357,7 @@ class HasImageMixin:
         image: bytes,
         credit: str,
         crop_params: image_conversion.CropParams,
+        alternative_text: str | None = None,
         ratio: image_conversion.ImageRatio = image_conversion.ImageRatio.PORTRAIT,
         keep_original: bool = False,
     ) -> None:
@@ -366,6 +368,7 @@ class HasImageMixin:
         self.imageId = self._generate_new_image_id(old_id)
         self.imageCrop = crop_params.__dict__ if keep_original else None
         self.imageCredit = credit
+        self.imageAlternativeText = alternative_text
         self.imageHasOriginal = keep_original
 
         object_storage.store_public_object(
@@ -394,6 +397,7 @@ class HasImageMixin:
             )
         self.imageCrop = None
         self.imageCredit = None
+        self.imageAlternativeText = None
         self.imageHasOriginal = None
         self.imageId = None
 

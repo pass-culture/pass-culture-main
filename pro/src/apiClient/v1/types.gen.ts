@@ -152,6 +152,10 @@ export type ArtistsResponseModel = Array<ArtistResponseModel>;
  */
 export type AttachImageFormModel = {
     /**
+     * Alternativetext
+     */
+    alternativeText?: string | null;
+    /**
      * Credit
      */
     credit: string;
@@ -249,6 +253,10 @@ export type BankAccountResponseModel = {
  */
 export type BannerMetaModel = {
     crop_params?: CropParamsV2;
+    /**
+     * Image Alternative Text
+     */
+    image_alternative_text?: string | null;
     /**
      * Image Credit
      */
@@ -1090,6 +1098,10 @@ export type CreateOffererBodyModel = {
  */
 export type CreateThumbnailBodyModel = {
     /**
+     * Alternativetext
+     */
+    alternativeText?: string | null;
+    /**
      * Credit
      */
     credit?: string | null;
@@ -1119,6 +1131,10 @@ export type CreateThumbnailBodyModel = {
  * CreateThumbnailResponseModel
  */
 export type CreateThumbnailResponseModel = {
+    /**
+     * Alternativetext
+     */
+    alternativeText: string | null;
     /**
      * Credit
      */
@@ -2218,6 +2234,10 @@ export type GetCollectiveOfferResponseModel = {
      */
     id: number;
     /**
+     * Imagealternativetext
+     */
+    imageAlternativeText: string | null;
+    /**
      * Imagecredit
      */
     imageCredit: string | null;
@@ -2324,6 +2344,10 @@ export type GetCollectiveOfferTemplateResponseModel = {
      * Id
      */
     id: number;
+    /**
+     * Imagealternativetext
+     */
+    imageAlternativeText: string | null;
     /**
      * Imagecredit
      */
@@ -2729,6 +2753,10 @@ export type GetOfferManagingOffererResponseModel = {
  * GetOfferMediationResponseModel
  */
 export type GetOfferMediationResponseModel = {
+    /**
+     * Alternativetext
+     */
+    alternativeText?: string;
     /**
      * Authorid
      */

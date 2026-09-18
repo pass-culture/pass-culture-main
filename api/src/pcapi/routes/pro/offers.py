@@ -689,6 +689,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
         user=current_user,
         offer=offer,
         credit=form.credit,
+        alternative_text=form.alternative_text,
         image_as_bytes=request.files["thumb"].read(),
         crop_params=form.crop_params,
         min_width=None,

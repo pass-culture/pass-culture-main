@@ -114,6 +114,7 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
           .required('Veuillez renseigner une adresse email')
           .test(emailSchema),
     }),
+    imageAlternativeText: yup.string().max(150),
     contactUrl: yup
       .string()
       .nullable()

@@ -21,6 +21,7 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
+import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullDownloadIcon from '@/icons/full-download.svg'
@@ -42,6 +43,7 @@ export interface OnImageUploadArgs {
   imageCroppedDataUrl?: string
   cropParams?: CroppedRect
   credit: string | null
+  alternativeText: string | null
 }
 
 export interface ModalImageUpsertOrEditProps {
@@ -77,6 +79,7 @@ export const ModalImageUpsertOrEdit = ({
     originalImageUrl: initialOriginalImageUrl,
     credit: initialCredit,
     cropParams: initialCropParams,
+    alternativeText: initialAlternativeText,
   } = previouslyUploadedImage
 
   // Only venue images seem to have both cropped and original image URLs saved.
@@ -114,6 +117,10 @@ export const ModalImageUpsertOrEdit = ({
     y: yInitialPosition,
   })
   const [credit, setCredit] = useState<string>(initialCredit ?? '')
+  const [alternativeText, setAlternativeText] = useState<string>(
+    initialAlternativeText ?? ''
+  )
+  const [isInformative, setIsInformative] = useState(Boolean(alternativeText))
   const initialScale = initalWidthCropPercent
     ? widthCropPercentToScale(initalWidthCropPercent)
     : 1
@@ -162,6 +169,10 @@ export const ModalImageUpsertOrEdit = ({
     setCredit(initialCredit ?? '')
   }, [initialCredit])
 
+  useEffect(() => {
+    setAlternativeText(initialAlternativeText ?? '')
+  }, [initialAlternativeText])
+
   const hardReset = () => {
     setImage(undefined)
     setEditorInitialPosition({
@@ -169,6 +180,7 @@ export const ModalImageUpsertOrEdit = ({
       y: defaultPositions.y,
     })
     setCredit('')
+    setAlternativeText('')
     setScale(1)
   }
 
@@ -180,9 +192,9 @@ export const ModalImageUpsertOrEdit = ({
       y: yInitialPosition,
     })
     setCredit(initialCredit ?? '')
+    setAlternativeText(initialAlternativeText ?? '')
     setScale(initialScale)
   }
-
   const onImageReplace = () => hardReset()
 
   const onImageReplacementDropOrSelected = (file: File) => {
@@ -194,7 +206,8 @@ export const ModalImageUpsertOrEdit = ({
   const onEditedImageSave = (
     credit: string | null,
     imageDataUrl: string,
-    croppedRect: CroppedRect
+    croppedRect: CroppedRect,
+    alternativeText: string | null
   ) => {
     if (image) {
       logEvent(Events.CLICKED_SAVE_IMAGE, {
@@ -208,6 +221,7 @@ export const ModalImageUpsertOrEdit = ({
           imageCroppedDataUrl: imageDataUrl,
           cropParams: croppedRect,
           credit: credit,
+          alternativeText: isInformative ? alternativeText : null,
         },
         previouslyUploadedImageUrl
           ? 'Vos modifications ont bien été prises en compte'
@@ -231,7 +245,12 @@ export const ModalImageUpsertOrEdit = ({
 
   const handleImageChange = (
     callback?:
-      | ((credit: string | null, url: string, cropping: CroppedRect) => void)
+      | ((
+          credit: string | null,
+          url: string,
+          cropping: CroppedRect,
+          alternativeText: string | null
+        ) => void)
       | undefined
   ) => {
     try {
@@ -246,7 +265,7 @@ export const ModalImageUpsertOrEdit = ({
         })
 
         if (callback) {
-          callback(credit, canvas.toDataURL(), croppingRect)
+          callback(credit, canvas.toDataURL(), croppingRect, alternativeText)
         }
       }
     } catch {
@@ -368,6 +387,22 @@ export const ModalImageUpsertOrEdit = ({
                   maxCharactersCount={255}
                   value={credit}
                   onChange={(e) => setCredit(e.target.value)}
+                />
+                <Checkbox
+                  label="L’image est porteuse d’informations"
+                  description="Si cette image n’apparaît pas dans la page, est-ce qu’une information importante est perdue pour l’utilisateur ?"
+                  variant="detailed"
+                  checked={isInformative}
+                  onChange={(e) => setIsInformative(e.target.checked)}
+                  collapsed={
+                    <TextInput
+                      label="Texte alternatif de l’image"
+                      name="alternativeText"
+                      maxCharactersCount={150}
+                      value={alternativeText}
+                      onChange={(e) => setAlternativeText(e.target.value)}
+                    />
+                  }
                 />
               </div>
             </>
