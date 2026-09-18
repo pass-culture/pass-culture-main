@@ -1,5 +1,6 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_forms.scss" as forms;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .date-picker {
   @include forms.input-theme;
@@ -16,4 +17,8 @@
     margin-left: 0;
     margin-right: calc(-1 * size.$input-filter-variant-horizontal-padding);
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

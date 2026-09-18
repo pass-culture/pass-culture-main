@@ -1,7 +1,8 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: SideNavLinks is used once per page. There cannot be id duplications. */
 
 import classnames from 'classnames'
-import { useState } from 'react'
+import { type KeyboardEvent, useId, useRef, useState } from 'react'
+import { Link } from 'react-router'
 
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -9,6 +10,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -16,7 +18,6 @@ import {
   ButtonVariant,
   IconPositionEnum,
 } from '@/design-system/Button/types'
-import { Dropdown } from '@/design-system/Dropdown/Dropdown'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullParametersIcon from '@/icons/full-parameters.svg'
@@ -26,6 +27,7 @@ import strokeHomeIcon from '@/icons/stroke-home.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { type NavItem, SideNavLinks } from '../SideNavLinks/SideNavLinks'
 import styles from './LateralMenu.module.scss'
@@ -131,10 +133,23 @@ const generateNavItems = (): NavItem[] => {
 }
 
 export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isCreateOfferOpen, setIsCreateOfferOpen] = useState(false)
+  const createOfferRef = useRef<HTMLDivElement>(null)
+  const createOfferPanelId = useId()
   const selectedPartnerVenue = useAppSelector(
     (state) => state.user.selectedPartnerVenue
   )
+
+  const closeCreateOfferPanel = () => setIsCreateOfferOpen(false)
+
+  useOnClickOrFocusOutside(createOfferRef, closeCreateOfferPanel)
+
+  const handleCreateOfferKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      closeCreateOfferPanel()
+    }
+  }
+
   if (!selectedPartnerVenue) {
     return null
   }
@@ -175,45 +190,60 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           />
         </div>
 
-        <div className={styles['nav-section-create-button-wrapper']}>
+        <div
+          className={styles['nav-section-create-button-wrapper']}
+          ref={createOfferRef}
+        >
           {!isClosed && (
-            <Dropdown
-              label="Créer une offre"
-              open={isOpen}
-              onOpenChange={setIsOpen}
-              align="start"
-              trigger={
-                <Button
-                  label="Créer une offre"
-                  variant={ButtonVariant.PRIMARY}
-                  icon={isOpen ? fullUpIcon : fullDownIcon}
-                  iconPosition={IconPositionEnum.RIGHT}
-                  fullWidth
-                />
-              }
-              items={[
-                [
-                  {
-                    text: 'Pour le grand public',
-                    icon: strokePhoneIcon,
-                    link: {
-                      to: getIndividualOfferUrl({
-                        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                        mode: OFFER_WIZARD_MODE.CREATION,
-                        isOnboarding: false,
-                      }),
-                    },
-                  },
-                  {
-                    text: 'Pour les groupes scolaires',
-                    icon: strokeBagIcon,
-                    link: {
-                      to: '/offre/creation',
-                    },
-                  },
-                ],
-              ]}
-            />
+            <>
+              <Button
+                label="Créer une offre"
+                variant={ButtonVariant.PRIMARY}
+                icon={isCreateOfferOpen ? fullUpIcon : fullDownIcon}
+                iconPosition={IconPositionEnum.RIGHT}
+                fullWidth
+                aria-expanded={isCreateOfferOpen}
+                aria-controls={createOfferPanelId}
+                onClick={() => setIsCreateOfferOpen((previous) => !previous)}
+                onKeyDown={handleCreateOfferKeyDown}
+              />
+              <div
+                className={styles['create-offer-panel']}
+                id={createOfferPanelId}
+                hidden={!isCreateOfferOpen}
+              >
+                <Link
+                  className={styles['create-offer-panel-item']}
+                  to={getIndividualOfferUrl({
+                    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                    mode: OFFER_WIZARD_MODE.CREATION,
+                    isOnboarding: false,
+                  })}
+                  onClick={closeCreateOfferPanel}
+                  onKeyDown={handleCreateOfferKeyDown}
+                >
+                  <SvgIcon
+                    className={styles['create-offer-panel-item-icon']}
+                    src={strokePhoneIcon}
+                    alt=""
+                  />
+                  Pour le grand public
+                </Link>
+                <Link
+                  className={styles['create-offer-panel-item']}
+                  to="/offre/creation"
+                  onClick={closeCreateOfferPanel}
+                  onKeyDown={handleCreateOfferKeyDown}
+                >
+                  <SvgIcon
+                    className={styles['create-offer-panel-item-icon']}
+                    src={strokeBagIcon}
+                    alt=""
+                  />
+                  Pour les groupes scolaires
+                </Link>
+              </div>
+            </>
           )}
           {isClosed && <Button disabled fullWidth label="Créer une offre" />}
         </div>
