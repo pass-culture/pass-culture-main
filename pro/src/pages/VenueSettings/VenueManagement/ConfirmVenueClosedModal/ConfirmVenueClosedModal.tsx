@@ -26,7 +26,7 @@ export const ConfirmVenueClosedModal = ({
       <p>
         {isPricingPoint
           ? 'Votre demande de fermeture est en cours de traitement. Nos équipes Support reviendront vers vous ultérieurement.'
-          : 'Les impacts suite à la fermeture de votre structure prendront effet dans les prochaines heures. Si ce n’est pas le cas, merci de contacter nos équipes.'}
+          : 'Les impacts suite à la fermeture de votre structure peuvent prendre effet immédiatement ou au cours des prochaines heures. Si ce n’est pas le cas merci de contacter nos équipes.'}
       </p>
     </SimpleModal>
   )
