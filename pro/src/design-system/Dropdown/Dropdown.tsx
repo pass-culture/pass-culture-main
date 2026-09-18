@@ -120,6 +120,7 @@ export const Dropdown = ({
         <DropdownMenu.Content
           align={align}
           side={side}
+          aria-expanded={open}
           className={cn(styles['dropdown-content'], {
             [styles['dropdown-width-auto']]: width === 'auto',
             [styles['dropdown-width-trigger']]: width === 'trigger',
