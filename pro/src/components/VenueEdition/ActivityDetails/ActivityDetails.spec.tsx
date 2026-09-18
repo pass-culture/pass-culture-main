@@ -151,7 +151,9 @@ describe('ActivityDetails', () => {
       })
       await userEvent.click(screen.getByText('domaine 1'))
       await userEvent.click(screen.getByText('domaine III'))
-      expect(screen.getByLabelText('domaines sélectionnés')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'domaines sélectionnés' })
+      ).toBeInTheDocument()
     })
   })
 })

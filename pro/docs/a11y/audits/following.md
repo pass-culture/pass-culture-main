@@ -152,6 +152,46 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 7.1 - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43622](https://passculture.atlassian.net/browse/PC-43622)  
+**PR** : [#24423](https://github.com/pass-culture/pass-culture-main/pull/24423)
+
+**Problème** 😱  
+
+P09 → Les offres individuelles 
+P10 → Les réservations
+P13 → Les offres réservables  
+P14 → Les offres vitrines
+
+Les boutons de filtre “Statut” permettent d'afficher une liste de filtres, mais leur état d'ouverture n'est pas toujours communiqué aux technologies d'assistance.
+
+Par exemple :
+
+- Le bouton “Statut” situé dans l'en-tête de colonne de la page Réservations n'indique pas si le panneau associé est ouvert ou fermé.
+- Le bouton ne possède pas toujours de relation explicite avec le contenu affiché.
+- Les filtres “Statut” des listes d'offres réservables et vitrines n'annoncent pas le nombre d'éléments sélectionnés, alors qu'une bulle visuelle l'indique aux utilisateurs voyants.
+- Certaines icônes décoratives de boutons de filtre communiquent un texte alternatif inutile.
+
+**Correction** 💡  
+
+- Ajout de `aria-expanded` sur les boutons de filtre afin d'indiquer dynamiquement si le panneau associé est ouvert ou fermé.
+- Ajout de `aria-controls` pour associer explicitement les boutons aux panneaux de filtre correspondants.
+- Maintien de `aria-describedby` sur les filtres “Statut” des listes d'offres réservables et vitrines, y compris lorsque le panneau est fermé, afin de communiquer le nombre d'éléments sélectionnés.
+- Ajout d'un rôle explicite au panneau du composant `MultiSelect` et conservation du design existant du panneau.
+- Passage des icônes décoratives des boutons de filtre en `alt=""`.
+- Vérification que les valeurs sélectionnées du filtre “Statut” restent communiquées via les champs de sélection.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 5.4 - RGAA - Pour chaque tableau de données ayant un titre, le titre est-il correctement associé au tableau de données ?</summary>
 
 **RAWeb/RGAA** : [Critère 5.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-4)

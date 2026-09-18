@@ -5,6 +5,7 @@ import { type ChangeEvent, useId, useRef, useState } from 'react'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import fullSortIcon from '@/icons/full-sort.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -76,6 +77,16 @@ export const FilterByBookingStatus = ({
   const bookingStatusOptions = INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS
 
   const tooltipId = useId()
+  const filterPanelId = `booking-filter-tooltip-${tooltipId}`
+  const filterDescriptionId = `booking-filter-description-${tooltipId}`
+  const hiddenBookingStatuses = bookingStatusOptions.filter((status) =>
+    bookingStatuses.includes(status.value)
+  )
+
+  const filterDescription =
+    hiddenBookingStatuses.length === 0
+      ? 'Tous les statuts sont affichés'
+      : `${hiddenBookingStatuses.length} ${pluralizeFr(hiddenBookingStatuses.length, 'statut masqué', 'statuts masqués')} : ${hiddenBookingStatuses.map((status) => status.title).join(', ')}`
 
   return (
     <div ref={containerRef}>
@@ -84,9 +95,9 @@ export const FilterByBookingStatus = ({
         className={styles['bs-filter-button']}
         onClick={toggleTooltip}
         onKeyDown={handleKeyDown}
-        aria-describedby={
-          isToolTipVisible ? `booking-filter-tooltip-${tooltipId}` : undefined
-        }
+        aria-controls={filterPanelId}
+        aria-expanded={isToolTipVisible}
+        aria-describedby={filterDescriptionId}
       >
         <span
           className={cn(styles['table-head-label'], styles['status-filter'])}
@@ -95,7 +106,7 @@ export const FilterByBookingStatus = ({
         </span>
         <span className={styles['status-container']}>
           <SvgIcon
-            alt="Filtrer par statut"
+            alt=""
             src={fullSortIcon}
             className={cn(
               styles['status-icon'],
@@ -106,9 +117,12 @@ export const FilterByBookingStatus = ({
           {bookingStatuses.length > 0 && <span className="status-badge-icon" />}
         </span>
       </button>
+      <span id={filterDescriptionId} className={styles['visually-hidden']}>
+        {filterDescription}
+      </span>
       <div
         className={styles['bs-filter']}
-        id={`booking-filter-tooltip-${tooltipId}`}
+        id={filterPanelId}
         hidden={!isToolTipVisible}
         aria-hidden={!isToolTipVisible}
       >

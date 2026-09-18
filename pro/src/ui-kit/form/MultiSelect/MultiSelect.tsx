@@ -10,6 +10,7 @@ import {
 } from 'react'
 
 import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import type { RequiredIndicator } from '@/design-system/common/types'
 
@@ -133,6 +134,7 @@ export const MultiSelect = forwardRef(
     const containerRef = useRef<HTMLDivElement>(null)
     const id = useId()
     const errorId = useId()
+    const selectedCountDescriptionId = useId()
 
     const toggleDropdown = () => setIsOpen((prev) => !prev)
 
@@ -213,11 +215,24 @@ export const MultiSelect = forwardRef(
               disabled={disabled}
               error={error}
               errorId={errorId}
+              selectedCountDescriptionId={selectedCountDescriptionId}
             />
+            <span
+              id={selectedCountDescriptionId}
+              className={styles['visually-hidden']}
+            >
+              {selectedItems.length}{' '}
+              {pluralizeFr(
+                selectedItems.length,
+                'élément sélectionné',
+                'éléments sélectionnés'
+              )}
+            </span>
 
             {isOpen && (
               <MultiSelectPanel
                 id={id}
+                label={buttonLabel}
                 options={options.map((option) => ({
                   ...option,
                   checked: selectedItems.some((item) => item.id === option.id),

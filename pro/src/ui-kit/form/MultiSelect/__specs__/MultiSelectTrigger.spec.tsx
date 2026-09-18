@@ -24,6 +24,7 @@ describe('<MultiSelectTrigger />', () => {
         isOpen={isOpen}
         selectedCount={selectedCount}
         id={''}
+        selectedCountDescriptionId="selected-count-description"
       />
     )
   }
@@ -33,6 +34,17 @@ describe('<MultiSelectTrigger />', () => {
 
     expect(screen.getByText('Options Label')).toBeInTheDocument()
     expect(screen.getByText('2')).toBeInTheDocument()
+  })
+
+  it('should expose its expanded state and selected count description', () => {
+    renderMultiSelectPanel({ isOpen: true, selectedCount: 2 })
+
+    const button = screen.getByRole('button', { name: 'Options Label' })
+    expect(button).toHaveAttribute('aria-expanded', 'true')
+    expect(button).toHaveAttribute(
+      'aria-describedby',
+      'selected-count-description'
+    )
   })
 
   it('should have no accessibility violations', async () => {
