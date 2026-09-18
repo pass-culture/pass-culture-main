@@ -127,10 +127,7 @@ class HttpBackend:
 
     def get_similar_offers(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
         path = f"/similar_offers/{offer_id}"
-        # The `user_id` param (in snake_case) is currently ignored by
-        # the Recommendation API, but let's be defensive.
-        params.pop("user_id", None)
-        params["userId"] = str(user.id) if user else None
+        params["user_id"] = str(user.id) if user else None
         return self._request("get", path, params=params)
 
     def get_similar_artists(self, artist_id: str, params: dict) -> bytes:
