@@ -25,7 +25,7 @@ class GetSimilarOffersTest:
 
         assert response == b"raw response"
         query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
-        assert query["userId"] == str(user.id)
+        assert query["user_id"] == str(user.id)
         assert query["token"] == "secret token"
 
     def test_without_user(self, requests_mock):
@@ -34,9 +34,7 @@ class GetSimilarOffersTest:
             content=b"raw response",
         )
 
-        response = recommendation.get_similar_offers(
-            offer_id=1, user=None, params={"userId": "overridden", "user_id": "overridden"}
-        )
+        response = recommendation.get_similar_offers(offer_id=1, user=None)
 
         assert response == b"raw response"
         query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
