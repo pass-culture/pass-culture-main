@@ -5,7 +5,45 @@
 @use "styles/variables/_z-index.scss" as zIndex;
 
 .nav-section-create-button-wrapper {
+  position: relative;
   margin: 0 var(--size-spacing-l) var(--size-spacing-l);
+}
+
+.create-offer-panel {
+  position: absolute;
+  z-index: zIndex.$dropdown-button-z-index;
+  top: 100%;
+  left: 0;
+  width: max-content;
+  min-width: 100%;
+  margin-top: var(--size-spacing-s);
+  border-radius: var(--size-spacing-xs);
+  border: rem.torem(1px) solid var(--color-border-subtle);
+  background-color: var(--color-background-default);
+  box-shadow: 0 1px 6px 0 var(--color-background-shadow-overlay);
+
+  &-item {
+    @include fonts.body-accent-s;
+
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    border-radius: var(--size-spacing-xs);
+    padding: var(--size-spacing-s) var(--size-spacing-l);
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--color-background-brand-primary-hover);
+      color: var(--color-text-inverted);
+    }
+
+    &-icon {
+      width: var(--size-icon-s);
+      height: var(--size-icon-s);
+      aspect-ratio: 1 / 1;
+      margin-right: var(--size-spacing-m);
+    }
+  }
 }
 
 .nav-links {

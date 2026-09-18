@@ -42,10 +42,10 @@ describe('LateralMenu', () => {
     )
 
     expect(
-      screen.getByRole('menuitem', { name: 'Pour le grand public' })
+      screen.getByRole('link', { name: 'Pour le grand public' })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('menuitem', { name: 'Pour les groupes scolaires' })
+      screen.getByRole('link', { name: 'Pour les groupes scolaires' })
     ).toBeInTheDocument()
   })
 
@@ -59,15 +59,13 @@ describe('LateralMenu', () => {
           screen.getByRole('button', { name: 'Créer une offre' })
         )
 
-        await userEvent.click(
-          screen.getByRole('menuitem', { name: menuItemName })
-        )
+        await userEvent.click(screen.getByRole('link', { name: menuItemName }))
 
         expect(
-          screen.queryByRole('menuitem', { name: 'Pour le grand public' })
+          screen.queryByRole('link', { name: 'Pour le grand public' })
         ).not.toBeInTheDocument()
         expect(
-          screen.queryByRole('menuitem', { name: 'Pour les groupes scolaires' })
+          screen.queryByRole('link', { name: 'Pour les groupes scolaires' })
         ).not.toBeInTheDocument()
       })
     }
