@@ -12,23 +12,29 @@ import {
   InfoPanelSurface,
   InfoPanelVariant,
 } from '@/ui-kit/InfoPanelList/types'
+import { Title } from '@/ui-kit/Title/Title'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 
 export const WelcomeStepAdvantages = (): JSX.Element => {
   return (
     <>
-      <h1 className={commonStyles.title}>
-        Pourquoi rejoindre le pass Culture ?
-      </h1>
-      <h2 className={commonStyles.subtitle}>
+      <div className={commonStyles['title-wrapper']}>
+        <Title
+          level="1"
+          title="Pourquoi rejoindre le pass Culture ?"
+          marginBottom="s"
+        />
+      </div>
+      <p className={commonStyles.subtitle}>
         Découvrez les avantages pour votre structure
-      </h2>
+      </p>
       <div className={cn(commonStyles[`container`])}>
         <InfoPanelList
           variant={InfoPanelVariant.UNORDERED}
           surface={InfoPanelSurface.FLAT}
           size={InfoPanelSize.LARGE}
+          titleLevel="2"
           panels={[
             {
               title: '4 millions de jeunes',

@@ -9,6 +9,7 @@ import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import strokeEventIcon from '@/icons/stroke-events.svg'
 import strokeHourglassIcon from '@/icons/stroke-hourglass.svg'
 import { CardInfo } from '@/pages/WelcomeCarousel/components/CardInfo'
+import { Title } from '@/ui-kit/Title/Title'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import styles from './WelcomeStepCollective.module.scss'
@@ -17,18 +18,26 @@ const WelcomeStepCollective = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   return (
     <>
-      <h1 className={commonStyles.title}>Offres pour les groupes scolaires</h1>
-      <h2 className={commonStyles.subtitle}>Intervenez auprès des classes</h2>
+      <div className={commonStyles['title-wrapper']}>
+        <Title
+          level="1"
+          title="Offres pour les groupes scolaires"
+          marginBottom="s"
+        />
+      </div>
+      <p className={commonStyles.subtitle}>Intervenez auprès des classes</p>
       <div className={cn(commonStyles[`container`], styles['container'])}>
         <CardInfo
           icon={strokeEventIcon}
           title="Qui réserve ?"
+          titleLevel="2"
           description="Le corps enseignant réserve pour les classes (de la 6e à la Terminale)
           via la plateforme ADAGE."
         ></CardInfo>
         <CardInfo
           icon={strokeEuroIcon}
           title="Comment ça fonctionne ?"
+          titleLevel="2"
           description="Déposez votre dossier ADAGE pour obtenir un référencement. Les
           établissements paient avec leur budget pass Culture. Vous recevez le
           paiement sous 2 à 3 semaines."
@@ -36,6 +45,7 @@ const WelcomeStepCollective = (): JSX.Element => {
         <CardInfo
           icon={strokeHourglassIcon}
           title="Combien de temps ça prend ?"
+          titleLevel="2"
           description="pass Culture Pro : quelques jours. Référencement ADAGE : 2 à 9 mois
           (selon commissions régionales). Vous pouvez démarrer avec des offres
           via l’application destinée aux jeunes en attendant."

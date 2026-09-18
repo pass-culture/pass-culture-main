@@ -8,12 +8,6 @@
   margin-right: auto;
 }
 
-.subtitle {
-  @include fonts.title3;
-
-  margin-bottom: var(--size-spacing-m);
-}
-
 .signup-offerer-authentication-form {
   margin-bottom: var(--size-spacing-l);
 }
@@ -29,9 +23,7 @@
 .displaying-data {
   margin-bottom: var(--size-spacing-l);
 
-  &-title {
-    @include fonts.title4;
-
+  &-title-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -42,14 +34,6 @@
     justify-content: space-between;
     align-items: center;
   }
-}
-
-.title {
-  @include fonts.title1;
-
-  overflow-wrap: anywhere;
-  margin-top: var(--size-spacing-xxl);
-  margin-bottom: var(--size-spacing-s);
 }
 
 .subheading-description {

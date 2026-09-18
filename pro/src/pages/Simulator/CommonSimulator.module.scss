@@ -6,14 +6,6 @@
   margin-bottom: var(--size-spacing-xl);
 }
 
-.title {
-  color: var(--color-text-default);
-
-  @include fonts.title1;
-
-  margin-bottom: var(--size-spacing-l);
-}
-
 .subtitle {
   color: var(--color-text-subtle, #696a6f);
 

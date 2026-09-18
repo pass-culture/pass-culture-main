@@ -15,7 +15,6 @@ describe('<SimulatorEmailConfirmation />', () => {
   it('should render title, subtitle and a CTA', () => {
     renderWithProviders(<SimulatorEmailConfirmation />)
     expect(screen.getByRole('heading', { level: 1 })).toBeVisible()
-    expect(screen.getByRole('heading', { level: 2 })).toBeVisible()
 
     expect(
       screen.getByRole('link', { name: "Retour à l'inscription" })

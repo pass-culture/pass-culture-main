@@ -3,6 +3,7 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Link } from '@/design-system/Link/Link'
 import { LinkColor } from '@/design-system/Link/types'
 import fullBackIcon from '@/icons/full-back.svg'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { AccessibilityLayout } from './AccessibilityLayout'
 import styles from './Declaration.module.scss'
@@ -10,7 +11,7 @@ import styles from './Declaration.module.scss'
 export const Declaration = () => {
   return (
     <AccessibilityLayout>
-      <h1 className={styles.title}>Déclaration d’accessibilité</h1>
+      <Title level="1" title="Déclaration d’accessibilité" marginBottom="xxl" />
       <div className={styles['back-link']}>
         <Button
           as="router-link"
@@ -50,7 +51,7 @@ export const Declaration = () => {
           label="https://passculture.pro/"
         />
       </p>
-      <h2 className={styles['heading2']}>État de conformité</h2>
+      <Title level="2" title="État de conformité" marginBottom="l" />
       <p className={styles['paragraph']}>
         Le site Pass Culture – Portail Pro est non conforme avec la norme
         européenne 301 549 (v3.2.1).
@@ -72,17 +73,17 @@ export const Declaration = () => {
         version 4.1, en raison des non-conformités énumérées dans la section «
         Résultats des tests ».
       </p>
-      <h2 className={styles['heading2']}>Résultat des tests</h2>
+      <Title level="2" title="Résultat des tests" marginBottom="l" />
       <p className={styles['paragraph']}>
         L’audit de conformité réalisé par la société Access42 révèle que le site
         est conforme à 67.65 % au RGAA version 4.1.
       </p>
-      <h2 className={styles['heading2']}>Contenus inaccessibles</h2>
+      <Title level="2" title="Contenus inaccessibles" marginBottom="l" />
       <p className={styles['paragraph']}>
         Les contenus listés ci-dessous ne sont pas accessibles pour les raisons
         suivantes.
       </p>
-      <h3 className={styles['heading3']}>Non conformité</h3>
+      <Title level="3" title="Non conformité" marginBottom="l" />
       <ul>
         <li className={styles['list-item']}>
           [1.2 - RGAA] Une image de décoration au moins n'est pas ignorée des
@@ -189,37 +190,46 @@ export const Declaration = () => {
           communication des personnes handicapées.
         </li>
       </ul>
-      <h3 className={styles['heading3']}>
-        Dérogations pour charge disproportionnée
-      </h3>
+      <Title
+        level="3"
+        title="Dérogations pour charge disproportionnée"
+        marginBottom="l"
+      />
       <ul>
         <li className={styles['list-item']}>Pas de dérogation identifiée</li>
       </ul>
-      <h3 className={styles['heading3']}>
-        Contenus non soumis à l’obligation d’accessibilité
-      </h3>
+      <Title
+        level="3"
+        title="Contenus non soumis à l’obligation d’accessibilité"
+        marginBottom="l"
+      />
       <ul>
         <li className={styles['list-item']}>Pas d'exemption identifiée</li>
       </ul>
-      <h2 className={styles['heading2']}>
-        Établissement de cette déclaration d’accessibilité
-      </h2>
+      <Title
+        level="2"
+        title="Établissement de cette déclaration d’accessibilité"
+        marginBottom="l"
+      />
       <p className={styles['paragraph']}>
         Cette déclaration a été établie le 10 juillet 2026.
       </p>
-      <h3 className={styles['heading3']}>
-        Technologies utilisées pour la réalisation du site
-      </h3>
+      <Title
+        level="3"
+        title="Technologies utilisées pour la réalisation du site"
+        marginBottom="l"
+      />
       <ul>
         <li className={styles['list-item']}>HTML5</li>
         <li className={styles['list-item']}>CSS</li>
         <li className={styles['list-item']}>JavaScript</li>
         <li className={styles['list-item']}>React</li>
       </ul>
-      <h3 className={styles['heading3']}>
-        Agents utilisateurs, technologies d'assistance et outils utilisés pour
-        vérifier l'accessibilité
-      </h3>
+      <Title
+        level="3"
+        title="Agents utilisateurs, technologies d'assistance et outils utilisés pour vérifier l'accessibilité"
+        marginBottom="l"
+      />
       <p className={styles['paragraph']}>
         Les tests des pages web ont été effectués avec les combinaisons de
         navigateurs web et lecteurs d’écran suivants :
@@ -242,9 +252,11 @@ export const Declaration = () => {
         assistés par des outils (feuilles CSS dédiés, extensions HeadingsMaps et
         WebDeveloper Toolbar, Color Contrast Analyser).
       </p>
-      <h3 className={styles['heading3']}>
-        Pages du site ayant fait l’objet de la vérification de conformité
-      </h3>
+      <Title
+        level="3"
+        title="Pages du site ayant fait l’objet de la vérification de conformité"
+        marginBottom="l"
+      />
       <p className={styles['paragraph']}>
         L’audit a porté sur l’échantillon de pages listé ci-dessous.
       </p>
@@ -437,7 +449,11 @@ export const Declaration = () => {
           </tr>
         </tbody>
       </table>
-      <h2 className={styles['heading2']}>Retour d’information et contact</h2>
+      <Title
+        level="2"
+        title="Retour d’information et contact"
+        marginBottom="l"
+      />
       <p className={styles['paragraph']}>
         Il est important de rappeler qu’en vertu de l’article 11 de la loi de
         février 2005 :
@@ -465,7 +481,7 @@ export const Declaration = () => {
         &nbsp;afin qu’une assistance puisse être apportée (alternative
         accessible, information et contenu donnés sous une autre forme).
       </p>
-      <h2 className={styles['heading2']}>Voies de recours</h2>
+      <Title level="2" title="Voies de recours" marginBottom="l" />
       <p className={styles['paragraph']}>
         Si vous constatez un défaut d'accessibilité vous empêchant d'accéder à
         un contenu ou une fonctionnalité du site, que vous nous le signalez et

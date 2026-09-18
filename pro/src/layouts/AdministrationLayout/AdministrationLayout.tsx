@@ -7,19 +7,18 @@ import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
 import { ensureOffererNames } from '@/commons/store/user/selectors'
 import { NonAttachedBanner } from '@/components/NonAttachedBanner/NonAttachedBanner'
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
-
-import styles from './AdministrationLayout.module.scss'
+import { Title } from '@/ui-kit/Title/Title'
 
 export const AdministrationLayout = () => {
   const offererNames = useAppSelector(ensureOffererNames)
   const currentRoute = useCurrentRoute()
   const userPermissions = useCurrentUserPermissions()
 
-  const title = currentRoute.handle?.title
+  const title = currentRoute.handle?.title ?? ''
 
   return (
     <BasicLayout isAdminArea>
-      <h1 className={styles.title}>{title}</h1>
+      <Title level="1" title={title} marginBottom="xxl" />
       {offererNames.length > 1 && <OffererSelect />}
       {userPermissions.isSelectedAdminOffererAssociated ? (
         <Outlet />

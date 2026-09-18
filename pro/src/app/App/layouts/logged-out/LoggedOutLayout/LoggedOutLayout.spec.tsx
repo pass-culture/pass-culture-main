@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { LoggedOutLayout } from './LoggedOutLayout'
 
 const renderLoggedOutLayout = () => {
-  return renderWithProviders(<LoggedOutLayout mainHeading="Connexion" />)
+  return renderWithProviders(<LoggedOutLayout />)
 }
 
 describe('LoggedOutLayout', () => {
@@ -13,6 +13,5 @@ describe('LoggedOutLayout', () => {
     renderLoggedOutLayout()
 
     expect(screen.getByRole('main')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 })

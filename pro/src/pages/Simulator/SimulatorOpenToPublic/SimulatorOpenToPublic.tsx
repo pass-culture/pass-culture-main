@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
+import { Title } from '@/ui-kit/Title/Title'
 
 type OpenToPublicFormValues = {
   isOpenToPublic: string | null
@@ -58,11 +59,11 @@ export const SimulatorOpenToPublic = (): JSX.Element => {
 
   return (
     <div className={commonStyles['content']}>
-      <h1 className={commonStyles['title']}>Accueil du public</h1>
-      <h2 className={commonStyles['subtitle']}>
+      <Title level="1" title="Accueil du public" marginBottom="l" />
+      <p className={commonStyles['subtitle']}>
         Votre réponse adapte la suite de votre inscription, notamment les
         informations d'adresse demandées.
-      </h2>
+      </p>
       <FormLayout>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormLayout.Section>

@@ -2,13 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-.title {
-  @include fonts.title1;
-
-  overflow-wrap: anywhere;
-  margin-bottom: var(--size-spacing-xxl);
-}
-
 .search-container {
   position: relative;
   margin: var(--size-spacing-l) 0;

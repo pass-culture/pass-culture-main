@@ -1,3 +1,5 @@
+import { Title } from '@/ui-kit/Title/Title'
+
 <%# scss.yes %>
 import styles from './<% name %>.module.scss'
 
@@ -14,7 +16,7 @@ export const <% name %> = ({ foo }: Readonly<<% name %>Props>): JSX.Element => {
     <%# scss.no %>
     <div>
     <%/ scss.no %>
-      <h1><% name %> {foo ?? ''}</h1>
+      <Title level="1" title={`<% name %> ${foo ?? ''}`} />
     </div>
   )
 }

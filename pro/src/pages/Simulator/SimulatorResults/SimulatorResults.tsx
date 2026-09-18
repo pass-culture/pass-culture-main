@@ -24,6 +24,7 @@ import {
   InfoPanelSurface,
   InfoPanelVariant,
 } from '@/ui-kit/InfoPanelList/types'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { api } from 'apiClient/api'
 import {
@@ -150,9 +151,11 @@ export const SimulatorResults = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['content']}>
-        <h1 className={commonStyles['title']}>
-          Voici les justificatifs à préparer pour votre inscription
-        </h1>
+        <Title
+          level="1"
+          title="Voici les justificatifs à préparer pour votre inscription"
+          marginBottom="l"
+        />
       </div>
       {showErrorBanner && (
         <Banner

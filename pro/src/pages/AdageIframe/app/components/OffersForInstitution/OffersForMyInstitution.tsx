@@ -11,6 +11,7 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import strokeMyInstitution from '@/icons/stroke-my-institution.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { useAdageUser } from '../../hooks/useAdageUser'
 import { AdageBudgetInformationBanner } from '../AdageBudgetInformationBanner/AdageBudgetInformationBanner'
@@ -57,7 +58,7 @@ export const OffersForMyInstitution = () => {
 
   return (
     <>
-      <h1 className={styles['title']}>Pour mon établissement</h1>
+      <Title level="1" title="Pour mon établissement" />
       {shouldShowSurveySatisfaction && (
         <div className={styles['banner-container']}>
           <SurveySatisfaction

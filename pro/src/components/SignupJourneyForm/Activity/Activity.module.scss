@@ -7,20 +7,6 @@
   margin-right: auto;
 }
 
-.subtitle {
-  @include fonts.title3;
-
-  margin-bottom: var(--size-spacing-m);
-}
-
-.title {
-  @include fonts.title1;
-
-  overflow-wrap: anywhere;
-  margin-top: var(--size-spacing-xxl);
-  margin-bottom: var(--size-spacing-s);
-}
-
 .subheading-description {
   @include fonts.body-xs;
 

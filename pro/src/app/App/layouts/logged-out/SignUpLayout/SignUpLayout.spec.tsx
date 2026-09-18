@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SignUpLayout } from './SignUpLayout'
 
 const renderLayout = () => {
-  renderWithProviders(<SignUpLayout mainHeading="Connexion" />)
+  renderWithProviders(<SignUpLayout />)
 }
 
 describe('SignUpLayout', () => {
@@ -13,7 +13,6 @@ describe('SignUpLayout', () => {
     renderLayout()
 
     expect(screen.getByRole('main')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('should render sign up banners', () => {

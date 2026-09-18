@@ -4,6 +4,7 @@ import { Link, Route, Routes } from 'react-router'
 
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { BasicLayout } from '../../layouts/BasicLayout/BasicLayout'
 import { SignUpLayout } from '../../layouts/logged-out/SignUpLayout/SignUpLayout'
@@ -26,6 +27,7 @@ const renderUseFocusRoutes = (url = '/accueil') => {
           <>
             <FocusTopPageOrBackToNavLink />
             <BasicLayout>
+              <Title level="1" title="Accueil" />
               <Link to="/connection">Log Out</Link>
             </BasicLayout>
           </>
@@ -36,7 +38,8 @@ const renderUseFocusRoutes = (url = '/accueil') => {
         element={
           <>
             <FocusTopPageOrBackToNavLink />
-            <SignUpLayout mainHeading="Connexion">
+            <SignUpLayout>
+              <Title level="1" title="Connexion" />
               <Link to="/accueil">Log In</Link>
             </SignUpLayout>
           </>
@@ -59,6 +62,8 @@ const renderUseFocusRoutes = (url = '/accueil') => {
 describe('useFocus', () => {
   it('should always focus on top of the page after a navigation', async () => {
     renderUseFocusRoutes()
+
+    expect(screen.getByRole('heading', { name: 'Accueil' })).toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('link', { name: 'Log Out' }))
 

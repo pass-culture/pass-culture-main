@@ -9,6 +9,7 @@ import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/const
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
+import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './ConfirmedAttachment.module.scss'
 
@@ -35,7 +36,7 @@ export const ConfirmedAttachment = (): JSX.Element => {
       })}
     >
       <div>
-        <h1 className={styles['title']}>Votre demande a été envoyée</h1>
+        <Title level="1" title="Votre demande a été envoyée" marginBottom="l" />
         <p className={styles['subheading-description']}>
           Nos équipes valideront votre rattachement par email. Vous aurez alors
           accès à l'ensemble des fonctionnalités du pass Culture Pro.

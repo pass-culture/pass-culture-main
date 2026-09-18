@@ -69,6 +69,7 @@ export const IndividualOffersLine = ({
           offer={offer}
           venueDepartmentCode={venueDepartmentCode}
         />
+        {/** biome-ignore lint/correctness/noRestrictedElements: This title has a different style but must be an <h3> in hierarchy */}
         <h3 className={styles['offer-line-content-primary']}>
           <Link
             className={styles['offer-line-link']}

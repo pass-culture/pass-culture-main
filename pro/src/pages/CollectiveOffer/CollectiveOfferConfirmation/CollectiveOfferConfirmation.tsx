@@ -12,6 +12,7 @@ import { ButtonVariant } from '@/design-system/Button/types'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import { Title } from '@/ui-kit/Title/Title'
 
 import {
   type MandatoryCollectiveOfferFromParamsProps,
@@ -173,8 +174,8 @@ const CollectiveOfferConfirmation = ({
 
   return (
     <BasicLayout>
-      <h1 className={styles['title']}>{confirmationData.title}</h1>
-      <h2 className={styles['subtitle']}>{offer.name}</h2>
+      <Title level="1" title={confirmationData.title} />
+      <Title level="2" title={offer.name} />
       <div className={styles['confirmation-wrapper']}>
         <div className={styles['confirmation']}>
           {confirmationData.icon}

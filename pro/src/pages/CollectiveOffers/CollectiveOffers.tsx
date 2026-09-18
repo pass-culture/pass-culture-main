@@ -11,8 +11,8 @@ import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/use
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
+import { Title } from '@/ui-kit/Title/Title'
 
-import styles from './CollectiveOffers.module.scss'
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 export const CollectiveOffers = () => {
@@ -54,7 +54,7 @@ export const CollectiveOffers = () => {
 
   return (
     <>
-      <h1 className={styles['title']}>Offres réservables</h1>
+      <Title level="1" title="Offres réservables" marginBottom="xxl" />
 
       <CollectiveOffersScreen
         currentPageNumber={currentPageNumber}
