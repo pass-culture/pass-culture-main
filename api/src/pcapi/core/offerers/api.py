@@ -2857,8 +2857,9 @@ def get_open_to_public_venues_without_accessibility_provider() -> list[models.Ve
 
 
 def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = False) -> None:
+    logger.info("Starting synchronization for venue %d with acceslibre", venue.id)
+
     assert venue.accessibilityProvider  # helps mypy, ensured by caller
-    assert venue.offererAddress and venue.offererAddress.address  # helps mypy, shouldn't happen
     slug = venue.accessibilityProvider.externalAccessibilityId
     try:
         last_update, accessibility_data = accessibility_provider.get_accessibility_infos(slug=slug)
@@ -2880,7 +2881,7 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
         venue.accessibilityProvider.externalAccessibilityData = (
             accessibility_data.dict() if accessibility_data else None
         )
-        db.session.add(venue.accessibilityProvider)
+        db.session.flush()
 
     # if last_update is None, the slug has been removed from acceslibre, we try a new match
     # and save accessibility data to DB
@@ -2901,6 +2902,7 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
         if id_and_url_at_provider:
             new_slug = id_and_url_at_provider["slug"]
             new_url = id_and_url_at_provider["url"]
+            logger.info("New match found at acceslibre with url %s", new_url)
             try:
                 last_update, accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
             except accessibility_provider.AccesLibreApiException as e:
@@ -2909,13 +2911,14 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
                 )
                 return
             if last_update and accessibility_data:
+                logger.info("Accessibility data updated, last update at acceslibre was %s", last_update)
                 venue.accessibilityProvider.externalAccessibilityId = new_slug
                 venue.accessibilityProvider.externalAccessibilityUrl = new_url
                 venue.accessibilityProvider.lastUpdateAtProvider = last_update
                 venue.accessibilityProvider.externalAccessibilityData = (
                     accessibility_data.dict() if accessibility_data else None
                 )
-                db.session.add(venue.accessibilityProvider)
+                db.session.flush()
                 logger.info(
                     "Acceslibre update synchronisation",
                     extra={
@@ -2950,6 +2953,7 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
             venue.id,
             venue.accessibilityProvider.externalAccessibilityData,
         )
+    logger.info("Finished synchronization for venue %d with acceslibre", venue.id)
 
 
 def synchronize_accessibility_with_acceslibre(
@@ -2966,6 +2970,8 @@ def synchronize_accessibility_with_acceslibre(
 
     If externalAccessibilityId can't be found at acceslibre, we try to find a new match, cf. synchronize_accessibility_provider()
     """
+    logger.info("Starting acceslibre synchronisation")
+
     venues_count = count_open_to_public_venues_with_accessibility_provider()
     num_batches = ceil(venues_count / batch_size)
     if start_from_batch > num_batches:
