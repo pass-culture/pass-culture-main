@@ -14,7 +14,7 @@ export const AdministrationLayout = () => {
   const currentRoute = useCurrentRoute()
   const userPermissions = useCurrentUserPermissions()
 
-  const title = currentRoute.handle?.title
+  const title = currentRoute.handle?.mainTitle ?? currentRoute.handle?.title
 
   return (
     <BasicLayout isAdminArea>
