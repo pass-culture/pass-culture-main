@@ -131,4 +131,5 @@ export enum HomepageEvents {
   CLICKED_RECOMMENDATION = 'hasClickedRecommendation',
   CLICKED_SEE_ALL_OFFERS = 'hasClickedSeeAllOffers',
   CLICKED_CREATE_OFFER = 'hasClickedCreateOffer',
+  CHANGED_STATS_V2_PERIOD = 'hasChangedStatsV2PeriodChanged',
 }
