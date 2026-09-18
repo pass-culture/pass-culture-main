@@ -22,7 +22,6 @@ class GetSettlementsTest:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check if user_offerer exists
     num_queries += 1  # get settlements
-    num_queries += 1  # selectinload invoices
 
     def test_get_settlements(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -90,7 +89,12 @@ class GetSettlementsTest:
 
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id
-        with testing.assert_num_queries(self.num_queries):
+
+        num_queries = self.num_queries
+        num_queries += 1  # selectinload invoices
+        num_queries += 1  # selectinload invoices -> settlements
+        num_queries += 1  # selectinload venue bank account links
+        with testing.assert_num_queries(num_queries):
             response = client.get(URL, params={"offererId": offerer_id})
 
         assert response.status_code == 200
@@ -102,7 +106,7 @@ class GetSettlementsTest:
                 "date": batch_1.dateValidated.date().isoformat(),
                 "amount": 200,
                 "bankAccount": "account 2",
-                "status": "executed",
+                "status": "EXECUTED",
                 "invoices": [
                     {
                         "reference": "F301234568",
@@ -119,6 +123,7 @@ class GetSettlementsTest:
                         "status": "paid",
                     },
                 ],
+                "resolvedBy": [],
             },
             {
                 "id": executed_settlement_1.id,
@@ -126,8 +131,9 @@ class GetSettlementsTest:
                 "date": batch_2.dateValidated.date().isoformat(),
                 "amount": 100,
                 "bankAccount": "account 1",
-                "status": "executed",
+                "status": "EXECUTED",
                 "invoices": [],
+                "resolvedBy": [],
             },
             {
                 "id": rejected_settlement.id,
@@ -135,8 +141,227 @@ class GetSettlementsTest:
                 "date": batch_3.dateValidated.date().isoformat(),
                 "amount": 300,
                 "bankAccount": "account 1",
-                "status": "rejected",
+                "status": "REJECTED_SOLVED",
                 "invoices": [],
+                "resolvedBy": [],
+            },
+        ]
+
+    def test_get_settlements_rejected(self, client: TestClient):
+        now = get_naive_utc_now()
+
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
+
+        # bank account is refused, venue was detached 5 days ago
+        bank_account = factories.BankAccountFactory(
+            offerer=user_offerer.offerer, status=models.BankAccountApplicationStatus.REFUSED
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue,
+            bankAccount=bank_account,
+            timespan=[now - datetime.timedelta(days=365), now - datetime.timedelta(days=5)],
+        )
+
+        # the batch occurred 5 days ago and the settlement is rejected, in sync with the bank account status
+        batch = factories.SettlementBatchFactory(name="VIR1", dateValidated=now - datetime.timedelta(days=5))
+        invoice = factories.InvoiceFactory(amount=-10000, bankAccount=bank_account, date=batch.dateValidated)
+        settlement = factories.SettlementFactory(
+            status=models.SettlementStatus.REJECTED,
+            amount=10000,
+            bankAccount=bank_account,
+            batch=batch,
+            invoices=[invoice],
+        )
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+
+        num_queries = self.num_queries
+        num_queries += 1  # selectinload venue bank account links
+        num_queries += 1  # selectinload invoices
+        num_queries += 1  # selectinload venue bank account links -> venue -> links
+        num_queries += 1  # selectinload invoices -> settlements
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params={"offererId": offerer_id})
+
+        assert response.status_code == 200
+        # the settlement is "rejected" as the venue is not linked to a bank account
+        assert response.json == [
+            {
+                "id": settlement.id,
+                "label": "VIR1",
+                "date": batch.dateValidated.date().isoformat(),
+                "amount": 100,
+                "bankAccount": bank_account.label,
+                "status": "REJECTED",
+                "invoices": [
+                    {
+                        "reference": invoice.reference,
+                        "date": invoice.date.date().isoformat(),
+                        "amount": 100,
+                        "url": invoice.url,
+                        "status": "paid",
+                    },
+                ],
+                "resolvedBy": [],
+            },
+        ]
+
+    def test_get_settlements_rejected_processed_solved(self, client: TestClient):
+        now = get_naive_utc_now()
+
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
+
+        # bank account is refused, venue was detached 5 days ago
+        bank_account = factories.BankAccountFactory(
+            offerer=user_offerer.offerer, status=models.BankAccountApplicationStatus.REFUSED
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue,
+            bankAccount=bank_account,
+            timespan=[now - datetime.timedelta(days=365), now - datetime.timedelta(days=5)],
+        )
+
+        # the batch occurred 5 days ago with 2 rejected settlements, in sync with the bank account status
+        batch = factories.SettlementBatchFactory(name="VIR1", dateValidated=now - datetime.timedelta(days=5))
+        invoice_1 = factories.InvoiceFactory(amount=-5000, bankAccount=bank_account, date=batch.dateValidated)
+        invoice_2 = factories.InvoiceFactory(amount=-5000, bankAccount=bank_account, date=batch.dateValidated)
+        settlement_1 = factories.SettlementFactory(
+            status=models.SettlementStatus.REJECTED,
+            amount=10000,
+            bankAccount=bank_account,
+            batch=batch,
+            invoices=[invoice_1, invoice_2],
+        )
+        invoice_3 = factories.InvoiceFactory(amount=-2000, bankAccount=bank_account, date=batch.dateValidated)
+        settlement_2 = factories.SettlementFactory(
+            status=models.SettlementStatus.REJECTED,
+            amount=2000,
+            bankAccount=bank_account,
+            batch=batch,
+            invoices=[invoice_3],
+        )
+
+        # another valid bank account is now linked to the venue
+        new_bank_account = factories.BankAccountFactory(offerer=user_offerer.offerer)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue, bankAccount=new_bank_account, timespan=[now - datetime.timedelta(days=4), None]
+        )
+
+        # two new settlements are executed on the new bank account, linked to the first rejected settlement invoices
+        new_batch_1 = factories.SettlementBatchFactory(name="VIR2", dateValidated=now - datetime.timedelta(days=3))
+        new_batch_2 = factories.SettlementBatchFactory(name="VIR3", dateValidated=now - datetime.timedelta(days=3))
+        settlement_3 = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            amount=5000,
+            bankAccount=new_bank_account,
+            batch=new_batch_1,
+            invoices=[invoice_1],
+        )
+        settlement_4 = factories.SettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            amount=5000,
+            bankAccount=new_bank_account,
+            batch=new_batch_2,
+            invoices=[invoice_2],
+        )
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+
+        num_queries = self.num_queries
+        num_queries += 1  # selectinload venue bank account links
+        num_queries += 1  # selectinload invoices
+        num_queries += 1  # selectinload venue bank account links -> venue -> links
+        num_queries += 1  # selectinload invoices -> settlements
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params={"offererId": offerer_id})
+
+        assert response.status_code == 200
+        result = sorted(response.json, key=lambda s: s["id"])
+        assert result == [
+            # the first settlement is "solved" by the two new settlements
+            {
+                "id": settlement_1.id,
+                "label": "VIR1",
+                "date": batch.dateValidated.date().isoformat(),
+                "amount": 100,
+                "bankAccount": bank_account.label,
+                "status": "REJECTED_SOLVED",
+                "invoices": [
+                    {
+                        "reference": invoice_1.reference,
+                        "date": invoice_1.date.date().isoformat(),
+                        "amount": 50,
+                        "url": invoice_1.url,
+                        "status": "paid",
+                    },
+                    {
+                        "reference": invoice_2.reference,
+                        "date": invoice_2.date.date().isoformat(),
+                        "amount": 50,
+                        "url": invoice_2.url,
+                        "status": "paid",
+                    },
+                ],
+                "resolvedBy": ["VIR2", "VIR3"],
+            },
+            # the second settlement is "processed" as the venue is linked to a new bank account
+            {
+                "id": settlement_2.id,
+                "label": "VIR1",
+                "date": batch.dateValidated.date().isoformat(),
+                "amount": 20,
+                "bankAccount": bank_account.label,
+                "status": "REJECTED_PROCESSED",
+                "invoices": [
+                    {
+                        "reference": invoice_3.reference,
+                        "date": invoice_3.date.date().isoformat(),
+                        "amount": 20,
+                        "url": invoice_3.url,
+                        "status": "paid",
+                    },
+                ],
+                "resolvedBy": [],
+            },
+            {
+                "id": settlement_3.id,
+                "label": "VIR2",
+                "date": new_batch_1.dateValidated.date().isoformat(),
+                "amount": 50,
+                "bankAccount": new_bank_account.label,
+                "status": "EXECUTED",
+                "invoices": [
+                    {
+                        "reference": invoice_1.reference,
+                        "date": invoice_1.date.date().isoformat(),
+                        "amount": 50,
+                        "url": invoice_1.url,
+                        "status": "paid",
+                    },
+                ],
+                "resolvedBy": [],
+            },
+            {
+                "id": settlement_4.id,
+                "label": "VIR3",
+                "date": new_batch_2.dateValidated.date().isoformat(),
+                "amount": 50,
+                "bankAccount": new_bank_account.label,
+                "status": "EXECUTED",
+                "invoices": [
+                    {
+                        "reference": invoice_2.reference,
+                        "date": invoice_2.date.date().isoformat(),
+                        "amount": 50,
+                        "url": invoice_2.url,
+                        "status": "paid",
+                    },
+                ],
+                "resolvedBy": [],
             },
         ]
 
@@ -152,7 +377,11 @@ class GetSettlementsTest:
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id
         bank_account_id = bank_account_1.id
-        with testing.assert_num_queries(self.num_queries):
+
+        num_queries = self.num_queries
+        num_queries += 1  # selectinload venue bank account links
+        num_queries += 1  # selectinload invoices -> settlements
+        with testing.assert_num_queries(num_queries):
             response = client.get(URL, params={"offererId": offerer_id, "bankAccountId": bank_account_id})
 
         assert response.status_code == 200
@@ -169,9 +398,7 @@ class GetSettlementsTest:
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id
         bank_account_id = bank_account.id
-        num_queries = self.num_queries
-        num_queries -= 1  # no selectinload
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(URL, params={"offererId": offerer_id, "bankAccountId": bank_account_id})
 
         assert response.status_code == 200
@@ -209,7 +436,11 @@ class GetSettlementsTest:
 
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id
-        with testing.assert_num_queries(self.num_queries):
+
+        num_queries = self.num_queries
+        num_queries += 1  # selectinload venue bank account links
+        num_queries += 1  # selectinload invoices -> settlements
+        with testing.assert_num_queries(num_queries):
             response = client.get(
                 URL,
                 params={"offererId": offerer_id, "periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"},
@@ -250,7 +481,11 @@ class GetSettlementsTest:
 
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id
-        with testing.assert_num_queries(self.num_queries):
+
+        num_queries = self.num_queries
+        num_queries += 1  # selectinload venue bank account links
+        num_queries += 1  # selectinload invoices -> settlements
+        with testing.assert_num_queries(num_queries):
             response = client.get(
                 URL,
                 params={"offererId": offerer_id, "nameSearch": "VIR12"},

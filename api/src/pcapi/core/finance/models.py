@@ -326,7 +326,7 @@ class BankAccount(PcObject, Model, DeactivableMixin):
         linked_venues = []
 
         for link in self.venueLinks:
-            is_active_link = link.timespan.lower <= now and (not link.timespan.upper or now <= link.timespan.upper)
+            is_active_link = link.is_active_at(now)
             if is_active_link and link.venue is not None:  # ignore soft-deleted venues when the link is still active
                 linked_venues.append(link.venue)
 
