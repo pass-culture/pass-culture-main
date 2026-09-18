@@ -1,6 +1,26 @@
+"""
+EXPERIMENTAL: If using gevent worker we must patch the standard library that may do blocking calls
+before it is loaded to play nice with greenlets https://www.gevent.org/intro.html#monkey-patching
+"""
+
+import os
+
+
+# 1. Read a single source of truth from the environment
+worker_class = os.environ.get("GUNICORN_WORKER_TYPE", "gthread")
+
+# 2. Conditionally patch immediately at line 6
+if worker_class == "gevent":
+    import gevent.monkey
+
+    gevent.monkey.patch_all()
+    print("Detected gevent worker class: Monkey patch applied.")
+else:
+    print(f"Using {worker_class} worker class: Skipping gevent patch.")
+
+
 # mypy: disable-error-code="no-untyped-def"
 import logging
-import os
 import pathlib
 
 import gunicorn.config
