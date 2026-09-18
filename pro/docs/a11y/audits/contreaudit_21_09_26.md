@@ -308,12 +308,44 @@ TBD
 <summary> ⏳ Critère 8.9 - Dans chaque page web, les balises ne doivent pas être utilisées uniquement à des fins de présentation ?</summary>
 
 **RAWeb/RGAA** : [Critère 8.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-8-9)
-**Tickets** : [PC-42990](https://passculture.atlassian.net/browse/PC-42990) & [PC-42989](https://passculture.atlassian.net/browse/PC-42989)  
-**PRs** : [#23997](https://github.com/pass-culture/pass-culture-main/pull/23997) & [#23954](https://github.com/pass-culture/pass-culture-main/pull/23954)
+**Tickets** : [PC-42990](https://passculture.atlassian.net/browse/PC-42990) & [PC-42989](https://passculture.atlassian.net/browse/PC-42989) & [PC-42854](https://passculture.atlassian.net/browse/PC-42854)  
+**PRs** : [#23997](https://github.com/pass-culture/pass-culture-main/pull/23997) & [#23954](https://github.com/pass-culture/pass-culture-main/pull/23954) & [#24310](https://github.com/pass-culture/pass-culture-main/pull/24310)
 
 **Problème** 😱  
 
 Au moins une balise est utilisée uniquement pour créer des effets de présentation.
+
+_P01 → Tuto de bienvenue (6 étapes)_
+
+Au moins une balise est utilisée uniquement pour créer des effets de présentation.
+
+Par exemple :
+
+- Le texte « Vous pourrez cumuler les deux types d’offres avec un seul compte pass Culture Pro. » est uniquement structuré avec des éléments <div> et <span> (étape 1).
+- Le texte « Les jeunes de 15 à 21 ans réservent directement via l'application pass Culture. » est uniquement structuré avec des éléments <div> et <span> (étape 2).
+- Le texte « Les jeunes paient avec leur crédit personnel (50€ à 200€). Vous recevez le paiement sous 2 à 3 semaines. » est uniquement structuré avec des éléments <div> et <span> (étape 2).
+- Les mêmes constats s’appliquent à l’étape 3 (l’étape 4 étant correctement structurée avec des balises <p>).
+- Les éléments du bloc « 3 étapes simples avant d’être visible sur le pass Culture » (page « Comment fonctionne l’inscription ? ») sont implémentés à l’aide de simples éléments <div> sans structure de liste sémantique.
+
+_P02 → Inscription et validation_
+
+Au moins une balise est utilisée uniquement pour créer des effets de présentation.
+
+Par exemple :
+
+- Les textes "Prenez connaissance des modalités" et "Acceptation des conditions et protection des données" sont uniquement structurés avec des <div>. Même chose pour le texte "Email non reçu ?" (étape de confirmation)
+
+_P04 → Inscription structure (3 étapes et validation)_
+
+Au moins une balise est utilisée uniquement pour créer des effets de présentation.
+
+Par exemple :
+
+- Le texte "Vous êtes un équipement d’une collectivité ou d’un établissement public ?" est uniquement structuré avec des <div>.
+- Les textes de la fenêtre "Profil"
+- Le texte "Coordonnées GPS importantes Les coordonnées GPS permettent aux jeunes de géolocaliser votre offre dans l'application."
+- Le texte "Vous pourrez cumuler les deux types d'offres avec un seul compte pass Culture Pro."
+- Le texte "Vous pourrez modifier ces informations à tout moment depuis votre espace partenaire."
 
 P05 → Création offre réservable (5 étapes et confirmation)
 
