@@ -4,7 +4,7 @@ Job console documentation here: https://www.notion.so/passcultureapp/Documentati
 You can start the job from the infra repository with github cli :
 
 gh workflow run on_dispatch_pcapi_console_job.yaml \
-  -f ENVIRONMENT_SHORT_NAME=tst \
+  -f ENVIRONMENT_SHORT_NAME=stg \
   -f RESOURCES="512Mi/.5" \
   -f BRANCH_NAME=ogeber/pc-43610-acceslibre-synch-script \
   -f NAMESPACE=acceslibre_sync \
@@ -16,20 +16,20 @@ import argparse
 import logging
 import time
 from datetime import datetime
+from functools import partial
 from math import ceil
 
 import pytz
-import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from dateutil import parser as dateutil_parser
 
 from pcapi import settings
 from pcapi.connectors import acceslibre as acceslibre_connector
-from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils import requests
+from pcapi.utils.transaction_manager import on_commit
 
 
 REQUEST_PAGE_SIZE = 50
@@ -98,7 +98,7 @@ class AcceslibreBackend(BaseBackend):
         url: str, headers: dict | None = None, params: dict[str, str | int] | None = None
     ) -> requests.Response:
         return requests.get(
-            url, headers=headers, params=params, timeout=settings.ACCESLIBRE_REQUEST_TIMEOUT, log_info=False
+            url, headers=headers, params=params, timeout=settings.ACCESLIBRE_REQUEST_TIMEOUT, log_info=LOG_INFO
         )
 
     def _send_request(
@@ -117,13 +117,28 @@ class AcceslibreBackend(BaseBackend):
         headers = {"Authorization": f"Api-Key {api_key}"}
         try:
             response = self._fetch_request(url, headers, query_params)
+
         except requests.exceptions.RequestException:
             raise acceslibre_connector.AccesLibreApiException(
                 f"Error connecting AccesLibre API for {url} and query parameters: {query_params}"
             )
         if settings.ACCESLIBRE_SHOULD_AVOID_TOO_MANY_REQUESTS:
-            time.sleep(0.3)  # request limit on acceslibre side is 3 per seconds
-        if response.status_code == 200:
+            time.sleep(RETRY_SECONDS)
+        if response.status_code == 429:  # handle too many requests
+            raw_retry_after = response.headers.get("Retry-After")
+            retry_after = int(raw_retry_after) if raw_retry_after and raw_retry_after.isdigit() else None
+
+            # If we catch a retry after and it is close to 1 hour
+            if retry_after and retry_after > 3000:
+                logger.error(
+                    "Acceslibre API Key might be invalid or expired: fallbacked to anonymous quota (20 req/h).",
+                    extra={
+                        "url": url,
+                        "retry_after": retry_after,
+                        "response_body": response.text,
+                    },
+                )
+        elif response.status_code == 200:
             try:
                 return response.json()
             except requests.exceptions.JSONDecodeError:
@@ -290,53 +305,39 @@ class AcceslibreBackend(BaseBackend):
         return bool(response and response.get("slug"))
 
 
+# --- repository ---
 def count_open_to_public_venues_with_accessibility_provider() -> int:
     return (
         db.session.query(offerers_models.Venue)
         .join(offerers_models.AccessibilityProvider)
+        .filter(offerers_models.Venue.isOpenToPublic.is_(True))
+        .count()
+    )
+
+
+def count_open_to_public_venues_without_accessibility_provider() -> int:
+    return (
+        db.session.query(offerers_models.Venue)
+        .outerjoin(offerers_models.Venue.accessibilityProvider)
         .filter(
-            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
+            offerers_models.Venue.isOpenToPublic.is_(True),
+            offerers_models.AccessibilityProvider.id.is_(None),
         )
         .count()
     )
 
 
-def get_open_to_public_venues_without_accessibility_provider() -> list[offerers_models.Venue]:
-    return (
-        db.session.query(offerers_models.Venue)
-        .outerjoin(offerers_models.Venue.accessibilityProvider)
-        .filter(
-            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
-            offerers_models.AccessibilityProvider.id.is_(None),
-        )
-        .options(
-            sa_orm.load_only(
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.siret,
-            ),
-            sa_orm.joinedload(offerers_models.Venue.offererAddress)
-            .joinedload(offerers_models.OffererAddress.address)
-            .load_only(
-                geography_models.Address.street,
-                geography_models.Address.banId,
-            ),
-        )
-        .order_by(offerers_models.Venue.id.asc())
-        .all()
-    )
-
-
 def get_open_to_public_venues_with_accessibility_provider(
-    batch_size: int, batch_num: int
+    batch_size: int = 1000, batch_num: int = 0
 ) -> list[offerers_models.Venue]:
     return (
         db.session.query(offerers_models.Venue)
         .join(offerers_models.Venue.accessibilityProvider)
-        .filter(
-            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
+        .filter(offerers_models.Venue.isOpenToPublic.is_(True))
+        .options(
+            sa_orm.contains_eager(offerers_models.Venue.accessibilityProvider),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
         )
-        .options(sa_orm.contains_eager(offerers_models.Venue.accessibilityProvider))
         .order_by(offerers_models.Venue.id.asc())
         .limit(batch_size)
         .offset(batch_num * batch_size)
@@ -344,8 +345,37 @@ def get_open_to_public_venues_with_accessibility_provider(
     )
 
 
+def get_open_to_public_venues_without_accessibility_provider(
+    batch_size: int = 1000, batch_num: int = 0
+) -> list[offerers_models.Venue]:
+    return (
+        db.session.query(offerers_models.Venue)
+        .outerjoin(offerers_models.Venue.accessibilityProvider)
+        .filter(
+            offerers_models.Venue.isOpenToPublic.is_(True),
+            offerers_models.AccessibilityProvider.id.is_(None),
+        )
+        .options(
+            sa_orm.load_only(
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+                offerers_models.Venue.isOpenToPublic,
+            ),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+        )
+        .order_by(offerers_models.Venue.id.asc())
+        .limit(batch_size)
+        .offset(batch_num * batch_size)
+        .all()
+    )
+
+
+# --- offerers api ---
+
+
 def synchronize_accessibility_with_acceslibre(
-    apply: bool, force_sync: bool, batch_size: int, start_from_batch: int = 1
+    apply: bool = False, force_sync: bool = False, batch_size: int = 1000, start_from_batch: int = 1
 ) -> None:
     """
     For all venues synchronized with acceslibre, we fetch on a weekly basis the
@@ -356,29 +386,36 @@ def synchronize_accessibility_with_acceslibre(
     If we use the --start-from-batch option, it will start synchronization from the given batch number
     Use case: synchronization has failed with message "Could not update batch <n>"
 
-    If externalAccessibilityId can't be found at acceslibre, we try to find a new match, cf. synchronize_accessibility_provider()
+    If externalAccessibilityId can't be found at acceslibre, we try to find a new match
     """
+    logger.info("Starting acceslibre synchronisation")
+
     venues_count = count_open_to_public_venues_with_accessibility_provider()
     num_batches = ceil(venues_count / batch_size)
+
     if start_from_batch > num_batches:
         logger.error("Start from batch must be less than %d", num_batches)
         return
-
+    accessibility_provider = AcceslibreBackend()
     start_batch_index = start_from_batch - 1
     for i in range(start_batch_index, num_batches):
         venues_list = get_open_to_public_venues_with_accessibility_provider(batch_size=batch_size, batch_num=i)
+
+        updates_to_apply = []  # (venue, last_update, accessibility_data)
+        providers_to_delete = []  # liste les providers si slug perdu
+
         for venue in venues_list:
-            assert venue.accessibilityProvider  # helps mypy, ensured by caller
-            assert venue.offererAddress and venue.offererAddress.address  # helps mypy, shouldn't happen
+            assert venue.accessibilityProvider
+            logger.info("Starting synchronisation for venue %d", venue.id)
             slug = venue.accessibilityProvider.externalAccessibilityId
-            accessibility_provider = AcceslibreBackend()
+            url = venue.accessibilityProvider.externalAccessibilityUrl
             try:
                 last_update, accessibility_data = accessibility_provider.get_accessibility_infos(slug=slug)
             except acceslibre_connector.AccesLibreApiException as e:
                 logger.exception(
                     "An error occurred while requesting Acceslibre widget for venue: %s, Error: %s", venue, e
                 )
-                return
+                continue
 
             # If last_update is not None: match still exist
             # Then we update accessibility data if :
@@ -391,15 +428,13 @@ def synchronize_accessibility_with_acceslibre(
                 or venue.accessibilityProvider.lastUpdateAtProvider.astimezone(pytz.utc)
                 < last_update.astimezone(pytz.utc)
             ):
-                venue.accessibilityProvider.lastUpdateAtProvider = last_update
-                venue.accessibilityProvider.externalAccessibilityData = (
-                    accessibility_data.dict() if accessibility_data else None
-                )
-                db.session.add(venue.accessibilityProvider)
+                logger.info("New data at acceslibre on %s", last_update)
+                updates_to_apply.append((venue, last_update, accessibility_data, slug, url))
 
             # if last_update is None, the slug has been removed from acceslibre, we try a new match
             # and save accessibility data to DB
             elif not last_update:
+                logger.info("Slug not found at acceslibre, trying to find a new match")
                 try:
                     id_and_url_at_provider = accessibility_provider.get_id_at_accessibility_provider(
                         name=venue.name,
@@ -412,47 +447,56 @@ def synchronize_accessibility_with_acceslibre(
                     )
                 except acceslibre_connector.AccesLibreApiException as e:
                     logger.exception("An error occurred while requesting Acceslibre for venue: %s, Error: %s", venue, e)
-                    return
+                    continue
+
                 if id_and_url_at_provider:
+                    logger.info("New match found with slug %s", slug)
                     new_slug = id_and_url_at_provider["slug"]
                     new_url = id_and_url_at_provider["url"]
                     try:
                         last_update, accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
                     except acceslibre_connector.AccesLibreApiException as e:
-                        logger.exception(
-                            "An error occurred while requesting Acceslibre widget for venue: %s, Error: %s", venue, e
-                        )
-                        return
+                        logger.exception("Error requesting Acceslibre widget for venue: %s, Error: %s", venue, e)
+                        continue
+
                     if last_update and accessibility_data:
-                        venue.accessibilityProvider.externalAccessibilityId = new_slug
-                        venue.accessibilityProvider.externalAccessibilityUrl = new_url
-                        venue.accessibilityProvider.lastUpdateAtProvider = last_update
-                        venue.accessibilityProvider.externalAccessibilityData = (
-                            accessibility_data.dict() if accessibility_data else None
+                        logger.info("Updating accessibility data")
+                        #  updating with new slug
+                        updates_to_apply.append((venue, last_update, accessibility_data, new_slug, new_url))
+                        on_commit(
+                            partial(
+                                logger.info,
+                                "Acceslibre update synchronisation",
+                                extra={
+                                    "analyticsSource": "app-pro",
+                                    "venue_id": venue.id,
+                                    "acceslibre_slug": new_slug,
+                                    "update_message": "New slug found at acceslibre for already synchronized venue",
+                                    "feature": "acceslibre",
+                                    "action": "synchronisation.update",
+                                },
+                                technical_message_id="acceslibre.synchronisation.update",
+                            )
                         )
-                        db.session.add(venue.accessibilityProvider)
-                        logger.info(
-                            "Acceslibre update synchronisation",
+
+                else:
+                    logger.info("No match found, deleting link with acceslibre")
+                    providers_to_delete.append(venue.accessibilityProvider)
+                    on_commit(
+                        partial(
+                            logger.info,
+                            "Acceslibre synchronisation loss",
                             extra={
                                 "analyticsSource": "app-pro",
                                 "venue_id": venue.id,
                                 "acceslibre_slug": slug,
-                                "update_message": "New slug found at acceslibre for already synchronized venue",
+                                "update_message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
+                                "feature": "acceslibre",
+                                "action": "synchronisation.lost",
                             },
-                            technical_message_id="acceslibre.synchronisation.update",
+                            technical_message_id="acceslibre.synchronisation.lost",
                         )
-                else:
-                    logger.info(
-                        "Acceslibre synchronisation loss",
-                        extra={
-                            "analyticsSource": "app-pro",
-                            "venue_id": venue.id,
-                            "acceslibre_slug": slug,
-                            "update_message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
-                        },
-                        technical_message_id="acceslibre.synchronisation.lost",
                     )
-                    db.session.delete(venue.accessibilityProvider)
 
             # In case a venue is synchronized but has no data, we want to be informed
             if venue.accessibilityProvider and not venue.accessibilityProvider.externalAccessibilityData:
@@ -464,12 +508,37 @@ def synchronize_accessibility_with_acceslibre(
 
         if apply:
             try:
+                logger.info("Batch update AccessibilityProvider")
+                for venue, last_update, accessibility_data, slug, url in updates_to_apply:
+                    assert venue.accessibilityProvider  # helps mypy
+
+                    # only update new slug and url
+                    if venue.accessibilityProvider.externalAccessibilityId != slug:
+                        venue.accessibilityProvider.externalAccessibilityId = slug
+                        venue.accessibilityProvider.externalAccessibilityUrl = url
+                    venue.accessibilityProvider.lastUpdateAtProvider = last_update
+                    venue.accessibilityProvider.externalAccessibilityData = (
+                        accessibility_data.dict() if accessibility_data else None
+                    )
+                logger.info("Batch delete stale AccessibilityProvider")
+                for provider in providers_to_delete:
+                    db.session.delete(provider)
+
                 db.session.commit()
-            except sa.exc.SQLAlchemyError:
+            except sa_exc.SQLAlchemyError:
                 logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
         else:
+            logger.info(
+                "Dry-run batch %d complete (%d updates, %d deletions)",
+                i + 1,
+                len(updates_to_apply),
+                len(providers_to_delete),
+            )
             db.session.rollback()
+
+        db.session.expunge_all()
+
     logger.info("Accessibility data synchronization with acceslibre complete successfully")
 
 
@@ -495,31 +564,40 @@ def match_venue_with_new_entries(
             db.session.add(venue.accessibilityProvider)
 
 
-def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_days_to_fetch: int = 7) -> None:
+def acceslibre_matching(
+    batch_size: int = 1000, apply: bool = False, start_from_batch: int = 0, n_days_to_fetch: int = 7
+) -> None:
     """
     For all venues opened to public, we are looking for a match at acceslibre
 
     If we use the --start-from-batch option, it will start synchronization from the given batch number
     Use case: synchronization has failed with message "Could not update batch <n>"
     """
-    synchronized_venues_count_before_matching = count_open_to_public_venues_with_accessibility_provider()
-    venues_list = get_open_to_public_venues_without_accessibility_provider()
-    num_batches = ceil(len(venues_list) / batch_size)
-    if start_from_batch > num_batches:
-        logger.info("Start from batch must be less than %d", num_batches)
-        return
-
+    logger.info("Starting acceslibre matching to find new venue synchronization")
     results_list = []
     accessibility_provider = AcceslibreBackend()
+
+    # first http calls
     for activity in acceslibre_connector.AcceslibreActivity:
         if results_by_activity := accessibility_provider.find_new_entries_by_activity(activity, n_days_to_fetch):
             results_list.extend(results_by_activity)
 
+    # then db updates
+    synchronized_venues_count_before_matching = count_open_to_public_venues_with_accessibility_provider()
+
+    # check batch size
+    total_venues_without_provider = count_open_to_public_venues_without_accessibility_provider()
+    num_batches = ceil(total_venues_without_provider / batch_size)
+    if start_from_batch > num_batches:
+        logger.info("Start from batch must be less than %d", num_batches)
+        return
+
     start_batch_index = start_from_batch - 1
+
     for i in range(start_batch_index, num_batches):
-        batch_start = i * batch_size
-        batch_end = (i + 1) * batch_size
-        match_venue_with_new_entries(venues_list[batch_start:batch_end], results_list)
+        venues_batch = get_open_to_public_venues_without_accessibility_provider(batch_size=batch_size, batch_num=i)
+
+        match_venue_with_new_entries(venues_batch, results_list)
 
         if apply:
             try:
@@ -527,6 +605,9 @@ def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_d
             except sa_exc.SQLAlchemyError:
                 logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
+        else:
+            db.session.rollback()
+
     new_match_found = (
         count_open_to_public_venues_with_accessibility_provider() - synchronized_venues_count_before_matching
     )
@@ -538,7 +619,7 @@ def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_d
         db.session.rollback()
 
 
-def main(apply: bool, force_sync: bool, batch_size: int, start_from_batch: int) -> None:
+def main(apply: bool, force_sync: bool, batch_size: int, start_from_batch: int, n_days_to_fetch: int) -> None:
     logger.info("starting synchronization")
 
     synchronize_accessibility_with_acceslibre(
@@ -555,7 +636,7 @@ def main(apply: bool, force_sync: bool, batch_size: int, start_from_batch: int) 
         batch_size=batch_size,
         apply=apply,
         start_from_batch=start_from_batch,
-        n_days_to_fetch=7,
+        n_days_to_fetch=n_days_to_fetch,
     )
     logger.info("finding new match successfully finished")
 
@@ -571,6 +652,7 @@ if __name__ == "__main__":
     parser.add_argument("--force-sync", action="store_true")
     parser.add_argument("--batch-size", type=int, default=1000)
     parser.add_argument("--start-from-batch", type=int, default=1)
+    parser.add_argument("--n-days-to-fetch", type=int, default=7)
 
     args = parser.parse_args()
 
@@ -579,6 +661,7 @@ if __name__ == "__main__":
         force_sync=args.force_sync,
         batch_size=args.batch_size,
         start_from_batch=args.start_from_batch,
+        n_days_to_fetch=args.n_days_to_fetch,
     )
 
     if args.apply:
