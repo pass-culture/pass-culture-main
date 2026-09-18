@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -27,7 +27,7 @@ export const DeleteVenueProviderButton = ({
   const [isLoading, setIsLoading] = useState(false)
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
-  const isClosed = isSelectedPartnerOrOffererClosed(venue)
+  const isClosed = withVenueHelpers(venue).isClosedOrClosing
 
   const tryToDeleteVenueProvider = async () => {
     setIsLoading(true)

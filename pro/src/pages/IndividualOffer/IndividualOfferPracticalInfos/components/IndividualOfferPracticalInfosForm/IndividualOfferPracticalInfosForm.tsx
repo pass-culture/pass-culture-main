@@ -18,7 +18,7 @@ import {
   ensureCurrentUser,
   ensureSelectedPartnerVenue,
 } from '@/commons/store/user/selectors'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -44,7 +44,7 @@ export function IndividualOfferPracticalInfosForm({
   stocks,
 }: Readonly<IndividualOfferPracticalInfosFormProps>) {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
 
   const form = useFormContext<IndividualOfferPracticalInfosFormValues>()
 

@@ -40,8 +40,8 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
 import {
   createPatchOfferPayload,
@@ -82,7 +82,7 @@ export const OfferEducational = ({
 
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const { mutate } = useSWRConfig()
 
   const { requete: requestId } = queryParamsFromOfferer(location)

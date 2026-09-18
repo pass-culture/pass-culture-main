@@ -13,7 +13,7 @@ import {
   isCollectiveOfferDetailsEditable,
   isCollectiveStockEditable,
 } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
@@ -151,7 +151,7 @@ export const CollectiveOfferSummary = ({
 }: CollectiveOfferSummaryProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const canEditDetails = isCollectiveOfferDetailsEditable(offer) && !isClosed
   const canEditDatesAndPrice = isCollectiveStockEditable(offer) && !isClosed
   const canEditInstitution = isCollectiveInstitutionEditable(offer) && !isClosed

@@ -6,7 +6,7 @@ import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeadin
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
-import { isSelectedPartnerOrOffererClosed } from '@/commons/utils/isSelectedPartnerOrOffererClosed'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { CollectiveDmsTimelineVariant } from '@/components/CollectiveDmsTimeline/types'
 import { OnboardingOffersChoice } from '@/components/OnboardingOffersChoice/OnboardingOffersChoice'
@@ -39,8 +39,7 @@ import styles from './Homepage.module.scss'
 
 export const Homepage = (): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = isSelectedPartnerOrOffererClosed(selectedPartnerVenue)
-  const isOffererClosed = selectedPartnerVenue.managingOfferer.isClosed
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const collectiveDmsApplication =
     selectedPartnerVenue.lastCollectiveDmsApplication
 
@@ -60,19 +59,21 @@ export const Homepage = (): JSX.Element => {
         <h2 className={styles['onboarding-title']}>
           Diffusez votre première offre et pilotez ici votre activité !
         </h2>
-        {selectedPartnerVenue.state === VenueState.CLOSED && (
+        {(selectedPartnerVenue.managingOfferer.isClosed ||
+          selectedPartnerVenue.state === VenueState.CLOSED) && (
           <div className={styles['venue-banner']}>
             <Banner variant={BannerVariants.ERROR} title="Structure fermée" />
           </div>
         )}
-        {selectedPartnerVenue.state === VenueState.CLOSING && (
-          <div className={styles['venue-banner']}>
-            <Banner
-              variant={BannerVariants.WARNING}
-              title="Demande de fermeture de structure en cours"
-            />
-          </div>
-        )}
+        {selectedPartnerVenue.state === VenueState.CLOSING &&
+          !selectedPartnerVenue.managingOfferer.isClosed && (
+            <div className={styles['venue-banner']}>
+              <Banner
+                variant={BannerVariants.WARNING}
+                title="Demande de fermeture de structure en cours"
+              />
+            </div>
+          )}
         <OnboardingOffersChoice hideSkipOnboardingLink />
       </div>
     )
@@ -124,26 +125,16 @@ export const Homepage = (): JSX.Element => {
       <MainHeading
         mainHeading={`Votre espace ${selectedPartnerVenue.publicName}`}
       />
-      {!isOffererClosed && selectedPartnerVenue.state === VenueState.CLOSED && (
+      {selectedPartnerVenue.state === VenueState.CLOSED && (
         <div className={styles['venue-banner']}>
           <Banner variant={BannerVariants.ERROR} title="Structure fermée" />
         </div>
       )}
-      {!isOffererClosed &&
-        selectedPartnerVenue.state === VenueState.CLOSING && (
-          <div className={styles['venue-banner']}>
-            <Banner
-              variant={BannerVariants.WARNING}
-              title="Demande de fermeture de structure en cours"
-            />
-          </div>
-        )}
-
-      {isOffererClosed && (
+      {selectedPartnerVenue.state === VenueState.CLOSING && (
         <div className={styles['venue-banner']}>
           <Banner
-            variant={BannerVariants.ERROR}
-            title="Entité juridique fermée"
+            variant={BannerVariants.WARNING}
+            title="Demande de fermeture de structure en cours"
           />
         </div>
       )}

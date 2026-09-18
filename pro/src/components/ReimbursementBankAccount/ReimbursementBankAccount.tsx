@@ -6,6 +6,7 @@ import {
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -45,7 +46,9 @@ export const ReimbursementBankAccount = ({
   const hasManagedVenues = managedVenues.length > 0
   const hasLinkedVenues = linkedCount > 0
   const showWarningIcon = hasWarning && hasManagedVenues
-
+  const selectedAdminOfferer = useAppSelector(
+    (state) => state.user.selectedAdminOfferer
+  )
   const showNoLinkedMessage = !hasLinkedVenues
   const showPartialWarning = hasLinkedVenues && venuesNotLinkedToBankAccount > 0
 
@@ -164,18 +167,20 @@ export const ReimbursementBankAccount = ({
                         ({ id, commonName, state }) => (
                           <div className={styles['linked-venue']} key={id}>
                             {commonName}
-                            {state === VenueState.CLOSED && (
+                            {(selectedAdminOfferer?.isClosed ||
+                              state === VenueState.CLOSED) && (
                               <Tag
                                 variant={TagVariant.ERROR}
                                 label="Structure fermée"
                               />
                             )}
-                            {state === VenueState.CLOSING && (
-                              <Tag
-                                variant={TagVariant.WARNING}
-                                label="Demande de fermeture de structure en cours"
-                              />
-                            )}
+                            {state === VenueState.CLOSING &&
+                              !selectedAdminOfferer?.isClosed && (
+                                <Tag
+                                  variant={TagVariant.WARNING}
+                                  label="Demande de fermeture de structure en cours"
+                                />
+                              )}
                           </div>
                         )
                       )}
