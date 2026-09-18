@@ -1,8 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .tag {
-  @include fonts.body-accent-xs;
-
   display: inline-flex;
   padding: var(--size-spacing-xxs) var(--size-spacing-xs);
   align-items: center;
@@ -88,4 +86,8 @@
     color: var(--color-text-inverted);
     background-color: var(--color-background-brand-primary);
   }
+}
+
+.label {
+  @include fonts.body-accent-xs;
 }
