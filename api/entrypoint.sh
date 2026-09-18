@@ -4,6 +4,7 @@ export ENABLE_FLASK_PROMETHEUS_EXPORTER="${ENABLE_FLASK_PROMETHEUS_EXPORTER:-1}"
 export FLASK_PROMETHEUS_EXPORTER_PORT="${FLASK_PROMETHEUS_EXPORTER_PORT:-5010}"
 export PROMETHEUS_MULTIPROC_DIR="${PROMETHEUS_MULTIPROC_DIR:-/tmp}"
 export FLASK_ENTRYPOINT="${FLASK_ENTRYPOINT:-src/pcapi/app.py}"
+export GUNICORN_WORKER_TYPE="${GUNICORN_WORKER_TYPE:-gthread}"
 if [ "${FLASK_SERVER:-0}" = "1" ]; then
   until psql "${DATABASE_URL:-postgres}" -c '\q'; do
     echo >&2 -e "\033[0;33mPostgres is unavailable - sleeping"
@@ -26,7 +27,7 @@ else
   exec gunicorn \
       --preload \
       --bind 0.0.0.0:${GUNICORN_PORT:-5000} \
-      --worker-class gthread \
+      --worker-class "${GUNICORN_WORKER_TYPE}" \
       --max-requests ${GUNICORN_MAX_REQUESTS:-0} \
       --max-requests-jitter ${GUNICORN_MAX_REQUESTS_JITTER:-0} \
       --workers ${GUNICORN_WORKERS:-2} \

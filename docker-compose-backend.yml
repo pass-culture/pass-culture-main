@@ -60,7 +60,8 @@ services:
       - env_file
     environment:
       - PYTHONDONTWRITEBYTECODE=1 # prevent .pyc sync loop
-      - FLASK_SERVER=${FLASK_SERVER:-1}
+      - FLASK_SERVER="${FLASK_SERVER:-1}"
+      - GUNICORN_WORKER_TYPE=${GUNICORN_WORKER_TYPE:-gthread}
     networks:
       - db_nw
       - web_nw
