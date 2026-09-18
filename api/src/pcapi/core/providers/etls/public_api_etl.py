@@ -332,6 +332,7 @@ def _create_offer(
             motorDisabilityCompliant=False,
             visualDisabilityCompliant=False,
             isDuo=data["offer_data"].enable_double_bookings,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
         ),
         product=data["product"],
         venue=venue,
