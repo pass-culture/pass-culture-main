@@ -100,6 +100,7 @@ class BatchUpdateCinemaOffersTaskTest:
         assert offer.publicationDatetime.replace(tzinfo=None) == datetime.datetime(2026, 5, 1)
         assert offer.status == offers_models.OfferStatus.ACTIVE
         assert offer.isDuo
+        assert offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
         assert price_category.label == "Tarif pass Culture"
         assert price_category.price == decimal.Decimal("5.00")
