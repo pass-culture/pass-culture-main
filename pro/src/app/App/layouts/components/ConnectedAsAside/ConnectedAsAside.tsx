@@ -11,7 +11,7 @@ interface ConnectedAsAsideProps {
 
 export const ConnectedAsAside = ({ currentUser }: ConnectedAsAsideProps) => {
   return (
-    <aside className={styles['connect-as']}>
+    <aside aria-label="Connect as" className={styles['connect-as']}>
       <SvgIcon
         src={fullInfoIcon}
         alt="Information"

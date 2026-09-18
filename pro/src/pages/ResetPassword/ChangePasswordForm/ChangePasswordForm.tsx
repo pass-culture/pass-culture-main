@@ -55,7 +55,7 @@ export const ChangePasswordForm = ({
             label="Confirmer"
           />
         </div>
-        <aside className={styles['no-account']}>
+        <aside aria-label="Pas de compte" className={styles['no-account']}>
           <p className={styles['no-account-text']}>
             Vous n’êtes pas à l’origine de cette demande ?
           </p>

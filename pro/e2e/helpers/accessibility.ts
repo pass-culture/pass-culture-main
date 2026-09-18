@@ -1,13 +1,22 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, type Page } from '@playwright/test'
 
+function waitTwoAnimationFrames() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  })
+}
+
 async function waitForSnackbarIfPresent(page: Page) {
+  await page.evaluate(waitTwoAnimationFrames)
+
   const snackbar = page.locator('[data-testid^="global-snack-bar-"]')
 
-  // If there is a snackbar, wait for it to be detached
-  if ((await snackbar.count()) > 0) {
-    await snackbar.waitFor({ state: 'detached' })
+  // Loop: closing one snackbar can be immediately followed by another one.
+  while ((await snackbar.count()) > 0) {
+    await snackbar.first().waitFor({ state: 'detached' })
   }
+
   return page.evaluate(() =>
     Promise.allSettled(document.getAnimations().map((a) => a.finished))
   )

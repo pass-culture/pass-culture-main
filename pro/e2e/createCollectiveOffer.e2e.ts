@@ -558,7 +558,13 @@ async function fillInstitution(
   ])
 
   await checkAccessibility()
-  await page.getByText('Enregistrer et continuer').click()
+  // Wait for the save to actually complete (and the resulting success snackbar to have
+  // started mounting) before returning, otherwise the next checkAccessibility() call can
+  // race the snackbar's appearance and axe catches it mid fade-in animation.
+  await Promise.all([
+    page.waitForResponse(isPatchOffersResponse),
+    page.getByText('Enregistrer et continuer').click(),
+  ])
 }
 
 async function searchOffer(
