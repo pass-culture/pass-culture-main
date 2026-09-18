@@ -67,7 +67,7 @@ export const ButtonFilter = ({
       {children}
       <SvgIcon
         src={isOpen ? fullUpIcon : fullDownIcon}
-        alt={'Ouvert/Fermé'}
+        alt=""
         className={styles['button-filter-icon']}
         width="20"
       />

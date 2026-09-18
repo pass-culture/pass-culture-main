@@ -15,6 +15,7 @@ type MultiSelectTriggerProps = {
   disabled?: boolean
   error?: string
   errorId?: string
+  selectedCountDescriptionId: string
 }
 
 export const MultiSelectTrigger = ({
@@ -26,7 +27,15 @@ export const MultiSelectTrigger = ({
   disabled,
   error,
   errorId,
+  selectedCountDescriptionId,
 }: MultiSelectTriggerProps): JSX.Element => {
+  const describedByIds = [
+    selectedCountDescriptionId,
+    error ? errorId : undefined,
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <button
       type="button"
@@ -35,12 +44,13 @@ export const MultiSelectTrigger = ({
         [styles['trigger-error']]: !!error,
       })}
       onClick={toggleDropdown}
-      aria-haspopup="listbox"
+      aria-haspopup="dialog"
       aria-label={buttonLabel}
       aria-controls={id}
+      aria-expanded={isOpen}
       disabled={disabled}
       data-error={!!error}
-      aria-describedby={errorId}
+      aria-describedby={describedByIds}
     >
       <div className={styles['trigger-content']}>
         {selectedCount > 0 && (

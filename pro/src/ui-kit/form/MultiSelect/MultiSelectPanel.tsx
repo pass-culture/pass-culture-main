@@ -8,6 +8,7 @@ import styles from './MultiSelect.module.scss'
 
 type MultiSelectPanelProps = {
   id: string
+  label: string
   options: (Option & { checked: boolean })[]
   hasSelectAllOptions?: boolean
   isAllChecked: boolean
@@ -19,6 +20,7 @@ type MultiSelectPanelProps = {
 
 export const MultiSelectPanel = ({
   id,
+  label,
   options,
   onOptionSelect,
   onSelectAll,
@@ -45,7 +47,7 @@ export const MultiSelectPanel = ({
   }
 
   return (
-    <div id={id} className={styles['panel']}>
+    <dialog id={id} className={styles['panel']} aria-label={label} open>
       {hasSearch && (
         <div className={styles['search-input']}>
           <SearchInput
@@ -62,9 +64,9 @@ export const MultiSelectPanel = ({
         className={styles['panel-scrollable']}
         data-testid="panel-scrollable"
       >
-        <p className={styles['visually-hidden']} role="status">
+        <output className={styles['visually-hidden']}>
           <span>{filteredOptions.length} résultats trouvés</span>
-        </p>
+        </output>
         {filteredOptions.length > 0 ? (
           <ul className={styles['container']}>
             {hasSelectAllOptions && (
@@ -96,6 +98,6 @@ export const MultiSelectPanel = ({
           </div>
         )}
       </div>
-    </div>
+    </dialog>
   )
 }
