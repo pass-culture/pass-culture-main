@@ -15,6 +15,7 @@ import strokeStarIcon from '@/icons/stroke-star.svg'
 import strokeVenueIcon from '@/icons/stroke-venue.svg'
 import { Breadcrumb, type Crumb } from '@/ui-kit/Breadcrumb/Breadcrumb'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { useAdageUser } from '../../hooks/useAdageUser'
 import { AdageOffer } from './AdageOffer/AdageOffer'
@@ -141,9 +142,12 @@ export const OfferInfos = () => {
               <use xlinkHref={`${offerInfosFallback}#path`} />
             </svg>
           </div>
-          <h1 className={styles['offers-info-fallback-title']}>
-            Cette offre est introuvable
-          </h1>
+          <Title
+            level="1"
+            title="Cette offre est introuvable"
+            marginBottom="xxl"
+            marginTop="xl"
+          />
           <Button
             as="router-link"
             to={`/adage-iframe/recherche?token=${adageAuthToken}`}

@@ -1,5 +1,7 @@
 import cn from 'classnames'
 
+import { Title } from '@/ui-kit/Title/Title'
+
 import style from './FormLayout.module.scss'
 
 interface FormLayoutSubSubSectionProps {
@@ -14,7 +16,7 @@ export const SubSubSection = ({
   className,
 }: FormLayoutSubSubSectionProps): JSX.Element => (
   <div className={cn(style['form-layout-sub-sub-section'], className)}>
-    <h4 className={style['form-layout-sub-sub-section-title']}>{title}</h4>
+    <Title level="4" title={title} marginBottom="l" />
     {children}
   </div>
 )

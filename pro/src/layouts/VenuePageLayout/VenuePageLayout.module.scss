@@ -1,8 +1,0 @@
-@use "styles/mixins/_fonts.scss" as fonts;
-
-.title {
-  @include fonts.title1;
-
-  margin-bottom: var(--size-spacing-xxl);
-  overflow-wrap: anywhere;
-}

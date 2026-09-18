@@ -15,6 +15,7 @@ import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullLinkIcon from '@/icons/full-link.svg'
 import { Panel } from '@/ui-kit/Panel/Panel'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { BookingDetails } from './BookingDetails/BookingDetails'
 import { ButtonInvalidateToken } from './components/ButtonInvalidateToken'
@@ -143,7 +144,7 @@ export const Desk = () => {
 
   return (
     <>
-      <h1 className={styles['title']}>Guichet</h1>
+      <Title level="1" title="Guichet" marginBottom="xxl" />
       <p className={styles['desk-advice']}>
         Saisissez les contremarques présentées par les bénéficiaires afin de les
         valider ou de les invalider.

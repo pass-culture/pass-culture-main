@@ -15,15 +15,3 @@
 .headings-wrapper {
   margin-bottom: var(--size-spacing-xxl);
 }
-
-.title {
-  @include fonts.title1;
-
-  overflow-wrap: anywhere;
-}
-
-.subtitle {
-  @include fonts.title2;
-
-  overflow-wrap: anywhere;
-}

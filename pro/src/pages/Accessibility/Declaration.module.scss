@@ -3,19 +3,6 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-.title {
-  @include fonts.title1;
-
-  margin-bottom: var(--size-spacing-xxl);
-  overflow-wrap: anywhere;
-}
-
-.heading2 {
-  @include fonts.title2;
-}
-
-.heading2,
-.heading3,
 .paragraph,
 .list-item,
 .table,

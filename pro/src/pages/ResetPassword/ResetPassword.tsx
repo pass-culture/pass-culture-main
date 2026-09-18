@@ -7,6 +7,7 @@ import { api } from '@/apiClient/api'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { ChangePasswordForm } from './ChangePasswordForm/ChangePasswordForm'
 import styles from './ResetPassword.module.scss'
@@ -67,7 +68,11 @@ export const ResetPassword = (): JSX.Element => {
 
   return (
     <SignUpLayout>
-      <h1 className={styles['title']}>Réinitialisez votre mot de passe</h1>
+      <Title
+        level="1"
+        title="Réinitialisez votre mot de passe"
+        marginBottom="xxl"
+      />
       <section>
         <p className={styles['mandatory-info']}>
           Veuillez définir votre nouveau mot de passe afin d’accéder à la

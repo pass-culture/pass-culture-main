@@ -17,6 +17,7 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'
+import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
@@ -68,7 +69,7 @@ export const LostPassword = (): JSX.Element => {
 
   return (
     <SignUpLayout>
-      <h1 className={styles['title']}>{mainHeading}</h1>
+      <Title level="1" title={mainHeading} marginBottom="xxl" />
       {email ? (
         <section>
           <p className={styles['change-password-request-success-body']}>

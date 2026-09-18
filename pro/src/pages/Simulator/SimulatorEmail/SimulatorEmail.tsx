@@ -16,6 +16,7 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { useSimulatorContext } from '../SimulatorContext'
 import {
@@ -106,13 +107,15 @@ export const SimulatorEmail = (): JSX.Element => {
 
   return (
     <div className={commonStyles['content']}>
-      <h1 className={commonStyles['title']}>
-        Recevez votre liste de justificatifs par email
-      </h1>
-      <h2 className={commonStyles['subtitle']}>
+      <Title
+        level="1"
+        title="Recevez votre liste de justificatifs par email"
+        marginBottom="l"
+      />
+      <p className={commonStyles['subtitle']}>
         Retrouvez la liste de vos justificatifs et reprenez votre inscription à
         tout moment depuis votre boîte mail.
-      </h2>
+      </p>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormLayout>
           <FormLayout.Row>

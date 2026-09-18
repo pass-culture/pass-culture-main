@@ -20,6 +20,7 @@ import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './Hub.module.scss'
 
@@ -99,9 +100,11 @@ export const Hub = () => {
   return (
     <FullLayout headerPropsOverride={{ hideAdminButton: false }}>
       <div className={styles['content-flex']}>
-        <h1 className={styles['title']}>
-          À quelle structure souhaitez-vous accéder ?
-        </h1>
+        <Title
+          level="1"
+          title="À quelle structure souhaitez-vous accéder ?"
+          marginBottom="xxl"
+        />
 
         {venues.length > 4 && (
           <SearchInput

@@ -20,6 +20,7 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import nextIcon from '@/icons/full-next.svg'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { api } from 'apiClient/api'
 import {
@@ -146,9 +147,11 @@ export const SimulatorResults = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['content']}>
-        <h1 className={commonStyles['title']}>
-          Voici les justificatifs à préparer pour votre inscription
-        </h1>
+        <Title
+          level="1"
+          title="Voici les justificatifs à préparer pour votre inscription"
+          marginBottom="l"
+        />
       </div>
       {showErrorBanner && (
         <Banner

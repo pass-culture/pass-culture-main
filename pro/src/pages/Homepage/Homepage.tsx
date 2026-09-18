@@ -16,6 +16,7 @@ import {
   type TabItem,
 } from '@/ui-kit/Tabs/TabItems/TabItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
+import { Title } from '@/ui-kit/Title/Title'
 
 import {
   getInitialTab,
@@ -56,9 +57,11 @@ export const Homepage = (): JSX.Element => {
   if (!hasIndividualTab && !hasCollectiveTab) {
     return (
       <div className={styles['onboarding-container']}>
-        <h2 className={styles['onboarding-title']}>
-          Diffusez votre première offre et pilotez ici votre activité !
-        </h2>
+        <Title
+          level="2"
+          title="Diffusez votre première offre et pilotez ici votre activité !"
+          marginBottom="xl"
+        />
         {selectedPartnerVenue.state === VenueState.CLOSED && (
           <div className={styles['venue-banner']}>
             <Banner variant={BannerVariants.ERROR} title="Structure fermée" />
@@ -120,9 +123,12 @@ export const Homepage = (): JSX.Element => {
 
   return (
     <>
-      <h1 className={styles['title']}>
-        Votre espace {selectedPartnerVenue.publicName}
-      </h1>
+      <Title
+        level="1"
+        title={`Votre espace ${selectedPartnerVenue.publicName}`}
+        marginBottom="xxl"
+      />
+
       {!isOffererClosed && selectedPartnerVenue.state === VenueState.CLOSED && (
         <div className={styles['venue-banner']}>
           <Banner variant={BannerVariants.ERROR} title="Structure fermée" />

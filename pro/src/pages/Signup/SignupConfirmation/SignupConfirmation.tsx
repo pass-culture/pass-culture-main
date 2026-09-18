@@ -3,6 +3,7 @@ import { useLocation } from 'react-router'
 
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { ReSendEmailCallout } from '@/components/ReSendEmailCallout/ReSendEmailCallout'
+import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './SignupConfirmation.module.scss'
 
@@ -19,7 +20,11 @@ export const SignupConfirmation = () => {
       })}
     >
       {isSignupSimulationEnabled && (
-        <h1 className={styles['title']}>Validez votre adresse email</h1>
+        <Title
+          level="1"
+          title="Validez votre adresse email"
+          marginBottom="xxl"
+        />
       )}
       <p className={styles['signup-confirmation']}>
         Cliquez sur le lien envoyé par email

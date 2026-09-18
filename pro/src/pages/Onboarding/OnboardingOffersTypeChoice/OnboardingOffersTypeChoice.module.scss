@@ -1,5 +1,3 @@
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
 
 .onboarding-offer-container {
@@ -10,17 +8,7 @@
   max-width: rem.torem(721px);
 }
 
-.title {
-  @include fonts.title1;
-
-  margin-bottom: var(--size-border-radius-xxl);
-  overflow-wrap: anywhere;
+.onboarding-offer-title-wrapper {
   align-self: center;
 }
 
-.onboarding-offer-header-subtitle {
-  @include fonts.title3;
-
-  margin-top: var(--size-border-radius-xxl);
-  margin-bottom: var(--size-border-radius-l);
-}

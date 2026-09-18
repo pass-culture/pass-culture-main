@@ -79,6 +79,17 @@
           "options": {
             "excludedComponents": ["h1", "main"]
           }
+        },
+        "noRestrictedElements": {
+          "level": "on",
+          "options": {
+            "elements": {
+              "h1": "Prefer using the <Title /> element from UI Kit",
+              "h2": "Prefer using the <Title /> element from UI Kit",
+              "h3": "Prefer using the <Title /> element from UI Kit",
+              "h4": "Prefer using the <Title /> element from UI Kit"
+            }
+          }
         }
       },
       "style": {
@@ -182,7 +193,8 @@
           "correctness": {
             "noNodejsModules": "off",
             "noUndeclaredVariables": "off",
-            "useUniqueElementIds": "off"
+            "useUniqueElementIds": "off",
+            "noRestrictedElements": "off"
           },
           "style": {
             "noDefaultExport": "off",
@@ -194,6 +206,22 @@
             "noExportsInTest": "off",
             "noExplicitAny": "off",
             "noImplicitAnyLet": "off"
+          }
+        }
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Design-system & UI Kit
+    // These layers implement the heading primitives (`<Title />`, modals,
+    // summary sections…), so they must be allowed to render raw heading tags.
+
+    {
+      "includes": ["src/design-system/**", "src/ui-kit/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noRestrictedElements": "off"
           }
         }
       }

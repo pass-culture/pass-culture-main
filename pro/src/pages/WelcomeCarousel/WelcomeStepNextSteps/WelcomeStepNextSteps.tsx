@@ -10,6 +10,7 @@ import { ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import { InfoPanel } from '@/ui-kit/InfoPanel/InfoPanel'
 import { InfoPanelSize, InfoPanelSurface } from '@/ui-kit/InfoPanel/types'
+import { Title } from '@/ui-kit/Title/Title'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import styles from './WelcomeStepNextSteps.module.scss'
@@ -21,10 +22,16 @@ const WelcomeStepNextSteps = (): JSX.Element => {
   )
   return (
     <>
-      <h1 className={commonStyles.title}>Comment fonctionne l’inscription ?</h1>
-      <h2 className={commonStyles.subtitle}>
+      <div className={commonStyles['title-wrapper']}>
+        <Title
+          level="1"
+          title="Comment fonctionne l’inscription ?"
+          marginBottom="s"
+        />
+      </div>
+      <p className={commonStyles.subtitle}>
         3 étapes simples avant d’être visible sur le pass Culture
-      </h2>
+      </p>
       <div className={commonStyles[`container`]}>
         <div className={styles['steps']}>
           <InfoPanel

@@ -1,9 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.title {
-  @include fonts.title1;
-}
-
 .no-results {
   padding-bottom: var(--size-spacing-xxl);
   text-align: center;

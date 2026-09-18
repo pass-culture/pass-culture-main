@@ -20,9 +20,9 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { Title } from '@/ui-kit/Title/Title'
 
 import type { IndividualOffersFilters } from './common/types'
-import styles from './IndividualOffers.module.scss'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
@@ -87,7 +87,7 @@ export const IndividualOffers = () => {
 
   return (
     <>
-      <h1 className={styles['title']}>Offres individuelles</h1>
+      <Title level="1" title="Offres individuelles" marginBottom="xxl" />
 
       <HeadlineOfferContextProvider>
         <IndividualOffersContainer

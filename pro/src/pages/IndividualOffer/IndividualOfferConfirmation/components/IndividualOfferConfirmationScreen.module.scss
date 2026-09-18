@@ -14,9 +14,7 @@
   }
 }
 
-.title {
-  @include fonts.title1;
-
+.title-wrapper {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -123,10 +121,6 @@
   text-align: left;
   width: 100%;
   margin-top: var(--size-spacing-xxxl);
-
-  &-title {
-    @include fonts.title4;
-  }
 
   &-cards {
     --card-width: #{rem.torem(325px)};

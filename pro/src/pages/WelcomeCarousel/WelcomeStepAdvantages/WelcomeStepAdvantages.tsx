@@ -8,6 +8,7 @@ import strokeProfilIcon from '@/icons/stroke-profil.svg'
 import strokeReleaseIcon from '@/icons/stroke-release.svg'
 import { InfoPanel } from '@/ui-kit/InfoPanel/InfoPanel'
 import { InfoPanelSize, InfoPanelSurface } from '@/ui-kit/InfoPanel/types'
+import { Title } from '@/ui-kit/Title/Title'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import styles from './WelcomeStepAdvantages.module.scss'
@@ -15,12 +16,16 @@ import styles from './WelcomeStepAdvantages.module.scss'
 export const WelcomeStepAdvantages = (): JSX.Element => {
   return (
     <>
-      <h1 className={commonStyles.title}>
-        Pourquoi rejoindre le pass Culture ?
-      </h1>
-      <h2 className={commonStyles.subtitle}>
+      <div className={commonStyles['title-wrapper']}>
+        <Title
+          level="1"
+          title="Pourquoi rejoindre le pass Culture ?"
+          marginBottom="s"
+        />
+      </div>
+      <p className={commonStyles.subtitle}>
         Découvrez les avantages pour votre structure
-      </h2>
+      </p>
       <div className={cn(commonStyles[`container`], styles['container'])}>
         <InfoPanel
           title="4 millions de jeunes"

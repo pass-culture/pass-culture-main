@@ -68,12 +68,6 @@ $info-box-margin-left: rem.torem(24px);
 
   &-sub-sub-section {
     margin-bottom: var(--size-spacing-xxl);
-
-    &-title {
-      margin-bottom: var(--size-spacing-l);
-
-      @include fonts.title4;
-    }
   }
 
   &-row {

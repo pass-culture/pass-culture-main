@@ -3,10 +3,3 @@
 .eac-section {
   margin-bottom: var(--size-spacing-xxl);
 }
-
-.title {
-  @include fonts.title1;
-
-  overflow-wrap: anywhere;
-  margin-bottom: var(--size-spacing-xxl);
-}

@@ -17,9 +17,9 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
-import styles from './SignIn.module.scss'
 import { SigninForm } from './SigninForm'
 import { validationSchema } from './validationSchema'
 
@@ -126,7 +126,7 @@ export const SignIn = (): JSX.Element => {
 
   return (
     <SignUpLayout>
-      <h1 className={styles['title']}>Connectez-vous</h1>
+      <Title level="1" title="Connectez-vous" marginBottom="xxl" />
       <MandatoryInfo areAllFieldsMandatory={true} />
       <FormProvider {...hookForm}>
         <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />

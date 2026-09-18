@@ -16,6 +16,7 @@ import editFullIcon from '@/icons/full-edit.svg'
 import connectStrokeIcon from '@/icons/stroke-connect.svg'
 import { CardLink } from '@/ui-kit/CardLink/CardLink'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { Title } from '@/ui-kit/Title/Title'
 
 import { DraftOffers } from './DraftOffers/DraftOffers'
 import styles from './OnboardingOfferIndividual.module.scss'
@@ -47,10 +48,16 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
       isStickyActionBarInChild
       isEntryScreen
     >
-      <h1 className={styles.title}>Offre à destination des jeunes</h1>
-      <h2 className={styles['offers-subtitle']}>
-        Comment souhaitez-vous créer votre 1ère offre ?
-      </h2>
+      <Title
+        level="1"
+        title="Offre à destination des jeunes"
+        marginBottom="xxl"
+      />
+      <Title
+        level="2"
+        title="Comment souhaitez-vous créer votre 1ère offre ?"
+        marginBottom="xxl"
+      />
       <FormLayout>
         <FormLayout.Section>
           <div className={styles['offer-choices']}>

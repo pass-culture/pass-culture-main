@@ -2,28 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
-.title {
-  @include fonts.title1;
-
-  margin-bottom: var(--size-spacing-xxl);
-  overflow-wrap: anywhere;
-}
-
-.heading2 {
-  @include fonts.title2;
-}
-
-.heading3 {
-  @include fonts.title3;
-}
-
-.heading4 {
-  @include fonts.title4;
-}
-
-.heading2,
-.heading3,
-.heading4,
 .paragraph {
   margin-bottom: var(--size-spacing-l);
 }
