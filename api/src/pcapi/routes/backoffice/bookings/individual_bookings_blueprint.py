@@ -762,6 +762,7 @@ class BookingDetailsActionType(enum.StrEnum):
     CREATE_COMMERCIAL_GESTURE = enum.auto()
     MARK_FRAUDULENT = enum.auto()
     MARK_NON_FRAUDULENT = enum.auto()
+    MOVE_BOOKING = enum.auto()
 
 
 def _get_booking_details_actions(booking: bookings_models.Booking) -> DetailsActions:
@@ -786,6 +787,11 @@ def _get_booking_details_actions(booking: bookings_models.Booking) -> DetailsAct
             booking_details_actions.add_action(BookingDetailsActionType.MARK_NON_FRAUDULENT)
         else:
             booking_details_actions.add_action(BookingDetailsActionType.MARK_FRAUDULENT)
+    if access_control.has_current_user_permission(perm_models.Permissions.MOVE_BOOKING) and booking.status in (
+        bookings_models.BookingStatus.CONFIRMED,
+        bookings_models.BookingStatus.USED,
+    ):
+        booking_details_actions.add_action(BookingDetailsActionType.MOVE_BOOKING)
 
     return booking_details_actions
 
@@ -960,6 +966,8 @@ def get_individual_booking(booking_id: int) -> response_utils.BackofficeResponse
     elif BookingDetailsActionType.MARK_NON_FRAUDULENT in actions:
         forms["mark_non_fraudulent_form"] = empty_forms.BatchForm()
         forms["mark_non_fraudulent_form"].object_ids.data = booking_id
+    if BookingDetailsActionType.MOVE_BOOKING in actions:
+        forms["move_booking_form"] = booking_forms.MoveBookingForm()
 
     connect_as = get_connect_as(
         object_id=booking.stock.offer.id,
@@ -975,3 +983,36 @@ def get_individual_booking(booking_id: int) -> response_utils.BackofficeResponse
         history=_format_booking_history(booking),
         **forms,
     )
+
+
+@individual_bookings_blueprint.route("/<int:booking_id>/move", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MOVE_BOOKING)
+def move_booking(booking_id: int) -> response_utils.BackofficeResponse:
+    redirect_url = url_for("backoffice.individual_bookings.get_individual_booking", booking_id=booking_id)
+
+    booking = (
+        db.session.query(bookings_models.Booking)
+        .filter(bookings_models.Booking.id == booking_id)
+        .options(sa_orm.joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.bookingEmail))
+        .one_or_none()
+    )
+    if not booking:
+        raise NotFound()
+
+    form = booking_forms.MoveBookingForm()
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return request_utils.safe_redirect_back(request, redirect_url)
+
+    try:
+        bookings_api.move_booking(booking, int(form.venue.data[0]))
+    except bookings_exceptions.VenueIsNotActive:
+        flash("Le partenaire culturel sélectionné n'est pas actif", "warning")
+    except bookings_exceptions.BookingIsCancelled:
+        flash("Une réservation annulée ne peut pas être déplacée", "warning")
+    except bookings_exceptions.BookingIsAlreadyRefunded:
+        flash("Une réservation remboursée ne peut pas être déplacée", "warning")
+    else:
+        flash("La réservation a été transférée vers le nouveau partenaire culturel", "success")
+
+    return request_utils.safe_redirect_back(request, redirect_url)

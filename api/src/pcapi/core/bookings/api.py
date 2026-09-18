@@ -1611,3 +1611,75 @@ def has_email_been_sent(stock: offers_models.Stock, withdrawal_delay: int | None
         delta = stock.beginningDatetime - date_utils.get_naive_utc_now()
         return delta.total_seconds() < withdrawal_delay
     return False
+
+
+def move_booking(booking: models.Booking, destination_venue_id: int) -> None:
+    if booking.isCancelled:
+        raise exceptions.BookingIsCancelled()
+
+    if finance_repository.has_reimbursement(booking):
+        raise exceptions.BookingIsAlreadyRefunded()
+
+    source_booking_email = booking.venue.bookingEmail
+
+    destination_venue = (
+        db.session.query(offerers_models.Venue)
+        .filter(
+            offerers_models.Venue.id == destination_venue_id,
+            offerers_models.Venue.state.is_distinct_from(offerers_models.VenueState.CLOSING),
+            offerers_models.Venue.state.is_distinct_from(offerers_models.VenueState.CLOSED),
+            offerers_models.Offerer.isValidated,
+            offerers_models.Offerer.isActive.is_(True),
+        )
+        .one_or_none()
+    )
+
+    if not destination_venue:
+        raise exceptions.VenueIsNotActive()
+
+    logger.info(
+        "Move individual booking",
+        extra={
+            "booking_id": booking.id,
+            "token": booking.token,
+            "status": booking.status.value,
+            "offerer_id": booking.offererId,
+            "venue_id": booking.venueId,
+            "new_offerer_id": destination_venue.managingOffererId,
+            "new_venue_id": destination_venue_id,
+        },
+    )
+
+    booking.offererId = destination_venue.managingOffererId
+    booking.venueId = destination_venue_id
+
+    pricing = db.session.query(finance_models.Pricing).filter_by(bookingId=booking.id).one_or_none()
+    if pricing:
+        db.session.query(finance_models.PricingLine).filter_by(pricingId=pricing.id).delete(synchronize_session=False)
+        db.session.delete(pricing)
+
+    finance_event = (
+        db.session.query(finance_models.FinanceEvent)
+        .filter(
+            finance_models.FinanceEvent.bookingId == booking.id,
+            finance_models.FinanceEvent.status.in_(finance_models.CANCELLABLE_FINANCE_EVENT_STATUSES),
+        )
+        .one_or_none()
+    )
+    if finance_event:
+        finance_event.venueId = destination_venue.id
+        new_pricing_point_id = destination_venue.current_pricing_point_id
+        finance_event.pricingPointId = new_pricing_point_id
+        if new_pricing_point_id:
+            finance_event.status = finance_models.FinanceEventStatus.READY
+            # pricingOrderingDate can be reset to NOW -- agreed by accountant.
+            finance_event.pricingOrderingDate = date_utils.get_naive_utc_now()
+        else:
+            finance_event.status = finance_models.FinanceEventStatus.PENDING
+            finance_event.pricingOrderingDate = None
+        db.session.add(finance_event)
+
+    db.session.flush()
+
+    update_external_pro(source_booking_email)
+    update_external_pro(destination_venue.bookingEmail)

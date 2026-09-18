@@ -2,12 +2,14 @@ import dataclasses
 import datetime
 import re
 from io import BytesIO
+from unittest.mock import patch
 
 import factory
 import openpyxl
 import pytest
 from flask import url_for
 
+from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import pro_categories
@@ -1880,3 +1882,55 @@ class GetIndividualBookingTest(GetEndpointHelper):
         assert tunnel[2] == "Réservation confirmée 05/01/2025à 12h30"
         assert tunnel[3] == "Réservation consommée En attente"
         assert tunnel[4] == "Réservation remboursée En attente"
+
+
+class MoveBookingTest(PostEndpointHelper):
+    endpoint = "backoffice.individual_bookings.move_booking"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.MOVE_BOOKING
+
+    @patch("pcapi.core.bookings.api.move_booking")
+    def test_move_booking(self, mock_move_booking, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        response = self.post_to_endpoint(
+            authenticated_client, form={"venue": destination_venue.id}, booking_id=booking.id, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert (
+            html_parser.extract_alert(response.data)
+            == "La réservation a été transférée vers le nouveau partenaire culturel"
+        )
+        mock_move_booking.assert_called_once_with(booking, destination_venue.id)
+
+    @pytest.mark.parametrize(
+        "exception,expected_error",
+        [
+            (bookings_exceptions.VenueIsNotActive, "Le partenaire culturel sélectionné n'est pas actif"),
+            (bookings_exceptions.BookingIsCancelled, "Une réservation annulée ne peut pas être déplacée"),
+            (bookings_exceptions.BookingIsAlreadyRefunded, "Une réservation remboursée ne peut pas être déplacée"),
+        ],
+    )
+    @patch("pcapi.core.bookings.api.move_booking")
+    def test_cant_move_booking(self, mock_move_booking, exception, expected_error, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        mock_move_booking.side_effect = exception()
+
+        response = self.post_to_endpoint(
+            authenticated_client, form={"venue": destination_venue.id}, booking_id=booking.id, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == expected_error
+        mock_move_booking.assert_called_once_with(booking, destination_venue.id)
+
+    def test_cant_move_booking_not_found(self, authenticated_client):
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        response = self.post_to_endpoint(authenticated_client, form={"venue": destination_venue.id}, booking_id=99999)
+
+        assert response.status_code == 404

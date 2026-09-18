@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 import pytest
 import sqlalchemy.exc
+from flask import current_app
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
@@ -39,6 +40,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.external.batch.utils import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
@@ -2465,3 +2467,108 @@ def test_voucher_is_displayed(is_digital, is_external, subcategory_id, expected)
         offer.url = "example.com"
 
     assert api.is_voucher_displayed(offer, is_external) is expected
+
+
+@pytest.mark.usefixtures("db_session")
+class MoveBookingTest:
+    def test_move_confirmed_booking(self):
+        booking = bookings_factories.BookingFactory()
+        source_venue = booking.venue
+        destination_venue = offerers_factories.VenueFactory()
+
+        api.move_booking(booking, destination_venue.id)
+
+        db.session.refresh(booking)
+
+        assert booking.offerer == destination_venue.managingOfferer
+        assert booking.venue == destination_venue
+
+        assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {
+            source_venue.bookingEmail,
+            destination_venue.bookingEmail,
+        }
+
+    def test_move_used_booking(self):
+        booking = bookings_factories.UsedBookingFactory()
+        source_venue = booking.venue
+        finance_factories.PricingFactory(booking=booking)
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        api.move_booking(booking, destination_venue.id)
+
+        db.session.refresh(booking)
+
+        assert booking.offerer == destination_venue.managingOfferer
+        assert booking.venue == destination_venue
+
+        assert len(booking.pricings) == 0
+        assert len(booking.finance_events) == 1
+        assert booking.finance_events[0].status == finance_models.FinanceEventStatus.READY
+        assert booking.finance_events[0].venue == destination_venue
+        assert booking.finance_events[0].pricingPoint == destination_venue
+
+        assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {
+            source_venue.bookingEmail,
+            destination_venue.bookingEmail,
+        }
+
+    def test_move_used_booking_no_destination_pricing_point(self):
+        booking = bookings_factories.UsedBookingFactory()
+        source_venue = booking.venue
+        finance_factories.PricingFactory(booking=booking)
+        destination_venue = offerers_factories.VenueFactory(pricing_point=None)
+
+        api.move_booking(booking, destination_venue.id)
+
+        db.session.refresh(booking)
+
+        assert booking.offerer == destination_venue.managingOfferer
+        assert booking.venue == destination_venue
+
+        assert len(booking.pricings) == 0
+        assert len(booking.finance_events) == 1
+        assert booking.finance_events[0].status == finance_models.FinanceEventStatus.PENDING
+        assert booking.finance_events[0].venue == destination_venue
+        assert booking.finance_events[0].pricingPoint is None
+
+        assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {
+            source_venue.bookingEmail,
+            destination_venue.bookingEmail,
+        }
+
+    @pytest.mark.parametrize(
+        "factory",
+        [bookings_factories.PendingReimbursementBookingFactory, bookings_factories.ReimbursedBookingFactory],
+    )
+    def test_move_reimbursed_booking(self, factory):
+        booking = factory()
+        source_venue = booking.venue
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
+            api.move_booking(booking, destination_venue.id)
+
+        assert booking.offerer == source_venue.managingOfferer
+        assert booking.venue == source_venue
+
+    def test_move_cancelled_booking(self):
+        booking = bookings_factories.CancelledBookingFactory()
+        source_venue = booking.venue
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        with pytest.raises(exceptions.BookingIsCancelled):
+            api.move_booking(booking, destination_venue.id)
+
+        db.session.refresh(booking)
+
+        assert booking.offerer == source_venue.managingOfferer
+        assert booking.venue == source_venue
+
+    def test_move_booking_on_same_venue(self):
+        booking = bookings_factories.BookingFactory()
+        source_venue = booking.venue
+
+        api.move_booking(booking, source_venue.id)
+
+        assert booking.offerer == source_venue.managingOfferer
+        assert booking.venue == source_venue

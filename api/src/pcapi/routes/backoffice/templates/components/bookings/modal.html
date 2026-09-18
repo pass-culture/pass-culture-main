@@ -1,5 +1,5 @@
 {% import "components/forms.html" as forms with context %}
-{% macro booking_modal(booking, title, div_id, form, dst, table_id=None) %}
+{% macro booking_modal(booking, title, div_id, form, dst, table_id=none, information=none) %}
   {% set aria_described_by_id = random_hash() %}
   <div class="modal modal-lg fade"
        id="{{ div_id }}"
@@ -9,20 +9,17 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <form name="{{ dst | action_to_name }}"
-              {%+ if table_id %}
-              hx-target="#{{ table_id }}"
-              hx-post="{{ dst }}"
-              hx-swap="outerHTML"
-              hx-trigger="submit"
-              {% else %}
-              action="{{ dst }}"
-              method="POST"
-              {% endif +%}>
+              {%+ if table_id %} hx-target="#{{ table_id }}" hx-post="{{ dst }}" hx-swap="outerHTML" hx-trigger="submit" {% else %} action="{{ dst }}" method="post" {% endif +%}>
           <div class="modal-header"
                id="{{ aria_described_by_id }}">
             <h5 class="modal-title">{{ title }}</h5>
           </div>
-          <div class="modal-body row">{{ forms.build_form_fields_group(form) }}</div>
+          <div class="modal-body">
+            {% if information %}
+              <div class="my-3">{{ information }}</div>
+            {% endif %}
+            <div class="row">{{ forms.build_form_fields_group(form) }}</div>
+          </div>
           <div class="modal-footer">
             <button type="button"
                     class="btn btn-outline-primary-subtle-bg"
