@@ -42,28 +42,34 @@
   {% if allowed_actions.actions.MARK_NON_FRAUDULENT in allowed_actions.inline_actions %}
     {{ action_bar_button("hand-thumbs-up", "Non frauduleuse", modal_id="#batch-remove-fraudulent-booking-tag-modal") }}
   {% endif %}
+  {% if allowed_actions.actions.MOVE_BOOKING in allowed_actions.inline_actions %}
+    {{ action_bar_button("shop", "Déplacer la réservation", modal_id="#move-booking-modal") }}
+  {% endif %}
   <!-- ADDITIONAL BUTTONS TO PUT IN DROPDOWN MENU -->
   {% if allowed_actions.additional_actions %}
     <ul class="dropdown-menu">
-      {% if allowed_actions.actions.VALIDATE in allowed_actions.inline_actions %}
+      {% if allowed_actions.actions.VALIDATE in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("check-circle", "Valider", modal_id="#pc-validate-booking-modal" + booking.id |string) }}</li>
       {% endif %}
-      {% if allowed_actions.actions.INVALIDATE in allowed_actions.inline_actions %}
+      {% if allowed_actions.actions.INVALIDATE in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("x-circle", "Annuler", modal_id="#pc-cancel-booking-modal-" + booking.id |string) }}</li>
       {% endif %}
-      {% if allowed_actions.actions.CREATE_INCIDENT in allowed_actions.inline_actions %}
+      {% if allowed_actions.actions.CREATE_INCIDENT in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("exclamation-diamond", "Créer un incident", modal_id="#overpayment-creation-modal") }}</li>
       {% endif %}
-      {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.inline_actions %}
+      {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.additional_actions %}
         <li>
           {{ action_bar_additional_button("exclamation-triangle", "Créer un geste commercial", modal_id="#commercial-gesture-creation-modal") }}
         </li>
       {% endif %}
-      {% if allowed_actions.actions.MARK_FRAUDULENT in allowed_actions.inline_actions %}
+      {% if allowed_actions.actions.MARK_FRAUDULENT in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("hand-thumbs-down", "Frauduleuse", modal_id="#batch-tag-fraudulent-booking-modal") }}</li>
       {% endif %}
-      {% if allowed_actions.actions.MARK_NON_FRAUDULENT in allowed_actions.inline_actions %}
+      {% if allowed_actions.actions.MARK_NON_FRAUDULENT in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("hand-thumbs-up", "Non frauduleuse", modal_id="#batch-remove-fraudulent-booking-tag-modal") }}</li>
+      {% endif %}
+      {% if allowed_actions.actions.MOVE_BOOKING in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("shop", "Déplacer la réservation", modal_id="#move-booking-modal") }}</li>
       {% endif %}
     </ul>
   {% endif %}
@@ -191,22 +197,25 @@
 {% endblock side_column %}
 {% block extra_main_content %}
   <!-- HIDDEN FORMS/AND MODALS -->
-  {% if allowed_actions.actions.VALIDATE in allowed_actions.inline_actions %}
+  {% if allowed_actions.actions.VALIDATE in allowed_actions.allowed_actions %}
     {{ booking_modal(booking, "Valider la réservation " + booking.token, "pc-validate-booking-modal-" + booking.id |string, mark_as_used_booking_form, url_for('backoffice.individual_bookings.mark_booking_as_used', booking_id=booking.id)) }}
   {% endif %}
-  {% if allowed_actions.actions.INVALIDATE in allowed_actions.inline_actions %}
+  {% if allowed_actions.actions.INVALIDATE in allowed_actions.allowed_actions %}
     {{ booking_modal(booking, "Annuler la réservation " + booking.token, "pc-cancel-booking-modal-" + booking.id |string, cancel_booking_form, url_for('backoffice.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id)) }}
   {% endif %}
-  {% if allowed_actions.actions.CREATE_INCIDENT in allowed_actions.inline_actions %}
+  {% if allowed_actions.actions.CREATE_INCIDENT in allowed_actions.allowed_actions %}
     {{ booking_modal(booking, "Créer un incident pour la réservation " + booking.token, "overpayment-creation-modal", create_incident_form, url_for('backoffice.finance_incidents.create_individual_booking_overpayment')) }}
   {% endif %}
-  {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.inline_actions %}
+  {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.allowed_actions %}
     {{ booking_modal(booking, "Créer un geste commercial pour la réservation " + booking.token, "commercial-gesture-creation-modal", create_commercial_gesture_form, url_for('backoffice.finance_incidents.create_individual_booking_commercial_gesture')) }}
   {% endif %}
-  {% if allowed_actions.actions.MARK_FRAUDULENT in allowed_actions.inline_actions %}
+  {% if allowed_actions.actions.MARK_FRAUDULENT in allowed_actions.allowed_actions %}
     {{ booking_modal(booking, "Marquer la réservation " + booking.token + " comme frauduleuse", "batch-tag-fraudulent-booking-modal", mark_fraudulent_form, url_for('backoffice.individual_bookings.batch_tag_fraudulent_bookings')) }}
   {% endif %}
-  {% if allowed_actions.actions.MARK_NON_FRAUDULENT in allowed_actions.inline_actions %}
+  {% if allowed_actions.actions.MARK_NON_FRAUDULENT in allowed_actions.allowed_actions %}
     {{ booking_modal(booking, "Marquer la réservation " + booking.token + " comme non frauduleuse", "batch-remove-fraudulent-booking-tag-modal", mark_non_fraudulent_form, url_for('backoffice.individual_bookings.batch_remove_fraudulent_booking_tag')) }}
+  {% endif %}
+  {% if allowed_actions.actions.MOVE_BOOKING in allowed_actions.allowed_actions %}
+    {{ booking_modal(booking, "Déplacer la réservation " + booking.token, "move-booking-modal", move_booking_form, url_for('backoffice.individual_bookings.move_booking', booking_id=booking.id), none, "Cette action expérimentale permet de déplacer la réservation vers n'importe quel autre partenaire culturel actif. À N'UTILISER QUE SI VOUS SAVEZ CE QUE VOUS FAITES !") }}
   {% endif %}
 {% endblock extra_main_content %}

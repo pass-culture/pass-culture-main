@@ -300,3 +300,13 @@ class BatchCancelIndividualBookingsForm(BatchForm, CancelIndividualBookingForm):
 
 class BatchTagFraudulentBookingsForms(BatchForm):
     send_mails = fields.PCSwitchBooleanField("Envoyer un mail d'avertissement aux acteurs culturels", full_row=True)
+
+
+class MoveBookingForm(FlaskForm):
+    venue = fields.PCTomSelectField(
+        "Partenaire culturel vers lequel transférer la réservation",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice.autocomplete_venues",
+    )
