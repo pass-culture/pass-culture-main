@@ -25,6 +25,7 @@ import pcapi.core.users.models as users_models
 import pcapi.core.users.utils as users_utils
 from pcapi import settings
 from pcapi.connectors import api_adresse
+from pcapi.connectors.apple_oauth import revoke_apple_user
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core import object_storage
 from pcapi.core.chronicles import api as chronicles_api
@@ -177,6 +178,20 @@ def anonymize_user(
         .delete()
     )
 
+    for sso in user.single_sign_ons:
+        if sso.ssoProvider == "apple":
+            # Trying to revoke Apple SSO from pc-api.
+            # Revocation on Apple could fail, due to bad refresh_token, but user
+            # can do it on their side (follow doc linked in revoke_apple_user function)
+            for client_type, token in sso.ssoExtraData.items():
+                is_web_client = client_type == "web"
+                try:
+                    revoke_apple_user(token, is_web_client)
+                except Exception as exc:
+                    logger.warning("Could not revoke Apple SSO", extra={"user_id": user.id, "exc": str(exc)})
+
+    db.session.query(models.SingleSignOn).filter(models.SingleSignOn.userId == user.id).delete()
+
     if external_email_anonymized:
         user.replace_roles_by_anonymized_role()
         user.email = (
@@ -190,6 +205,7 @@ def anonymize_user(
                 comment=action_history_comment,
             )
         )
+
     return True
 
 
