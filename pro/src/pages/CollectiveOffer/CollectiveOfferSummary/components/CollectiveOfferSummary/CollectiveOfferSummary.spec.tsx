@@ -284,12 +284,10 @@ describe('CollectiveOfferSummary', () => {
       ).toBeVisible()
     })
 
-    it('should display priceDetail in "Informations pratiques" when it exists', () => {
+    it('should display practial infos in "Informations pratiques" when it exists', () => {
       renderCollectiveOfferSummary({
         offer: getCollectiveOfferFactory({
-          collectiveStock: getCollectiveOfferCollectiveStockFactory({
-            priceDetail: 'Détail du prix pratique',
-          }),
+          additionalDetails: 'Quelques détails additionnels',
         }),
       })
 
@@ -297,7 +295,9 @@ describe('CollectiveOfferSummary', () => {
         name: 'Informations pratiques',
         level: 2,
       })
-      const priceDetailElement = screen.getByText('Détail du prix pratique')
+      const priceDetailElement = screen.getByText(
+        'Quelques détails additionnels'
+      )
       expect(priceDetailElement).toBeInTheDocument()
       expect(heading.closest('.summary-layout-section')).toContainElement(
         priceDetailElement
