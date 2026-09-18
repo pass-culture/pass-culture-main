@@ -208,6 +208,7 @@
         {% if not offerer.is_caledonian %}{{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}{% endif %}
         {{ build_details_tab("bank-accounts", "Comptes bancaires", active_tab == 'bank_accounts') }}
         {{ build_details_tab("invoices", "Justificatifs", active_tab == 'invoices') }}
+        {{ build_details_tab("settlements", "Virements", active_tab == 'settlements') }}
       {% endcall %}
       {% call build_details_tabs_content_wrapper() %}
         {% call build_details_tab_content("history", active_tab == 'history') %}
@@ -261,6 +262,11 @@
           <div id="offerer_invoices_frame"
                hx-trigger="intersect once"
                hx-get="{{ url_for('backoffice.offerer.get_invoices', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
+        {% endcall %}
+        {% call build_details_tab_content("settlements", active_tab == 'settlements') %}
+          <div id="offerer_settlements_frame"
+               hx-trigger="intersect once"
+               hx-get="{{ url_for('backoffice.offerer.get_settlements', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
       {% endcall %}
     </div>

@@ -1297,6 +1297,36 @@ def download_invoices(offerer_id: int) -> response_utils.BackofficeResponse:
     )
 
 
+@offerer_blueprint.route("/settlements", methods=["GET"])
+def get_settlements(offerer_id: int) -> response_utils.BackofficeResponse:
+    settlements = (
+        db.session.query(finance_models.Settlement)
+        .join(finance_models.Settlement.bankAccount)
+        .join(finance_models.Settlement.batch)
+        .filter(finance_models.BankAccount.offererId == offerer_id)
+        .options(
+            sa_orm.load_only(
+                finance_models.Settlement.id,
+                finance_models.Settlement.amount,
+                finance_models.Settlement.status,
+            ),
+            sa_orm.contains_eager(finance_models.Settlement.bankAccount)
+            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label)
+            .joinedload(finance_models.BankAccount.offerer),
+            sa_orm.joinedload(finance_models.Settlement.invoices).load_only(finance_models.Invoice.reference),
+            sa_orm.contains_eager(finance_models.Settlement.batch).load_only(
+                finance_models.SettlementBatch.name, finance_models.SettlementBatch.dateValidated
+            ),
+        )
+        .order_by(finance_models.SettlementBatch.dateValidated.desc(), finance_models.BankAccount.id.desc())
+        .all()
+    )
+    return render_template(
+        "offerer/get/details/settlements.html",
+        settlements=settlements,
+    )
+
+
 @offerer_blueprint.route("/comment", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
