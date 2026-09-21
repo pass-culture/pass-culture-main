@@ -40,9 +40,9 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
@@ -1643,7 +1643,7 @@ class ValidateOffererTest:
         admin = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
         venue1 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, adageId="11")
-        mails = get_emails_by_venue(venue1)
+        mails = offerers_repository.get_emails_by_venue(venue1)
 
         # When
         with patch("pcapi.core.mails.transactional.send_eac_offerer_activation_email") as mock_activation_mail:
@@ -3791,7 +3791,7 @@ class AccessibilityProviderTest:
         venue_id = venue.id
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_open_to_public_venue_ids(with_accessibility_provider=True)
+        venues_list = offerers_repository.get_open_to_public_venue_ids(with_accessibility_provider=True)
         assert len(venues_list) == 1
         assert venues_list[0] == venue_id
 
@@ -3801,7 +3801,7 @@ class AccessibilityProviderTest:
         venue_id = venue.id
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_open_to_public_venue_ids(with_accessibility_provider=False)
+        venues_list = offerers_repository.get_open_to_public_venue_ids(with_accessibility_provider=False)
         assert len(venues_list) == 3
         assert venue_id not in venues_list
 

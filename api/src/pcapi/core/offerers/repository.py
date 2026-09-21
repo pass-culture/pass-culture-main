@@ -1370,3 +1370,45 @@ def _build_offerer_is_onboarded_expression() -> sa.ColumnElement[bool]:
     return sa.or_(
         models.Offerer.allowedOnAdage.is_(True), has_adage_id, has_collective_application, has_non_draft_offers
     )
+
+
+def get_open_to_public_venue_ids(with_accessibility_provider: bool) -> list[int]:
+    stmt = sa.select(offerers_models.Venue.id).filter(offerers_models.Venue.isOpenToPublic.is_(True))
+
+    if with_accessibility_provider:
+        stmt = stmt.join(offerers_models.AccessibilityProvider)
+    else:
+        stmt = stmt.outerjoin(offerers_models.Venue.accessibilityProvider).filter(
+            offerers_models.AccessibilityProvider.id.is_(None)
+        )
+
+    stmt = stmt.order_by(offerers_models.Venue.id.asc())
+    return list(db.session.scalars(stmt).all())
+
+
+def get_open_to_public_venues_by_ids(
+    venue_ids: list[int], with_accessibility_provider: bool
+) -> list[offerers_models.Venue]:
+    if not venue_ids:
+        return []
+
+    stmt = sa.select(offerers_models.Venue).filter(offerers_models.Venue.id.in_(venue_ids))
+
+    if with_accessibility_provider:
+        stmt = stmt.join(offerers_models.Venue.accessibilityProvider).options(
+            sa_orm.contains_eager(offerers_models.Venue.accessibilityProvider),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+        )
+    else:
+        stmt = stmt.options(
+            sa_orm.load_only(
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+                offerers_models.Venue.isOpenToPublic,
+            ),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+        )
+
+    stmt = stmt.order_by(offerers_models.Venue.id.asc())
+    return list(db.session.scalars(stmt).unique().all())
