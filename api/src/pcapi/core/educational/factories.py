@@ -228,28 +228,32 @@ class EducationalYearFactory(BaseFactory[models.EducationalYear]):
         lambda number: str(int(_get_current_educational_year_adage_id()) + number)
     )
     beginningDate: factory.declarations.BaseDeclaration = factory.Sequence(
-        lambda number: _get_educational_year_start(_get_current_educational_year()) + relativedelta(years=number)
+        lambda number: (
+            _get_educational_year_start(get_current_educational_first_civil_year()) + relativedelta(years=number)
+        )
     )
     expirationDate: factory.declarations.BaseDeclaration = factory.Sequence(
-        lambda number: _get_educational_year_end(_get_current_educational_year() + 1) + relativedelta(years=number),
+        lambda number: (
+            _get_educational_year_end(get_current_educational_first_civil_year() + 1) + relativedelta(years=number)
+        ),
     )
 
 
-def _get_educational_year_beginning(date_time: datetime.datetime) -> int:
+def get_educational_first_civil_year(date_time: datetime.datetime) -> int:
     if 1 <= date_time.month < 9:
         return date_time.year - 1
 
     return date_time.year
 
 
-def _get_current_educational_year() -> int:
+def get_current_educational_first_civil_year() -> int:
     current_date = date_utils.get_naive_utc_now()
 
-    return _get_educational_year_beginning(current_date)
+    return get_educational_first_civil_year(current_date)
 
 
 def create_educational_year(date_time: datetime.datetime) -> models.EducationalYear:
-    beginning_year = _get_educational_year_beginning(date_time)
+    beginning_year = get_educational_first_civil_year(date_time)
     adage_id = str(beginning_year - ADAGE_STARTING_EDUCATIONAL_YEAR)
 
     return EducationalYearFactory.create(
@@ -260,11 +264,11 @@ def create_educational_year(date_time: datetime.datetime) -> models.EducationalY
 
 
 def _get_current_educational_year_adage_id() -> str:
-    return str(_get_current_educational_year() - ADAGE_STARTING_EDUCATIONAL_YEAR)
+    return str(get_current_educational_first_civil_year() - ADAGE_STARTING_EDUCATIONAL_YEAR)
 
 
 def _get_next_educational_year_adage_id() -> str:
-    return str(_get_current_educational_year() - ADAGE_STARTING_EDUCATIONAL_YEAR + 1)
+    return str(get_current_educational_first_civil_year() - ADAGE_STARTING_EDUCATIONAL_YEAR + 1)
 
 
 def _get_educational_year_start(civil_year: int) -> datetime.datetime:
@@ -280,14 +284,22 @@ def _get_educational_year_end(civil_year: int) -> datetime.datetime:
 
 
 class EducationalCurrentYearFactory(EducationalYearFactory):
-    beginningDate = factory.LazyFunction(lambda: _get_educational_year_start(_get_current_educational_year()))
-    expirationDate = factory.LazyFunction(lambda: _get_educational_year_end(_get_current_educational_year() + 1))
+    beginningDate = factory.LazyFunction(
+        lambda: _get_educational_year_start(get_current_educational_first_civil_year())
+    )
+    expirationDate = factory.LazyFunction(
+        lambda: _get_educational_year_end(get_current_educational_first_civil_year() + 1)
+    )
     adageId = factory.LazyFunction(_get_current_educational_year_adage_id)
 
 
 class EducationalNextYearFactory(EducationalYearFactory):
-    beginningDate = factory.LazyFunction(lambda: _get_educational_year_start(_get_current_educational_year() + 1))
-    expirationDate = factory.LazyFunction(lambda: _get_educational_year_end(_get_current_educational_year() + 2))
+    beginningDate = factory.LazyFunction(
+        lambda: _get_educational_year_start(get_current_educational_first_civil_year() + 1)
+    )
+    expirationDate = factory.LazyFunction(
+        lambda: _get_educational_year_end(get_current_educational_first_civil_year() + 2)
+    )
     adageId = factory.LazyFunction(_get_next_educational_year_adage_id)
 
 
