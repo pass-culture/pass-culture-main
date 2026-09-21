@@ -7,6 +7,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 import pcapi.core.artist.api as artist_api
+import pcapi.core.artist.exceptions as artist_exceptions
 import pcapi.core.cultural_outreach.api as cultural_outreach_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.constants as offers_constants
@@ -339,7 +340,10 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
 
     create_offer_schema = offers_schemas.CreateOffer(**values)
 
-    offer = offers_api.create_offer(create_offer_schema, venue=venue, product=product, is_from_private_api=True)
+    try:
+        offer = offers_api.create_offer(create_offer_schema, venue=venue, product=product, is_from_private_api=True)
+    except artist_exceptions.ArtistException as error:
+        raise api_errors.ApiErrors({"artistOfferLinks": [error.message]})
     offer.hasPendingBookings = False
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -559,11 +563,15 @@ def patch_offer(
 
     if body.artist_offer_links is not None:
         validation.check_fields_are_editable({"artistOfferLinks"}, not_editable_fields=not_editable_fields)
-        artist_api.upsert_artist_offer_links(
-            body.artist_offer_links,
-            offer,
-            subcategory_id=subcategory_id,
-        )
+        try:
+            validation.check_artist_offer_links(
+                body.artist_offer_links, subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+            )
+            artist_api.upsert_artist_offer_links(
+                offer, {artist_api.get_artist_offer_link_key(link) for link in body.artist_offer_links}
+            )
+        except artist_exceptions.ArtistException as error:
+            raise api_errors.ApiErrors({"artistOfferLinks": [error.message]})
 
     if body.hasCulturalOutreachClaim is not None:
         validation.check_fields_are_editable({"hasCulturalOutreachClaim"}, not_editable_fields=not_editable_fields)
