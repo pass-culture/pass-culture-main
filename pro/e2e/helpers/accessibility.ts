@@ -12,6 +12,12 @@ async function waitForSnackbarIfPresent(page: Page) {
 
   const snackbar = page.locator('[data-testid^="global-snack-bar-"]')
 
+  // Wait for snackbar to be visible (if any)
+  try {
+    await snackbar.first().waitFor({ state: 'visible', timeout: 500 })
+  } catch {
+    // If no snackbar, continue
+  }
   // Loop: closing one snackbar can be immediately followed by another one.
   while ((await snackbar.count()) > 0) {
     await snackbar.first().waitFor({ state: 'detached' })
