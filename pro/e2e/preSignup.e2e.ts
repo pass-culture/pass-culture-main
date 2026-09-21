@@ -1,8 +1,10 @@
-import { expect, type Page, test } from '@playwright/test'
 import {
   type APIRequestContext,
+  expect,
+  type Page,
   request as playwrightRequest,
-} from 'playwright-core'
+  test,
+} from '@playwright/test'
 
 import { checkAccessibility } from './helpers/accessibility'
 import { setFeatureFlags } from './helpers/features'

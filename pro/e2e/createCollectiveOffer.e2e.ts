@@ -1,6 +1,5 @@
-import type { Page } from '@playwright/test'
+import type { Page, Response } from '@playwright/test'
 import { addDays, format } from 'date-fns'
-import type { Response } from 'playwright-core'
 
 import {
   COLLECTIVE_OFFERS_COLUMNS,

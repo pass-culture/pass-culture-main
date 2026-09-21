@@ -1,4 +1,4 @@
-import type { Response } from 'playwright-core'
+import type { Response } from '@playwright/test'
 
 export function isGetOffersResponse(response: Response) {
   return (
