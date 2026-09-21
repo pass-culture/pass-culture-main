@@ -51,7 +51,9 @@ export const useFocus = (): void => {
           activeSnackBar.focus()
         })
       }
-    } else {
+    } else if (document.activeElement === document.body) {
+      // Some content (e.g. a wizard's current step) may have already claimed
+      // focus for itself as part of the same navigation: don't steal it back.
       document.getElementById('top-page')?.focus()
     }
 
