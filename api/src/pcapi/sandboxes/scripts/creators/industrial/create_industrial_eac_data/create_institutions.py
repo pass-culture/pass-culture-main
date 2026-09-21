@@ -174,9 +174,8 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
 
 @log_func_duration
 def create_institutions_with_deposits_by_period() -> list[educational_models.EducationalDeposit]:
-    test_datetime = datetime.datetime(2025, 12, 1)
-    current_year = educational_factories.create_educational_year(test_datetime)
-    next_year = educational_factories.create_educational_year(test_datetime.replace(year=test_datetime.year + 1))
+    current_year = educational_factories.EducationalCurrentYearFactory()
+    next_year = educational_factories.EducationalNextYearFactory()
 
     institution_data = (
         ("CLG", "ANDRE MALRAUX", "ASNIERES-SUR-SEINE", "0921545E"),
@@ -259,11 +258,13 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
         ]
     )
 
-    # case 5: deposit for current year, 2 periods, first period is passed
+    # case 5: deposit for current year, 2 periods, second period starts on september 5th
+    # this allows us to test the second period without waiting until january 1st
     institution = next(institutions_iter)
     PARIS_TZ = pytz.timezone(date_utils.METROPOLE_TIMEZONE)
-    passed_period_end = PARIS_TZ.localize(datetime.datetime(2025, 10, 31, 23, 59, 59))
-    passed_period_next_start = PARIS_TZ.localize(datetime.datetime(2025, 11, 1))
+    first_civil_year = educational_factories.get_current_educational_first_civil_year()
+    passed_period_end = PARIS_TZ.localize(datetime.datetime(first_civil_year, 9, 4, 23, 59, 59))
+    passed_period_next_start = PARIS_TZ.localize(datetime.datetime(first_civil_year, 9, 5))
     deposits.extend(
         [
             educational_factories.EducationalDepositFactory.create(
@@ -281,7 +282,7 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
         ]
     )
 
-    # case 6: deposit for current year, first period only, passed
+    # case 6: deposit for current year, first period only ending on september 4th
     # deposit with amount 0 for second period
     institution = next(institutions_iter)
     deposits.extend(
