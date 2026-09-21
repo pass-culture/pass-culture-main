@@ -177,7 +177,7 @@ export const InvoiceTable = ({
           onFilterReset,
         }}
         noData={{
-          hasNoData: !hasInvoice || !hasBankAccount,
+          hasNoData: !hasInvoice,
           message: getEmptyStateMessage(hasBankAccount),
         }}
       >
