@@ -114,7 +114,6 @@ dev = [
   "types-pytz==2026.3.1.20260727",
   "types-pyyaml==6.0.12.20260906",
   "types-redis ==4.6.0.20241004",
-  "types-requests==2.33.0.20260906",
 ]
 
 [build-system]
