@@ -1,1 +1,0 @@
-import{t as e}from"./iframe-k_BF-ZuE.js";e();
