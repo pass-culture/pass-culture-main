@@ -192,7 +192,11 @@ describe('<SettlementTable />', () => {
   })
 
   it('shows the missing bank account empty state when hasBankAccount is false', () => {
-    renderSettlementTable({ hasBankAccount: false })
+    renderSettlementTable({
+      hasBankAccount: false,
+      hasSettlement: false,
+      settlements: [],
+    })
 
     expect(screen.getByText('Aucun compte bancaire rattaché')).toBeVisible()
     expect(

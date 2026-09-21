@@ -286,7 +286,7 @@ export const SettlementTable = ({
           onFilterReset,
         }}
         noData={{
-          hasNoData: !hasBankAccount || !hasSettlement,
+          hasNoData: !hasSettlement,
           message: getEmptyStateMessage(hasBankAccount),
         }}
         getFullRow={getInvoiceTable}

@@ -174,6 +174,8 @@ describe('<Settlements />', () => {
       bankAccounts: [],
       managedVenues: [],
     })
+    vi.spyOn(api, 'hasSettlement').mockResolvedValue({ hasSettlement: false })
+    vi.spyOn(api, 'getSettlements').mockResolvedValue([])
 
     renderSettlements()
 
