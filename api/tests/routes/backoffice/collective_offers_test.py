@@ -178,7 +178,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == collective_offers[0].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == collective_offers[0].venue.name
         assert rows[0]["Ministère"] == "MENjs"
-        first_year = educational_factories._get_educational_year_beginning(
+        first_year = educational_factories.get_educational_first_civil_year(
             collective_offers[0].collectiveStock.startDatetime
         )
         assert rows[0]["Année"] == f"{first_year}-{first_year + 1}"
@@ -228,7 +228,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == collective_offers[1].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == collective_offers[1].venue.name
         assert rows[0]["Ministère"] == "MENjs"
-        first_year = educational_factories._get_educational_year_beginning(
+        first_year = educational_factories.get_educational_first_civil_year(
             date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         )
         assert rows[0]["Année"] == f"{first_year}-{first_year + 1}"
