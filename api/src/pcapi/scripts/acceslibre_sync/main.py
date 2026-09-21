@@ -118,7 +118,6 @@ def _synchronize_accessibility_provider(venue: offerers_models.Venue, force_sync
         venue.accessibilityProvider.externalAccessibilityData = (
             accessibility_data.dict() if accessibility_data else None
         )
-        db.session.flush()
 
     # if last_update is None, the slug has been removed from acceslibre, we try a new match
     # and save accessibility data to DB
@@ -153,7 +152,6 @@ def _synchronize_accessibility_provider(venue: offerers_models.Venue, force_sync
                 venue.accessibilityProvider.externalAccessibilityData = (
                     accessibility_data.dict() if accessibility_data else None
                 )
-                db.session.flush()
                 logger.info(
                     "Acceslibre update synchronisation",
                     extra={
