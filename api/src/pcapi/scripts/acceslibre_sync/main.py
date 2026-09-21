@@ -294,7 +294,7 @@ def _acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_
         db.session.rollback()
 
 
-def main(apply: bool, force_sync: bool, batch_size: int, start_from_batch: int) -> None:
+def main(apply: bool, force_sync: bool, batch_size: int, start_from_batch: int, n_days_to_fetch: int) -> None:
     logger.info("starting synchronization")
 
     _synchronize_accessibility_with_acceslibre(
@@ -311,7 +311,7 @@ def main(apply: bool, force_sync: bool, batch_size: int, start_from_batch: int) 
         batch_size=batch_size,
         apply=apply,
         start_from_batch=start_from_batch,
-        n_days_to_fetch=7,
+        n_days_to_fetch=n_days_to_fetch,
     )
     logger.info("finding new match successfully finished")
 
@@ -327,6 +327,7 @@ if __name__ == "__main__":
     parser.add_argument("--force-sync", action="store_true")
     parser.add_argument("--batch-size", type=int, default=1000)
     parser.add_argument("--start-from-batch", type=int, default=1)
+    parser.add_argument("--n-days-to-fetch", type=int, default=7)
 
     args = parser.parse_args()
 
@@ -335,6 +336,7 @@ if __name__ == "__main__":
         force_sync=args.force_sync,
         batch_size=args.batch_size,
         start_from_batch=args.start_from_batch,
+        n_days_to_fetch=args.n_days_to_fetch,
     )
 
     if args.apply:
