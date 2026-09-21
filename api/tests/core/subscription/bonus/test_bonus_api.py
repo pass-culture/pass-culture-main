@@ -575,6 +575,20 @@ class QuotientFamilialApplicationTest:
         ]
         assert not bonus_fraud_checks
 
+    @patch("pcapi.connectors.api_particulier.get_quotient_familial")
+    def test_calls_quotient_familial_after_cutoff(self, mocked_get_quotient_familial):
+        almost_20_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=19, months=10)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=almost_20_years_ago.date())
+        fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+        mocked_get_quotient_familial.side_effect = [bonus_fixtures.QF_DESERIALIZED_RESPONSE]
+
+        bonus_api.apply_for_quotient_familial_bonus(fraud_check)
+
+        assert len(mocked_get_quotient_familial.mock_calls) == 1
+
     @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=0)
     def test_sentry_error_filtered(self):
         captured_events = []

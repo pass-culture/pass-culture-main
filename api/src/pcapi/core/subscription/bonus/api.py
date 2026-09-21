@@ -119,8 +119,8 @@ def _get_months_when_user_is_17(user: users_models.User) -> list[datetime.date]:
         raise ValueError("Beneficiaries applying for the bonus are expected to have a non-null birth date")
 
     MONTHS_IN_A_YEAR = 12
-    api_particulier_cutoff_date = datetime.date.today() - relativedelta(years=2)
-    cutoff_month = api_particulier_cutoff_date.replace(month=1, day=1)
+    api_particulier_cutoff_date = datetime.date.today() - relativedelta(months=23)
+    cutoff_month = api_particulier_cutoff_date.replace(day=1)
     seventeenth_birth_month = birth_date.replace(day=1) + relativedelta(years=17)
 
     months_when_user_is_17 = []
