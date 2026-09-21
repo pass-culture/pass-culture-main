@@ -77,6 +77,7 @@ def _fetch_identity_token(client_id: str, client_secret: str, authorization_code
         response = requests.post(settings.APPLE_TOKEN_ENDPOINT, data=payload)
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
+        assert e.response is not None
         status = e.response.status_code
         logger.error("Error fetching Apple token", extra={"response": str(e), "status_code": status})
         raise

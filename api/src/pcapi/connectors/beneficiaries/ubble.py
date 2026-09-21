@@ -55,6 +55,7 @@ def log_and_handle_ubble_response(
                 return ubble_function(*args, **kwargs)
             except requests.exceptions.HTTPError as e:
                 response = e.response
+                assert response is not None
                 logger.warning(
                     "Ubble error",
                     extra={
@@ -190,7 +191,7 @@ def create_and_start_identity_verification(
     Ubble API documentation:
     https://docs.ubble.ai/api#tag/Identity-verifications/operation/create_and_start_identity_verification
     """
-    data = {
+    data: dict[str, str | dict[str, str]] = {
         "declared_data": {"name": f"{first_name} {last_name}"},
         "webhook_url": webhook_url,
         "redirect_url": redirect_url,

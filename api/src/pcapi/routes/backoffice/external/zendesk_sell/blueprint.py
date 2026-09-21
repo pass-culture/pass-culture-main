@@ -49,6 +49,7 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
         # no parent: ignore, nothing to update
         return None
     except requests.exceptions.HTTPError as http_error:
+        assert http_error.response is not None
         flash(
             Markup(
                 "Une erreur {status_code} s'est produite lors de la recherche de l'entité juridique parente : {error}"
@@ -95,6 +96,7 @@ def update_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
         flash("L'entité juridique n'a pas été trouvée dans Zendesk Sell", "warning")
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
+        assert http_error.response is not None
         flash(
             Markup("Une erreur {status_code} s'est produite : {error}").format(
                 status_code=str(http_error.response.status_code), error=str(http_error)
@@ -107,6 +109,7 @@ def update_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
         offerer_zendesk_id = zendesk_offerer_data["id"]
         zendesk_sell_api.get_backend().update_offerer(offerer_zendesk_id, offerer)
     except requests.exceptions.HTTPError as http_error:
+        assert http_error.response is not None
         flash(
             Markup("Une erreur {status_code} s'est produite : {error}").format(
                 status_code=str(http_error.response.status_code), error=str(http_error)
@@ -164,6 +167,7 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
         flash("Le partenaire culturel n'a pas été trouvé dans Zendesk Sell", "warning")
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
+        assert http_error.response is not None
         flash(
             Markup("Une erreur {status_code} s'est produite : {error}").format(
                 status_code=str(http_error.response.status_code), error=str(http_error)
@@ -177,6 +181,7 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
         parent_organization_id = _get_parent_organization_id(venue)
         zendesk_sell_api.get_backend().update_venue(zendesk_venue_id, venue, parent_organization_id)
     except requests.exceptions.HTTPError as http_error:
+        assert http_error.response is not None
         flash(
             Markup("Une erreur {status_code} s'est produite : {error}").format(
                 status_code=str(http_error.response.status_code), error=str(http_error)
