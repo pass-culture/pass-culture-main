@@ -1587,8 +1587,8 @@ def get_user_qf_bonification_status(user: models.User) -> bonus_schemas.QFBonifi
 
 def get_user_disability_bonification_status(user: models.User) -> bonus_schemas.DisabilityBonificationStatus:
     """
-    Get only the AAH bonus credit status.
-    The AEEH bonus credit status follows it closely: both are created and handled at the same time.
+    Get only the AEEH bonus credit status.
+    The AAH bonus credit status follows it closely: both are created and handled at the same time.
     """
     deposit = user.deposit
     if not deposit:
@@ -1617,25 +1617,25 @@ def get_user_disability_bonification_status(user: models.User) -> bonus_schemas.
     if not has_eligible_age:
         return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
 
-    aah_bonus_credit_fraud_checks = get_bonus_credit_fraud_checks(
-        user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
+    aeeh_bonus_credit_fraud_checks = get_bonus_credit_fraud_checks(
+        user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
     )
-    if not aah_bonus_credit_fraud_checks:
+    if not aeeh_bonus_credit_fraud_checks:
         return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
 
-    aah_bonus_fraud_check = aah_bonus_credit_fraud_checks[-1]
-    aah_fraud_check_status = aah_bonus_fraud_check.status
-    is_pending_fraud_check = aah_fraud_check_status in (
+    aeeh_bonus_fraud_check = aeeh_bonus_credit_fraud_checks[-1]
+    aeeh_fraud_check_status = aeeh_bonus_fraud_check.status
+    is_pending_fraud_check = aeeh_fraud_check_status in (
         subscription_models.FraudCheckStatus.STARTED,
         subscription_models.FraudCheckStatus.PENDING,
     )
-    is_automatic_fraud_check = aah_bonus_fraud_check.reason is not None and aah_bonus_fraud_check.reason.startswith(
+    is_automatic_fraud_check = aeeh_bonus_fraud_check.reason is not None and aeeh_bonus_fraud_check.reason.startswith(
         bonus_constants.AUTOMATIC_ORIGIN
     )
     if is_pending_fraud_check and not is_automatic_fraud_check:
         return bonus_schemas.DisabilityBonificationStatus.STARTED
 
-    has_never_completely_tried = aah_fraud_check_status in (
+    has_never_completely_tried = aeeh_fraud_check_status in (
         None,
         subscription_models.FraudCheckStatus.CANCELED,
         subscription_models.FraudCheckStatus.ERROR,
@@ -1643,12 +1643,12 @@ def get_user_disability_bonification_status(user: models.User) -> bonus_schemas.
     if has_never_completely_tried or (is_pending_fraud_check and is_automatic_fraud_check):
         return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
 
-    if aah_fraud_check_status == subscription_models.FraudCheckStatus.KO:
-        reason_codes = (aah_bonus_fraud_check.reasonCodes if aah_bonus_fraud_check else None) or []
+    if aeeh_fraud_check_status == subscription_models.FraudCheckStatus.KO:
+        reason_codes = (aeeh_bonus_fraud_check.reasonCodes if aeeh_bonus_fraud_check else None) or []
 
-        if aah_bonus_fraud_check:
+        if aeeh_bonus_fraud_check:
             fraud_created_date_in_user_departement_tz = date_utils.utc_datetime_to_department_timezone(
-                aah_bonus_fraud_check.dateCreated, user.departementCode
+                aeeh_bonus_fraud_check.dateCreated, user.departementCode
             ).date()
             today_user_departement_tz = date_utils.utc_datetime_to_department_timezone(
                 date_utils.get_naive_utc_now(), user.departementCode
