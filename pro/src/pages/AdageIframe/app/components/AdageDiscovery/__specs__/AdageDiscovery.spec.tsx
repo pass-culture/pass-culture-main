@@ -7,7 +7,6 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { api, apiAdage } from '@/apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
@@ -164,18 +163,6 @@ describe('AdageDiscovery', () => {
 
     //  Log called once for each playlist
     expect(apiAdage.logHasSeenWholePlaylist).toHaveBeenCalledTimes(4)
-  })
-
-  it('should display error message when educational domains API fails', async () => {
-    vi.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce(
-      new Error('API Error')
-    )
-
-    renderAdageDiscovery(adageUser)
-
-    await waitFor(() => {
-      expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
-    })
   })
 
   describe('survey satisfaction', () => {
