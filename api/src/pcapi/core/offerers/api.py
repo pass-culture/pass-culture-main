@@ -2755,7 +2755,6 @@ def delete_venue_accessibility_provider(venue: models.Venue) -> None:
 def set_accessibility_provider_id(
     venue: models.Venue, id_at_provider: str | None = None, url_at_provider: str | None = None
 ) -> None:
-    assert venue.offererAddress and venue.offererAddress.address  # helps mypy, shouldn't happen
     if not (id_at_provider and url_at_provider):
         if id_and_url_at_provider := accessibility_provider.get_id_at_accessibility_provider(
             name=venue.name,
@@ -2845,7 +2844,6 @@ def get_open_to_public_venues_without_accessibility_provider() -> list[models.Ve
 
 def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = False) -> None:
     assert venue.accessibilityProvider  # helps mypy, ensured by caller
-    assert venue.offererAddress and venue.offererAddress.address  # helps mypy, shouldn't happen
     slug = venue.accessibilityProvider.externalAccessibilityId
     try:
         last_update, accessibility_data = accessibility_provider.get_accessibility_infos(slug=slug)
@@ -3021,7 +3019,6 @@ def match_venue_with_new_entries(
     results: list[accessibility_provider.AcceslibreResult],
 ) -> None:
     for venue in venues_list:
-        assert venue.offererAddress and venue.offererAddress.address  # helps mypy, shouldn't happen
         if matching_venue := accessibility_provider.match_venue_with_acceslibre(
             acceslibre_results=results,
             venue_name=venue.name,
