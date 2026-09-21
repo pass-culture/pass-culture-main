@@ -2,10 +2,8 @@ import { createRef, useRef, useState } from 'react'
 
 import { AdageFrontRoles, AdagePlaylistType } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'
-import { useSnackBar } from '@/commons/hooks/useSnackBar'
 
 import { useAdageUser } from '../../hooks/useAdageUser'
 import { SurveySatisfaction } from '../SurveySatisfaction/SurveySatisfaction'
@@ -34,7 +32,6 @@ export const AdageDiscovery = () => {
   const footerSuggestion = createRef<HTMLDivElement>()
   const [isFooterSuggestionVisible] = useIsElementVisible(footerSuggestion)
 
-  const snackBar = useSnackBar()
   const adageAuthToken = params.get('token')
 
   const discoveryRef = useRef<HTMLDivElement>(null)
@@ -52,12 +49,7 @@ export const AdageDiscovery = () => {
     hasSeenAllPlaylist.current = true
   }
 
-  const { data: educationalDomains, error: educationalDomainsApiError } =
-    useEducationalDomains()
-
-  if (educationalDomainsApiError) {
-    snackBar.error(GET_DATA_ERROR_MESSAGE)
-  }
+  const { data: educationalDomains } = useEducationalDomains()
 
   const domainsOptions = educationalDomains.map(({ id, name }) => ({
     value: id,
