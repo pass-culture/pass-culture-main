@@ -6,7 +6,6 @@ from dateutil.relativedelta import relativedelta
 from pydantic import BaseModel as BaseModelV2
 
 from pcapi.celery_tasks.tasks import celery_async_task
-from pcapi.connectors import api_particulier
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus.api import apply_for_adult_disability_bonus
@@ -25,11 +24,7 @@ class BonusTaskPayload(BaseModelV2):
     fraud_check_id: int
 
 
-RETRYABLE_EXCEPTIONS = (
-    api_particulier.ParticulierApiUnavailable,
-    api_particulier.ParticulierApiRateLimitExceeded,
-    api_particulier.ParticulierApiRequestConflict,
-)
+RETRYABLE_EXCEPTIONS = ()
 
 
 @celery_async_task(
