@@ -38,6 +38,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_emails_by_venue
@@ -3729,7 +3730,7 @@ class AccessibilityProviderTest:
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        count = offerers_api.count_open_to_public_venues_with_accessibility_provider()
+        count = offerers_repository.count_open_to_public_venues_with_accessibility_provider()
         assert count == 1
 
     def test_get_open_to_public_venues_with_accessibility_provider(self):
@@ -3737,7 +3738,9 @@ class AccessibilityProviderTest:
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_open_to_public_venues_with_accessibility_provider(batch_size=10, batch_num=0)
+        venues_list = offerers_repository.get_open_to_public_venues_with_accessibility_provider(
+            batch_size=10, batch_num=0
+        )
         assert len(venues_list) == 1
         assert venues_list[0] == venue
 
@@ -3746,7 +3749,7 @@ class AccessibilityProviderTest:
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_open_to_public_venues_without_accessibility_provider()
+        venues_list = offerers_repository.get_open_to_public_venues_without_accessibility_provider()
         assert len(venues_list) == 3
 
     @patch("pcapi.connectors.acceslibre.find_new_entries_by_activity")
