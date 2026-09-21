@@ -8,6 +8,8 @@ from zoneinfo import ZoneInfo
 import pytest
 
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.artist import exceptions as artist_exceptions
+from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
@@ -18,6 +20,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.serialization import artist_serialize
 from pcapi.utils import date as date_utils
 
 import tests
@@ -68,6 +71,34 @@ class CheckCanEditStockSynchronizedStockTest:
             validation.check_can_edit_synchronized_stock(provider_offer, None, {attribute})
 
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
+
+
+class CheckArtistOfferLinksTest:
+    @mock.patch("pcapi.core.offers.validation.artist_api.check_artist_type_is_allowed_for_subcategory")
+    def test_check_subcategory_checker_is_called(self, mocked_check_artist_type):
+        links = [
+            artist_serialize.ArtistOfferLinkBodyModel(
+                artist_id="any-id", artist_type=artist_models.ArtistType.PERFORMER, artist_name="any"
+            ),
+        ]
+
+        validation.check_artist_offer_links(links, subcategories.CONCERT)
+
+        mocked_check_artist_type.assert_called_once_with(artist_models.ArtistType.PERFORMER, subcategories.CONCERT)
+
+    @mock.patch("pcapi.core.offers.validation.artist_api.check_artist_type_is_allowed_for_subcategory")
+    def test_raise_with_expected_error_message_when_subcategory_checker_raises(self, mocked_check_artist_type):
+        links = [
+            artist_serialize.ArtistOfferLinkBodyModel(
+                artist_id="any-id", artist_type=artist_models.ArtistType.PERFORMER, artist_name="any"
+            )
+        ]
+        mocked_check_artist_type.side_effect = artist_exceptions.ArtistException("the artist type is not allowed")
+
+        with pytest.raises(artist_exceptions.ArtistException) as error:
+            validation.check_artist_offer_links(links, subcategories.CONCERT)
+
+        assert error.value.message == "the artist type is not allowed"
 
 
 class CheckCanInputIdAtProviderTest:

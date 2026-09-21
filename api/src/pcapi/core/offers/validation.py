@@ -14,6 +14,7 @@ from PIL import UnidentifiedImageError
 from dateutil.relativedelta import relativedelta
 from pydantic.v1 import HttpUrl
 
+from pcapi.core.artist import api as artist_api
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
@@ -907,6 +908,13 @@ def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subc
         raise exceptions.OfferException(
             {"enableDoubleBookings": ["the category chosen does not allow double bookings"]}
         )
+
+
+def check_artist_offer_links(
+    artist_offer_links: typing.Sequence[artist_api.ArtistOfferLinkBody], subcategory: subcategories.Subcategory
+) -> None:
+    for link in artist_offer_links:
+        artist_api.check_artist_type_is_allowed_for_subcategory(link.artist_type, subcategory)
 
 
 def check_accessibility_compliance(

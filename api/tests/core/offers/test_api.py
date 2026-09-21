@@ -18,6 +18,7 @@ import time_machine
 from factory.faker import faker
 from flask import current_app
 
+import pcapi.core.artist.exceptions as artist_exceptions
 import pcapi.core.artist.factories as artist_factories
 import pcapi.core.artist.models as artist_models
 import pcapi.core.bookings.factories as bookings_factories
@@ -1678,12 +1679,10 @@ class CreateOfferTest:
             ],
         )
 
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(artist_exceptions.ArtistException) as error:
             api.create_offer(body, venue=venue, offerer_address=offerer_address)
 
-        assert error.value.errors == {
-            "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
-        }
+        assert error.value.message == "`performer` artists are not allowed for the `SEANCE_CINE` category"
 
     @mock.patch("pcapi.core.cultural_outreach.api.create_cultural_outreach_claim")
     def test_create_offer_with_cultural_outreach_claim(self, mocked_create_claim):

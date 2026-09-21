@@ -15,7 +15,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import ImageType
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import ProductMediation
-from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.routes.serialization import artist_serialize
 from pcapi.utils.string import to_camelcase
@@ -26,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 # TODO (tpommellet-pass): drop the union once `offers_schemas.CreateOffer` is migrated to pydantic v2
 ArtistOfferLinkBody = artist_serialize.ArtistOfferLinkBodyModel | artist_serialize.ArtistOfferLinkBodyModelV2
-
 
 @dataclass(frozen=True)
 class ArtistOfferLinkKey:
@@ -71,13 +69,15 @@ def create_artist_offer_link(offer_id: int, artist_offer_link: ArtistOfferLinkKe
     except sa_exc.IntegrityError as error:
         error_str = str(error.orig)
         if "check_has_artist_or_custom_name" in error_str:
-            raise artist_exceptions.MissingArtistDataException()
+            raise artist_exceptions.ArtistException(
+                "An artist offer link must have either an artist_id or a custom_name"
+            )
         if "unique_offer_artist_constraint" in error_str:
-            raise artist_exceptions.DuplicateArtistException()
+            raise artist_exceptions.ArtistException("An artist can only be linked once per type")
         if "unique_offer_custom_artist_constraint" in error_str:
-            raise artist_exceptions.DuplicateCustomArtistException()
+            raise artist_exceptions.ArtistException("A custom name can only be linked once per type")
         if "artist_id" in error_str:
-            raise artist_exceptions.InvalidArtistDataException()
+            raise artist_exceptions.ArtistException("Invalid artist id")
         raise error
 
 
@@ -92,34 +92,21 @@ def get_artist_offer_link_key(
     )
 
 
-def check_artist_offer_links(
-    artist_offer_links: typing.Sequence[ArtistOfferLinkBody], subcategory: subcategories.Subcategory
+def check_artist_type_is_allowed_for_subcategory(
+    artist_type: ArtistType, subcategory: subcategories.Subcategory
 ) -> None:
-    for link in artist_offer_links:
-        # TODO (tpommellet-pass): refacto once artists are no longer stored in extradata
-        # Convert snake_case ArtistType values to camelCase to match conditional_fields keys (ArtistFieldEnum)
-        if to_camelcase(link.artist_type.value) not in subcategory.conditional_fields:
-            raise api_errors.ApiErrors(
-                errors={"artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]}
-            )
+    # TODO (tpommellet-pass): refacto once artists are no longer stored in extradata
+    # Convert snake_case ArtistType values to camelCase to match conditional_fields keys (ArtistFieldEnum)
+    if to_camelcase(artist_type.value) not in subcategory.conditional_fields:
+        raise artist_exceptions.ArtistException(
+            f"`{artist_type.value}` artists are not allowed for the `{subcategory.id}` category"
+        )
 
 
 def upsert_artist_offer_links(
-    artist_offer_links: typing.Sequence[ArtistOfferLinkBody],
-    offer: models.Offer,
-    *,
-    subcategory_id: str | None = None,
-) -> tuple:
-    """
-    Update artist offer links for a specific offer based on a new list of artist offer links.
-    - Deletes existing artist offer links that are not in the new list
-    - Creates new artist offer links for entries that don't already exist
-    """
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id or offer.subcategoryId]
-    check_artist_offer_links(artist_offer_links, subcategory)
-
+    offer: models.Offer, incoming_links_keys: set[ArtistOfferLinkKey]
+) -> tuple[list[ArtistOfferLinkKey], list[ArtistOfferLinkKey]]:
     current_links_keys = {get_artist_offer_link_key(link) for link in offer.artistOfferLinks}
-    incoming_links_keys = {get_artist_offer_link_key(link) for link in artist_offer_links}
 
     deleted_keys = []
     for current_link in offer.artistOfferLinks:
@@ -146,6 +133,7 @@ def upsert_artist_offer_links(
                 technical_message_id="offer.artistOfferLinks.deleted",
             )
         )
+
     if created_keys:
         on_commit(
             partial(
@@ -156,7 +144,4 @@ def upsert_artist_offer_links(
             )
         )
 
-    return (
-        created_keys,
-        deleted_keys,
-    )
+    return created_keys, deleted_keys
