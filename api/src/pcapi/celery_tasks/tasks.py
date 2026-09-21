@@ -87,8 +87,13 @@ def celery_async_task(
             except requests.ExternalAPIException as exc:
                 if exc.is_retryable:
                     raise CloudTaskRetryException()
-            except Exception:
+            except Exception as exc:
                 metrics.tasks_failed_counter.labels(task=name).inc()
+                retry_after = getattr(exc, "retry_after", None)
+                if retry_after is not None and isinstance(exc, autoretry_for):
+                    # the external API told us when it will accept our calls again:
+                    # honor it instead of the exponential backoff
+                    raise self.retry(exc=exc, countdown=min(int(retry_after), MAX_RETRY_DURATION))
                 raise
             finally:
                 metrics.tasks_in_progress.labels(task=name).dec()

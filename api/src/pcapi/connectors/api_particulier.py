@@ -1,6 +1,9 @@
 import datetime
+import email.utils
 import enum
+import functools
 import logging
+import time
 import typing
 
 from pydantic import BaseModel
@@ -10,7 +13,9 @@ from pcapi import settings
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
+from pcapi.utils import rate_limit as rate_limit_utils
 from pcapi.utils import requests
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.requests import Response
 
 
@@ -21,6 +26,13 @@ QUOTIENT_FAMILIAL_ENDPOINT = f"{settings.PARTICULIER_API_URL}/v3/dss/quotient_fa
 AAH_ENDPOINT = f"{settings.PARTICULIER_API_URL}/v3/dss/allocation_adulte_handicape/identite"
 AEEH_ENDPOINT = f"{settings.PARTICULIER_API_URL}/v3/dss/allocation_enfant_handicape/identite"
 
+RATE_LIMIT_KEY = "api_particulier"
+RATE_LIMIT_TIME_WINDOW_SIZE = 60  # seconds
+# set when API Particulier rate limits us, so that every worker stops calling them until they accept our calls again
+RATE_LIMIT_LOCK_KEY = f"pcapi:rate_limit:{RATE_LIMIT_KEY}:lock"
+# `RateLimit-Reset` is documented as a number of seconds, but some gouv.fr APIs send a unix timestamp instead
+_UNIX_TIMESTAMP_THRESHOLD = 1_000_000_000
+
 
 class ParticulierApiException(Exception):
     def __init__(
@@ -30,11 +42,14 @@ class ParticulierApiException(Exception):
         status_code: int,
         error_code: str | None = None,
         error_title: str | None = None,
+        retry_after: int | None = None,
     ) -> None:
         super().__init__(message)
         self.status_code = status_code
         self.error_code = error_code
         self.error_title = error_title
+        # when set, tells the caller (usually a celery task) how many seconds it should wait before retrying
+        self.retry_after = retry_after
 
 
 class ParticulierApiForbidden(ParticulierApiException):
@@ -63,6 +78,96 @@ class ParticulierApiQueryError(ParticulierApiException):
 
 class ParticulierApiRateLimitExceeded(ParticulierApiException):
     pass
+
+
+def rate_limited[**P, T](func: typing.Callable[P, T]) -> typing.Callable[P, T]:
+    """
+    Client side rate limit, shared by every worker, so that we stop calling API Particulier
+    before they start rejecting our calls, and stop until `Retry-After` passes once they do.
+    """
+
+    @functools.wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        remaining_lock_seconds = _get_rate_limit_lock_ttl()
+        if remaining_lock_seconds:
+            raise ParticulierApiRateLimitExceeded(
+                "API Particulier is rate limiting us", status_code=429, retry_after=remaining_lock_seconds
+            )
+
+        try:
+            with rate_limit_utils.rate_limit(
+                key=RATE_LIMIT_KEY,
+                time_window_size=RATE_LIMIT_TIME_WINDOW_SIZE,
+                max_per_time_window=settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD,
+            ):
+                return func(*args, **kwargs)
+        except rate_limit_utils.RateLimitedError as e:
+            retry_after = _get_seconds_before_next_time_window()
+            logger.warning(
+                "API Particulier client side rate limit reached",
+                extra={"limit": e.max_per_time_window, "current": e.current, "retry_after": retry_after},
+            )
+            raise ParticulierApiRateLimitExceeded(
+                "client side rate limit reached", status_code=429, retry_after=retry_after
+            ) from e
+        except ParticulierApiRateLimitExceeded as e:
+            # they rejected that call: every other call is going to be rejected as well until `Retry-After` passes
+            e.retry_after = max(1, e.retry_after or _get_seconds_before_next_time_window())
+            _lock_until_rate_limit_reset(e.retry_after)
+            raise
+
+    return wrapper
+
+
+def _get_rate_limit_lock_ttl() -> int:
+    # `ttl` returns a negative value when the key has no expiry (-1) or does not exist (-2)
+    return max(0, get_redis_client().ttl(RATE_LIMIT_LOCK_KEY))
+
+
+def _lock_until_rate_limit_reset(retry_after: int) -> None:
+    get_redis_client().set(RATE_LIMIT_LOCK_KEY, "1", ex=retry_after)
+
+
+def _get_seconds_before_next_time_window() -> int:
+    now = int(time.time())
+    next_time_window_start = (now // RATE_LIMIT_TIME_WINDOW_SIZE + 1) * RATE_LIMIT_TIME_WINDOW_SIZE
+    return max(1, next_time_window_start - now)
+
+
+def _get_retry_after(response: Response) -> int | None:
+    """
+    API Particulier sends `Retry-After`, along with `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset`,
+    when it rate limits us. `Retry-After` is either a number of seconds or an HTTP date.
+    """
+    retry_after = response.headers.get("Retry-After")
+    if retry_after:
+        try:
+            return max(0, int(retry_after))
+        except ValueError:
+            pass
+
+        try:
+            retry_date = email.utils.parsedate_to_datetime(retry_after)
+        except (TypeError, ValueError):
+            retry_date = None
+
+        if retry_date:
+            if retry_date.tzinfo is None:
+                retry_date = retry_date.replace(tzinfo=datetime.UTC)
+            return max(0, int((retry_date - datetime.datetime.now(datetime.UTC)).total_seconds()))
+
+    rate_limit_reset = response.headers.get("RateLimit-Reset")
+    if rate_limit_reset:
+        try:
+            seconds_before_reset = int(rate_limit_reset)
+        except ValueError:
+            return None
+
+        if seconds_before_reset > _UNIX_TIMESTAMP_THRESHOLD:
+            seconds_before_reset -= int(time.time())
+        return max(0, seconds_before_reset)
+
+    return None
 
 
 class ApiParticulierPerson(BaseModel):
@@ -107,6 +212,7 @@ class QuotientFamilialResponse(BaseModel):
     data: QuotientFamilialData
 
 
+@rate_limited
 def get_quotient_familial(
     custodian: bonus_schemas.BonusCreditPerson, at_date: datetime.date | None = None
 ) -> QuotientFamilialResponse:
@@ -170,6 +276,7 @@ class DisabledAdultAllowanceResponse(BaseModel):
     data: DisabledAdultAllowanceData
 
 
+@rate_limited
 def get_disabled_adult_allowance(person: bonus_schemas.BonusCreditPerson) -> DisabledAdultAllowanceResponse:
     """
     Get whether the person benefits from the disabled adult allowance.
@@ -235,6 +342,7 @@ class DisabledChildEducationAllowanceResponse(BaseModel):
     data: DisabledChildEducationAllowanceData
 
 
+@rate_limited
 def get_disabled_child_education_allowance(
     person: bonus_schemas.BonusCreditPerson,
 ) -> DisabledChildEducationAllowanceResponse:
@@ -289,6 +397,8 @@ def _raise_for_status(response: Response, endpoint_label: str) -> None:
         error_code, error_title = None, None
         message = f"{endpoint_label} unparsable error"
 
+    retry_after = _get_retry_after(response)
+
     ExceptionClass = ParticulierApiException
     if response.status_code == 403:
         ExceptionClass = ParticulierApiForbidden
@@ -302,6 +412,16 @@ def _raise_for_status(response: Response, endpoint_label: str) -> None:
         ExceptionClass = ParticulierApiPersonNotFound
     elif response.status_code == 429:
         ExceptionClass = ParticulierApiRateLimitExceeded
+        logger.warning(
+            "API Particulier rate limit exceeded",
+            extra={
+                "endpoint": endpoint_label,
+                "limit": response.headers.get("RateLimit-Limit"),
+                "remaining": response.headers.get("RateLimit-Remaining"),
+                "reset": response.headers.get("RateLimit-Reset"),
+                "retry_after": retry_after,
+            },
+        )
     elif response.status_code // 100 == 4:
         ExceptionClass = ParticulierApiQueryError
     elif response.status_code // 100 == 5:
@@ -312,4 +432,5 @@ def _raise_for_status(response: Response, endpoint_label: str) -> None:
         status_code=response.status_code,
         error_code=error_code,
         error_title=error_title,
+        retry_after=retry_after,
     )

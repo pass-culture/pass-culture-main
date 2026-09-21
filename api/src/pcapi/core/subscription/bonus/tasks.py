@@ -36,7 +36,6 @@ RETRYABLE_EXCEPTIONS = (
     name="tasks.api_particulier.default.apply_for_quotient_familial_bonus",
     model=BonusTaskPayload,
     autoretry_for=RETRYABLE_EXCEPTIONS,
-    rate_limit="200/m",
 )
 def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
     if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
@@ -88,7 +87,6 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
     name="tasks.api_particulier.default.apply_for_adult_disability_bonus",
     model=BonusTaskPayload,
     autoretry_for=RETRYABLE_EXCEPTIONS,
-    rate_limit="200/m",
 )
 def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
     if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
@@ -140,7 +138,6 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
     name="tasks.api_particulier.default.apply_for_disabled_child_education_bonus",
     model=BonusTaskPayload,
     autoretry_for=RETRYABLE_EXCEPTIONS,
-    rate_limit="200/m",
 )
 def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> None:
     if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():

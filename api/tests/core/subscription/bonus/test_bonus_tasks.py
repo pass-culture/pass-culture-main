@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 import pytest
 import sqlalchemy as sa
+from celery import exceptions as celery_exceptions
 from dateutil.relativedelta import relativedelta
 
 import pcapi.core.finance.factories as finance_factories
@@ -187,6 +188,24 @@ class DisabledChildEducationBonusTaskTest:
         with does_not_raise():
             payload = tasks.BonusTaskPayload(fraud_check_id=1)
             tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump())
+
+
+class RateLimitedBonusTaskTest:
+    @patch("celery.app.task.Task.retry")
+    @patch("pcapi.connectors.api_particulier.get_disabled_adult_allowance")
+    def test_task_is_retried_when_api_particulier_says_so(self, mocked_disabled_adult_allowance, mocked_retry):
+        fraud_check = subscription_factories.AAHBonusCreditFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+        mocked_disabled_adult_allowance.side_effect = api_particulier.ParticulierApiRateLimitExceeded(
+            "aah 429", status_code=429, retry_after=37
+        )
+        mocked_retry.side_effect = celery_exceptions.Retry()
+
+        payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check.id)
+        tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump())
+
+        assert mocked_retry.call_args.kwargs["countdown"] == 37
 
 
 class RecoverStartedBonusCreditApplicationsTest:

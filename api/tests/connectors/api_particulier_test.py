@@ -3,9 +3,15 @@ Examples are taken from
 https://github.com/etalab/siade_staging_data/tree/develop/payloads/api_particulier_v3_cnav_quotient_familial_with_civility
 """
 
+import time
+from datetime import UTC
 from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from email.utils import format_datetime
 
 import pytest
+from flask import current_app
 
 from pcapi import settings
 from pcapi.connectors import api_particulier
@@ -374,3 +380,115 @@ class DisabledChildEducationAllowanceTest:
 
         with pytest.raises(exception):
             api_particulier.get_disabled_child_education_allowance(person)
+
+
+class RateLimitTest:
+    def _get_rate_limit_key(self) -> str:
+        time_window_id = int(time.time()) // api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE
+        return (
+            f"pcapi:rate_limit:{api_particulier.RATE_LIMIT_KEY}"
+            f":{api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE}:{time_window_id}"
+        )
+
+    def test_retry_after_in_seconds(self, requests_mock):
+        person = subscription_factories.BonusCreditPersonFactory.create()
+        requests_mock.get(
+            api_particulier.AAH_ENDPOINT,
+            status_code=429,
+            json={},
+            headers={
+                "RateLimit-Limit": "200",
+                "RateLimit-Remaining": "0",
+                "RateLimit-Reset": "37",
+                "Retry-After": "37",
+            },
+        )
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded) as error:
+            api_particulier.get_disabled_adult_allowance(person)
+
+        assert error.value.retry_after == 37
+
+    def test_retry_after_as_http_date(self, requests_mock):
+        person = subscription_factories.BonusCreditPersonFactory.create()
+        in_one_minute = datetime.now(UTC) + timedelta(minutes=1)
+        requests_mock.get(
+            api_particulier.AAH_ENDPOINT,
+            status_code=429,
+            json={},
+            headers={"Retry-After": format_datetime(in_one_minute, usegmt=True)},
+        )
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded) as error:
+            api_particulier.get_disabled_adult_allowance(person)
+
+        assert 50 <= error.value.retry_after <= 60
+
+    def test_retry_after_falls_back_on_rate_limit_reset(self, requests_mock):
+        person = subscription_factories.BonusCreditPersonFactory.create()
+        requests_mock.get(
+            api_particulier.AEEH_ENDPOINT,
+            status_code=429,
+            json={},
+            headers={"RateLimit-Limit": "200", "RateLimit-Remaining": "0", "RateLimit-Reset": "12"},
+        )
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded) as error:
+            api_particulier.get_disabled_child_education_allowance(person)
+
+        assert error.value.retry_after == 12
+
+    def test_no_retry_after_when_the_api_does_not_send_any(self, requests_mock):
+        person = subscription_factories.BonusCreditPersonFactory.create()
+        requests_mock.get(api_particulier.AAH_ENDPOINT, status_code=500, json={})
+
+        with pytest.raises(api_particulier.ParticulierApiUnavailable) as error:
+            api_particulier.get_disabled_adult_allowance(person)
+
+        assert error.value.retry_after is None
+
+    def test_further_calls_fail_early_until_retry_after_passes(self, requests_mock):
+        person = subscription_factories.BonusCreditPersonFactory.create()
+        requests_mock.get(api_particulier.AAH_ENDPOINT, status_code=429, json={}, headers={"Retry-After": "37"})
+        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=AEEH_RECIPIENT_RESPONSE)
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded):
+            api_particulier.get_disabled_adult_allowance(person)
+
+        # any endpoint, not only the one that got rate limited
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded) as error:
+            api_particulier.get_disabled_child_education_allowance(person)
+
+        assert requests_mock.call_count == 1
+        assert error.value.retry_after == 37
+        assert current_app.redis_client.ttl(api_particulier.RATE_LIMIT_LOCK_KEY) == 37
+
+    def test_locked_calls_do_not_consume_the_client_side_rate_limit(self, requests_mock):
+        person = subscription_factories.BonusCreditPersonFactory.create()
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=AAH_RECIPIENT_RESPONSE)
+        current_app.redis_client.set(api_particulier.RATE_LIMIT_LOCK_KEY, "1", ex=60)
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded):
+            api_particulier.get_disabled_adult_allowance(person)
+
+        assert not requests_mock.called
+        assert current_app.redis_client.get(self._get_rate_limit_key()) is None
+
+    def test_client_side_rate_limit_does_not_call_the_api(self, requests_mock):
+        person = subscription_factories.BonusCreditPersonFactory.create()
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=AAH_RECIPIENT_RESPONSE)
+        current_app.redis_client.set(self._get_rate_limit_key(), settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD)
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded) as error:
+            api_particulier.get_disabled_adult_allowance(person)
+
+        assert not requests_mock.called
+        assert 0 < error.value.retry_after <= api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE
+
+    def test_calls_are_counted_in_the_client_side_rate_limit(self, requests_mock):
+        person = subscription_factories.BonusCreditPersonFactory.create()
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=AAH_RECIPIENT_RESPONSE)
+
+        api_particulier.get_disabled_adult_allowance(person)
+
+        assert int(current_app.redis_client.get(self._get_rate_limit_key())) == 1

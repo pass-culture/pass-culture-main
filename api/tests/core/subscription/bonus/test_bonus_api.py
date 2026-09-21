@@ -242,6 +242,24 @@ class QuotientFamilialApplicationTest:
         assert len(mocked_get_quotient_familial.mock_calls) == 2
 
     @patch("pcapi.connectors.api_particulier.get_quotient_familial")
+    def test_quotient_familial_stops_when_rate_limited(self, mocked_get_quotient_familial):
+        fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+                quotient_familial=None
+            ).model_dump(),
+        )
+        mocked_get_quotient_familial.side_effect = api_particulier.ParticulierApiRateLimitExceeded(
+            status_code=429, retry_after=42
+        )
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded) as error:
+            bonus_api.apply_for_quotient_familial_bonus(fraud_check)
+
+        assert error.value.retry_after == 42
+        assert len(mocked_get_quotient_familial.mock_calls) == 1
+
+    @patch("pcapi.connectors.api_particulier.get_quotient_familial")
     @patch("pcapi.core.subscription.bonus.api._get_result_relevance")
     def test_get_quotient_familial_caches_calls(self, mocked_get_result_relevance, mocked_get_quotient_familial):
         custodian = subscription_factories.BonusCreditPersonFactory()
