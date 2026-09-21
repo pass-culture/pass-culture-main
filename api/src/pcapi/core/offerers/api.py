@@ -60,7 +60,6 @@ from pcapi.core.geography import utils as geography_utils
 from pcapi.core.history import api as history_api
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import utils as offerers_utils
 from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
@@ -92,8 +91,8 @@ from pcapi.utils.transaction_manager import on_commit
 
 from . import exceptions
 from . import models
-from . import repository as offerers_repository
-from . import schemas as offerers_schemas
+from . import repository
+from . import schemas
 from . import tasks
 from . import validation
 
@@ -111,7 +110,7 @@ INVOICE_REFERENCE_REGEX = r"^[AF]\d{9}$"
 
 def link_cultural_domains_to_venue(
     cultural_domains: list[str] | None,
-    venue: offerers_models.Venue | None,
+    venue: models.Venue | None,
 ) -> None:
     if cultural_domains is None:
         return
@@ -134,7 +133,7 @@ def update_venue(
     author: users_models.User,
     *,
     opening_hours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None = None,
-    contact_data: offerers_schemas.VenueContactModelV2 | None = None,
+    contact_data: schemas.VenueContactModelV2 | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     cultural_domains: list[str] | None = None,
@@ -163,7 +162,7 @@ def update_venue(
 
     if contact_data:
         # target must not be None, otherwise contact_data fields will be compared to fields in Venue, which do not exist
-        target = venue.contact if venue.contact is not None else offerers_models.VenueContact()
+        target = venue.contact if venue.contact is not None else models.VenueContact()
         venue_snapshot.trace_update(contact_data.model_dump(), target=target, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
 
@@ -193,7 +192,7 @@ def update_venue(
         }
         venue_snapshot.trace_update(
             external_accessibility_infos,
-            target=venue.accessibilityProvider or offerers_models.AccessibilityProvider(),
+            target=venue.accessibilityProvider or models.AccessibilityProvider(),
             field_name_template="accessibilityProvider.{}",
         )
         if external_accessibility_id:
@@ -344,10 +343,10 @@ def _update_venue_location(
     offerer_address = venue.offererAddress
     if not offerer_address:
         # In case of missing OA, backoffice user should be able to set an address
-        offerer_address = offerers_models.OffererAddress(
+        offerer_address = models.OffererAddress(
             offererId=venue.managingOffererId,
             venueId=venue.id,
-            type=offerers_models.LocationType.VENUE_LOCATION,
+            type=models.LocationType.VENUE_LOCATION,
             address=geography_models.Address(),  # not saved, only used for comparison
             label=None,
         )
@@ -399,7 +398,7 @@ def _update_venue_location(
 
     venue_snapshot.trace_update(snapshot_location_data, offerer_address.address, "offererAddress.address.{}")
 
-    assert offerer_address.type == offerers_models.LocationType.VENUE_LOCATION  # should never raise
+    assert offerer_address.type == models.LocationType.VENUE_LOCATION  # should never raise
     venue_snapshot.trace_update({"addressId": address.id}, offerer_address, "offererAddress.{}")
     offerer_address.address = address
 
@@ -445,7 +444,7 @@ def update_venue_collective_data(
 
 
 def upsert_venue_contact(
-    venue: models.Venue, contact_data: offerers_schemas.VenueContactModel | offerers_schemas.VenueContactModelV2
+    venue: models.Venue, contact_data: schemas.VenueContactModel | schemas.VenueContactModelV2
 ) -> models.Venue:
     """
     Create and attach a VenueContact to a Venue if it has none.
@@ -488,7 +487,7 @@ def create_venue(
     dms_token = generate_dms_token()
 
     venue = models.Venue()
-    venue_address = offerers_schemas.LocationModel(**venue_data.address.model_dump())
+    venue_address = schemas.LocationModel(**venue_data.address.model_dump())
 
     if not address:
         address = create_offerer_address_from_address_api(venue_address)
@@ -511,7 +510,7 @@ def create_venue(
         # Always enable collective features for new venues in integration
         # Update managing offerer now and not when it is created to avoid
         # some environment specific code spread here and there.
-        offerer = db.session.get(offerers_models.Offerer, venue.managingOffererId)
+        offerer = db.session.get(models.Offerer, venue.managingOffererId)
         if offerer:
             # if no offerer is found, venue won't be saved because of invalid
             # foreign key id. No need to handle this here, let it fail later.
@@ -528,10 +527,10 @@ def create_venue(
 
     db.session.flush()
 
-    offerer_address = offerers_models.OffererAddress(
+    offerer_address = models.OffererAddress(
         offererId=venue_data.managing_offerer_id,
         addressId=address.id,
-        type=offerers_models.LocationType.VENUE_LOCATION,
+        type=models.LocationType.VENUE_LOCATION,
         label=None,  # venue location always gets an empty label
         venue=venue,
     )
@@ -567,10 +566,10 @@ def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
         raise exceptions.CannotDeleteVenueWithBookingsException()
 
     venue_used_as_pricing_point = db.session.query(
-        db.session.query(offerers_models.VenuePricingPointLink)
+        db.session.query(models.VenuePricingPointLink)
         .filter(
-            offerers_models.VenuePricingPointLink.venueId != venue_id,
-            offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
+            models.VenuePricingPointLink.venueId != venue_id,
+            models.VenuePricingPointLink.pricingPointId == venue_id,
         )
         .exists()
     ).scalar()
@@ -579,11 +578,11 @@ def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
         # Additional checks to allow removing a venue which is only a former pricing point for other venues but has
         # never been used for pricing, so that support team can handle misconfiguration by an offerer.
         venue_used_as_current_pricing_point = db.session.query(
-            db.session.query(offerers_models.VenuePricingPointLink)
+            db.session.query(models.VenuePricingPointLink)
             .filter(
-                offerers_models.VenuePricingPointLink.venueId != venue_id,
-                offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
-                offerers_models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
+                models.VenuePricingPointLink.venueId != venue_id,
+                models.VenuePricingPointLink.pricingPointId == venue_id,
+                models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
             )
             .exists()
         ).scalar()
@@ -598,9 +597,9 @@ def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
         if pricing_point_has_pricings:
             raise exceptions.CannotDeleteVenueUsedAsPricingPointException()
 
-        db.session.query(offerers_models.VenuePricingPointLink).filter(
-            offerers_models.VenuePricingPointLink.venueId != venue_id,
-            offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
+        db.session.query(models.VenuePricingPointLink).filter(
+            models.VenuePricingPointLink.venueId != venue_id,
+            models.VenuePricingPointLink.pricingPointId == venue_id,
         ).delete(synchronize_session=False)
 
     # Because of regularization, FinanceEvent may still be linked to the venue even if the Booking has moved
@@ -626,14 +625,14 @@ def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
         raise exceptions.CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule()
 
     if not allow_delete_last_venue:
-        aliased_venue = sa_orm.aliased(offerers_models.Venue)
+        aliased_venue = sa_orm.aliased(models.Venue)
         offerer_has_other_venue = db.session.query(
-            db.session.query(offerers_models.Venue)
-            .join(aliased_venue, aliased_venue.managingOffererId == offerers_models.Venue.managingOffererId)
+            db.session.query(models.Venue)
+            .join(aliased_venue, aliased_venue.managingOffererId == models.Venue.managingOffererId)
             .filter(
                 aliased_venue.id == venue_id,
-                offerers_models.Venue.id != venue_id,
-                offerers_models.Venue.isSoftDeleted.is_not(True),
+                models.Venue.id != venue_id,
+                models.Venue.isSoftDeleted.is_not(True),
             )
             .exists()
         ).scalar()
@@ -651,13 +650,11 @@ def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
     # their pricing/reimbursement point, the database will rightfully
     # raise an error. Either these venues should be deleted first, or
     # the "venue to delete" should not be deleted.
-    db.session.query(offerers_models.VenuePricingPointLink).filter_by(
+    db.session.query(models.VenuePricingPointLink).filter_by(
         venueId=venue_id,
     ).delete(synchronize_session=False)
 
-    db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_id).delete(
-        synchronize_session=False
-    )
+    db.session.query(models.Venue).filter(models.Venue.id == venue_id).delete(synchronize_session=False)
 
     db.session.flush()
 
@@ -731,7 +728,7 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
     db.session.query(providers_models.AllocineVenueProvider).filter(
         providers_models.AllocineVenueProvider.id == providers_models.VenueProvider.id,
         providers_models.VenueProvider.venueId == venue_id,
-        offerers_models.Venue.id == venue_id,
+        models.Venue.id == venue_id,
     ).delete(synchronize_session=False)
     db.session.query(providers_models.VenueProvider).filter(providers_models.VenueProvider.venueId == venue_id).delete(
         synchronize_session=False
@@ -950,7 +947,7 @@ def _create_prefix(env: str, prefix_identifier: str) -> str:
     return f"{env}{API_KEY_SEPARATOR}{prefix_identifier}"
 
 
-def _initialize_offerer(offerer: offerers_models.Offerer) -> None:
+def _initialize_offerer(offerer: models.Offerer) -> None:
     if settings.IS_INTEGRATION:
         offerer.validationStatus = ValidationStatus.VALIDATED
     else:
@@ -960,7 +957,7 @@ def _initialize_offerer(offerer: offerers_models.Offerer) -> None:
 
 
 def auto_tag_new_offerer(
-    offerer: offerers_models.Offerer,
+    offerer: models.Offerer,
     siren_info: sirene_models.SirenInfo | sirene_models.SiretInfo | None,
     user: users_models.User,
 ) -> None:
@@ -970,7 +967,7 @@ def auto_tag_new_offerer(
         if siren_info.ape_code:
             tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
             if tag_label:
-                tag = db.session.query(offerers_models.OffererTag).filter_by(label=tag_label).one_or_none()
+                tag = db.session.query(models.OffererTag).filter_by(label=tag_label).one_or_none()
                 if not tag:
                     logger.error(
                         "Could not assign tag to offerer: tag not found in DB",
@@ -983,11 +980,7 @@ def auto_tag_new_offerer(
         tag_names_to_apply.add("partenaire-national")
 
     if tag_names_to_apply:
-        tags = (
-            db.session.query(offerers_models.OffererTag)
-            .filter(offerers_models.OffererTag.name.in_(tag_names_to_apply))
-            .all()
-        )
+        tags = db.session.query(models.OffererTag).filter(models.OffererTag.name.in_(tag_names_to_apply)).all()
         if len(tags) != len(tag_names_to_apply):
             missing_tags = tag_names_to_apply - {tag.name for tag in tags}
             logger.error(
@@ -1022,7 +1015,7 @@ def create_offerer(
     insee_data: sirene_models.SirenInfo | sirene_models.SiretInfo | None = None,
     **kwargs: typing.Any,
 ) -> models.UserOfferer:
-    offerer = offerers_repository.find_offerer_by_siren(offerer_informations.siren)
+    offerer = repository.find_offerer_by_siren(offerer_informations.siren)
     if not insee_data:
         insee_data = api_entreprise.get_siren_open_data(offerer_informations.siren)
     is_new = False
@@ -1034,7 +1027,7 @@ def create_offerer(
         # The user can have his attachment rejected or deleted to the offerer,
         # in this case it is passed to NEW if the offerer is not rejected
         user_offerer = (
-            db.session.query(offerers_models.UserOfferer).filter_by(userId=user.id, offererId=offerer.id).one_or_none()
+            db.session.query(models.UserOfferer).filter_by(userId=user.id, offererId=offerer.id).one_or_none()
         )
         if not user_offerer:
             user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
@@ -1196,7 +1189,7 @@ def remove_pro_role_and_add_non_attached_pro_role(users: list[users_models.User]
 
 
 def validate_offerer_attachment(
-    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
+    user_offerer: models.UserOfferer, author_user: users_models.User, comment: str | None = None
 ) -> None:
     if user_offerer.isValidated:
         raise exceptions.UserOffererAlreadyValidatedException()
@@ -1233,7 +1226,7 @@ def validate_offerer_attachment(
 
 
 def set_offerer_attachment_pending(
-    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
+    user_offerer: models.UserOfferer, author_user: users_models.User, comment: str | None = None
 ) -> None:
     user_offerer.validationStatus = ValidationStatus.PENDING
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
@@ -1249,7 +1242,7 @@ def set_offerer_attachment_pending(
 
 
 def reject_offerer_attachment(
-    user_offerer: offerers_models.UserOfferer,
+    user_offerer: models.UserOfferer,
     author_user: users_models.User | None,
     comment: str | None = None,
     send_email: bool = True,
@@ -1273,7 +1266,7 @@ def reject_offerer_attachment(
 
 
 def delete_offerer_attachment(
-    user_offerer: offerers_models.UserOfferer,
+    user_offerer: models.UserOfferer,
     author_user: users_models.User | None,
     comment: str | None = None,
 ) -> None:
@@ -1310,16 +1303,14 @@ def validate_offerer(
 
     if review_all_offers:
         action_args |= _internal_update_fraud_info(
-            offerer=offerer, confidence_level=offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+            offerer=offerer, confidence_level=models.OffererConfidenceLevel.MANUAL_REVIEW
         )
 
         # Offers created before validation should be reviewed
         db.session.query(offers_models.Offer).filter(
-            offerers_models.Venue.managingOffererId == offerer.id,
+            models.Venue.managingOffererId == offerer.id,
             offers_models.Offer.venueId.in_(
-                db.session.query(offerers_models.Venue)
-                .filter_by(managingOffererId=offerer.id)
-                .with_entities(offerers_models.Venue.id)
+                db.session.query(models.Venue).filter_by(managingOffererId=offerer.id).with_entities(models.Venue.id)
             ),
             offers_models.Offer.lastValidationType == offer_mixin.OfferValidationType.AUTO,
             offers_models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -1349,14 +1340,12 @@ def validate_offerer(
         transactional_mails.send_new_offerer_validation_email_to_pro(offerer)
     for managed_venue in offerer.managedVenues:
         if managed_venue.adageId:
-            emails = offerers_repository.get_emails_by_venue(managed_venue)
+            emails = repository.get_emails_by_venue(managed_venue)
             transactional_mails.send_eac_offerer_activation_email(managed_venue, list(emails))
             break
 
 
-def reject_offerer(
-    offerer: offerers_models.Offerer, author_user: users_models.User | None, **action_args: typing.Any
-) -> None:
+def reject_offerer(offerer: models.Offerer, author_user: users_models.User | None, **action_args: typing.Any) -> None:
     if offerer.isRejected:
         raise exceptions.OffererAlreadyRejectedException()
 
@@ -1382,7 +1371,7 @@ def reject_offerer(
             action_args.get("rejection_reason"),
         )
 
-    users_offerer = db.session.query(offerers_models.UserOfferer).filter_by(offererId=offerer.id).all()
+    users_offerer = db.session.query(models.UserOfferer).filter_by(offererId=offerer.id).all()
     for user_offerer in users_offerer:
         reject_offerer_attachment(
             user_offerer,
@@ -1405,7 +1394,7 @@ USED_EVENT_DELAY = bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY + timedelt
 
 
 def close_offerer(
-    offerer: offerers_models.Offerer,
+    offerer: models.Offerer,
     *,
     is_manual: bool = False,
     closure_date: date | None = None,
@@ -1451,24 +1440,24 @@ def auto_delete_attachments_on_closed_offerers() -> None:
     last_closed_date_subquery = (
         db.session.query(history_models.ActionHistory.actionDate)
         .filter(
-            history_models.ActionHistory.offererId == offerers_models.Offerer.id,
+            history_models.ActionHistory.offererId == models.Offerer.id,
             history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_CLOSED,
         )
         .order_by(history_models.ActionHistory.actionDate.desc())
         .limit(1)
-        .correlate(offerers_models.Offerer)
+        .correlate(models.Offerer)
         .scalar_subquery()
     )
 
     rows = (
         db.session.query(
-            offerers_models.UserOfferer,
+            models.UserOfferer,
             last_closed_date_subquery.label("offererClosedDate"),
         )
-        .join(offerers_models.UserOfferer.offerer)
+        .join(models.UserOfferer.offerer)
         .filter(
-            offerers_models.Offerer.isClosed,
-            offerers_models.UserOfferer.validationStatus.in_(
+            models.Offerer.isClosed,
+            models.UserOfferer.validationStatus.in_(
                 [ValidationStatus.NEW, ValidationStatus.PENDING, ValidationStatus.VALIDATED]
             ),
         )
@@ -1644,7 +1633,7 @@ def cancel_collective_bookings_on_venue_closure(venue_id: int, author_id: int | 
             )
 
 
-def handle_closed_offerer(offerer: offerers_models.Offerer, closure_date: date | None) -> None:
+def handle_closed_offerer(offerer: models.Offerer, closure_date: date | None) -> None:
     action_kwargs: dict[str, typing.Any] = {
         "comment": "L'entité juridique est détectée comme fermée "
         + (closure_date.strftime("le %d/%m/%Y ") if closure_date else "")
@@ -1656,17 +1645,17 @@ def handle_closed_offerer(offerer: offerers_models.Offerer, closure_date: date |
         if offerers_constants.CLOSED_OFFERER_TAG_NAME not in (tag.name for tag in offerer.tags):
             # .one() raises an exception if the tag does not exist -- ensures that a potential issue is tracked
             tag = (
-                db.session.query(offerers_models.OffererTag)
-                .filter(offerers_models.OffererTag.name == offerers_constants.CLOSED_OFFERER_TAG_NAME)
+                db.session.query(models.OffererTag)
+                .filter(models.OffererTag.name == offerers_constants.CLOSED_OFFERER_TAG_NAME)
                 .one()
             )
             action_kwargs["modified_info"] = {"tags": {"new_info": tag.label}}
-            db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
+            db.session.add(models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
         if offerer.isWaitingForValidation:
             reject_offerer(
                 offerer=offerer,
                 author_user=None,
-                rejection_reason=offerers_models.OffererRejectionReason.CLOSED_BUSINESS,
+                rejection_reason=models.OffererRejectionReason.CLOSED_BUSINESS,
                 **action_kwargs,
             )
         elif offerer.isValidated and FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS.is_active():
@@ -1686,11 +1675,11 @@ def handle_closed_offerer(offerer: offerers_models.Offerer, closure_date: date |
 
 
 def set_offerer_pending(
-    offerer: offerers_models.Offerer,
+    offerer: models.Offerer,
     author_user: users_models.User,
     comment: str | None = None,
-    tags_to_add: typing.Iterable[offerers_models.OffererTag] | None = None,
-    tags_to_remove: typing.Iterable[offerers_models.OffererTag] | None = None,
+    tags_to_add: typing.Iterable[models.OffererTag] | None = None,
+    tags_to_remove: typing.Iterable[models.OffererTag] | None = None,
 ) -> None:
     was_validated = offerer.isValidated
     offerer.validationStatus = ValidationStatus.PENDING
@@ -1732,12 +1721,12 @@ def set_offerer_pending(
         _update_external_offerer(offerer, index_with_reason=IndexationReason.OFFERER_DEACTIVATION)
 
 
-def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_models.User, comment: str) -> None:
+def add_comment_to_offerer(offerer: models.Offerer, author_user: users_models.User, comment: str) -> None:
     history_api.add_action(history_models.ActionType.COMMENT, author=author_user, offerer=offerer, comment=comment)
     db.session.flush()
 
 
-def add_comment_to_venue(venue: offerers_models.Venue, author_user: users_models.User, comment: str) -> None:
+def add_comment_to_venue(venue: models.Venue, author_user: users_models.User, comment: str) -> None:
     history_api.add_action(history_models.ActionType.COMMENT, author=author_user, venue=venue, comment=comment)
 
 
@@ -1854,7 +1843,7 @@ def can_offerer_create_educational_offer(offerer_id: int) -> bool:
     if offerer.allowedOnAdage:
         return True
 
-    if offerers_repository.offerer_has_venue_with_adage_id(offerer_id):
+    if repository.offerer_has_venue_with_adage_id(offerer_id):
         return True
 
     try:
@@ -1886,7 +1875,7 @@ def get_educational_offerers(offerer_id: int | None, current_user: users_models.
         )
     else:
         offerers = (
-            offerers_repository.get_all_offerers_for_user(
+            repository.get_all_offerers_for_user(
                 user=current_user,
                 validated_offerers_only=True,
             )
@@ -1938,21 +1927,19 @@ def generate_dms_token() -> str:
     """
     for _i in range(10):
         dms_token = secrets.token_hex(6)
-        if not offerers_repository.dms_token_exists(dms_token):
+        if not repository.dms_token_exists(dms_token):
             return dms_token
     raise ValueError("Could not generate new dmsToken for Venue")
 
 
-def get_venues_educational_statuses() -> list[offerers_models.VenueEducationalStatus]:
-    return offerers_repository.get_venues_educational_statuses()
+def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
+    return repository.get_venues_educational_statuses()
 
 
 def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) -> sa_orm.Query[models.Offerer]:
     offerers = db.session.query(models.Offerer).options(
-        sa_orm.with_expression(
-            offerers_models.Offerer.department_codes, offerers_models.Offerer.department_codes_expression()
-        ),
-        sa_orm.with_expression(offerers_models.Offerer.cities, offerers_models.Offerer.cities_expression()),
+        sa_orm.with_expression(models.Offerer.department_codes, models.Offerer.department_codes_expression()),
+        sa_orm.with_expression(models.Offerer.cities, models.Offerer.cities_expression()),
     )
 
     search_query = search_query.strip()
@@ -1986,7 +1973,7 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
         )
     else:
         search_words = f"%{clean_accents(search_query).replace(' ', '%').replace('-', '%')}%"
-        offerers = offerers.filter(sa.func.immutable_unaccent(offerers_models.Offerer.name).ilike(search_words))
+        offerers = offerers.filter(sa.func.immutable_unaccent(models.Offerer.name).ilike(search_words))
 
         # Always order by similarity when searching by name
         offerers = offerers.order_by(sa.desc(sa.func.similarity(models.Offerer.name, search_query)))
@@ -2052,8 +2039,8 @@ def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> s
             search_words = f"%{clean_accents(search_query).replace(' ', '%').replace('-', '%')}%"
             venues = venues.filter(
                 sa.or_(
-                    sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(search_words),
-                    sa.func.immutable_unaccent(offerers_models.Venue.publicName).ilike(search_words),
+                    sa.func.immutable_unaccent(models.Venue.name).ilike(search_words),
+                    sa.func.immutable_unaccent(models.Venue.publicName).ilike(search_words),
                 )
             )
 
@@ -2192,10 +2179,10 @@ def map_top_offers_to_existing_offers(
 def count_offerers_by_validation_status() -> dict[str, int]:
     stats: dict[validation_status_mixin.ValidationStatus, int] = dict(
         db.session.query(  # type: ignore [arg-type]
-            offerers_models.Offerer.validationStatus,
-            sa.func.count(offerers_models.Offerer.validationStatus).label("count"),
+            models.Offerer.validationStatus,
+            sa.func.count(models.Offerer.validationStatus).label("count"),
         )
-        .group_by(offerers_models.Offerer.validationStatus)
+        .group_by(models.Offerer.validationStatus)
         .all()
     )
 
@@ -2224,8 +2211,8 @@ def update_offerer_tag(
     db.session.flush()
 
 
-def create_venue_registration(venue_id: int, target: offerers_models.Target, web_presence: str | None) -> None:
-    venue_registration = offerers_models.VenueRegistration(venueId=venue_id, target=target, webPresence=web_presence)
+def create_venue_registration(venue_id: int, target: models.Target, web_presence: str | None) -> None:
+    venue_registration = models.VenueRegistration(venueId=venue_id, target=target, webPresence=web_presence)
     db.session.add(venue_registration)
     if is_managed_transaction():
         db.session.flush()
@@ -2266,14 +2253,14 @@ def create_from_onboarding_data(
         phone_number=onboarding_data.phone_number,
     )
     new_onboarding_info = NewOnboardingInfo(
-        activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
+        activity=models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
         target=onboarding_data.target,
         webPresence=onboarding_data.web_presence,
     )
     user_offerer = create_offerer(user, offerer_creation_info, new_onboarding_info, insee_data=siret_info)
 
     # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
-    venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
+    venue = repository.find_venue_by_siret(onboarding_data.siret)
     if (
         venue
         and onboarding_data.create_venue_without_siret
@@ -2287,7 +2274,7 @@ def create_from_onboarding_data(
         if not address.street:
             address = address.copy(update={"street": "n/d"})
         common_kwargs = {
-            "activity": offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
+            "activity": models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
             "address": address,
             "booking_email": user.email,
             "cultural_domains": onboarding_data.cultural_domains,
@@ -2324,7 +2311,7 @@ def create_from_onboarding_data(
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     # Log the other activity comment if activity is OTHER
-    if onboarding_data.activity.value == offerers_models.Activity.OTHER.value:
+    if onboarding_data.activity.value == models.Activity.OTHER.value:
         logger.info(
             "Other activity comment",
             extra={
@@ -2389,7 +2376,7 @@ def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment
 
 
 def _update_external_offerer(offerer: models.Offerer, *, index_with_reason: IndexationReason | None = None) -> None:
-    for email in offerers_repository.get_emails_by_offerer(offerer):
+    for email in repository.get_emails_by_offerer(offerer):
         external_attributes_api.update_external_pro(email)
 
     zendesk_sell_api.update_offerer(offerer)
@@ -2444,7 +2431,7 @@ def delete_offerer(offerer_id: int) -> None:
         .filter(
             sa.or_(
                 finance_models.CustomReimbursementRule.offererId == offerer_id,
-                offerers_models.Venue.managingOffererId == offerer_id,
+                models.Venue.managingOffererId == offerer_id,
             )
         )
         .exists()
@@ -2453,9 +2440,7 @@ def delete_offerer(offerer_id: int) -> None:
         raise exceptions.CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule()
 
     venue_ids_query = (
-        db.session.query(offerers_models.Venue)
-        .filter_by(managingOffererId=offerer_id)
-        .with_entities(offerers_models.Venue.id)
+        db.session.query(models.Venue).filter_by(managingOffererId=offerer_id).with_entities(models.Venue.id)
     )
     venue_ids = [venue_id[0] for venue_id in venue_ids_query.all()]
 
@@ -2473,26 +2458,24 @@ def delete_offerer(offerer_id: int) -> None:
             "collective_offer_template_ids_to_delete"
         ]
 
-    db.session.query(offerers_models.VenuePricingPointLink).filter(
-        offerers_models.VenuePricingPointLink.venueId.in_(venue_ids)
-        | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids),
+    db.session.query(models.VenuePricingPointLink).filter(
+        models.VenuePricingPointLink.venueId.in_(venue_ids)
+        | models.VenuePricingPointLink.pricingPointId.in_(venue_ids),
     ).delete(synchronize_session=False)
 
-    db.session.query(offerers_models.Venue).filter(offerers_models.Venue.managingOffererId == offerer_id).delete(
+    db.session.query(models.Venue).filter(models.Venue.managingOffererId == offerer_id).delete(
         synchronize_session=False
     )
 
-    db.session.query(offerers_models.NonPaymentNotice).filter(
-        offerers_models.NonPaymentNotice.offererId == offerer_id
-    ).delete(synchronize_session=False)
-
-    db.session.query(offerers_models.UserOfferer).filter(offerers_models.UserOfferer.offererId == offerer_id).delete(
+    db.session.query(models.NonPaymentNotice).filter(models.NonPaymentNotice.offererId == offerer_id).delete(
         synchronize_session=False
     )
 
-    db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.id == offerer_id).delete(
+    db.session.query(models.UserOfferer).filter(models.UserOfferer.offererId == offerer_id).delete(
         synchronize_session=False
     )
+
+    db.session.query(models.Offerer).filter(models.Offerer.id == offerer_id).delete(synchronize_session=False)
 
     db.session.flush()
 
@@ -2633,7 +2616,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
     offerer_invitations = (
         db.session.query(models.OffererInvitation)
         .filter_by(email=user.email)
-        .filter_by(status=offerers_models.InvitationStatus.PENDING)
+        .filter_by(status=models.InvitationStatus.PENDING)
         .all()
     )
     if not offerer_invitations:
@@ -2652,7 +2635,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
             inviter_user_id=inviter_user.id,
             offerer_invitation_id=offerer_invitation.id,
         )
-        offerer_invitation.status = offerers_models.InvitationStatus.ACCEPTED
+        offerer_invitation.status = models.InvitationStatus.ACCEPTED
         db.session.add_all([user_offerer, offerer_invitation])
         if is_managed_transaction():
             db.session.flush()
@@ -2668,10 +2651,10 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
 
 def delete_expired_offerer_invitations() -> None:
     count = (
-        db.session.query(offerers_models.OffererInvitation)
+        db.session.query(models.OffererInvitation)
         .filter(
-            offerers_models.OffererInvitation.status == offerers_models.InvitationStatus.PENDING,
-            offerers_models.OffererInvitation.dateCreated
+            models.OffererInvitation.status == models.InvitationStatus.PENDING,
+            models.OffererInvitation.dateCreated
             < date_utils.get_naive_utc_now() - timedelta(days=settings.OFFERER_INVITATION_EXPIRATION_DELAY),
         )
         .delete(synchronize_session=False)
@@ -2681,35 +2664,33 @@ def delete_expired_offerer_invitations() -> None:
 
 @dataclasses.dataclass
 class OffererVenues:
-    offerer: offerers_models.Offerer
-    venues: typing.Sequence[offerers_models.Venue]
+    offerer: models.Offerer
+    venues: typing.Sequence[models.Venue]
 
 
 def get_providers_offerer_and_venues(
     provider: providers_models.Provider, siren: str | None = None
 ) -> typing.Generator[OffererVenues]:
     offerers_query = (
-        db.session.query(offerers_models.Offerer, offerers_models.Venue)
-        .options(
-            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
-        )
-        .join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
-        .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
+        db.session.query(models.Offerer, models.Venue)
+        .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
+        .join(models.Venue, models.Offerer.managedVenues)
+        .join(providers_models.VenueProvider, models.Venue.venueProviders)
         .join(providers_models.Provider, providers_models.VenueProvider.provider)
         .filter(providers_models.VenueProvider.providerId == provider.id)
         .filter(providers_models.VenueProvider.isActive)
-        .order_by(offerers_models.Offerer.id, offerers_models.Venue.id)
+        .order_by(models.Offerer.id, models.Venue.id)
     )
 
     if siren:
-        offerers_query = offerers_query.filter(offerers_models.Offerer.siren == siren)
+        offerers_query = offerers_query.filter(models.Offerer.siren == siren)
 
     for offerer, group in itertools.groupby(offerers_query, lambda row: row.Offerer):
         yield OffererVenues(offerer=offerer, venues=[row.Venue for row in group])
 
 
-def get_offerer_stats_data(offerer_id: int) -> list[offerers_models.OffererStats]:
-    return db.session.query(offerers_models.OffererStats).filter_by(offererId=offerer_id).all()
+def get_offerer_stats_data(offerer_id: int) -> list[models.OffererStats]:
+    return db.session.query(models.OffererStats).filter_by(offererId=offerer_id).all()
 
 
 @dataclasses.dataclass
@@ -2721,18 +2702,16 @@ class OffererV2Stats:
 
 
 def get_offerer_v2_stats(offerer_id: int) -> OffererV2Stats:
-    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    offerer = repository.find_offerer_by_id(offerer_id)
     if not offerer:
         raise exceptions.CannotFindOffererForOfferId()
     return OffererV2Stats(
-        publishedPublicOffers=offerers_repository.get_number_of_bookable_offers_for_offerer(offerer_id=offerer_id),
-        publishedEducationalOffers=offerers_repository.get_number_of_bookable_collective_offers_for_offerer(
+        publishedPublicOffers=repository.get_number_of_bookable_offers_for_offerer(offerer_id=offerer_id),
+        publishedEducationalOffers=repository.get_number_of_bookable_collective_offers_for_offerer(
             offerer_id=offerer_id
         ),
-        pendingPublicOffers=offerers_repository.get_number_of_pending_offers_for_offerer(offerer_id=offerer_id),
-        pendingEducationalOffers=offerers_repository.get_number_of_pending_collective_offers_for_offerer(
-            offerer_id=offerer_id
-        ),
+        pendingPublicOffers=repository.get_number_of_pending_offers_for_offerer(offerer_id=offerer_id),
+        pendingEducationalOffers=repository.get_number_of_pending_collective_offers_for_offerer(offerer_id=offerer_id),
     )
 
 
@@ -2746,14 +2725,10 @@ class OffersStatsByVenue:
 
 def get_offers_stats_by_venue(venue_id: int) -> OffersStatsByVenue:
     return OffersStatsByVenue(
-        published_public_offers=offerers_repository.get_number_of_bookable_offers_for_venue(venue_id=venue_id),
-        published_educational_offers=offerers_repository.get_number_of_bookable_collective_offers_for_venue(
-            venue_id=venue_id
-        ),
-        pending_public_offers=offerers_repository.get_number_of_pending_offers_for_venue(venue_id=venue_id),
-        pending_educational_offers=offerers_repository.get_number_of_pending_collective_offers_for_venue(
-            venue_id=venue_id
-        ),
+        published_public_offers=repository.get_number_of_bookable_offers_for_venue(venue_id=venue_id),
+        published_educational_offers=repository.get_number_of_bookable_collective_offers_for_venue(venue_id=venue_id),
+        pending_public_offers=repository.get_number_of_pending_offers_for_venue(venue_id=venue_id),
+        pending_educational_offers=repository.get_number_of_pending_collective_offers_for_venue(venue_id=venue_id),
     )
 
 
@@ -2801,67 +2776,6 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
             venue.accessibilityProvider.externalAccessibilityData = accessibility_data.dict()
             venue.accessibilityProvider.lastUpdateAtProvider = last_update
             db.session.add(venue.accessibilityProvider)
-
-
-def count_open_to_public_venues_with_accessibility_provider() -> int:
-    return (
-        db.session.query(offerers_models.Venue)
-        .join(offerers_models.AccessibilityProvider)
-        .filter(offerers_models.Venue.isOpenToPublic.is_(True))
-        .count()
-    )
-
-
-def get_open_to_public_venues_with_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
-    return (
-        db.session.query(offerers_models.Venue)
-        .join(offerers_models.Venue.accessibilityProvider)
-        .filter(offerers_models.Venue.isOpenToPublic.is_(True))
-        .options(
-            sa_orm.contains_eager(offerers_models.Venue.accessibilityProvider),
-            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
-        )
-        .order_by(offerers_models.Venue.id.asc())
-        .limit(batch_size)
-        .offset(batch_num * batch_size)
-        .all()
-    )
-
-
-def get_open_to_public_venues_without_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
-    return (
-        db.session.query(offerers_models.Venue)
-        .outerjoin(offerers_models.Venue.accessibilityProvider)
-        .filter(
-            offerers_models.Venue.isOpenToPublic.is_(True),
-            offerers_models.AccessibilityProvider.id.is_(None),
-        )
-        .options(
-            sa_orm.load_only(
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.siret,
-                offerers_models.Venue.isOpenToPublic,
-            ),
-            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
-        )
-        .order_by(offerers_models.Venue.id.asc())
-        .limit(batch_size)
-        .offset(batch_num * batch_size)
-        .all()
-    )
-
-
-def count_open_to_public_venues_without_accessibility_provider() -> int:
-    return (
-        db.session.query(offerers_models.Venue)
-        .outerjoin(offerers_models.Venue.accessibilityProvider)
-        .filter(
-            offerers_models.Venue.isOpenToPublic.is_(True),
-            offerers_models.AccessibilityProvider.id.is_(None),
-        )
-        .count()
-    )
 
 
 def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = False) -> None:
@@ -2973,7 +2887,7 @@ def synchronize_accessibility_with_acceslibre(
     """
     logger.info("Starting acceslibre synchronisation")
 
-    venues_count = count_open_to_public_venues_with_accessibility_provider()
+    venues_count = repository.count_open_to_public_venues_with_accessibility_provider()
     num_batches = ceil(venues_count / batch_size)
     if start_from_batch > num_batches:
         logger.error("Start from batch must be less than %d", num_batches)
@@ -2981,7 +2895,9 @@ def synchronize_accessibility_with_acceslibre(
 
     start_batch_index = start_from_batch - 1
     for i in range(start_batch_index, num_batches):
-        venues_list = get_open_to_public_venues_with_accessibility_provider(batch_size=batch_size, batch_num=i)
+        venues_list = repository.get_open_to_public_venues_with_accessibility_provider(
+            batch_size=batch_size, batch_num=i
+        )
         for venue in venues_list:
             synchronize_accessibility_provider(venue, force_sync)
 
@@ -2999,7 +2915,7 @@ def synchronize_accessibility_with_acceslibre(
     logger.info("Accessibility data synchronization with acceslibre complete successfully")
 
 
-def match_acceslibre(venue: offerers_models.Venue) -> None:
+def match_acceslibre(venue: models.Venue) -> None:
     old_slug = venue.external_accessibility_id
     old_url = venue.external_accessibility_url
     delete_venue_accessibility_provider(venue)
@@ -3060,7 +2976,7 @@ def match_venue_with_new_entries(
             venue_ban_id=venue.offererAddress.address.banId,
             venue_siret=venue.siret,
         ):
-            venue.accessibilityProvider = offerers_models.AccessibilityProvider(
+            venue.accessibilityProvider = models.AccessibilityProvider(
                 externalAccessibilityId=matching_venue.slug,
                 externalAccessibilityUrl=matching_venue.web_url,
             )
@@ -3075,8 +2991,8 @@ def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_d
     Use case: synchronization has failed with message "Could not update batch <n>"
     """
     logger.info("Starting acceslibre matching to find new venue synchronization")
-    synchronized_venues_count_before_matching = count_open_to_public_venues_with_accessibility_provider()
-    total_venues_without_provider = count_open_to_public_venues_without_accessibility_provider()
+    synchronized_venues_count_before_matching = repository.count_open_to_public_venues_with_accessibility_provider()
+    total_venues_without_provider = repository.count_open_to_public_venues_without_accessibility_provider()
     num_batches = ceil(total_venues_without_provider / batch_size)
     if start_from_batch > num_batches:
         logger.info("Start from batch must be less than %d", num_batches)
@@ -3089,7 +3005,9 @@ def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_d
 
     start_batch_index = start_from_batch - 1
     for i in range(start_batch_index, num_batches):
-        venues_batch = get_open_to_public_venues_without_accessibility_provider(batch_size=batch_size, batch_num=i)
+        venues_batch = repository.get_open_to_public_venues_without_accessibility_provider(
+            batch_size=batch_size, batch_num=i
+        )
 
         match_venue_with_new_entries(venues_batch, results_list)
 
@@ -3103,7 +3021,7 @@ def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_d
             db.session.rollback()
 
     new_match_found = (
-        count_open_to_public_venues_with_accessibility_provider() - synchronized_venues_count_before_matching
+        repository.count_open_to_public_venues_with_accessibility_provider() - synchronized_venues_count_before_matching
     )
     logger.info("%d new match found over last %d days", new_match_found, n_days_to_fetch)
     if apply:
@@ -3216,7 +3134,7 @@ def get_or_create_offer_location(
 
 
 def create_offerer_address_from_address_api(
-    address: offerers_schemas.LocationModel | offerers_schemas.CoreLocationModelV2,
+    address: schemas.LocationModel | schemas.CoreLocationModelV2,
 ) -> geography_models.Address:
     try:
         insee_code = (
@@ -3241,9 +3159,9 @@ def create_offerer_address_from_address_api(
 
 def get_offer_location_from_address(
     offerer_id: int,
-    address: offerers_schemas.LocationModel | offerers_schemas.CoreLocationModelV2,
+    address: schemas.LocationModel | schemas.CoreLocationModelV2,
     venue_id: int,
-) -> offerers_models.OffererAddress:
+) -> models.OffererAddress:
     assert offerer_id
     address_from_api = create_offerer_address_from_address_api(address)
     return get_or_create_offer_location(
@@ -3256,9 +3174,9 @@ def get_offer_location_from_address(
 
 def _internal_update_fraud_info(
     *,
-    offerer: offerers_models.Offerer | None = None,
-    venue: offerers_models.Venue | None = None,
-    confidence_level: offerers_models.OffererConfidenceLevel | None = None,
+    offerer: models.Offerer | None = None,
+    venue: models.Venue | None = None,
+    confidence_level: models.OffererConfidenceLevel | None = None,
 ) -> dict[str, typing.Any]:
     offerer_or_venue = offerer or venue
     assert offerer_or_venue  # helps mypy
@@ -3274,14 +3192,10 @@ def _internal_update_fraud_info(
 
         if not current_confidence_level:
             assert confidence_level  # helps mypy
-            db.session.add(
-                offerers_models.OffererConfidenceRule(offerer=offerer, venue=venue, confidenceLevel=confidence_level)
-            )
+            db.session.add(models.OffererConfidenceRule(offerer=offerer, venue=venue, confidenceLevel=confidence_level))
         else:
             assert offerer_or_venue.confidenceRule
-            query = db.session.query(offerers_models.OffererConfidenceRule).filter_by(
-                id=offerer_or_venue.confidenceRule.id
-            )
+            query = db.session.query(models.OffererConfidenceRule).filter_by(id=offerer_or_venue.confidenceRule.id)
             if not confidence_level:
                 query.delete(synchronize_session=False)
             else:
@@ -3292,10 +3206,10 @@ def _internal_update_fraud_info(
 
 def update_fraud_info(
     *,
-    offerer: offerers_models.Offerer | None = None,
-    venue: offerers_models.Venue | None = None,
+    offerer: models.Offerer | None = None,
+    venue: models.Venue | None = None,
     author_user: users_models.User | None = None,
-    confidence_level: offerers_models.OffererConfidenceLevel | None = None,
+    confidence_level: models.OffererConfidenceLevel | None = None,
     comment: str | None = None,
 ) -> bool:
     action_kwargs = _internal_update_fraud_info(offerer=offerer, venue=venue, confidence_level=confidence_level)
@@ -3314,8 +3228,8 @@ def update_fraud_info(
 
 
 def get_offer_confidence_level(
-    venue: offerers_models.Venue,
-) -> offerers_models.OffererConfidenceLevel | None:
+    venue: models.Venue,
+) -> models.OffererConfidenceLevel | None:
     venue_confidence_level = venue.confidenceLevel
     offerer_confidence_level = venue.managingOfferer.confidenceLevel
 
@@ -3335,37 +3249,37 @@ MAX_REMINDER_EMAILS_PER_DAY = 80
 def send_reminder_email_to_individual_offerers() -> None:
     offerers = (
         (
-            db.session.query(offerers_models.Offerer)
+            db.session.query(models.Offerer)
             .join(
-                offerers_models.IndividualOffererSubscription,
-                offerers_models.IndividualOffererSubscription.offererId == offerers_models.Offerer.id,
+                models.IndividualOffererSubscription,
+                models.IndividualOffererSubscription.offererId == models.Offerer.id,
             )
             .options(
-                sa_orm.load_only(offerers_models.Offerer.id),
-                sa_orm.contains_eager(offerers_models.Offerer.individualSubscription).load_only(
-                    offerers_models.IndividualOffererSubscription.dateReminderEmailSent
+                sa_orm.load_only(models.Offerer.id),
+                sa_orm.contains_eager(models.Offerer.individualSubscription).load_only(
+                    models.IndividualOffererSubscription.dateReminderEmailSent
                 ),
-                sa_orm.joinedload(offerers_models.Offerer.UserOfferers)
-                .load_only(offerers_models.UserOfferer.userId)
-                .joinedload(offerers_models.UserOfferer.user)
+                sa_orm.joinedload(models.Offerer.UserOfferers)
+                .load_only(models.UserOfferer.userId)
+                .joinedload(models.UserOfferer.user)
                 .load_only(users_models.User.email),
             )
             .filter(
-                offerers_models.IndividualOffererSubscription.isEmailSent.is_(True),
-                offerers_models.IndividualOffererSubscription.dateEmailSent.between(
+                models.IndividualOffererSubscription.isEmailSent.is_(True),
+                models.IndividualOffererSubscription.dateEmailSent.between(
                     date.today() - timedelta(days=365),
                     date.today() - timedelta(days=31),
                 ),
-                sa.not_(offerers_models.IndividualOffererSubscription.isReminderEmailSent),
+                sa.not_(models.IndividualOffererSubscription.isReminderEmailSent),
                 sa.or_(
                     # same as for column and filter "Documents reçus"
-                    offerers_models.IndividualOffererSubscription.isCriminalRecordReceived.is_(False),
-                    offerers_models.IndividualOffererSubscription.isExperienceReceived.is_(False),
+                    models.IndividualOffererSubscription.isCriminalRecordReceived.is_(False),
+                    models.IndividualOffererSubscription.isExperienceReceived.is_(False),
                 ),
-                offerers_models.Offerer.isPending,
+                models.Offerer.isPending,
             )
         )
-        .order_by(offerers_models.IndividualOffererSubscription.dateEmailSent)
+        .order_by(models.IndividualOffererSubscription.dateEmailSent)
         .limit(MAX_REMINDER_EMAILS_PER_DAY)
         .all()
     )
@@ -3384,7 +3298,7 @@ def send_reminder_email_to_individual_offerers() -> None:
 
 def update_offerer_address(offerer_address_id: int, address_id: int, label: str | None = None) -> None:
     try:
-        db.session.query(offerers_models.OffererAddress).filter_by(id=offerer_address_id).update(
+        db.session.query(models.OffererAddress).filter_by(id=offerer_address_id).update(
             {"addressId": address_id, "label": label}
         )
         db.session.flush()
@@ -3398,15 +3312,15 @@ def synchronize_from_adage_and_check_registration(offerer_id: int) -> bool:
     since_date = date_utils.get_naive_utc_now() - timedelta(days=2)
     adage_cultural_partners = adage_client.get_cultural_partners(since_date=since_date)
     adage_api.synchronize_adage_partners(adage_partners=adage_cultural_partners, apply=True)
-    return offerers_repository.offerer_has_venue_with_adage_id(offerer_id)
+    return repository.offerer_has_venue_with_adage_id(offerer_id)
 
 
 def synchronize_from_ds_and_check_application(offerer_id: int) -> bool:
     dms_api.import_dms_applications_for_all_eac_procedures(ignore_previous=False)
     query = (
-        db.session.query(offerers_models.Venue)
-        .filter(offerers_models.Venue.managingOffererId == offerer_id)
-        .filter(offerers_models.Venue.collectiveDmsApplications.any())
+        db.session.query(models.Venue)
+        .filter(models.Venue.managingOffererId == offerer_id)
+        .filter(models.Venue.collectiveDmsApplications.any())
     )
     return db.session.query(query.exists()).scalar()
 
@@ -3414,8 +3328,8 @@ def synchronize_from_ds_and_check_application(offerer_id: int) -> bool:
 def is_allowed_on_adage(offerer_id: int) -> bool:
     query = (
         db.session.query(models.Offerer)
-        .filter(offerers_models.Offerer.id == offerer_id)
-        .filter(offerers_models.Offerer.allowedOnAdage.is_(True))
+        .filter(models.Offerer.id == offerer_id)
+        .filter(models.Offerer.allowedOnAdage.is_(True))
     )
     return db.session.query(query.exists()).scalar()
 
@@ -3431,7 +3345,7 @@ def find_structure_data(search_input: str) -> sirene_models.SiretInfo:
 
 def find_ban_address_from_insee_address(
     diffusible: bool, insee_address: sirene_models.SireneAddress
-) -> offerers_schemas.CoreLocationModelV2 | None:
+) -> schemas.CoreLocationModelV2 | None:
     try:
         is_manual_address = False
         if diffusible:
@@ -3466,7 +3380,7 @@ def find_ban_address_from_insee_address(
         return (
             None
             if ban_address is None
-            else offerers_schemas.CoreLocationModelV2(
+            else schemas.CoreLocationModelV2(
                 isManualEdition=is_manual_address,
                 banId=str(ban_address.id) if not is_manual_address else None,
                 city=ban_address.city,
@@ -3494,26 +3408,26 @@ def find_ban_address_from_insee_address(
 
 def clean_unused_offerer_address() -> None:
     offerer_address_usage = db.session.query(
-        offerers_models.OffererAddress.id.label("offerer_address_id"),
+        models.OffererAddress.id.label("offerer_address_id"),
         sa.or_(
             sa.and_(
-                offerers_models.OffererAddress.type == offerers_models.LocationType.VENUE_LOCATION,
-                offerers_models.OffererAddress.venueId.is_not(None),
+                models.OffererAddress.type == models.LocationType.VENUE_LOCATION,
+                models.OffererAddress.venueId.is_not(None),
             ),
             sa.select(1)
-            .where(educational_models.CollectiveOffer.offererAddressId == offerers_models.OffererAddress.id)
+            .where(educational_models.CollectiveOffer.offererAddressId == models.OffererAddress.id)
             .exists(),
             sa.select(1)
-            .where(educational_models.CollectiveOfferTemplate.offererAddressId == offerers_models.OffererAddress.id)
+            .where(educational_models.CollectiveOfferTemplate.offererAddressId == models.OffererAddress.id)
             .exists(),
-            sa.select(1).where(offers_models.Offer.offererAddressId == offerers_models.OffererAddress.id).exists(),
+            sa.select(1).where(offers_models.Offer.offererAddressId == models.OffererAddress.id).exists(),
         ).label("is_used"),
     ).cte()
 
     count = (
-        db.session.query(offerers_models.OffererAddress)
+        db.session.query(models.OffererAddress)
         .filter(
-            offerers_models.OffererAddress.id.in_(
+            models.OffererAddress.id.in_(
                 sa.select(offerer_address_usage.c.offerer_address_id)
                 .select_from(offerer_address_usage)
                 .filter(offerer_address_usage.c.is_used.is_(False))
@@ -3528,24 +3442,24 @@ def clean_unused_offerer_address() -> None:
 
 @dataclasses.dataclass
 class PendingAndValidatedOfferers:
-    validated: list[offerers_models.Offerer]
-    pending: list[offerers_models.Offerer]
+    validated: list[models.Offerer]
+    pending: list[models.Offerer]
 
 
 def get_user_pending_and_validated_offerers(
     user: users_models.User,
 ) -> PendingAndValidatedOfferers:
     query = (
-        offerers_repository.get_all_offerers_for_user(
+        repository.get_all_offerers_for_user(
             user=user, validated_offerers_only=False, include_non_validated_user_offerers=True
         )
-        .order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
-        .distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
-        .options(sa_orm.load_only(offerers_models.Offerer.id, offerers_models.Offerer.name))
+        .order_by(models.Offerer.name, models.Offerer.id)
+        .distinct(models.Offerer.name, models.Offerer.id)
+        .options(sa_orm.load_only(models.Offerer.id, models.Offerer.name))
     )
 
-    pending = query.filter(offerers_models.UserOfferer.isWaitingForValidation).all()
-    validated = query.filter(offerers_models.UserOfferer.isValidated).all()
+    pending = query.filter(models.UserOfferer.isWaitingForValidation).all()
+    validated = query.filter(models.UserOfferer.isValidated).all()
 
     return PendingAndValidatedOfferers(validated=validated, pending=pending)
 
