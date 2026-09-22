@@ -91,8 +91,8 @@ from . import validation
 logger = logging.getLogger(__name__)
 
 AnyOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer
-type OfferIds = tuple[int]
-type VenueIds = tuple[int]
+type OfferIds = tuple[int, ...]
+type VenueIds = tuple[int, ...]
 
 
 OFFER_LIKE_MODELS = {
@@ -486,37 +486,48 @@ def batch_update_offers(
     send_email_notification: bool = False,
     chunk_processed_callback: typing.Callable[[OfferIds, VenueIds], None] | None = None,
     chunk_size: int = settings.BATCH_UPDATE_OFFERS_CHUNK_SIZE,
+    apply: bool = True,
 ) -> set[int]:
     results = query.with_entities(models.Offer.id, models.Offer.venueId).yield_per(2_500).tuples()
 
-    updated_offer_ids = set()
-    found_venue_ids = set()
+    updated_offer_ids: set[int] = set()
+    found_venue_ids: set[int] = set()
 
     logger.info("Batch update of offers: start", extra={"updated_fields": update_fields})
 
-    with atomic():
-        for chunk in get_chunks(results, chunk_size=chunk_size):
+    for chunk in get_chunks(results, chunk_size=chunk_size):
+        with atomic(apply=apply):
+            offer_ids: set[int] = set()
+            venue_ids: set[int] = set()
             raw_offer_ids, raw_venue_ids = zip(*chunk)
-            offer_ids = set(raw_offer_ids)
-            venue_ids = set(raw_venue_ids)
+            query_to_update = db.session.query(models.Offer).filter(models.Offer.id.in_(raw_offer_ids))
+            try:
+                with atomic():
+                    query_to_update.update(update_fields, synchronize_session=False)
+                    offer_ids = set(raw_offer_ids)
+                    venue_ids = set(raw_venue_ids)
+            except sa_exc.OperationalError as exc:
+                # Batch failed, likely timeout. Let's fallback on a one by one basis.
+                logger.info("Batch failed, falling back on a per offer processing.", extra={"exception": str(exc)})
+                for offer_id, venue_id in zip(raw_offer_ids, raw_venue_ids):
+                    for i in range(5):
+                        try:
+                            with atomic():
+                                db.session.query(models.Offer).filter(models.Offer.id == offer_id).update(
+                                    update_fields, synchronize_session=False
+                                )
+                                offer_ids.add(offer_id)
+                                venue_ids.add(venue_id)
+                                # offer updated, break the retry loop
+                                break
+                        except Exception as exc:
+                            logger.info("Single UPDATE offer %s failed with reason: %s (try #%s)", offer_id, exc, i)
 
             updated_offer_ids |= offer_ids
             found_venue_ids |= venue_ids
 
-            query_to_update = db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids))
-            try:
-                with atomic():
-                    query_to_update.update(update_fields, synchronize_session=False)
-                    db.session.flush()
-            except sa_exc.OperationalError:
-                # Batch failed, likely timeout. Let's fallback on a one by one basis.
-                for offer_id in offer_ids:
-                    db.session.query(models.Offer).filter(models.Offer.id == offer_id).update(
-                        update_fields, synchronize_session=False
-                    )
-
             if chunk_processed_callback:
-                chunk_processed_callback(raw_offer_ids, raw_venue_ids)
+                chunk_processed_callback(tuple(offer_ids), tuple(venue_ids))
 
             on_commit(
                 partial(
