@@ -5313,6 +5313,10 @@ export type PostCollectiveOfferBodyModel = {
      */
     audioDisabilityCompliant: boolean;
     /**
+     * Bookingemails
+     */
+    bookingEmails?: Array<string> | null;
+    /**
      * Contactemail
      */
     contactEmail?: string | null;
@@ -5386,7 +5390,7 @@ export type PostCollectiveOfferTemplateBodyModel = {
     /**
      * Bookingemails
      */
-    bookingEmails: Array<string>;
+    bookingEmails?: Array<string> | null;
     /**
      * Contactemail
      */
