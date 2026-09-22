@@ -4,6 +4,8 @@ import typing
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.artist import api as artist_api
+from pcapi.core.artist import exceptions as artist_exceptions
 from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import api as offerers_api
@@ -375,6 +377,7 @@ EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
     "idAtProvider",
     "bookingAllowedDatetime",
     "publicationDatetime",
+    "artistOfferLinks",
 } | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 
 
@@ -386,3 +389,44 @@ def get_editable_fields(provider: providers_models.Provider | None) -> set[str] 
     if provider.hasOffererProvider:
         return EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER
     return EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
+
+
+def update_artist_offer_links(offer: offers_models.Offer, artists: list[serialization.ArtistBody] | None) -> None:
+    editable_fields = get_editable_fields(offer.lastProvider)
+    if editable_fields is not None and "artistOfferLinks" not in editable_fields:
+        raise api_errors.ApiErrors({"artists": ["You cannot update this field"]})
+    if offer.productId:
+        raise api_errors.ApiErrors({"artists": ["You cannot update this field for an event linked to a product"]})
+
+    artists = artists or []
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+
+    links_keys: set[artist_api.ArtistOfferLinkKey] = set()
+    try:
+        for artist in artists:
+            artist_type = artist_models.ArtistType(artist.artist_type)
+            artist_api.check_artist_type_is_allowed_for_subcategory(artist_type, subcategory)
+
+            platform_ids = artist.dict(exclude={"artist_type"}, exclude_none=True)
+            found_artist = artist_api.find_artist_by_music_platform_ids(platform_ids)
+
+            if found_artist is None:
+                logger.warning(
+                    "No artist found for the music platform ids",
+                    extra={
+                        "offer_id": offer.id,
+                        "venue_id": offer.venueId,
+                        "provider_id": current_api_key.providerId,
+                        "platform_ids": platform_ids,
+                    },
+                    technical_message_id="offer.artistOfferLinks.not_found",
+                )
+                continue
+
+            links_keys.add(
+                artist_api.ArtistOfferLinkKey(artist_type=artist_type, artist_id=found_artist.id, custom_name=None)
+            )
+
+        artist_api.upsert_artist_offer_links(offer, links_keys)
+    except artist_exceptions.ArtistException as error:
+        raise api_errors.ApiErrors({"artists": [error.message]})
