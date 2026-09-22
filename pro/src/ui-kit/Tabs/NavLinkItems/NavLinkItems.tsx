@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 
 import type { BaseTabsProps } from '../Tabs'
@@ -29,6 +30,15 @@ export const NavLinkItems = <T extends string>({
   links,
   className,
 }: NavLinkItemsProps<T>): JSX.Element => {
+  const selectedLinkRef = useRef<HTMLAnchorElement>(null)
+
+  // Moves focus to the selected tab whenever it (re)appears, e.g. once its
+  // data has finished loading, so screen reader users land on it after
+  // navigating to the next/previous step.
+  useEffect(() => {
+    selectedLinkRef.current?.focus()
+  }, [selectedKey])
+
   return (
     <nav aria-label={navLabel}>
       {/** biome-ignore lint/correctness/useUniqueElementIds: This is always
@@ -44,6 +54,7 @@ export const NavLinkItems = <T extends string>({
               key={key}
             >
               <Link
+                ref={isSelected ? selectedLinkRef : undefined}
                 to={url}
                 className={cn(styles['menu-list-item'], {
                   [styles['is-selected']]: isSelected,

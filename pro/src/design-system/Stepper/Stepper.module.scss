@@ -42,6 +42,10 @@ $connector-width: rem.torem(2px);
 
   .wrapper {
     cursor: default;
+
+    &:focus-visible {
+      @include outline.focus-outline;
+    }
   }
 
   .visually-hidden {

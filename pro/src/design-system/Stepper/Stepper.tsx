@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 
 import { noop } from '@/commons/utils/noop'
@@ -39,8 +39,16 @@ export const Stepper = ({
   const listRef = (ref ||
     fallbackRef) as React.RefObject<HTMLOListElement | null>
   const [isVertical, setIsVertical] = useState(orientation === 'vertical')
+  const currentStepRef = useRef<HTMLDivElement>(null)
 
   const activeStepIndex = steps.findIndex((step) => step.id === activeStep)
+
+  // Moves focus to the current step whenever it (re)appears, e.g. once its
+  // data has finished loading, so screen reader users land on it after
+  // navigating to the next/previous step.
+  useEffect(() => {
+    currentStepRef.current?.focus()
+  }, [activeStep])
 
   // Bascule horizontal -> vertical based on width per step
   useLayoutEffect(() => {
@@ -148,6 +156,7 @@ export const Stepper = ({
             })}
           >
             <StepTrigger
+              ref={state === 'current' ? currentStepRef : undefined}
               linkUrl={linkUrl}
               hasButton={hasButton}
               onClick={step.onClick}
@@ -172,14 +181,16 @@ function StepTrigger({
   voiceOverText,
   isActive,
   children,
-}: {
+  ref,
+}: Readonly<{
   linkUrl?: string
   hasButton: boolean
   onClick?: () => void
   voiceOverText: string
   isActive: boolean
   children: React.ReactNode
-}): JSX.Element {
+  ref?: React.Ref<HTMLDivElement>
+}>): JSX.Element {
   if (linkUrl) {
     return (
       <Link
@@ -207,7 +218,7 @@ function StepTrigger({
   }
 
   return (
-    <div className={styles.wrapper}>
+    <div ref={ref} className={styles.wrapper} tabIndex={-1}>
       <div role="log" className={styles['visually-hidden']}>
         {isActive ? voiceOverText : <span>&nbsp;</span>}
       </div>
