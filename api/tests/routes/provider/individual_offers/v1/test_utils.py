@@ -1,16 +1,23 @@
 import base64
+import logging
 from unittest import mock
 
 import pytest
 import sqlalchemy.orm as sa_orm
+from flask import g
 
 from pcapi.core import testing
+from pcapi.core.artist import api as artist_api
+from pcapi.core.artist import exceptions as artist_exceptions
+from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.videos import exceptions as videos_exceptions
@@ -405,3 +412,135 @@ class GetEditableFieldsTest:
         assert provider.hasOffererProvider
 
         assert utils.get_editable_fields(provider) == utils.EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER
+
+
+class UpdateArtistOfferLinksTest:
+    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links")
+    @mock.patch("pcapi.core.artist.api.find_artist_by_music_platform_ids")
+    @mock.patch("pcapi.core.artist.api.check_artist_type_is_allowed_for_subcategory")
+    @mock.patch("pcapi.routes.provider.individual_offers.v1.utils.get_editable_fields")
+    def test_should_link_the_artists_found_by_their_platform_ids(
+        self, mocked_get_editable_fields, mocked_check_artist_type, mocked_find_artist, mocked_upsert_links
+    ):
+        offer = offers_models.Offer(id=1, venueId=2, subcategoryId=subcategories.CONCERT.id)
+        performer = artist_models.Artist(id="performer-id")
+        author = artist_models.Artist(id="author-id")
+
+        mocked_get_editable_fields.return_value = utils.EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER
+        mocked_find_artist.side_effect = [performer, author]
+
+        utils.update_artist_offer_links(
+            offer,
+            [
+                serialization.ArtistBody(artist_type="performer", spotify_id="performer-spotify-id"),
+                serialization.ArtistBody(artist_type="author", spotify_id="unknown", deezer_id="author-deezer-id"),
+            ],
+        )
+
+        assert mocked_check_artist_type.call_args_list == [
+            mock.call(artist_models.ArtistType.PERFORMER, subcategories.CONCERT),
+            mock.call(artist_models.ArtistType.AUTHOR, subcategories.CONCERT),
+        ]
+        assert mocked_find_artist.call_args_list == [
+            mock.call({"spotify_id": "performer-spotify-id"}),
+            mock.call({"spotify_id": "unknown", "deezer_id": "author-deezer-id"}),
+        ]
+        mocked_upsert_links.assert_called_once_with(
+            offer,
+            {
+                artist_api.ArtistOfferLinkKey(
+                    artist_type=artist_models.ArtistType.PERFORMER, artist_id="performer-id", custom_name=None
+                ),
+                artist_api.ArtistOfferLinkKey(
+                    artist_type=artist_models.ArtistType.AUTHOR, artist_id="author-id", custom_name=None
+                ),
+            },
+        )
+
+    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links")
+    @mock.patch("pcapi.core.artist.api.find_artist_by_music_platform_ids")
+    @mock.patch("pcapi.core.artist.api.check_artist_type_is_allowed_for_subcategory")
+    @mock.patch("pcapi.routes.provider.individual_offers.v1.utils.get_editable_fields", return_value=None)
+    def test_should_unlink_every_artist_when_given_none(
+        self, _, mocked_check_artist_type, mocked_find_artist, mocked_upsert_links
+    ):
+        offer = offers_models.Offer(id=1, venueId=2, subcategoryId=subcategories.CONCERT.id)
+
+        utils.update_artist_offer_links(offer, None)
+
+        mocked_check_artist_type.assert_not_called()
+        mocked_find_artist.assert_not_called()
+        mocked_upsert_links.assert_called_once_with(offer, set())
+
+    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links")
+    @mock.patch("pcapi.core.artist.api.find_artist_by_music_platform_ids")
+    @mock.patch("pcapi.routes.provider.individual_offers.v1.utils.get_editable_fields", return_value=None)
+    def test_should_ignore_an_artist_that_cannot_be_found_and_log_it(
+        self, _, mocked_find_artist, mocked_upsert_links, caplog
+    ):
+        offer = offers_models.Offer(id=1, venueId=2, subcategoryId=subcategories.CONCERT.id)
+        known_artist = artist_models.Artist(id="known-id")
+
+        mocked_find_artist.side_effect = [known_artist, None]
+        g.current_api_key = offerers_models.ApiKey(providerId=3)
+
+        with caplog.at_level(logging.WARNING):
+            utils.update_artist_offer_links(
+                offer,
+                [
+                    serialization.ArtistBody(artist_type="performer", spotify_id="known"),
+                    serialization.ArtistBody(artist_type="performer", spotify_id="unknown", deezer_id="unknown-too"),
+                ],
+            )
+
+        mocked_upsert_links.assert_called_once_with(
+            offer,
+            {
+                artist_api.ArtistOfferLinkKey(
+                    artist_type=artist_models.ArtistType.PERFORMER, artist_id="known-id", custom_name=None
+                )
+            },
+        )
+        target_log_message = "No artist found for the music platform ids"
+        log = next(record for record in caplog.records if record.message == target_log_message)
+
+        assert log.technical_message_id == "offer.artistOfferLinks.not_found"
+        log_extra_data = log.__dict__.get("extra")
+        assert log_extra_data.get("offer_id") == 1
+        assert log_extra_data.get("venue_id") == 2
+        assert log_extra_data.get("provider_id") == 3
+        assert log_extra_data.get("platform_ids") == {"spotify_id": "unknown", "deezer_id": "unknown-too"}
+
+    @mock.patch("pcapi.core.artist.api.check_artist_type_is_allowed_for_subcategory")
+    @mock.patch("pcapi.routes.provider.individual_offers.v1.utils.get_editable_fields", return_value=None)
+    def test_should_raise_if_check_artist_type_raises(self, _, mocked_check_artist_type):
+        offer = offers_models.Offer(id=1, venueId=2, subcategoryId=subcategories.SEANCE_CINE.id)
+        mocked_check_artist_type.side_effect = artist_exceptions.ArtistException(
+            "`performer` artists are not allowed for the `SEANCE_CINE` category"
+        )
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            utils.update_artist_offer_links(
+                offer, [serialization.ArtistBody(artist_type="performer", spotify_id="known")]
+            )
+
+        assert error.value.errors == {"artists": ["`performer` artists are not allowed for the `SEANCE_CINE` category"]}
+
+    @mock.patch("pcapi.routes.provider.individual_offers.v1.utils.get_editable_fields", return_value=None)
+    def test_should_raise_when_the_field_is_not_editable(self, mocked_get_editable_fields):
+        offer = offers_models.Offer(id=1, venueId=2, subcategoryId=subcategories.CONCERT.id)
+        mocked_get_editable_fields.return_value = utils.EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            utils.update_artist_offer_links(offer, None)
+
+        assert error.value.errors == {"artists": ["You cannot update this field"]}
+
+    @mock.patch("pcapi.routes.provider.individual_offers.v1.utils.get_editable_fields", return_value=None)
+    def test_should_raise_for_an_event_linked_to_a_product(self, _):
+        offer = offers_models.Offer(id=1, venueId=2, subcategoryId=subcategories.CONCERT.id, productId=4)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            utils.update_artist_offer_links(offer, None)
+
+        assert error.value.errors == {"artists": ["You cannot update this field for an event linked to a product"]}

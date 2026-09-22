@@ -8,6 +8,7 @@ import sqlalchemy.exc as sa_exc
 
 from pcapi.core.artist import exceptions as artist_exceptions
 from pcapi.core.artist import models
+from pcapi.core.artist import repository
 from pcapi.core.artist.models import Artist
 from pcapi.core.artist.models import ArtistProductLink
 from pcapi.core.artist.models import ArtistType
@@ -25,6 +26,16 @@ logger = logging.getLogger(__name__)
 
 # TODO (tpommellet-pass): drop the union once `offers_schemas.CreateOffer` is migrated to pydantic v2
 ArtistOfferLinkBody = artist_serialize.ArtistOfferLinkBodyModel | artist_serialize.ArtistOfferLinkBodyModelV2
+
+MUSIC_PLATFORM_ID_FIELDS_BY_PRIORITY = (
+    "isni_id",
+    "spotify_id",
+    "deezer_id",
+    "apple_music_id",
+    "genius_id",
+    "soundcloud_id",
+)
+
 
 @dataclass(frozen=True)
 class ArtistOfferLinkKey:
@@ -145,3 +156,24 @@ def upsert_artist_offer_links(
         )
 
     return created_keys, deleted_keys
+
+
+def _get_platform_ids_by_priority(platform_ids: typing.Mapping[str, str | None]) -> dict[str, str]:
+    platform_ids_by_priority: dict[str, str] = {}
+    for field in MUSIC_PLATFORM_ID_FIELDS_BY_PRIORITY:
+        value = platform_ids.get(field)
+        if value:
+            platform_ids_by_priority[field] = value
+    return platform_ids_by_priority
+
+
+def find_artist_by_music_platform_ids(platform_ids: typing.Mapping[str, str]) -> Artist | None:
+    platform_ids_by_priority = _get_platform_ids_by_priority(platform_ids)
+    if not platform_ids_by_priority:
+        return None
+
+    for platform, platform_id in platform_ids_by_priority.items():
+        artist = repository.get_artist_by_music_platform_id(platform, platform_id)
+        if artist is not None:
+            return artist
+    return None

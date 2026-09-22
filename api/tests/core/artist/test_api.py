@@ -10,6 +10,7 @@ from pcapi.core.artist import models as artist_models
 from pcapi.core.artist.api import ArtistOfferLinkKey
 from pcapi.core.artist.api import check_artist_type_is_allowed_for_subcategory
 from pcapi.core.artist.api import create_artist_offer_link
+from pcapi.core.artist.api import find_artist_by_music_platform_ids
 from pcapi.core.artist.api import get_artist_image_url
 from pcapi.core.artist.api import upsert_artist_offer_links
 from pcapi.core.categories import subcategories
@@ -284,3 +285,55 @@ class CheckArtistTypeIsAllowedForSubcategoryTest:
             check_artist_type_is_allowed_for_subcategory(artist_type, subcategory)
 
         assert exc.value.message == f"`{artist_type.value}` artists are not allowed for the `{subcategory.id}` category"
+
+
+class FindArtistByMusicPlatformIdsTest:
+    @pytest.mark.parametrize("platform_ids", [{}, {"spotify_id": None}, {"spotify_id": ""}, {"unknown_field": "id"}])
+    @mock.patch("pcapi.core.artist.repository.get_artist_by_music_platform_id")
+    def test_should_return_none_without_any_usable_id(self, mocked_get_artist, platform_ids):
+        assert find_artist_by_music_platform_ids(platform_ids) is None
+        mocked_get_artist.assert_not_called()
+
+    @mock.patch("pcapi.core.artist.repository.get_artist_by_music_platform_id")
+    def test_should_skip_the_empty_ids(self, mocked_get_artist):
+        mocked_get_artist.return_value = artist_models.Artist(id="artist-id")
+
+        find_artist_by_music_platform_ids({"spotify_id": "", "isni_id": None, "deezer_id": "3590"})
+
+        mocked_get_artist.assert_called_once_with("deezer_id", "3590")
+
+    @mock.patch("pcapi.core.artist.repository.get_artist_by_music_platform_id")
+    def test_should_return_none_when_no_platform_id_is_known(self, mocked_get_artist):
+        mocked_get_artist.return_value = None
+
+        assert find_artist_by_music_platform_ids({"spotify_id": "unknown"}) is None
+        assert mocked_get_artist.call_args_list == [
+            mock.call("spotify_id", "unknown"),
+        ]
+
+    @mock.patch("pcapi.core.artist.repository.get_artist_by_music_platform_id")
+    def test_should_look_the_ids_up_by_platform_priority(self, mocked_get_artist):
+        artist = artist_models.Artist(id="artist-id")
+        mocked_get_artist.return_value = artist
+
+        found = find_artist_by_music_platform_ids(
+            {
+                "deezer_id": "3590",
+                "spotify_id": "4TNiKyCX2oCvdo1sTgHcRw",
+                "isni_id": "0000000120303402",
+            }
+        )
+
+        assert found == artist
+        mocked_get_artist.assert_called_once_with("isni_id", "0000000120303402")
+
+    @mock.patch("pcapi.core.artist.repository.get_artist_by_music_platform_id")
+    def test_should_fall_back_on_a_lower_priority_platform(self, mocked_get_artist):
+        artist = artist_models.Artist(id="artist-id")
+        mocked_get_artist.side_effect = [None, artist]
+
+        assert find_artist_by_music_platform_ids({"spotify_id": "unknown", "deezer_id": "3590"}) == artist
+        assert mocked_get_artist.call_args_list == [
+            mock.call("spotify_id", "unknown"),
+            mock.call("deezer_id", "3590"),
+        ]
