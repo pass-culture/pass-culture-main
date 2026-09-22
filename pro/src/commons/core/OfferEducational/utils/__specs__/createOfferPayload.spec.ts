@@ -38,7 +38,7 @@ describe('createOfferPayload', () => {
     ).toEqual(expect.not.arrayContaining(['dates']))
   })
 
-  it('should not return contactEmail, contactPhone or bookingEmails on payload for a non-template offer', () => {
+  it('should return contactEmail, contactPhone and bookingEmails on payload for a non-template offer', () => {
     expect(
       Object.keys(
         createCollectiveOfferPayload({
@@ -48,11 +48,7 @@ describe('createOfferPayload', () => {
         })
       )
     ).toEqual(
-      expect.not.arrayContaining([
-        'contactEmail',
-        'contactPhone',
-        'bookingEmails',
-      ])
+      expect.arrayContaining(['contactEmail', 'contactPhone', 'bookingEmails'])
     )
   })
 

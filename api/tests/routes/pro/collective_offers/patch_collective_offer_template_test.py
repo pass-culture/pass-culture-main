@@ -91,8 +91,8 @@ def build_payload_context():
 PATCH_NULLABLE_FIELDS = [
     field.alias
     for field_name, field in PatchCollectiveOfferTemplateBodyModel.model_fields.items()
-    # TODO (jcicurel-pass, 2026-06-02): remove exclude clause when additional_details is added
-    if field_name not in PatchCollectiveOfferTemplateBodyModel.NON_NULLABLE_FIELDS and not field.exclude
+    if field_name not in PatchCollectiveOfferTemplateBodyModel.NON_NULLABLE_FIELDS
+    and field_name != "additional_details"  # this field is present in the model but excluded
 ]
 
 

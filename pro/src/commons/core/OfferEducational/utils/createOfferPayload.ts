@@ -113,6 +113,12 @@ const getCommonOfferPayload = (
       ? Number(offer.nationalProgramId)
       : null,
     formats: offer.formats,
+    // contactEmail, contactPhone and bookingEmails are set in the collective offer template creation form
+    // when creating a collective offer from a collective offer template, we will receive here the values from the template
+    contactEmail: offer.contactOptions?.email ? offer.contactEmail : undefined,
+    contactPhone: offer.contactOptions?.phone ? offer.phone : undefined,
+    bookingEmails:
+      offer.bookingEmails?.map((email) => email.email) ?? undefined,
   } as PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel
 }
 
@@ -120,7 +126,6 @@ export const createCollectiveOfferTemplatePayload = (
   offer: OfferEducationalFormValues
 ): PostCollectiveOfferTemplateBodyModel => ({
   ...getCommonOfferPayload(offer),
-  bookingEmails: offer.bookingEmails?.map((email) => email.email) ?? [''],
   dates:
     offer.datesType === 'specific_dates' &&
     offer.beginningDate &&
@@ -128,8 +133,6 @@ export const createCollectiveOfferTemplatePayload = (
       ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
       : undefined,
   priceDetail: offer.priceDetail,
-  contactEmail: offer.contactOptions?.email ? offer.contactEmail : undefined,
-  contactPhone: offer.contactOptions?.phone ? offer.phone : undefined,
   contactForm:
     offer.contactOptions?.form && offer.contactFormType === 'form'
       ? OfferContactFormEnum.FORM
