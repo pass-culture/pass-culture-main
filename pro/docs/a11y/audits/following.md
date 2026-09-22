@@ -24,6 +24,64 @@ Texte
 <summary> ⏳ Critère 7.1 - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
 
 **RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43716](https://passculture.atlassian.net/browse/PC-43716)  
+**PR** : [#24438](https://github.com/pass-culture/pass-culture-main/pull/24438)
+
+**Problème** 😱  
+P05 → Création offre réservable (5 étapes et confirmation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Lors du changement d'étape, la page entière est rechargée, ce qui provoque un replacement du focus sur la page entière, provoquant un certain nombre de tabulations avant de revenir à un endroit “naturel” pour le focus dans le formulaire.
+
+**Correction** 💡  
+Au changement d’étape, replacer le focus à un endroit “naturel” en arrivant à l'étape suivante / précédente, par exemple sur l’onglet de l'étape active.
+
+Après le changement d'étape, déplacer explicitement le focus vers l'élément actif d'étape en utilisant tabindex="-1".
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.1 - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43629](https://passculture.atlassian.net/browse/PC-43629)  
+**PR** : [#24423](https://github.com/pass-culture/pass-culture-main/pull/24423)
+
+**Problème** 😱  
+P05 → Création offre réservable (5 étapes et confirmation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Le composant « Domaine(s) d’activité » 
+
+- est annoncé comme ouvrant une listbox (aria-haspopup="listbox"), alors que le panneau affiché contient une liste de cases à cocher. Les rôles et attributs ARIA utilisés ne correspondent donc pas au comportement réel du composant.
+
+- Le bouton ouvrant le panneau ne restitue pas son état d'ouverture ou de fermeture (aria-expanded absent).
+
+**Correction** 💡  
+- Utiliser des rôles et attributs ARIA adaptés au comportement réel du composant. Dans ce cas, privilégier un panneau contenant des cases à cocher plutôt qu'une listbox, ou implémenter une véritable listbox multisélection si tel est le comportement attendu.
+
+- Restituer l'état du panneau à l'aide de l'attribut aria-expanded sur le bouton d'ouverture.
+
+- Veiller à ce que les attributs ARIA utilisés correspondent à la structure et au comportement effectifs du composant, conformément aux spécifications WAI-ARIA.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.1 - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
 **Ticket** : [PC-43622](https://passculture.atlassian.net/browse/PC-43622)  
 **PR** : [#24423](https://github.com/pass-culture/pass-culture-main/pull/24423)
 
