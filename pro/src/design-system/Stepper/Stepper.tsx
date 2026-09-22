@@ -2,6 +2,7 @@ import cn from 'classnames'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { noop } from '@/commons/utils/noop'
 
 import styles from './Stepper.module.scss'
@@ -47,7 +48,7 @@ export const Stepper = ({
   // data has finished loading, so screen reader users land on it after
   // navigating to the next/previous step.
   useEffect(() => {
-    currentStepRef.current?.focus()
+    claimNavigationFocus(currentStepRef.current)
   }, [activeStep])
 
   // Bascule horizontal -> vertical based on width per step

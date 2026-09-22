@@ -6,6 +6,12 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { listSelector } from '@/commons/store/snackBar/selectors'
 import { SNACKBAR_ITEM_SELECTOR } from '@/design-system/SnackBar/SnackBar'
 
+let focusClaimed = false
+export const claimNavigationFocus = (el: HTMLElement | null) => {
+  focusClaimed = true
+  el?.focus()
+}
+
 export const useFocus = (): void => {
   const location = useLocation()
   const { pathname } = location
@@ -51,15 +57,13 @@ export const useFocus = (): void => {
           activeSnackBar.focus()
         })
       }
-    } else if (document.activeElement === document.body) {
-      // Some content (e.g. a wizard's current step) may have already claimed
-      // focus for itself as part of the same navigation: don't steal it back.
+    } else if (!focusClaimed) {
       document.getElementById('top-page')?.focus()
+      // As "topPageLink" is a non-interactive <div tabIndex={-1}>, focusing above is not sufficient to guarantee that the browser scrolls to the top
+      // So we must force the #content-wrapper container to go to top
+      document.getElementById('content-wrapper')?.scrollTo(0, 0)
     }
-
-    // As "topPageLink" is a non-interactive <div tabIndex={-1}>, focusing above is not sufficient to guarantee that the browser scrolls to the top
-    // So we must force the #content-wrapper container to go to top
-    document.getElementById('content-wrapper')?.scrollTo(0, 0)
+    focusClaimed = false
 
     return () => {
       if (rafId !== undefined) {

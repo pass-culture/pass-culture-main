@@ -2,6 +2,8 @@ import cn from 'classnames'
 import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
+
 import type { BaseTabsProps } from '../Tabs'
 import styles from './NavLinkItems.module.scss'
 
@@ -36,7 +38,7 @@ export const NavLinkItems = <T extends string>({
   // data has finished loading, so screen reader users land on it after
   // navigating to the next/previous step.
   useEffect(() => {
-    selectedLinkRef.current?.focus()
+    claimNavigationFocus(selectedLinkRef.current)
   }, [selectedKey])
 
   return (
