@@ -3614,9 +3614,9 @@ def delete_venue_pivots(venue_id: int) -> None:
             providers_models.CinemaProviderPivot.venueId == venue_id
         ).delete(synchronize_session=False)
 
-    db.session.query(providers_models.AllocinePivot).filter(
-        providers_models.CinemaProviderPivot.venueId == venue_id
-    ).delete(synchronize_session=False)
+    db.session.query(providers_models.AllocinePivot).filter(providers_models.AllocinePivot.venueId == venue_id).delete(
+        synchronize_session=False
+    )
 
 
 def venue_has_ongoing_bookings(venue: models.Venue) -> bool:
