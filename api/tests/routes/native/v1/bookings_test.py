@@ -949,11 +949,17 @@ class PostBookingTest:
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 200
-        bookings_succeeded_counter_value = REGISTRY.get_sample_value(
-            "bookings_succeeded_total",
-            labels={"provider_id": "None", "provider_label": "None", "subcategory_id": str(subcategories.CONCERT.id)},
+        booking_requests_counter_value = REGISTRY.get_sample_value(
+            "booking_requests_total",
+            labels={
+                "provider_id": "None",
+                "provider_label": "None",
+                "subcategory_id": str(subcategories.CONCERT.id),
+                "status": "success",
+                "error_code": "None",
+            },
         )
-        assert bookings_succeeded_counter_value == 1
+        assert booking_requests_counter_value == 1
 
     def test_increment_bookings_failed_counter_metric(self, client):
         later = datetime.now(UTC) + timedelta(days=64)
@@ -966,16 +972,17 @@ class PostBookingTest:
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
-        bookings_failed_counter_value = REGISTRY.get_sample_value(
-            "bookings_failed_total",
+        booking_requests_counter_value = REGISTRY.get_sample_value(
+            "booking_requests_total",
             labels={
                 "provider_id": "None",
                 "provider_label": "None",
                 "subcategory_id": str(subcategories.CONCERT.id),
+                "status": "failure",
                 "error_code": "STOCK_NOT_BOOKABLE",
             },
         )
-        assert bookings_failed_counter_value == 1
+        assert booking_requests_counter_value == 1
 
     def test_external_bookings_execution_time_metric(self, client, requests_mock):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)

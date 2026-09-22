@@ -2,16 +2,10 @@ from prometheus_client import Counter
 from prometheus_client import Histogram
 
 
-bookings_succeeded_counter = Counter(
-    "bookings_succeeded_total",
-    "Total number of bookings that succeeded",
-    labelnames=["provider_id", "provider_label", "subcategory_id"],
-)
-
-bookings_failed_counter = Counter(
-    "bookings_failed_total",
-    "Total number of bookings that failed",
-    labelnames=["provider_id", "provider_label", "subcategory_id", "error_code"],
+booking_requests_counter = Counter(
+    "booking_requests_total",
+    "Total number of booking requests",
+    labelnames=["provider_id", "provider_label", "subcategory_id", "status", "error_code"],
 )
 
 external_bookings_execution_time_histogram = Histogram(
