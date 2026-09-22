@@ -16,6 +16,25 @@ describe('buildDatasets', () => {
       { x: '2023-01-01', y: 100 },
       { x: '2023-02-01', y: 200 },
     ])
+    expect(result.datasets[0].borderRadius).toEqual(0)
+    expect(result.datasets[0].minBarLength).toEqual(0)
+  })
+
+  it('should return the correct dataset structure for V2 graph', () => {
+    const recentViews = [
+      { date: new Date('2023-01-01'), views: 100, rawDate: '2023-01-01' },
+      { date: new Date('2023-02-01'), views: 200, rawDate: '2023-02-01' },
+    ]
+
+    const result = buildDatasets(recentViews, true)
+
+    expect(result.datasets[0].data).toEqual([
+      { x: '2023-01-01', y: 100 },
+      { x: '2023-02-01', y: 200 },
+    ])
+
+    expect(result.datasets[0].borderRadius).toEqual(4)
+    expect(result.datasets[0].minBarLength).toEqual(4)
   })
 })
 
