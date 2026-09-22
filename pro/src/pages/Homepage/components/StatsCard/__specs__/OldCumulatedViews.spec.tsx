@@ -5,14 +5,14 @@ import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
-  CumulatedViews,
-  type CumulatedViewsProps,
-} from '../components/CumulatedViews'
+  OldCumulatedViews,
+  type OldCumulatedViewsProps,
+} from '../components/OldCumulatedViews'
 
-const renderCumulatedViews = (props: CumulatedViewsProps) =>
-  renderWithProviders(<CumulatedViews {...props} />)
+const renderCumulatedViews = (props: OldCumulatedViewsProps) =>
+  renderWithProviders(<OldCumulatedViews {...props} />)
 
-describe('CumulatedViews', () => {
+describe('OldCumulatedViews', () => {
   it('should render empty state when no views data', () => {
     renderCumulatedViews({ dailyViews: [], totalViewsLast30Days: 0 })
 

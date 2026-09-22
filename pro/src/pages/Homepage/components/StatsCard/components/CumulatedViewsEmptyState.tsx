@@ -3,7 +3,7 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import strokeBookingHoldIcon from '@/icons/stroke-booking-hold.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import styles from './CumulatedViews.module.scss'
+import styles from './OldCumulatedViews.module.scss'
 
 const BEST_PRACTICES_URL =
   'https://passcultureapp.notion.site/Les-bonnes-pratiques-et-tudes-du-pass-Culture-323b1a0ec309406192d772e7d803fbd0'
