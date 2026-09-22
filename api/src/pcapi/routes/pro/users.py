@@ -189,7 +189,8 @@ def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
     except users_exceptions.EmailUpdateLimitReached:
         raise ApiErrors({"email": ["Trop de tentatives, réessayez dans 24 heures"]})
     except users_exceptions.EmailExistsError:
-        raise ApiErrors({"email": ["Un compte lié à cet email existe déjà"]})
+        # return a generic response to avoid user emails enumeration
+        return
 
 
 @pro_blueprint.route("/users/email_pending_validation", methods=["GET"])
