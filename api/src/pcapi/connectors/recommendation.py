@@ -108,7 +108,8 @@ class HttpBackend:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", urllib_execptions.InsecureRequestWarning)
                 if method == "get":
-                    response = requests.get(  # nosemgrep: python.requests.security.disabled-cert-validation.disabled-cert-validation
+                    # nosemgrep: python.requests.security.disabled-cert-validation.disabled-cert-validation
+                    response = requests.get(
                         url,
                         params=params,
                         headers=headers,
@@ -117,7 +118,8 @@ class HttpBackend:
                         log_info=False,
                     )
                 elif method == "post":
-                    response = requests.post(  # nosemgrep: python.requests.security.disabled-cert-validation.disabled-cert-validation
+                    # nosemgrep: python.requests.security.disabled-cert-validation.disabled-cert-validation
+                    response = requests.post(
                         url,
                         params=params,
                         json=body,
