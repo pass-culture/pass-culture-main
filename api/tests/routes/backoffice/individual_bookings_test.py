@@ -1791,6 +1791,8 @@ class GetIndividualBookingTest(GetEndpointHelper):
     # mediation
     expected_num_queries = 6
     expected_num_queries_without_incident_or_external = expected_num_queries - 3
+    # check has_reimbursement
+    expected_num_queries_check_reimbursement = expected_num_queries_without_incident_or_external + 1
 
     def test_reimbursed_booking(self, authenticated_client):
         booking = bookings_factories.ReimbursedBookingFactory(
@@ -1836,7 +1838,7 @@ class GetIndividualBookingTest(GetEndpointHelper):
         db.session.flush()
         booking_id = booking.id
 
-        with assert_num_queries(self.expected_num_queries_without_incident_or_external):
+        with assert_num_queries(self.expected_num_queries_check_reimbursement):
             response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
             assert response.status_code == 200
 
@@ -1852,7 +1854,7 @@ class GetIndividualBookingTest(GetEndpointHelper):
         booking.cancellationLimitDate = datetime.datetime(2025, 1, 5, 11, 30, 12)
 
         booking_id = booking.id
-        with assert_num_queries(self.expected_num_queries_without_incident_or_external):
+        with assert_num_queries(self.expected_num_queries_check_reimbursement):
             response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
             assert response.status_code == 200
 
@@ -1871,7 +1873,7 @@ class GetIndividualBookingTest(GetEndpointHelper):
         booking.cancellationLimitDate = datetime.datetime(2025, 1, 5, 11, 30, 12)
 
         booking_id = booking.id
-        with assert_num_queries(self.expected_num_queries_without_incident_or_external):
+        with assert_num_queries(self.expected_num_queries_check_reimbursement):
             response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
             assert response.status_code == 200
 

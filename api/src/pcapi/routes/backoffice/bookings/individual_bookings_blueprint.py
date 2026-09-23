@@ -29,6 +29,7 @@ from pcapi.core.bookings import exports as bookings_exports
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import repository as finance_repository
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -787,9 +788,14 @@ def _get_booking_details_actions(booking: bookings_models.Booking) -> DetailsAct
             booking_details_actions.add_action(BookingDetailsActionType.MARK_NON_FRAUDULENT)
         else:
             booking_details_actions.add_action(BookingDetailsActionType.MARK_FRAUDULENT)
-    if access_control.has_current_user_permission(perm_models.Permissions.MOVE_BOOKING) and booking.status in (
-        bookings_models.BookingStatus.CONFIRMED,
-        bookings_models.BookingStatus.USED,
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.MOVE_BOOKING)
+        and booking.status
+        in (
+            bookings_models.BookingStatus.CONFIRMED,
+            bookings_models.BookingStatus.USED,
+        )
+        and not finance_repository.has_reimbursement(booking)
     ):
         booking_details_actions.add_action(BookingDetailsActionType.MOVE_BOOKING)
 
