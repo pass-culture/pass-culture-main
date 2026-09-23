@@ -314,9 +314,9 @@ def get_offers_by_booking_allowed_datetime(booking_allowed_datetime: datetime.da
     return get_offers_by_date_field_range("bookingAllowedDatetime", lower_bound, upper_bound)
 
 
-def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> sa_orm.Query:
+def get_offers_by_ids(user: users_models.User | None, offer_ids: list[int]) -> sa_orm.Query:
     query = db.session.query(models.Offer)
-    if not user.has_admin_role:
+    if user and not user.has_admin_role:
         query = (
             query.join(offerers_models.Venue)
             .join(offerers_models.Offerer)
