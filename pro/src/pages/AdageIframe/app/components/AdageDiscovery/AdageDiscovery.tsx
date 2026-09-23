@@ -1,4 +1,5 @@
-import { createRef, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import { useLocation, useSearchParams } from 'react-router'
 
 import { AdageFrontRoles, AdagePlaylistType } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -26,13 +27,14 @@ import type { PlaylistTracker } from './types'
 
 export const AdageDiscovery = () => {
   const hasSeenAllPlaylist = useRef<boolean>(false)
-  const params = new URLSearchParams(location.search)
+  const [searchParams] = useSearchParams()
+  const location = useLocation()
   const { adageUser } = useAdageUser()
 
-  const footerSuggestion = createRef<HTMLDivElement>()
+  const footerSuggestion = useRef<HTMLDivElement>(null)
   const [isFooterSuggestionVisible] = useIsElementVisible(footerSuggestion)
 
-  const adageAuthToken = params.get('token')
+  const adageAuthToken = searchParams.get('token')
 
   const discoveryRef = useRef<HTMLDivElement>(null)
 
@@ -51,10 +53,14 @@ export const AdageDiscovery = () => {
 
   const { data: educationalDomains } = useEducationalDomains()
 
-  const domainsOptions = educationalDomains.map(({ id, name }) => ({
-    value: id,
-    label: name,
-  }))
+  const domainsOptions = useMemo(
+    () =>
+      (educationalDomains ?? []).map(({ id, name }) => ({
+        value: id,
+        label: name,
+      })),
+    [educationalDomains]
+  )
 
   function onWholePlaylistSeen({
     playlistId,

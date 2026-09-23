@@ -1,14 +1,15 @@
-import { setUser as setSentryUser } from '@sentry/browser'
-import { useEffect, useState } from 'react'
+import { setUser } from '@sentry/browser'
+import type { JSX } from 'react'
+import { useLocation, useSearchParams } from 'react-router'
+import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
 
-import {
-  AdageFrontRoles,
-  type AuthenticatedResponse,
-  type CatalogViewBody,
-} from '@/apiClient/adage'
+import { AdageFrontRoles, type CatalogViewBody } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
-import { LOG_CATALOG_VIEW_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_AUTHENTICATED_ADAGE_USER,
+  LOG_CATALOG_VIEW_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { LOGS_DATA } from '@/commons/utils/config'
 import { AppLayout } from '@/pages/AdageIframe/app/components/AppLayout/AppLayout'
 
@@ -17,12 +18,10 @@ import { UnauthenticatedError } from './components/UnauthenticatedError/Unauthen
 import { AdageUserContextProvider } from './providers/AdageUserContext'
 
 export const App = (): JSX.Element => {
-  const [user, setUser] = useState<AuthenticatedResponse | null>()
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-
-  const params = new URLSearchParams(window.location.search)
-  const siret = params.get('siret')
-  const venueId = Number(params.get('venue'))
+  const [searchParams] = useSearchParams()
+  const location = useLocation()
+  const siret = searchParams.get('siret')
+  const venueId = Number(searchParams.get('venue'))
 
   const { trigger: logCatalogView } = useSWRMutation(
     LOG_CATALOG_VIEW_QUERY_KEY,
@@ -34,34 +33,20 @@ export const App = (): JSX.Element => {
     ) => apiAdage.logCatalogView({ body: options.arg })
   )
 
-  useEffect(() => {
-    const logData = () => {
-      if (LOGS_DATA) {
-        logCatalogView({
-          iframeFrom: location.pathname,
-          source: siret || venueId ? 'partnersMap' : 'homepage',
-        })
-      }
-    }
+  const { data: user, isLoading } = useSWR([GET_AUTHENTICATED_ADAGE_USER], () =>
+    apiAdage.authenticate()
+  )
 
-    async function authenticate() {
-      setIsLoading(true)
-      try {
-        const user = await apiAdage.authenticate()
-        setUser(user)
-        if (user.email) {
-          setSentryUser({ email: user.email })
-        }
-        logData()
-      } catch {
-        setUser(null)
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  if (user?.email) {
+    setUser({ email: user.email })
+  }
 
-    authenticate()
-  }, [siret, venueId, logCatalogView])
+  if (LOGS_DATA && user && (venueId || siret)) {
+    logCatalogView({
+      iframeFrom: location.pathname,
+      source: siret || venueId ? 'partnersMap' : 'homepage',
+    })
+  }
 
   if (isLoading) {
     return <LoaderPage />
