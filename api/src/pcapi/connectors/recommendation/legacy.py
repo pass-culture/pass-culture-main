@@ -1,7 +1,12 @@
-"""Connector for our recommendation API
+"""Connector V1 for our recommendation API
 
 This is a mere proxy. Input validation is done by the recommendation
-API, and this module returns the raw response.
+API, and this module returns the raw response as bytes.
+
+Use this instead for auto serialization:
+```
+from pcapi.connectors import recommendation
+```
 """
 
 import json

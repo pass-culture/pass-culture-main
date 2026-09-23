@@ -1,6 +1,6 @@
 from flask_login import current_user
 
-import pcapi.connectors.recommendation as recommendation_api
+from pcapi.connectors.recommendation import legacy as recommendation_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
