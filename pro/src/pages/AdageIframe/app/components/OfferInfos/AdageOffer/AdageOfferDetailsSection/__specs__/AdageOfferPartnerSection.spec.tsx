@@ -46,7 +46,7 @@ describe('AdageOfferPartnerSection', () => {
     renderAdageOfferInfoSection({
       offer: {
         ...defaultCollectiveOffer,
-        contactPhone: undefined,
+        contactPhone: null,
       },
     })
 

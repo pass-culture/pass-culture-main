@@ -34,7 +34,7 @@ describe('adageOfferInstitution', () => {
       const institutionText = getBookableOfferInstitutionAndTeacherName({
         ...defaultCollectiveOffer,
         educationalInstitution: institution,
-        teacher: undefined,
+        teacher: null,
       })
 
       expect(institutionText).toEqual('Collège Victor Hugo')
@@ -43,7 +43,7 @@ describe('adageOfferInstitution', () => {
     it('should not return anything if the institution is not available', () => {
       const institutionText = getBookableOfferInstitutionAndTeacherName({
         ...defaultCollectiveOffer,
-        educationalInstitution: undefined,
+        educationalInstitution: null,
         teacher: teacher,
       })
 

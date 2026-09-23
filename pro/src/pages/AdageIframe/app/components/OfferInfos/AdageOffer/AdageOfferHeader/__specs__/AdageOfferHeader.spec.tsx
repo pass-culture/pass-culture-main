@@ -1,6 +1,10 @@
 import { screen } from '@testing-library/react'
 
-import { AdageFrontRoles, StudentLevels } from '@/apiClient/adage'
+import {
+  AdageFrontRoles,
+  type LocationResponseModelV2,
+  StudentLevels,
+} from '@/apiClient/adage'
 import { CollectiveLocationType } from '@/apiClient/v1'
 import {
   defaultAdageUser,
@@ -88,7 +92,7 @@ describe('AdageOfferHeader', () => {
 
   it('should not show an image if the offer has no image', () => {
     renderAdageOfferHeader({
-      offer: { ...defaultCollectiveTemplateOffer, imageUrl: undefined },
+      offer: { ...defaultCollectiveTemplateOffer, imageUrl: null },
       adageUser: defaultAdageUser,
     })
 
@@ -185,6 +189,7 @@ describe('AdageOfferHeader', () => {
           city: 'Paris',
           postalCode: '75000',
           id: 1,
+          institutionType: 'collège',
         },
         stock: {
           ...defaultCollectiveOffer.stock,
@@ -205,7 +210,10 @@ describe('AdageOfferHeader', () => {
         ...defaultCollectiveTemplateOffer,
         location: {
           locationType: CollectiveLocationType.ADDRESS,
+          locationComment: null,
           location: {
+            ...(defaultCollectiveTemplateOffer.location
+              .location as LocationResponseModelV2),
             id: 1,
             isVenueLocation: false,
             isManualEdition: false,
@@ -234,6 +242,8 @@ describe('AdageOfferHeader', () => {
         ...defaultCollectiveTemplateOffer,
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
+          locationComment: null,
+          location: null,
         },
       },
       adageUser: defaultAdageUser,
@@ -250,6 +260,8 @@ describe('AdageOfferHeader', () => {
         ...defaultCollectiveTemplateOffer,
         location: {
           locationType: CollectiveLocationType.SCHOOL,
+          locationComment: null,
+          location: null,
         },
       },
       adageUser: defaultAdageUser,

@@ -48,7 +48,7 @@ class CollectiveOfferTest:
             collectiveOffer__venue=venue,
             collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
             collectiveOffer__offererAddress=offerers_factories.OfferLocationFactory(
-                address=venue.offererAddress.address, venue=venue, label=venue.publicName
+                address=venue.offererAddress.address, venue=venue, label=None
             ),
         )
         # this archived offer should not appear in the result
@@ -123,7 +123,9 @@ class CollectiveOfferTest:
             venue=venue,
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddress.id,
+            offererAddress=offerers_factories.OfferLocationFactory(
+                address=venue.offererAddress.address, venue=venue, label=None
+            ),
             interventionArea=None,
             institution=institution,
         )
@@ -139,6 +141,7 @@ class CollectiveOfferTest:
         assert response_location["locationComment"] is None
         assert response_location["location"] is not None
         assert response_location["location"]["isVenueLocation"] is True
+        assert response_location["location"]["label"] is None
         assert response_location["location"]["banId"] == venue.offererAddress.address.banId
 
     def test_price_fields(self, eac_client, redactor):

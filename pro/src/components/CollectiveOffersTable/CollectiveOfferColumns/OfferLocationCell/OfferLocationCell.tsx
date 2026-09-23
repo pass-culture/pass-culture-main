@@ -1,10 +1,10 @@
-import type { GetCollectiveOfferLocationModelV2 } from '@/apiClient/v1'
+import type { GetCollectiveOfferLocationModel } from '@/apiClient/v1'
 import { CollectiveLocationType } from '@/apiClient/v1'
 
 import styles from './OfferLocationCell.module.scss'
 
 export interface OfferLocationCellProps {
-  offerLocation?: GetCollectiveOfferLocationModelV2 | null
+  offerLocation?: GetCollectiveOfferLocationModel | null
 }
 
 export const OfferLocationCell = ({

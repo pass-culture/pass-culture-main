@@ -2,6 +2,7 @@ import {
   CollectiveLocationType,
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
+  type LocationResponseModelV2,
   StudentLevels,
 } from '@/apiClient/adage'
 import {
@@ -23,6 +24,8 @@ describe('getOfferTags', () => {
       dates: { start: '2023-10-23T22:00:00Z', end: '2023-10-24T21:59:00Z' },
       location: {
         locationType: CollectiveLocationType.SCHOOL,
+        locationComment: null,
+        location: null,
       },
       venue: {
         ...templateOffer.venue,
@@ -61,7 +64,9 @@ describe('getOfferTags', () => {
       ...templateOffer,
       location: {
         locationType: CollectiveLocationType.ADDRESS,
+        locationComment: null,
         location: {
+          ...(templateOffer.location.location as LocationResponseModelV2),
           isManualEdition: false,
           isVenueLocation: false,
           id: 1,
@@ -102,6 +107,7 @@ describe('getOfferTags', () => {
       location: {
         locationType: CollectiveLocationType.TO_BE_DEFINED,
         locationComment: 'Comment',
+        location: null,
       },
       dates: undefined,
     }
@@ -132,7 +138,9 @@ describe('getOfferTags', () => {
       ...templateOffer,
       location: {
         locationType: CollectiveLocationType.ADDRESS,
+        locationComment: null,
         location: {
+          ...(templateOffer.location.location as LocationResponseModelV2),
           isManualEdition: false,
           isVenueLocation: false,
           id: 1,
@@ -159,7 +167,9 @@ describe('getOfferTags', () => {
       ...templateOffer,
       location: {
         locationType: CollectiveLocationType.ADDRESS,
+        locationComment: null,
         location: {
+          ...(templateOffer.location.location as LocationResponseModelV2),
           isManualEdition: false,
           isVenueLocation: false,
           id: 1,

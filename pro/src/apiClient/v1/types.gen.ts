@@ -728,7 +728,7 @@ export type CollectiveOfferResponseModel = {
      * Imageurl
      */
     imageUrl: string | null;
-    location: GetCollectiveOfferLocationModelV2;
+    location: GetCollectiveOfferLocationModel;
     /**
      * Name
      */
@@ -813,7 +813,7 @@ export type CollectiveOfferTemplateResponseModel = {
      * Imageurl
      */
     imageUrl: string | null;
-    location: GetCollectiveOfferLocationModelV2;
+    location: GetCollectiveOfferLocationModel;
     /**
      * Name
      */
@@ -2089,9 +2089,9 @@ export type GetCollectiveOfferCollectiveStockResponseModel = {
 };
 
 /**
- * GetCollectiveOfferLocationModelV2
+ * GetCollectiveOfferLocationModel
  */
-export type GetCollectiveOfferLocationModelV2 = {
+export type GetCollectiveOfferLocationModel = {
     location: LocationResponseModelV2 | null;
     /**
      * Locationcomment
@@ -2238,7 +2238,7 @@ export type GetCollectiveOfferResponseModel = {
      * Istemplate
      */
     isTemplate?: boolean;
-    location: GetCollectiveOfferLocationModelV2;
+    location: GetCollectiveOfferLocationModel;
     /**
      * Mentaldisabilitycompliant
      */
@@ -2340,7 +2340,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
      * Istemplate
      */
     isTemplate?: boolean;
-    location: GetCollectiveOfferLocationModelV2;
+    location: GetCollectiveOfferLocationModel;
     /**
      * Mentaldisabilitycompliant
      */

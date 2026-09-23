@@ -3,121 +3,77 @@ import typing
 from datetime import date
 from datetime import datetime
 
-import pydantic as pydantic_v2
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import validator
+import pydantic
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models
 from pcapi.core.finance.utils import to_cents
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.utils import is_venue_address
-from pcapi.routes.native.v1.serialization import common_models
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.serialization import address_serialize
-from pcapi.routes.serialization.national_programs import NationalProgramModel
+from pcapi.routes.serialization.collective_offers_serialize import GetCollectiveOfferLocationModel
+from pcapi.routes.serialization.national_programs import NationalProgramResponseModel
 from pcapi.serialization import utils
-from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import format_into_utc_date
 
 
 logger = logging.getLogger(__name__)
 
 
-class CollectiveOfferDatesModel(BaseModel):
+class CollectiveOfferDatesModel(HttpBodyModel):
     start: datetime
     end: datetime
 
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
 
-
-class GetCollectiveOfferLocationModel(BaseModel):
-    locationType: models.CollectiveLocationType
-    locationComment: str | None
-    location: address_serialize.LocationResponseModel | None
-
-
-def get_collective_offer_location_model(
-    offer: models.CollectiveOffer | models.CollectiveOfferTemplate,
-) -> GetCollectiveOfferLocationModel:
-    location = None
-    oa = offer.offererAddress
-    venue = offer.venue
-    if oa is not None:
-        is_venue_location = is_venue_address(oa, venue)
-        location = address_serialize.LocationResponseModel(
-            **address_serialize.retrieve_address_info_from_oa(oa),
-            label=venue.publicName if is_venue_location else oa.label,
-            isVenueLocation=is_venue_location,
-        )
-
-    return GetCollectiveOfferLocationModel(
-        locationType=offer.locationType, locationComment=offer.locationComment, location=location
-    )
-
-
-class OfferManagingOffererResponse(BaseModel):
+class OfferManagingOffererResponse(HttpBodyModel):
     name: str
 
-    class Config:
-        orm_mode = True
 
-
-class CollectiveAdditionalFeeResponse(ConfiguredBaseModel):
+class CollectiveAdditionalFeeResponse(HttpBodyModel):
     type: models.CollectiveAdditionalFeeType
     label: str | None
     amount: int
 
-    @validator("amount", pre=True)
+    @pydantic.field_validator("amount", mode="before")
     def validate_amount(cls, value: typing.Any) -> int:
         return to_cents(value)
 
 
-class OfferStockResponse(BaseModel):
+class OfferStockResponse(HttpBodyModel):
     id: int
-    startDatetime: datetime | None
-    endDatetime: datetime | None
-    bookingLimitDatetime: datetime | None
+    startDatetime: datetime | None = None
+    endDatetime: datetime | None = None
+    bookingLimitDatetime: datetime | None = None
     price: int
-    servicePrice: int | None
+    servicePrice: int
     collective_additional_fees: list[CollectiveAdditionalFeeResponse]
-    numberOfTickets: int | None
-    numberOfTeachers: int | None
-    priceDetail: str | None = Field(alias="educationalPriceDetail")
+    numberOfTickets: int
+    numberOfTeachers: int
+    priceDetail: str | None = pydantic.Field(default=None, alias="educationalPriceDetail")
 
-    @validator("price", "servicePrice", pre=True)
+    @pydantic.field_validator("price", "servicePrice", mode="before")
     def validate_price(cls, value: typing.Any) -> int:
         return to_cents(value)
 
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
+
+class OfferVenueCoordinates(HttpBodyModel):
+    latitude: float
+    longitude: float
 
 
-class OfferVenueResponse(BaseModel):
+class OfferVenueResponse(HttpBodyModel):
     id: int
-    address: str | None
-    city: str | None
+    address: str
+    city: str
     name: str
-    postalCode: str | None
-    departementCode: str | None = Field(alias="departmentCode")
+    postalCode: str
+    departmentCode: str
     publicName: str
-    coordinates: common_models.Coordinates
+    coordinates: OfferVenueCoordinates
     managingOfferer: OfferManagingOffererResponse
     adageId: str | None
-    bannerUrl: str | None = Field(alias="imgUrl")
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+    imgUrl: str | None
 
     @classmethod
-    def from_orm(cls: type["OfferVenueResponse"], venue: offerers_models.Venue) -> "OfferVenueResponse":
+    def build(cls, venue: offerers_models.Venue) -> typing.Self:
         return cls(
             id=venue.id,
             address=venue.offererAddress.address.street,
@@ -126,104 +82,100 @@ class OfferVenueResponse(BaseModel):
             postalCode=venue.offererAddress.address.postalCode,
             departmentCode=venue.offererAddress.address.departmentCode,
             publicName=venue.publicName,
-            coordinates=common_models.Coordinates(
-                latitude=venue.offererAddress.address.latitude,
-                longitude=venue.offererAddress.address.longitude,
+            coordinates=OfferVenueCoordinates(
+                latitude=float(venue.offererAddress.address.latitude),
+                longitude=float(venue.offererAddress.address.longitude),
             ),
-            managingOfferer=venue.managingOfferer,  # type: ignore [arg-type]
+            managingOfferer=OfferManagingOffererResponse(name=venue.managingOfferer.name),
             adageId=venue.adageId,
             imgUrl=venue.bannerUrl,
         )
 
 
-class OfferDomain(BaseModel):
+class OfferDomain(HttpBodyModel):
     id: int
     name: str
 
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
 
-
-class EducationalInstitutionResponseModel(BaseModel):
+class EducationalInstitutionResponseModel(HttpBodyModel):
     id: int
     name: str
     postalCode: str
     city: str
-    institutionType: str | None
-
-    class Config:
-        orm_mode = True
-        extra = "forbid"
+    institutionType: str
 
 
-class EducationalRedactorResponseModel(BaseModel):
-    email: str | None
+class EducationalRedactorResponseModel(HttpBodyModel):
+    email: str
     firstName: str | None
     lastName: str | None
     civility: str | None
 
-    class Config:
-        orm_mode = True
 
-
-class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
+class CollectiveOfferBaseReponseModel(HttpBodyModel):
     id: int
-    description: str | None
+    description: str
     name: str
     venue: OfferVenueResponse
     students: list[models.StudentLevels]
-    location: GetCollectiveOfferLocationModel | None
+    location: GetCollectiveOfferLocationModel
     contactEmail: str | None
     contactPhone: str | None
     durationMinutes: int | None
-    educationalPriceDetail: str | None
-    domains: typing.Sequence[OfferDomain]
+    educationalPriceDetail: str | None = None
+    domains: list[OfferDomain]
     interventionArea: list[str]
     imageUrl: str | None
     imageCredit: str | None
-    nationalProgram: NationalProgramModel | None
-    formats: typing.Sequence[EacFormat]
+    nationalProgram: NationalProgramResponseModel | None
+    formats: list[EacFormat]
     isTemplate: bool
+    # accessibility fields
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
 
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
-        use_enum_values = True
-        extra = "forbid"
+    model_config = pydantic.ConfigDict(use_enum_values=True)
 
 
 class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
-    collectiveStock: OfferStockResponse = Field(alias="stock")
-    institution: EducationalInstitutionResponseModel | None = Field(alias="educationalInstitution")
+    stock: OfferStockResponse
+    educationalInstitution: EducationalInstitutionResponseModel | None
     teacher: EducationalRedactorResponseModel | None
     additionalDetails: str | None
 
     @classmethod
-    def build(
-        cls: "type[CollectiveOfferResponseModel]", offer: models.CollectiveOffer
-    ) -> "CollectiveOfferResponseModel":
+    def build(cls, offer: models.CollectiveOffer) -> typing.Self:
+        stock = OfferStockResponse.model_validate(offer.collectiveStock)
+        venue = OfferVenueResponse.build(offer.venue)
+        location = GetCollectiveOfferLocationModel.build(offer)
+        domains = [OfferDomain.model_validate(domain) for domain in offer.domains]
+        institution = (
+            EducationalInstitutionResponseModel.model_validate(offer.institution) if offer.institution else None
+        )
+        teacher = EducationalRedactorResponseModel.model_validate(offer.teacher) if offer.teacher else None
+        program = NationalProgramResponseModel.model_validate(offer.nationalProgram) if offer.nationalProgram else None
+
         return cls(
             id=offer.id,
             description=offer.description,
             name=offer.name,
-            stock=offer.collectiveStock,  # type: ignore [arg-type]
-            venue=offer.venue,  # type: ignore [arg-type]
+            stock=stock,
+            venue=venue,
             students=offer.students,
-            location=get_collective_offer_location_model(offer),
+            location=location,
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
             durationMinutes=offer.durationMinutes,
             educationalPriceDetail=offer.collectiveStock.priceDetail,
-            domains=offer.domains,  # type: ignore [arg-type]
-            educationalInstitution=offer.institution,  # type: ignore [arg-type]
+            domains=domains,
+            educationalInstitution=institution,
             interventionArea=offer.interventionArea,
             imageUrl=offer.imageUrl,
             imageCredit=offer.imageCredit,
-            teacher=offer.teacher,  # type: ignore [arg-type]
-            nationalProgram=offer.nationalProgram,  # type: ignore [arg-type]
+            teacher=teacher,
+            nationalProgram=program,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
@@ -234,44 +186,42 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
         )
 
 
-class ListCollectiveOffersResponseModel(BaseModel):
+class ListCollectiveOffersResponseModel(HttpBodyModel):
     collectiveOffers: list[CollectiveOfferResponseModel]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
 
 
 class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
-    isFavorite: bool | None
-    dates: CollectiveOfferDatesModel | None
-    contactUrl: str | None
-    contactForm: models.OfferContactFormEnum | None
+    isFavorite: bool | None = None
+    dates: CollectiveOfferDatesModel | None = None
+    contactUrl: str | None = None
+    contactForm: models.OfferContactFormEnum | None = None
 
     @classmethod
-    def build(
-        cls: "type[CollectiveOfferTemplateResponseModel]",
-        offer: models.CollectiveOfferTemplate,
-        is_favorite: bool,
-    ) -> "CollectiveOfferTemplateResponseModel":
+    def build(cls, offer: models.CollectiveOfferTemplate, is_favorite: bool) -> typing.Self:
         if offer.start and offer.end:
             dates = CollectiveOfferDatesModel(start=offer.start, end=offer.end)
         else:
             dates = None
 
+        venue = OfferVenueResponse.build(offer.venue)
+        location = GetCollectiveOfferLocationModel.build(offer)
+        domains = [OfferDomain.model_validate(domain) for domain in offer.domains]
+        program = NationalProgramResponseModel.model_validate(offer.nationalProgram) if offer.nationalProgram else None
+
         return cls(
             id=offer.id,
             description=offer.description,
             name=offer.name,
-            venue=offer.venue,  # type: ignore [arg-type]
+            venue=venue,
             students=offer.students,
-            location=get_collective_offer_location_model(offer),
+            location=location,
             durationMinutes=offer.durationMinutes,
             educationalPriceDetail=offer.priceDetail,
-            domains=offer.domains,  # type: ignore [arg-type]
+            domains=domains,
             interventionArea=offer.interventionArea,
             imageUrl=offer.imageUrl,
             imageCredit=offer.imageCredit,
-            nationalProgram=offer.nationalProgram,  # type: ignore [arg-type]
+            nationalProgram=program,
             isFavorite=is_favorite,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
@@ -287,11 +237,8 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
         )
 
 
-class ListCollectiveOfferTemplateResponseModel(BaseModel):
+class ListCollectiveOfferTemplateResponseModel(HttpBodyModel):
     collectiveOffers: list[CollectiveOfferTemplateResponseModel]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
 
 
 class CollectiveRequestResponseModel(HttpBodyModel):
@@ -305,7 +252,7 @@ class PostCollectiveRequestBodyModel(HttpBodyModel):
     total_teachers: int | None
     comment: str
 
-    @pydantic_v2.field_validator("phone_number", mode="after")
+    @pydantic.field_validator("phone_number", mode="after")
     def validate_phone_number(cls, phone_number: str | None) -> str | None:
         return utils.validate_phone_number_nullable(phone_number)
 

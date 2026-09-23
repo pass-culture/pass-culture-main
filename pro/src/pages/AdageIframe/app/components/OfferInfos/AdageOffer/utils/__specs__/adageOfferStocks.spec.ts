@@ -14,6 +14,7 @@ describe('adageOfferStocks', () => {
           servicePrice: 100,
           collectiveAdditionalFees: [],
           numberOfTickets: 20,
+          numberOfTeachers: 0,
         },
       })
 
@@ -28,7 +29,11 @@ describe('adageOfferStocks', () => {
           price: 14500,
           servicePrice: 10000,
           collectiveAdditionalFees: [
-            { type: CollectiveAdditionalFeeType.TRAVEL, amount: 4500 },
+            {
+              type: CollectiveAdditionalFeeType.TRAVEL,
+              amount: 4500,
+              label: null,
+            },
           ],
           numberOfTickets: 28,
           numberOfTeachers: 2,
