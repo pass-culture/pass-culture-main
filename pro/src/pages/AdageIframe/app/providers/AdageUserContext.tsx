@@ -3,7 +3,6 @@ import {
   type Dispatch,
   type ReactNode,
   type SetStateAction,
-  useEffect,
   useMemo,
   useState,
 } from 'react'
@@ -29,13 +28,12 @@ export const AdageUserContextProvider = ({
   children: ReactNode
   adageUser: AdageUserContextType['adageUser']
 }): JSX.Element => {
-  const [favoritesCount, setFavoritesCount] = useState<number>(0)
-  const [institutionOfferCount, setInstitutionOfferCount] = useState<number>(0)
-
-  useEffect(() => {
-    setFavoritesCount(adageUser?.favoritesCount ?? 0)
-    setInstitutionOfferCount(adageUser?.offersCount ?? 0)
-  }, [adageUser])
+  const [favoritesCount, setFavoritesCount] = useState<number>(
+    adageUser?.favoritesCount ?? 0
+  )
+  const [institutionOfferCount, setInstitutionOfferCount] = useState<number>(
+    adageUser?.offersCount ?? 0
+  )
 
   const contextValue = useMemo(
     () => ({
