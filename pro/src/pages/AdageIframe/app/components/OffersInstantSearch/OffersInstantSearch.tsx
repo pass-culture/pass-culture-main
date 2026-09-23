@@ -19,6 +19,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
 import { useAdageUser } from '../../hooks/useAdageUser'
+import styles from './OffersInstantSearch.module.scss'
 import { OffersSearch } from './OffersSearch/OffersSearch'
 import {
   ADAGE_FILTERS_DEFAULT_VALUES,
@@ -144,37 +145,40 @@ export const OffersInstantSearch = (): JSX.Element | null => {
   })
 
   return (
-    <InstantSearch
-      indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
-      searchClient={searchClient}
-      future={{ preserveSharedStateOnUnmount: true }} // InstantSearch recommendation to prepare for version 8
-    >
-      <Index
+    <>
+      <h1 className={styles['visually-hidden']}>Rechercher une offre</h1>
+      <InstantSearch
         indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
-        indexId={MAIN_INDEX_ID}
+        searchClient={searchClient}
+        future={{ preserveSharedStateOnUnmount: true }} // InstantSearch recommendation to prepare for version 8
       >
-        <Configure
-          attributesToHighlight={[]}
-          attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
-          clickAnalytics
-          facetFilters={queryFilters}
-          filters={locationsFilter}
-          hitsPerPage={8}
-          aroundLatLng={
-            isNumber(adageUser.lat) && isNumber(adageUser.lon)
-              ? `${adageUser.lat}, ${adageUser.lon}`
-              : undefined
-          }
-          aroundRadius={geoRadius}
-          distinct={false}
-        />
+        <Index
+          indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
+          indexId={MAIN_INDEX_ID}
+        >
+          <Configure
+            attributesToHighlight={[]}
+            attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
+            clickAnalytics
+            facetFilters={queryFilters}
+            filters={locationsFilter}
+            hitsPerPage={8}
+            aroundLatLng={
+              isNumber(adageUser.lat) && isNumber(adageUser.lon)
+                ? `${adageUser.lat}, ${adageUser.lon}`
+                : undefined
+            }
+            aroundRadius={geoRadius}
+            distinct={false}
+          />
 
-        <OffersSearch
-          setFilters={setFilters}
-          initialFilters={filters}
-          setGeoRadius={setGeoRadius}
-        />
-      </Index>
-    </InstantSearch>
+          <OffersSearch
+            setFilters={setFilters}
+            initialFilters={filters}
+            setGeoRadius={setGeoRadius}
+          />
+        </Index>
+      </InstantSearch>
+    </>
   )
 }

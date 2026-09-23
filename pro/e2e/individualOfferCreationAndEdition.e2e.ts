@@ -1,6 +1,7 @@
 import { type APIRequestContext, expect, request, test } from '@playwright/test'
 import { addDays, format } from 'date-fns'
 
+import { checkAccessibility } from './helpers/accessibility'
 import { loginAndNavigate } from './helpers/auth'
 import { isPatchStocksResponse } from './helpers/requests'
 import {
@@ -32,6 +33,7 @@ test.describe('Individual Offer Creation and Edition', () => {
 
     const titleInput = page.getByLabel(/Titre de l’offre/)
     await expect(titleInput).toHaveValue('')
+    await checkAccessibility(page)
 
     await page.goto('/offre/individuelle/1/edition/description')
     await expect(page.getByTestId('spinner')).not.toBeVisible()
@@ -48,11 +50,13 @@ test.describe('Individual Offer Creation and Edition', () => {
 
     const titleInput = page.getByLabel(/Titre de l’offre/)
     await expect(titleInput).toHaveValue('Mon offre virtuelle')
+    await checkAccessibility(page)
 
     await page.goto('/offre/individuelle/creation/description')
     await expect(page.getByTestId('spinner')).not.toBeVisible()
 
     await expect(titleInput).toHaveValue('')
+    await checkAccessibility(page)
   })
 
   test('I should see a warning modal when editing a stock with bookings and update only after confirmation', async ({
@@ -75,6 +79,7 @@ test.describe('Individual Offer Creation and Edition', () => {
     )
 
     await expect(page.getByTestId('spinner')).toHaveCount(0)
+    await checkAccessibility(page)
 
     await page.getByRole('button', { name: 'Modifier la date' }).first().click()
 
@@ -119,6 +124,7 @@ test.describe('Individual Offer Creation and Edition', () => {
     )
 
     await expect(page.getByTestId('spinner')).toHaveCount(0)
+    await checkAccessibility(page)
 
     await page
       .getByRole('button', { name: 'Supprimer la date' })

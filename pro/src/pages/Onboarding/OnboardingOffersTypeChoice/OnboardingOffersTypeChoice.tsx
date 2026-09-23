@@ -16,7 +16,7 @@ export const OnboardingOffersTypeChoice = () => {
         <h2 className={styles['onboarding-offer-header-subtitle']}>
           Où souhaitez-vous diffuser votre première offre ?
         </h2>
-        <OnboardingOffersChoice />
+        <OnboardingOffersChoice titleTag="h3" />
       </div>
     </OnboardingLayout>
   )

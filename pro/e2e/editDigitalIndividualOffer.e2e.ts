@@ -83,6 +83,7 @@ test.describe('Edit digital individual offers', () => {
       await expect(
         page.getByText('Votre offre a bien été modifiée.').first()
       ).toBeVisible()
+      await checkAccessibility(page)
 
       // LOCATION EDITION
       await page.getByRole('link', { name: 'Localisation' }).click()
@@ -97,6 +98,7 @@ test.describe('Edit digital individual offers', () => {
       await expect(page.getByLabel(/URL d’accès à l’offre/)).toHaveValue(
         randomUrl
       )
+      await checkAccessibility(page)
     })
   })
 
@@ -141,6 +143,7 @@ test.describe('Edit digital individual offers', () => {
         page.waitForResponse(isPatchStocksResponse),
         page.getByRole('button', { name: 'Confirmer la modification' }).click(),
       ])
+      await checkAccessibility(page)
 
       // Check that booking date has been modified
       await page.goto('/offre/individuelle/2/reservations')

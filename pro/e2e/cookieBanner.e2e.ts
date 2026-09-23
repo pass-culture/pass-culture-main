@@ -5,6 +5,7 @@ import {
   test,
 } from '@playwright/test'
 
+import { checkAccessibility } from './helpers/accessibility'
 import { login } from './helpers/auth'
 import { BASE_API_URL, createRegularOnboardedProUser } from './helpers/sandbox'
 
@@ -31,6 +32,7 @@ test.describe('Cookie banner', () => {
       page,
     }) => {
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
+      await checkAccessibility(page)
 
       await expect(
         page.getByText('Accessibilité : partiellement conforme')
@@ -45,6 +47,7 @@ test.describe('Cookie banner', () => {
       page,
     }) => {
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
+      await checkAccessibility(page)
 
       await page.reload()
 
@@ -55,6 +58,7 @@ test.describe('Cookie banner', () => {
       page,
     }) => {
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
+      await checkAccessibility(page)
 
       await page.getByRole('button', { name: 'Tout accepter' }).click()
 
@@ -120,7 +124,7 @@ test.describe('Cookie banner', () => {
       await expect(page.locator('#orejime-purpose-beamer')).not.toBeChecked()
 
       await page.locator('.orejime-Modal').getByText('Beamer').click()
-
+      await checkAccessibility(page)
       await page
         .locator('.orejime-Modal')
         .getByRole('button', { name: 'Enregistrer mes choix' })
@@ -148,7 +152,7 @@ test.describe('Cookie banner', () => {
       await expect(page.locator('#orejime-purpose-beamer')).not.toBeChecked()
 
       await page.locator('.orejime-Modal').getByText('Beamer').click()
-
+      await checkAccessibility(page)
       await page.goto('/connexion')
 
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
@@ -174,7 +178,7 @@ test.describe('Cookie banner', () => {
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await page.locator('.orejime-Modal').getByText('Beamer').click()
-
+      await checkAccessibility(page)
       await page.locator('.orejime-Modal-closeButton').click()
       await expect(page.locator('.orejime-Modal')).not.toBeVisible()
 
@@ -199,7 +203,7 @@ test.describe('Cookie banner', () => {
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await page.locator('.orejime-Modal').getByText('Beamer').click()
-
+      await checkAccessibility(page)
       await page
         .locator('.orejime-Modal')
         .getByRole('button', { name: 'Enregistrer mes choix' })
@@ -235,9 +239,8 @@ test.describe('Cookie banner', () => {
       const userData = await createRegularOnboardedProUser(requestContext)
       await requestContext.dispose()
 
-      await login(page, userData.user.email, {
-        setCookieConsent: false,
-      })
+      await login(page, userData.user.email, { setCookieConsent: false })
+      await checkAccessibility(page)
 
       await page
         .getByRole('button', { name: 'Gestion des cookies' })

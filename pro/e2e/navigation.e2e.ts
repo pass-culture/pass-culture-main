@@ -1,5 +1,6 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
+import { checkAccessibility } from './helpers/accessibility'
 import { login } from './helpers/auth'
 import { BASE_API_URL, createRegularOnboardedProUser } from './helpers/sandbox'
 
@@ -26,6 +27,7 @@ test.describe('Navigation', () => {
       name: 'Compléter ma page',
     })
     await expect(collectivePageLink).toBeVisible()
+    await checkAccessibility(page)
     await collectivePageLink.scrollIntoViewIfNeeded()
 
     const contentWrapper = page.locator('#content-wrapper')

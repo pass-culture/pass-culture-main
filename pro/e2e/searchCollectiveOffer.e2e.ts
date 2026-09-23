@@ -101,6 +101,7 @@ test.describe('Search collective offers', () => {
     await page.getByText('Rechercher').click()
     const response = await responsePromise
     expect(response.status()).toBe(200)
+    await checkAccessibility(page)
 
     await expectCollectiveOffersAreFound(page, [
       BOOKABLE_OFFERS_COLUMNS,
@@ -135,6 +136,7 @@ test.describe('Search collective offers', () => {
     const response = await responsePromise
     expect(response.status()).toBe(200)
 
+    await checkAccessibility(page)
     await expectCollectiveOffersAreFound(page, [
       BOOKABLE_OFFERS_COLUMNS,
       getPublishedCollectiveOfferRow(userData),
@@ -160,6 +162,7 @@ test.describe('Search collective offers', () => {
     const response = await responsePromise
     expect(response.status()).toBe(200)
 
+    await checkAccessibility(page)
     await expectCollectiveOffersAreFound(page, [
       BOOKABLE_OFFERS_COLUMNS,
       getPublishedCollectiveOfferRow(userData),
@@ -185,6 +188,7 @@ test.describe('Search collective offers', () => {
     const response = await responsePromise
     expect(response.status()).toBe(200)
 
+    await checkAccessibility(page)
     await expectCollectiveOffersAreFound(page, [
       BOOKABLE_OFFERS_COLUMNS,
       getPublishedCollectiveOfferRow(userData),
@@ -214,6 +218,7 @@ test.describe('Search collective offers', () => {
 
     await page.getByText('Rechercher').click()
 
+    await checkAccessibility(page)
     await expectCollectiveOffersAreFound(page, [
       BOOKABLE_OFFERS_COLUMNS,
       [
@@ -242,6 +247,7 @@ test.describe('Search collective offers', () => {
 
     await page.getByText('Rechercher').click()
 
+    await checkAccessibility(page)
     const rows = page.locator('tbody').locator('tr[data-testid="table-row"]')
     await expect(rows).toHaveCount(3)
   })
