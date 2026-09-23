@@ -30,6 +30,7 @@ test.describe('Desk (Guichet)', () => {
     const href = await cguLink.getAttribute('href')
     expect(href).toContain('aide.passculture.app')
     expect(href).toContain('Acteurs-Culturels-Modalit')
+    await checkAccessibility(page)
   })
 
   test('should validate a valid countermark', async ({
@@ -54,6 +55,7 @@ test.describe('Desk (Guichet)', () => {
     await tokenInput.fill(`PASSCULTURE:v3,TOKEN:${deskData.tokenUsed}`)
 
     await expect(tokenInput).toHaveValue(deskData.tokenUsed)
+    await checkAccessibility(page)
   })
 
   test('should decline a non-valid countermark', async ({
@@ -63,6 +65,7 @@ test.describe('Desk (Guichet)', () => {
     await tokenInput.fill('XXXXXX')
 
     await expect(page.getByText(/La contremarque n.existe pas/)).toBeVisible()
+    await checkAccessibility(page)
   })
 
   test('should decline an event countermark more than 48h before', async ({
@@ -74,6 +77,7 @@ test.describe('Desk (Guichet)', () => {
 
     const expectedDate = format(addDays(new Date(), 2), 'dd/MM/yyyy')
 
+    await checkAccessibility(page)
     await expect(
       page.getByText(
         `Vous pourrez valider cette contremarque à partir du ${expectedDate}`
@@ -101,6 +105,7 @@ test.describe('Desk (Guichet)', () => {
     await page.getByRole('button', { name: 'Continuer' }).click()
 
     await expectSuccessSnackbar(page, 'Contremarque invalidée')
+    await checkAccessibility(page)
   })
 
   test('should not validate another pro countermark', async ({
@@ -115,6 +120,7 @@ test.describe('Desk (Guichet)', () => {
     ).toBeVisible()
 
     await expect(page.getByText(/La contremarque n.existe pas/)).toBeVisible()
+    await checkAccessibility(page)
   })
 
   test('should not validate a cancelled countermark', async ({
@@ -127,6 +133,7 @@ test.describe('Desk (Guichet)', () => {
     await expect(
       page.getByText('Cette réservation a été annulée')
     ).toBeVisible()
+    await checkAccessibility(page)
   })
 
   test('should not validate a reimbursed countermark', async ({
@@ -139,5 +146,6 @@ test.describe('Desk (Guichet)', () => {
     await expect(
       page.getByText('Cette réservation a été remboursée')
     ).toBeVisible()
+    await checkAccessibility(page)
   })
 })

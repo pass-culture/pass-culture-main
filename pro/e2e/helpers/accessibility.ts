@@ -28,16 +28,9 @@ async function waitForSnackbarIfPresent(page: Page) {
   )
 }
 
-export async function checkAccessibility(
-  page: Page,
-  disabledRules: string[] = []
-): Promise<void> {
+export async function checkAccessibility(page: Page): Promise<void> {
   const axeBuilder = new AxeBuilder({ page })
   axeBuilder.exclude('iframe[name^="a-"]')
-
-  if (disabledRules.length > 0) {
-    axeBuilder.disableRules(disabledRules)
-  }
 
   await waitForSnackbarIfPresent(page)
 

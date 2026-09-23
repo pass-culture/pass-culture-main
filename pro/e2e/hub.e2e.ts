@@ -1,5 +1,6 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
+import { checkAccessibility } from './helpers/accessibility'
 import { doLogin } from './helpers/auth'
 import { navigateToHubAndPickVenue } from './helpers/navigation'
 import {
@@ -22,6 +23,7 @@ test.describe('Hub', () => {
 
     await doLogin(page, userData.user.email)
     await navigateToHubAndPickVenue(page, 'Mon lieu 2')
+    await checkAccessibility(page)
     await expect
       .soft(
         page.getByRole('heading', {

@@ -50,6 +50,8 @@ test.describe('Search collective template offers (Optimized)', () => {
 
     expect((await collectiveOffersResponse).status()).toBe(200)
 
+    await checkAccessibility(page)
+
     const row = page
       .locator('tbody')
       .locator('tr[data-testid="table-row"]')
@@ -79,6 +81,8 @@ test.describe('Search collective template offers (Optimized)', () => {
     await page.getByRole('button', { name: 'Rechercher' }).click()
 
     expect((await collectiveOffersResponse).status()).toBe(200)
+
+    await checkAccessibility(page)
 
     const row = page
       .locator('tbody')
@@ -110,6 +114,8 @@ test.describe('Search collective template offers (Optimized)', () => {
 
     expect((await collectiveOffersResponse).status()).toBe(200)
 
+    await checkAccessibility(page)
+
     const tbody = page.locator('tbody')
     await expect(tbody).toContainText(templateOffersData.offerDraft.name)
     await expect(tbody).toContainText('brouillon')
@@ -135,6 +141,8 @@ test.describe('Search collective template offers (Optimized)', () => {
     await page.getByRole('button', { name: 'Rechercher' }).click()
 
     expect((await collectiveOffersResponse).status()).toBe(200)
+
+    await checkAccessibility(page)
 
     const row = page
       .locator('tbody')
@@ -167,6 +175,8 @@ test.describe('Search collective template offers (Optimized)', () => {
 
     const response = await collectiveOffersResponse
     expect(response.status()).toBe(200)
+
+    await checkAccessibility(page)
 
     const row = page
       .locator('tbody')
@@ -203,6 +213,8 @@ test.describe('Search collective template offers (Optimized)', () => {
 
     expect((await collectiveOffersResponse).status()).toBe(200)
 
+    await checkAccessibility(page)
+
     await expect(
       page.getByText('Aucune offre trouvée pour votre recherche')
     ).toBeVisible()
@@ -212,6 +224,8 @@ test.describe('Search collective template offers (Optimized)', () => {
       .click()
 
     await page.getByRole('button', { name: 'Statut' }).click()
+
+    await checkAccessibility(page)
 
     const statusPanel = page.getByTestId('panel-scrollable')
     await expect(statusPanel.getByText('En instruction')).not.toBeChecked()
@@ -226,6 +240,8 @@ test.describe('Search collective template offers (Optimized)', () => {
 
     await page.getByLabel('Nom de l’offre').clear()
     await page.getByRole('button', { name: 'Rechercher' }).click()
+
+    await checkAccessibility(page)
 
     const tbody = page.locator('tbody')
     await expect(tbody).toContainText(templateOffersData.offerPublished.name)

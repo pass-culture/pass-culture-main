@@ -1,4 +1,5 @@
 import { expect, test } from './fixtures/activityData'
+import { checkAccessibility } from './helpers/accessibility'
 import {
   navigateToAdministrationSpace,
   navigateToHubAndPickVenue,
@@ -11,6 +12,7 @@ test.describe('Activity Data', () => {
   }) => {
     await navigateToHubAndPickVenue(page, userData.venueName)
     await navigateToAdministrationSpace(page)
+    await checkAccessibility(page)
 
     await page.getByRole('link', { name: 'Individuel' }).click()
     await expect(page).toHaveURL(/\/individuel$/)
@@ -43,6 +45,7 @@ test.describe('Activity Data', () => {
   }) => {
     await navigateToHubAndPickVenue(page, userData.venueName)
     await navigateToAdministrationSpace(page)
+    await checkAccessibility(page)
 
     await page.getByRole('link', { name: 'Collectif' }).click()
     await expect(page).toHaveURL(/\/collectif$/)
