@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
@@ -48,7 +49,7 @@ function renderStocksCalendar(
     })
   )
 
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <StocksCalendar
         offer={getIndividualOfferFactory({
@@ -75,6 +76,23 @@ const LABEL = {
 }
 
 describe('StocksCalendar', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderStocksCalendar([], {
+      offer: getIndividualOfferFactory({
+        priceCategories: [
+          { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+        ],
+        hasStocks: false,
+      }),
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display a button to add calendar infos when there are no stocks yet', async () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({

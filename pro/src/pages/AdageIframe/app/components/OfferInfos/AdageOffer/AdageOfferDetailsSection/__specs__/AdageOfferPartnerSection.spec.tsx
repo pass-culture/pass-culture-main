@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { defaultCollectiveOffer } from '@/commons/utils/factories/adageFactories'
 
@@ -16,6 +17,17 @@ function renderAdageOfferInfoSection(
 }
 
 describe('AdageOfferPartnerSection', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageOfferInfoSection({
+      offer: {
+        ...defaultCollectiveOffer,
+        contactEmail: 'test@test.co',
+      },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the e-mail address', () => {
     renderAdageOfferInfoSection({
       offer: {

@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { RouteObject } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -54,7 +55,7 @@ const routes: RouteObject[] = [
 ]
 
 const renderCollectiveActivityData = () => {
-  renderWithProviders(null, {
+  return renderWithProviders(null, {
     routes,
     initialRouterEntries: ['/administration/donnees-activite/collectif'],
     storeOverrides: {
@@ -85,6 +86,12 @@ describe('CollectiveActivityData', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getOffererAddresses').mockResolvedValue([])
     mockDownloadBookableOffersFile.mockResolvedValue(undefined)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveActivityData()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render the subtitle', () => {

@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import {
   IndividualOfferContext,
@@ -125,6 +126,12 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
 }
 
 describe('<PhysicalLocationSubform />', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderPhysicalLocationSubform({})
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show venue address radio selected by default (no other address fields)', () => {
     renderPhysicalLocationSubform({})
 

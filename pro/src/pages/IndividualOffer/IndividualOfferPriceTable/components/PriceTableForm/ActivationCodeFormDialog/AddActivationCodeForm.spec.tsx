@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -9,6 +10,14 @@ const LABELS = {
 }
 
 describe('AddActivationCodeForm', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <AddActivationCodeForm errorMessage="" errorTitle="" />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render helper banner when no error', () => {
     renderWithProviders(<AddActivationCodeForm errorMessage="" errorTitle="" />)
 

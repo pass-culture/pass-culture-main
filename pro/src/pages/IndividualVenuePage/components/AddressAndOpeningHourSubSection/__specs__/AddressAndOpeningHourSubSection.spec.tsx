@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
@@ -15,6 +16,14 @@ const location = makeGetVenueResponseModel({
 }).location
 
 describe('AddressAndOpeningHourSubSection', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(
+      <AddressAndOpeningHourSubSection address={location} openingHours={null} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the formatted address', () => {
     render(
       <AddressAndOpeningHourSubSection address={location} openingHours={null} />

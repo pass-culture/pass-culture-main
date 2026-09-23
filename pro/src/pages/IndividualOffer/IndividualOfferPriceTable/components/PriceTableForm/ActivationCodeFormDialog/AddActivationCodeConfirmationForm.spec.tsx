@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -13,6 +14,19 @@ const LABELS = {
 describe('AddActivationCodeConfirmationForm', () => {
   const today = new Date('2025-09-17T12:00:00Z')
   const minExpirationDate = new Date('2025-09-20T12:00:00Z')
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <AddActivationCodeConfirmationForm
+        onExpirationDateChange={vi.fn()}
+        today={today}
+        minExpirationDate={minExpirationDate}
+        departmentCode={'75'}
+      />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should render confirmation texts and expiration date field', () => {
     renderWithProviders(

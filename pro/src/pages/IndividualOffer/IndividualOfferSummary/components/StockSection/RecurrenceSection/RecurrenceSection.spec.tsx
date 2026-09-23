@@ -1,10 +1,25 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import type { StockStatsResponseModel } from '@/apiClient/v1'
 
 import { RecurrenceSection } from './RecurrenceSection'
 
 describe('StockEventSection', () => {
+  it('should render without accessibility violations', async () => {
+    const stocksStats: StockStatsResponseModel = {
+      stockCount: 2,
+      remainingQuantity: undefined,
+      oldestStock: '2021-01-01T00:00:00+01:00',
+      newestStock: '2021-01-02T00:00:00+01:00',
+    }
+    const { container } = render(
+      <RecurrenceSection stocksStats={stocksStats} departementCode="" />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render all information when there are several stocks', () => {
     const stocksStats: StockStatsResponseModel = {
       stockCount: 2,

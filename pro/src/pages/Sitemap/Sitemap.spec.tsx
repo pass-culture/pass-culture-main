@@ -1,5 +1,6 @@
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -39,6 +40,12 @@ vi.mock('react-router', async () => {
 })
 
 describe('Sitemap', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSitemap()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the sitemap heading', () => {
     renderSitemap()
     expect(

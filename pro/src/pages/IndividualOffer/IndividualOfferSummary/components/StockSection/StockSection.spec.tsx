@@ -5,6 +5,7 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { generatePath, Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
@@ -66,6 +67,40 @@ const renderStockSection = (
 
 describe('Summary stock section', () => {
   describe('for general case', () => {
+    it('should render without accessibility violations', async () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+        getStocksResponseFactory({
+          stocks: [
+            getOfferStockFactory({
+              quantity: 0,
+              price: 20,
+              // @ts-expect-error - to remove when GetStocksResponseModel will be migrated to pydanticV2
+              bookingLimitDatetime: null,
+            }),
+          ],
+        })
+      )
+      const props = {
+        offer: getIndividualOfferFactory({
+          isEvent: false,
+          status: OfferStatus.SOLD_OUT,
+        }),
+      }
+      const { container } = renderStockSection(
+        props,
+        generatePath(
+          getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        )
+      )
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should render sold out warning', async () => {
       vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({

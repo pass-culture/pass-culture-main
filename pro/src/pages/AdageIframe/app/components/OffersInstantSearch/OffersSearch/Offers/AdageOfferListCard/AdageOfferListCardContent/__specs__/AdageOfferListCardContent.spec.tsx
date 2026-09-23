@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { type AuthenticatedResponse, EacFormat } from '@/apiClient/adage'
 import {
@@ -19,7 +20,7 @@ const renderAdageOfferListCardContent = (
   },
   adageUser: AuthenticatedResponse | null = defaultAdageUser
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
       <AdageOfferListCardContent {...props} />
     </AdageUserContextProvider>
@@ -27,6 +28,17 @@ const renderAdageOfferListCardContent = (
 }
 
 describe('AdageOfferListCardContent', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageOfferListCardContent({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        formats: [EacFormat.CONCERT, EacFormat.CONF_RENCE_RENCONTRE],
+      },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the offer formats if there are some', () => {
     renderAdageOfferListCardContent({
       offer: {

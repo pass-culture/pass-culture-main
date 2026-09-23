@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -45,7 +46,7 @@ const renderToggleVenueProviderStatusButton = (
   venueProvider = mockVenueProvider,
   venue = mockVenue
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <ToggleVenueProviderStatusButton
       venueProvider={venueProvider}
       venue={venue}
@@ -62,6 +63,12 @@ describe('ToggleVenueProviderStatusButton', () => {
   })
 
   describe('onCancel', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = renderToggleVenueProviderStatusButton()
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should close the modal when cancel is clicked', async () => {
       renderToggleVenueProviderStatusButton()
 

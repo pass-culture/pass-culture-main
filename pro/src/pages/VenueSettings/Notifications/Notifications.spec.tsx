@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { type GetVenueResponseModel, VenueState } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
@@ -47,6 +48,14 @@ const renderNotifications = (
 }
 
 describe('Notifications', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderNotifications()
+
+    await screen.findByText('Notifications de réservations')
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the notifications section with the email field', async () => {
     renderNotifications()
 

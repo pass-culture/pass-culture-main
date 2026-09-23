@@ -1,4 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
+import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -27,7 +29,7 @@ const renderCollectiveOfferCreation = (
   path: string,
   props: OptionalCollectiveOfferFromParamsProps
 ) => {
-  renderWithProviders(<CollectiveOfferCreation {...props} />, {
+  return renderWithProviders(<CollectiveOfferCreation {...props} />, {
     initialRouterEntries: [path],
     storeOverrides: {
       user: {
@@ -70,6 +72,22 @@ describe('CollectiveOfferCreation', () => {
       educationalOfferers: [offerer],
     })
   })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferCreation(
+      '/offre/creation/collectif',
+      {
+        ...defaultProps,
+      }
+    )
+
+    await screen.findByRole('heading', {
+      name: 'Quel est le type de votre offre ?',
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render collective offer creation form', async () => {
     renderCollectiveOfferCreation('/offre/creation/collectif', {
       ...defaultProps,

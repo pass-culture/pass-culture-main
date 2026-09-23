@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import {
   IndividualOfferContext,
@@ -73,6 +74,9 @@ const renderDetailsSubForm = ({
   const options = {
     initialRouterEntries: [path],
     features,
+    storeOverrides: {
+      staticData: { musicTypes: [] },
+    },
   }
 
   return renderWithProviders(
@@ -93,6 +97,14 @@ const renderDetailsSubForm = ({
 const calloutLabel = /Cette catégorie nécessite un code EAN./
 
 describe('DetailsSubForm', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderDetailsSubForm({
+      props: { isProductBased: true },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should always display conditional fields based on the selected category / subcategory  and if offer is product based', () => {
     renderDetailsSubForm({ props: { isProductBased: true } })
 

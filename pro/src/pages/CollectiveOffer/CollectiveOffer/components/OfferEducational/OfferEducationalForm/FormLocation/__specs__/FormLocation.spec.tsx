@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { CollectiveLocationType } from '@/apiClient/v1'
@@ -109,6 +110,12 @@ describe('FormLocation', () => {
 
   beforeEach(() => {
     vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue(mockAdressData)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderFormLocation(props, initialValues)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render the location form with title', () => {

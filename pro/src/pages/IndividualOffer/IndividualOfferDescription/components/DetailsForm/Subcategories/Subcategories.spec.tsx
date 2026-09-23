@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { useEffect } from 'react'
 import { FormProvider, type UseFormReturn, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import {
   categoryFactory,
@@ -75,6 +76,12 @@ const renderSubCategories = (options?: {
 }
 
 describe('<Subcategories />', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSubCategories()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('renders the category select', () => {
     renderSubCategories()
     expect(screen.getByLabelText(/Catégorie/)).toBeInTheDocument()

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import * as router from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -11,6 +12,12 @@ vi.mock('react-router', async () => ({
 }))
 
 describe('NotFound', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(<NotFound />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display a message notifying the user they are on a wrong path', () => {
     renderWithProviders(<NotFound />)
 

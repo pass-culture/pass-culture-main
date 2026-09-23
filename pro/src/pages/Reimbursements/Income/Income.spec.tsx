@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type {
@@ -68,7 +69,7 @@ const user = sharedCurrentUserFactory()
 const renderIncome = (
   venues: VenueListItemLiteResponseModel[] = MOCK_DATA.venues
 ) => {
-  renderWithProviders(<Income />, {
+  return renderWithProviders(<Income />, {
     user,
     storeOverrides: {
       user: {
@@ -95,6 +96,12 @@ describe('Income', () => {
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: vi.fn(),
       }))
+    })
+
+    it('should render without accessibility violations', async () => {
+      const { container } = renderIncome([])
+
+      expect(await axe(container)).toHaveNoViolations()
     })
 
     it('should display an empty screen if no venues were found', async () => {

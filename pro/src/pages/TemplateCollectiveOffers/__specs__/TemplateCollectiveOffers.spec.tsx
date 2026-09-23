@@ -4,6 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -46,7 +47,7 @@ const renderOffers = async (
   )
 
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<TemplateCollectiveOffers />, {
+  const renderResult = renderWithProviders(<TemplateCollectiveOffers />, {
     user,
     initialRouterEntries: [route],
     features,
@@ -59,6 +60,8 @@ const renderOffers = async (
   })
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+  return renderResult
 }
 
 const makeQuery = (
@@ -95,6 +98,14 @@ describe('TemplateCollectiveOffers', () => {
 
   afterEach(() => {
     window.sessionStorage.clear()
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = await renderOffers()
+
+    await screen.findByRole('heading', { name: 'Offres vitrines' })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display the page', async () => {

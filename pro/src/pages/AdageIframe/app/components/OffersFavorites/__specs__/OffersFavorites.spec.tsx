@@ -1,6 +1,11 @@
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import {
   AdageFrontRoles,
@@ -35,7 +40,7 @@ const renderAdageFavoritesOffers = (
   user: AuthenticatedResponse,
   features?: string[]
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <Routes>
       <Route path="/adage-iframe/recherche" element={<h1>Accueil</h1>} />
       <Route
@@ -66,6 +71,13 @@ describe('OffersFavorites', () => {
       favoritesTemplate: [],
     })
     vi.spyOn(apiAdage, 'logFavOfferButtonClick').mockResolvedValue()
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageFavoritesOffers(user)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render favorites title', async () => {

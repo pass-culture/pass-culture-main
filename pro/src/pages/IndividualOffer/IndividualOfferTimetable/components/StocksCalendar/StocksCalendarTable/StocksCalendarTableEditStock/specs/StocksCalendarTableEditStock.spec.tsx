@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import {
   getIndividualOfferFactory,
@@ -50,10 +51,27 @@ function renderStocksCalendarTableEditStock(
       </>
     )
   }
-  renderWithProviders(<StocksCalendarTableEditStockWrapper />)
+  return renderWithProviders(<StocksCalendarTableEditStockWrapper />)
 }
 
 describe('StocksCalendarTableEditStock', () => {
+  it('should render without accessibility violations', async () => {
+    const beginningDate = addDays(new Date(), 2).toISOString().split('T')[0]
+    const limitDate = addDays(new Date(), 3).toISOString().split('T')[0]
+    const priceCategoryId = 1
+    const remainingQuantity = 322
+    const { container } = renderStocksCalendarTableEditStock({
+      stock: getOfferStockFactory({
+        beginningDatetime: beginningDate,
+        bookingLimitDatetime: limitDate,
+        priceCategoryId: priceCategoryId,
+        remainingQuantity: remainingQuantity,
+      }),
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should set the stock initial form values on init', () => {
     const beginningDate = addDays(new Date(), 2).toISOString().split('T')[0]
     const limitDate = addDays(new Date(), 3).toISOString().split('T')[0]

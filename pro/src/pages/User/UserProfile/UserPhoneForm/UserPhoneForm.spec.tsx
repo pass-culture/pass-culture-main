@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { ApiRequestOptions } from '@/apiClient/compat'
@@ -27,6 +28,12 @@ describe('components:UserPhoneForm', () => {
         phoneNumber: INITIAL_PHONE_NUMBER,
       },
     }
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderUserPhoneForm(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('renders component successfully', () => {

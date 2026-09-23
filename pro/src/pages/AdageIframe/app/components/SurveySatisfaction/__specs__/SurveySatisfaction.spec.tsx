@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { apiAdage } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -27,6 +28,14 @@ describe('SurveySatisfaction', () => {
     queryId: '123',
     onClose: mockOnclose,
   }
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <SurveySatisfaction {...defaultProps} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should close survey satisfaction', async () => {
     const user = userEvent.setup()
 

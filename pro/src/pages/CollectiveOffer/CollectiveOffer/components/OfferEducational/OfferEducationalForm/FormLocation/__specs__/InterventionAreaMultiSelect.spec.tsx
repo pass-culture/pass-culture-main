@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
@@ -31,6 +32,14 @@ function renderInterventionAreaMultiSelect(
 }
 
 describe('InterventionAreaMultiSelect', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderInterventionAreaMultiSelect({
+      interventionArea: ['75', '44'],
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render correctly', () => {
     renderInterventionAreaMultiSelect({ interventionArea: ['75', '44'] })
 

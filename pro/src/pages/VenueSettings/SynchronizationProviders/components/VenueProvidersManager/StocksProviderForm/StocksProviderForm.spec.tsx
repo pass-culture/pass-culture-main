@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -13,7 +14,7 @@ import {
 const mockLogEvent = vi.fn()
 
 const renderStocksProviderForm = (props: StocksProviderFormProps) => {
-  renderWithProviders(<StocksProviderForm {...props} />)
+  return renderWithProviders(<StocksProviderForm {...props} />)
 }
 
 describe('StocksProviderForm', () => {
@@ -31,6 +32,12 @@ describe('StocksProviderForm', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderStocksProviderForm(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display an import button', () => {

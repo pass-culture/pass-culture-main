@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import {
   IndividualOfferContext,
@@ -78,6 +79,15 @@ const renderIndividualOfferPriceTable: RenderComponentFunction<
 }
 
 describe('<IndividualOfferSummaryPriceTable />', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIndividualOfferPriceTable({
+      offer: null,
+      offerId: 1,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show spinner when offer is fetching', () => {
     renderIndividualOfferPriceTable({
       offer: null,

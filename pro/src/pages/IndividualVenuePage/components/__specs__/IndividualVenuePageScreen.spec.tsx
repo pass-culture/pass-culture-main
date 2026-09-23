@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import type { SWRResponse } from 'swr'
+import { axe } from 'vitest-axe'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useEducationalDomainsModule from '@/commons/hooks/swr/useEducationalDomains'
@@ -29,6 +30,24 @@ describe('IndividualVenuePageScreen', () => {
       useEducationalDomainsModule,
       'useEducationalDomains'
     ).mockReturnValue({ isLoading: false, data: [] } as SWRResponse)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderScreen({
+      isOpenToPublic: true,
+      externalAccessibilityData: null,
+      withdrawalDetails: 'Au comptoir',
+      volunteeringUrl: 'https://benevolat.example.com',
+      openingHours: { MONDAY: [['09:00', '12:00']] },
+      contact: {
+        phoneNumber: '0612345678',
+        email: 'contact@example.com',
+        website: 'https://example.com',
+        socialMedias: null,
+      },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display the venue information for an open-to-public venue', () => {

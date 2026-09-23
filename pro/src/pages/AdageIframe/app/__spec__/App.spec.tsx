@@ -1,6 +1,7 @@
-import { screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { useId } from 'react'
 import { Configure } from 'react-instantsearch'
+import { axe } from 'vitest-axe'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -116,7 +117,7 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
 })
 
 const renderApp = (options?: RenderWithProvidersOptions) => {
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <App />
       <SnackBarContainer />
@@ -140,6 +141,15 @@ describe('app', () => {
         institutionName: 'COLLEGE BELLEVUE',
         institutionCity: 'ALES',
       })
+    })
+
+    it('should render without accessibility violations', async () => {
+      const { container } = renderApp({
+        initialRouterEntries: ['/recherche?siret=123456789&venue=1436'],
+      })
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      expect(await axe(container)).toHaveNoViolations()
     })
 
     it('should display venue tag using public name when siret and venue are provided', async () => {

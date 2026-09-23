@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { RECAPTCHA_ERROR } from '@/commons/core/shared/constants'
@@ -18,7 +19,7 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 const renderLostPassword = () => {
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <LostPassword />
       <SnackBarContainer />
@@ -28,6 +29,12 @@ const renderLostPassword = () => {
 
 describe('LostPassword', () => {
   describe('when user arrive on reset password page', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = renderLostPassword()
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should be able to sent his email', async () => {
       // given
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({

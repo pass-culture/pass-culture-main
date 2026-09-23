@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { createRef } from 'react'
 import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -53,6 +54,12 @@ describe('DeleteVenueProviderButton', () => {
       success: vi.fn(),
       error: snackBarError,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderDeleteVenueProviderButton()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should open dialog when clicking on delete button', async () => {

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
@@ -26,6 +27,12 @@ function renderFormContact(
 }
 
 describe('FormContact', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderFormContact({})
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the normal contact form', () => {
     renderFormContact({})
     expect(

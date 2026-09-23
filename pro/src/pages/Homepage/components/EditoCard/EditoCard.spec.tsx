@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -31,6 +32,12 @@ const defaultProps = {
 }
 
 describe('EditoCard', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(<EditoCard {...defaultProps} />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the main title', () => {
     renderWithProviders(<EditoCard {...defaultProps} />)
     expect(

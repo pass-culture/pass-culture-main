@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -41,6 +42,22 @@ describe('ActivationCodeFormDialog', () => {
     mockedCheckAndParseUploadedFile.mockResolvedValue({
       activationCodes: ['CODE1', 'CODE2'],
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <ActivationCodeFormDialog
+        onCancel={vi.fn()}
+        onSubmit={vi.fn()}
+        today={today}
+        minExpirationDate={minExpirationDate}
+        isDialogOpen={false}
+        activationCodeButtonRef={ref}
+        departmentCode={'75'}
+      />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should not render dialog when closed', () => {

@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { describe, expect, it, vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import {
   type GetIndividualOfferResponseModel,
@@ -155,6 +156,12 @@ describe('PriceTableForm', () => {
     offerId: 1,
     remainingQuantity: null,
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderPriceTableForm({ offer: eventOffer })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should display first entry fields for event offer', () => {
     renderPriceTableForm({ offer: eventOffer })

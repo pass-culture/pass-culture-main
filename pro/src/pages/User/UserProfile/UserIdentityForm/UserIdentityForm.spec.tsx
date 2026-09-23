@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -43,6 +44,12 @@ describe('components:UserIdentityForm', () => {
       lastName: 'Dupont',
     })
   })
+  it('should render without accessibility violations', async () => {
+    const { container } = renderUserIdentityForm(props)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('renders component successfully', () => {
     renderUserIdentityForm(props)
 

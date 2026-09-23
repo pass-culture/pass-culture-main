@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
@@ -41,7 +42,7 @@ const defaultProps = {
 }
 
 const renderDialog = (props: Partial<typeof defaultProps> = {}) => {
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <ComplementaryInfosDrawer {...defaultProps} {...props} />
       <SnackBarContainer />
@@ -65,6 +66,12 @@ describe('ComplementaryInfosDrawer', () => {
   })
 
   describe('address changed banner', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = renderDialog({ hasAddressChanged: true })
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should show the banner when hasAddressChanged is true', () => {
       renderDialog({ hasAddressChanged: true })
 

@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import * as router from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -36,7 +37,7 @@ const renderOfferInfos = (
   user: AuthenticatedResponse = defaultAdageUser,
   overrides?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
       <OfferInfos />
     </AdageUserContextProvider>,
@@ -55,6 +56,12 @@ const defaultUseLocationValue = {
 describe('OfferInfos', () => {
   beforeEach(() => {
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOfferInfos()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display offers informations', () => {

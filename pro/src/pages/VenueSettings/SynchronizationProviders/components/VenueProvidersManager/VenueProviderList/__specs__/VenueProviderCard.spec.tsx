@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { createRef } from 'react'
+import { axe } from 'vitest-axe'
 
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
@@ -12,9 +13,11 @@ import {
 } from '../VenueProviderCard'
 
 const renderVenueProviderCard = async (props: VenueProviderCardProps) => {
-  renderWithProviders(<VenueProviderCard {...props} />)
+  const renderResult = renderWithProviders(<VenueProviderCard {...props} />)
 
   await screen.findByText('Supprimer')
+
+  return renderResult
 }
 
 describe('VenueProviderCard', () => {
@@ -31,6 +34,12 @@ describe('VenueProviderCard', () => {
   describe('integration provider with on going sync', () => {
     beforeEach(() => {
       props.venueProvider.isActive = true
+    })
+
+    it('should render without accessibility violations', async () => {
+      const { container } = await renderVenueProviderCard(props)
+
+      expect(await axe(container)).toHaveNoViolations()
     })
 
     it('should display cinema provider info', async () => {

@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/dom'
+import { axe } from 'vitest-axe'
 
 import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -33,6 +34,13 @@ const renderCollectiveOfferInformation = (
 }
 
 describe('<CollectiveOfferInformation />', () => {
+  it('should render without accessibility violations', async () => {
+    const offer = getCollectiveOfferFactory()
+    const { container } = renderCollectiveOfferInformation(offer)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render CollectiveOfferInformationForm', () => {
     const offer = getCollectiveOfferFactory()
     renderCollectiveOfferInformation(offer)

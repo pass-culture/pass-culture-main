@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -34,7 +35,7 @@ const renderClassroomPlaylist = () => {
     institutionCity: 'ALES',
   }
 
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
       <ClassroomPlaylist
         onWholePlaylistSeen={mockOnWholePlaylistSeen}
@@ -60,6 +61,13 @@ describe('AdageDiscover classRoomPlaylist', () => {
       ...snackBarsImport,
       error: snackBarError,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderClassroomPlaylist()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render new offer playlist', async () => {

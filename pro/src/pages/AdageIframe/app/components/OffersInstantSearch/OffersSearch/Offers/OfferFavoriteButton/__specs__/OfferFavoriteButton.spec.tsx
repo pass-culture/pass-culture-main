@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { apiAdage } from '@/apiClient/api'
 import {
@@ -23,7 +24,7 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 const renderOfferFavoriteButton = (props: OfferFavoriteButtonProps) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <OfferFavoriteButton {...props} />
     </AdageUserContextProvider>
@@ -35,6 +36,12 @@ describe('OfferFavoriteButton', () => {
     offer: defaultCollectiveTemplateOffer,
     queryId: 'ABC123',
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOfferFavoriteButton(defaultProps)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should send event when offer is added to favorites', async () => {
     renderOfferFavoriteButton(defaultProps)

@@ -3,6 +3,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
@@ -61,6 +62,13 @@ vi.mock('@/apiClient/api', () => ({
 describe('<OnboardingOfferIndividual />', () => {
   beforeEach(() => {
     vi.spyOn(api, 'listOffers').mockResolvedValue([])
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOnboardingOfferIndividual()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should propose how to create the 1st offer', async () => {

@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { describe } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import * as logoutModule from '@/commons/store/user/dispatchers/logout'
@@ -55,6 +56,14 @@ describe('UserAnonymization', () => {
   })
 
   describe('feature flag handling', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = renderUserAnonymization({
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
+      })
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should display the anonymization button when feature flag is enabled', () => {
       renderUserAnonymization({
         features: ['PRO_AUTONOMOUS_ANONYMIZATION'],

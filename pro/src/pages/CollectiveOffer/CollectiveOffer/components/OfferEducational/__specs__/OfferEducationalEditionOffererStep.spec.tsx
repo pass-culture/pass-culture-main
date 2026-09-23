@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -14,7 +15,7 @@ import {
 
 function renderComponent(props: OfferEducationalProps) {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<OfferEducational {...props} />, {
+  return renderWithProviders(<OfferEducational {...props} />, {
     user,
     storeOverrides: {
       user: {
@@ -32,6 +33,14 @@ describe('screens | OfferEducational : edition offerer step', () => {
 
   beforeEach(() => {
     props = defaultEditionProps
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderComponent(props)
+
+    await screen.findByLabelText(/Titre de l’offre/)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should show banner if generate from publicApi', async () => {

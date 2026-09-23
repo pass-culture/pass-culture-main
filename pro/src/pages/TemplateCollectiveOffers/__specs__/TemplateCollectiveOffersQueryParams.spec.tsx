@@ -1,6 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type {
@@ -51,7 +52,7 @@ const renderOffers = async (
     DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     shouldComputeTemplateOfferUrl
   )
-  renderWithProviders(
+  const renderResult = renderWithProviders(
     <router.Routes>
       <router.Route
         path="/offres/vitrines"
@@ -72,9 +73,7 @@ const renderOffers = async (
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-  return {
-    history,
-  }
+  return { ...renderResult, history }
 }
 
 vi.mock('repository/venuesService', async () => ({
@@ -118,6 +117,14 @@ describe('route TemplateCollectiveOffers', () => {
     beforeAll(() => {
       Element.prototype.scrollTo = () => {}
       window.scrollTo = () => {}
+    })
+
+    it('should render without accessibility violations', async () => {
+      const { container } = await renderOffers()
+
+      await screen.findByRole('heading', { name: 'Offres vitrines' })
+
+      expect(await axe(container)).toHaveNoViolations()
     })
 
     it('should have page value when page value is not first page', async () => {

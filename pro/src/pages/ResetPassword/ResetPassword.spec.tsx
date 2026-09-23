@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -37,7 +38,7 @@ vi.mock('@/commons/hooks/useSnackBar', async () => ({
 }))
 
 const renderLostPassword = (url: string) => {
-  renderWithProviders(
+  return renderWithProviders(
     <Routes>
       <Route path="/demande-mot-de-passe/:token" element={<ResetPassword />} />
     </Routes>,
@@ -48,6 +49,22 @@ const renderLostPassword = (url: string) => {
 }
 
 describe('ResetPassword', () => {
+  it('should render without accessibility violations', async () => {
+    const url = '/demande-mot-de-passe/ABC'
+
+    vi.spyOn(api, 'postCheckToken').mockResolvedValue()
+
+    const { container } = renderLostPassword(url)
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Réinitialisez votre mot de passe',
+      })
+    ).toBeVisible()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should be able to reset the password when token is ok', async () => {
     const url = '/demande-mot-de-passe/ABC'
 

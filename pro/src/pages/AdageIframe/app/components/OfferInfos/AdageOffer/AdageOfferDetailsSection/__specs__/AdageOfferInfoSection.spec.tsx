@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import {
   CollectiveAdditionalFeeType,
@@ -31,6 +32,17 @@ function renderAdageOfferInfoSection(
 }
 
 describe('AdageOfferInfoSection', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageOfferInfoSection({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        educationalPriceDetail: 'The detail of the price',
+      },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the offer price details', () => {
     renderAdageOfferInfoSection({
       offer: {

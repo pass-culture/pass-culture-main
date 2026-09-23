@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -14,7 +15,7 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 const renderOfferTypes = (initialRoute = '/', allowedOnAdage = false) => {
-  renderWithProviders(
+  return renderWithProviders(
     <Routes>
       <Route path="/" element={<OfferType />} />
       <Route path="/onboarding" element={<OfferType />} />
@@ -36,6 +37,12 @@ const renderOfferTypes = (initialRoute = '/', allowedOnAdage = false) => {
 }
 
 describe('OfferType', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOfferTypes()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display with the lateral bar', async () => {
     renderOfferTypes()
     expect(await screen.findByTestId('lateral-panel')).toBeInTheDocument()

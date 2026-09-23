@@ -1,6 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as instantSearch from 'react-instantsearch'
+import { axe } from 'vitest-axe'
 
 import {
   AdageFrontRoles,
@@ -251,6 +252,13 @@ describe('offers', () => {
       submitCount: 0,
       indexId: 'test-props-value',
     }
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffers(offersProps, adageUser)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display two offers with their respective stocks when two bookable offers', async () => {

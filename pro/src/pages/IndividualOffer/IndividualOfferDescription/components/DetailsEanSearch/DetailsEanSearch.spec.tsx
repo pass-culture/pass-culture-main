@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { VenueState } from '@/apiClient/v1'
@@ -104,6 +105,16 @@ const getButton = () =>
   })
 
 describe('DetailsEanSearch', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderDetailsEanSearch()
+
+    await waitFor(() => {
+      expect(getInput()).toBeEnabled()
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display an input and a submit button within a dedicated form', async () => {
     renderDetailsEanSearch()
 
