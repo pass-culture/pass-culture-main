@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 import createFetchMock from 'vitest-fetch-mock'
 
 import {
@@ -28,7 +29,7 @@ const renderCollectiveOfferSummaryEdition = (
     | GetCollectiveOfferResponseModel,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(<CollectiveOfferSummaryEdition offer={offer} />, {
+  return renderWithProviders(<CollectiveOfferSummaryEdition offer={offer} />, {
     user: sharedCurrentUserFactory(),
     ...options,
     storeOverrides: {
@@ -49,6 +50,15 @@ describe('CollectiveOfferSummary', () => {
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
 
+  it('should render without accessibility violations', async () => {
+    const offer = getCollectiveOfferFactory()
+    const { container } = renderCollectiveOfferSummaryEdition(offer)
+
+    await screen.findByText(`n°${offer.id}`)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display hide offer option when action is allowed', async () => {
     offer = getCollectiveOfferTemplateFactory({
       allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
@@ -63,9 +73,10 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should display bookable offer detail page when offer is bookable', async () => {
-    renderCollectiveOfferSummaryEdition(getCollectiveOfferFactory())
+    const bookableOffer = getCollectiveOfferFactory()
+    renderCollectiveOfferSummaryEdition(bookableOffer)
 
-    expect(await screen.findByText('n°2')).toBeInTheDocument()
+    expect(await screen.findByText(`n°${bookableOffer.id}`)).toBeInTheDocument()
   })
 
   it('should not display bookable offer detail page when offer is template', async () => {

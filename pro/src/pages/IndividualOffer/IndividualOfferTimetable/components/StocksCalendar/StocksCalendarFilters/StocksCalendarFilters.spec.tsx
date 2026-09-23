@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
+import { axe } from 'vitest-axe'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -13,7 +14,7 @@ import {
 function renderStocksCalendarFilters(
   props?: Partial<StocksCalendarFiltersProps>
 ) {
-  renderWithProviders(
+  return renderWithProviders(
     <StocksCalendarFilters
       filters={{}}
       onUpdateFilters={vi.fn()}
@@ -26,6 +27,15 @@ function renderStocksCalendarFilters(
 }
 
 describe('StocksCalendarFilters', () => {
+  it('should render without accessibility violations', async () => {
+    const updateSortMock = vi.fn()
+    const { container } = renderStocksCalendarFilters({
+      onUpdateSort: updateSortMock,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should update the sort type', async () => {
     const updateSortMock = vi.fn()
 

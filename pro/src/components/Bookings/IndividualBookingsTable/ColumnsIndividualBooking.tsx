@@ -6,6 +6,7 @@ import {
 } from '@/commons/utils/convertEuroToPacificFranc'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import type { Column } from '@/ui-kit/Table/Table'
+import tableStyles from '@/ui-kit/Table/Table.module.scss'
 
 import { FilterByBookingStatus } from '../Components/Filters/FilterByBookingStatus'
 import type { BookingsFilters } from '../Components/types'
@@ -81,7 +82,8 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
     },
     {
       id: 'details',
-      label: '',
+      label: 'Détails',
+      header: <span className={tableStyles['visually-hidden']}>Détails</span>,
       render: (row) => (
         <DetailsButtonCell
           controlledId={`booking-details-${row.id}`}

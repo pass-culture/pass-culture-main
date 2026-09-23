@@ -1,5 +1,6 @@
 import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -34,7 +35,7 @@ const renderOffers = (
   props: TemplateCollectiveOffersScreenProps,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(<TemplateCollectiveOffersScreen {...props} />, {
+  return renderWithProviders(<TemplateCollectiveOffersScreen {...props} />, {
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
@@ -85,6 +86,17 @@ describe('TemplateCollectiveOffersScreen', () => {
       error: snackBarError,
       success: snackBarSuccess,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const firstOffer = collectiveOfferTemplateFactory()
+    const secondOffer = collectiveOfferTemplateFactory()
+    const { container } = renderOffers({
+      ...props,
+      offers: [firstOffer, secondOffer],
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render as much offers as returned by the api', () => {

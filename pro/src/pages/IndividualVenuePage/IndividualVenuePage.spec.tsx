@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import type { SWRResponse } from 'swr'
+import { axe } from 'vitest-axe'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useEducationalDomainsModule from '@/commons/hooks/swr/useEducationalDomains'
@@ -30,6 +31,16 @@ describe('IndividualVenuePage', () => {
       useEducationalDomainsModule,
       'useEducationalDomains'
     ).mockReturnValue({ isLoading: false, data: [] } as SWRResponse)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIndividualVenuePage({
+      isPermanent: true,
+      hasOffers: true,
+      hasAtLeastOneBookableOffer: false,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should warn that the page is invisible when a permanent venue with offers has no active individual offer', () => {

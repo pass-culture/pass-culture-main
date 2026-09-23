@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import {
   CollectiveOfferAllowedAction,
@@ -34,6 +35,14 @@ const renderBookableOfferTimeline = (
   })
 
 describe('BookableOfferTimeline', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderBookableOfferTimeline(
+      <BookableOfferTimeline offer={getCollectiveOfferFactory()} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it("should render the 'Suivi de l’offre' title", () => {
     renderBookableOfferTimeline(
       <BookableOfferTimeline offer={getCollectiveOfferFactory()} />

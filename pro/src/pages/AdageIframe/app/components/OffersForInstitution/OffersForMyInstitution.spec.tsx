@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -24,7 +25,7 @@ const renderOffersForMyInstitution = (
   user = defaultAdageUser,
   features?: string[]
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
       <OffersForMyInstitution />
     </AdageUserContextProvider>,
@@ -43,6 +44,16 @@ const budgetResponse = {
 }
 
 describe('OffersInstitutionList', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffersForMyInstitution({
+      ...defaultAdageUser,
+      offersCount: 0,
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display no result page', async () => {
     vi.spyOn(
       apiAdage,

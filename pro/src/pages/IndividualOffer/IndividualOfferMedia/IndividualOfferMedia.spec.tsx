@@ -1,4 +1,9 @@
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -38,6 +43,13 @@ describe('IndividialOfferMedia', () => {
       subcategories: [],
     })
     vi.spyOn(api, 'getOffer').mockResolvedValue(offer)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIndividualOfferMedia()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render a spinner until offer is fetched', async () => {

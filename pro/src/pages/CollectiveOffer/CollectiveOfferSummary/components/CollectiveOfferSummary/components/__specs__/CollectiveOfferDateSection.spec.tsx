@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -11,10 +12,21 @@ import {
 const renderCollectiveOfferDateSection = (
   props: CollectiveOfferDateSectionProps
 ) => {
-  renderWithProviders(<CollectiveOfferDateSection {...props} />)
+  return renderWithProviders(<CollectiveOfferDateSection {...props} />)
 }
 
 describe('CollectiveOfferDateSection', () => {
+  it('should render without accessibility violations', async () => {
+    const offer = getCollectiveOfferTemplateFactory({
+      dates: { start: '2023-10-24T09:14:00', end: '2023-10-24T09:16:00' },
+    })
+    const { container } = renderCollectiveOfferDateSection({
+      offer,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the dates section if there are dates in the offer', () => {
     const offer = getCollectiveOfferTemplateFactory({
       dates: { start: '2023-10-24T09:14:00', end: '2023-10-24T09:16:00' },

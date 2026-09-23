@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -23,7 +24,7 @@ const renderCollectiveOfferLayout = (
   props: Partial<CollectiveOfferLayoutProps>,
   venueOverrides?: Partial<GetVenueResponseModel>
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <CollectiveOfferLayout subTitle="Ma super offre" {...props}>
       Test
     </CollectiveOfferLayout>,
@@ -45,6 +46,15 @@ const renderCollectiveOfferLayout = (
 }
 
 describe('CollectiveOfferLayout', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferLayout(
+      '/offre/A1/collectif/edition',
+      {}
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render edition title page', () => {
     renderCollectiveOfferLayout('/offre/A1/collectif/edition', {})
     expect(screen.getByText("Modifier l'offre")).toBeInTheDocument()

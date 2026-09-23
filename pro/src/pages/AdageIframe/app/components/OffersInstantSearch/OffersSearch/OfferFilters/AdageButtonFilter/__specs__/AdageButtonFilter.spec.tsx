@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -51,6 +52,12 @@ describe('AdageButtonFilter', () => {
       students: [],
     },
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageButtonFilter(props)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should render adageButtonFilter', () => {
     renderAdageButtonFilter(props)

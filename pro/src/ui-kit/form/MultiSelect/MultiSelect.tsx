@@ -128,7 +128,23 @@ export const MultiSelect = forwardRef(
     forwardedRef: ForwardedRef<HTMLFieldSetElement>
   ): JSX.Element => {
     const [isOpen, setIsOpen] = useState(false)
-    const [selectedItems, setSelectedItems] = useState<Option[]>(defaultOptions)
+
+    // `selectedOptions` is often a new array each render. Sync only when the
+    // selection itself changes, during render, so unrelated parent updates
+    // don't schedule a passive setState (act() warning under axe).
+    const selectedOptionsKey = selectedOptions
+      ?.map((option) => option.id)
+      .join('\0')
+    const [syncedOptionsKey, setSyncedOptionsKey] = useState(selectedOptionsKey)
+    const [selectedItems, setSelectedItems] = useState<Option[]>(
+      selectedOptions ?? defaultOptions
+    )
+
+    if (selectedOptions && selectedOptionsKey !== syncedOptionsKey) {
+      setSyncedOptionsKey(selectedOptionsKey)
+      setSelectedItems(selectedOptions)
+    }
+
     const isSelectAllChecked = selectedItems.length === options.length
 
     const containerRef = useRef<HTMLDivElement>(null)
@@ -137,12 +153,6 @@ export const MultiSelect = forwardRef(
     const selectedCountDescriptionId = useId()
 
     const toggleDropdown = () => setIsOpen((prev) => !prev)
-
-    useEffect(() => {
-      if (selectedOptions) {
-        setSelectedItems(selectedOptions)
-      }
-    }, [selectedOptions])
 
     function updateSelectedItems(updatedSelectedItems: Option[]) {
       const currentIds = new Set(selectedItems.map((item) => item.id))

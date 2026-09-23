@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
@@ -28,6 +29,12 @@ function renderFormNotifications(
 
 describe('FormNotifications', () => {
   let initialValues: Partial<OfferEducationalFormValues>
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderFormNotifications(initialValues)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should add notification mail input when button is clicked', async () => {
     initialValues = {

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -7,6 +8,17 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OffersCardVariant } from '../types'
 import { OffersEmptyStateCard } from './OffersEmptyStateCard'
+
+it('should render without accessibility violations', async () => {
+  const { container } = renderWithProviders(
+    <OffersEmptyStateCard
+      isReadOnly={false}
+      variant={OffersCardVariant.BOOKABLE}
+    />
+  )
+
+  expect(await axe(container)).toHaveNoViolations()
+})
 
 it('should display correct information when variant is BOOKABLE', () => {
   renderWithProviders(

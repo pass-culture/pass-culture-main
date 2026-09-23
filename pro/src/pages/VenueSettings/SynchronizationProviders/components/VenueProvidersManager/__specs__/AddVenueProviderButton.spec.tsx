@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { createRef } from 'react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
@@ -14,10 +15,14 @@ import {
 const renderAddVenueProviderButton = async (
   props: AddVenueProviderButtonProps
 ) => {
-  renderWithProviders(<AddVenueProviderButton {...props} />)
+  const renderResult = renderWithProviders(
+    <AddVenueProviderButton {...props} />
+  )
   await waitFor(() => {
     screen.getByText('Sélectionner un logiciel')
   })
+
+  return renderResult
 }
 
 describe('AddVenueProviderButton', () => {
@@ -60,6 +65,12 @@ describe('AddVenueProviderButton', () => {
         enabledForPro: true,
       },
     ])
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = await renderAddVenueProviderButton(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display the add button', async () => {

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -20,6 +21,12 @@ describe('components:UserEmailForm', () => {
     props = {
       closeForm: vi.fn(),
     }
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderUserEmailForm(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('renders component successfully', () => {

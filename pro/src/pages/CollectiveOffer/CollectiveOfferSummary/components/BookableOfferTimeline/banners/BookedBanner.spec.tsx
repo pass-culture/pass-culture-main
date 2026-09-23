@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { addDays, format, subDays } from 'date-fns'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -18,6 +19,20 @@ describe('BookedBanner', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  it('should render without accessibility violations', async () => {
+    vi.useRealTimers()
+    const cancellationLimitDate = subDays(new Date(), 1).toISOString()
+    const { container } = renderWithProviders(
+      <BookedBanner
+        {...baseProps}
+        cancellationLimitDate={cancellationLimitDate}
+        canEditDiscount={true}
+      />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display the "not cancellable anymore" message if cancellationLimitDate is in the past', () => {

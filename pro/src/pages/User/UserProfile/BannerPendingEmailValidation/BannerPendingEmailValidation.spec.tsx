@@ -1,8 +1,15 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { BannerPendingEmailValidation } from './BannerPendingEmailValidation'
 
 describe('BannerPendingEmailValidation component', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(<BannerPendingEmailValidation email={''} />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render a link to BannerPendingEmailValidation information when email is empty', () => {
     render(<BannerPendingEmailValidation email={''} />)
     const link = screen.getByRole('link', {

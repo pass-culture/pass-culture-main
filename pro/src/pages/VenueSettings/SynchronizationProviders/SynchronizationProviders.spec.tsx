@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
@@ -55,6 +56,18 @@ describe('SynchronizationProviders', () => {
     vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
       venueProviders: [],
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSynchronizationProviders({ id: 1 })
+
+    await waitFor(() => {
+      expect(api.listVenueProviders).toHaveBeenCalledWith({
+        path: { venue_id: 1 },
+      })
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should call listVenueProviders with the venue id', async () => {

@@ -1,5 +1,6 @@
 import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/compat'
@@ -69,6 +70,20 @@ describe('LinkVenueDialog', () => {
     snackBarsImport = (await vi.importActual(
       '@/commons/hooks/useSnackBar'
     )) as ReturnType<typeof useSnackBar.useSnackBar>
+  })
+
+  it('should render without accessibility violations', async () => {
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+      { ...defaultManagedVenue, id: 2, commonName: 'Lieu 2' },
+    ]
+    const { container } = renderLinkVenuesDialog(
+      1,
+      defaultBankAccount,
+      managedVenues
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should select all venues when clicking on select all checkbox', async () => {

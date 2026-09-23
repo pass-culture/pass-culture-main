@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -23,6 +24,14 @@ const renderAccessibilitySubSection = (
   })
 
 describe('AccessibilitySubSection', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAccessibilitySubSection({
+      externalAccessibilityData: null,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the internal accessibility section when there is no acceslibre data', () => {
     renderAccessibilitySubSection({ externalAccessibilityData: null })
 

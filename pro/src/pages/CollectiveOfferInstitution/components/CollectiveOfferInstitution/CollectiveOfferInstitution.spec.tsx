@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect, it } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -125,6 +126,17 @@ describe('CollectiveOfferInstitution', () => {
       isLoadingInstitutions: false,
       offer,
     }
+  })
+
+  it('should render without accessibility violations', async () => {
+    const offer = getCollectiveOfferFactory({ isPublicApi: true })
+    const { container } = renderInstitutionStep({
+      ...props,
+      mode: Mode.EDITION,
+      offer,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should show banner if generate from publicApi', () => {

@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -37,6 +38,12 @@ const LABELS = {
 }
 
 describe('MediaSection', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderMediaSection()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should always render a title and an edit link', () => {
     renderMediaSection()
 

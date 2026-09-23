@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import {
   AdageFrontRoles,
@@ -29,7 +30,7 @@ const renderAdageHeader = (
   user: AuthenticatedResponse,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
       <AdageHeader />
     </AdageUserContextProvider>,
@@ -69,6 +70,18 @@ describe('AdageHeader', () => {
     vi.spyOn(Date, 'now').mockReturnValue(
       new Date('2025-10-01T10:00:00').getTime()
     )
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageHeader(user)
+
+    await waitFor(() =>
+      expect(
+        apiAdage.getEducationalInstitutionWithBudget
+      ).toHaveBeenCalledTimes(1)
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render adage header', async () => {

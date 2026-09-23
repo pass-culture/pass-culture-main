@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as instantSearch from 'react-instantsearch'
+import { axe } from 'vitest-axe'
 
 import { apiAdage } from '@/apiClient/api'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -30,6 +31,14 @@ describe('AdagePagination', () => {
   const defaultProps = {
     queryId: '123',
   }
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <CustomPagination {...defaultProps} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should go to next page', async () => {
     renderWithProviders(<CustomPagination {...defaultProps} />)
 

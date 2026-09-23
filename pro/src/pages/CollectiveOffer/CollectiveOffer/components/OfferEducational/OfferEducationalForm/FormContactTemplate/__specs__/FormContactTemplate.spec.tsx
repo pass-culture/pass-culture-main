@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
@@ -27,6 +28,12 @@ function renderFormContactTemplate(
 }
 
 describe('FormContactTemplate', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderFormContactTemplate({ isTemplate: true })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the email form when the contact email checkbox is checked', async () => {
     renderFormContactTemplate({ isTemplate: true })
     expect(

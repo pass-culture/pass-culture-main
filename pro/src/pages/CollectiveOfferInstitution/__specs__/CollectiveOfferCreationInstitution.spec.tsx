@@ -1,4 +1,5 @@
-import { screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -13,19 +14,22 @@ const renderCollectiveOfferCreationInstitution = (
   props: MandatoryCollectiveOfferFromParamsProps,
   storeOverride?: any
 ) => {
-  renderWithProviders(<CollectiveOfferCreationInstitution {...props} />, {
-    initialRouterEntries: [path],
-    storeOverrides: {
-      user: {
-        currentUser: sharedCurrentUserFactory(),
-        selectedPartnerVenue: makeGetVenueResponseModel({
-          id: 1,
-          allowedOnAdage: true,
-        }),
+  return renderWithProviders(
+    <CollectiveOfferCreationInstitution {...props} />,
+    {
+      initialRouterEntries: [path],
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 1,
+            allowedOnAdage: true,
+          }),
+        },
+        ...storeOverride,
       },
-      ...storeOverride,
-    },
-  })
+    }
+  )
 }
 
 const defaultProps = {
@@ -35,6 +39,16 @@ const defaultProps = {
 }
 
 describe('CollectiveOfferCreationInstitution', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferCreationInstitution(
+      '/offre/A1/collectif/etablissement',
+      defaultProps
+    )
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render collective offer institution form', async () => {
     renderCollectiveOfferCreationInstitution(
       '/offre/A1/collectif/etablissement',

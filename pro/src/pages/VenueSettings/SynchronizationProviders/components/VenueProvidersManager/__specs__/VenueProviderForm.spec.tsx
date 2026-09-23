@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
@@ -47,7 +48,7 @@ const renderVenueProviderForm = (
 ) => {
   const afterSubmit = vi.fn().mockResolvedValue(undefined)
 
-  renderWithProviders(
+  const renderResult = renderWithProviders(
     <VenueProviderForm
       provider={provider}
       venue={mockVenue}
@@ -56,7 +57,7 @@ const renderVenueProviderForm = (
     />
   )
 
-  return { afterSubmit }
+  return { ...renderResult, afterSubmit }
 }
 
 describe('VenueProviderForm', () => {
@@ -68,6 +69,19 @@ describe('VenueProviderForm', () => {
   })
 
   describe('createVenueProvider - success case', () => {
+    it('should render without accessibility violations', async () => {
+      const button = document.createElement('button')
+      const selectSoftwareButtonRef = {
+        current: button,
+      } as React.RefObject<HTMLButtonElement | null>
+      const { container } = renderVenueProviderForm(
+        mockProvider,
+        selectSoftwareButtonRef
+      )
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should call api.createVenueProvider, show success message, call afterSubmit, return true and focus button', async () => {
       const button = document.createElement('button')
       const focusSpy = vi.spyOn(button, 'focus')

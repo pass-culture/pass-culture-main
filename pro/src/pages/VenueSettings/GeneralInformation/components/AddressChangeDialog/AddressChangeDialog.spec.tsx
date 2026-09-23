@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -11,10 +12,18 @@ const defaultProps = {
 }
 
 const renderDialog = (props: Partial<typeof defaultProps> = {}) => {
-  renderWithProviders(<AddressChangeDialog {...defaultProps} {...props} />)
+  return renderWithProviders(
+    <AddressChangeDialog {...defaultProps} {...props} />
+  )
 }
 
 describe('AddressChangeDialog', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderDialog({ open: false })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should not display the dialog when closed', () => {
     renderDialog({ open: false })
 

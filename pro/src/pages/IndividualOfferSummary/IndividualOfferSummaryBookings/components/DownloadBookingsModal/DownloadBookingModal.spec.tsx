@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { BookingExportType, type EventDatesInfos } from '@/apiClient/v1'
@@ -29,7 +30,7 @@ const render = (priceCategoryAndScheduleCountByDate: EventDatesInfos) => {
         )}`
       : 'Sélectionnez la date :'
 
-  renderWithProviders(
+  return renderWithProviders(
     <DetailedModal
       isOpen
       onClose={() => {}}
@@ -85,6 +86,28 @@ const render = (priceCategoryAndScheduleCountByDate: EventDatesInfos) => {
 vi.mock('@/commons/utils/downloadFile', () => ({ downloadFile: vi.fn() }))
 
 describe('DownloadBookingModal', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render([
+      {
+        eventDate: '2022-01-01',
+        scheduleCount: 1,
+        priceCategoriesCount: 1,
+      },
+      {
+        eventDate: '2022-01-02',
+        scheduleCount: 5,
+        priceCategoriesCount: 3,
+      },
+      {
+        eventDate: '2022-01-03',
+        scheduleCount: 2,
+        priceCategoriesCount: 2,
+      },
+    ])
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display offer dates table', () => {
     render([
       {

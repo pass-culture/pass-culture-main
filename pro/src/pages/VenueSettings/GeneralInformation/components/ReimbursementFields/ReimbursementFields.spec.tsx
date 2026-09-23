@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -16,6 +17,14 @@ describe('ReimbursementFields', () => {
       venueName: 'Mon Lieu',
     },
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <ReimbursementFields {...defaultProps} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should display the reimbursement section title', () => {
     renderWithProviders(<ReimbursementFields {...defaultProps} />)

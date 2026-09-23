@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { describe, expect, it } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { SimplifiedBankAccountStatus } from '@/apiClient/v1'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -22,6 +23,12 @@ const renderBanner = (bankAccountStatus: SimplifiedBankAccountStatus | null) =>
   })
 
 describe('ReimbursementWaitingBanner', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderBanner(SimplifiedBankAccountStatus.VALID)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show valid bank account message and faq link when the selected partner venue has a valid bank account', () => {
     renderBanner(SimplifiedBankAccountStatus.VALID)
     expect(

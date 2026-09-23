@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'
@@ -16,6 +17,12 @@ vi.mock('@/apiClient/api', () => ({
 const renderSignup = () => renderWithProviders(<SignupConfirmation />)
 
 describe('SignupConfirmation', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSignup()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('Should render correctly', () => {
     renderSignup()
     expect(

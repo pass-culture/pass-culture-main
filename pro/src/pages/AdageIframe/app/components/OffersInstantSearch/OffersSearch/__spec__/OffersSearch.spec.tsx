@@ -1,6 +1,7 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { api } from '@/apiClient/api'
@@ -105,7 +106,7 @@ const renderOffersSearchComponent = (
   user: AuthenticatedResponse,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <AdageUserContextProvider adageUser={user}>
         <OffersSearch {...props} />
@@ -183,6 +184,18 @@ describe('offersSearch component', () => {
       ...snackBarsImport,
       error: snackBarError,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffersSearchComponent(props, user)
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0)
+      })
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should call algolia with requested query and uai all', async () => {

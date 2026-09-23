@@ -1,6 +1,7 @@
 import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { RouteObject } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
@@ -71,6 +72,12 @@ const renderIndividualActivityData = () =>
   })
 
 describe('IndividualActivityData', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIndividualActivityData()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the subtitle', () => {
     renderIndividualActivityData()
 

@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import {
   CollectiveOfferAllowedAction,
@@ -31,6 +32,20 @@ describe('screens | OfferEducational: edition', () => {
 
   beforeEach(() => {
     props = defaultEditionProps
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(<OfferEducational {...props} />, {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        },
+      },
+    })
+
+    await screen.findByLabelText(/Titre de l’offre/)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should disable all fields when mode is READONLY', async () => {

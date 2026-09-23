@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addYears, format } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
@@ -40,6 +41,19 @@ describe('FormDates', () => {
     disableForm: false,
     dateCreated: '',
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderFormDates(defaultProps, {
+      ...getDefaultEducationalValues(),
+      isTemplate: true,
+      beginningDate: new Date().toString(),
+      endingDate: '',
+      datesType: 'specific_dates',
+      hour: '',
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should limit ending date to beggining date when value', () => {
     renderFormDates(defaultProps, {

@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -265,6 +266,12 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       subCategories: MOCK_DATA.subCategories,
       offer: null,
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderDetailsScreen({ contextValue })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render the component', async () => {

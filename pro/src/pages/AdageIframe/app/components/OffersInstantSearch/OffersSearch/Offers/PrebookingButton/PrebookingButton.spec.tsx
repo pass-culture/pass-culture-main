@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { apiAdage } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
@@ -27,7 +28,7 @@ vi.mock('@/commons/utils/config', async () => {
 })
 
 const renderPrebookingButton = (props: PrebookingButtonProps) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <PrebookingButton {...props} />
       <SnackBarContainer />
@@ -55,6 +56,15 @@ describe('offer item', () => {
         numberOfTeachers: 3,
       },
     }
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderPrebookingButton({
+      ...props,
+      canPrebookOffers: false,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should not display when prebooking is not activated', () => {

@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -11,6 +12,18 @@ describe('ExpiredBanner', () => {
     bookingLimitDatetime: '2025-08-31T12:00:00Z',
     departmentCode: '75',
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <ExpiredBanner
+        {...baseProps}
+        stepBeforeExpiredStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
+        canEditDates
+      />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should display the teacher message if the status before expired status is PUBLISHED', () => {
     renderWithProviders(

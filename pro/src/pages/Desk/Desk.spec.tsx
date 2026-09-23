@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -49,6 +50,12 @@ beforeEach(() => {
 
 describe('Desk', () => {
   describe('token typing behaviour', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = renderDesk()
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('removes QR code prefix', async () => {
       vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse

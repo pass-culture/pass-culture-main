@@ -4,6 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { api, apiAdage } from '@/apiClient/api'
@@ -41,7 +42,7 @@ vi.mock('@/commons/hooks/useIsElementVisible', () => ({
 }))
 
 const renderAdageDiscovery = (user: AuthenticatedResponse) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
       <AdageDiscovery />
     </AdageUserContextProvider>
@@ -72,6 +73,14 @@ describe('AdageDiscovery', () => {
       { id: 1, name: 'Danse', nationalPrograms: [] },
       { id: 2, name: 'Architecture', nationalPrograms: [] },
     ])
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageDiscovery(adageUser)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render adage discovery', async () => {

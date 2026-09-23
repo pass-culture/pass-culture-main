@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import {
   IndividualOfferContext,
@@ -53,6 +54,15 @@ const renderIndividualOfferSummary: RenderComponentFunction<
 }
 
 describe('<IndividualOfferSummary />', () => {
+  it('should render without accessibility violations', async () => {
+    const contextValues = {
+      offer: null,
+    }
+    const { container } = renderIndividualOfferSummary({ contextValues })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('renders spinner when no offer in context', () => {
     const contextValues = {
       offer: null,

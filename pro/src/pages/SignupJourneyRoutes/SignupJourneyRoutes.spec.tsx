@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 import createFetchMock from 'vitest-fetch-mock'
 
 import {
@@ -70,6 +71,15 @@ describe('SignupJourneyRoutes', () => {
       setInitialAddress: noop,
     }
   })
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffererAuthenticationScreen(
+      contextValue,
+      '/inscription/structure/identification'
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should redirect to offerer screen if there is no offerer siret', () => {
     contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
     renderOffererAuthenticationScreen(

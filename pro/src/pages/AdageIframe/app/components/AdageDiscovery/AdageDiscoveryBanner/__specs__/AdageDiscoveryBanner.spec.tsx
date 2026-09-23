@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { AdageDiscoveryBanner } from '../AdageDiscoveryBanner'
 
@@ -10,6 +11,12 @@ Object.defineProperty(window, 'matchMedia', {
 })
 
 describe('AdageDiscoveryBanner', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(<AdageDiscoveryBanner />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the title of the adage discovery page', () => {
     render(<AdageDiscoveryBanner />)
 

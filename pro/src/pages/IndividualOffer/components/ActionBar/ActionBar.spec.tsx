@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
@@ -53,6 +54,12 @@ describe('IndividualOffer::ActionBar', () => {
   })
 
   describe('on creation', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = renderActionBar({ props })
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should always display a "Retour" button', async () => {
       props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
       renderActionBar({ props })

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import type { ComponentProps } from 'react'
+import { axe } from 'vitest-axe'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -45,6 +46,12 @@ const renderCollectiveOffersCard = (
   })
 
 describe('CollectiveOffersCard', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOffersCard({ isLoading: true })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display skeleton when data is loading', () => {
     renderCollectiveOffersCard({ isLoading: true })
 

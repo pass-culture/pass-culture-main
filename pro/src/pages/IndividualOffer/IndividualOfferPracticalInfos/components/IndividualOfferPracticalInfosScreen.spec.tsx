@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { SubcategoryIdEnum, WithdrawalTypeEnum } from '@/apiClient/v1'
@@ -52,7 +53,7 @@ const LABELS = {
 function renderIndividualOfferPracticalInfosScreen(
   props?: Partial<IndividualOfferPracticalInfosScreenProps>
 ) {
-  renderWithProviders(
+  return renderWithProviders(
     <IndividualOfferContext.Provider
       value={individualOfferContextValuesFactory({
         categories: [],
@@ -84,6 +85,14 @@ function renderIndividualOfferPracticalInfosScreen(
 }
 
 describe('IndividualOfferPracticalInfosScreen', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIndividualOfferPracticalInfosScreen()
+
+    await screen.findByRole('heading', { name: LABELS.heading })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the form action bar in creation mode', async () => {
     renderIndividualOfferPracticalInfosScreen()
 

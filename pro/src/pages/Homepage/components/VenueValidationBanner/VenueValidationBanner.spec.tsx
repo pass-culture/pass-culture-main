@@ -1,10 +1,17 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { VenueValidationBanner } from './VenueValidationBanner'
 
 describe('VenueValidationBanner', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(<VenueValidationBanner />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the banner with the correct title, description and faq link', () => {
     renderWithProviders(<VenueValidationBanner />)
 

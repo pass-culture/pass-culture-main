@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -16,9 +17,13 @@ const mockLogEvent = vi.fn()
 const renderCinemaProviderForm = async (
   props: GenericCinemaProviderFormProps
 ) => {
-  renderWithProviders(<GenericCinemaProviderForm {...props} />)
+  const renderResult = renderWithProviders(
+    <GenericCinemaProviderForm {...props} />
+  )
 
   await screen.findByText('Accepter les réservations “Duo“')
+
+  return renderResult
 }
 
 describe('GenericCinemaProviderForm', () => {
@@ -45,6 +50,12 @@ describe('GenericCinemaProviderForm', () => {
   })
 
   describe('import form cinema provider for the first time', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = await renderCinemaProviderForm(props)
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should display the isDuo checkbox checked by default', async () => {
       await renderCinemaProviderForm(props)
 

@@ -4,6 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
@@ -83,6 +84,16 @@ describe('CollectiveVenuePageEdition', () => {
   })
 
   describe('render', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = renderCollectiveVenuePageEdition(
+        {},
+        { initialRouterEntries: ['/'] }
+      )
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should display read only information', async () => {
       renderCollectiveVenuePageEdition({}, { initialRouterEntries: ['/'] })
 

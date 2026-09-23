@@ -1,4 +1,5 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
@@ -28,6 +29,25 @@ describe('CollectiveOffersCardsContainer', () => {
       hasOffers: true,
       offers: [],
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    vi.spyOn(api, 'getCollectiveOffersHome').mockResolvedValueOnce({
+      hasOffers: true,
+      offers: [],
+    })
+
+    const { container } = renderWithProviders(
+      <CollectiveOffersCardsContainer isReadOnly={false} venueId={1} />
+    )
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 50)
+      })
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render template offers before bookable offers when venue has no bookable offers to display', async () => {

@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import * as instantSearch from 'react-instantsearch'
 import { Configure } from 'react-instantsearch'
+import { axe } from 'vitest-axe'
 
 import {
   type AuthenticatedResponse,
@@ -49,7 +50,7 @@ const renderOffersSuggestionsComponent = (
   user: AuthenticatedResponse,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
       <OffersSuggestions {...props} />
     </AdageUserContextProvider>,
@@ -104,6 +105,12 @@ describe('OffersSuggestions', () => {
     lat: 10,
     lon: 10,
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffersSuggestionsComponent(props, user)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should show the suggestions header when there are results', () => {
     renderOffersSuggestionsComponent(props, user)

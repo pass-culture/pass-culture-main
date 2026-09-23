@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { CollectiveLocationType, EacFormat } from '@/apiClient/adage'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
@@ -52,7 +53,7 @@ const renderOfferFilters = (
     )
   }
 
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
       <OfferFiltersWrapper />
     </AdageUserContextProvider>,
@@ -73,6 +74,15 @@ const initialValues = {
 }
 
 describe('OfferFilters', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOfferFilters({
+      ...initialValues,
+      domains: [123],
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should submit onclick modal search button domain artistic', async () => {
     renderOfferFilters({
       ...initialValues,

@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -26,7 +27,7 @@ const reimbursementsRoutes = [
 const user = sharedCurrentUserFactory()
 
 function renderReimbursements(options?: RenderWithProvidersOptions) {
-  renderWithProviders(<Reimbursements />, {
+  return renderWithProviders(<Reimbursements />, {
     routes: reimbursementsRoutes,
     initialRouterEntries: ['/administration/remboursements'],
     storeOverrides: {
@@ -40,6 +41,12 @@ function renderReimbursements(options?: RenderWithProvidersOptions) {
 }
 
 describe('Reimbursement page', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderReimbursements()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render reimbursement page', () => {
     renderReimbursements()
 

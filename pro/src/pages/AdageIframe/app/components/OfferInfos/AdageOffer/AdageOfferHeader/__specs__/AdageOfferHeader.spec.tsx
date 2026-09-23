@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import {
   AdageFrontRoles,
@@ -41,6 +42,12 @@ function renderAdageOfferHeader(
 }
 
 describe('AdageOfferHeader', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageOfferHeader()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the offer title', () => {
     renderAdageOfferHeader()
 
@@ -70,7 +77,7 @@ describe('AdageOfferHeader', () => {
     expect(screen.getByRole('presentation')).toHaveAttribute('src', 'test_url')
   })
 
-  it('should show the image credit and associate it to the image', () => {
+  it('should expose the image credit as the figure caption', () => {
     renderAdageOfferHeader({
       offer: {
         ...defaultCollectiveTemplateOffer,
@@ -79,10 +86,11 @@ describe('AdageOfferHeader', () => {
       },
       adageUser: defaultAdageUser,
     })
-
+    const image = screen.getByRole('presentation')
     const imageCredit = screen.getByText('Crédit image : Agence photo')
 
-    expect(imageCredit).toBeInTheDocument()
+    expect(image.closest('figure')).toContainElement(imageCredit)
+    expect(image).not.toHaveAttribute('aria-describedby')
   })
 
   it('should not show an image if the offer has no image', () => {

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import {
   type RenderComponentFunction,
@@ -21,6 +22,12 @@ vi.mock('react-router', async () => {
 })
 
 describe('Statement of EcoDesign page', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderEcoDesignMenu({})
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display EcoDesign information message', () => {
     renderEcoDesignMenu({})
 

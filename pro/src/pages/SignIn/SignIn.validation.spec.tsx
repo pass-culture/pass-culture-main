@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { SharedLoginUserResponseModel } from '@/apiClient/v1'
@@ -37,7 +38,7 @@ vi.mock('react-router', async () => ({
 }))
 
 const renderSignIn = (options?: RenderWithProvidersOptions) => {
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <SignIn />
       <Routes>
@@ -98,6 +99,16 @@ describe('SignIn', () => {
   })
 
   describe('should display messages after account validation', () => {
+    it('should render without accessibility violations', async () => {
+      vi.spyOn(router, 'useSearchParams').mockReturnValue([
+        new URLSearchParams(),
+        vi.fn(),
+      ])
+      const { container } = renderSignIn()
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should display confirmation', async () => {
       vi.spyOn(router, 'useSearchParams').mockReturnValue([
         new URLSearchParams({ accountValidation: 'true' }),

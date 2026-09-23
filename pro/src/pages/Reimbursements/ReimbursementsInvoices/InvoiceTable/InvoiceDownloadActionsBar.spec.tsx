@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
@@ -52,6 +53,15 @@ describe('<InvoiceDownloadActionsBar />', () => {
         description="1 justificatif sélectionné"
         invoiceReferences={['INV-1']}
       />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+describe('InvoiceDownloadActionsBar', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <InvoiceDownloadActionsBar invoiceReferences={[]} description="0 justificatif sélectionné"/>
     )
 
     expect(await axe(container)).toHaveNoViolations()

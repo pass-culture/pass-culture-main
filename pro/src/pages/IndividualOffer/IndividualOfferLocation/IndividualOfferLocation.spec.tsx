@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import {
   IndividualOfferContext,
@@ -48,6 +49,14 @@ const renderIndividualOfferLocation = (
 }
 
 describe('<IndividualOfferLocation />', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIndividualOfferLocation({
+      offer: undefined as unknown as IndividualOfferContextValues['offer'],
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the spinner when no offer is in context', () => {
     renderIndividualOfferLocation({
       offer: undefined as unknown as IndividualOfferContextValues['offer'],

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { ButtonInvalidateToken } from '../ButtonInvalidateToken'
 
@@ -11,7 +12,7 @@ vi.mock('@/commons/hooks/useMediaQuery', () => ({
 const setup = () => {
   const onConfirm = vi.fn()
 
-  render(<ButtonInvalidateToken onConfirm={onConfirm} />)
+  const renderResult = render(<ButtonInvalidateToken onConfirm={onConfirm} />)
 
   const openDialog = async () => {
     await userEvent.click(
@@ -21,11 +22,17 @@ const setup = () => {
     )
   }
 
-  return { onConfirm, openDialog }
+  return { ...renderResult, onConfirm, openDialog }
 }
 
 describe('ButtonInvalidateToken', () => {
   describe('dialog opening', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = setup()
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('opens confirmation dialog when clicking invalidate button', async () => {
       const { openDialog } = setup()
 

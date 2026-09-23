@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
@@ -65,6 +66,16 @@ describe('IndividualOfferTimetable', () => {
         totalStockCount: 0,
       })
     )
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIndividualOfferTimetable(contextOverride)
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render the content of the offer timetable form', async () => {

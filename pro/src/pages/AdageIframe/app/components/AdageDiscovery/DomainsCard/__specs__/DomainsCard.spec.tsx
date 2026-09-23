@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -11,7 +12,7 @@ const renderDomainsCardComponent = ({
   href,
   handlePlaylistElementTracking,
 }: DomainsCardProps) => {
-  renderWithProviders(
+  return renderWithProviders(
     <DomainsCard
       title={title}
       color={color}
@@ -23,6 +24,18 @@ const renderDomainsCardComponent = ({
 }
 
 describe('OfferCard component', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderDomainsCardComponent({
+      title: 'Test domains card',
+      color: 'green',
+      src: 'src',
+      href: 'href',
+      handlePlaylistElementTracking: vi.fn(),
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render domains card', () => {
     renderDomainsCardComponent({
       title: 'Test domains card',
