@@ -215,7 +215,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
   ensure-preview-env-ready:
-    name: Ensure preview environment is ready (${{ matrix.service }})
+    name: Ensure preview environment is ready
     runs-on: ubuntu-latest
     environment:
       name: pcapi-preview
@@ -227,11 +227,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - service: backend
-            url: ${{ needs.deploy-preview-env-init.outputs.backend_url }}
-          - service: backoffice
-            url: ${{ needs.deploy-preview-env-init.outputs.backoffice_url }}
+        service:
+          - backend
+          - backoffice
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -261,7 +259,7 @@ jobs:
       - name: Ensure ${{ matrix.service }} is ready
         shell: bash
         env:
-          SERVICE_URL: ${{ matrix.url }}
+          SERVICE_URL: ${{ needs.deploy-preview-env-init.outputs[format('{0}_url', matrix.service)] }}
         run: |
           passdirector pcapi get-version \
             --url "${SERVICE_URL}" \
