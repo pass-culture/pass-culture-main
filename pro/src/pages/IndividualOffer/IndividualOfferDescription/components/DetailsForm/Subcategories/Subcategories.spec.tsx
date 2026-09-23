@@ -59,6 +59,7 @@ const SubcategoriesForm = ({
         readOnlyFields={readOnlyFields}
         filteredCategories={categories}
         filteredSubcategories={subcategories}
+        onSubcategoryChange={() => {}}
       />
       {conditionalFields.map((field) => (
         <input key={field} {...methods.register(field)} />
