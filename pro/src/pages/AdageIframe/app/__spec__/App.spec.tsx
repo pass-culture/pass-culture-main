@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { useId } from 'react'
 import { Configure } from 'react-instantsearch'
 
@@ -63,6 +63,7 @@ vi.mock('@/commons/utils/config', async () => {
     ALGOLIA_API_KEY: 'adage-api-key',
     ALGOLIA_APP_ID: '1',
     ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
+    LOGS_DATA: true,
   }
 })
 
@@ -212,6 +213,77 @@ describe('app', () => {
         }),
         undefined
       )
+    })
+
+    it('should display the app for readonly users', async () => {
+      vi.spyOn(apiAdage, 'authenticate').mockResolvedValueOnce({
+        ...defaultAdageUser,
+        role: AdageFrontRoles.READONLY,
+      })
+
+      renderApp({ initialRouterEntries: ['/recherche'] })
+
+      expect(
+        await screen.findByRole('button', { name: 'Rechercher' })
+      ).toBeInTheDocument()
+    })
+
+    it('should show the loader while authentication is pending', () => {
+      vi.spyOn(apiAdage, 'authenticate').mockReturnValueOnce(
+        new Promise(() => {}) as never
+      )
+
+      renderApp()
+
+      expect(screen.getByRole('main')).toBeInTheDocument()
+      expect(screen.queryByRole('heading')).not.toBeInTheDocument()
+    })
+
+    it('should log a catalogue view when a venue is provided', async () => {
+      vi.mocked(apiAdage.logCatalogView).mockClear()
+
+      renderApp({
+        initialRouterEntries: ['/recherche?venue=1436'],
+      })
+
+      await waitFor(() => {
+        expect(apiAdage.logCatalogView).toHaveBeenCalledWith({
+          body: {
+            iframeFrom: '/recherche',
+            source: 'partnersMap',
+          },
+        })
+      })
+    })
+
+    it('should log a homepage catalogue view without venue or siret', async () => {
+      vi.mocked(apiAdage.logCatalogView).mockClear()
+
+      renderApp({ initialRouterEntries: ['/recherche'] })
+
+      await waitFor(() => {
+        expect(apiAdage.logCatalogView).toHaveBeenCalledWith({
+          body: {
+            iframeFrom: '/recherche',
+            source: 'homepage',
+          },
+        })
+      })
+    })
+
+    it('should show an error page for unsupported roles', async () => {
+      vi.spyOn(apiAdage, 'authenticate').mockResolvedValueOnce({
+        ...defaultAdageUser,
+        role: 'unsupported' as AdageFrontRoles,
+      })
+
+      renderApp()
+
+      expect(
+        await screen.findByRole('heading', {
+          name: 'Une erreur s’est produite',
+        })
+      ).toBeInTheDocument()
     })
   })
 

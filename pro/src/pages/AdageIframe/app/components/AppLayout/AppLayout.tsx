@@ -5,6 +5,7 @@ import {
   Routes,
   ScrollRestoration,
   useLocation,
+  useSearchParams,
 } from 'react-router'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
@@ -23,7 +24,7 @@ import styles from './AppLayout.module.scss'
 export const AppLayout = (): JSX.Element => {
   const { adageUser } = useAdageUser()
   const { pathname, search } = useLocation()
-  const params = new URLSearchParams(search)
+  const [searchParams] = useSearchParams()
 
   const isFullWidthPage =
     pathname === '/adage-iframe/decouverte' || pathname.includes('/offre/')
@@ -33,9 +34,9 @@ export const AppLayout = (): JSX.Element => {
   )
   const redirectToMarseilleSearch =
     isMarseilleEnabled && isUserInMarseilleProgram
-  const venueId = params.get('venue')
-  const offerId = params.get('offerid')
-  const tab = params.get('tab')
+  const venueId = searchParams.get('venue')
+  const offerId = searchParams.get('offerid')
+  const tab = searchParams.get('tab')
 
   const redirectToSearch =
     venueId ||
