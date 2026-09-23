@@ -99,7 +99,7 @@ export function ArtistField({
                         artistName: artist.name,
                         artistType,
                       },
-                      { shouldValidate: true }
+                      { shouldValidate: true, shouldDirty: true }
                     )
                   }
                 }}
