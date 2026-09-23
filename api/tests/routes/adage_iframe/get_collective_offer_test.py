@@ -53,7 +53,9 @@ class CollectiveOfferTest:
             collectiveOffer__nationalProgramId=factories.NationalProgramFactory().id,
             collectiveOffer__venue=venue,
             collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
-            collectiveOffer__offererAddress=venue.offererAddress,
+            collectiveOffer__offererAddress=offerers_factories.OfferLocationFactory(
+                address=venue.offererAddress.address, venue=venue, label=None
+            ),
         )
         offer = stock.collectiveOffer
 
@@ -114,7 +116,7 @@ class CollectiveOfferTest:
                     "id": address.id,
                     "inseeCode": address.inseeCode,
                     "isManualEdition": address.isManualEdition,
-                    "label": venue.publicName,
+                    "label": None,
                     "latitude": float(address.latitude),
                     "longitude": float(address.longitude),
                     "postalCode": address.postalCode,
@@ -153,7 +155,9 @@ class CollectiveOfferTest:
             venue=venue,
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddress.id,
+            offererAddress=offerers_factories.OfferLocationFactory(
+                address=venue.offererAddress.address, venue=venue, label=None
+            ),
             interventionArea=None,
         )
 

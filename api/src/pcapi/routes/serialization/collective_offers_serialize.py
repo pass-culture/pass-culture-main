@@ -62,7 +62,7 @@ class DatesModel(HttpBodyModel):
     end: datetime
 
 
-class GetCollectiveOfferLocationModelV2(HttpBodyModel):
+class GetCollectiveOfferLocationModel(HttpBodyModel):
     locationType: models.CollectiveLocationType
     locationComment: str | None
     location: address_serialize.LocationResponseModelV2 | None
@@ -89,7 +89,7 @@ class CollectiveOfferResponseModel(HttpBodyModel):
     name: str
     displayedStatus: models.CollectiveOfferDisplayedStatus
     imageUrl: str | None
-    location: GetCollectiveOfferLocationModelV2
+    location: GetCollectiveOfferLocationModel
     dates: DatesModel | None
     # collective offer specific fields
     allowedActions: list[models.CollectiveOfferAllowedAction]
@@ -119,7 +119,7 @@ class CollectiveOfferResponseModel(HttpBodyModel):
             displayedStatus=offer.displayedStatus,
             allowedActions=offer.allowedActions,
             imageUrl=offer.imageUrl,
-            location=GetCollectiveOfferLocationModelV2.build(offer),
+            location=GetCollectiveOfferLocationModel.build(offer),
             stock=serialized_stock,
             educationalInstitution=institution,
             dates=dates,
@@ -135,7 +135,7 @@ class CollectiveOfferTemplateResponseModel(HttpBodyModel):
     name: str
     displayedStatus: models.CollectiveOfferDisplayedStatus
     imageUrl: str | None
-    location: GetCollectiveOfferLocationModelV2
+    location: GetCollectiveOfferLocationModel
     dates: DatesModel | None
     # collective offer template specific fields
     allowedActions: list[models.CollectiveOfferTemplateAllowedAction]
@@ -155,7 +155,7 @@ class CollectiveOfferTemplateResponseModel(HttpBodyModel):
             allowedActions=offer.allowedActions,
             imageUrl=offer.imageUrl,
             dates=dates,
-            location=GetCollectiveOfferLocationModelV2.build(offer),
+            location=GetCollectiveOfferLocationModel.build(offer),
         )
 
 
@@ -246,7 +246,7 @@ class GetCollectiveOfferBaseResponseModel(HttpBodyModel):
     description: str
     durationMinutes: int | None
     students: list[models.StudentLevels]
-    location: GetCollectiveOfferLocationModelV2
+    location: GetCollectiveOfferLocationModel
     contactEmail: str | None
     contactPhone: str | None
     id: int
@@ -292,7 +292,7 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
             description=offer.description,
             durationMinutes=offer.durationMinutes,
             students=offer.students,
-            location=GetCollectiveOfferLocationModelV2.build(offer),
+            location=GetCollectiveOfferLocationModel.build(offer),
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
             id=offer.id,
@@ -404,7 +404,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
             description=offer.description,
             durationMinutes=offer.durationMinutes,
             students=offer.students,
-            location=GetCollectiveOfferLocationModelV2.build(offer),
+            location=GetCollectiveOfferLocationModel.build(offer),
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
             id=offer.id,

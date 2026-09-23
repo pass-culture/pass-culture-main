@@ -5,6 +5,7 @@ import typing
 from typing import Any
 
 import pydantic as pydantic_v2
+import pydantic.v1 as pydantic_v1
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import conlist
@@ -18,7 +19,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.offer_mixin import OfferStatus
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import HttpBodyModel
@@ -55,6 +55,15 @@ def validate_extra_data_size(extra_data: offers_models.OfferExtraData | None) ->
 def validate_extra_data_content(extra_data: offers_models.OfferExtraData | None) -> None:
     if HTML_INJECTION_REGEX.search(json.dumps(extra_data)):
         raise PydanticError("extraData field includes forbidden caracters or scripts")
+
+
+# /!\ this class should not be migrated to pydantic v2
+# instead list the fields explicitely in the inheriting model
+class AccessibilityComplianceMixin(pydantic_v1.BaseModel):
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
 
 
 class SubcategoryGetterDict(GetterDict):

@@ -83,6 +83,8 @@ export const AdagePreviewLayout = ({
     contactEmail: offer.contactEmail,
     venue: {
       ...offer.venue,
+      // adageId is not needed in the preview but part of the iframe model
+      adageId: null,
       coordinates: {
         latitude: venue.location?.latitude,
         longitude: venue.location?.longitude,

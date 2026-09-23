@@ -4,6 +4,7 @@ import { expect } from 'vitest'
 import {
   CollectiveAdditionalFeeType,
   CollectiveLocationType,
+  type LocationResponseModelV2,
 } from '@/apiClient/adage'
 import {
   defaultCollectiveOffer,
@@ -110,7 +111,10 @@ describe('AdageOfferInfoSection', () => {
         ...defaultCollectiveTemplateOffer,
         location: {
           locationType: CollectiveLocationType.ADDRESS,
+          locationComment: null,
           location: {
+            ...(defaultCollectiveTemplateOffer.location
+              .location as LocationResponseModelV2),
             id: 1,
             isVenueLocation: false,
             isManualEdition: false,
@@ -137,6 +141,7 @@ describe('AdageOfferInfoSection', () => {
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
           locationComment: 'Test comment section',
+          location: null,
         },
       },
     })
@@ -146,7 +151,7 @@ describe('AdageOfferInfoSection', () => {
     expect(screen.getByText('Test comment section')).toBeVisible()
   })
 
-  it.each([undefined, ''])(
+  it.each([null, ''])(
     'should not display comment section when location type is to be defined and comment is empty',
     (comment) => {
       renderAdageOfferInfoSection({
@@ -155,6 +160,7 @@ describe('AdageOfferInfoSection', () => {
           location: {
             locationType: CollectiveLocationType.TO_BE_DEFINED,
             locationComment: comment,
+            location: null,
           },
         },
       })
@@ -170,6 +176,8 @@ describe('AdageOfferInfoSection', () => {
         ...defaultCollectiveTemplateOffer,
         location: {
           locationType: CollectiveLocationType.SCHOOL,
+          locationComment: null,
+          location: null,
         },
       },
     })
@@ -187,13 +195,16 @@ describe('AdageOfferInfoSection', () => {
         ...defaultCollectiveTemplateOffer,
         location: {
           locationType: CollectiveLocationType.ADDRESS,
+          locationComment: null,
           location: {
+            ...(defaultCollectiveTemplateOffer.location
+              .location as LocationResponseModelV2),
             id: 1,
             isVenueLocation: false,
             isManualEdition: false,
             latitude: 48.8566,
             longitude: 2.3522,
-            label: undefined,
+            label: null,
             street: '123 Rue de Meaux',
             city: 'Paris',
             postalCode: '75000',
@@ -238,15 +249,14 @@ describe('AdageOfferInfoSection', () => {
             servicePrice: 10000,
             collectiveAdditionalFees: [
               {
-                // TODO: (jcicurel 2026-07-08) the label should be null
-                // but for now the schema has label?: string
-                // when the backend model is migrated it should be label: string | null
                 type: CollectiveAdditionalFeeType.TRAVEL,
                 amount: 3000,
+                label: null,
               },
               {
                 type: CollectiveAdditionalFeeType.MEAL,
                 amount: 1500,
+                label: null,
               },
               {
                 type: CollectiveAdditionalFeeType.OTHER,

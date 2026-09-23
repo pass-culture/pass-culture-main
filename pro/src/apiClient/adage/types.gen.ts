@@ -180,14 +180,12 @@ export type CollectiveAdditionalFeeResponse = {
     /**
      * Label
      */
-    label?: string;
+    label: string | null;
     type: CollectiveAdditionalFeeType;
 };
 
 /**
  * CollectiveAdditionalFeeType
- *
- * An enumeration.
  */
 export enum CollectiveAdditionalFeeType {
     ACCOMMODATION = 'ACCOMMODATION',
@@ -203,8 +201,6 @@ export enum CollectiveAdditionalFeeType {
 
 /**
  * CollectiveLocationType
- *
- * An enumeration.
  */
 export enum CollectiveLocationType {
     SCHOOL = 'SCHOOL',
@@ -233,23 +229,23 @@ export type CollectiveOfferResponseModel = {
     /**
      * Additionaldetails
      */
-    additionalDetails?: string;
+    additionalDetails: string | null;
     /**
      * Audiodisabilitycompliant
      */
-    audioDisabilityCompliant?: boolean;
+    audioDisabilityCompliant: boolean | null;
     /**
      * Contactemail
      */
-    contactEmail?: string;
+    contactEmail: string | null;
     /**
      * Contactphone
      */
-    contactPhone?: string;
+    contactPhone: string | null;
     /**
      * Description
      */
-    description?: string;
+    description: string;
     /**
      * Domains
      */
@@ -257,15 +253,15 @@ export type CollectiveOfferResponseModel = {
     /**
      * Durationminutes
      */
-    durationMinutes?: number;
-    /**
-     * EducationalInstitutionResponseModel
-     */
-    educationalInstitution?: EducationalInstitutionResponseModel;
+    durationMinutes: number | null;
+    educationalInstitution: EducationalInstitutionResponseModel | null;
     /**
      * Educationalpricedetail
      */
-    educationalPriceDetail?: string;
+    educationalPriceDetail?: string | null;
+    /**
+     * Formats
+     */
     formats: Array<EacFormat>;
     /**
      * Id
@@ -274,11 +270,11 @@ export type CollectiveOfferResponseModel = {
     /**
      * Imagecredit
      */
-    imageCredit?: string;
+    imageCredit: string | null;
     /**
      * Imageurl
      */
-    imageUrl?: string;
+    imageUrl: string | null;
     /**
      * Interventionarea
      */
@@ -287,37 +283,31 @@ export type CollectiveOfferResponseModel = {
      * Istemplate
      */
     isTemplate: boolean;
-    /**
-     * GetCollectiveOfferLocationModel
-     */
-    location?: GetCollectiveOfferLocationModel;
+    location: GetCollectiveOfferLocationModel;
     /**
      * Mentaldisabilitycompliant
      */
-    mentalDisabilityCompliant?: boolean;
+    mentalDisabilityCompliant: boolean | null;
     /**
      * Motordisabilitycompliant
      */
-    motorDisabilityCompliant?: boolean;
+    motorDisabilityCompliant: boolean | null;
     /**
      * Name
      */
     name: string;
-    /**
-     * NationalProgramModel
-     */
-    nationalProgram?: NationalProgramModel;
+    nationalProgram: NationalProgramResponseModel | null;
     stock: OfferStockResponse;
-    students: Array<StudentLevels>;
     /**
-     * EducationalRedactorResponseModel
+     * Students
      */
-    teacher?: EducationalRedactorResponseModel;
+    students: Array<StudentLevels>;
+    teacher: EducationalRedactorResponseModel | null;
     venue: OfferVenueResponse;
     /**
      * Visualdisabilitycompliant
      */
-    visualDisabilityCompliant?: boolean;
+    visualDisabilityCompliant: boolean | null;
 };
 
 /**
@@ -327,28 +317,25 @@ export type CollectiveOfferTemplateResponseModel = {
     /**
      * Audiodisabilitycompliant
      */
-    audioDisabilityCompliant?: boolean;
+    audioDisabilityCompliant: boolean | null;
     /**
      * Contactemail
      */
-    contactEmail?: string;
-    contactForm?: OfferContactFormEnum;
+    contactEmail: string | null;
+    contactForm?: OfferContactFormEnum | null;
     /**
      * Contactphone
      */
-    contactPhone?: string;
+    contactPhone: string | null;
     /**
      * Contacturl
      */
-    contactUrl?: string;
-    /**
-     * CollectiveOfferDatesModel
-     */
-    dates?: CollectiveOfferDatesModel;
+    contactUrl?: string | null;
+    dates?: CollectiveOfferDatesModel | null;
     /**
      * Description
      */
-    description?: string;
+    description: string;
     /**
      * Domains
      */
@@ -356,11 +343,14 @@ export type CollectiveOfferTemplateResponseModel = {
     /**
      * Durationminutes
      */
-    durationMinutes?: number;
+    durationMinutes: number | null;
     /**
      * Educationalpricedetail
      */
-    educationalPriceDetail?: string;
+    educationalPriceDetail?: string | null;
+    /**
+     * Formats
+     */
     formats: Array<EacFormat>;
     /**
      * Id
@@ -369,11 +359,11 @@ export type CollectiveOfferTemplateResponseModel = {
     /**
      * Imagecredit
      */
-    imageCredit?: string;
+    imageCredit: string | null;
     /**
      * Imageurl
      */
-    imageUrl?: string;
+    imageUrl: string | null;
     /**
      * Interventionarea
      */
@@ -381,37 +371,34 @@ export type CollectiveOfferTemplateResponseModel = {
     /**
      * Isfavorite
      */
-    isFavorite?: boolean;
+    isFavorite?: boolean | null;
     /**
      * Istemplate
      */
     isTemplate: boolean;
-    /**
-     * GetCollectiveOfferLocationModel
-     */
-    location?: GetCollectiveOfferLocationModel;
+    location: GetCollectiveOfferLocationModel;
     /**
      * Mentaldisabilitycompliant
      */
-    mentalDisabilityCompliant?: boolean;
+    mentalDisabilityCompliant: boolean | null;
     /**
      * Motordisabilitycompliant
      */
-    motorDisabilityCompliant?: boolean;
+    motorDisabilityCompliant: boolean | null;
     /**
      * Name
      */
     name: string;
+    nationalProgram: NationalProgramResponseModel | null;
     /**
-     * NationalProgramModel
+     * Students
      */
-    nationalProgram?: NationalProgramModel;
     students: Array<StudentLevels>;
     venue: OfferVenueResponse;
     /**
      * Visualdisabilitycompliant
      */
-    visualDisabilityCompliant?: boolean;
+    visualDisabilityCompliant: boolean | null;
 };
 
 /**
@@ -497,23 +484,7 @@ export type ConsultOfferBody = {
 };
 
 /**
- * Coordinates
- */
-export type Coordinates = {
-    /**
-     * Latitude
-     */
-    latitude?: number;
-    /**
-     * Longitude
-     */
-    longitude?: number;
-};
-
-/**
  * EacFormat
- *
- * An enumeration.
  */
 export enum EacFormat {
     ATELIER_DE_PRATIQUE = 'Atelier de pratique',
@@ -569,7 +540,7 @@ export type EducationalInstitutionResponseModel = {
     /**
      * Institutiontype
      */
-    institutionType?: string;
+    institutionType: string;
     /**
      * Name
      */
@@ -587,19 +558,19 @@ export type EducationalRedactorResponseModel = {
     /**
      * Civility
      */
-    civility?: string;
+    civility: string | null;
     /**
      * Email
      */
-    email?: string;
+    email: string;
     /**
      * Firstname
      */
-    firstName?: string;
+    firstName: string | null;
     /**
      * Lastname
      */
-    lastName?: string;
+    lastName: string | null;
 };
 
 /**
@@ -616,14 +587,11 @@ export type FavoritesResponseModel = {
  * GetCollectiveOfferLocationModel
  */
 export type GetCollectiveOfferLocationModel = {
-    /**
-     * LocationResponseModel
-     */
-    location?: LocationResponseModel;
+    location: LocationResponseModelV2 | null;
     /**
      * Locationcomment
      */
-    locationComment?: string;
+    locationComment: string | null;
     locationType: CollectiveLocationType;
 };
 
@@ -721,13 +689,13 @@ export type LocalOfferersPlaylistOffer = {
 };
 
 /**
- * LocationResponseModel
+ * LocationResponseModelV2
  */
-export type LocationResponseModel = {
+export type LocationResponseModelV2 = {
     /**
      * Banid
      */
-    banId?: string;
+    banId: string | null;
     /**
      * City
      */
@@ -735,7 +703,7 @@ export type LocationResponseModel = {
     /**
      * Departmentcode
      */
-    departmentCode?: string;
+    departmentCode: string | null;
     /**
      * Id
      */
@@ -743,7 +711,7 @@ export type LocationResponseModel = {
     /**
      * Inseecode
      */
-    inseeCode?: string;
+    inseeCode: string | null;
     /**
      * Ismanualedition
      */
@@ -755,7 +723,7 @@ export type LocationResponseModel = {
     /**
      * Label
      */
-    label?: string;
+    label: string | null;
     /**
      * Latitude
      */
@@ -771,23 +739,19 @@ export type LocationResponseModel = {
     /**
      * Street
      */
-    street?: string;
+    street: string | null;
 };
 
 /**
- * NationalProgramModel
+ * NationalProgramResponseModel
  */
-export type NationalProgramModel = {
+export type NationalProgramResponseModel = {
     /**
      * Id
-     *
-     * National program id
      */
     id: number;
     /**
      * Name
-     *
-     * National program name
      */
     name: string;
 };
@@ -824,8 +788,6 @@ export type OfferBody = {
 
 /**
  * OfferContactFormEnum
- *
- * An enumeration.
  */
 export enum OfferContactFormEnum {
     FORM = 'form'
@@ -948,7 +910,7 @@ export type OfferStockResponse = {
     /**
      * Bookinglimitdatetime
      */
-    bookingLimitDatetime?: string;
+    bookingLimitDatetime?: string | null;
     /**
      * Collectiveadditionalfees
      */
@@ -956,11 +918,11 @@ export type OfferStockResponse = {
     /**
      * Educationalpricedetail
      */
-    educationalPriceDetail?: string;
+    educationalPriceDetail?: string | null;
     /**
      * Enddatetime
      */
-    endDatetime?: string;
+    endDatetime?: string | null;
     /**
      * Id
      */
@@ -968,11 +930,11 @@ export type OfferStockResponse = {
     /**
      * Numberofteachers
      */
-    numberOfTeachers?: number;
+    numberOfTeachers: number;
     /**
      * Numberoftickets
      */
-    numberOfTickets?: number;
+    numberOfTickets: number;
     /**
      * Price
      */
@@ -980,11 +942,25 @@ export type OfferStockResponse = {
     /**
      * Serviceprice
      */
-    servicePrice?: number;
+    servicePrice: number;
     /**
      * Startdatetime
      */
-    startDatetime?: string;
+    startDatetime?: string | null;
+};
+
+/**
+ * OfferVenueCoordinates
+ */
+export type OfferVenueCoordinates = {
+    /**
+     * Latitude
+     */
+    latitude: number;
+    /**
+     * Longitude
+     */
+    longitude: number;
 };
 
 /**
@@ -994,20 +970,20 @@ export type OfferVenueResponse = {
     /**
      * Adageid
      */
-    adageId?: string;
+    adageId: string | null;
     /**
      * Address
      */
-    address?: string;
+    address: string;
     /**
      * City
      */
-    city?: string;
-    coordinates: Coordinates;
+    city: string;
+    coordinates: OfferVenueCoordinates;
     /**
      * Departmentcode
      */
-    departmentCode?: string;
+    departmentCode: string;
     /**
      * Id
      */
@@ -1015,7 +991,7 @@ export type OfferVenueResponse = {
     /**
      * Imgurl
      */
-    imgUrl?: string;
+    imgUrl: string | null;
     managingOfferer: OfferManagingOffererResponse;
     /**
      * Name
@@ -1024,7 +1000,7 @@ export type OfferVenueResponse = {
     /**
      * Postalcode
      */
-    postalCode?: string;
+    postalCode: string;
     /**
      * Publicname
      */
@@ -1176,8 +1152,6 @@ export type StockIdBody = {
 
 /**
  * StudentLevels
- *
- * An enumeration.
  */
 export enum StudentLevels {
     _COLES_MARSEILLE_MATERNELLE = 'Écoles Marseille - Maternelle',

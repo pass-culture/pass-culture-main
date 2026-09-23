@@ -5,6 +5,7 @@ import * as router from 'react-router'
 import {
   type AuthenticatedResponse,
   CollectiveLocationType,
+  type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import {
@@ -132,10 +133,12 @@ describe('OfferCard component', () => {
   })
 
   it('should render location tag when offer has location attribute', () => {
-    const offer = {
+    const offer: CollectiveOfferTemplateResponseModel = {
       ...mockOffer,
       location: {
         locationType: CollectiveLocationType.SCHOOL,
+        locationComment: null,
+        location: null,
       },
     }
     renderOfferCardComponent({ offer, onCardClicked: vi.fn() })

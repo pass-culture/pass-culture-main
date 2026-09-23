@@ -56,7 +56,7 @@ describe('AdageOfferPartnerPanel', () => {
     renderAdageOfferPartnerPanel({
       offer: {
         ...defaultCollectiveTemplateOffer,
-        venue: { ...defaultCollectiveTemplateOffer.venue, adageId: undefined },
+        venue: { ...defaultCollectiveTemplateOffer.venue, adageId: null },
       },
       adageUser: defaultAdageUser,
     })
@@ -91,7 +91,7 @@ describe('AdageOfferPartnerPanel', () => {
         venue: {
           ...defaultCollectiveTemplateOffer.venue,
           city: 'Paris',
-          postalCode: undefined,
+          postalCode: '',
         },
       },
       adageUser: defaultAdageUser,
@@ -106,7 +106,7 @@ describe('AdageOfferPartnerPanel', () => {
         ...defaultCollectiveTemplateOffer,
         venue: {
           ...defaultCollectiveTemplateOffer.venue,
-          city: undefined,
+          city: '',
           postalCode: '75000',
         },
       },
@@ -123,8 +123,6 @@ describe('AdageOfferPartnerPanel', () => {
         venue: {
           ...defaultCollectiveTemplateOffer.venue,
           coordinates: { latitude: 1, longitude: 1 },
-          city: undefined,
-          postalCode: undefined,
         },
       },
       adageUser: { ...defaultAdageUser, lat: 2, lon: 2 },

@@ -237,7 +237,7 @@ export {
   type GetBookingsProResponseModel,
   type GetCollectiveOfferBookingResponseModel,
   type GetCollectiveOfferCollectiveStockResponseModel,
-  type GetCollectiveOfferLocationModelV2,
+  type GetCollectiveOfferLocationModel,
   type GetCollectiveOfferManagingOffererResponseModel,
   type GetCollectiveOfferProviderResponseModel,
   type GetCollectiveOfferRequestResponseModel,

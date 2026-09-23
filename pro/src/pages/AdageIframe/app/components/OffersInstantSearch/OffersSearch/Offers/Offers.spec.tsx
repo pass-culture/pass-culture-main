@@ -171,6 +171,11 @@ describe('offers', () => {
       id: 480,
       description: 'Une offre vraiment coco',
       name: 'Coco channel',
+      location: { ...defaultCollectiveOffer.location },
+      durationMinutes: null,
+      imageUrl: null,
+      imageCredit: null,
+      nationalProgram: null,
       stock: {
         id: 826,
         startDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
@@ -178,13 +183,18 @@ describe('offers', () => {
         price: 80000,
         servicePrice: 80000,
         collectiveAdditionalFees: [],
+        numberOfTickets: 10,
+        numberOfTeachers: 0,
       },
       venue: {
         id: 1,
+        adageId: '1',
+        imgUrl: null,
         address: '1 boulevard Poissonnière',
         city: 'Cayenne',
         name: 'Le Petit Rintintin 33',
         postalCode: '97300',
+        departmentCode: '97',
         publicName: 'Le Petit Rintintin 33',
         managingOfferer: {
           name: 'Le Petit Rintintin Management',
@@ -205,12 +215,20 @@ describe('offers', () => {
       interventionArea: ['973'],
       formats: [EacFormat.CONCERT],
       isTemplate: false,
+      additionalDetails: null,
+      teacher: null,
+      educationalInstitution: null,
     }
 
     otherOffer = {
       id: 481,
       description: 'Une autre offre',
       name: 'Un autre titre',
+      location: { ...defaultCollectiveOffer.location },
+      durationMinutes: null,
+      imageUrl: null,
+      imageCredit: null,
+      nationalProgram: null,
       stock: {
         id: 827,
         startDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
@@ -218,13 +236,18 @@ describe('offers', () => {
         price: 3000,
         servicePrice: 3000,
         collectiveAdditionalFees: [],
+        numberOfTickets: 10,
+        numberOfTeachers: 0,
       },
       venue: {
         id: 1,
+        adageId: '1',
+        imgUrl: null,
         address: '1 boulevard Poissonnière',
         city: 'Paris',
         name: 'Un autre lieu',
         postalCode: '97300',
+        departmentCode: '97',
         publicName: 'Le Petit Rintintin 33',
         coordinates: {
           latitude: 48.87004,
@@ -245,6 +268,9 @@ describe('offers', () => {
       interventionArea: ['75', '92'],
       formats: [EacFormat.CONCERT],
       isTemplate: false,
+      additionalDetails: null,
+      teacher: null,
+      educationalInstitution: null,
     }
 
     offersProps = {

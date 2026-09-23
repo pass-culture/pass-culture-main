@@ -101,7 +101,7 @@ describe('AdageOfferDetailsSection', () => {
     renderAdageOfferDetailsSection({
       offer: {
         ...defaultCollectiveTemplateOffer,
-        nationalProgram: undefined,
+        nationalProgram: null,
       },
     })
 
@@ -126,7 +126,7 @@ describe('AdageOfferDetailsSection', () => {
     renderAdageOfferDetailsSection({
       offer: {
         ...defaultCollectiveTemplateOffer,
-        durationMinutes: undefined,
+        durationMinutes: null,
       },
     })
 
@@ -155,7 +155,7 @@ describe('AdageOfferDetailsSection', () => {
     renderAdageOfferDetailsSection({
       offer: {
         ...defaultCollectiveTemplateOffer,
-        description: undefined,
+        description: '',
       },
     })
 

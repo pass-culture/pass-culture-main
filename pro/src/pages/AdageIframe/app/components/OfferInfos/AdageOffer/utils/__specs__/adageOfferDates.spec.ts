@@ -72,17 +72,5 @@ describe('adageOfferDates', () => {
 
       expect(dateText).toBeNull()
     })
-
-    it('should not return a date if the end date of the offer does not exist', () => {
-      const dateText = getFormattedDatesForBookableOffer({
-        ...defaultCollectiveOffer,
-        stock: {
-          ...defaultCollectiveOffer.stock,
-          startDatetime: '2024-01-29T23:00:28.040559Z',
-        },
-      })
-
-      expect(dateText).toBeNull()
-    })
   })
 })
