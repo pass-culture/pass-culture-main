@@ -108,7 +108,7 @@
     "knip": "6.36.0",
     "node-fetch": "3.3.2",
     "openapi-typescript-codegen": "0.29.0",
-    "prettier": "3.9.6",
+    "prettier": "3.9.7",
     "regenerator-runtime": "0.14.1",
     "rollup-plugin-visualizer": "7.0.1",
     "sass": "1.104.0",
