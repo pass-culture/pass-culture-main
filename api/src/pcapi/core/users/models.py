@@ -13,7 +13,6 @@ from operator import attrgetter
 from uuid import UUID
 
 import sqlalchemy as sa
-import sqlalchemy.event as sa_event
 import sqlalchemy.orm as sa_orm
 from sqlalchemy import func
 from sqlalchemy.dialects import postgresql
@@ -969,7 +968,10 @@ class DiscordUser(PcObject, Model):
         return cls.discordId.is_not(None) and cls.isBanned.is_(False)
 
 
-trig_ensure_password_or_sso_exists_ddl = sa.DDL(
+# These DDLs are a copy of their real equivalent in db
+# They don't do anything; they are just here to remember the existence of these
+# triggers and functions so as not to forget them when working on the models
+function_ensure_password_or_sso_exists_ddl = sa.DDL(
     """
     CREATE OR REPLACE FUNCTION ensure_password_or_sso_exists()
     RETURNS TRIGGER AS $$
@@ -982,21 +984,15 @@ trig_ensure_password_or_sso_exists_ddl = sa.DDL(
         RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
+    """
+)
 
-    DROP TRIGGER IF EXISTS ensure_password_or_sso_exists ON "user";
+trigger_ensure_password_or_sso_exists_ddl = sa.DDL("""
     CREATE CONSTRAINT TRIGGER ensure_password_or_sso_exists
     AFTER INSERT OR UPDATE OF password ON "user"
     DEFERRABLE INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE ensure_password_or_sso_exists();
-    """
-)
-
-
-sa_event.listen(
-    User.__table__,
-    "after_create",
-    trig_ensure_password_or_sso_exists_ddl,
-)
+""")
 
 
 class ExpenseDomain(enum.Enum):

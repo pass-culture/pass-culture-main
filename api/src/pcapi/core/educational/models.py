@@ -6,7 +6,6 @@ import random
 import typing
 
 import sqlalchemy as sa
-import sqlalchemy.event as sa_event
 from psycopg2.extras import DateTimeRange
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
@@ -2008,30 +2007,6 @@ class CollectiveDmsApplication(PcObject, models.Model):
     @classmethod
     def _siren_expression(cls) -> sa.Function:
         return sa.func.substr(cls.siret, 1, SIREN_LENGTH)
-
-
-trig_update_cancellationDate_on_isCancelled_ddl = sa.DDL(f"""
-    CREATE OR REPLACE FUNCTION save_collective_booking_cancellation_date()
-    RETURNS TRIGGER AS $$
-    BEGIN
-        IF NEW.status = '{CollectiveBookingStatus.CANCELLED.value}' AND OLD."cancellationDate" IS NULL AND NEW."cancellationDate" THEN
-            NEW."cancellationDate" = NOW();
-        ELSIF NEW.status != '{CollectiveBookingStatus.CANCELLED.value}' THEN
-            NEW."cancellationDate" = NULL;
-        END IF;
-        RETURN NEW;
-    END;
-    $$ LANGUAGE plpgsql;
-
-    DROP TRIGGER IF EXISTS stock_update_collective_booking_cancellation_date ON collective_booking;
-
-    CREATE TRIGGER stock_update_collective_booking_cancellation_date
-    BEFORE INSERT OR UPDATE OF status ON collective_booking
-    FOR EACH ROW
-    EXECUTE PROCEDURE save_collective_booking_cancellation_date()
-    """)
-
-sa_event.listen(CollectiveBooking.__table__, "after_create", trig_update_cancellationDate_on_isCancelled_ddl)
 
 
 class CollectiveOfferRequest(PcObject, models.Model):

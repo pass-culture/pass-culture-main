@@ -5,7 +5,6 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
-import sqlalchemy.event as sa_event
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -543,7 +542,67 @@ class Booking(PcObject, Model):
         return self.dateUsed is not None and self.stock.offer.subcategoryId in SUBCATEGORY_IDS_WITH_REACTION_AVAILABLE
 
 
-trig_check_booking_deposit_ddl = sa.DDL(f"""
+# These DDLs are a copy of their real equivalent in db
+# They don't do anything; they are just here to remember the existence of these
+# triggers and functions so as not to forget them when working on the models
+function_get_wallet_balance_ddl = sa.DDL(
+    """
+    CREATE OR REPLACE FUNCTION public.get_wallet_balance(user_id bigint) RETURNS numeric
+        LANGUAGE plpgsql STABLE
+        AS $$
+            DECLARE
+                deposit_id bigint;
+                deposit_amount numeric;
+                spent_amount numeric;
+            BEGIN
+                SELECT id, amount
+                INTO deposit_id, deposit_amount
+                FROM deposit
+                WHERE
+                    "userId" = user_id
+                    AND (
+                        "expirationDate" IS NULL
+                        OR "expirationDate" > now()
+                    )
+                ORDER BY "expirationDate" DESC
+                LIMIT 1;
+
+                IF deposit_id IS NULL THEN
+                    RETURN NULL;
+                END IF;
+
+                -- One row per booking: a booking is charged its partial incident amount when it has one
+                -- (first VALIDATED or INVOICED incident with a non-zero new total), its full price otherwise.
+                SELECT
+                    COALESCE(SUM(COALESCE(partial_incident.new_total_amount, booking.amount * booking.quantity)), 0)
+                INTO spent_amount
+                FROM
+                    booking
+                    LEFT OUTER JOIN LATERAL (
+                        SELECT booking_finance_incident."newTotalAmount" * 0.01 AS new_total_amount
+                        FROM
+                            booking_finance_incident
+                            JOIN finance_incident ON finance_incident.id = booking_finance_incident."incidentId"
+                        WHERE
+                            booking_finance_incident."bookingId" = booking.id
+                            AND booking_finance_incident."newTotalAmount" > 0
+                            AND finance_incident.status IN ('VALIDATED', 'INVOICED')
+                            AND finance_incident.kind = 'OVERPAYMENT'
+                        ORDER BY booking_finance_incident.id
+                        LIMIT 1
+                    ) AS partial_incident ON TRUE
+                WHERE
+                    booking."depositId" = deposit_id
+                    AND booking.status <> 'CANCELLED'
+                ;
+
+                RETURN GREATEST(deposit_amount - spent_amount, 0);
+            END;
+            $$;
+    """
+)
+
+function_get_deposit_balance_ddl = sa.DDL(f"""
     CREATE OR REPLACE FUNCTION public.get_deposit_balance (deposit_id bigint, only_used_bookings boolean)
         RETURNS numeric
         AS $$
@@ -571,7 +630,9 @@ trig_check_booking_deposit_ddl = sa.DDL(f"""
         END;
     $$
     LANGUAGE plpgsql;
+    """)
 
+function_check_booking_ddl = sa.DDL(f"""
     CREATE OR REPLACE FUNCTION check_booking()
     RETURNS TRIGGER AS $$
     DECLARE
@@ -617,24 +678,25 @@ trig_check_booking_deposit_ddl = sa.DDL(f"""
     RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
+    """)
 
-    DROP TRIGGER IF EXISTS booking_update ON booking;
+trigger_booking_update_ddl = sa.DDL(f"""
     CREATE CONSTRAINT TRIGGER booking_update
     AFTER INSERT
     OR UPDATE OF quantity, amount, status, "userId"
     ON booking
+    NOT DEFERRABLE INITIALLY IMMEDIATE
     FOR EACH ROW
-    -- Happens only for USED to PENDING_REIMBURSEMENT and PENDING_REIMBURSEMENT to REIMBURSED transitions
+    -- Ignore USED to PENDING_REIMBURSEMENT, PENDING_REIMBURSEMENT to REIMBURSED and REIMBURSED to PENDING_REIMBURSEMENT updates
     WHEN (NEW.status NOT IN ('{BookingStatus.PENDING_REIMBURSEMENT.value}','{BookingStatus.REIMBURSED.value}'))
     EXECUTE PROCEDURE check_booking()
     """)
-sa_event.listen(Booking.__table__, "after_create", trig_check_booking_deposit_ddl)
 
-trig_update_cancellationDate_on_isCancelled_ddl = sa.DDL(f"""
+function_stock_cancellation_date_ddl = sa.DDL(f"""
     CREATE OR REPLACE FUNCTION save_cancellation_date()
     RETURNS TRIGGER AS $$
     BEGIN
-        IF NEW.status = '{BookingStatus.CANCELLED.value}' AND OLD."cancellationDate" IS NULL AND NEW."cancellationDate" THEN
+        IF NEW.status = '{BookingStatus.CANCELLED.value}' AND OLD."cancellationDate" IS NULL AND NEW."cancellationDate" IS NULL THEN
             NEW."cancellationDate" = NOW();
         ELSIF NEW.status != '{BookingStatus.CANCELLED.value}' THEN
             NEW."cancellationDate" = NULL;
@@ -642,16 +704,14 @@ trig_update_cancellationDate_on_isCancelled_ddl = sa.DDL(f"""
         RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
+    """)
 
-    DROP TRIGGER IF EXISTS stock_update_cancellation_date ON booking;
-
+trigger_stock_update_cancellation_date_ddl = sa.DDL("""
     CREATE TRIGGER stock_update_cancellation_date
     BEFORE INSERT OR UPDATE OF status ON booking
     FOR EACH ROW
     EXECUTE PROCEDURE save_cancellation_date()
     """)
-
-sa_event.listen(Booking.__table__, "after_create", trig_update_cancellationDate_on_isCancelled_ddl)
 
 
 class FraudulentBookingTag(PcObject, Model):
