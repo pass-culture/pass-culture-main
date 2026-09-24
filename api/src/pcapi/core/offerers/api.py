@@ -731,7 +731,6 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
     db.session.query(providers_models.AllocineVenueProvider).filter(
         providers_models.AllocineVenueProvider.id == providers_models.VenueProvider.id,
         providers_models.VenueProvider.venueId == venue_id,
-        offerers_models.Venue.id == venue_id,
     ).delete(synchronize_session=False)
     db.session.query(providers_models.VenueProvider).filter(providers_models.VenueProvider.venueId == venue_id).delete(
         synchronize_session=False
