@@ -105,7 +105,7 @@
     "check-unused-css": "0.5.5",
     "dotenv": "17.4.2",
     "jsdom": "30.0.1",
-    "knip": "6.35.1",
+    "knip": "6.36.0",
     "node-fetch": "3.3.2",
     "openapi-typescript-codegen": "0.29.0",
     "prettier": "3.9.6",
