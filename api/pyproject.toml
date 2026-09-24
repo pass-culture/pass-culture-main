@@ -78,7 +78,7 @@ dependencies = [
   "spectree ==1.5.8",
   # from our private fork
   "sqlalchemy-easy-softdelete",
-  "sqlalchemy[mypy]==2.0.52",
+  "sqlalchemy[mypy]==2.0.54",
   "time-machine==3.5.1",
   "transitions ==0.9.3",
   "urllib3 ==2.7.0",
