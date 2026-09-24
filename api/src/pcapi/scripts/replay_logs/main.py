@@ -4,7 +4,7 @@ Job console documentation here: https://www.notion.so/passcultureapp/Documentati
 You can start the job from the infra repository with github cli :
 
 gh workflow run on_dispatch_pcapi_console_job.yaml \
-  -f ENVIRONMENT_SHORT_NAME=tst \
+  -f ENVIRONMENT_SHORT_NAME=stg \
   -f RESOURCES="512Mi/.5" \
   -f BRANCH_NAME=PC-43713-replay-previous-logs \
   -f NAMESPACE=replay_logs \
@@ -53,7 +53,7 @@ def replay_logs() -> None:
             extra={
                 "published_at": log_payload["published_at"],
                 "first_attempt_delays_since": log_payload["first_attempt_delays_since"],
-                "first_attempt_delays": log_payload["first_attempt_delays"],
+                "first_attempt_delays": json.dumps(log_payload["first_attempt_delays"]),
                 "feature": "bonus_credit",
                 "action": "statistics.first_attempt_delays",
             },
