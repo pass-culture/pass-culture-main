@@ -61,6 +61,10 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     for month in _get_months_when_user_is_17(user):
         try:
             qf_result = _get_and_cache_quotient_familial_result(quotient_familial_fraud_check, month, cache_name)
+        except api_particulier.ParticulierApiRateLimitExceeded:
+            # no need to burn the remaining months: the task is retried once the rate limit resets,
+            # and the months already fetched are cached
+            raise
         except api_particulier.ParticulierApiException as e:
             unhandled_api_particulier_errors.append(e)
             continue
