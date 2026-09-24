@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import path from 'path'
 import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 import { vi } from 'vitest'
@@ -8,6 +9,7 @@ import { api } from '@/apiClient/api'
 import {
   ArtistType,
   DisplayableActivity,
+  type GetVenueResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
@@ -160,18 +162,20 @@ const renderDetailsScreen = ({
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
     mode,
   }),
+  defaultVenue = defaultPartnerVenue,
 }: {
   contextValue: IndividualOfferContextValues
   mode?: OFFER_WIZARD_MODE
   options?: RenderWithProvidersOptions
   path?: string
+  defaultVenue?: GetVenueResponseModel
 }) => {
   const controlledOptions: RenderWithProvidersOptions = {
     initialRouterEntries: [path],
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
-        selectedPartnerVenue: defaultPartnerVenue,
+        selectedPartnerVenue: defaultVenue,
       },
     },
     user: sharedCurrentUserFactory(),
@@ -833,6 +837,105 @@ describe('<IndividualOfferDescriptionScreen />', () => {
           await waitFor(() => {
             expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
           })
+        })
+      })
+
+      describe('when the subcategory requires an EAN', () => {
+        it.only('should display a (cumulative) error message that cannot be cleared on new inputs', async () => {
+          // console.log('Rendering details screen for subcategory requiring EAN')
+
+          // const venue = makeGetVenueResponseModel({
+          //   id: 1,
+          //   activity: DisplayableActivity.RECORD_STORE,
+          // })
+
+          // const context = {
+          //   ...contextValue,
+          //   subCategories: [
+          //     subcategoryFactory({
+          //       id: 'SUPPORT_PHYSIQUE_MUSIQUE_CD',
+          //       categoryId: 'MUSIQUE_ENREGISTREE',
+          //       proLabel: 'CD et autres supports',
+          //       conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
+          //     }),
+          //   ],
+          // }
+
+          // renderDetailsScreen({
+          //   contextValue: context,
+          //   mode: OFFER_WIZARD_MODE.CREATION,
+          //   path: `/onboarding${getIndividualOfferPath({
+          //     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+          //     mode: OFFER_WIZARD_MODE.CREATION,
+          //   })}`,
+          //   defaultVenue: venue,
+          // })
+
+          vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
+            id: 1,
+            dateCreated: '',
+            isActive: true,
+            name: 'test',
+            status: OfferStatus.DRAFT,
+            subcategoryId: SubcategoryIdEnum.LIVRE_PAPIER,
+          })
+          renderWithRecordStoreVenue({
+            // hasPublishedOfferWithSameEan: true,
+            offer: getIndividualOfferFactory({
+              subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
+              productId: 1,
+            }),
+          })
+
+          // Input is now required.
+          const eanInput = screen.getByRole('textbox', {
+            name: /rechercher/,
+          })
+          await waitFor(() => {
+            expect(eanInput).toBeRequired()
+          })
+
+          // Error cannot be removed by typing in the input.
+          expect(
+            screen.getByText(/doivent être liées à un produit/)
+          ).toBeInTheDocument()
+          await userEvent.type(eanInput, '9781234567897')
+          expect(
+            screen.getByText(/doivent être liées à un produit/)
+          ).toBeInTheDocument()
+        })
+
+        it('should let the submit button enabled', async () => {
+          const context = {
+            ...contextValue,
+            subCategories: [
+              subcategoryFactory({
+                id: 'SUPPORT_PHYSIQUE_MUSIQUE_CD',
+                categoryId: 'MUSIQUE_ENREGISTREE',
+                proLabel: 'CD et autres supports',
+                conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
+              }),
+            ],
+          }
+
+          renderDetailsScreen({
+            contextValue: context,
+            mode: OFFER_WIZARD_MODE.CREATION,
+            path: `/onboarding${getIndividualOfferPath({
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            })}`,
+          })
+
+          const eanInput = screen.getByRole('textbox', {
+            name: /Rechercher/,
+          })
+          const submitButton = screen.getByRole('button', {
+            name: /Rechercher/,
+          })
+
+          await userEvent.type(eanInput, '9781234567897')
+          expect(submitButton).not.toBeDisabled()
         })
       })
     })

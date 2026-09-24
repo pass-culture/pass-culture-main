@@ -54,7 +54,7 @@ type DetailsFormProps = {
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
   canClaimCulturalOutreach: boolean
-  setSubcategoryId: (subcategoryId: string | undefined) => void
+  onSubcategoryChange: (subcategoryId: string | undefined) => void
 }
 
 export const DetailsForm = ({
@@ -63,7 +63,7 @@ export const DetailsForm = ({
   filteredCategories,
   filteredSubcategories,
   canClaimCulturalOutreach,
-  setSubcategoryId,
+  onSubcategoryChange,
 }: DetailsFormProps): JSX.Element => {
   const { offer: initialOffer, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
@@ -261,7 +261,7 @@ export const DetailsForm = ({
             readOnlyFields={readOnlyFields}
             filteredCategories={filteredCategories}
             filteredSubcategories={filteredSubcategories}
-            setSubcategoryId={setSubcategoryId}
+            onSubcategoryChange={onSubcategoryChange}
           />
           {isSubCategorySelected && (
             <DetailsSubForm

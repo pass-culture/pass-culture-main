@@ -24,14 +24,14 @@ interface SubcategoriesProps {
   readOnlyFields: string[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
-  setSubcategoryId: (subcategoryId: string | undefined) => void
+  onSubcategoryChange: (subcategoryId: string | undefined) => void
 }
 
 export function Subcategories({
   readOnlyFields,
   filteredCategories,
   filteredSubcategories,
-  setSubcategoryId,
+  onSubcategoryChange,
 }: Readonly<SubcategoriesProps>) {
   const {
     setValue,
@@ -73,7 +73,7 @@ export function Subcategories({
     })
 
     setIsControlledEvent(nextSubcategory.isEvent)
-    setSubcategoryId(nextSubcategoryId)
+    onSubcategoryChange(nextSubcategoryId)
   }
 
   const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {

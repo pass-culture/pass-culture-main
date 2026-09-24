@@ -1,34 +1,8 @@
 import * as yup from 'yup'
 
 import type { ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
-import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 
-// import type { DetailsFormValues } from './types'
-
-export type DetailsFormValues = {
-  name: string
-  description?: string
-  venueId: string
-  categoryId: string
-  hasCulturalOutreachClaim?: boolean
-  subcategoryId: string
-  showType?: string
-  showSubType?: string
-  gtl_id?: string
-  author?: string
-  artistOfferLinks: Array<ArtistOfferLinkResponseModel>
-  performer?: string
-  ean?: string
-  eanSearch?: string
-  speaker?: string
-  stageDirector?: string
-  visa?: string
-  durationMinutes?: string | null
-  subcategoryConditionalFields: (keyof DetailsFormValues)[]
-  productId?: string
-  callId?: string
-  accessibility?: AccessibilityFormValues
-}
+import type { DetailsFormValues } from './types'
 
 const eanValidation = yup
   .string()

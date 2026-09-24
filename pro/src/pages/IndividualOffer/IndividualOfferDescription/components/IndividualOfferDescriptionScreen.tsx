@@ -73,16 +73,19 @@ export const IndividualOfferDescriptionScreen = () => {
   const isDraftOfferNotProductBased = isNewOfferDraft && !hasSelectedProduct
 
   const selectedSubcategoryId = subcategoryId
-  const [subcatError, setSubcatError] = useState<string | undefined>(undefined)
+  const [subcatErrorForEanCompletion, setSubcatErrorForEanCompletion] =
+    useState<string | undefined>(undefined)
 
   useEffect(() => {
     if (
       isDraftOfferNotProductBased &&
       isSubCategoryCD(selectedSubcategoryId ?? '')
     ) {
-      setSubcatError('Les offres de type CD doivent être liées à un produit.')
+      setSubcatErrorForEanCompletion(
+        'Les offres de type CD doivent être liées à un produit.'
+      )
     } else {
-      setSubcatError(undefined)
+      setSubcatErrorForEanCompletion(undefined)
     }
   }, [isDraftOfferNotProductBased, selectedSubcategoryId])
 
@@ -96,6 +99,15 @@ export const IndividualOfferDescriptionScreen = () => {
 
   const isEanSearchInputDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
+
+  console.log({
+    isNewOfferDraft,
+    hasSelectedProduct,
+    initialValues,
+    isDraftOfferNotProductBased,
+    cd: isSubCategoryCD(selectedSubcategoryId ?? ''),
+    selectedSubcategoryId,
+  })
 
   const updateProduct = (ean: string, product: Product) => {
     const { description, gtlId, subcategoryId, images, ...restProduct } =
@@ -121,6 +133,7 @@ export const IndividualOfferDescriptionScreen = () => {
       gtl_id = gtlId || '19000000'
     }
 
+    console.log('COUCOU')
     setInitialValues((prevInitialValues) => ({
       ...prevInitialValues,
       ...restProduct,
@@ -154,14 +167,14 @@ export const IndividualOfferDescriptionScreen = () => {
             setInitialValues(getInitialValues())
           }}
           onEanSearch={updateProduct}
-          subcatError={subcatError}
+          subcatError={subcatErrorForEanCompletion}
         />
       )}
 
       <DetailsForm
         key={initialValues.productId}
         initialValues={initialValues}
-        setSubcategoryId={setSubcategoryId}
+        onSubcategoryChange={setSubcategoryId}
         filteredCategories={categories}
         filteredSubcategories={subCategories}
         isEanSearchDisplayed={isEanSearchInputDisplayed}

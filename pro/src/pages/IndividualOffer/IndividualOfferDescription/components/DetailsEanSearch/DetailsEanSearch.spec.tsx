@@ -11,7 +11,6 @@ import { subcategoryFactory } from '@/commons/utils/factories/individualApiFacto
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
 
 import {
   DetailsEanSearch,
@@ -48,24 +47,17 @@ const renderDetailsEanSearch = (props: DetailsEanSearchTestProps = {}) => {
   const {
     isDraftOffer = false,
     wasEanSearchPerformedSuccessfully = false,
-    subcategoryId = DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
     initialEan = '',
     eanSubmitError = '',
     onEanSearch = vi.fn(),
     onEanReset = vi.fn(),
   } = props
 
-  const hasCompleteValues = !isDraftOffer || wasEanSearchPerformedSuccessfully
-  const mockedSubCategoryId = hasCompleteValues
-    ? 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE'
-    : subcategoryId
-
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <DetailsEanSearch
         isDraftOffer={isDraftOffer}
         isProductBased={wasEanSearchPerformedSuccessfully}
-        subcategoryId={mockedSubCategoryId}
         initialEan={initialEan}
         eanSubmitError={eanSubmitError}
         onEanSearch={onEanSearch}
@@ -90,7 +82,6 @@ vi.mock('@/apiClient/api', () => ({
 const successMessage = /Ces informations ont été récupérées depuis l’EAN./
 const errorMessage = /Une erreur est survenue lors de la recherche/
 const formatErrorMessage = /doit être composé de 13 chiffres/
-const subCatErrorMessage = /doivent être liées à un produit/
 const clearButtonLabel = /Effacer/
 
 const getInput = () =>
@@ -154,34 +145,6 @@ describe('DetailsEanSearch', () => {
           expect(getButton()).toBeDisabled()
           await userEvent.type(getInput(), '123')
           expect(getButton()).toBeDisabled()
-        })
-      })
-
-      describe('when the subcategory requires an EAN', () => {
-        it('should display a (cumulative) error message that cannot be cleared on new inputs', async () => {
-          renderDetailsEanSearch({
-            isDraftOffer: true,
-            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_CD',
-          })
-
-          // Input is now required.
-          const eanInput = getInput()
-          expect(eanInput).toBeRequired()
-
-          // Error cannot be removed by typing in the input.
-          expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
-          await userEvent.type(eanInput, '9781234567897')
-          expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
-        })
-
-        it('should let the submit button enabled', async () => {
-          renderDetailsEanSearch({
-            isDraftOffer: true,
-            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_CD',
-          })
-
-          await userEvent.type(getInput(), '9781234567897')
-          expect(getButton()).not.toBeDisabled()
         })
       })
     })
@@ -260,7 +223,6 @@ describe('DetailsEanSearch', () => {
         <DetailsEanSearch
           isDraftOffer={true}
           isProductBased={false}
-          subcategoryId={DEFAULT_DETAILS_FORM_VALUES.subcategoryId}
           onEanSearch={vi.fn()}
           onEanReset={vi.fn()}
         />
