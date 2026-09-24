@@ -23,19 +23,20 @@ export const CollectiveOfferTypeSection = ({
 }: CollectiveOfferSummaryProps) => {
   const offerTypeDescriptions: Description[] = []
 
-  offerTypeDescriptions.push({
-    title: 'Format',
-    text: offer.formats.join(', ') || DEFAULT_RECAP_VALUE,
-  })
-
-  offerTypeDescriptions.push({
-    title: 'Domaine artistique et culturel',
-    text: offer.domains.map((domain) => domain.name).join(', '),
-  })
-  offerTypeDescriptions.push({
-    title: 'Dispositif national',
-    text: offer.nationalProgram?.name || DEFAULT_RECAP_VALUE,
-  })
+  offerTypeDescriptions.push(
+    {
+      title: 'Format',
+      text: offer.formats.join(', ') || DEFAULT_RECAP_VALUE,
+    },
+    {
+      title: 'Domaine artistique et culturel',
+      text: offer.domains.map((domain) => domain.name).join(', '),
+    },
+    {
+      title: 'Dispositif national',
+      text: offer.nationalProgram?.name || DEFAULT_RECAP_VALUE,
+    }
+  )
 
   return (
     <>

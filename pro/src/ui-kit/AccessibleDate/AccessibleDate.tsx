@@ -5,7 +5,10 @@ type AccessibleDateProps = {
   visualOptions?: Intl.DateTimeFormatOptions
 }
 
-export function AccessibleDate({ date, visualOptions }: AccessibleDateProps) {
+export function AccessibleDate({
+  date,
+  visualOptions,
+}: Readonly<AccessibleDateProps>) {
   const d = date instanceof Date ? date : new Date(date)
   const spoken = new Intl.DateTimeFormat('fr-FR', {
     day: 'numeric',

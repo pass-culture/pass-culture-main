@@ -18,12 +18,12 @@ export function OpeningHoursTimespans({
   hasTimespans,
   dayFrenchName,
   hasErrorBecauseOfEmptyOpeningHours,
-}: {
+}: Readonly<{
   weekDay: keyof WeekdayOpeningHoursTimespans
   hasTimespans: boolean
   dayFrenchName: string
   hasErrorBecauseOfEmptyOpeningHours: boolean
-}) {
+}>) {
   const form = useFormContext<{
     openingHours: WeekdayOpeningHoursTimespans | null
   }>()

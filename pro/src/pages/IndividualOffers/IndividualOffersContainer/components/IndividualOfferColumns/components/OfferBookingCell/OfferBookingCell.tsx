@@ -11,7 +11,6 @@ import waitFullIcon from '@/icons/full-wait.svg'
 
 export type OfferBookingCellProps = {
   offer: ListOffersOfferResponseModel
-  className?: string
 }
 
 export const OfferBookingCell = ({ offer }: OfferBookingCellProps) => {

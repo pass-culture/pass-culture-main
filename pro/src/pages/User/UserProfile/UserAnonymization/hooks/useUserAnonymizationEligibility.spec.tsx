@@ -27,7 +27,7 @@ describe('useUserAnonymizationEligibility', () => {
 
     expect(result.current.isLoading).toBe(true)
     expect(result.current.isEligible).toBe(false)
-    expect(result.current.isSoleUserWithOngoingActivities).toBe(undefined)
+    expect(result.current.isSoleUserWithOngoingActivities).toBeUndefined()
   })
 
   it('should return true when user is eligible', () => {

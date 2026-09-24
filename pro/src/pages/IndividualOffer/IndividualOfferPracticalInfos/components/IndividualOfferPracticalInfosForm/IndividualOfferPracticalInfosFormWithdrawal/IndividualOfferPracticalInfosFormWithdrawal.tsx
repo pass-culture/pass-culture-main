@@ -93,7 +93,7 @@ export type IndividualOfferPracticalInfosFormWithdrawalProps = {
 
 export function IndividualOfferPracticalInfosFormWithdrawal({
   isFormDisabled,
-}: IndividualOfferPracticalInfosFormWithdrawalProps) {
+}: Readonly<IndividualOfferPracticalInfosFormWithdrawalProps>) {
   const form = useFormContext<IndividualOfferPracticalInfosFormValues>()
 
   const withdrawalType = form.watch('withdrawalType')

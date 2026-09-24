@@ -52,7 +52,6 @@ import styles from './Offers.module.scss'
 
 export interface OffersProps {
   displayStats?: boolean
-  displayShowMore?: boolean
   displayNoResult?: boolean
   submitCount?: number
   isBackToTopVisibile?: boolean

@@ -70,7 +70,7 @@ export const AddVenueProviderButton = ({
         filteredProvidersOptions: { value: string; label: string }[],
         provider
       ) => {
-        const shouldBeFilteredOut = !!linkedProviders.find(
+        const shouldBeFilteredOut = !!linkedProviders.some(
           (linkedProvider) =>
             // venue already linked to this provider
             provider.id === linkedProvider.id ||

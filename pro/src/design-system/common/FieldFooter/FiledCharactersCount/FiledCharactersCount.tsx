@@ -12,7 +12,7 @@ export function FiledCharactersCount({
   current,
   max,
   describeById,
-}: FiledCharactersCountProps) {
+}: Readonly<FiledCharactersCountProps>) {
   //  The real counter would be announced by assistive technologies after each character typed.
   //  Therefore, we need a debounced counter that only changes when the user stops typing.
   const [debouncedCount] = useDebounce(current, 1000)

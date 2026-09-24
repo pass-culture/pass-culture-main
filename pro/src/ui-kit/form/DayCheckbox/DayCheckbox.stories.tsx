@@ -56,7 +56,6 @@ export const WithinAGroupInError: Story = {
     name: 'myField',
     checked: false,
     hasError: true,
-    displayErrorMessage: false,
     onChange: () => {
       //  Control the result here with e.target.checked
     },

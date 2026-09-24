@@ -4,28 +4,28 @@ describe('getUrlYoutubeError', () => {
   it('returns nothing for valid youtube URLs', () => {
     expect(
       getUrlYoutubeError('https://www.youtube.com/watch?v=abcdefghijk')
-    ).toBe(undefined)
-    expect(getUrlYoutubeError('https://youtu.be/abcdefghijk')).toBe(undefined)
+    ).toBeUndefined()
+    expect(getUrlYoutubeError('https://youtu.be/abcdefghijk')).toBeUndefined()
     expect(
       getUrlYoutubeError('http://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10s')
-    ).toBe(undefined)
-    expect(getUrlYoutubeError('http://www.youtube.com/embed/dQw4w9WgXcQ')).toBe(
-      undefined
-    )
-    expect(getUrlYoutubeError('http://youtube.com/v/dQw4w9WgXcQ')).toBe(
-      undefined
-    )
-    expect(getUrlYoutubeError('https://www.youtube.com/e/dQw4w9WgXcQ')).toBe(
-      undefined
-    )
+    ).toBeUndefined()
+    expect(
+      getUrlYoutubeError('http://www.youtube.com/embed/dQw4w9WgXcQ')
+    ).toBeUndefined()
+    expect(
+      getUrlYoutubeError('http://youtube.com/v/dQw4w9WgXcQ')
+    ).toBeUndefined()
+    expect(
+      getUrlYoutubeError('https://www.youtube.com/e/dQw4w9WgXcQ')
+    ).toBeUndefined()
     expect(
       getUrlYoutubeError(
         'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLUMRshJ8e2c4oQ60D4Ew15A1LgN5C7Y3X'
       )
-    ).toBe(undefined)
-    expect(getUrlYoutubeError('http://m.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(
-      undefined
-    )
+    ).toBeUndefined()
+    expect(
+      getUrlYoutubeError('http://m.youtube.com/watch?v=dQw4w9WgXcQ')
+    ).toBeUndefined()
   })
 
   it('returns specific message for non-youtube URLs', () => {

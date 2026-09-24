@@ -79,7 +79,7 @@ describe('useCollectiveOfferFromParams', () => {
       useCollectiveOfferFromParams(false, undefined)
     )
 
-    expect(result.current.offer).toEqual(undefined)
+    expect(result.current.offer).toBeUndefined()
   })
 
   it('should return undefined when the offerId in the params is an invalid number', () => {
@@ -87,6 +87,6 @@ describe('useCollectiveOfferFromParams', () => {
       useCollectiveOfferFromParams(false, 'abcd')
     )
 
-    expect(result.current.offer).toEqual(undefined)
+    expect(result.current.offer).toBeUndefined()
   })
 })

@@ -28,7 +28,7 @@ const computeDurationString = (durationMinutes?: number | null) => {
 
 export function AdageOfferDetailsSection({
   offer,
-}: AdageOfferDetailsSectionProps) {
+}: Readonly<AdageOfferDetailsSectionProps>) {
   const domains = offer.domains
   const formats = offer.formats
   const duration = computeDurationString(offer.durationMinutes)

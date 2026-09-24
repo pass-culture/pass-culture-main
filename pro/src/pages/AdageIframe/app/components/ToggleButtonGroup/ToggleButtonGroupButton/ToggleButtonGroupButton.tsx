@@ -17,7 +17,7 @@ export function ToggleButtonGroupButton({
   button,
   isActive,
   ...buttonAttrs
-}: ToggleButtonGroupButtonProps) {
+}: Readonly<ToggleButtonGroupButtonProps>) {
   return (
     <div
       className={classNames(styles['button-group-button-container'])}

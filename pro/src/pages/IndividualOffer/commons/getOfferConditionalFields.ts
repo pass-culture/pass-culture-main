@@ -30,9 +30,11 @@ export const getOfferConditionalFields = ({
   }
 
   if (offerSubCategory?.canBeWithdrawable) {
-    offerConditionalFields.push('withdrawalType')
-    offerConditionalFields.push('withdrawalDelay')
-    offerConditionalFields.push('bookingContact')
+    offerConditionalFields.push(
+      'withdrawalType',
+      'withdrawalDelay',
+      'bookingContact'
+    )
   }
 
   return offerConditionalFields

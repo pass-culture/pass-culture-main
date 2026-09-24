@@ -121,14 +121,16 @@ export function getOfferTags(
   }
 
   if (!isTemplate) {
-    tags.push({
-      icon: strokeEuroIcon,
-      text: `${getFormattedPrice(offer.stock.price)}`,
-    })
-    tags.push({
-      icon: fullProfileIcon,
-      text: `${(offer.stock.numberOfTickets ?? 0) + (offer.stock.numberOfTeachers ?? 0)} participants`,
-    })
+    tags.push(
+      {
+        icon: strokeEuroIcon,
+        text: `${getFormattedPrice(offer.stock.price)}`,
+      },
+      {
+        icon: fullProfileIcon,
+        text: `${(offer.stock.numberOfTickets ?? 0) + (offer.stock.numberOfTeachers ?? 0)} participants`,
+      }
+    )
   }
 
   return tags

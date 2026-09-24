@@ -11,8 +11,6 @@ type DayCheckboxProps = {
   className?: string
   /** Error text for the checkbox */
   hasError?: boolean
-  /** Whether or not to display the error message. If false, the field has the error styles but no message */
-  displayErrorMessage?: boolean
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
   onBlur?: React.InputHTMLAttributes<HTMLInputElement>['onBlur']
   label: string | React.ReactNode

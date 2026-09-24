@@ -36,7 +36,7 @@ describe('useIndividualOfferImageUpload', () => {
   it('should return nothing as displayed image at first if no initial image was provided', () => {
     const { result } = renderHook(() => useIndividualOfferImageUpload())
 
-    expect(result.current.displayedImage).toEqual(undefined)
+    expect(result.current.displayedImage).toBeUndefined()
   })
 
   it('should return nothing as displayed image if the initial image is to be deleted', () => {
@@ -48,7 +48,7 @@ describe('useIndividualOfferImageUpload', () => {
       result.current.onImageDelete()
     })
 
-    expect(result.current.displayedImage).toEqual(undefined)
+    expect(result.current.displayedImage).toBeUndefined()
   })
 
   it('should return the new image as displayed image after upload', () => {
@@ -101,7 +101,7 @@ describe('useIndividualOfferImageUpload', () => {
       result.current.handleEanImage(undefined)
     })
 
-    expect(result.current.displayedImage).toEqual(undefined)
+    expect(result.current.displayedImage).toBeUndefined()
   })
 
   it('should call createThumbnail when a new image is uploaded', async () => {

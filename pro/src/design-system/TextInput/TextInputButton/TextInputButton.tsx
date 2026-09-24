@@ -19,7 +19,7 @@ export function TextInputButton({
   onClick,
   onBlur,
   disabled,
-}: TextInputButtonProps) {
+}: Readonly<TextInputButtonProps>) {
   return (
     <Tooltip content={label}>
       <button

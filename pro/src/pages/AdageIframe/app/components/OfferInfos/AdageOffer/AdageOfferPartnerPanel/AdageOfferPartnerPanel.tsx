@@ -27,7 +27,7 @@ export function AdageOfferPartnerPanel({
   adageUser,
   isPreview = false,
   playlistId,
-}: AdageOfferPartnerPanelProps) {
+}: Readonly<AdageOfferPartnerPanelProps>) {
   const venue = offer.venue
 
   const venueCoords =

@@ -74,7 +74,7 @@ const addSuggestionToHistory = (suggestion: string) => {
   const currentHistory = localStorage.getItem(AUTOCOMPLETE_LOCAL_STORAGE_KEY)
   const currentHistoryParsed = currentHistory ? JSON.parse(currentHistory) : []
   if (
-    !currentHistoryParsed.find((item: { id: string }) => item.id === suggestion)
+    !currentHistoryParsed.some((item: { id: string }) => item.id === suggestion)
   ) {
     currentHistoryParsed.unshift({ id: suggestion, label: suggestion })
   }

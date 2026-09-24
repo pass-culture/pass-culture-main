@@ -146,10 +146,9 @@ export const Offerer = (): JSX.Element => {
       saveInitialAddressToStorage(initialAddressData)
       setInitialAddress(initialAddressData)
 
-      const hasVenueWithSiret =
-        venueOfOffererProvidersResponse.venues.find(
-          (venue) => venue.siret === formattedSiret
-        ) !== undefined
+      const hasVenueWithSiret = venueOfOffererProvidersResponse.venues.some(
+        (venue) => venue.siret === formattedSiret
+      )
 
       const offererData = {
         ...formValues,
