@@ -36,6 +36,7 @@ ADDRESS_MATCHING_RATIO = 80
 NAME_MATCHING_RATIO = 45
 RETRY_SECONDS = 0.5
 LOG_INFO = True
+ACCESLIBRE_API_URL = "https://recette.acceslibre.info/api/erps/"
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ class BaseBackend:
 class AcceslibreBackend(BaseBackend):
     @staticmethod
     def _build_url(slug: str | None = None, request_widget_infos: bool | None = False) -> str:
-        base_url = settings.ACCESLIBRE_API_URL
+        base_url = ACCESLIBRE_API_URL
         if slug:
             return base_url + slug + "/widget/" if request_widget_infos else base_url + slug + "/"
         return base_url
