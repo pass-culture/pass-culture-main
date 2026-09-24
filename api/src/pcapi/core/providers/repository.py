@@ -1,6 +1,4 @@
 import datetime
-from collections.abc import Iterable
-from collections.abc import Sequence
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -158,42 +156,6 @@ def get_ems_cinema_details(cinema_id: str) -> models.EMSCinemaDetails:
         .one()
     )
     return cinema_details
-
-
-def bump_ems_sync_version(version: int, venues_provider_to_sync: Iterable[int]) -> None:
-    """
-    Storing the version point (timestamp) from which we are up to update
-    """
-    ids: list[Sequence[int]] = (
-        db.session.query(models.EMSCinemaDetails)
-        .join(models.CinemaProviderPivot)
-        .join(models.VenueProvider, models.CinemaProviderPivot.providerId == models.VenueProvider.providerId)
-        .filter(models.VenueProvider.id.in_(venues_provider_to_sync))
-        .with_entities(models.EMSCinemaDetails.id)
-        .all()
-    )
-    db.session.execute(
-        sa.update(models.EMSCinemaDetails),
-        [{"id": id, "lastVersion": version} for (id,) in ids],
-    )
-
-
-def get_ems_oldest_sync_version() -> int:
-    """
-    Get the oldest sync version among all EMSCinemaDetails, for active VenueProviders.
-
-    EMS use a versioned synchronization.
-    It means we can pass a version number (actually a timestamp) in our call to their API and within the response
-    we get all resources that have been added since that point.
-    """
-    version = (
-        db.session.query(sa.func.min(models.EMSCinemaDetails.lastVersion))
-        .join(models.CinemaProviderPivot)
-        .join(models.VenueProvider, models.CinemaProviderPivot.providerId == models.VenueProvider.providerId)
-        .filter(models.VenueProvider.isActive)
-        .scalar()
-    )
-    return version
 
 
 def get_pivot_for_id_at_provider(id_at_provider: str, provider_id: int) -> models.CinemaProviderPivot | None:

@@ -33,7 +33,7 @@ from pcapi.routes.backoffice.bookings import forms
 from pcapi.utils import date as date_utils
 
 from tests.connectors.cgr import soap_definitions
-from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
+from tests.core.providers.cinema_providers.cgr import fixtures as cgr_fixtures
 
 from .helpers import flash
 from .helpers import html_parser

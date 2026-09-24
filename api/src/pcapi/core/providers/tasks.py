@@ -8,7 +8,6 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core.providers.etls.public_api_etl import batch_update_cinema_offers_etl
 from pcapi.core.providers.serialization import ExternalEventBookingRequest
-from pcapi.local_providers.provider_manager import synchronize_ems_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.routes.provider.individual_offers.v1.serializers import events as events_serializers
 from pcapi.utils import requests
@@ -27,10 +26,7 @@ class CinemaSynchronisationTaskPayload(BaseModelV2):
 )
 def synchronize_cinema_sessions_task(payload: CinemaSynchronisationTaskPayload) -> None:
     venue_provider = providers_repository.get_venue_provider_by_id(payload.venue_provider_id)
-    if venue_provider.provider.localClass == "EMSStocks":
-        synchronize_ems_venue_provider(venue_provider)
-    else:
-        synchronize_venue_provider(venue_provider)
+    synchronize_venue_provider(venue_provider)
 
 
 class BookingAction(str, enum.Enum):

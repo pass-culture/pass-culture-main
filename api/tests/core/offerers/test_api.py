@@ -61,7 +61,7 @@ from pcapi.utils.transaction_manager import atomic
 
 import tests
 from tests.connectors.cgr import soap_definitions
-from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
+from tests.core.providers.cinema_providers.cgr import fixtures as cgr_fixtures
 from tests.test_utils import gen_offerer_tags
 
 

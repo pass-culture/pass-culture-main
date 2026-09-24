@@ -16,10 +16,9 @@ from pcapi.core.providers.factories import CDSCinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
-from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models import db
 
-import tests.local_providers.cinema_providers.cds.fixtures as cds_fixtures
+import tests.core.providers.cinema_providers.cds.fixtures as cds_fixtures
 
 
 logger = logging.getLogger(__name__)

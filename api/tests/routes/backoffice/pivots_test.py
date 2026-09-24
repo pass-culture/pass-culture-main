@@ -17,7 +17,7 @@ from pcapi.models import db
 from pcapi.utils.crypto import decrypt
 
 from tests.connectors.cgr import soap_definitions
-from tests.local_providers.cinema_providers.cgr import fixtures
+from tests.core.providers.cinema_providers.cgr import fixtures
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
