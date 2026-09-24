@@ -4,6 +4,7 @@ import typing
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -66,6 +67,11 @@ def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
             sa_orm.joinedload(offers_models.Offer.venue)
             .joinedload(offerers_models.Venue.offererAddress)
             .load_only(offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label)
+        )
+        .options(
+            sa_orm.joinedload(offers_models.Offer.artistOfferLinks)
+            .joinedload(artist_models.ArtistOfferLink.artist)
+            .load_only(artist_models.Artist.id, artist_models.Artist.name)
         )
     )
 

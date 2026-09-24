@@ -62,6 +62,8 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
     num_queries_location_type_address_existing = base_num_queries
     num_queries_location_type_address_creation = base_num_queries + 1
 
+    num_queries_live_music_event = base_num_queries + 1  # select artist offer links
+
     @staticmethod
     def _get_base_payload(venue_id: int) -> dict:
         return {
@@ -122,6 +124,24 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.offererAddressId != created_offer.venue.offererAddress.id
         assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
         assert created_offer.offererAddress.label == None
+
+    @time_machine.travel(now_datetime_with_tz, tick=False)
+    def test_live_music_event_minimal_body(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["categoryRelatedFields"] = {"category": "CONCERT", "musicType": "ELECTRO-HOUSE"}
+        json_body["bookingContact"] = "contact@example.com"
+        db.session.flush()
+
+        with testing.assert_num_queries(self.num_queries_live_music_event):
+            response = self.make_request(plain_api_key, json_body=json_body)
+
+        assert response.status_code == 200
+        assert response.json["categoryRelatedFields"]["artists"] == []
+        created_offer = db.session.query(offers_models.Offer).one()
+        assert created_offer.subcategoryId == "CONCERT"
+        assert created_offer.artistOfferLinks == []
 
     def test_event_with_deprecated_music_type_triggers_warning_log(self, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum
@@ -388,6 +408,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "bookingContact": "contact@example.com",
             "bookingEmail": "nicoj@example.com",
             "categoryRelatedFields": {
+                "artists": [],
                 "author": "Ray Charles",
                 "category": "CONCERT",
                 "musicType": "ELECTRO-HOUSE",
@@ -453,6 +474,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "performer": "Nicolas Jaar",
         }
         assert response.json["categoryRelatedFields"] == {
+            "artists": [],
             "author": "Ray Charles",
             "category": "CONCERT",
             "musicType": "MUSIQUE_CLASSIQUE",
@@ -503,6 +525,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
         assert response.json["categoryRelatedFields"] == {
+            "artists": [],
             "author": "Ray Charles",
             "category": "CONCERT",
             "musicType": "JAZZ-BLUES",
@@ -529,6 +552,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.extraData == {"musicType": "-1", "musicSubType": "-1", "gtl_id": "19000000"}
 
         assert response.json["categoryRelatedFields"] == {
+            "artists": [],
             "author": None,
             "category": "CONCERT",
             "musicType": "AUTRES",  # The music type is inferred from gtl_id

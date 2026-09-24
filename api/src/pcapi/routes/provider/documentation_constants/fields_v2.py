@@ -284,9 +284,6 @@ class _FIELDS_V2:
         description="A list of stocks to associate with an event. Each stock represents a unique combination of a date and a price category. To add stocks for multiple price categories on the same date, you must create a separate stock entry for each category.",
         max_items=Offer.MAX_STOCKS_PER_OFFER,
     )
-    EVENT_CATEGORIES_RELATED_FIELDS = Field(
-        description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
-    )
     EVENT_CATEGORY_ID = Field(description="Category id", example="CONCERT")
     EVENT_CATEGORY_LABEL = Field(description="Category label", example="Concert")
     EVENT_CONDITIONAL_FIELDS = Field(
