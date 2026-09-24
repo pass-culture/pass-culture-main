@@ -22,14 +22,15 @@ def similar_offers(
         response = recommendation_api.get_similar_offers(
             offer_id,
             user,
-            params=query.model_dump(mode="json"),
+            params=query,
         )
     except reco_exc.RecommendationApiTimeoutException:
         raise ApiErrors({"code": "RECOMMENDATION_API_TIMEOUT"}, status_code=504)
     except reco_exc.RecommendationApiException:
         raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=502)
 
-    offers = offers_repo.get_offers_by_ids(user, [int(offer_id) for offer_id in response.results]).all()
+    offers_ids = [int(offer_id) for offer_id in response.results]
+    offers = offers_repo.get_offers_by_ids(user, offers_ids).all()
 
     return serializers.SimilarOffersResponse(offers=offers)
 
@@ -44,17 +45,15 @@ def playlist(
     try:
         response = recommendation_api.get_playlist(
             current_user,
-            params=query.dict(),
-            body=body.dict(),
+            params=query,
+            body=body,
         )
     except reco_exc.RecommendationApiTimeoutException:
         raise ApiErrors({"code": "RECOMMENDATION_API_TIMEOUT"}, status_code=504)
     except reco_exc.RecommendationApiException:
         raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=502)
 
-    offers = offers_repo.get_offers_by_ids(
-        current_user,
-        [int(offer_id) for offer_id in response.playlist_recommended_offers],
-    ).all()
+    offers_ids = [int(offer_id) for offer_id in response.playlist_recommended_offers]
+    offers = offers_repo.get_offers_by_ids(current_user, offers_ids).all()
 
     return serializers.PlaylistResponse(offers=offers)
