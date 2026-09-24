@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { ExposureEventType } from '@/apiClient/v1'
@@ -59,6 +60,12 @@ describe('OfferExposureTimeline', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOfferExposureTimeline()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render each enhancement event', async () => {

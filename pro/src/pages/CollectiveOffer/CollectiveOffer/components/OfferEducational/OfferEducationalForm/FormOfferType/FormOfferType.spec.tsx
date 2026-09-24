@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -45,6 +46,29 @@ describe('FormOfferType', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderFormOfferType({
+      initialValues: getDefaultEducationalValues(),
+      props: {
+        ...formTypeProps,
+        domainsOptions: [
+          {
+            label: 'Domain 1',
+            id: '1',
+            nationalPrograms: [{ id: 1, name: 'nationalProgram1' }],
+          },
+          {
+            label: 'Domain 2',
+            id: '2',
+            nationalPrograms: [{ id: 2, name: 'nationalProgram2' }],
+          },
+        ],
+      },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should offer the national program options filtered for the selected domains', async () => {

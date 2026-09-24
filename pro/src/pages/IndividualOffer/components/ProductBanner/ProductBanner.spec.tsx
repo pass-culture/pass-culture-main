@@ -1,10 +1,17 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ProductBanner } from './ProductBanner'
 
 describe('IndividualOffer::ProductBanner', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(<ProductBanner />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the product-based warning banner', () => {
     renderWithProviders(<ProductBanner />)
 

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { CancelablePromise } from '@/apiClient/compat'
@@ -36,7 +37,7 @@ const renderIncomeCard = (
   const { venueId = 1, bankAccountStatus = SimplifiedBankAccountStatus.VALID } =
     props ?? {}
 
-  renderWithProviders(
+  return renderWithProviders(
     <IncomeCard venueId={venueId} bankAccountStatus={bankAccountStatus} />,
     {
       user: sharedCurrentUserFactory(),
@@ -49,6 +50,14 @@ describe('IncomeCard', () => {
   beforeEach(() => {
     vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValue(false)
     vi.spyOn(api, 'getStatistics').mockResolvedValue(MOCK_STATISTICS)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIncomeCard()
+
+    await screen.findByText('Remboursement')
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display a skeleton while income data is loading', () => {

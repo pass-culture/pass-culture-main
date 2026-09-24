@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -19,6 +20,14 @@ const renderWebinarCard = (props: WebinarCardProps) => {
 }
 
 describe('WebinarCard', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWebinarCard({
+      variant: HomepageVariant.COLLECTIVE,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the webinar card with the collective content', () => {
     renderWebinarCard({ variant: HomepageVariant.COLLECTIVE })
 

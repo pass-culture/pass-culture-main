@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import type { LocalOfferersPlaylistOffer } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -29,7 +30,7 @@ const mockLocalOfferersPlaylistOffer: LocalOfferersPlaylistOffer = {
 }
 
 const renderVenuePlaylist = () => {
-  renderWithProviders(
+  return renderWithProviders(
     <VenuePlaylist
       onWholePlaylistSeen={mockOnWholePlaylistSeen}
       trackPlaylistElementClicked={mockTrackPlaylistElementClicked}
@@ -53,6 +54,13 @@ describe('VenuePlaylist', () => {
       ...snackBarsImport,
       error: snackBarError,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderVenuePlaylist()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render venue playlist', async () => {

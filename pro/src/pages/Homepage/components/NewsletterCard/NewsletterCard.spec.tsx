@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -8,6 +9,12 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { NewsletterCard } from './NewsletterCard'
 
 const mockLogEvent = vi.fn()
+
+it('should render without accessibility violations', async () => {
+  const { container } = renderWithProviders(<NewsletterCard />)
+
+  expect(await axe(container)).toHaveNoViolations()
+})
 
 it('should render correctly', () => {
   renderWithProviders(<NewsletterCard />)

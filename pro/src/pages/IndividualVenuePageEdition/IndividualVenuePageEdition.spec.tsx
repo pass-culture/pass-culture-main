@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import type { SWRResponse } from 'swr'
 import { expect, vi } from 'vitest'
+import { axe } from 'vitest-axe'
 import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
@@ -42,7 +43,7 @@ function renderForm(
     ...options,
   }
 
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <Routes>
         <Route path="*" element={<Wrapper />} />
@@ -197,6 +198,22 @@ describe('IndividualVenuePageEdition', () => {
       }
     )
   })
+  it('should render without accessibility violations', async () => {
+    const venue: GetVenueResponseModel = {
+      ...defaultGetVenue,
+      isPermanent: true,
+      hasOffers: true,
+      hasAtLeastOneBookableOffer: false,
+    }
+    const { container } = renderForm(venue)
+
+    await screen.findByText(
+      "Publiez une offre pour rendre votre page accessible aux jeunes dans l'application."
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display access to partner page is impossible warning', async () => {
     const venue: GetVenueResponseModel = {
       ...defaultGetVenue,

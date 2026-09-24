@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import * as router from 'react-router'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import type {
   CollectiveOfferResponseModel,
@@ -61,6 +62,14 @@ vi.mock('react-router', async () => {
 })
 
 describe('AdageOffer', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageOffer({
+      offer: defaultCollectiveTemplateOffer,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the offer information sections', () => {
     renderAdageOffer({ offer: defaultCollectiveTemplateOffer })
 

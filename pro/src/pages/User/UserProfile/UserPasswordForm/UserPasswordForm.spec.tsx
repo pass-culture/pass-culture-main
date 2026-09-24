@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -24,6 +25,12 @@ describe('components:UserPasswordForm', () => {
     props = {
       closeForm: vi.fn(),
     }
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderUserPasswordForm(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('renders component successfully', () => {

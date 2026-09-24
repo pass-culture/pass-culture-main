@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import * as analyticsHook from '@/app/App/analytics/firebase'
@@ -48,6 +49,14 @@ beforeEach(() => {
 })
 
 describe('InvoiceDownloadActionsBar', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <InvoiceDownloadActionsBar checkedInvoices={[]} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should not render the actions bar when no invoice is checked', () => {
     renderWithProviders(<InvoiceDownloadActionsBar checkedInvoices={[]} />)
 

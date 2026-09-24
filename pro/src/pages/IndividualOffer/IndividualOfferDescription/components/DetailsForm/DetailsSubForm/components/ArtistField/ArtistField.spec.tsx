@@ -8,6 +8,7 @@ import {
   useForm,
 } from 'react-hook-form'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { type ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
@@ -98,6 +99,12 @@ describe('ArtistField', () => {
       },
       { id: '2', name: 'Bob', description: null, thumbUrl: 'any-url' },
     ])
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderArtistField()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should pass label "Auteur" to ApiSelect', () => {

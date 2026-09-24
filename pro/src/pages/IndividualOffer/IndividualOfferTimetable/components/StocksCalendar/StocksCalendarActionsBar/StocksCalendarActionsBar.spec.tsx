@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
@@ -38,6 +39,12 @@ function renderStocksCalendarActionsBar(
 }
 
 describe('StocksCalendarActionsBar', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderStocksCalendarActionsBar()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the navigation links in the action bar when no stock is checked yet', () => {
     renderStocksCalendarActionsBar()
 

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { OfferStatus } from '@/apiClient/v1'
 import {
@@ -50,6 +51,19 @@ const renderOfferNameCell = (
   )
 
 describe('OfferNameCell', () => {
+  it('should render without accessibility violations', async () => {
+    const offer = listOffersOfferFactory({
+      id: 123,
+      name: 'Offre nom',
+    })
+    const { container } = renderOfferNameCell({
+      offer,
+      offerLink: '/offre/123',
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should log title source tracker on whole row redirection', async () => {
     const offer = listOffersOfferFactory({
       id: 123,

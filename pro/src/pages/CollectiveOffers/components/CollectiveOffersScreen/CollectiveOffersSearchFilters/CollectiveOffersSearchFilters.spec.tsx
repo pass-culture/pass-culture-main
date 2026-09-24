@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -28,7 +29,7 @@ const renderCollectiveOffersSearchFilters = (
   props: CollectiveOffersSearchFiltersProps,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(<CollectiveOffersSearchFilters {...props} />, {
+  return renderWithProviders(<CollectiveOffersSearchFilters {...props} />, {
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
@@ -50,6 +51,12 @@ const baseProps = {
 }
 
 describe('CollectiveOffersSearchFilters', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOffersSearchFilters({ ...baseProps })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display location filter', async () => {
     vi.mocked(useActiveFeature).mockReturnValue(true)
     renderCollectiveOffersSearchFilters({ ...baseProps })

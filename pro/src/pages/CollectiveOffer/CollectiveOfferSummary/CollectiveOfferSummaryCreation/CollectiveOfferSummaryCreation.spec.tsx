@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -46,7 +47,7 @@ const renderCollectiveOfferSummaryCreation = (
   props: MandatoryCollectiveOfferFromParamsProps,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(<CollectiveOfferSummaryCreation {...props} />, {
+  return renderWithProviders(<CollectiveOfferSummaryCreation {...props} />, {
     ...options,
     initialRouterEntries: [path],
     storeOverrides: {
@@ -82,6 +83,15 @@ describe('CollectiveOfferSummaryCreation', () => {
     vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [offerer],
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferSummaryCreation(
+      '/offre/A1/collectif/creation/recapitulatif',
+      defaultProps
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render collective offer summary ', async () => {

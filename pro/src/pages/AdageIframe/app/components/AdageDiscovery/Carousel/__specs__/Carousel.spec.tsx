@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 
@@ -15,6 +16,12 @@ const mockCarouselElements = Array(20)
   .map((_el, i) => <div key={i}>Element {i}</div>)
 
 describe('Carousel', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(<Carousel elements={mockCarouselElements} />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the list of elements in the carousel', () => {
     render(<Carousel elements={mockCarouselElements} />)
 

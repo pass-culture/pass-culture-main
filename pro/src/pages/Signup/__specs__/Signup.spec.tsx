@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { routesSignup } from '@/app/AppRouter/subroutesSignupMap'
 import {
@@ -32,6 +33,15 @@ const renderSignup = (options?: RenderWithProvidersOptions) =>
   )
 
 describe('src | components | pages | Signup', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSignup({
+      initialRouterEntries: ['/inscription/compte/creation'],
+      features: ['ENABLE_PRO_ACCOUNT_CREATION'],
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render logo and sign-up form', () => {
     renderSignup({
       initialRouterEntries: ['/inscription/compte/creation'],

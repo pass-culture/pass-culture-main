@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -119,6 +120,14 @@ describe('IndividualOfferConfirmation', () => {
       shouldDisplayHighlightAction: true,
       shouldDisplayHeadlineAction: true,
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffer(contextOverride)
+
+    await waitForRecommendationCardFetch()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display a pending message when offer is pending for validation', async () => {

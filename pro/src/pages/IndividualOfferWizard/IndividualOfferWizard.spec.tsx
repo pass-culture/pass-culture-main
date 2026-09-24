@@ -1,5 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -30,6 +31,13 @@ const renderOffer = (initialRoute = '/') => {
 }
 
 describe('IndividualOfferWizard', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffer()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display with the lateral bar', async () => {
     renderOffer()
     expect(await screen.findByTestId('lateral-panel')).toBeInTheDocument()

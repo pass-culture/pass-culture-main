@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -6,6 +7,12 @@ import { OnboardingOffersTypeChoice } from './OnboardingOffersTypeChoice'
 
 describe('OnboardingOffersChoice Component', () => {
   beforeEach(() => {})
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(<OnboardingOffersTypeChoice />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('displays the content correctly', () => {
     renderWithProviders(<OnboardingOffersTypeChoice />)

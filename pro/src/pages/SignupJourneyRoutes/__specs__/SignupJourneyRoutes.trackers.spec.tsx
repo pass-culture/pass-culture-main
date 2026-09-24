@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { routesSignupJourney } from '@/app/AppRouter/subroutesSignupJourneyMap'
@@ -12,7 +13,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
 
 const renderSignupJourneyRoutes = () => {
-  renderWithProviders(
+  return renderWithProviders(
     <Routes>
       <Route path="/inscription/structure" element={<SignupJourneyRoutes />}>
         {routesSignupJourney.map((route) => (
@@ -30,6 +31,12 @@ const renderSignupJourneyRoutes = () => {
 const mockLogEvent = vi.fn()
 
 describe('SignupJourneyRoutes::trackers', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSignupJourneyRoutes()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should track logout', async () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,

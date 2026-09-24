@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { CollectiveStockResponseModel } from '@/apiClient/v1'
@@ -52,7 +53,7 @@ const renderCollectiveStockCreation = (
   props: CollectiveOfferFromParamsProps,
   features: string[] = []
 ) => {
-  renderWithProviders(<CollectiveOfferStockCreation {...props} />, {
+  return renderWithProviders(<CollectiveOfferStockCreation {...props} />, {
     initialRouterEntries: [path],
     features,
     storeOverrides: {
@@ -68,6 +69,17 @@ const renderCollectiveStockCreation = (
 }
 
 describe('CollectiveOfferStockCreation', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveStockCreation(
+      '/offre/A1/collectif/stocks',
+      {
+        offer: getCollectiveOfferFactory(),
+      }
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render collective offer stock form', async () => {
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', {
       offer: getCollectiveOfferFactory(),

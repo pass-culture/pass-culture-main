@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import {
   defaultAdageUser,
@@ -79,7 +80,7 @@ const renderAppLayout = (
   options?: RenderWithProvidersOptions,
   user = defaultAdageUser
 ) => {
-  renderWithProviders(
+  const renderResult = renderWithProviders(
     <AdageUserContextProvider adageUser={{ ...user, offersCount: 1 }}>
       <AppLayout />
     </AdageUserContextProvider>,
@@ -92,6 +93,8 @@ const renderAppLayout = (
       matches: true,
     }),
   })
+
+  return renderResult
 }
 
 const featureOverrides = {
@@ -99,6 +102,15 @@ const featureOverrides = {
 }
 
 describe('AppLayout', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAppLayout(featureOverrides, {
+      ...defaultAdageUser,
+      programs: [{ label: '', name: MARSEILLE_EN_GRAND, description: null }],
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should redirect to the search page if the user is in Marseille en Grand and if the FF is active', () => {
     renderAppLayout(featureOverrides, {
       ...defaultAdageUser,

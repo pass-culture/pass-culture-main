@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/compat'
@@ -61,7 +62,7 @@ const renderCollectiveStockEdition = (
   props: CollectiveOfferFromParamsProps,
   features: string[] = []
 ) => {
-  renderWithProviders(<CollectiveOfferStockEdition {...props} />, {
+  return renderWithProviders(<CollectiveOfferStockEdition {...props} />, {
     initialRouterEntries: [path],
     features,
     storeOverrides: {
@@ -107,6 +108,21 @@ describe('CollectiveOfferStockEdition', () => {
       CollectiveOfferAllowedAction.CAN_EDIT_DATES,
       CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
     ],
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveStockEdition(
+      '/offre/A1/collectif/stocks/edition',
+      {
+        offer: defaultOffer,
+      }
+    )
+
+    await screen.findByRole('button', {
+      name: /Enregistrer et continuer/,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render in EDITION mode when stock is editable', async () => {

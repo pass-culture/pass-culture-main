@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -13,7 +14,7 @@ describe('PreviewHeader', () => {
   const renderPreviewHeader = (
     displayedStatus: CollectiveOfferDisplayedStatus = CollectiveOfferDisplayedStatus.UNDER_REVIEW
   ) => {
-    renderWithProviders(
+    return renderWithProviders(
       <PreviewHeader
         offer={{
           ...baseOffer,
@@ -22,6 +23,12 @@ describe('PreviewHeader', () => {
       />
     )
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderPreviewHeader()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should show the preview explanation paragraph', () => {
     renderPreviewHeader()

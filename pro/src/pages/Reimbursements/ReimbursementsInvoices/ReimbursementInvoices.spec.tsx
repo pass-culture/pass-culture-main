@@ -5,6 +5,7 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { type BankAccountResponseModel, InvoiceStatus } from '@/apiClient/v1'
@@ -35,7 +36,7 @@ vi.mock('@/commons/utils/date', async () => ({
 const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
   const user = sharedCurrentUserFactory()
 
-  renderWithProviders(<ReimbursementsInvoices />, {
+  return renderWithProviders(<ReimbursementsInvoices />, {
     user,
     ...options,
     storeOverrides: {
@@ -96,6 +97,13 @@ describe('reimbursementsWithFilters', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render a table with invoices', async () => {

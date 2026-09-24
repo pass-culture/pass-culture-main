@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { describe } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import {
   defaultAdageUser,
@@ -28,6 +29,12 @@ function renderAdageOfferPartnerPanel(
 }
 
 describe('AdageOfferPartnerPanel', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageOfferPartnerPanel()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the cultural partner panel', () => {
     renderAdageOfferPartnerPanel()
 

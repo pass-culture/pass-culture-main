@@ -5,6 +5,7 @@ import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferConte
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { axe } from 'vitest-axe'
 
 import {
   EngagementEvents,
@@ -17,6 +18,37 @@ import { api } from 'apiClient/api'
 import { HeadlineOffer } from './HeadlineOffer'
 
 describe('HeadlineOffer', () => {
+  it('should render without accessibility violations', async () => {
+    vi.spyOn(api, 'getVenueHeadlineOffer').mockResolvedValue({
+      id: 42,
+      name: 'My offer',
+      venueId: 1,
+    })
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      getIndividualOfferFactory({ id: 42 })
+    )
+
+    const user = sharedCurrentUserFactory()
+    const { container } = renderWithProviders(
+      <HeadlineOfferContextProvider>
+        <HeadlineOffer />
+      </HeadlineOfferContextProvider>,
+      {
+        user,
+        storeOverrides: {
+          user: {
+            currentUser: user,
+            selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
+          },
+        },
+      }
+    )
+
+    await screen.findByText('Visualiser dans l’application')
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should log when cultural actor click on see in app', async () => {
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({

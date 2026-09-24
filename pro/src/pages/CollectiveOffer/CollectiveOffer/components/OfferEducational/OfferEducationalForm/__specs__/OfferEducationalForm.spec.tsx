@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React, { forwardRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { describe, expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -150,6 +151,17 @@ const defaultProps: OfferEducationalFormProps = {
 }
 
 describe('OfferEducationalForm', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOfferEducationalForm({
+      ...defaultProps,
+      isTemplate: true,
+    })
+
+    await screen.findByText('Indiquez le tarif de votre offre')
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render price details if offer is template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
 

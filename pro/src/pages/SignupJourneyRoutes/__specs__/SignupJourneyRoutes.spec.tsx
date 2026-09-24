@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { routesSignupJourney } from '@/app/AppRouter/subroutesSignupJourneyMap'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -8,7 +9,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
 
 const renderSignupJourneyRoutes = () => {
-  renderWithProviders(
+  return renderWithProviders(
     <Routes>
       <Route path="/inscription/structure" element={<SignupJourneyRoutes />}>
         {routesSignupJourney.map((route) => (
@@ -24,6 +25,12 @@ const renderSignupJourneyRoutes = () => {
 }
 
 describe('SignupJourneyRoutes', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSignupJourneyRoutes()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render component', async () => {
     renderSignupJourneyRoutes()
     await waitFor(() => {

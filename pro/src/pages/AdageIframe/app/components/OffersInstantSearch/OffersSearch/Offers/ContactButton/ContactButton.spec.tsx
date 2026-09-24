@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -30,6 +31,12 @@ describe('ContactButton', () => {
     userRole: AdageFrontRoles.REDACTOR,
     contactForm: 'form',
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderContactButton(defaultProps)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should call the tracking function when the contact dialog is closed', async () => {
     renderContactButton(defaultProps)

@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import { useId } from 'react'
 
 import {
   AdageFrontRoles,
@@ -41,7 +40,6 @@ export function AdageOfferHeader({
   playlistId,
 }: Readonly<AdageOfferHeaderProps>) {
   const isOfferBookable = isCollectiveOfferBookable(offer)
-  const imageCreditId = useId()
 
   const venueAndOffererName = getOfferVenueAndOffererName(offer.venue)
 
@@ -62,10 +60,9 @@ export function AdageOfferHeader({
               className={styles['offer-header-image']}
               loading="lazy"
               src={offer.imageUrl}
-              aria-describedby={offer.imageCredit ? imageCreditId : undefined}
             />
             {offer.imageCredit ? (
-              <figcaption id={imageCreditId}>
+              <figcaption>
                 <p className={styles['offer-header-image-credit-text']}>
                   Crédit image : {offer.imageCredit}
                 </p>

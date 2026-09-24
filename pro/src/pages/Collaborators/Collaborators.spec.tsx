@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -37,7 +38,7 @@ const offererNames = [
 ]
 
 const renderCollaborators = (options?: RenderWithProvidersOptions) => {
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <Collaborators />
       <SnackBarContainer />
@@ -74,6 +75,16 @@ describe('Collaborators', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollaborators()
+
+    await waitFor(() => {
+      expect(api.getOffererMembers).toHaveBeenCalled()
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display a button to open invite form', () => {

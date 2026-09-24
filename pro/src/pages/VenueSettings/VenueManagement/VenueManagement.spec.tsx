@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { VenueState } from '@/apiClient/v1'
@@ -37,6 +38,12 @@ describe('VenueManagement', () => {
   beforeEach(() => {
     vi.spyOn(api, 'closeVenue').mockResolvedValue()
     syncVenueMock.mockResolvedValue(undefined)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderVenueManagement()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render the banner and the button', () => {

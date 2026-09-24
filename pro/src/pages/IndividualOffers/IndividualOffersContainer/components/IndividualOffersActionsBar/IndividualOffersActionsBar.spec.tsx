@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
@@ -25,7 +26,7 @@ const renderActionsBar = (
   overrides: RenderWithProvidersOptions = {}
 ) => {
   overrides.initialRouterEntries = ['/offres']
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <IndividualOffersActionsBar {...props} />
       <SnackBarContainer />
@@ -85,6 +86,12 @@ describe('ActionsBar', () => {
     }))
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
     vi.spyOn(api, 'patchAllOffersActiveStatus').mockResolvedValue({})
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderActionsBar(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should have buttons to activate and deactivate offers, to delete, and to abort action', () => {

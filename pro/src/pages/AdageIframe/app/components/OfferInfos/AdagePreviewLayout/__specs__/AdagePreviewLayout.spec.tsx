@@ -1,4 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -28,7 +29,7 @@ function renderAdagePreviewLayout(
     | GetCollectiveOfferResponseModel = getCollectiveOfferTemplateFactory(),
   options?: RenderWithProvidersOptions
 ) {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <AdagePreviewLayout offer={offer} />
     </AdageUserContextProvider>,
@@ -41,6 +42,16 @@ describe('AdagePreviewLayout', () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue({
       ...defaultGetVenue,
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdagePreviewLayout({
+      ...getCollectiveOfferTemplateFactory(),
+      name: 'My test name',
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should show a preview of the offer template', async () => {

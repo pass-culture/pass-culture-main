@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { add, addDays, format, set, sub } from 'date-fns'
 import { generatePath, Route, Routes } from 'react-router'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -319,6 +320,18 @@ describe('IndividualOfferSummaryScreen', () => {
       ...contextValuesBase,
       offer: draftOfferBase,
     }
+
+    it('should render without accessibility violations', async () => {
+      const contextValues = { offer: draftOfferBase }
+      const { container } = renderIndividualOfferSummaryScreen({
+        contextValues,
+        path,
+      })
+
+      await expectOfferFields()
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
 
     it('should render component with informations', async () => {
       const contextValues = { offer: draftOfferBase }

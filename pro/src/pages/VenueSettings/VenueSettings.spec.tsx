@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -28,6 +29,12 @@ const renderVenueSettings = (options?: RenderWithProvidersOptions) => {
 }
 
 describe('VenueSettings', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderVenueSettings()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the settings page heading', () => {
     renderVenueSettings()
 

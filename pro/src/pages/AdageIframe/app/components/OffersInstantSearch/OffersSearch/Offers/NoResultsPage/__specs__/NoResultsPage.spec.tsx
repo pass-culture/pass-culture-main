@@ -1,8 +1,17 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { NoResultsPage } from '../NoResultsPage'
 
 describe('NoResultPage', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(
+      <NoResultsPage query="Musée du Louvre" venue={null} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the searched query when something was searched ', () => {
     render(<NoResultsPage query="Musée du Louvre" venue={null} />)
 

@@ -51,7 +51,7 @@ describe('OnboardingOffersChoice Component', () => {
     renderOnboardingOffersChoice()
     expect(
       screen.getByRole('heading', {
-        level: 3,
+        level: 2,
         name: 'Sur l’application mobile à destination des jeunes',
       })
     ).toBeInTheDocument()

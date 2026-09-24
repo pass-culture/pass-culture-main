@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { CollectiveAdditionalFeeType } from '@/apiClient/adage'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -7,6 +8,24 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdditionalFeeTypeInput } from './AdditionalFeeTypeInput'
 
 describe('AdditionalFeeTypeInput – onBlur', () => {
+  it('should render without accessibility violations', async () => {
+    const handleChange = vi.fn()
+    const { container } = renderWithProviders(
+      <AdditionalFeeTypeInput
+        collectiveAdditionalFee={{
+          type: CollectiveAdditionalFeeType.OTHER,
+          label: '',
+          amount: 0,
+        }}
+        name="type"
+        disabled={false}
+        onChange={handleChange}
+      />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should reset the input to empty when user typed something without confirming', async () => {
     const user = userEvent.setup()
     const handleChange = vi.fn()

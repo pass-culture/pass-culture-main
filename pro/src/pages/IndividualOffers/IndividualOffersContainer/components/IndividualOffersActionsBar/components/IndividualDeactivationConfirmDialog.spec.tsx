@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -11,7 +12,7 @@ import {
 const renderDeactivationConfirmDialog = ({
   ...props
 }: DeactivationConfirmDialogProps) => {
-  renderWithProviders(<IndividualDeactivationConfirmDialog {...props} />)
+  return renderWithProviders(<IndividualDeactivationConfirmDialog {...props} />)
 }
 
 describe('DeactivationConfirmDialog', () => {
@@ -24,6 +25,15 @@ describe('DeactivationConfirmDialog', () => {
     onConfirm: onConfirmDialogMock,
     isDialogOpen: true,
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderDeactivationConfirmDialog({
+      ...props,
+      nbSelectedOffers: 1,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should called onCancel button onclick', async () => {
     renderDeactivationConfirmDialog({ ...props, nbSelectedOffers: 1 })

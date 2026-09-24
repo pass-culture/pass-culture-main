@@ -6,6 +6,7 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -52,7 +53,7 @@ function renderBankInformations({
   hasValidBankAccount?: boolean
   hasPendingBankAccount?: boolean
 } = {}) {
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <BankInformations />
       <SnackBarContainer />
@@ -94,6 +95,13 @@ describe('BankInformations page', () => {
         },
       ],
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderBankInformations()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display the bank account section', async () => {

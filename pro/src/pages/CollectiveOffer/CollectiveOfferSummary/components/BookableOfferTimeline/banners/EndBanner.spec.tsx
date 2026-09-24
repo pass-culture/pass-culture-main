@@ -1,9 +1,18 @@
 import { screen } from '@testing-library/react'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { axe } from 'vitest-axe'
 
 import { EndBanner } from './EndBanner'
 
 describe('EndBanner', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <EndBanner offerId={123} canEditDiscount={true} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show edit link when canEditDiscount is true', () => {
     renderWithProviders(<EndBanner offerId={123} canEditDiscount={true} />)
 

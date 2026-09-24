@@ -1,6 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { sub } from 'date-fns'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { OfferContactFormEnum } from '@/apiClient/v1'
@@ -72,6 +73,13 @@ describe('CollectiveOfferConfirmation', () => {
     }))
 
     vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferPreviewCreation(defaultProps)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render selection duplication page', async () => {

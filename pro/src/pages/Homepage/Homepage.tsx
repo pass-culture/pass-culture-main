@@ -56,9 +56,9 @@ export const Homepage = (): JSX.Element => {
   if (!hasIndividualTab && !hasCollectiveTab) {
     return (
       <div className={styles['onboarding-container']}>
-        <h2 className={styles['onboarding-title']}>
+        <h1 className={styles['onboarding-title']}>
           Diffusez votre première offre et pilotez ici votre activité !
-        </h2>
+        </h1>
         {(selectedPartnerVenue.managingOfferer.isClosed ||
           selectedPartnerVenue.state === VenueState.CLOSED) && (
           <div className={styles['venue-banner']}>
@@ -74,7 +74,7 @@ export const Homepage = (): JSX.Element => {
               />
             </div>
           )}
-        <OnboardingOffersChoice hideSkipOnboardingLink />
+        <OnboardingOffersChoice hideSkipOnboardingLink titleTag="h2" />
       </div>
     )
   }

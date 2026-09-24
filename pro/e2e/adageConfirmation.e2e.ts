@@ -1,5 +1,6 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
+import { checkAccessibility } from './helpers/accessibility'
 import { expectCollectiveOffersAreFound } from './helpers/assertions'
 import { login } from './helpers/auth'
 import {
@@ -61,6 +62,8 @@ test.describe('Adage confirmation', () => {
         response.status() === 200
     )
 
+    await checkAccessibility(page)
+
     await page
       .getByRole('link', { name: `N°${offer.id} ${offer.name}` })
       .click()
@@ -89,6 +92,7 @@ test.describe('Adage confirmation', () => {
       }
     )
     expect(bookResponse.status()).toBe(200)
+    await checkAccessibility(page)
     const bookingData = await bookResponse.json()
     const bookingId = bookingData.bookingId
 
@@ -130,6 +134,7 @@ test.describe('Adage confirmation', () => {
     ]
 
     await expectCollectiveOffersAreFound(page, expectedResults)
+    await checkAccessibility(page)
 
     await expect(
       page.getByText('En attente de réservation par le chef d’établissement')
@@ -184,6 +189,8 @@ test.describe('Adage confirmation', () => {
         response.status() === 200
     )
 
+    await checkAccessibility(page)
+
     expectedResults = [
       BOOKABLE_OFFERS_COLUMNS,
       [
@@ -225,6 +232,8 @@ test.describe('Adage confirmation', () => {
           'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
       })
     ).toBeVisible()
+
+    await checkAccessibility(page)
 
     const emailResponse3 = await sandboxCall<{
       To: string

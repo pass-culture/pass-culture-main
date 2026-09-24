@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import {
   SubcategoryIdEnum,
@@ -52,7 +53,7 @@ function renderIndividualOfferPracticalInfosForm(
       </IndividualOfferContext.Provider>
     )
   }
-  renderWithProviders(<IndividualOfferPracticalInfosFormWrapper />, {
+  return renderWithProviders(<IndividualOfferPracticalInfosFormWrapper />, {
     user: sharedCurrentUserFactory(),
     storeOverrides: {
       user: {
@@ -66,6 +67,14 @@ function renderIndividualOfferPracticalInfosForm(
 }
 
 describe('IndividualOfferPracticalInfosForm', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIndividualOfferPracticalInfosForm({
+      offer: getIndividualOfferFactory({ isEvent: false }),
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the warning booking callout if the offer is not an event', () => {
     renderIndividualOfferPracticalInfosForm({
       offer: getIndividualOfferFactory({ isEvent: false }),

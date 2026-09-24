@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import type {
   EducationalInstitutionResponseModel,
@@ -25,6 +26,12 @@ const renderCollectiveOfferInstitutionSection = (
 }
 
 describe('CollectiveOfferInstitutionSection', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferInstitutionSection()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render all institution if no institution provided', () => {
     renderCollectiveOfferInstitutionSection()
 

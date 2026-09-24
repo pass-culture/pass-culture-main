@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { CollectiveAdditionalFeeType } from '@/apiClient/v1'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -20,6 +21,15 @@ const renderCollectiveOfferStockSection = (
 }
 
 describe('CollectiveOfferStockSection', () => {
+  it('should render without accessibility violations', async () => {
+    const props = {
+      stock: getCollectiveOfferCollectiveStockFactory(),
+    }
+    const { container } = renderCollectiveOfferStockSection(props)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('render component', () => {
     const props = {
       stock: getCollectiveOfferCollectiveStockFactory(),

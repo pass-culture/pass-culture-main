@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
+import { axe } from 'vitest-axe'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -14,7 +15,7 @@ import {
 } from './RequestFormDialog'
 
 const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
-  renderWithProviders(
+  return renderWithProviders(
     <RequestFormDialog
       onConfirmDialog={vi.fn()}
       onCloseDialog={vi.fn()}
@@ -41,6 +42,17 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 describe('RequestFormDialog', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderRequestFormDialog({
+      contactEmail: '',
+      contactPhone: '',
+      contactForm: 'form',
+      contactUrl: '',
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display passCulture default form', () => {
     renderRequestFormDialog({
       contactEmail: '',

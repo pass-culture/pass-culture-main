@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -98,6 +99,32 @@ describe('CollectiveOfferFromRequest', () => {
     vi.spyOn(api, 'attachOfferImage').mockResolvedValue({
       imageUrl: 'https://example.com/image.jpg',
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    const collectiveRequest = {
+      ...defaultGetCollectiveOfferRequest,
+      comment: 'Test unit',
+      redactor: {
+        email: 'request@example.com',
+        firstName: 'Reda',
+        lastName: 'Khteur',
+      },
+      institution,
+      dateCreated: '2030-06-20',
+      requestedDate: '2030-06-27',
+    }
+
+    vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce(
+      collectiveRequest
+    )
+
+    const { container } = renderWithProviders(<CollectiveOfferFromRequest />, {
+      storeOverrides,
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display request information', async () => {

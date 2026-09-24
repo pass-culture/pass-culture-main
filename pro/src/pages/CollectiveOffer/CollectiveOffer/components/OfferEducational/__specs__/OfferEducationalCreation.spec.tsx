@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -37,7 +38,7 @@ vi.mock('@/commons/utils/windowMatchMedia', () => ({
 
 function renderComponent(props: OfferEducationalProps, route?: string) {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<OfferEducational {...props} />, {
+  return renderWithProviders(<OfferEducational {...props} />, {
     user,
     storeOverrides: {
       user: {
@@ -70,6 +71,16 @@ describe('screens | OfferEducational : creation', () => {
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
   })
 
+  it('should render without accessibility violations', async () => {
+    const { container } = renderComponent(props)
+
+    await screen.findByRole('textbox', {
+      name: /Décrivez ici votre projet/,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should redirect to stock on submit', async () => {
     vi.spyOn(api, 'editCollectiveOffer').mockResolvedValueOnce(offer)
     renderComponent(props)
@@ -81,7 +92,7 @@ describe('screens | OfferEducational : creation', () => {
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
-    expect(mockNavigate).toHaveBeenCalledWith('/offre/2/collectif/stocks')
+    expect(mockNavigate).toHaveBeenCalledWith('/offre/3/collectif/stocks')
   })
 
   it('should redirect to right url if requete params exist on submit', async () => {
@@ -96,7 +107,7 @@ describe('screens | OfferEducational : creation', () => {
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(mockNavigate).toHaveBeenCalledWith(
-      '/offre/3/collectif/stocks?requete=1'
+      '/offre/4/collectif/stocks?requete=1'
     )
   })
 })

@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -22,6 +23,18 @@ const renderAccessibilityLayout: RenderComponentFunction<
   )
 
 describe('Accessibility layout', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAccessibilityLayout({
+      options: {
+        storeOverrides: {
+          user: { currentUser: sharedCurrentUserFactory() },
+        },
+      },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should handle connected users', () => {
     renderAccessibilityLayout({
       options: {

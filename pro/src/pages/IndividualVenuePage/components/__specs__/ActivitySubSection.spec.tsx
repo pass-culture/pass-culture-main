@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import type { SWRResponse } from 'swr'
+import { axe } from 'vitest-axe'
 
 import {
   DisplayableActivity,
@@ -37,6 +38,18 @@ const renderActivitySubSection = (
   })
 
 describe('ActivitySubSection', () => {
+  it('should render without accessibility violations', async () => {
+    mockEducationalDomains([{ id: 1, name: 'Danse', nationalPrograms: [] }])
+
+    const { container } = renderActivitySubSection({
+      activity: DisplayableActivity.CULTURAL_MEDIATION,
+      collectiveDomains: [{ id: 1, name: 'Danse' }],
+      description: 'Ma description',
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the activity, the domains and the description', () => {
     mockEducationalDomains([{ id: 1, name: 'Danse', nationalPrograms: [] }])
 

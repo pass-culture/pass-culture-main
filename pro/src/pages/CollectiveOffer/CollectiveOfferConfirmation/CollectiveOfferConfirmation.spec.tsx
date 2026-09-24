@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import * as reactRouter from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -43,7 +44,7 @@ const collectiveOfferTemplate = getCollectiveOfferTemplateFactory({
 const renderCollectiveOfferConfirmation = async (
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(<CollectiveOfferConfirmation />, {
+  const renderResult = renderWithProviders(<CollectiveOfferConfirmation />, {
     ...options,
     storeOverrides: {
       user: {
@@ -54,6 +55,8 @@ const renderCollectiveOfferConfirmation = async (
     },
   })
   await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+  return renderResult
 }
 
 describe('CollectiveOfferConfirmation', () => {
@@ -67,6 +70,12 @@ describe('CollectiveOfferConfirmation', () => {
         },
       })
     )
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = await renderCollectiveOfferConfirmation()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render confirmation page when offer is pending', async () => {

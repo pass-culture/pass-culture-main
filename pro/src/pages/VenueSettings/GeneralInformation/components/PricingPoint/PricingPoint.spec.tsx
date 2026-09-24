@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -13,6 +14,14 @@ describe('PricingPoint', () => {
       venueName: 'Nom de la structure de référence',
     },
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <PricingPoint {...defaultProps} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should display a disabled select with venue pricing point info', () => {
     renderWithProviders(<PricingPoint {...defaultProps} />)

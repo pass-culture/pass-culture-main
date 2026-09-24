@@ -4,6 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
@@ -17,7 +18,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { CollectiveOfferSelectionDuplication } from './CollectiveOfferSelectionDuplication'
 
 function renderCollectiveOfferSelectionDuplication() {
-  renderWithProviders(<CollectiveOfferSelectionDuplication />, {
+  return renderWithProviders(<CollectiveOfferSelectionDuplication />, {
     storeOverrides: {
       user: {
         selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
@@ -53,6 +54,16 @@ describe('CollectiveOfferConfirmation', () => {
       error: snackBarError,
     }))
     vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue(offers)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferSelectionDuplication()
+
+    await waitForElementToBeRemoved(() =>
+      screen.queryAllByTestId('skeleton-loader')
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render selection duplication page', async () => {

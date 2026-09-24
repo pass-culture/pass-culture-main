@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -25,7 +26,7 @@ const mockTrackPlaylistElementClicked = vi.fn()
 const mockOnWholePlaylistSeen = vi.fn()
 
 const renderNewOfferPlaylist = (user: AuthenticatedResponse) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
       <NewOfferPlaylist
         onWholePlaylistSeen={mockOnWholePlaylistSeen}
@@ -59,6 +60,13 @@ describe('AdageDiscovery', () => {
       ...snackBarsImport,
       error: snackBarError,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderNewOfferPlaylist(user)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render new offer playlist', async () => {

@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -12,6 +13,14 @@ const defaultProps = {
 }
 
 describe('EditoCardItem', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <EditoCardItem {...defaultProps} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render correctly', () => {
     const { container } = renderWithProviders(
       <EditoCardItem {...defaultProps} />

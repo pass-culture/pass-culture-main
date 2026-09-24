@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { add } from 'date-fns'
 import * as router from 'react-router'
 import { beforeAll } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -90,7 +91,7 @@ const renderOffers = (
 ) => {
   const route = computeCollectiveOffersUrl(filters)
   const user = sharedCurrentUserFactory()
-  renderWithProviders(null, {
+  return renderWithProviders(null, {
     routes: collectiveOffersRoutes,
     initialRouterEntries: [route],
     features,
@@ -112,6 +113,18 @@ describe('CollectiveOffers', () => {
 
   afterEach(() => {
     window.sessionStorage.clear()
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffers()
+
+    await waitFor(() => {
+      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith({
+        query: makeQuery(),
+      })
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should fetch only bookable offers', async () => {

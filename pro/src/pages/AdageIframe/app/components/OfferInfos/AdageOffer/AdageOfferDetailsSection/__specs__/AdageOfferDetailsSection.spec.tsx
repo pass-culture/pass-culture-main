@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { EacFormat } from '@/apiClient/adage'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
@@ -18,6 +19,26 @@ function renderAdageOfferDetailsSection(
 }
 
 describe('AdageOfferDetailsSection', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageOfferDetailsSection({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        domains: [
+          {
+            id: 1,
+            name: 'test domain 1',
+          },
+          {
+            id: 2,
+            name: 'test domain 2',
+          },
+        ],
+      },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the list of domains of the offer', () => {
     renderAdageOfferDetailsSection({
       offer: {

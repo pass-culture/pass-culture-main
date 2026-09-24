@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -9,7 +10,7 @@ describe('<UpdateWarningDialog />', () => {
   const setup = (message?: string) => {
     const onCancel = vi.fn()
     const onConfirm = vi.fn()
-    renderWithProviders(
+    const renderResult = renderWithProviders(
       <UpdateWarningDialog
         isOpen
         onCancel={onCancel}
@@ -17,8 +18,15 @@ describe('<UpdateWarningDialog />', () => {
         message={message}
       />
     )
-    return { onCancel, onConfirm }
+    return { ...renderResult, onCancel, onConfirm }
   }
+
+  it('should render without accessibility violations', async () => {
+    const message = 'Vous avez modifié l’adresse.'
+    const { container } = setup(message)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('renders dialog with expected static texts', () => {
     const message = 'Vous avez modifié l’adresse.'

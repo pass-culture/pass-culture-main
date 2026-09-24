@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type {
@@ -44,7 +45,7 @@ const renderOffers = (
   options?: RenderWithProvidersOptions
 ) => {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(
+  return renderWithProviders(
     <HeadlineOfferContextProvider>
       <IndividualOffersContainer {...props} />
     </HeadlineOfferContextProvider>,
@@ -135,6 +136,12 @@ describe('IndividualOffersScreen', () => {
       error: snackBarError,
       success: snackBarSuccess,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffers(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display column titles when offers are returned', () => {

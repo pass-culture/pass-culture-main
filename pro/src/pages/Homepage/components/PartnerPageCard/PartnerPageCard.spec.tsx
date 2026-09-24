@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -63,6 +64,23 @@ describe('PartnerPageCard', () => {
       logEvent: mockLogEvent,
     }))
   })
+  it('should render without accessibility violations', async () => {
+    const { container } = renderPartnerPageCard(HomepageVariant.INDIVIDUAL, {
+      bannerMeta: {
+        image_credit: null,
+        original_image_url: 'MyFirstImage',
+        crop_params: {
+          height_crop_percent: 12,
+          width_crop_percent: 12,
+          x_crop_percent: 12,
+          y_crop_percent: 12,
+        },
+      },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the partner page module with the venue information', () => {
     renderPartnerPageCard(HomepageVariant.INDIVIDUAL, {
       bannerMeta: {

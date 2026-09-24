@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
@@ -78,6 +79,20 @@ const renderVideoUploaderContext = (offer: GetIndividualOfferResponseModel) => {
 }
 
 describe('VideoUploaderContext', () => {
+  it('should render without accessibility violations', async () => {
+    const offer = getIndividualOfferFactory({
+      videoData: {
+        videoDuration: 3,
+        videoThumbnailUrl: 'http://youtube.image.com',
+        videoTitle: 'Ma super vidéo',
+        videoUrl: 'http://youtube.url',
+      },
+    })
+    const { container } = renderVideoUploaderContext(offer)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render component with offer values', () => {
     const offer = getIndividualOfferFactory({
       videoData: {

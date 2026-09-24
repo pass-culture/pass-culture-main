@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -94,6 +95,12 @@ describe('BookableOfferSummary', () => {
   })
 
   describe('offer details', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = renderBookableOfferSummary(props)
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it.each([
       { description: 'the offer name', expectedText: 'Test Offer' },
       {

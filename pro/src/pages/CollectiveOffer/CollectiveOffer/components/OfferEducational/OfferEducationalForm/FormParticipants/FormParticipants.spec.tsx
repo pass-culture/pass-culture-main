@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { StudentLevels } from '@/apiClient/v1'
 import { buildStudentLevelsMapWithDefaultValue } from '@/commons/core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
@@ -40,6 +41,12 @@ describe('FormParticipants', () => {
     ...buildStudentLevelsMapWithDefaultValue(true),
     CAPAnnee2: false,
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderFormParticipants(participants)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should render all options with default value', async () => {
     renderFormParticipants(participants)
