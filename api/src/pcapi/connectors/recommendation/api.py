@@ -19,6 +19,8 @@ def get_similar_offers(
     backend = _get_backend()
     if not params:
         query_params = models.SimilarOffersRequestQuery()
+    else:
+        query_params = params
     return backend.get_similar_offers(offer_id, user, query_params)
 
 
@@ -37,8 +39,11 @@ def get_playlist(
     backend = _get_backend()
     if not params:
         query_params = models.PlaylistRequestQuery()
-
+    else:
+        query_params = params
     if not body:
         body_params = models.PlaylistRequestBody()
+    else:
+        body_params = body
 
     return backend.get_playlist(user, query_params, body_params)
