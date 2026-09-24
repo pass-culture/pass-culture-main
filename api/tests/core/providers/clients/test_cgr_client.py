@@ -13,7 +13,7 @@ from pcapi.core.providers.clients.cgr_client import CGRAPIException
 from pcapi.utils.crypto import encrypt
 
 from tests.connectors.cgr import soap_definitions
-from tests.local_providers.cinema_providers.cgr import fixtures
+from tests.core.providers.cinema_providers.cgr import fixtures
 
 
 def _get_seances_pass_culture_xml_response_template(body_response: str) -> str:

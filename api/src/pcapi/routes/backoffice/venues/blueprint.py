@@ -40,7 +40,6 @@ from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import tasks as providers_tasks
 from pcapi.core.search.models import IndexationReason
-from pcapi.local_providers.provider_manager import new_etl_integration_can_be_enabled
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.utils import get_or_404
@@ -391,9 +390,6 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVe
         has_fraudulent_booking=venue_row.has_fraudulent_booking,
         active_tab=request.args.get("active_tab", "history"),
         get_region_name_from_postal_code=regions_utils.get_region_name_from_postal_code,
-        # TODO (tcoudray-pass, 04/02/26): Remove when we get rid of old local providers integrations
-        # See https://passculture.atlassian.net/browse/PC-40117
-        new_etl_integration_can_be_enabled=new_etl_integration_can_be_enabled,
         allowed_actions=actions,
         **kwargs,
     )

@@ -1,20 +1,12 @@
-import logging
 from unittest.mock import patch
 
 import pytest
-import requests_mock
 
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.offers.models import Offer
-from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.local_providers.provider_manager import synchronize_data_for_provider
-from pcapi.local_providers.provider_manager import synchronize_ems_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_providers
-from pcapi.models import db
 
 from tests.connectors.cgr import soap_definitions
-from tests.local_providers.cinema_providers.ems import fixtures as ems_fixtures
 from tests.local_providers.provider_test_utils import TestLocalProvider
 
 
@@ -28,42 +20,18 @@ def mock_init_provider(*arg):
 
 @pytest.mark.usefixtures("db_session")
 class SynchronizeVenueProviderTest:
-    @patch(
-        "pcapi.local_providers.provider_manager._NAME_TO_LOCAL_PROVIDER_CLASS",
-        {"AllocineStocks": TestLocalProvider},
-    )
-    @pytest.mark.parametrize("isNewEtlIntegrationEnabled", [True, False])
-    @patch("pcapi.core.providers.etls.cinema_etl_template.CinemaETLProcessTemplate.execute")
-    @patch("pcapi.local_providers.local_provider.LocalProvider.updateObjects")
-    def test_should_start_old_integration(self, mock_updateObjects, mock_execute, isNewEtlIntegrationEnabled):
-        allocine = providers_factories.AllocineProviderFactory()
-        venue_provider = providers_factories.VenueProviderFactory(
-            provider=allocine,
-            isNewEtlIntegrationEnabled=isNewEtlIntegrationEnabled,
-        )
-
-        synchronize_venue_provider(
-            venue_provider,
-            limit=10,
-        )
-
-        mock_updateObjects.assert_called_once_with(10)
-        mock_execute.assert_not_called()
-
-    @pytest.mark.features(WIP_ENABLE_ETL_SYNC=1)
     @pytest.mark.parametrize(
         "cinema_details_factory",
         [
             providers_factories.CGRCinemaDetailsFactory,
             providers_factories.CDSCinemaDetailsFactory,
             providers_factories.BoostCinemaDetailsFactory,
+            providers_factories.EMSCinemaDetailsFactory,
         ],
     )
     @patch("pcapi.core.providers.etls.cinema_etl_template.CinemaETLProcessTemplate.execute")
     @patch("pcapi.local_providers.local_provider.LocalProvider.updateObjects")
-    def test_should_start_new_etl_process(
-        self, mock_updateObjects, mock_execute, cinema_details_factory, requests_mock
-    ):
+    def test_should_start_etl_process(self, mock_updateObjects, mock_execute, cinema_details_factory, requests_mock):
         cinema_details = cinema_details_factory()
         pivot = cinema_details.cinemaProviderPivot
         venue_provider = providers_factories.VenueProviderFactory(
@@ -127,45 +95,3 @@ class SynchronizeVenueProvidersTest:
 
         synchronize_venue_providers([venue_provider_1, venue_provider_2], 10)
         assert mock_synchronize_venue_provider.call_count == 2
-
-
-class SynchronizeDataForProviderTest:
-    @patch("pcapi.local_providers.local_provider.LocalProvider.updateObjects")
-    @patch("pcapi.local_providers.provider_manager._NAME_TO_LOCAL_PROVIDER_CLASS", {"Provider": TestLocalProvider})
-    @pytest.mark.usefixtures("db_session")
-    def test_should_call_do_update_for_specified_provider(self, mock_updateObjects, app):
-        provider_test = providers_factories.AllocineProviderFactory()
-        db.session.add(provider_test)
-        db.session.commit()
-
-        synchronize_data_for_provider(provider_test.__class__.__name__, None)
-
-        mock_updateObjects.assert_called_once_with(None)
-
-
-class SynchronizeEMSVenueProviderTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_synchronize_ems_venue_provider(self, caplog):
-        ems_provider = get_provider_by_local_class("EMSStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
-        pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider=venue_provider.venueIdAtOfferProvider)
-        ems_cinema_details = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=pivot, lastVersion=0)
-        with requests_mock.Mocker() as requests_mocker:
-            requests_mocker.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
-            requests_mocker.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=b"")
-
-            with caplog.at_level(logging.DEBUG, logger="pcapi.connectors.ems"):
-                synchronize_ems_venue_provider(venue_provider)
-
-            assert len(caplog.records) == 1
-            assert caplog.records[0].message == "[CINEMA] Call to external API"
-            assert caplog.records[0].extra == {
-                "api_client": "EMSScheduleConnector",
-                "method": "get_schedules",
-                "method_params": {"version": 0},
-                "response": ems_fixtures.DATA_VERSION_0,
-            }
-
-            assert ems_cinema_details.lastVersion == 86400
-            assert venue_provider.lastSyncDate
-            assert db.session.query(Offer).count() == 1

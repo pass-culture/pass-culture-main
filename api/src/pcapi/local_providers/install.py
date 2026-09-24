@@ -16,6 +16,18 @@ def install_local_providers() -> None:
         enabledForPro=False,
     )
     providers_factories.ProviderFactory(
+        name="Boost",
+        localClass=providers_constants.BOOST_STOCKS_FAKE_CLASS_NAME,
+    )
+    providers_factories.ProviderFactory(
+        name="Ciné Office",
+        localClass=providers_constants.CDS_STOCKS_FAKE_CLASS_NAME,
+    )
+    providers_factories.ProviderFactory(
+        name="CGR",
+        localClass=providers_constants.CGR_STOCKS_FAKE_CLASS_NAME,
+    )
+    providers_factories.ProviderFactory(
         name="EMS",
         localClass=providers_constants.EMS_STOCKS_FAKE_CLASS_NAME,
     )
