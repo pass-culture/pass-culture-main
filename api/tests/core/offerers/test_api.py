@@ -3528,6 +3528,69 @@ class DeleteExpiredOffererInvitationsTest:
 
 
 class AccessibilityProviderTest:
+    def test_synchronize_accessibility_with_acceslibre_num_queries():
+        address = geography_factories.AddressFactory()
+        for _ in range(3):
+            venue = offerers_factories.VenueFactory(
+                isOpenToPublic=True,
+                accessibilityProvider=offerers_factories.AccessibilityProviderFactory(),
+                offererAddress__address=address,
+            )
+            assert venue.offererAddress.address
+
+        # 1. COUNT (=3 venues)
+        # 2. SELECT batch 1
+        # 3. SELECT batch 2
+        expected_queries_sync = 3
+
+        with assert_num_queries(expected_queries_sync):
+            offerers_api.synchronize_accessibility_with_acceslibre(
+                apply=True,
+                force_sync=False,
+                batch_size=2,
+                start_from_batch=1,
+            )
+
+    @patch("pcapi.connectors.acceslibre.get_accessibility_infos")
+    @patch("pcapi.connectors.acceslibre.find_new_entries_by_activity")
+    def test_acceslibre_matching_num_queries(
+        mock_find_new_entries,
+        mock_get_accessibility_infos,
+    ):
+        mock_get_accessibility_infos.return_value = (None, None)
+        mock_find_new_entries.return_value = []
+
+        address = geography_factories.AddressFactory()
+        for _ in range(5):
+            venue = offerers_factories.VenueFactory(
+                isOpenToPublic=True,
+                accessibilityProvider=offerers_factories.AccessibilityProviderFactory(),
+                offererAddress__address=address,
+            )
+            assert venue.offererAddress.address
+
+        for _ in range(15):  # 15 venues sans synchro acceslibre
+            venue = offerers_factories.VenueFactory(
+                isOpenToPublic=True, accessibilityProvider=None, offererAddress__address=address
+            )
+            assert venue.offererAddress.address
+
+        # 1. COUNT venues with accessibility_provider
+        # 2. COUNT venues without accessibility_provider
+        # 3. SELECT batch 1 venues + joinedload offererAddress + joinedload address
+        # 4. SELECT batch 2 venues + joinedload offererAddress + joinedload address
+        # 5. COUNT venues with accessibility_provider
+
+        expected_queries_matching = 5
+
+        with assert_num_queries(expected_queries_matching):
+            offerers_api.acceslibre_matching(
+                batch_size=10,
+                apply=True,
+                start_from_batch=1,
+                n_days_to_fetch=7,
+            )
+
     def test_set_accessibility_provider_id(self):
         venue = offerers_factories.VenueFactory(name="Une librairie de test", accessibilityProvider=None)
         offerers_api.set_accessibility_provider_id(venue)

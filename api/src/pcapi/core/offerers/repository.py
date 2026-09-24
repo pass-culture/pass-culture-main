@@ -1412,3 +1412,66 @@ def _build_offerer_is_onboarded_expression() -> sa.ColumnElement[bool]:
     return sa.or_(
         models.Offerer.allowedOnAdage.is_(True), has_adage_id, has_collective_application, has_non_draft_offers
     )
+
+
+def count_open_to_public_venues_with_accessibility_provider() -> int:
+    return (
+        db.session.query(offerers_models.Venue)
+        .join(offerers_models.AccessibilityProvider)
+        .filter(offerers_models.Venue.isOpenToPublic.is_(True))
+        .count()
+    )
+
+
+def get_open_to_public_venues_with_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
+    return (
+        db.session.query(models.Venue)
+        .join(offerers_models.Venue.accessibilityProvider)
+        .filter(offerers_models.Venue.isOpenToPublic.is_(True))
+        .options(
+            sa_orm.contains_eager(offerers_models.Venue.accessibilityProvider),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+        )
+        .order_by(offerers_models.Venue.id.asc())
+        .limit(batch_size)
+        .offset(batch_num * batch_size)
+        .all()
+    )
+
+
+def count_open_to_public_venues_without_accessibility_provider() -> int:
+    return (
+        db.session.query(offerers_models.Venue)
+        .outerjoin(offerers_models.Venue.accessibilityProvider)
+        .filter(
+            offerers_models.Venue.isOpenToPublic.is_(True),
+            offerers_models.AccessibilityProvider.id.is_(None),
+        )
+        .count()
+    )
+
+
+def get_open_to_public_venues_without_accessibility_provider(
+    batch_size: int, batch_num: int
+) -> list[offerers_models.Venue]:
+    return (
+        db.session.query(offerers_models.Venue)
+        .outerjoin(offerers_models.Venue.accessibilityProvider)
+        .filter(
+            offerers_models.Venue.isOpenToPublic.is_(True),
+            offerers_models.AccessibilityProvider.id.is_(None),
+        )
+        .options(
+            sa_orm.load_only(
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+                offerers_models.Venue.isOpenToPublic,
+            ),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+        )
+        .order_by(offerers_models.Venue.id.asc())
+        .limit(batch_size)
+        .offset(batch_num * batch_size)
+        .all()
+    )
