@@ -1058,6 +1058,93 @@
                 "title": "ArchiveCollectiveOfferBodyModel",
                 "type": "object"
             },
+            "ArtistBody": {
+                "additionalProperties": false,
+                "description": "Artist identified by one or more ids from music platforms.\n\nWhen several platform ids are provided, they are looked up in this order:\nISNI, Spotify, Deezer, Apple Music, Genius, SoundCloud. The first known id\ndetermines which artist is linked.",
+                "properties": {
+                    "appleMusicId": {
+                        "description": "Id of the artist on Apple Music.",
+                        "example": "3614052",
+                        "nullable": true,
+                        "title": "Applemusicid",
+                        "type": "string"
+                    },
+                    "artistType": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/MusicArtistTypeEnum"
+                            }
+                        ],
+                        "description": "Role of the artist in the event. The roles allowed depend on the event category.",
+                        "example": "performer"
+                    },
+                    "deezerId": {
+                        "description": "Id of the artist on Deezer.",
+                        "example": "3590",
+                        "nullable": true,
+                        "title": "Deezerid",
+                        "type": "string"
+                    },
+                    "geniusId": {
+                        "description": "Id of the artist on Genius.",
+                        "example": "45678",
+                        "nullable": true,
+                        "title": "Geniusid",
+                        "type": "string"
+                    },
+                    "isniId": {
+                        "description": "Id of the artist on ISNI.",
+                        "example": "0000000120303402",
+                        "nullable": true,
+                        "title": "Isniid",
+                        "type": "string"
+                    },
+                    "soundcloudId": {
+                        "description": "Id of the artist on SoundCloud.",
+                        "example": "123456789",
+                        "nullable": true,
+                        "title": "Soundcloudid",
+                        "type": "string"
+                    },
+                    "spotifyId": {
+                        "description": "Id of the artist on Spotify.",
+                        "example": "4TNiKyCX2oCvdo1sTgHcRw",
+                        "nullable": true,
+                        "title": "Spotifyid",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "artistType"
+                ],
+                "title": "ArtistBody",
+                "type": "object"
+            },
+            "ArtistResponse": {
+                "properties": {
+                    "artistType": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/MusicArtistTypeEnum"
+                            }
+                        ],
+                        "description": "Role of the artist in the event. The roles allowed depend on the event category.",
+                        "example": "performer"
+                    },
+                    "name": {
+                        "description": "Name of the artist.",
+                        "example": "Barbara",
+                        "nullable": true,
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "artistType"
+                ],
+                "title": "ArtistResponse",
+                "type": "object"
+            },
             "AvailableEANsResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -1441,6 +1528,14 @@
             "CONCERT_edit": {
                 "description": "Concert",
                 "properties": {
+                    "artists": {
+                        "description": "Artists to link to the event, identified by their ids on music platforms. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistBody"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -1477,6 +1572,14 @@
             "CONCERT_read": {
                 "description": "Concert",
                 "properties": {
+                    "artists": {
+                        "description": "Artists linked to the event.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistResponse"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -1505,7 +1608,8 @@
                     }
                 },
                 "required": [
-                    "category"
+                    "category",
+                    "artists"
                 ],
                 "title": "CONCERT_read",
                 "type": "object"
@@ -2556,6 +2660,14 @@
             "EVENEMENT_MUSIQUE_edit": {
                 "description": "Autre type d'\u00e9v\u00e8nement musical",
                 "properties": {
+                    "artists": {
+                        "description": "Artists to link to the event, identified by their ids on music platforms. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistBody"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -2592,6 +2704,14 @@
             "EVENEMENT_MUSIQUE_read": {
                 "description": "Autre type d'\u00e9v\u00e8nement musical",
                 "properties": {
+                    "artists": {
+                        "description": "Artists linked to the event.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistResponse"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -2620,7 +2740,8 @@
                     }
                 },
                 "required": [
-                    "category"
+                    "category",
+                    "artists"
                 ],
                 "title": "EVENEMENT_MUSIQUE_read",
                 "type": "object"
@@ -3089,7 +3210,40 @@
                         "type": "string"
                     },
                     "categoryRelatedFields": {
-                        "anyOf": [
+                        "description": "To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
+                        "discriminator": {
+                            "mapping": {
+                                "ATELIER_PRATIQUE_ART": "#/components/schemas/ATELIER_PRATIQUE_ART_edit",
+                                "CINE_PLEIN_AIR": "#/components/schemas/CINE_PLEIN_AIR_edit",
+                                "CONCERT": "#/components/schemas/CONCERT_edit",
+                                "CONCOURS": "#/components/schemas/CONCOURS_edit",
+                                "CONFERENCE": "#/components/schemas/CONFERENCE_edit",
+                                "EVENEMENT_CINE": "#/components/schemas/EVENEMENT_CINE_edit",
+                                "EVENEMENT_JEU": "#/components/schemas/EVENEMENT_JEU_edit",
+                                "EVENEMENT_MUSIQUE": "#/components/schemas/EVENEMENT_MUSIQUE_edit",
+                                "EVENEMENT_PATRIMOINE": "#/components/schemas/EVENEMENT_PATRIMOINE_edit",
+                                "FESTIVAL_ART_VISUEL": "#/components/schemas/FESTIVAL_ART_VISUEL_edit",
+                                "FESTIVAL_CINE": "#/components/schemas/FESTIVAL_CINE_edit",
+                                "FESTIVAL_LIVRE": "#/components/schemas/FESTIVAL_LIVRE_edit",
+                                "FESTIVAL_MUSIQUE": "#/components/schemas/FESTIVAL_MUSIQUE_edit",
+                                "FESTIVAL_SPECTACLE": "#/components/schemas/FESTIVAL_SPECTACLE_edit",
+                                "LIVESTREAM_EVENEMENT": "#/components/schemas/LIVESTREAM_EVENEMENT_edit",
+                                "LIVESTREAM_MUSIQUE": "#/components/schemas/LIVESTREAM_MUSIQUE_edit",
+                                "LIVESTREAM_PRATIQUE_ARTISTIQUE": "#/components/schemas/LIVESTREAM_PRATIQUE_ARTISTIQUE_edit",
+                                "RENCONTRE": "#/components/schemas/RENCONTRE_edit",
+                                "RENCONTRE_EN_LIGNE": "#/components/schemas/RENCONTRE_EN_LIGNE_edit",
+                                "RENCONTRE_JEU": "#/components/schemas/RENCONTRE_JEU_edit",
+                                "SALON": "#/components/schemas/SALON_edit",
+                                "SEANCE_CINE": "#/components/schemas/SEANCE_CINE_edit",
+                                "SEANCE_ESSAI_PRATIQUE_ART": "#/components/schemas/SEANCE_ESSAI_PRATIQUE_ART_edit",
+                                "SPECTACLE_REPRESENTATION": "#/components/schemas/SPECTACLE_REPRESENTATION_edit",
+                                "VISITE": "#/components/schemas/VISITE_edit",
+                                "VISITE_GUIDEE": "#/components/schemas/VISITE_GUIDEE_edit"
+                            },
+                            "propertyName": "category"
+                        },
+                        "nullable": true,
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/ATELIER_PRATIQUE_ART_edit"
                             },
@@ -3169,8 +3323,6 @@
                                 "$ref": "#/components/schemas/VISITE_edit"
                             }
                         ],
-                        "description": "To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
-                        "nullable": true,
                         "title": "Categoryrelatedfields"
                     },
                     "description": {
@@ -3992,6 +4144,14 @@
             "FESTIVAL_MUSIQUE_edit": {
                 "description": "Festival de musique",
                 "properties": {
+                    "artists": {
+                        "description": "Artists to link to the event, identified by their ids on music platforms. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistBody"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -4028,6 +4188,14 @@
             "FESTIVAL_MUSIQUE_read": {
                 "description": "Festival de musique",
                 "properties": {
+                    "artists": {
+                        "description": "Artists linked to the event.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistResponse"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -4056,7 +4224,8 @@
                     }
                 },
                 "required": [
-                    "category"
+                    "category",
+                    "artists"
                 ],
                 "title": "FESTIVAL_MUSIQUE_read",
                 "type": "object"
@@ -5402,6 +5571,14 @@
             "LIVESTREAM_MUSIQUE_edit": {
                 "description": "Livestream musical",
                 "properties": {
+                    "artists": {
+                        "description": "Artists to link to the event, identified by their ids on music platforms. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistBody"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -5438,6 +5615,14 @@
             "LIVESTREAM_MUSIQUE_read": {
                 "description": "Livestream musical",
                 "properties": {
+                    "artists": {
+                        "description": "Artists linked to the event.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistResponse"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -5466,7 +5651,8 @@
                     }
                 },
                 "required": [
-                    "category"
+                    "category",
+                    "artists"
                 ],
                 "title": "LIVESTREAM_MUSIQUE_read",
                 "type": "object"
@@ -5854,6 +6040,15 @@
                 ],
                 "title": "MUSEE_VENTE_DISTANCE_read",
                 "type": "object"
+            },
+            "MusicArtistTypeEnum": {
+                "description": "An enumeration.",
+                "enum": [
+                    "author",
+                    "performer"
+                ],
+                "title": "MusicArtistTypeEnum",
+                "type": "string"
             },
             "MusicTypeEnum__deprecated_": {
                 "description": "An enumeration.",

@@ -319,6 +319,8 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
             utils.save_image(body.image, offer)
         if "videoUrl" in updates:
             utils.update_or_delete_video(body.video_url, offer, current_api_key.provider.id)
+        if body.category_related_fields is not None and "artists" in body.category_related_fields.__fields_set__:
+            utils.update_artist_offer_links(offer, body.category_related_fields.artists)
 
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(utils.translate_offer_errors(error.errors))

@@ -550,6 +550,7 @@ class Returns200Test(PatchEventEndpointHelper):
             "musicSubType": "-1",
         }
         assert response.json["categoryRelatedFields"] == {
+            "artists": [],
             "category": "CONCERT",
             "author": "Ray Charles",
             "musicType": "JAZZ-BLUES",

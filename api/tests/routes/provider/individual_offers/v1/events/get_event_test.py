@@ -161,6 +161,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
             assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {
+            "artists": [],
             "author": None,
             "category": "CONCERT",
             "performer": None,
