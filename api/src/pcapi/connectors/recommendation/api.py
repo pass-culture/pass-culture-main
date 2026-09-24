@@ -14,12 +14,10 @@ def _get_backend() -> BaseRecommandationBackend:
 def get_similar_offers(
     offer_id: int,
     user: users_models.User | None = None,
-    params: dict | None = None,
+    params: models.SimilarOffersRequestQuery | None = None,
 ) -> models.SimilarOffersResponse:
     backend = _get_backend()
-    if params:
-        query_params = models.SimilarOffersRequestQuery.model_validate(params)
-    else:
+    if not params:
         query_params = models.SimilarOffersRequestQuery()
     return backend.get_similar_offers(offer_id, user, query_params)
 
@@ -33,18 +31,14 @@ def get_similar_artists(
 
 def get_playlist(
     user: users_models.User,
-    params: dict | None = None,
-    body: dict | None = None,
+    params: models.PlaylistRequestQuery | None = None,
+    body: models.PlaylistRequestBody | None = None,
 ) -> models.PlaylistResponse:
     backend = _get_backend()
-    if params:
-        query_params = models.PlaylistRequestQuery.model_validate(params)
-    else:
+    if not params:
         query_params = models.PlaylistRequestQuery()
 
-    if body:
-        body_params = models.PlaylistRequestBody.model_validate(body)
-    else:
+    if not body:
         body_params = models.PlaylistRequestBody()
 
     return backend.get_playlist(user, query_params, body_params)
