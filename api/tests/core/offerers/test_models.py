@@ -66,7 +66,7 @@ class VenueBannerUrlTest:
         assert venue._bannerUrl == expected_banner_url
 
     @pytest.mark.parametrize(
-        "venue_type_code", (type_code for type_code, banners in models.VENUE_TYPE_DEFAULT_BANNERS.items() if banners)
+        "venue_type_code", [type_code for type_code, banners in models.VENUE_TYPE_DEFAULT_BANNERS.items() if banners]
     )
     def test_can_get_category_default_banner_url_when_exists(self, venue_type_code):
         venue = factories.VenueFactory(venueTypeCode=venue_type_code)
@@ -77,7 +77,7 @@ class VenueBannerUrlTest:
 
     @pytest.mark.parametrize(
         "venue_type_code",
-        (type_code for type_code, banners in models.VENUE_TYPE_DEFAULT_BANNERS.items() if not banners),
+        [type_code for type_code, banners in models.VENUE_TYPE_DEFAULT_BANNERS.items() if not banners],
     )
     def test_cannot_get_category_default_banner_if_not_available(self, venue_type_code):
         venue = factories.VenueFactory(venueTypeCode=venue_type_code)
