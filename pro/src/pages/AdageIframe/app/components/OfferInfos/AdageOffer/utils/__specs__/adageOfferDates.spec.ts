@@ -70,7 +70,7 @@ describe('adageOfferDates', () => {
         },
       })
 
-      expect(dateText).toEqual(null)
+      expect(dateText).toBeNull()
     })
 
     it('should not return a date if the end date of the offer does not exist', () => {
@@ -82,7 +82,7 @@ describe('adageOfferDates', () => {
         },
       })
 
-      expect(dateText).toEqual(null)
+      expect(dateText).toBeNull()
     })
   })
 })

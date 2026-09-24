@@ -275,7 +275,7 @@ describe('RecurrenceForm', () => {
     await userEvent.click(screen.getByText(/valider/i))
 
     const errorMessages = screen.getAllByText(/Veuillez renseigner un horaire/i)
-    expect(errorMessages.length).toBe(2)
+    expect(errorMessages).toHaveLength(2)
   })
 
   it('should accept empty string as an empty value', async () => {

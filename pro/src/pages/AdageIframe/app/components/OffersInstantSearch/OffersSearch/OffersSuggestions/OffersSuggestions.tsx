@@ -171,7 +171,6 @@ export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
                   {formValues.headerMessage}
                 </OffersSuggestionsHeader>
                 <Offers
-                  displayShowMore={false}
                   displayStats={false}
                   displayNoResult={false}
                   indexId={`no_results_offers_index_${i}`}

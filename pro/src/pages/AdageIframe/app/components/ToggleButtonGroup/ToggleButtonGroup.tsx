@@ -24,7 +24,7 @@ export function ToggleButtonGroup({
   buttons,
   activeButton,
   className,
-}: ToggleButtonGroupProps) {
+}: Readonly<ToggleButtonGroupProps>) {
   return (
     // biome-ignore lint/a11y/useSemanticElements: We don't want to use a `<fieldset />` here.
     <div

@@ -46,7 +46,7 @@ describe('components:UserIdentityForm', () => {
   it('renders component successfully', () => {
     renderUserIdentityForm(props)
 
-    expect(screen.getAllByRole('textbox').length).toBe(2)
+    expect(screen.getAllByRole('textbox')).toHaveLength(2)
   })
 
   it('should trigger onSubmit callback when submitting', async () => {

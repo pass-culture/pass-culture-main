@@ -21,7 +21,7 @@ function recordCallSite<Operation extends SdkOperation>(
 ): Operation {
   const wrapped = async (...args: Parameters<Operation>) => {
     // Captured synchronously, before the operation is entered
-    const callSite = new Error()
+    const callSite = new Error('An error has occured during callSite operation')
 
     try {
       return await operation(...args)

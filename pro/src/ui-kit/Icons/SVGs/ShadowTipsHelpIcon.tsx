@@ -4,7 +4,9 @@ type ShadowTipsHelpIconProps = {
   className?: string
 }
 
-export function ShadowTipsHelpIcon({ className }: ShadowTipsHelpIconProps) {
+export function ShadowTipsHelpIcon({
+  className,
+}: Readonly<ShadowTipsHelpIconProps>) {
   const ShadowIconId = useId()
 
   return (

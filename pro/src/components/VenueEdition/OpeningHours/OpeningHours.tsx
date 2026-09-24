@@ -9,9 +9,9 @@ import { OpeningHoursTimespans } from './OpeningHoursTimespans/OpeningHoursTimes
 
 export function OpeningHours({
   hasErrorBecauseOfEmptyOpeningHours = false,
-}: {
+}: Readonly<{
   hasErrorBecauseOfEmptyOpeningHours?: boolean
-}) {
+}>) {
   const form = useFormContext<{
     openingHours: WeekdayOpeningHoursTimespans | null
   }>()

@@ -59,7 +59,7 @@ describe('<CollectiveOffersTemplateCard />', () => {
     const allOfferLines = screen.getAllByTestId(
       'collective-offer-template-line'
     )
-    expect(allOfferLines.length).toBe(3)
+    expect(allOfferLines).toHaveLength(3)
     allOfferLines.forEach((line, idx) => {
       expect(line).toHaveTextContent(`Line for offer ${idx + 1}`)
     })

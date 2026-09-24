@@ -99,8 +99,7 @@ const renderIndividualOffers = async (
   await waitFor(() => {
     expect(
       within(screen.getByLabelText('Localisation')).getAllByRole('option')
-        .length
-    ).toBe(3)
+    ).toHaveLength(3)
   })
 }
 
@@ -670,9 +669,9 @@ describe('IndividualOffers', () => {
       const offererAddressOption = screen.getByLabelText('Localisation')
 
       await waitFor(() => {
-        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
-          3
-        )
+        expect(
+          within(offererAddressOption).getAllByRole('option')
+        ).toHaveLength(3)
       })
 
       const firstOffererAddressOption =
@@ -718,9 +717,9 @@ describe('IndividualOffers', () => {
       const offererAddressOption = screen.getByLabelText('Localisation')
 
       await waitFor(() => {
-        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
-          3
-        )
+        expect(
+          within(offererAddressOption).getAllByRole('option')
+        ).toHaveLength(3)
       })
 
       const firstOffererAddressOption =
@@ -768,7 +767,7 @@ describe('IndividualOffers', () => {
     const venueAddressOption = screen.getByLabelText('Localisation')
 
     await waitFor(() => {
-      expect(within(venueAddressOption).getAllByRole('option').length).toBe(3)
+      expect(within(venueAddressOption).getAllByRole('option')).toHaveLength(3)
     })
 
     const firstOffererAddressOption =

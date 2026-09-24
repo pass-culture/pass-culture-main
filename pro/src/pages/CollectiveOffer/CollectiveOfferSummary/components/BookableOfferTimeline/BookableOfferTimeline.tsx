@@ -227,9 +227,6 @@ const buildExpiredPastStep = ({
               offer,
               CollectiveOfferAllowedAction.CAN_EDIT_DATES
             )}
-            contactEmail={
-              offer.booking?.educationalRedactor?.email ?? offer.teacher?.email
-            }
           />
         )}
       </>

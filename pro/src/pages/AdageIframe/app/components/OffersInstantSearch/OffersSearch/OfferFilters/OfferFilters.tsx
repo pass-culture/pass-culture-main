@@ -41,6 +41,8 @@ interface OfferFiltersProps {
   onSubmit: () => void
 }
 
+type SearchFormFieldValue = string | string[] | number
+
 export const OfferFilters = ({
   className,
   localisationFilterState,
@@ -102,7 +104,7 @@ export const OfferFilters = ({
 
   const resetModalFilter = (
     filterName: keyof SearchFormValues,
-    value: string | string[] | number
+    value: SearchFormFieldValue
   ) => {
     clearFormFieldValue(filterName, value)
     closeModal(filterName)
@@ -126,7 +128,7 @@ export const OfferFilters = ({
 
   const clearFormFieldValue = (
     fieldName: keyof SearchFormValues,
-    value: string | string[] | number
+    value: SearchFormFieldValue
   ) => {
     form.setValue(fieldName, value, {
       shouldValidate: true,
@@ -162,7 +164,7 @@ export const OfferFilters = ({
     name: keyof SearchFormValues,
     value: ItemProps['value'][]
   ) => {
-    form.setValue(name, value as string | number | string[])
+    form.setValue(name, value as SearchFormFieldValue)
   }
 
   const locationFieldKey = 'locationType'

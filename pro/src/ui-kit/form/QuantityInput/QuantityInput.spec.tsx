@@ -47,7 +47,7 @@ describe('QuantityInput', () => {
 
     const input = screen.getByRole('spinbutton', { name: LABELS.input })
     await userEvent.type(input, '1')
-    expect(onChange.mock.calls.length).toBe(1)
+    expect(onChange.mock.calls).toHaveLength(1)
   })
 
   it('should empty the input value when the checkbox is checked', async () => {

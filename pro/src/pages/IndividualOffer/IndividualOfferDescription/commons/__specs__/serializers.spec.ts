@@ -422,7 +422,7 @@ describe('serializeDetailsPatchData', () => {
 
 describe('serializeDurationMinutes', () => {
   it('should return undefined when durationHour is empty', () => {
-    expect(serializeDurationMinutes('')).toStrictEqual(null)
+    expect(serializeDurationMinutes('')).toBeNull()
   })
 
   it('should transform string duration into int minutes', () => {

@@ -26,7 +26,7 @@ export function Carousel({
   loading,
   className,
   observableRef,
-}: CarouselProps) {
+}: Readonly<CarouselProps>) {
   const listRef = createRef<HTMLUListElement>()
   const firstElementRef = createRef<HTMLLIElement>()
   const lastElementRef = createRef<HTMLLIElement>()

@@ -294,7 +294,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
                 }}
                 onUpdateSort={(sort, desc) => {
                   setAppliedSort({
-                    sort: sort ? sort : undefined,
+                    sort: sort ?? undefined,
                     orderByDesc: Boolean(desc),
                   })
                 }}

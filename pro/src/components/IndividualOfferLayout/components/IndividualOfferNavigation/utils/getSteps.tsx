@@ -5,7 +5,7 @@ import {
 
 export interface StepPattern {
   id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
-  label: string | React.ReactNode
+  label: string
 }
 
 type GetStepsContext = {

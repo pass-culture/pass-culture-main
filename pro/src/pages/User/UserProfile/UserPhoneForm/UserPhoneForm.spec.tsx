@@ -31,7 +31,7 @@ describe('components:UserPhoneForm', () => {
 
   it('renders component successfully', () => {
     renderUserPhoneForm(props)
-    expect(screen.getAllByRole('textbox').length).toBe(1)
+    expect(screen.getAllByRole('textbox')).toHaveLength(1)
   })
 
   it('should render api error when submitting', async () => {

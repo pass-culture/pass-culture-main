@@ -32,7 +32,11 @@ export type TooltipProps = {
  * - Tooltips are not accessible to touch interfaces, thus it should be avoided.
  */
 
-export function Tooltip({ children, content, className }: TooltipProps) {
+export function Tooltip({
+  children,
+  content,
+  className,
+}: Readonly<TooltipProps>) {
   const { isTooltipHidden, ...tooltipProps } = useTooltipProps()
   const [tooltipContentWidth, setTooltipContentWidth] = useState<number>(0)
   const tooltipId = useId()

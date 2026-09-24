@@ -109,8 +109,7 @@ const waitForCompleteLoading = async () => {
   await waitFor(() => {
     expect(
       within(screen.getByLabelText('Localisation')).getAllByRole('option')
-        .length
-    ).toBe(3)
+    ).toHaveLength(3)
   })
 }
 

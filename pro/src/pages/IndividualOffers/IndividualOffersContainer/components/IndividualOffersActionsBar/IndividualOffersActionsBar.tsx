@@ -105,7 +105,7 @@ const updateIndividualOffersStatus = async (
     try {
       await api.patchOffersActiveStatus({
         body: {
-          ids: selectedOfferIds.map((id) => Number(id)),
+          ids: selectedOfferIds.map(Number),
           isActive,
         },
       })

@@ -24,7 +24,7 @@ describe('components:UserEmailForm', () => {
 
   it('renders component successfully', () => {
     renderUserEmailForm(props)
-    expect(screen.getAllByRole('textbox').length).toBe(1)
+    expect(screen.getAllByRole('textbox')).toHaveLength(1)
   })
 
   it('should trigger onSubmit callback when submitting', async () => {

@@ -132,7 +132,7 @@ describe('DetailsEanSearch', () => {
             offerer_id: 1,
           },
         })
-        expect(onEanSearch.mock.calls.length).toBe(1)
+        expect(onEanSearch.mock.calls).toHaveLength(1)
       })
 
       describe('when the input has format issues', () => {

@@ -91,6 +91,7 @@ export const initializeUser = createAsyncThunk<
       dispatch(unsetSelectedAdminOfferer())
     }
   } catch (_err: unknown) {
+    // Initialization errors are intentionally ignored after logging the user out.
     await logout()
   }
 })

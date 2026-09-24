@@ -76,7 +76,7 @@ describe('AddVenueProviderButton', () => {
     expect(addVenueProviderButton).toBeInTheDocument()
     await userEvent.click(addVenueProviderButton)
     const options = screen.getAllByRole('option')
-    expect(options.length).toBe(5)
+    expect(options).toHaveLength(5)
 
     expect(screen.getByRole('option', { name: 'Allociné' })).toBeInTheDocument()
     expect(
@@ -97,7 +97,7 @@ describe('AddVenueProviderButton', () => {
     expect(addVenueProviderButton).toBeInTheDocument()
     await userEvent.click(addVenueProviderButton)
     const options = screen.getAllByRole('option')
-    expect(options.length).toBe(5)
+    expect(options).toHaveLength(5)
 
     const providerSelect = screen.getByRole('combobox', {
       name: 'Logiciel',
@@ -128,7 +128,7 @@ describe('AddVenueProviderButton', () => {
     expect(addVenueProviderButton).toBeInTheDocument()
     await userEvent.click(addVenueProviderButton)
     const options = screen.getAllByRole('option')
-    expect(options.length).toBe(4)
+    expect(options).toHaveLength(4)
 
     expect(screen.getByRole('option', { name: 'Allociné' })).toBeInTheDocument()
     expect(
@@ -157,7 +157,7 @@ describe('AddVenueProviderButton', () => {
     expect(addVenueProviderButton).toBeInTheDocument()
     await userEvent.click(addVenueProviderButton)
     const options = screen.getAllByRole('option')
-    expect(options.length).toBe(3)
+    expect(options).toHaveLength(3)
 
     expect(
       screen.getByRole('option', { name: 'Ticket Buster' })

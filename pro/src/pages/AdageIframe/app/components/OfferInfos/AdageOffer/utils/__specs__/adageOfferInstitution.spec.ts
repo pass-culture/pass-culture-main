@@ -47,7 +47,7 @@ describe('adageOfferInstitution', () => {
         teacher: teacher,
       })
 
-      expect(institutionText).toEqual(null)
+      expect(institutionText).toBeNull()
     })
   })
 })

@@ -1,5 +1,5 @@
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import {
+  type GetIndividualOfferResponseModel,
   type SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'

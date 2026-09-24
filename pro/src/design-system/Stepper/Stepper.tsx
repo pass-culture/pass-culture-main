@@ -11,7 +11,7 @@ export const STEPPER_MIN_WIDTH_PER_STEP = 80
 
 export interface StepItem {
   id: string
-  label: string | React.ReactNode
+  label: string
   sublabel?: string
   url?: string
   onClick?: () => void

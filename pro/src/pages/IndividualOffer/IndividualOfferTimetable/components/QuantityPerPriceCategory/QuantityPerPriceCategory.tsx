@@ -18,7 +18,7 @@ type QuantityPerPriceCategoryProps = {
 
 export function QuantityPerPriceCategory({
   priceCategoryOptions,
-}: QuantityPerPriceCategoryProps) {
+}: Readonly<QuantityPerPriceCategoryProps>) {
   const { register, watch, setValue, formState } = useFormContext<{
     quantityPerPriceCategories: QuantityPerPriceCategoryForm[]
   }>()

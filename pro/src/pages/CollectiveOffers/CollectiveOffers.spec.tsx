@@ -232,8 +232,7 @@ describe('CollectiveOffers', () => {
         await waitFor(() => {
           expect(
             within(screen.getByLabelText('Localisation')).getAllByRole('option')
-              .length
-          ).toBe(5) // all + school + to be defined + 2 addresses
+          ).toHaveLength(5) // all + school + to be defined + 2 addresses
         })
 
         await userEvent.selectOptions(

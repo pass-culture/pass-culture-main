@@ -495,7 +495,7 @@ describe('onSubmit', () => {
     expect(snackBarError).toHaveBeenCalledWith(
       `Une erreur est survenue lors de l’enregistrement de vos stocks.`
     )
-    expect(result).toEqual(undefined)
+    expect(result).toBeUndefined()
   })
   it(`should show error when exceeding max stocks limit of 2500`, async () => {
     const formValues = {

@@ -65,6 +65,6 @@ describe('getEducationalInstitutions', () => {
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 2 })
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 3 })
     const response = await getEducationalInstitutions()
-    expect(response.length).toBe(9)
+    expect(response).toHaveLength(9)
   })
 })

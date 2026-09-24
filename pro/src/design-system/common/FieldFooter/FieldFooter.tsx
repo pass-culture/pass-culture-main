@@ -21,7 +21,7 @@ export function FieldFooter({
   errorId,
   charactersCount,
   charactersCountId,
-}: FieldFooterProps) {
+}: Readonly<FieldFooterProps>) {
   return (
     <div
       className={classNames(styles['footer'], {

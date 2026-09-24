@@ -7,7 +7,9 @@ type ActionBarDraftStatusProps = {
   isSaved: boolean
 }
 
-export function ActionBarDraftStatus({ isSaved }: ActionBarDraftStatusProps) {
+export function ActionBarDraftStatus({
+  isSaved,
+}: Readonly<ActionBarDraftStatusProps>) {
   return (
     <>
       {isSaved ? (

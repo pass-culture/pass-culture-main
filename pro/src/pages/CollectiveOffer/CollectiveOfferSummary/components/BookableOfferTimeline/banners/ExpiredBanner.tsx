@@ -22,7 +22,6 @@ export const ExpiredBanner = ({
   bookingLimitDatetime: string | null
   departmentCode?: string | null
   canEditDates: boolean
-  contactEmail?: string | null
 }) => {
   const hasPublished =
     stepBeforeExpiredStatus === CollectiveOfferDisplayedStatus.PUBLISHED
