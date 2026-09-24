@@ -7,7 +7,6 @@ from dataclasses import dataclass
 
 import psycopg2.extras
 import sqlalchemy as sa
-import sqlalchemy.event as sa_event
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
@@ -549,7 +548,10 @@ def before_insert(mapper: sa_orm.Mapper, configuration: sa.engine.Connection, se
         )
 
 
-trig_stock_quantity_ddl = sa.DDL("""
+# These DDLs are a copy of their real equivalent in db
+# They don't do anything; they are just here to remember the existence of these
+# triggers and functions so as not to forget them when working on the models
+function_check_stock_ddl = sa.DDL("""
     CREATE OR REPLACE FUNCTION check_stock()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -580,16 +582,16 @@ trig_stock_quantity_ddl = sa.DDL("""
       RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
+    """)
 
-    DROP TRIGGER IF EXISTS stock_update ON stock;
+trigger_stock_update_ddl = sa.DDL("""
     CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
     ON stock
     FOR EACH ROW EXECUTE PROCEDURE check_stock()
     """)
 
-sa_event.listen(Stock.__table__, "after_create", trig_stock_quantity_ddl)
 
-trig_update_date_ddl = sa.DDL("""
+function_save_stock_modification_date_ddl = sa.DDL("""
     CREATE OR REPLACE FUNCTION save_stock_modification_date()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -599,16 +601,14 @@ trig_update_date_ddl = sa.DDL("""
       RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
+    """)
 
-    DROP TRIGGER IF EXISTS stock_update_modification_date ON stock;
-
+trigger_stock_update_modification_date_ddl = sa.DDL("""
     CREATE TRIGGER stock_update_modification_date
     BEFORE UPDATE ON stock
     FOR EACH ROW
     EXECUTE PROCEDURE save_stock_modification_date()
     """)
-
-sa_event.listen(Stock.__table__, "after_create", trig_update_date_ddl)
 
 
 @dataclass

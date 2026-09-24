@@ -17,7 +17,6 @@ from uuid import UUID
 import psycopg2.extras
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as sa_psql
-import sqlalchemy.event as sa_event
 import sqlalchemy.ext.mutable as sa_mutable
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -800,7 +799,10 @@ class CustomReimbursementRule(PcObject, ReimbursementRule, Model):
         return super().apply(booking, custom_total_amount)
 
 
-trig_venue_has_siret_ddl = sa.DDL("""
+# These DDLs are a copy of their real equivalent in db
+# They don't do anything; they are just here to remember the existence of these
+# triggers and functions so as not to forget them when working on the models
+function_check_venue_has_siret_ddl = sa.DDL("""
     CREATE OR REPLACE FUNCTION check_venue_has_siret()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -822,15 +824,15 @@ trig_venue_has_siret_ddl = sa.DDL("""
       RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
+    """)
 
-    DROP TRIGGER IF EXISTS check_venue_has_siret ON "custom_reimbursement_rule";
+
+trigger_check_venue_has_siret_ddl = sa.DDL("""
     CREATE TRIGGER check_venue_has_siret
     AFTER INSERT OR UPDATE ON custom_reimbursement_rule
     FOR EACH ROW
     EXECUTE PROCEDURE check_venue_has_siret()
     """)
-
-sa_event.listen(CustomReimbursementRule.__table__, "after_create", trig_venue_has_siret_ddl)
 
 
 class InvoiceCashflow(Model):
