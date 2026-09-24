@@ -1,6 +1,5 @@
 import enum
 import logging
-from time import time
 
 import click
 
@@ -58,50 +57,6 @@ def synchronize_allocine_products_with_bigquery() -> None:
     allocine.synchronize_products_with_bigquery()
 
 
-@blueprint.cli.command("update_providables")
-@click.option("-p", "--provider-name", help="Limit update to this provider name")
-@click.option(
-    "-l",
-    "--limit",
-    help="Limit update to n items per providerName/venueId" + " (for test purposes)",
-    type=int,
-    default=None,
-)
-@click.option("-w", "--venue-provider-id", type=int, help="Limit update to this venue provider id")
-def update_providables(provider_name: str, venue_provider_id: int, limit: int) -> None:
-    start = time()
-    logger.info(
-        "Starting update_providables with provider_name=%s and venue_provider_id=%s", provider_name, venue_provider_id
-    )
-
-    if (provider_name and venue_provider_id) or not (provider_name or venue_provider_id):
-        raise ValueError("Call either with provider-name or venue-provider-id")
-
-    if provider_name:
-        provider_manager.synchronize_data_for_provider(provider_name, limit)
-
-    if venue_provider_id:
-        venue_provider = providers_repository.get_venue_provider_by_id(venue_provider_id)
-        provider_manager.synchronize_venue_provider(venue_provider, limit)
-
-    logger.info(
-        "Finished update_providables with provider_name=%s and venue_provider_id=%s elapsed=%.2f",
-        provider_name,
-        venue_provider_id,
-        time() - start,
-    )
-
-
-@blueprint.cli.command("update_providables_by_provider_id")
-@click.option("-p", "--provider-id", required=True, help="Update providables for this provider", type=int)
-@click.option(
-    "-l", "--limit", help="Limit update to n items per venue provider" + " (for test purposes)", type=int, default=None
-)
-def update_providables_by_provider_id(provider_id: int, limit: int | None) -> None:
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(provider_id)
-    provider_manager.synchronize_venue_providers(venue_providers, limit)
-
-
 @blueprint.cli.command("synchronize_allocine_stocks")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
@@ -155,14 +110,7 @@ def synchronize_cinema_provider_offers(local_class: CinemaLocalClasses) -> None:
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_CDS_IMPLEMENTATION)
 def synchronize_cine_office_stocks() -> None:
     """Launch Ciné Office synchronization."""
-    if FeatureToggle.WIP_ENABLE_ETL_SYNC.is_active():
-        _synchronize_cinema_provider_offers(CinemaLocalClasses.CDSStocks)
-        return
-
-    cine_office_stocks_provider = providers_repository.get_provider_by_local_class("CDSStocks")
-    assert cine_office_stocks_provider  # helps mypy
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(cine_office_stocks_provider.id)
-    provider_manager.synchronize_venue_providers(venue_providers)
+    _synchronize_cinema_provider_offers(CinemaLocalClasses.CDSStocks)
 
 
 # (tcoudray-pass, 7/9/26) TODO: To be replaced with `synchronize_cinema_provider_offers` (PC-43579)
@@ -172,14 +120,7 @@ def synchronize_cine_office_stocks() -> None:
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_BOOST_API_INTEGRATION)
 def synchronize_boost_stocks() -> None:
     """Launch Boost synchronization."""
-    if FeatureToggle.WIP_ENABLE_ETL_SYNC.is_active():
-        _synchronize_cinema_provider_offers(CinemaLocalClasses.BoostStocks)
-        return
-
-    boost_stocks_provider = providers_repository.get_provider_by_local_class("BoostStocks")
-    assert boost_stocks_provider  # helps mypy
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(boost_stocks_provider.id)
-    provider_manager.synchronize_venue_providers(venue_providers)
+    _synchronize_cinema_provider_offers(CinemaLocalClasses.BoostStocks)
 
 
 # (tcoudray-pass, 7/9/26) TODO: To be replaced with `synchronize_cinema_provider_offers` (PC-43579)
@@ -189,14 +130,7 @@ def synchronize_boost_stocks() -> None:
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_CGR_INTEGRATION)
 def synchronize_cgr_stocks() -> None:
     """Launch CGR synchronization."""
-    if FeatureToggle.WIP_ENABLE_ETL_SYNC.is_active():
-        _synchronize_cinema_provider_offers(CinemaLocalClasses.CGRStocks)
-        return
-
-    cgr_stocks_provider = providers_repository.get_provider_by_local_class("CGRStocks")
-    assert cgr_stocks_provider  # helps mypy
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(cgr_stocks_provider.id)
-    provider_manager.synchronize_venue_providers(venue_providers)
+    _synchronize_cinema_provider_offers(CinemaLocalClasses.CGRStocks)
 
 
 @blueprint.cli.command("synchronize_ems_stocks")
@@ -205,35 +139,31 @@ def synchronize_cgr_stocks() -> None:
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_EMS_INTEGRATION)
 def synchronize_ems_stocks_on_schedule() -> None:
     """Launch EMS synchronization"""
-    if FeatureToggle.WIP_ENABLE_ETL_SYNC.is_active():
-        cinema_provider = providers_repository.get_cinema_provider_by_local_class("EMSStocks")
-        venue_providers = providers_repository.get_active_venue_providers_by_provider(cinema_provider.id)
+    cinema_provider = providers_repository.get_cinema_provider_by_local_class("EMSStocks")
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(cinema_provider.id)
 
-        ems_connector = EMSScheduleConnector()
-        # we fetch the schedules once and not inside the ETL process
-        # for there is no endpoint to fetch the schedules for only
-        # one cinema.
-        schedules = ems_connector.get_schedules()
+    ems_connector = EMSScheduleConnector()
+    # we fetch the schedules once and not inside the ETL process
+    # for there is no endpoint to fetch the schedules for only
+    # one cinema.
+    schedules = ems_connector.get_schedules()
 
-        for venue_provider in venue_providers:
-            try:
-                EMSExtractTransformLoadProcess(venue_provider).with_schedules_data(schedules).execute()
-            except Exception as exception:
-                # we except all exceptions to prevent that
-                # one faulty venue blocks the synchronisation
-                # of other venues
-                logger.warning(
-                    "Error while synchronizing cinema venue",
-                    extra={
-                        "venue_provider_id": venue_provider.id,
-                        "venue_id": venue_provider.venueId,
-                        "provider_id": venue_provider.providerId,
-                        "exc": exception,
-                    },
-                )
-        return
-
-    provider_manager.synchronize_ems_venue_providers(from_last_version=True)
+    for venue_provider in venue_providers:
+        try:
+            EMSExtractTransformLoadProcess(venue_provider).with_schedules_data(schedules).execute()
+        except Exception as exception:
+            # we except all exceptions to prevent that
+            # one faulty venue blocks the synchronisation
+            # of other venues
+            logger.warning(
+                "Error while synchronizing cinema venue",
+                extra={
+                    "venue_provider_id": venue_provider.id,
+                    "venue_id": venue_provider.venueId,
+                    "provider_id": venue_provider.providerId,
+                    "exc": exception,
+                },
+            )
 
 
 @blueprint.cli.command("update_gtl")

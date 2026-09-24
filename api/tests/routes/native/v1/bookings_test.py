@@ -45,7 +45,7 @@ from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
 from tests.connectors.cgr import soap_definitions
-from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
+from tests.core.providers.cinema_providers.cgr import fixtures as cgr_fixtures
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

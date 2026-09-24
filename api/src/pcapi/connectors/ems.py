@@ -111,33 +111,6 @@ class EMSScheduleConnector(AbstractEMSConnector):
         return ems_serializers.ScheduleResponse.model_validate(response.json())
 
 
-class EMSSitesConnector(AbstractEMSConnector):
-    def build_url(self) -> str:
-        return settings.EMS_SITES_API_URL
-
-    def get_available_sites(self, version: int = 0) -> list[ems_serializers.Site]:
-        response = requests.get(
-            url=self.build_url(),
-            auth=self.build_auth(),
-            params=self.build_query_params(version),
-            timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
-        )
-
-        logger.debug(
-            "[CINEMA] Call to external API",
-            extra={
-                "api_client": "EMSSitesConnector",
-                "method": "get_available_sites",
-                "method_params": {"version": version},
-                "response": response.json(),
-            },
-        )
-
-        self._check_response_is_ok(response)
-        serialized_site_response = ems_serializers.SitesResponse.model_validate(response.json())
-        return serialized_site_response.sites
-
-
 class EMSBookingConnector:
     digest_mode = "sha512"
     get_ticket_endpoint = "STATUT"
