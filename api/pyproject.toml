@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.13,<3.14"
 
 dependencies = [
-  "alembic==1.19.2",
+  "alembic==1.20.0",
   "algoliasearch==4.47.0",
   "authlib==1.8.0",
   "babel ==2.18.0",
