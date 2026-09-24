@@ -81,7 +81,7 @@ dependencies = [
   "sqlalchemy[mypy]==2.0.54",
   "time-machine==3.5.1",
   "transitions ==0.9.3",
-  "urllib3 ==2.7.0",
+  "urllib3==2.8.0",
   "weasyprint==70.0",
   "werkzeug ==3.1.8",
   "wtforms ==3.2.2",
