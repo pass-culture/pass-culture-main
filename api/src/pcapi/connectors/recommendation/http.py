@@ -55,7 +55,7 @@ class HttpBackend(BaseRecommandationBackend):
             logger.info("Got error from Recommendation API", extra={"exc": str(exc)}, exc_info=True)
             raise RecommendationApiException(str(exc)) from exc
 
-        return response.content
+        return response.json()
 
     def get_similar_offers(
         self,
