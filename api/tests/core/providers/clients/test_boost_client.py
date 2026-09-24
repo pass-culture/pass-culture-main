@@ -18,7 +18,7 @@ from pcapi.core.providers.clients import cinema_client
 from pcapi.utils import date
 from pcapi.utils import date as date_utils
 
-from tests.local_providers.cinema_providers.boost import fixtures
+from tests.core.providers.cinema_providers.boost import fixtures
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

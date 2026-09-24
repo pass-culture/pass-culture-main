@@ -8,13 +8,13 @@ import pcapi.core.chronicles.factories as chronicles_factories
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
-import pcapi.local_providers.cinema_providers.constants as cinema_providers_constants
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.external.batch import testing as notifications_testing
 from pcapi.core.geography.factories import AddressFactory
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.providers.etls.cinema_etl_template import ShowFeatures
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -79,9 +79,9 @@ class OffersStocksV2Test:
             quantity=2,
             priceCategory__label="bookable",
             features=[
-                cinema_providers_constants.ShowtimeFeatures.VF.value,
-                cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
-                cinema_providers_constants.ShowtimeFeatures.ICE.value,
+                ShowFeatures.VF.value,
+                ShowFeatures.THREE_D.value,
+                ShowFeatures.ICE.value,
             ],
         )
         another_bookable_stock = offers_factories.EventStockFactory(
@@ -90,8 +90,8 @@ class OffersStocksV2Test:
             quantity=3,
             priceCategory=bookable_stock.priceCategory,
             features=[
-                cinema_providers_constants.ShowtimeFeatures.VO.value,
-                cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
+                ShowFeatures.VO.value,
+                ShowFeatures.THREE_D.value,
             ],
         )
         expired_stock = offers_factories.EventStockFactory(
@@ -100,8 +100,8 @@ class OffersStocksV2Test:
             beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1),
             priceCategory__label="expired",
             features=[
-                cinema_providers_constants.ShowtimeFeatures.VF.value,
-                cinema_providers_constants.ShowtimeFeatures.ICE.value,
+                ShowFeatures.VF.value,
+                ShowFeatures.ICE.value,
             ],
         )
         exhausted_stock = offers_factories.EventStockFactory(
@@ -109,7 +109,7 @@ class OffersStocksV2Test:
             price=89.00,
             quantity=1,
             priceCategory__label="exhausted",
-            features=[cinema_providers_constants.ShowtimeFeatures.VO.value],
+            features=[ShowFeatures.VO.value],
         )
 
         BookingFactory(stock=bookable_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))

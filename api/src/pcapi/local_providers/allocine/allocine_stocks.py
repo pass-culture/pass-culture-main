@@ -20,8 +20,6 @@ from pcapi.core.providers.allocine import get_movies_showtimes
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
-from pcapi.local_providers.movie_festivals import api as movie_festivals_api
-from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
@@ -174,16 +172,7 @@ class AllocineStocks(LocalProvider):
         if "quantity" not in allocine_stock.fieldsUpdated:
             allocine_stock.quantity = self.quantity
 
-        if movie_festivals_api.should_apply_movie_festival_rate(
-            allocine_stock.offer.id, allocine_stock.beginningDatetime.date()
-        ):
-            allocine_stock.price = movie_festivals_constants.FESTIVAL_RATE
-            allocine_stock.priceCategory = self.get_or_create_allocine_price_category(
-                movie_festivals_constants.FESTIVAL_RATE,
-                allocine_stock,
-                movie_festivals_constants.FESTIVAL_NAME,
-            )
-        elif "price" not in allocine_stock.fieldsUpdated:
+        if "price" not in allocine_stock.fieldsUpdated:
             if allocine_stock.priceCategory is None:
                 allocine_stock.price = self.price
                 allocine_stock.priceCategory = self.get_or_create_allocine_price_category(self.price, allocine_stock)
