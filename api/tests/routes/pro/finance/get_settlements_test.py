@@ -147,7 +147,7 @@ class GetSettlementsTest:
             },
         ]
 
-    def test_get_settlements_rejected(self, client: TestClient):
+    def test_get_settlements_rejected_unresolved(self, client: TestClient):
         now = get_naive_utc_now()
 
         user_offerer = offerers_factories.UserOffererFactory()
@@ -186,7 +186,7 @@ class GetSettlementsTest:
             response = client.get(URL, params={"offererId": offerer_id})
 
         assert response.status_code == 200
-        # the settlement is "rejected" as the venue is not linked to a bank account
+        # the settlement is "rejected unresolved" as the venue is not linked to a bank account
         assert response.json == [
             {
                 "id": settlement.id,
@@ -194,7 +194,7 @@ class GetSettlementsTest:
                 "date": batch.dateValidated.date().isoformat(),
                 "amount": 100,
                 "bankAccount": bank_account.label,
-                "status": "REJECTED",
+                "status": "REJECTED_UNRESOLVED",
                 "invoices": [
                     {
                         "reference": invoice.reference,
