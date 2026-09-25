@@ -990,7 +990,7 @@ class SSORefreshTokenPersistenceTest:
         assert sso.ssoExtraData == {"mobile": "apple-refresh-token"}
 
     @patch("pcapi.connectors.apple_oauth.get_apple_user")
-    def test_does_not_overwrite_existing_refresh_token_when_provider_returns_none(self, mocked_apple_oauth, client):
+    def test_overwrite_existing_refresh_token_on_relog(self, mocked_apple_oauth, client):
         user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
         users_factories.SingleSignOnFactory(
             user=user,
