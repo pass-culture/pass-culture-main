@@ -1007,11 +1007,16 @@ def _get_collective_offer_details_actions(collective_offer: educational_models.C
             and finance_validation.check_incident_collective_booking(collective_booking)
         ):
             allowed_actions.add_action(CollectiveOfferDetailsActionType.CREATE_OVERPAYMENT)
-    if access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
-        if collective_stock and _is_collective_offer_price_editable(collective_offer):
-            allowed_actions.add_action(CollectiveOfferDetailsActionType.ADJUST_PRICE)
-        if not collective_booking or not collective_booking.is_pending_reimbursement_or_reimbursed:
-            allowed_actions.add_action(CollectiveOfferDetailsActionType.MOVE_OFFER)
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+        and collective_stock
+        and _is_collective_offer_price_editable(collective_offer)
+    ):
+        allowed_actions.add_action(CollectiveOfferDetailsActionType.ADJUST_PRICE)
+    if access_control.has_current_user_permission(perm_models.Permissions.MOVE_COLLECTIVE_OFFER) and (
+        not collective_booking or not collective_booking.is_pending_reimbursement_or_reimbursed
+    ):
+        allowed_actions.add_action(CollectiveOfferDetailsActionType.MOVE_OFFER)
 
     return allowed_actions
 
@@ -1320,7 +1325,7 @@ def get_collective_offer_price_form(collective_offer_id: int) -> response_utils.
 
 
 @blueprint.route("/<int:collective_offer_id>/move", methods=["GET"])
-@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+@access_control.permission_required(perm_models.Permissions.MOVE_COLLECTIVE_OFFER)
 def get_move_collective_offer_form(collective_offer_id: int) -> response_utils.BackofficeResponse:
     information = Markup(
         "Cette <strong>action expérimentale</strong> permet de déplacer l'offre collective et sa réservation vers n'importe quel autre "
@@ -1341,7 +1346,7 @@ def get_move_collective_offer_form(collective_offer_id: int) -> response_utils.B
 
 
 @blueprint.route("/<int:collective_offer_id>/move", methods=["POST"])
-@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+@access_control.permission_required(perm_models.Permissions.MOVE_COLLECTIVE_OFFER)
 def move_collective_offer(collective_offer_id: int) -> response_utils.BackofficeResponse:
     redirect_url = url_for(
         "backoffice.collective_offer.get_collective_offer_details", collective_offer_id=collective_offer_id
