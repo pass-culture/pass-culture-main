@@ -1042,7 +1042,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         # explicit join on Venue then Offerer
         return sa.and_(
             cls.isPublished,
-            offerers_models.Venue.state == None,
+            offerers_models.Venue.state.is_(None),
             offerers_models.Offerer.isActive,
             offerers_models.Offerer.isValidated,
         )
@@ -1059,7 +1059,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     def _isPublishedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(
             cls.validation == OfferValidationStatus.APPROVED,
-            cls.publicationDatetime != None,
+            cls.publicationDatetime.is_not(None),
             cls.publicationDatetime <= sa.func.now(),
         )
 
@@ -1448,7 +1448,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @classmethod
     def _isActiveExpression(cls) -> ColumnElement[bool]:
         return sa.and_(
-            cls.publicationDatetime != None,
+            cls.publicationDatetime.is_not(None),
             cls.publicationDatetime <= sa.func.now(),
         )
 

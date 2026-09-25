@@ -261,8 +261,8 @@ class UpdateProviderExternalUrlsTest:
             )
 
         # Should not have changed
-        assert provider_with_no_ticketing_urls.bookingExternalUrl == None
-        assert provider_with_no_ticketing_urls.cancelExternalUrl == None
+        assert provider_with_no_ticketing_urls.bookingExternalUrl is None
+        assert provider_with_no_ticketing_urls.cancelExternalUrl is None
 
         # Try to set only `cancelExternalUrl`
         with pytest.raises(exceptions.ProviderException):
@@ -271,8 +271,8 @@ class UpdateProviderExternalUrlsTest:
             )
 
         # Should not have changed
-        assert provider_with_no_ticketing_urls.bookingExternalUrl == None
-        assert provider_with_no_ticketing_urls.cancelExternalUrl == None
+        assert provider_with_no_ticketing_urls.bookingExternalUrl is None
+        assert provider_with_no_ticketing_urls.cancelExternalUrl is None
 
     def test_should_do_nothing(self):
         provider = providers_factories.PublicApiProviderFactory()
@@ -297,8 +297,8 @@ class UpdateProviderExternalUrlsTest:
         api.update_provider_external_urls(provider, booking_external_url=None, cancel_external_url=None)
 
         # Should have unset the ticketing urls
-        assert provider.bookingExternalUrl == None
-        assert provider.cancelExternalUrl == None
+        assert provider.bookingExternalUrl is None
+        assert provider.cancelExternalUrl is None
 
     def test_should_update_ticketing_urls(self):
         provider = providers_factories.PublicApiProviderFactory()
@@ -504,8 +504,8 @@ class UpdateVenueProviderExternalUrlsTest:
         api.update_venue_provider_external_urls(venue_provider, booking_external_url=None, cancel_external_url=None)
 
         # Should have unset ticketing urls
-        assert venue_provider_external_urls.bookingExternalUrl == None
-        assert venue_provider_external_urls.cancelExternalUrl == None
+        assert venue_provider_external_urls.bookingExternalUrl is None
+        assert venue_provider_external_urls.cancelExternalUrl is None
         assert venue_provider_external_urls.notificationExternalUrl == previous_notification_url
 
     def test_should_unset_ticketing_urls_because_ticketing_urls_are_defined_at_provider_level(self):
@@ -528,8 +528,8 @@ class UpdateVenueProviderExternalUrlsTest:
         api.update_venue_provider_external_urls(venue_provider, booking_external_url=None, cancel_external_url=None)
 
         # Should have unset ticketing urls
-        assert venue_provider_external_urls.bookingExternalUrl == None
-        assert venue_provider_external_urls.cancelExternalUrl == None
+        assert venue_provider_external_urls.bookingExternalUrl is None
+        assert venue_provider_external_urls.cancelExternalUrl is None
         assert venue_provider_external_urls.notificationExternalUrl == previous_notification_url
 
     def test_should_delete_venue_provider_external_urls(self):
@@ -549,7 +549,7 @@ class UpdateVenueProviderExternalUrlsTest:
         db.session.refresh(venue_provider)
 
         # Should have deleted `venue_provider_external_urls`
-        assert venue_provider.externalUrls == None
+        assert venue_provider.externalUrls is None
 
     def test_should_delete_venue_provider_external_urls_even_if_it_is_a_partial_unset_of_ticket_urls(self):
         provider = providers_factories.ProviderFactory()
@@ -571,7 +571,7 @@ class UpdateVenueProviderExternalUrlsTest:
         db.session.refresh(venue_provider)
 
         # Should have deleted `venue_provider_external_urls`
-        assert venue_provider.externalUrls == None
+        assert venue_provider.externalUrls is None
 
     def test_should_delete_venue_provider_external_urls_even_if_it_is_a_partial_unset_of_notif_url(self):
         provider = providers_factories.ProviderFactory()
@@ -593,7 +593,7 @@ class UpdateVenueProviderExternalUrlsTest:
         db.session.refresh(venue_provider)
 
         # Should have deleted `venue_provider_external_urls`
-        assert venue_provider.externalUrls == None
+        assert venue_provider.externalUrls is None
 
     def test_should_create_venue_provider_external_urls(self):
         provider = providers_factories.ProviderFactory()
@@ -601,7 +601,7 @@ class UpdateVenueProviderExternalUrlsTest:
         venue = offerers_factories.VenueFactory()
         venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
 
-        assert venue_provider.externalUrls == None
+        assert venue_provider.externalUrls is None
 
         api.update_venue_provider_external_urls(
             venue_provider, booking_external_url="https://helloooooo.co", cancel_external_url="https://byyyyyye.co"
@@ -610,4 +610,4 @@ class UpdateVenueProviderExternalUrlsTest:
         # Should have created `venue_provider_external_urls`
         assert venue_provider.externalUrls.bookingExternalUrl == "https://helloooooo.co"
         assert venue_provider.externalUrls.cancelExternalUrl == "https://byyyyyye.co"
-        assert venue_provider.externalUrls.notificationExternalUrl == None
+        assert venue_provider.externalUrls.notificationExternalUrl is None

@@ -400,7 +400,7 @@ class PostBookingTest:
         assert external_bookings.bookingId == response.json["bookingId"]
         assert external_bookings.barcode == "12123932898127"
         assert external_bookings.seat == "A12"
-        assert stock.quantity == None  # stock quantity is unlimited the value is None in the database
+        assert stock.quantity is None  # stock quantity is unlimited the value is None in the database
         assert stock.remainingQuantity == "unlimited"
         assert stock.dnBookedQuantity == 15
 
@@ -702,7 +702,7 @@ class PostBookingTest:
         assert response.json == {"code": "PROVIDER_SHOW_DOES_NOT_EXIST"}
         assert stock.isSoftDeleted
         assert len(db.session.query(bookings_models.Booking).all()) == 0
-        assert post_adapter.last_request == None
+        assert post_adapter.last_request is None
 
     @time_machine.travel("2022-10-12 17:09:25")
     @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
@@ -770,7 +770,7 @@ class PostBookingTest:
         assert response.json == {"code": "PROVIDER_SHOW_DOES_NOT_EXIST"}
         assert stock.isSoftDeleted
         assert len(db.session.query(bookings_models.Booking).all()) == 0
-        assert post_adapter.last_request == None
+        assert post_adapter.last_request is None
 
     @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_api_return_less_tickets_than_quantity(self, client, requests_mock):

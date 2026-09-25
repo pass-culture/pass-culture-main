@@ -189,7 +189,6 @@ ignore = [
   # TODO : delete following rules from this list, and fix each case (check if you need to add them to extend-select by comparing to https://docs.astral.sh/ruff/default-rules/)
 
   # These are stylistic rules that implies many modifications
-  "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy;
   "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert);
   "SIM102",  # nested-if : Use a single `if` statement instead of nested `if` statements
   "SIM117",  # multiple-with-statements : Use a single `with` statement with multiple contexts

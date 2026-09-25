@@ -689,8 +689,8 @@ class SendBookingNotificationToExternalServiceTest:
         assert payload["offer_id_at_provider"] == "une_offre_de_grand_malade"
         assert payload["offer_name"] == "Moins 50 pour cent sur tous les Marc Lévy !"
         assert payload["offer_price"] == 1010
-        assert payload["price_category_id"] == None
-        assert payload["price_category_label"] == None
+        assert payload["price_category_id"] is None
+        assert payload["price_category_label"] is None
         assert payload["stock_id"] == stock.id
         assert (
             payload["stock_id_at_provider"] == "bro_si_ty_vas_pas_direct_ça_va_te_passer_sous_nez_c_marc_lévy_qd_meme"

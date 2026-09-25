@@ -1389,7 +1389,7 @@ class CreateOfferTest:
 
         offer = api.create_offer(body=body, venue=venue, offerer_address=offerer_address)
 
-        assert offer.offererAddressId == None
+        assert offer.offererAddressId is None
 
     def test_create_offer_from_scratch(self, caplog, clear_redis):
         venue = offerers_factories.VenueFactory()
@@ -2210,7 +2210,7 @@ class UpdateOfferTest:
         api.update_offer(offer, ean=None, mandatory_extra_data_fields=set())
 
         offer = db.session.query(models.Offer).one()
-        assert offer.ean == None
+        assert offer.ean is None
 
     def test_raise_error_on_updating_id_at_provider(self):
         offer = factories.OfferFactory(
@@ -2736,7 +2736,7 @@ class HeadlineOfferTest:
             assert not old_headline_offer.isActive
             assert new_headline_offer.isActive
             assert new_headline_offer.timespan.lower.date() != creation_time.date()
-            assert new_headline_offer.timespan.upper == None
+            assert new_headline_offer.timespan.upper is None
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
@@ -4310,7 +4310,7 @@ class GetStocksStatsTest:
 
         # Then
         assert stats.stock_count == 1
-        assert stats.remaining_quantity == None
+        assert stats.remaining_quantity is None
 
     def test_get_stocks_stats_with_another_stock_has_unlimited_quantity(self):
         # Given
@@ -4356,7 +4356,7 @@ class GetStocksStatsTest:
 
         # Then
         assert stats.stock_count == 2
-        assert stats.remaining_quantity == None
+        assert stats.remaining_quantity is None
 
     def test_get_stocks_stats_with_no_stock(self):
         offer = factories.OfferFactory()
@@ -4724,7 +4724,7 @@ class CreatePriceCategoryTest:
         price_category_1 = api.create_price_category(offer, "Carré or où ça douille sa maman", decimal.Decimal("70.5"))
         assert price_category_1.price == 70.5
         assert price_category_1.label == "Carré or où ça douille sa maman"
-        assert price_category_1.idAtProvider == None
+        assert price_category_1.idAtProvider is None
 
         # with idAtProvider
         price_category_2 = api.create_price_category(
@@ -4767,7 +4767,7 @@ class EditPriceCategoryTest:
             price_category,
             id_at_provider=None,
         )
-        assert updated_price_category.idAtProvider == None
+        assert updated_price_category.idAtProvider is None
 
     def test_should_raise_because_id_at_provider_already_taken(self):
         offer = factories.EventOfferFactory()

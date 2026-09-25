@@ -291,7 +291,7 @@ def get_offers_by_date_field_range(
 ) -> sa_orm.Query:
     column = getattr(models.Offer, date_field)
     return db.session.query(models.Offer).filter(
-        column != None,
+        column.is_not(None),
         column >= lower_bound,
         column <= upper_bound,
     )

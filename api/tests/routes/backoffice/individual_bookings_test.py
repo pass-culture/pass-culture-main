@@ -1776,7 +1776,7 @@ class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
         assert sheet.cell(row=1, column=1).value == "Structure"
         assert sheet.cell(row=2, column=1).value == bookings[0].venue.name
         assert sheet.cell(row=3, column=1).value == bookings[0].venue.name
-        assert sheet.cell(row=4, column=1).value == None
+        assert sheet.cell(row=4, column=1).value is None
 
 
 class GetIndividualBookingTest(GetEndpointHelper):

@@ -470,7 +470,7 @@ class SynchroniseRuralityLevelTest:
         assert institutions[0].ruralLevel == models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
         assert institutions[1].ruralLevel == models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
         assert institutions[2].ruralLevel == models.InstitutionRuralLevel.GRANDS_CENTRES_URBAINS
-        assert institutions[3].ruralLevel == None
+        assert institutions[3].ruralLevel is None
 
 
 @pytest.mark.usefixtures("db_session")

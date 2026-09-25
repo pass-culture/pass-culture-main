@@ -210,7 +210,7 @@ class Returns200Test:
 
         assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
         assert offer.offererAddress.addressId == oa.addressId
-        assert offer.offererAddress.label == None
+        assert offer.offererAddress.label is None
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -355,7 +355,7 @@ class Returns200Test:
         response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        assert getattr(offer, field) == None
+        assert getattr(offer, field) is None
 
     def test_additional_details(self, auth_client, venue):
         offer = factories.PublishedCollectiveOfferFactory(venue=venue, additionalDetails="some details")

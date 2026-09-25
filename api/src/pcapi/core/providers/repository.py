@@ -261,8 +261,8 @@ def get_future_events_requiring_ticketing_system(
         # Events not linked to a Venue specific ticketing system
         final_query = future_provider_events_with_ticketing_query.filter(
             sa.or_(
-                Venue.venueProviders == None,
-                models.VenueProviderExternalUrls.bookingExternalUrl == None,
+                ~Venue.venueProviders.any(),
+                models.VenueProviderExternalUrls.bookingExternalUrl.is_(None),
             )
         )
 

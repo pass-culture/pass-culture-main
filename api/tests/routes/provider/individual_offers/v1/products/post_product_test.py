@@ -162,7 +162,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
         assert created_offer.offererAddressId != created_offer.venue.offererAddress.id
         assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
-        assert created_offer.offererAddress.label == None
+        assert created_offer.offererAddress.label is None
 
         assert response.json == {
             "bookingAllowedDatetime": None,
@@ -270,7 +270,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
         assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
         assert created_offer.offererAddress.addressId == venue_provider.venue.offererAddress.addressId
-        assert created_offer.offererAddress.label == None
+        assert created_offer.offererAddress.label is None
 
         created_stock = db.session.query(offers_models.Stock).one()
         assert created_stock.price == decimal.Decimal("12.34")

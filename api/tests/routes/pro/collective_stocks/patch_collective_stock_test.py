@@ -284,8 +284,8 @@ class Return200Test:
         db.session.refresh(booking)
         assert stock.bookingLimitDatetime == new_limit
         assert booking.status == CollectiveBookingStatus.PENDING
-        assert booking.cancellationReason == None
-        assert booking.cancellationDate == None
+        assert booking.cancellationReason is None
+        assert booking.cancellationDate is None
 
     def test_number_of_teachers(self, client):
         stock = factories.CollectiveStockFactory(numberOfTeachers=30)

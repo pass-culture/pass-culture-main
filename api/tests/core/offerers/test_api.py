@@ -4432,7 +4432,7 @@ class ReopenVenueTest:
 
         db.session.refresh(venue)
 
-        assert venue.state == None
+        assert venue.state is None
 
     def test_reopen_venue_adds_immediate_reopen_action_with_comment(self):
         venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
@@ -4457,7 +4457,7 @@ class ReopenVenueTest:
             offerers_api.reopen_venue(venue, author)
 
         db.session.refresh(venue)
-        assert venue.state == None
+        assert venue.state is None
 
     def test_closed_venue_with_closed_offerer_stays_closed_and_nothing_is_done(self):
         venue = offerers_factories.VenueFactory(

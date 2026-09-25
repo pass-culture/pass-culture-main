@@ -217,7 +217,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         venue = db.session.get(offerers_models.Venue, venue_id)
-        assert venue.collectivePhone == None
+        assert venue.collectivePhone is None
 
 
 class Returns400Test:

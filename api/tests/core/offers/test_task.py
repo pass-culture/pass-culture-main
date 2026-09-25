@@ -204,7 +204,7 @@ class UpdateOfferAndRelatedStockTest:
         stock = db.session.query(models.Stock).first()
         assert stock.offer == update_offer
         assert stock.price == decimal.Decimal("5.50")
-        assert stock.bookingLimitDatetime == None
+        assert stock.bookingLimitDatetime is None
         assert stock.quantity == 10
 
     @pytest.mark.parametrize(

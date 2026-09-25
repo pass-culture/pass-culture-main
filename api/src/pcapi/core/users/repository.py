@@ -211,7 +211,7 @@ def fill_phone_number_on_all_users_offerer_without_any(offerer_id: int, phone_nu
     users_without_phone_number = (
         sa.select(models.User.id)
         .select_from(models.User)
-        .where(sa.or_(models.User.phoneNumber == None, models.User.phoneNumber == ""))
+        .where(sa.or_(models.User.phoneNumber.is_(None), models.User.phoneNumber == ""))
         .join(
             offerers_models.UserOfferer,
             sa.and_(

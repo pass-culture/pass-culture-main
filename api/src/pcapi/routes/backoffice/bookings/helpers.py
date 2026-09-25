@@ -108,9 +108,9 @@ def get_filtered_booking_query(
 
     if form.has_incident.data and len(form.has_incident.data) == 1:
         if form.has_incident.data[0] == "true":
-            base_query = base_query.filter(booking_class.validated_incident_id != None)
+            base_query = base_query.filter(booking_class.validated_incident_id.is_not(None))
         else:
-            base_query = base_query.filter(booking_class.validated_incident_id == None)
+            base_query = base_query.filter(booking_class.validated_incident_id.is_(None))
 
     if form.q.data:
         search_query = form.q.data
@@ -150,7 +150,7 @@ def tag_bookings_as_fraudulent(bookings_ids: list[int], send_emails: bool) -> No
         )
         .filter(
             bookings_models.Booking.id.in_(bookings_ids),
-            bookings_models.Booking.fraudulentBookingTag == None,
+            bookings_models.Booking.fraudulentBookingTag == None,  # noqa: E711
         )
     )
     tokens_by_email = defaultdict(list)

@@ -1887,7 +1887,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         event = db.session.query(finance_models.FinanceEvent).one()
         assert event.booking == booking
-        assert event.valueDate == booking.dateUsed != None
+        assert event.valueDate == booking.dateUsed is not None
 
     def test_achievement_unlock_for_individual_booking(self):
         event_date = date_utils.get_naive_utc_now() - timedelta(days=3)

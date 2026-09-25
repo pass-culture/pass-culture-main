@@ -2773,7 +2773,7 @@ class PendingOfferTest(PostEndpointHelper):
         assert offer_to_validate.validation == offers_models.OfferValidationStatus.PENDING
         assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
         assert offer_to_validate.lastValidationDate.date() == datetime.date.today()
-        assert offer_to_validate.lastValidationPrice == None
+        assert offer_to_validate.lastValidationPrice is None
 
     def test_pending_offer_using_htmx(self, legit_user, authenticated_client):
         offer_to_validate = offers_factories.OfferFactory()
@@ -2823,7 +2823,7 @@ class PendingOfferTest(PostEndpointHelper):
         assert offer_to_validate.validation == offers_models.OfferValidationStatus.PENDING
         assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
         assert offer_to_validate.lastValidationDate.date() == datetime.date.today()
-        assert offer_to_validate.lastValidationPrice == None
+        assert offer_to_validate.lastValidationPrice is None
 
 
 class GetValidateOfferFormTest(GetEndpointHelper):
@@ -4155,7 +4155,7 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
         assert sheet.cell(row=1, column=1).value == "Structure"
         assert sheet.cell(row=2, column=1).value == booking1.venue.name
         assert sheet.cell(row=3, column=1).value == booking2.venue.name
-        assert sheet.cell(row=4, column=1).value == None
+        assert sheet.cell(row=4, column=1).value is None
 
 
 class ActivateOfferTest(PostEndpointHelper):

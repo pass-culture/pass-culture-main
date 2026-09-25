@@ -793,8 +793,9 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
         db.session.query(models.Venue)
         .filter(
             models.Venue.managingOffererId == offerer_id,
-            models.VenueBankAccountLink.timespan
-            == None,  # Because as we LEFT OUTER JOIN on VenueBankAccountLink, timespan column can be NULL
+            models.VenueBankAccountLink.timespan.is_(
+                None
+            ),  # Because as we LEFT OUTER JOIN on VenueBankAccountLink, timespan column can be NULL
             # i.e. only Venue without any VenueBankAccountLink or only deprecated ones.
             sa.or_(
                 db.session.query(offers_models.Stock)
@@ -886,7 +887,7 @@ def get_offerers_venues_with_pricing_point(
             # It is not possible to filter over Venue.pricing_point_links
             # so we filter over models.VenuePricingPointLink.venueId == None
             # but we could filter over models.VenuePricingPointLink.pricingPointId == None
-            venues_choices_query = venues_choices_query.filter(models.VenuePricingPointLink.venueId == None)
+            venues_choices_query = venues_choices_query.filter(models.VenuePricingPointLink.venueId.is_(None))
 
     if filter_same_bank_account:
         venues_choices_query = venues_choices_query.outerjoin(

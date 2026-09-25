@@ -323,7 +323,7 @@ class UserTest:
 
     def test_get_birth_date_with_neither_date_of_birth_nor_validated_birth_date(self):
         users_factories.UserFactory(dateOfBirth=None, validatedBirthDate=None)
-        user_query = db.session.query(user_models.User).filter(user_models.User.birth_date == None)
+        user_query = db.session.query(user_models.User).filter(user_models.User.birth_date.is_(None))
         assert user_query.count() == 1
 
     def test_get_birth_date_with_only_date_of_birth(self):

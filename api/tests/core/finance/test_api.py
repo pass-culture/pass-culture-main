@@ -5355,12 +5355,12 @@ class RevertInvoicesTest:
         for pricing in pricings:
             assert pricing.status == models.PricingStatus.INVOICED
         assert indiv_booking1.status == bookings_models.BookingStatus.PENDING_REIMBURSEMENT
-        assert indiv_booking1.reimbursementDate == None
+        assert indiv_booking1.reimbursementDate is None
         assert indiv_booking2.status == bookings_models.BookingStatus.CANCELLED
         assert indiv_booking2.reimbursementDate == invoice.date
         assert booking_finance_incident.incident.status == models.IncidentStatus.VALIDATED
         assert collective_booking1.status == educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT
-        assert collective_booking1.reimbursementDate == None
+        assert collective_booking1.reimbursementDate is None
         assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED
         assert collective_booking2.reimbursementDate == invoice.date
 

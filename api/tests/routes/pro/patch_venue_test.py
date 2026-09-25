@@ -585,10 +585,10 @@ class Returns200Test:
         assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         assert venue.activity == offerers_models.Activity.BOOKSTORE
-        assert venue.audioDisabilityCompliant == None
-        assert venue.mentalDisabilityCompliant == None
-        assert venue.motorDisabilityCompliant == None
-        assert venue.visualDisabilityCompliant == None
+        assert venue.audioDisabilityCompliant is None
+        assert venue.mentalDisabilityCompliant is None
+        assert venue.motorDisabilityCompliant is None
+        assert venue.visualDisabilityCompliant is None
 
     @patch("pcapi.core.offers.tasks.update_all_venue_offers_accessibility_task.delay")
     @pytest.mark.parametrize("unchanged_value", [True, False, None])
@@ -691,7 +691,7 @@ class Returns200Test:
 
         assert response.json["openingHours"]["MONDAY"] == [["10:00", "13:00"], ["14:00", "19:30"]]
         assert response.json["openingHours"]["TUESDAY"] == [["10:00", "13:00"], ["14:00", "19:30"]]
-        assert response.json["openingHours"]["FRIDAY"] == None
+        assert response.json["openingHours"]["FRIDAY"] is None
 
         assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
         assert venue.action_history[0].extraData == {

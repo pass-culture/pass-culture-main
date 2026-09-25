@@ -843,7 +843,7 @@ class Returns200Test:
         assert address.street == data["location"]["street"]
         assert address.city == data["location"]["city"]
         assert address.postalCode == data["location"]["postalCode"]
-        assert address.inseeCode == None
+        assert address.inseeCode is None
         assert address.latitude == Decimal("-20.08521")
         assert address.longitude == Decimal("164.03239")
         assert address.isManualEdition is True

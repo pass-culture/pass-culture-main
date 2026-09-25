@@ -277,7 +277,7 @@ class EMSExtractTransformLoadProcessTest:
             == "Après avoir retrouvé Gwen Stacy, Spider-Man, le sympathique héros originaire de Brooklyn, est catapulté à travers le Multivers, où il rencontre une équipe de Spider-Héros chargée d'en protéger l'existence. Mais lorsque les héros s'opposent sur la façon de gérer une nouvelle menace, Miles se retrouve confronté à eux et doit redéfinir ce que signifie être un héros afin de sauver les personnes qu'il aime le plus."
         )
         assert offer_1.product.extraData["allocineId"] == 269975
-        assert offer_1.product.extraData.get("visa") == None
+        assert offer_1.product.extraData.get("visa") is None
         assert len(offer_1.product.productMediations) == 1
         assert offer_1.product.productMediations[0].lastProvider == venue_provider.provider
         assert offer_1.product.productMediations[0].imageType == offers_models.ImageType.POSTER
@@ -290,7 +290,7 @@ class EMSExtractTransformLoadProcessTest:
         assert offer_1_stock_1.bookingLimitDatetime == datetime.datetime(2023, 7, 11, 8, 0)
         assert offer_1_stock_1.dateModifiedAtLastProvider == datetime.datetime(2023, 6, 12, 12, 41, 30)
         assert offer_1_stock_1.features == ["VF", "3D"]
-        assert offer_1_stock_1.quantity == None
+        assert offer_1_stock_1.quantity is None
         assert offer_1_stock_1.price == decimal.Decimal("7.15")
         assert offer_1_stock_1.priceCategory.price == decimal.Decimal("7.15")
         assert offer_1_stock_1.priceCategory.label == "Tarif pass Culture 7.15€"
@@ -302,7 +302,7 @@ class EMSExtractTransformLoadProcessTest:
         assert offer_1_stock_2.bookingLimitDatetime == datetime.datetime(2023, 7, 11, 10, 30)
         assert offer_1_stock_2.dateModifiedAtLastProvider == datetime.datetime(2023, 6, 12, 12, 41, 30)
         assert offer_1_stock_2.features == ["VF", "3D"]
-        assert offer_1_stock_2.quantity == None
+        assert offer_1_stock_2.quantity is None
         assert offer_1_stock_2.price == decimal.Decimal("7.15")
         assert offer_1_stock_2.priceCategory.price == decimal.Decimal("7.15")
         assert offer_1_stock_2.priceCategory.label == "Tarif pass Culture 7.15€"
@@ -325,7 +325,7 @@ class EMSExtractTransformLoadProcessTest:
             == "Renouant avec l'action et le grand spectacle qui ont fait des premiers Transformers un phénomène mondial il y a 14 ans, Transformers : Rise of The Beasts transportera le public dans une aventure aux quatre coins du monde au coeur des années 1990. On y découvrira pour la première fois les Maximals, Predacons et Terrorcons rejoignant l'éternel combat entre les Autobots et les Decepticons."
         )
         assert offer_2.product.extraData["allocineId"] == 241065
-        assert offer_2.product.extraData.get("visa") == None
+        assert offer_2.product.extraData.get("visa") is None
         assert len(offer_2.product.productMediations) == 0
 
         offer_2_stocks = offer_2.activeStocks
@@ -336,7 +336,7 @@ class EMSExtractTransformLoadProcessTest:
         assert offer_2_stock_1.bookingLimitDatetime == datetime.datetime(2023, 7, 11, 8, 0)
         assert offer_2_stock_1.dateModifiedAtLastProvider == datetime.datetime(2023, 6, 12, 12, 41, 30)
         assert offer_2_stock_1.features == ["VF"]
-        assert offer_2_stock_1.quantity == None
+        assert offer_2_stock_1.quantity is None
         assert offer_2_stock_1.price == decimal.Decimal("5.15")
         assert offer_2_stock_1.priceCategory.price == decimal.Decimal("5.15")
         assert offer_2_stock_1.priceCategory.label == "Tarif pass Culture 5.15€"
@@ -404,7 +404,7 @@ class EMSExtractTransformLoadProcessTest:
 
         EMSExtractTransformLoadProcess(venue_provider).execute()
 
-        assert get_image_adapter.last_request == None
+        assert get_image_adapter.last_request is None
 
     def should_create_offer_even_if_thumb_is_incorrect(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)

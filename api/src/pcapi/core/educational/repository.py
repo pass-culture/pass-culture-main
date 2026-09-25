@@ -648,7 +648,7 @@ def get_collective_offers_template_by_filters(
                 sa.func.lower(models.CollectiveOfferTemplate.dateRange)
                 <= datetime.combine(filters.period_ending_date, time.max),
             )
-        query = query.filter(sa.or_(models.CollectiveOfferTemplate.dateRange == None, sa.and_(*date_filters)))
+        query = query.filter(sa.or_(models.CollectiveOfferTemplate.dateRange.is_(None), sa.and_(*date_filters)))
 
     if filters.formats:
         query = query.filter(
@@ -748,7 +748,7 @@ def filter_collective_offers_by_statuses(
         on_booking_status_filter.append(
             sa.and_(
                 *approved_and_active_filters,
-                models.CollectiveBooking.status == None,
+                models.CollectiveBooking.status.is_(None),
                 models.CollectiveStock.hasBookingLimitDatetimePassed == False,
             )
         )
@@ -800,7 +800,7 @@ def filter_collective_offers_by_statuses(
                 models.CollectiveStock.hasStartDatetimePassed == False,
                 sa.or_(
                     models.CollectiveBooking.status == models.CollectiveBookingStatus.PENDING,
-                    models.CollectiveBooking.status == None,
+                    models.CollectiveBooking.status.is_(None),
                 ),
             )
         )
@@ -840,7 +840,7 @@ def filter_collective_offers_by_statuses(
             sa.and_(
                 *approved_and_active_filters,
                 sa.or_(
-                    models.CollectiveBooking.status == None,
+                    models.CollectiveBooking.status.is_(None),
                     models.CollectiveBooking.status == models.CollectiveBookingStatus.PENDING,
                 ),
                 models.CollectiveStock.hasStartDatetimePassed == True,
@@ -905,7 +905,7 @@ def add_ordering_on_collective_offers_for_home(
                 models.CollectiveOffer.isActive == True,
                 models.CollectiveStock.hasBookingLimitDatetimePassed == False,
                 sa.or_(
-                    models.CollectiveBooking.status == None,
+                    models.CollectiveBooking.status.is_(None),
                     models.CollectiveBooking.status == models.CollectiveBookingStatus.PENDING,
                 ),
                 # here the conditions of expiration within the next 7 days

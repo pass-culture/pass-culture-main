@@ -186,7 +186,7 @@ class CGRStocksTest:
         assert created_offers[0].venue == venue_provider.venue
         assert created_offers[0].offererAddress != venue_provider.venue.offererAddress
         assert created_offers[0].offererAddress.address == venue_provider.venue.offererAddress.address
-        assert created_offers[0].offererAddress.label == None
+        assert created_offers[0].offererAddress.label is None
         assert created_offers[0].offererAddress.type != "VENUE_LOCATION"
         assert (
             created_offers[0].description
@@ -243,7 +243,7 @@ class CGRStocksTest:
         assert created_offers[0].venue == venue_provider.venue
         assert created_offers[0].offererAddress != venue_provider.venue.offererAddress
         assert created_offers[0].offererAddress.address == venue_provider.venue.offererAddress.address
-        assert created_offers[0].offererAddress.label == None
+        assert created_offers[0].offererAddress.label is None
         assert created_offers[0].offererAddress.type != "VENUE_LOCATION"
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
@@ -588,7 +588,7 @@ class CGRStocksTest:
 
         cgr_stocks = self.execute_import(ProcessClass, venue_provider)
 
-        assert get_image_adapter.last_request == None
+        assert get_image_adapter.last_request is None
         if isinstance(cgr_stocks, CGRStocks):
             assert cgr_stocks.createdThumbs == 0
 
@@ -618,7 +618,7 @@ class CGRStocksTest:
         cgr_stocks = self.execute_import(ProcessClass, venue_provider)
 
         created_offer = db.session.query(offers_models.Offer).one()
-        assert created_offer.activeMediation == None
+        assert created_offer.activeMediation is None
         if isinstance(cgr_stocks, CGRStocks):
             assert cgr_stocks.erroredThumbs == 1
 

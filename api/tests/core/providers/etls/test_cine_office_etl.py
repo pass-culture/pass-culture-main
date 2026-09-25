@@ -514,7 +514,7 @@ class CineOfficeExtractTransformLoadProcessTest:
         assert offer_1.product.name == "Test movie #1"
         assert offer_1.product.description == "Test description #1"
         assert offer_1.product.durationMinutes == 120
-        assert offer_1.product.extraData.get("allocineId") == None
+        assert offer_1.product.extraData.get("allocineId") is None
         assert offer_1.product.extraData["visa"] == "123"
 
         assert offer_2
@@ -530,7 +530,7 @@ class CineOfficeExtractTransformLoadProcessTest:
         assert offer_2.product.name == "Test movie #2"
         assert offer_2.product.description == "Test description #2"
         assert offer_2.product.durationMinutes == 90
-        assert offer_2.product.extraData.get("allocineId") == None
+        assert offer_2.product.extraData.get("allocineId") is None
         assert offer_2.product.extraData["visa"] == "456"
         assert not offer_2.product.productMediations
 

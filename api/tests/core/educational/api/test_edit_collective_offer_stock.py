@@ -159,8 +159,8 @@ class EditCollectiveOfferStocksTest:
 
         assert stock.bookingLimitDatetime == new_limit
         assert booking.status == CollectiveBookingStatus.PENDING
-        assert booking.cancellationReason == None
-        assert booking.cancellationDate == None
+        assert booking.cancellationReason is None
+        assert booking.cancellationDate is None
         assert booking.confirmationLimitDate == new_limit
 
     @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DETAILS)

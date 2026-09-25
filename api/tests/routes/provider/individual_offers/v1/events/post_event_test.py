@@ -121,7 +121,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
         assert created_offer.offererAddressId != created_offer.venue.offererAddress.id
         assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
-        assert created_offer.offererAddress.label == None
+        assert created_offer.offererAddress.label is None
 
     def test_event_with_deprecated_music_type_triggers_warning_log(self, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum
@@ -360,7 +360,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.status == offer_mixin.OfferStatus.DRAFT
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
-        assert created_offer.withdrawalDelay == None
+        assert created_offer.withdrawalDelay is None
         assert created_offer.idAtProvider == "T'as un bel id tu sais"
 
         created_mediation = db.session.query(offers_models.Mediation).one()

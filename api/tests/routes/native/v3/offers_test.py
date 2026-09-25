@@ -261,8 +261,8 @@ class OffersV3Test:
             "bannerUrl": offer.venue.bannerUrl,
         }
         assert response.json["withdrawalDetails"] == "modalité de retrait"
-        assert response.json["publicationDate"] == None
-        assert response.json["bookingAllowedDatetime"] == None
+        assert response.json["publicationDate"] is None
+        assert response.json["bookingAllowedDatetime"] is None
         assert response.json["isEvent"] is True
 
     def test_get_offer_with_unlimited_stock(self, client):

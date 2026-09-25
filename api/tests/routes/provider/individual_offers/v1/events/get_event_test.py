@@ -228,4 +228,4 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
         with testing.assert_num_queries(self.num_queries):
             response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
             assert response.status_code == 200
-        assert response.json["videoUrl"] == None
+        assert response.json["videoUrl"] is None
