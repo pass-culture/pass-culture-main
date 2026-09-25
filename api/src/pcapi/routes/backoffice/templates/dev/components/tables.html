@@ -1,0 +1,131 @@
+{% from "dev/components/_spec.html" import ds_section, ds_spec %}
+{% from "components/table.html" import sortable_column %}
+{% call ds_section("pc-ds-tableaux", "Tableaux", "Modèle des pages de liste (layouts/list.html + components/presentation/list.html) : bloc de recherche, compteur, tableau et actions groupées.") %}
+  {% call ds_spec("Bloc de recherche", "pc-search-block · build_filters_form_ng(form, action) · build_advanced_filters_form(form, action, id)", "Fond gris, champs sur une ligne, bouton Rechercher aligné à droite.") %}
+    <div class="pc-search-block rounded p-4 w-100">
+      <form>
+        <div class="row">
+          <div class="mb-3">
+            <div class="input-group">
+              {{ form_states[0][1].stringfield }}
+              {{ form_states[0][1].select }}
+              {{ form_states[0][1].date_range }}
+            </div>
+            <div class="input-group pt-2">{{ form_states[0][1].switch }}</div>
+          </div>
+          <div class="text-center d-flex justify-content-end">
+            <button type="button"
+                    class="btn py-2 px-3 btn-primary">
+              Rechercher<i class="bi bi-search ms-2"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  {% endcall %}
+  {% call ds_spec("Tableau de résultats", "table table-hover · sortable_column(is_active, comparator, default_sort) · pc-table-manager", "En-tête en gris subtil et petite taille, lignes survolées en gris clair, colonne de sélection à gauche, menu d'actions à droite.") %}
+    <div class="vstack gap-4 w-100">
+      <div class="d-flex justify-content-between">
+        <p class="num-results hstack text-secondary my-auto gap-2">3 résultats</p>
+        {% include "components/search/pagination.html" %}
+      </div>
+      <table class="table table-hover">
+        <thead>
+          <tr class="bg-secondary-subtle fs-7 align-middle">
+            <th scope="col">
+              <input type="checkbox"
+                     class="form-check-input"
+                     aria-label="Tout sélectionner" />
+            </th>
+            {% call sortable_column(comparator="number") %}ID{% endcall %}
+            {% call sortable_column() %}Nom{% endcall %}
+            {% call sortable_column(is_active=False) %}État{% endcall %}
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row_id, name, badge, color in [(101, "Le Grand Rex", "Validé", "success"), (102, "Librairie Mollat", "En attente", "warning"), (103, "Théâtre de la Ville", "Rejeté", "danger")] %}
+            <tr>
+              <td>
+                <input type="checkbox"
+                       class="form-check-input"
+                       aria-label="Sélectionner la ligne"
+                       {% if loop.first %}checked{% endif %} />
+              </td>
+              <td>{{ row_id }}</td>
+              <td>
+                <a href="#" class="link-primary">{{ name }}</a>
+              </td>
+              <td>{{ badge | format_badge(color) }}</td>
+              <td>
+                <div class="dropdown">
+                  <button type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          class="btn p-0">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-item">
+                      <a class="btn btn-sm d-block w-100 text-start px-3">Modifier</a>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endcall %}
+  {% call ds_spec("Actions groupées", "pc-batch-action + block multi_select_menu · data-toggle=pc-batch-confirm-btn-group", "Barre flottante en bas de page, visible dès qu'une ligne est cochée. Affichée ici en position statique.") %}
+    <div class="pc-batch-action p-0">
+      <div class="d-inline-block rounded bg-primary px-3 py-2">
+        <div class="d-flex">
+          <div class="counter-container">1 sélectionné</div>
+          <button type="button" class="btn">
+            <i class="bi bi-tag me-2"></i>Taguer
+          </button>
+          <button type="button" class="btn">
+            <i class="bi bi-hourglass-split me-2"></i>Suspendre
+          </button>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+  {% call ds_spec("Ligne dépliable", "build_booking_toggle_extra_row_button(booking) · collapse", "Un chevron ouvre une ligne supplémentaire sous la ligne courante.") %}
+    <table class="table table-hover w-100">
+      <thead>
+        <tr class="bg-secondary-subtle fs-7 align-middle">
+          <th scope="col"></th>
+          <th scope="col">Réservation</th>
+          <th scope="col">Offre</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <button type="button"
+                    class="btn btn-sm btn-outline-primary-subtle-bg pc-btn-chevron-toggle"
+                    data-bs-toggle="collapse"
+                    data-bs-target=".pc-ds-extra-row"
+                    aria-expanded="false">
+              <i class="bi bi-chevron-down"></i>
+            </button>
+          </td>
+          <td>ABC123</td>
+          <td>Concert</td>
+        </tr>
+        <tr class="collapse pc-ds-extra-row">
+          <td></td>
+          <td colspan="2" class="fs-7">
+            <ul class="mb-0">
+              <li>Date de l'évènement : 12/10/2026</li>
+              <li>Prix : 25,00 €</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  {% endcall %}
+{% endcall %}
