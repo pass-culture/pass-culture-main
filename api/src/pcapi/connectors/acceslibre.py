@@ -549,6 +549,21 @@ class AcceslibreBackend(BaseBackend):
             )
         if settings.ACCESLIBRE_SHOULD_AVOID_TOO_MANY_REQUESTS:
             time.sleep(0.3)  # request limit on acceslibre side is 3 per seconds
+        if response.status_code == 429:  # handle too many requests
+            raw_retry_after = response.headers.get("Retry-After")
+            retry_after = int(raw_retry_after) if raw_retry_after and raw_retry_after.isdigit() else None
+
+            # If we catch a retry after and it is close to 1 hour
+            if retry_after and retry_after > 3000:
+                logger.error(
+                    "Acceslibre API Key might be invalid or expired: fallbacked to anonymous quota (20 req/h).",
+                    extra={
+                        "url": url,
+                        "retry_after": retry_after,
+                        "response_body": response.text,
+                    },
+                )
+
         if response.status_code == 200:
             try:
                 return response.json()
