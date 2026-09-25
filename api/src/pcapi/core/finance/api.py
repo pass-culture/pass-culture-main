@@ -104,7 +104,7 @@ ORIGIN_OF_CREDIT_CASE: sa.sql.elements.Case = sa.case(
     (
         sa.or_(
             sa.and_(
-                bookings_models.Booking.usedRecreditType == None,
+                bookings_models.Booking.usedRecreditType.is_(None),
                 models.Deposit.type == models.DepositType.GRANT_17_18,
             ),
             models.Deposit.type == models.DepositType.GRANT_15_17,

@@ -266,8 +266,8 @@ class OffersStocksV2Test:
         }
         assert response_offer["withdrawalDetails"] is None
 
-        assert response_offer["publicationDate"] == None
-        assert response_offer["bookingAllowedDatetime"] == None
+        assert response_offer["publicationDate"] is None
+        assert response_offer["bookingAllowedDatetime"] is None
 
 
 class SendOfferWebAppLinkTest:

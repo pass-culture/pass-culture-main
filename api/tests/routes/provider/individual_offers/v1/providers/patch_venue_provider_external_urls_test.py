@@ -98,12 +98,12 @@ class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
             json_body={"cancelUrl": None, "notificationUrl": None, "bookingUrl": None},
         )
         assert response.status_code == 204
-        assert venue_provider.externalUrls == None
+        assert venue_provider.externalUrls is None
 
     def test_should_create_venue_provider_external_urls(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        assert venue_provider.externalUrls == None
+        assert venue_provider.externalUrls is None
 
         response = self.make_request(
             plain_api_key,
@@ -163,7 +163,7 @@ class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
     def test_should_raise_400_because_try_to_set_only_one_ticketing_url(self, payload):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
 
-        assert venue_provider.externalUrls == None
+        assert venue_provider.externalUrls is None
 
         response = self.make_request(plain_api_key, {"venue_id": venue_provider.venue.id}, json_body=payload)
 
@@ -172,7 +172,7 @@ class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
             "ticketing_urls": ["Your `booking_url` and `cancel_url` must be either both set or both unset"]
         }
 
-        assert venue_provider.externalUrls == None
+        assert venue_provider.externalUrls is None
 
     @pytest.mark.parametrize("payload", [{"cancelUrl": None}, {"bookingUrl": None}])
     def test_should_raise_400_because_try_to_unset_only_one_ticketing_url(self, payload):

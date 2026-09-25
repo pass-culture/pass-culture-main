@@ -491,8 +491,8 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         db.session.refresh(booking)
         assert stock.bookingLimitDatetime == new_limit
         assert booking.status == models.CollectiveBookingStatus.PENDING
-        assert booking.cancellationReason == None
-        assert booking.cancellationDate == None
+        assert booking.cancellationReason is None
+        assert booking.cancellationDate is None
         assert booking.confirmationLimitDate == new_limit
 
     def test_description_invalid(self):
@@ -719,7 +719,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert collective_offer.offererAddress.type == offerers_models.LocationType.OFFER_LOCATION
         assert collective_offer.offererAddressId != venue.offererAddress.id
         assert collective_offer.offererAddress.addressId == venue.offererAddress.addressId
-        assert collective_offer.offererAddress.label == None
+        assert collective_offer.offererAddress.label is None
 
     def test_patch_offer_update_to_address_on_other_location(self):
         key, venue_provider = self.setup_active_venue_provider()

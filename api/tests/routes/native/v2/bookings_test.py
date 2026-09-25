@@ -899,7 +899,7 @@ class GetBookingsListTest:
             "quantity": ended_booking.quantity,
             "canReact": ended_booking.can_react,
             "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%SZ")
-            if ended_booking.dateUsed != None
+            if ended_booking.dateUsed is not None
             else ended_booking.dateUsed,
             "expirationDate": None,
             "stock": {
@@ -927,7 +927,7 @@ class GetBookingsListTest:
                 },
             },
             "cancellationDate": ended_booking.cancellationDate.strftime("%Y-%m-%dT%H:%M:%SZ")
-            if ended_booking.cancellationDate != None
+            if ended_booking.cancellationDate is not None
             else ended_booking.cancellationDate,
             "cancellationReason": ended_booking.cancellationReason.value
             if ended_booking.cancellationReason
@@ -1287,7 +1287,7 @@ class GetBookingTicketTest:
             "data": booking.token,
         }
         assert ticket["voucher"] is None
-        assert ticket["activationCode"] == None
+        assert ticket["activationCode"] is None
         assert ticket["display"] == "online_code"
 
     def test_get_booking_goods(self, client):

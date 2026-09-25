@@ -230,7 +230,7 @@ class UpdateObjectsTest:
         assert existing_offer.durationMinutes == 21
         assert existing_offer.offererAddress != venue.offererAddress
         assert existing_offer.offererAddress.address == venue.offererAddress.address
-        assert existing_offer.offererAddress.label == None
+        assert existing_offer.offererAddress.label is None
         assert existing_offer.offererAddress.type != "VENUE_LOCATION"
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -263,7 +263,7 @@ class UpdateObjectsTest:
         assert created_offer.name == "Ceux de chez nous"
         assert created_offer.offererAddress != venue.offererAddress
         assert created_offer.offererAddress.address == venue.offererAddress.address
-        assert created_offer.offererAddress.label == None
+        assert created_offer.offererAddress.label is None
         assert created_offer.offererAddress.type != "VENUE_LOCATION"
 
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")

@@ -410,7 +410,7 @@ class GetUserForFormTest:
         )
         result = operations_api._get_user_for_form(form=form)
 
-        assert result == None
+        assert result is None
 
     def test_multiple_phone_matches(self):
         form = typeform.TypeformResponse(

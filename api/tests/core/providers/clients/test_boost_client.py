@@ -450,7 +450,7 @@ class BookTicketTest:
         with pytest.raises(external_bookings_exceptions.ShowSoldOutException) as exc:
             boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
 
-        assert post_adapter.last_request == None
+        assert post_adapter.last_request is None
         assert exc.value.remainingQuantity == 0
 
     def test_should_raise_show_does_not_exist_error(self, requests_mock):
@@ -469,7 +469,7 @@ class BookTicketTest:
         with pytest.raises(external_bookings_exceptions.ShowRemovedException):
             boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
 
-        assert post_adapter.last_request == None
+        assert post_adapter.last_request is None
 
     def test_error_502_should_raise_boost_api_exception(self, requests_mock):
         beneficiary = users_factories.BeneficiaryGrant18Factory()

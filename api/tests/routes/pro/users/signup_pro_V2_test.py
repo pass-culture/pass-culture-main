@@ -221,7 +221,7 @@ class Returns400Test:
         assert user.firstName == "Toto"
         assert not user.has_admin_role
         assert user.lastName == "Pro"
-        assert user.phoneNumber == None
+        assert user.phoneNumber is None
         assert user.dateOfBirth is None
         assert user.dateCreated is not None
         assert user.notificationSubscriptions == {

@@ -1870,7 +1870,7 @@ def get_stocks_stats(offer_id: int) -> StocksStats:
                 (
                     db.session.query(models.Stock)
                     .filter(
-                        models.Stock.quantity == None,
+                        models.Stock.quantity.is_(None),
                         models.Stock.isSoftDeleted.is_(False),
                         models.Stock.offerId == offer_id,
                     )

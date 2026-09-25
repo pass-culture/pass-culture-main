@@ -68,7 +68,7 @@ def check_can_edit_synchronized_stock(
     # as sometimes this piece of data is not correctly synchronized and pro users
     # have a tendency to create fake offers to circumvent the issue (which is worse
     # than allowing them to modify the stock)
-    if offer.isThing and editing_provider == None and modifications_set == {"quantity"}:
+    if offer.isThing and editing_provider is None and modifications_set == {"quantity"}:
         return
     if offer.lastProvider != editing_provider:
         raise exceptions.OfferException({"global": ["Les offres importées ne sont pas modifiables"]})

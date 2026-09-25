@@ -220,7 +220,7 @@ class Returns200Test:
         assert response.status_code == 201
         offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
-        assert offer.offererAddressId == None
+        assert offer.offererAddressId is None
         assert offer.locationType == models.CollectiveLocationType.SCHOOL
         assert offer.locationComment is None
 
@@ -267,7 +267,7 @@ class Returns200Test:
         assert response.status_code == 201
         offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
-        assert offer.offererAddressId == None
+        assert offer.offererAddressId is None
         assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "Right here"
 

@@ -745,7 +745,7 @@ class HeadlineOfferTest:
             db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(True)).one()
             == headline_offer
         )
-        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() == None
+        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() is None
 
     def test_headline_offer_with_ending_time_in_the_future_is_active(self):
         headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
@@ -754,7 +754,7 @@ class HeadlineOfferTest:
             db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(True)).one()
             == headline_offer
         )
-        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() == None
+        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() is None
 
     def test_headline_offer_with_ending_time_in_the_past_is_not_active(self):
         headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
@@ -792,7 +792,7 @@ class HeadlineOfferTest:
             db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(True)).one()
             == headline_offer
         )
-        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() == None
+        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() is None
 
     def test_headline_offer_with_product_thumb_is_not_active(self):
         product = factories.ProductFactory(thumbCount=1)

@@ -166,9 +166,9 @@ def _get_individual_bookings(
 
     if form.is_fraudulent.data and len(form.is_fraudulent.data) == 1:
         if form.is_fraudulent.data[0] == "true":
-            base_query = base_query.filter(bookings_models.Booking.fraudulentBookingTag != None)
+            base_query = base_query.filter(bookings_models.Booking.fraudulentBookingTag != None)  # noqa: E711
         else:
-            base_query = base_query.filter(bookings_models.Booking.fraudulentBookingTag == None)
+            base_query = base_query.filter(bookings_models.Booking.fraudulentBookingTag == None)  # noqa: E711
 
     if form.category.data:
         base_query = base_query.filter(

@@ -348,7 +348,7 @@ class GetSettlementsTest:
         assert second_settlement.invoices == [invoice]
         assert second_settlement.settlementDate == datetime.date.today()
         assert second_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
-        assert second_settlement.dateRejected == None
+        assert second_settlement.dateRejected is None
         assert second_settlement.amount == 98280
         assert second_settlement.status == finance_models.SettlementStatus.ISSUED
         assert second_settlement.batch == settlement_batch
@@ -367,7 +367,7 @@ class GetSettlementsTest:
         assert set(other_settlement.invoices) == {other_invoice, another_invoice}
         assert other_settlement.settlementDate == datetime.date.today()
         assert other_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
-        assert other_settlement.dateRejected == None
+        assert other_settlement.dateRejected is None
         assert other_settlement.amount == 45000
         assert other_settlement.status == finance_models.SettlementStatus.ISSUED
         assert other_settlement.batch == settlement_batch

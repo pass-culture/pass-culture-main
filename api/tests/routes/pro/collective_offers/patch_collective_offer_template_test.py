@@ -305,7 +305,7 @@ class Returns200Test:
 
         assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
         assert offer.offererAddress.addressId == oa.addressId
-        assert offer.offererAddress.label == None
+        assert offer.offererAddress.label is None
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -481,7 +481,7 @@ class Returns200Test:
         response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
-        assert getattr(offer_ctx.offer, field) == None
+        assert getattr(offer_ctx.offer, field) is None
 
 
 class Returns400Test:

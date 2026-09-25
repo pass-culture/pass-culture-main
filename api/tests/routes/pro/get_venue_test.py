@@ -571,8 +571,8 @@ class Returns200Test:
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
-        assert venue.accessibilityProvider == None
-        assert response.json["externalAccessibilityData"] == None
+        assert venue.accessibilityProvider is None
+        assert response.json["externalAccessibilityData"] is None
 
     def should_return_accessibility_provider_id_and_url(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")

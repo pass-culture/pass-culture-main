@@ -97,8 +97,8 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
         }
 
         assert provider.notificationExternalUrl == previous_notification_url
-        assert provider.bookingExternalUrl == None
-        assert provider.cancelExternalUrl == None
+        assert provider.bookingExternalUrl is None
+        assert provider.cancelExternalUrl is None
 
     @pytest.mark.parametrize(
         "partial_json, expected_response",

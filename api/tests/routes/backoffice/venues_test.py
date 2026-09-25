@@ -1862,7 +1862,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         assert response.status_code == 303
         db.session.refresh(venue)
-        assert venue.volunteeringUrl == None
+        assert venue.volunteeringUrl is None
 
         update_snapshot = venue.action_history[0].extraData["modified_info"]
 
@@ -1870,7 +1870,7 @@ class UpdateVenueTest(PostEndpointHelper):
             update_snapshot["volunteeringUrl"]["old_info"]
             == "https://www.jeveuxaider.gouv.fr/organisations/structure-name"
         )
-        assert update_snapshot["volunteeringUrl"]["new_info"] == None
+        assert update_snapshot["volunteeringUrl"]["new_info"] is None
 
     @pytest.mark.parametrize("siret", ["1234567891234", "123456789123456", "123456789ABCDE", "11122233300001"])
     def test_update_venue_invalid_siret(self, authenticated_client, offerer, siret):
@@ -2095,7 +2095,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.status_code == 400
         assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
         db.session.refresh(venue)
-        assert venue.accessibilityProvider == None
+        assert venue.accessibilityProvider is None
 
     @patch("pcapi.core.offerers.tasks.match_acceslibre_task.delay")
     def test_update_venue_becomes_permanent_should_not_call_match_acceslibre_task(
@@ -3410,7 +3410,7 @@ class ReopenVenueTest(PostEndpointHelper):
         assert html_parser.extract_alert(response.data) == f"Le partenaire culturel {venue.name} a été rouvert"
 
         db.session.refresh(venue)
-        assert venue.state == None
+        assert venue.state is None
 
     def test_reopen_venue_with_comment(self, authenticated_client):
         venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
