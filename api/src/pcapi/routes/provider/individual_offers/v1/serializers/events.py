@@ -173,9 +173,7 @@ class EventOfferCreation(v1_serialization.OfferCreationBase):
 
 
 class EventOfferEdition(v1_serialization.OfferEditionBase):
-    category_related_fields: v1_serialization.event_category_edition_fields | None = (
-        fields.EVENT_CATEGORIES_RELATED_FIELDS
-    )
+    category_related_fields: v1_serialization.event_category_edition_fields = None
     event_duration: int | None = fields.EVENT_DURATION
     video_url: pydantic_v1.HttpUrl | None = fields.VIDEO_URL
 

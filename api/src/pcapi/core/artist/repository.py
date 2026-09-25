@@ -53,3 +53,14 @@ def get_artists_by_ids(artist_ids: list[str]) -> list[models.Artist]:
         )
         .all()
     )
+
+
+def get_artist_by_music_platform_id(platform: str, platform_id: str) -> models.Artist | None:
+    platform_column = getattr(models.ArtistMusicPlatform, platform)
+
+    query = (
+        sa.select(models.Artist)
+        .join(models.Artist.music_platform)
+        .where(platform_column == platform_id, sa.not_(models.Artist.is_blacklisted))
+    )
+    return db.session.scalars(query).first()

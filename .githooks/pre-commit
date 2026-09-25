@@ -294,7 +294,7 @@ STAGED_DOCUMENTATION_FILES=$(git diff --cached --name-only | grep '^api/document
 if [[ ! -z "$STAGED_DOCUMENTATION_FILES" ]]; then
   if [[ ! ",${DISABLED_BO_PRE_COMMIT_CHECKS}," =~ ",documentation," ]]; then
     echo -e "\033[0;96mCheck documentation can be built...\033[0m"
-    npm run build
+    pnpm run build
     if [[ "$?" != 0 ]]; then
       echo -e "\033[0;96mIf you want to bypass these checks, add --no-verify option when committing.\033[0m"
       exit 1
