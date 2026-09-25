@@ -543,25 +543,24 @@ class PostCollectiveOfferBodyModel(HttpBodyModel):
         min_length=1
     )
     location: CollectiveOfferLocationModel
-    contact_email: pydantic.EmailStr | None = None
-    contact_phone: str | None = None
     intervention_area: typing.Annotated[list[str] | None, pydantic.AfterValidator(validate_intervention_area)]
     template_id: int | None = None
     national_program_id: int | None = None
     formats: list[EacFormat] = pydantic.Field(min_length=1)
 
-    @pydantic.field_validator("contact_phone", mode="after")
-    def validate_contact_phone(cls, phone_number: str | None) -> str | None:
-        return utils.validate_phone_number_nullable(phone_number)
-
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: str | None = pydantic.Field(default=None, max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH)
+    contact_email: pydantic.EmailStr | None = None
+    contact_phone: str | None = None
     contact_url: utils.ValidHttpUrl | None = None
     contact_form: models.OfferContactFormEnum | None = None
     dates: PostDateRangeModel | None = None
-
     booking_emails: list[pydantic.EmailStr] = pydantic.Field(min_length=1, max_length=6)
+
+    @pydantic.field_validator("contact_phone", mode="after")
+    def validate_contact_phone(cls, phone_number: str | None) -> str | None:
+        return utils.validate_phone_number_nullable(phone_number)
 
 
 class CollectiveOfferResponseIdModel(HttpBodyModel):
@@ -621,7 +620,8 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     dates: PatchDateRangeModel | None = None
     contact_url: str | None = None
     contact_form: models.OfferContactFormEnum | None = None
-    # TODO (jcicurel-pass, 2026-06-05): this field will be added to the collective offer templates later on
+
+    # this field is present in collective offer but not collective offer template
     additional_details: SkipJsonSchema[str | None] = pydantic.Field(default=None, exclude=True)
 
     @pydantic.model_validator(mode="after")

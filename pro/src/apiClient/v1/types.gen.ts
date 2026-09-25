@@ -5313,14 +5313,6 @@ export type PostCollectiveOfferBodyModel = {
      */
     audioDisabilityCompliant: boolean;
     /**
-     * Contactemail
-     */
-    contactEmail?: string | null;
-    /**
-     * Contactphone
-     */
-    contactPhone?: string | null;
-    /**
      * Description
      */
     description: string;
