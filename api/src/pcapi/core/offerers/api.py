@@ -2642,6 +2642,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         user_offerer = models.UserOfferer(
             offerer=offerer_invitation.offerer, user=user, validationStatus=ValidationStatus.NEW
         )
+        db.session.add(user_offerer)
         history_api.add_action(
             history_models.ActionType.USER_OFFERER_NEW,
             author=user,
@@ -2652,7 +2653,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
             offerer_invitation_id=offerer_invitation.id,
         )
         offerer_invitation.status = offerers_models.InvitationStatus.ACCEPTED
-        db.session.add_all([user_offerer, offerer_invitation])
+        db.session.add(offerer_invitation)
         if is_managed_transaction():
             db.session.flush()
         else:
