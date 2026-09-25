@@ -270,7 +270,10 @@ def _autocomplete_venues(only_with_siret: bool = False, only_allowed_on_adage: b
 
     if only_allowed_on_adage:
         query = query.join(offerers_models.Venue.managingOfferer).filter(
-            offerers_models.Offerer.allowedOnAdage.is_(True)
+            offerers_models.Offerer.allowedOnAdage.is_(True),
+            offerers_models.Offerer.isValidated,
+            offerers_models.Offerer.isActive.is_(True),
+            offerers_models.Venue.state.is_(None),
         )
 
     venues = query.limit(NUM_RESULTS)

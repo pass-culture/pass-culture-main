@@ -1438,3 +1438,62 @@ def move_collective_offer(collective_offer_id: int, destination_venue_id: int) -
     # Refresh pro attributes (contacts may now have or no longer have collective offers)
     update_external_pro(source_venue.bookingEmail)
     update_external_pro(destination_venue.bookingEmail)
+
+
+def move_collective_offer_template(collective_offer_template_id: int, destination_venue_id: int) -> None:
+    collective_offer_template = (
+        db.session.query(models.CollectiveOfferTemplate)
+        .filter_by(id=collective_offer_template_id)
+        .options(
+            sa_orm.joinedload(models.CollectiveOfferTemplate.offererAddress),
+            sa_orm.joinedload(models.CollectiveOfferTemplate.venue),
+        )
+        .one_or_none()
+    )
+
+    if not collective_offer_template:
+        raise exceptions.CollectiveOfferTemplateNotFound()
+
+    destination_venue = (
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=destination_venue_id)
+        .options(sa_orm.joinedload(offerers_models.Venue.managingOfferer))
+        .one()
+    )
+
+    if not destination_venue.managingOfferer.allowedOnAdage:
+        raise exceptions.OffererNotAllowedOnAdage()
+
+    source_venue = collective_offer_template.venue
+
+    extra = {
+        "collective_offer_template_id": collective_offer_template.id,
+        "offerer_id": source_venue.managingOffererId,
+        "venue_id": source_venue.id,
+        "new_offerer_id": destination_venue.managingOffererId,
+        "new_venue_id": destination_venue_id,
+    }
+    logger.info("Move collective offer template", extra=extra)
+
+    collective_offer_template.venue = destination_venue
+    if collective_offer_template.offererAddress:
+        collective_offer_template.offererAddress = offerers_api.get_or_create_offer_location(
+            offerer_id=destination_venue.managingOffererId,
+            address_id=collective_offer_template.offererAddress.addressId,
+            venue_id=destination_venue_id,
+            label=collective_offer_template.offererAddress.label,
+        )
+    db.session.add(collective_offer_template)
+    db.session.flush()
+
+    on_commit(
+        partial(
+            search.async_index_collective_offer_template_ids,
+            [collective_offer_template.id],
+            reason=IndexationReason.OFFER_UPDATE,
+        )
+    )
+
+    # Refresh pro attributes (contacts may now have or no longer have collective offers)
+    update_external_pro(source_venue.bookingEmail)
+    update_external_pro(destination_venue.bookingEmail)
