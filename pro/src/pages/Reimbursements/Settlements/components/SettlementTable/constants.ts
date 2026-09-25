@@ -6,7 +6,7 @@ export const SETTLEMENT_STATUS_LABELS = {
     label: 'Virement émis',
     variant: TagVariant.SUCCESS,
   },
-  [SettlementDisplayedStatus.REJECTED]: {
+  [SettlementDisplayedStatus.REJECTED_UNRESOLVED]: {
     label: 'Rejet bancaire',
     variant: TagVariant.ERROR,
   },

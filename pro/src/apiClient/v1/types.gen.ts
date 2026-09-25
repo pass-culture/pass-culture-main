@@ -5830,7 +5830,7 @@ export type SaveNewOnboardingDataQueryModel = {
  */
 export enum SettlementDisplayedStatus {
     EXECUTED = 'EXECUTED',
-    REJECTED = 'REJECTED',
+    REJECTED_UNRESOLVED = 'REJECTED_UNRESOLVED',
     REJECTED_PROCESSED = 'REJECTED_PROCESSED',
     REJECTED_SOLVED = 'REJECTED_SOLVED'
 }

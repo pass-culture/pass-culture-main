@@ -216,7 +216,8 @@ export const SettlementTable = ({
 
           {
             // REJECTED -> link to the bank accounts tab
-            settlement.status === SettlementDisplayedStatus.REJECTED && (
+            settlement.status ===
+              SettlementDisplayedStatus.REJECTED_UNRESOLVED && (
               <Button
                 as="router-link"
                 variant={ButtonVariant.PRIMARY}

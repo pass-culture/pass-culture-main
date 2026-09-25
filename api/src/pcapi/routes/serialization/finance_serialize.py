@@ -81,7 +81,7 @@ class InvoiceListV2ResponseModel(RootModel):
 
 class SettlementDisplayedStatus(enum.Enum):
     EXECUTED = "EXECUTED"
-    REJECTED = "REJECTED"
+    REJECTED_UNRESOLVED = "REJECTED_UNRESOLVED"
     REJECTED_PROCESSED = "REJECTED_PROCESSED"
     REJECTED_SOLVED = "REJECTED_SOLVED"
 
@@ -98,7 +98,7 @@ def _get_settlement_data(
     The settlement displayed status is:
 
     - EXECUTED = the settlement is not rejected
-    - REJECTED = the settlement is rejected and the venues previously linked to the bank account are not linked to another bank account
+    - REJECTED_UNRESOLVED = the settlement is rejected and the venues previously linked to the bank account are not linked to another bank account
     - REJECTED_PROCESSED = the settlement is rejected and the venues are linked to another bank account
     - REJECTED_SOLVED = the settlement is rejected, the venues are linked to another bank account and the invoices are linked to a new (non-rejected) settlement
 
@@ -115,7 +115,7 @@ def _get_settlement_data(
     one_venue_not_attached = any(venue.current_bank_account_link is None for venue in detached_venues)
 
     if one_venue_not_attached:
-        return SettlementDisplayedStatus.REJECTED, []
+        return SettlementDisplayedStatus.REJECTED_UNRESOLVED, []
 
     resolving_settlements = []
     for invoice in settlement.invoices:
