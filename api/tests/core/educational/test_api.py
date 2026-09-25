@@ -20,6 +20,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.search import IndexationReason
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
@@ -766,3 +767,46 @@ class MoveCollectiveOfferTest:
         assert offer.venue == source_venue
         assert booking.offerer == source_venue.managingOfferer
         assert booking.venue == source_venue
+
+
+@pytest.mark.usefixtures("db_session")
+class MoveCollectiveOfferTemplateTest:
+    @mock.patch("pcapi.core.search.async_index_collective_offer_template_ids")
+    def test_move_collective_offer_template(self, mock_async_index_collective_offer_template_ids):
+        template = factories.CollectiveOfferTemplateOnOtherAddressLocationFactory()
+        source_venue = template.venue
+        destination_venue = offerers_factories.VenueFactory()
+
+        educational_api_offer.move_collective_offer_template(template.id, destination_venue.id)
+
+        db.session.refresh(template)
+
+        assert template.venue == destination_venue
+        assert template.offererAddress.venue == destination_venue
+
+        assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {
+            source_venue.bookingEmail,
+            destination_venue.bookingEmail,
+        }
+
+        mock_async_index_collective_offer_template_ids.assert_called_once_with(
+            [template.id], reason=IndexationReason.OFFER_UPDATE
+        )
+
+    def test_move_collective_offer_without_adage(self):
+        template = factories.CollectiveOfferTemplateFactory()
+        source_venue = template.venue
+        destination_venue = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
+
+        with pytest.raises(exceptions.OffererNotAllowedOnAdage):
+            educational_api_offer.move_collective_offer_template(template.id, destination_venue.id)
+
+        assert template.venue == source_venue
+
+    def test_move_collective_offer_template_on_same_venue(self):
+        template = factories.CollectiveOfferTemplateFactory()
+        source_venue = template.venue
+
+        educational_api_offer.move_collective_offer_template(template.id, source_venue.id)
+
+        assert template.venue == source_venue

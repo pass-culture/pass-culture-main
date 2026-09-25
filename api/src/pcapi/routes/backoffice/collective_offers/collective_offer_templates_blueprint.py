@@ -8,10 +8,13 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi.core import search
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.api import offer as educational_offer_api
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -513,3 +516,53 @@ def get_collective_offer_template_details(collective_offer_template_id: int) -> 
         collective_offer_template=collective_offer_template,
         connect_as=connect_as,
     )
+
+
+@list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/move", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.MOVE_COLLECTIVE_OFFER)
+def get_move_collective_offer_template_form(collective_offer_template_id: int) -> response_utils.BackofficeResponse:
+    information = Markup(
+        "Cette action permet de déplacer l'offre collective vitrine vers n'importe quel autre partenaire culturel pouvant proposer des offres collectives. "
+        "À n'utiliser que si vous savez ce que vous faites !"
+        "<br/>"
+        "<br/>Les éventuelles offres collectives réservables créées à partir de cette offre vitrine sont à déplacer séparément, si besoin."
+    )
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        form=collective_offer_forms.MoveCollectiveOfferForm(),
+        dst=url_for(
+            "backoffice.collective_offer_template.move_collective_offer_template",
+            collective_offer_template_id=collective_offer_template_id,
+        ),
+        div_id="move-collective-offer-template-modal",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Déplacer l'offre collective vitrine {collective_offer_template_id}",
+        button_text="Déplacer",
+        ajax_submit=False,
+        information=information,
+    )
+
+
+@list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/move", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MOVE_COLLECTIVE_OFFER)
+def move_collective_offer_template(collective_offer_template_id: int) -> response_utils.BackofficeResponse:
+    redirect_url = url_for(
+        "backoffice.collective_offer_template.get_collective_offer_template_details",
+        collective_offer_template_id=collective_offer_template_id,
+    )
+
+    form = collective_offer_forms.MoveCollectiveOfferForm()
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return request_utils.safe_redirect_back(request, redirect_url)
+
+    try:
+        educational_offer_api.move_collective_offer_template(collective_offer_template_id, int(form.venue.data[0]))
+    except educational_exceptions.CollectiveOfferTemplateNotFound:
+        raise NotFound()
+    except educational_exceptions.OffererNotAllowedOnAdage:
+        flash("L'entité juridique cible ne peut pas créer d'offre EAC", "warning")
+    else:
+        flash("L'offre collective vitrine a été transférée vers le nouveau partenaire culturel", "success")
+
+    return request_utils.safe_redirect_back(request, redirect_url)

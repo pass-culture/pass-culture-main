@@ -1,10 +1,12 @@
 import datetime
 from dataclasses import asdict
+from unittest.mock import patch
 
 import pytest
 from flask import url_for
 
 from pcapi.core.categories.models import EacFormat
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import testing as mails_testing
@@ -804,3 +806,73 @@ class GetBatchCollectiveOfferTemplatesRejectFormTest(GetEndpointHelper):
         with assert_num_queries(1):  # session
             response = authenticated_client.get(url)
             assert response.status_code == 200
+
+
+class GetMoveCollectiveOfferTemplateFormTest(GetEndpointHelper):
+    endpoint = "backoffice.collective_offer_template.get_move_collective_offer_template_form"
+    endpoint_kwargs = {"collective_offer_template_id": 1}
+    needed_permission = perm_models.Permissions.MOVE_COLLECTIVE_OFFER
+
+    # session
+    expected_num_queries = 1
+
+    def test_get_move_collective_offer_template_form(self, legit_user, authenticated_client):
+        collective_offer_template_id = educational_factories.CollectiveOfferTemplateFactory().id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, collective_offer_template_id=collective_offer_template_id)
+            )
+            assert response.status_code == 200
+
+
+class MoveCollectiveOfferTemplateTest(PostEndpointHelper):
+    endpoint = "backoffice.collective_offer_template.move_collective_offer_template"
+    endpoint_kwargs = {"collective_offer_template_id": 1}
+    needed_permission = perm_models.Permissions.MOVE_COLLECTIVE_OFFER
+
+    @patch("pcapi.core.educational.api.offer.move_collective_offer_template")
+    def test_move_collective_offer_template(self, mock_move_offer_template, authenticated_client):
+        template = educational_factories.CollectiveOfferTemplateFactory()
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"venue": destination_venue.id},
+            collective_offer_template_id=template.id,
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert (
+            html_parser.extract_alert(response.data)
+            == "L'offre collective vitrine a été transférée vers le nouveau partenaire culturel"
+        )
+        mock_move_offer_template.assert_called_once_with(template.id, destination_venue.id)
+
+    @patch("pcapi.core.educational.api.offer.move_collective_offer_template")
+    def test_cant_move_collective_offer_template(self, mock_move_offer_template, authenticated_client):
+        template = educational_factories.CollectiveOfferTemplateFactory()
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        mock_move_offer_template.side_effect = educational_exceptions.OffererNotAllowedOnAdage()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"venue": destination_venue.id},
+            collective_offer_template_id=template.id,
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "L'entité juridique cible ne peut pas créer d'offre EAC"
+        mock_move_offer_template.assert_called_once_with(template.id, destination_venue.id)
+
+    def test_cant_move_collective_offer_not_found(self, authenticated_client):
+        destination_venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        response = self.post_to_endpoint(
+            authenticated_client, form={"venue": destination_venue.id}, collective_offer_template_id=99999
+        )
+
+        assert response.status_code == 404
