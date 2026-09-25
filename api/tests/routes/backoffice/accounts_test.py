@@ -1295,6 +1295,18 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = users_factories.UserFactory()
             return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
+    def test_extract_modal_offers_both_scopes(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+
+        assert response.status_code == 200
+        assert html_parser.get_tag(response.data, tag="div", id="create-extract-user-gdpr-data-modal") is not None
+        assert html_parser.extract_select_options(response.data, "scope", selected_only=True) == {
+            "PUBLIC": "Demande d'accès jeune"
+        }
+        assert html_parser.extract_select_options(response.data, "scope") == {"INTERNAL_USE": "Usage interne"}
+
     @pytest.mark.parametrize("index,expected_badge", [(0, "Pass 17"), (1, "Ancien Pass 18"), (2, "Pass 18"), (3, None)])
     def test_get_public_account(self, authenticated_client, index, expected_badge):
         users = create_bunch_of_accounts()
@@ -6012,12 +6024,16 @@ class ExtractPublicAccountTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
 
     expected_queries = 3  # session + targeted user with joined data + gdpr insert
+    public_scope_form = {"scope": users_models.GdprUserDataExtractScope.PUBLIC.name}
 
     def test_extract_public_account(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory()
 
         response = self.post_to_endpoint(
-            authenticated_client, user_id=user.id, expected_num_queries=self.expected_queries
+            authenticated_client,
+            user_id=user.id,
+            form=self.public_scope_form,
+            expected_num_queries=self.expected_queries,
         )
         assert response.status_code == 302
 
@@ -6027,6 +6043,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
         extract_data = db.session.query(users_models.GdprUserDataExtract).one()
         assert extract_data.user.id == user.id
         assert extract_data.authorUser == legit_user
+        assert extract_data.scope == users_models.GdprUserDataExtractScope.PUBLIC
 
         response = authenticated_client.get(response.location)
         assert (
@@ -6037,7 +6054,9 @@ class ExtractPublicAccountTest(PostEndpointHelper):
     def test_extract_public_account_extract_data_already_exists(self, authenticated_client):
         gdpr_data_extract = users_factories.GdprUserDataExtractBeneficiaryFactory()
 
-        response = self.post_to_endpoint(authenticated_client, user_id=gdpr_data_extract.user.id)
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=gdpr_data_extract.user.id, form=self.public_scope_form
+        )
         assert response.status_code == 302
 
         response = authenticated_client.get(response.location)
@@ -6052,7 +6071,9 @@ class ExtractPublicAccountTest(PostEndpointHelper):
             dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=8)
         )
 
-        response = self.post_to_endpoint(authenticated_client, user_id=expired_gdpr_data_extract.user.id)
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=expired_gdpr_data_extract.user.id, form=self.public_scope_form
+        )
 
         expected_url = url_for(
             "backoffice.public_accounts.get_public_account",
@@ -6073,8 +6094,76 @@ class ExtractPublicAccountTest(PostEndpointHelper):
         )
 
     def test_extract_public_account_no_user_found(self, authenticated_client):
-        response = self.post_to_endpoint(authenticated_client, user_id=42)
+        response = self.post_to_endpoint(authenticated_client, user_id=42, form=self.public_scope_form)
         assert response.status_code == 404
+
+    def test_extract_public_account_for_internal_use(self, authenticated_client, legit_user):
+        user = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user.id,
+            form={"scope": users_models.GdprUserDataExtractScope.INTERNAL_USE.name},
+            expected_num_queries=self.expected_queries,
+        )
+
+        assert response.status_code == 302
+        extract_data = db.session.query(users_models.GdprUserDataExtract).one()
+        assert extract_data.scope == users_models.GdprUserDataExtractScope.INTERNAL_USE
+        assert extract_data.authorUser == legit_user
+
+    def test_extract_public_account_without_scope(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, follow_redirects=True)
+
+        assert response.status_code == 200
+        assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(response.data)
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
+
+    def test_extract_public_account_with_unknown_scope(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=user.id, form={"scope": "UNKNOWN"}, follow_redirects=True
+        )
+
+        assert response.status_code == 200
+        assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(response.data)
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
+
+    def test_extract_public_account_with_existing_extract_in_another_scope(self, authenticated_client):
+        public_extract = users_factories.GdprUserDataExtractBeneficiaryFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=public_extract.user.id,
+            form={"scope": users_models.GdprUserDataExtractScope.INTERNAL_USE.name},
+        )
+
+        assert response.status_code == 302
+        scopes = {extract.scope for extract in db.session.query(users_models.GdprUserDataExtract)}
+        assert scopes == {
+            users_models.GdprUserDataExtractScope.PUBLIC,
+            users_models.GdprUserDataExtractScope.INTERNAL_USE,
+        }
+
+    def test_extract_public_account_with_existing_extract_in_same_scope(self, authenticated_client):
+        internal_extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            scope=users_models.GdprUserDataExtractScope.INTERNAL_USE
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=internal_extract.user.id,
+            form={"scope": users_models.GdprUserDataExtractScope.INTERNAL_USE.name},
+            follow_redirects=True,
+        )
+
+        assert "Une extraction de données est déjà en cours pour cet utilisateur." in html_parser.extract_alert(
+            response.data
+        )
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 1
 
 
 class ClearEmailTest(PostEndpointHelper):

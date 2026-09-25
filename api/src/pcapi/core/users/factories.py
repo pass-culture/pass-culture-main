@@ -1279,6 +1279,7 @@ class GdprUserDataExtractBeneficiaryFactory(BaseFactory):
     dateCreated = LazyAttribute(lambda _: date_utils.get_naive_utc_now() - timedelta(days=1))
     user = factory.SubFactory(BeneficiaryFactory)
     authorUser = factory.SubFactory(AdminFactory)
+    scope = models.GdprUserDataExtractScope.PUBLIC
 
 
 class GdprUserAnonymizationFactory(BaseFactory):

@@ -1402,6 +1402,16 @@ def format_error_codes(error_codes: list[str] | None) -> str:
     return format_string_list(error_codes_labels)
 
 
+def format_gdpr_extract_scope(scope: users_models.GdprUserDataExtractScope) -> str:
+    match scope:
+        case users_models.GdprUserDataExtractScope.PUBLIC:
+            return "Demande d'accès jeune"
+        case users_models.GdprUserDataExtractScope.INTERNAL_USE:
+            return "Usage interne"
+        case _:
+            raise ValueError(f"Invalid extract scope: {scope}")
+
+
 def format_gdpr_date_processed(date_processed: datetime.datetime | None) -> str:
     return "prête" if date_processed else "en attente"
 
@@ -2431,6 +2441,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["webapp_offer_link"] = lambda offer: urls.offer_app_link(offer.id)
     app.jinja_env.filters["webapp_venue_link"] = lambda venue: urls.venue_app_link(venue.id)
     app.jinja_env.filters["format_gdpr_date_processed"] = format_gdpr_date_processed
+    app.jinja_env.filters["format_gdpr_extract_scope"] = format_gdpr_extract_scope
     app.jinja_env.filters["format_finance_incident_nature_badge"] = format_finance_incident_nature_badge
     app.jinja_env.filters["format_finance_incident_status"] = format_finance_incident_status
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
