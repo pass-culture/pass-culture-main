@@ -1388,6 +1388,12 @@ class SingleSignOn(PcObject, Model):
     ssoProvider: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     ssoUserId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
 
+    ssoExtraData: sa_orm.Mapped[MutableDict[str, str] | None] = sa_orm.mapped_column(
+        postgresql.JSONB,
+        nullable=True,
+        default=None,
+    )
+
     __table_args__ = (
         sa.UniqueConstraint(
             "ssoProvider",
