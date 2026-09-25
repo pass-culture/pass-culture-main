@@ -251,13 +251,13 @@ def _verify_signature(data: str, signature: str) -> str:
 # the URL controller
 @app.post('/tickets/create')
 def create_ticket():
-    request_signature = request.headers.get('PassCulture-ed25519-ignature')
+    request_signature = request.headers.get('PassCulture-ed25519-Signature')
 
     if not request_signature:
         # `PassCulture-Signature` header is missing
         return jsonify({"message": "Invalid Signature"}), 401
 
-    if not _verify_signature(request.json, request.headers.get('PassCulture-ed25519-Signature')):
+    if not _verify_signature(request.json, request_signature):
         # the request body signature doesn't match the signature in the `PassCulture-ed25519-Signature` header
         return jsonify({"message": "Invalid Signature"}), 401
 
