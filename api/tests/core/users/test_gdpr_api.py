@@ -43,6 +43,8 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as brevo_testing
+from pcapi.core.users.api import revoke_sso_access
+from pcapi.core.users.models import SingleSignOn
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
@@ -2362,3 +2364,22 @@ class AnonymizeUserByIdTest:
     def test_user_not_found(self):
         gdpr_api.anonymize_user_by_id(0)
         assert True
+
+    def test_revoke_all_sso_access(self):
+        email = "email_with_sso@example.com"
+
+        user = users_factories.UserFactory(
+            email=email,
+            single_sign_ons=[
+                users_factories.SingleSignOnFactory(
+                    ssoProvider="apple",
+                    ssoExtraData={"mobile": "a-good-refresh-token"},
+                )
+            ],
+        )
+
+        with mock.patch("pcapi.core.users.api.revoke_apple_user") as apple_api:
+            revoke_sso_access(user)
+            apple_api.assert_called_once_with("a-good-refresh-token", False)
+
+        assert db.session.query(SingleSignOn).filter(SingleSignOn.userId == user.id).count() == 0

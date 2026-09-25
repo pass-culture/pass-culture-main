@@ -29,6 +29,7 @@ import pcapi.utils.date as date_utils
 import pcapi.utils.email as email_utils
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
+from pcapi.connectors.apple_oauth import revoke_apple_user
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -107,6 +108,7 @@ def create_account(
     firebase_pseudo_id: str | None = None,
     sso_provider: str | None = None,
     sso_user_id: str | None = None,
+    sso_extra_data: dict | None = None,
 ) -> models.User:
     email = email_utils.sanitize_email(email)
     if users_repository.find_user_by_email(email):
@@ -127,7 +129,7 @@ def create_account(
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
 
-    setup_login(user, password, sso_provider, sso_user_id)
+    setup_login(user, password, sso_provider, sso_user_id, sso_extra_data)
 
     if user.externalIds is None:
         user.externalIds = {}
@@ -155,7 +157,11 @@ def _bypass_email_confirmation(email: str) -> bool:
 
 
 def setup_login(
-    user: models.User, password: str | None, sso_provider: str | None = None, sso_user_id: str | None = None
+    user: models.User,
+    password: str | None,
+    sso_provider: str | None = None,
+    sso_user_id: str | None = None,
+    sso_extra_data: dict | None = None,
 ) -> None:
     if password:
         user.setPassword(password)
@@ -164,7 +170,7 @@ def setup_login(
     if not sso_provider or not sso_user_id:
         raise exceptions.MissingLoginMethod()
 
-    single_sign_on = users_repository.create_single_sign_on(user, sso_provider, sso_user_id)
+    single_sign_on = users_repository.create_single_sign_on(user, sso_provider, sso_user_id, sso_extra_data)
     db.session.add(single_sign_on)
 
 
@@ -899,11 +905,11 @@ def create_oauth_state_token() -> str:
     return token.encoded_token
 
 
-def create_account_creation_token(google_user: users_schemas.SSOUser) -> str:
+def create_account_creation_token(sso_user: users_schemas.SSOUser) -> str:
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.ACCOUNT_CREATION,
         constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
-        data=google_user.model_dump(),
+        data=sso_user.model_dump(),
     )
     return token.encoded_token
 
@@ -1730,3 +1736,27 @@ def extend_deposit_validity(user: models.User, new_expiration_date: datetime.dat
     db.session.flush()
 
     external_attributes_api.update_external_user(user)
+
+
+def revoke_sso_access(user: models.User) -> None:
+    for sso in user.single_sign_ons:
+        if sso.ssoProvider == "apple":
+            # Trying to revoke Apple SSO from pc-api.
+            # Revocation on Apple could fail, due to bad refresh_token, but user
+            # can do it on their side (follow doc linked in revoke_apple_user function)
+
+            if sso.ssoExtraData is None:
+                continue
+
+            for client_type, token in sso.ssoExtraData.items():
+                is_web_client = client_type == "web"
+                try:
+                    revoke_apple_user(token, is_web_client)
+                except Exception as exc:
+                    logger.warning(
+                        "Could not revoke Apple SSO",
+                        extra={"user_id": user.id, "exc": str(exc)},
+                    )
+
+    db.session.query(models.SingleSignOn).filter(models.SingleSignOn.userId == user.id).delete()
+    db.session.flush()

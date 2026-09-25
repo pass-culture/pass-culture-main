@@ -20,6 +20,7 @@ import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.permissions.models as permissions_models
+import pcapi.core.users.api as users_api
 import pcapi.core.users.ds as users_ds
 import pcapi.core.users.models as users_models
 import pcapi.core.users.utils as users_utils
@@ -177,6 +178,8 @@ def anonymize_user(
         .delete()
     )
 
+    users_api.revoke_sso_access(user)
+
     if external_email_anonymized:
         user.replace_roles_by_anonymized_role()
         user.email = (
@@ -190,6 +193,7 @@ def anonymize_user(
                 comment=action_history_comment,
             )
         )
+
     return True
 
 
@@ -417,6 +421,9 @@ def pre_anonymize_user(user: models.User, author: models.User, is_backoffice_act
         comment="L'utilisateur sera anonymisé le jour de ses 21 ans",
         is_backoffice_action=is_backoffice_action,
     )
+
+    users_api.revoke_sso_access(user)
+
     db.session.add(models.GdprUserAnonymization(user=user))
     db.session.flush()
 
