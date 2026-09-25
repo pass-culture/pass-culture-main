@@ -144,7 +144,10 @@ describe('<SettlementTable />', () => {
   it('renders the rejected settlement differently', () => {
     renderSettlementTable({
       settlements: [
-        { ...baseSettlement, status: SettlementDisplayedStatus.REJECTED },
+        {
+          ...baseSettlement,
+          status: SettlementDisplayedStatus.REJECTED_UNRESOLVED,
+        },
       ] as never,
     })
 
@@ -331,7 +334,7 @@ describe('<SettlementTable />', () => {
           ...baseSettlement,
           id: 2,
           label: 'VIR_REJECTED',
-          status: SettlementDisplayedStatus.REJECTED,
+          status: SettlementDisplayedStatus.REJECTED_UNRESOLVED,
         },
         {
           ...baseSettlement,
