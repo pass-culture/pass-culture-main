@@ -372,6 +372,9 @@ describe('OfferActionsCells', () => {
       expect(api.createCollectiveOffer).toHaveBeenCalledWith({
         body: {
           audioDisabilityCompliant: false,
+          bookingEmails: ['toto@example.com'],
+          contactEmail: 'toto@example.com',
+          contactPhone: '0600000000',
           description: 'blablabla,',
           domains: [1],
           durationMinutes: undefined,

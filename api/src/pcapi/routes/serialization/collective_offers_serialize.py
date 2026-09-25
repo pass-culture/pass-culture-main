@@ -532,6 +532,7 @@ def validate_students(students: list[models.StudentLevels]) -> list[models.Stude
 class PostCollectiveOfferBodyModel(HttpBodyModel):
     venue_id: int
     name: str = pydantic.Field(min_length=1, max_length=constants.MAX_COLLECTIVE_NAME_LENGTH)
+    booking_emails: list[pydantic.EmailStr] | None = pydantic.Field(default=None, min_length=1, max_length=6)
     description: str = pydantic.Field(max_length=constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH)
     domains: list[int] = pydantic.Field(min_length=1)
     duration_minutes: int | None = None
@@ -560,8 +561,6 @@ class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     contact_url: utils.ValidHttpUrl | None = None
     contact_form: models.OfferContactFormEnum | None = None
     dates: PostDateRangeModel | None = None
-
-    booking_emails: list[pydantic.EmailStr] = pydantic.Field(min_length=1, max_length=6)
 
 
 class CollectiveOfferResponseIdModel(HttpBodyModel):
@@ -621,7 +620,8 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     dates: PatchDateRangeModel | None = None
     contact_url: str | None = None
     contact_form: models.OfferContactFormEnum | None = None
-    # TODO (jcicurel-pass, 2026-06-05): this field will be added to the collective offer templates later on
+
+    # this field is present in collective offer but not collective offer template
     additional_details: SkipJsonSchema[str | None] = pydantic.Field(default=None, exclude=True)
 
     @pydantic.model_validator(mode="after")

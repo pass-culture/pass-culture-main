@@ -43,6 +43,7 @@ def base_offer_payload(
     return {
         "venueId": venue.id,
         "description": "Ma super description",
+        "bookingEmails": ["offer1@example.com", "offer2@example.com"],
         "domains": domain_ids,
         "durationMinutes": 60,
         "name": "La pièce de théâtre",
@@ -66,7 +67,7 @@ def base_offer_payload(
 
 
 def assert_offer_values(offer: models.CollectiveOffer, data, user, offerer):
-    assert offer.bookingEmails == []
+    assert offer.bookingEmails == data["bookingEmails"]
     assert offer.venueId == data["venueId"]
     assert offer.durationMinutes == data["durationMinutes"]
     assert offer.venue.managingOffererId == offerer.id
@@ -574,6 +575,37 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
+
+    def test_booking_emails_invalid(self, client):
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "bookingEmails": ["test@testmail.com", "test@test", "test"],
+        }
+        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingEmails.1": ["Saisissez un email valide"],
+            "bookingEmails.2": ["Saisissez un email valide"],
+        }
+
+    def test_too_many_booking_emails(self, client):
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "bookingEmails": [f"test{i}@testmail.com" for i in range(1, 8)],
+        }
+        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingEmails": ["Cette liste doit avoir une taille maximum de 6"],
+        }
 
 
 class Returns404Test:
