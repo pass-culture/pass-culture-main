@@ -28,7 +28,8 @@ logger = logging.getLogger(__name__)
 @blueprint.cli.command("send_beneficiary_subscription_reminders")
 @cron_decorators.log_cron_with_transaction
 def send_beneficiary_subscription_reminders() -> None:
-    reminder_emails.send_reminders()
+    with atomic():
+        reminder_emails.send_reminders()
 
 
 @blueprint.cli.command("import_dms_application")
@@ -86,14 +87,15 @@ def import_all_updated_dms_applications(since: str | None = None) -> None:
 @blueprint.cli.command("handle_inactive_dms_applications_cron")
 @cron_decorators.log_cron_with_transaction
 def handle_inactive_dms_applications_cron() -> None:
-    dms_api.handle_inactive_dms_applications(
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
-        with_never_eligible_applicant_rule=settings.DMS_NEVER_ELIGIBLE_APPLICANT,
-    )
-    dms_api.handle_inactive_dms_applications(
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
-        with_never_eligible_applicant_rule=settings.DMS_NEVER_ELIGIBLE_APPLICANT,
-    )
+    with atomic():
+        dms_api.handle_inactive_dms_applications(
+            settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
+            with_never_eligible_applicant_rule=settings.DMS_NEVER_ELIGIBLE_APPLICANT,
+        )
+        dms_api.handle_inactive_dms_applications(
+            settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
+            with_never_eligible_applicant_rule=settings.DMS_NEVER_ELIGIBLE_APPLICANT,
+        )
 
 
 @blueprint.cli.command("handle_deleted_dms_applications_cron")
@@ -105,7 +107,8 @@ def handle_deleted_dms_applications_cron() -> None:
     ]
     for procedure_id in procedures:
         try:
-            dms_api.handle_deleted_dms_applications(procedure_id)
+            with atomic():
+                dms_api.handle_deleted_dms_applications(procedure_id)
         except Exception:
             logger.exception("Failed to handle deleted DMS applications for procedure %s", procedure_id)
 

@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.native_route("/subscription/profile", methods=["GET"])
+@atomic()
 @authenticated_and_active_user_required
 @spectree_serialize(on_success_status=200, on_error_statuses=[404], api=blueprint.api)
 def get_profile() -> serializers.ProfileResponse | None:
@@ -91,6 +92,7 @@ def complete_profile(body: serializers.ProfileUpdateRequest) -> None:
 
 
 @blueprint.native_route("/subscription/activity_types", methods=["GET"])
+@atomic()
 @authenticated_and_active_user_required
 @spectree_serialize(
     response_model=serializers.ActivityTypesResponse,

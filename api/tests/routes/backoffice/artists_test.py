@@ -186,9 +186,9 @@ class PostArtistBlacklistTest(PostEndpointHelper):
         self, mock_async_index_offers_of_artist_ids, mock_async_index_artist_ids, db_session, authenticated_client
     ):
         artist = artist_factories.ArtistFactory.create(is_blacklisted=False)
-        with patch("pcapi.routes.backoffice.artists.blueprint.db.session.commit"):
-            response = self.post_to_endpoint(authenticated_client, artist_id=artist.id, follow_redirects=True)
-            assert response.status_code == 200
+
+        response = self.post_to_endpoint(authenticated_client, artist_id=artist.id, follow_redirects=True)
+        assert response.status_code == 200
 
         artist = db.session.query(artist_models.Artist).filter_by(id=artist.id).one()
         assert artist.is_blacklisted is True
