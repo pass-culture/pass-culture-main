@@ -684,7 +684,10 @@ def render_public_account_details(
 
     if AccountDetailsActionType.EXTRACT in allowed_actions:
         kwargs.update(
-            {"extract_user_form": empty_forms.EmptyForm()},
+            {
+                "create_extract_user_gdpr_data_form": account_forms.CreateExtractUserGdprDataForm(),
+                "create_extract_user_gdpr_data_dst": url_for(".create_extract_user_gdpr_data", user_id=user.id),
+            },
         )
 
     if AccountDetailsActionType.UPDATE in allowed_actions:
@@ -815,7 +818,6 @@ def render_public_account_details(
         bookings=sorted(user.userBookings, key=lambda booking: booking.dateCreated, reverse=True),
         active_tab=request.args.get("active_tab", "registration"),
         show_personal_info=True,
-        has_gdpr_extract=has_gdpr_extract(user=user),
         booking_fraudulent_form=account_forms.TagFraudulentBookingsForm(),
         booking_remove_fraudulent_form=empty_forms.EmptyForm(),
         is_user_expired=is_user_expired,
@@ -2443,13 +2445,20 @@ def create_extract_user_gdpr_data(user_id: int) -> response_utils.BackofficeResp
     if not (user.is_beneficiary or user.roles == []):
         raise NotFound()
 
-    if has_gdpr_extract(user=user):
+    form = account_forms.CreateExtractUserGdprDataForm()
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return redirect(url_for(".get_public_account", user_id=user_id))
+
+    scope = users_models.GdprUserDataExtractScope[form.scope.data]
+    if has_gdpr_extract(user=user, scope=scope):
         flash("Une extraction de données est déjà en cours pour cet utilisateur.", "warning")
         return redirect(url_for(".get_public_account", user_id=user_id))
 
     gdpr_data = users_models.GdprUserDataExtract(
         userId=user_id,
         authorUserId=current_user.id,
+        scope=scope,
     )
     db.session.add(gdpr_data)
     db.session.flush()
@@ -2461,10 +2470,8 @@ def create_extract_user_gdpr_data(user_id: int) -> response_utils.BackofficeResp
     return redirect(url_for(".get_public_account", user_id=user_id))
 
 
-def has_gdpr_extract(user: users_models.User) -> bool:
-    if not user.gdprUserDataExtracts:
-        return False
-    return any(not extract.is_expired for extract in user.gdprUserDataExtracts)
+def has_gdpr_extract(user: users_models.User, scope: users_models.GdprUserDataExtractScope) -> bool:
+    return any(extract.scope == scope and not extract.is_expired for extract in user.gdprUserDataExtracts)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/disconnect", methods=["POST"])

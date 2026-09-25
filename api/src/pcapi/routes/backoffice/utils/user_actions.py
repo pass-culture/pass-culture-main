@@ -8,6 +8,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models as users_models
+from pcapi.core.users.email import constants as email_constants
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.routes.backoffice import filters
@@ -57,26 +58,7 @@ class EmailChangeAction(AccountAction):
 
     @property
     def actionType(self) -> history_models.ActionType | str:
-        match self._email_change.eventType:
-            case users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST:
-                return "Demande de changement d'email"
-            case users_models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION:
-                return "Saisie d'une nouvelle adresse email"
-            case users_models.EmailHistoryEventTypeEnum.CONFIRMATION:
-                return "Confirmation de changement d'email"
-            case users_models.EmailHistoryEventTypeEnum.CANCELLATION:
-                return "Annulation de changement d'email"
-            case users_models.EmailHistoryEventTypeEnum.VALIDATION:
-                return "Validation de changement d'email"
-            case users_models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION:
-                return "Validation (admin) de changement d'email"
-            case (
-                users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST
-                | users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
-            ):
-                return "Changement d'email par l'admin"
-            case _:
-                return "Action de changement d'email inconnue"
+        return email_constants.EMAIL_HISTORY_EVENT_TYPE_LABELS[self._email_change.eventType]
 
     @property
     def actionDate(self) -> datetime.datetime | None:
