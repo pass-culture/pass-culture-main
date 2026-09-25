@@ -2,6 +2,7 @@ import { addDays, format } from 'date-fns'
 
 import { expect, test } from './fixtures/desk'
 import { checkAccessibility } from './helpers/accessibility'
+import { expectSuccessSnackbar } from './helpers/assertions'
 
 test.describe('Desk (Guichet)', () => {
   test.describe.configure({ mode: 'serial' })
@@ -40,7 +41,7 @@ test.describe('Desk (Guichet)', () => {
 
     await page.getByRole('button', { name: 'Valider la contremarque' }).click()
 
-    await expect(page.getByText('Contremarque validée').first()).toBeVisible()
+    await expectSuccessSnackbar(page, 'Contremarque validée')
 
     await checkAccessibility(page)
   })
@@ -99,7 +100,7 @@ test.describe('Desk (Guichet)', () => {
       .click()
     await page.getByRole('button', { name: 'Continuer' }).click()
 
-    await expect(page.getByText('Contremarque invalidée').first()).toBeVisible()
+    await expectSuccessSnackbar(page, 'Contremarque invalidée')
   })
 
   test('should not validate another pro countermark', async ({
