@@ -69,6 +69,7 @@ class Permissions(enum.Enum):
     CONNECT_AS_PRO = "se connecter sur PC Pro en tant qu'AC (connect-as)"
 
     MOVE_BOOKING = "support pro avancé : déplacer une réservation"
+    MOVE_COLLECTIVE_OFFER = "support pro avancé : déplacer une offre collective"
     MOVE_SIRET = "support pro avancé : déplacer ou supprimer un SIRET"
     ADVANCED_PRO_SUPPORT = "support pro avancé"
 

@@ -2242,7 +2242,7 @@ class ValidateCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):
 class GetMoveCollectiveOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice.collective_offer.get_move_collective_offer_form"
     endpoint_kwargs = {"collective_offer_id": 1}
-    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    needed_permission = perm_models.Permissions.MOVE_COLLECTIVE_OFFER
 
     # session
     expected_num_queries = 1
@@ -2258,7 +2258,7 @@ class GetMoveCollectiveOfferFormTest(GetEndpointHelper):
 class MoveCollectiveOfferTest(PostEndpointHelper):
     endpoint = "backoffice.collective_offer.move_collective_offer"
     endpoint_kwargs = {"collective_offer_id": 1}
-    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    needed_permission = perm_models.Permissions.MOVE_COLLECTIVE_OFFER
 
     @patch("pcapi.core.educational.api.offer.move_collective_offer")
     def test_move_collective_offer(self, mock_move_offer, authenticated_client):
