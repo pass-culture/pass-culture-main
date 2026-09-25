@@ -271,6 +271,7 @@ def create_account_with_sso(sso_provider: str, body: serializers.SSOAccountReque
             password=None,
             sso_provider=sso_provider,
             sso_user_id=sso_user.sub,
+            sso_extra_data=sso_user.extra_data,
             birthdate=body.birthdate,
             marketing_email_subscription=bool(body.marketing_email_subscription),
             is_email_validated=True,
