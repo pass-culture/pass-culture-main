@@ -11,7 +11,6 @@ import pcapi.core.finance.repository as finance_repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
-import pcapi.core.offers.api as offers_api
 from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
@@ -234,7 +233,7 @@ def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsRes
 
     # top offers come from ClickHouse but need extra data from Postgres
     # offers for serialization.
-    offers_mapping = api.map_top_offers_to_existing_offers(stats.top_offers)
+    offers_mapping = api.map_top_offers_to_existing_offers(stats.top_offers, venue_id)
 
     # filter top offer without a known offer, just in case.
     # -> a missing offer is very (very) unlikely but it can happen
@@ -250,7 +249,7 @@ def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsRes
                     offerId=offers_mapping[top_offer].id,
                     numberOfViews=top_offer.views,
                     offerName=offers_mapping[top_offer].name,
-                    image=offers_api.build_offer_image(offers_mapping[top_offer]),
+                    image=api.build_offer_image(offers_mapping[top_offer]),
                     isHeadlineOffer=offers_mapping[top_offer].is_headline_offer,
                 )
                 for top_offer in top_offers
@@ -260,6 +259,22 @@ def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsRes
             ],
         ),
     )
+
+
+@pro_blueprint.route("/venues/<int:venue_id>/offers-statistics-v2", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(
+    on_success_status=200,
+    api=blueprint.pro_schema,
+    response_model=offerers_serialize.GetVenueOffersStatsV2ResponseModel,
+)
+def get_venue_offers_stats_v2(venue_id: int) -> offerers_serialize.GetVenueOffersStatsV2ResponseModel:
+    venue = get_or_404(offerers_models.Venue, venue_id)
+    check_user_has_access_to_venues(current_user, [venue.id])
+
+    stats = api.get_venue_offers_statistics_v2(venue_id)
+    return offerers_serialize.GetVenueOffersStatsV2ResponseModel.model_validate(stats)
 
 
 @pro_blueprint.route("/offerers/<int:offerer_id>/offerer_addresses", methods=["GET"])

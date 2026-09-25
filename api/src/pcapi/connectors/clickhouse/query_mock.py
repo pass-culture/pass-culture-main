@@ -179,3 +179,39 @@ class MockVenueOffersMonthlyViewsQuery:
 
 
 VENUE_OFFERS_MONTHLY_VIEWS = [MockVenueOffersMonthlyViewsQuery(total=256)]
+
+
+@dataclass
+class MockVenueTopOffersQueryResult:
+    offer_id: str
+    consultation_cnt: int
+    rank: int
+
+
+VENUE_TOP_OFFERS_LAST_3_MONTHS = [
+    MockVenueTopOffersQueryResult(offer_id="1", consultation_cnt=150, rank=1),
+    MockVenueTopOffersQueryResult(offer_id="2", consultation_cnt=120, rank=2),
+    MockVenueTopOffersQueryResult(offer_id="3", consultation_cnt=100, rank=3),
+]
+
+VENUE_TOP_OFFERS_LAST_6_MONTHS = [
+    MockVenueTopOffersQueryResult(offer_id="1", consultation_cnt=300, rank=1),
+    MockVenueTopOffersQueryResult(offer_id="3", consultation_cnt=250, rank=2),
+    MockVenueTopOffersQueryResult(offer_id="2", consultation_cnt=200, rank=3),
+]
+
+
+@dataclass
+class MockVenueOffersConsultationsByMonthQueryResult:
+    month: datetime.date
+    views: int
+
+
+VENUE_OFFERS_VIEWS_BY_MONTH = [
+    MockVenueOffersConsultationsByMonthQueryResult(month=datetime.date(2026, 4, 1), views=10),
+    MockVenueOffersConsultationsByMonthQueryResult(month=datetime.date(2026, 5, 1), views=20),
+    MockVenueOffersConsultationsByMonthQueryResult(month=datetime.date(2026, 6, 1), views=30),
+    MockVenueOffersConsultationsByMonthQueryResult(month=datetime.date(2026, 7, 1), views=40),
+    MockVenueOffersConsultationsByMonthQueryResult(month=datetime.date(2026, 8, 1), views=50),
+    MockVenueOffersConsultationsByMonthQueryResult(month=datetime.date(2026, 9, 1), views=60),
+]
