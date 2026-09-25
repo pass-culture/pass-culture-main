@@ -1122,7 +1122,7 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
         siret=None,
         booking_email=form.booking_email.data,
         managing_offerer_id=offerer_id,
-        name=form.public_name.data,
+        name=offerer.name,
         public_name=form.public_name.data,
         venue_label_id=None,
         withdrawal_details=None,
