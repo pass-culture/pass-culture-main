@@ -1,4 +1,6 @@
 import { screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import * as useCurrentUserPermissionsModule from '@/commons/auth/useCurrentUserPermissions'
 import * as useOffererNamesQueryModule from '@/commons/hooks/swr/useOffererNamesQuery'
@@ -9,7 +11,12 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { AdministrationLayout } from './AdministrationLayout'
 
-const renderAdministrationLayout = (offererCount = 1) => {
+const renderAdministrationLayout = (
+  offererCount = 1,
+  routeHandle: { title?: string; mainTitle?: string } = {
+    title: 'Titre de la page',
+  }
+) => {
   const offererNames = Array.from({ length: offererCount }, (_, i) =>
     getOffererNameFactory({ id: i + 1, name: `Offerer ${i + 1}` })
   )
@@ -22,7 +29,7 @@ const renderAdministrationLayout = (offererCount = 1) => {
     mutate: vi.fn(),
   } as any)
 
-  renderWithProviders(null, {
+  return renderWithProviders(null, {
     routes: [
       {
         path: '/administration',
@@ -31,6 +38,7 @@ const renderAdministrationLayout = (offererCount = 1) => {
           {
             path: 'donnees-activite/individuel',
             element: <div data-testid="outlet-content">Page content</div>,
+            handle: routeHandle,
           },
         ],
       },
@@ -46,6 +54,19 @@ const renderAdministrationLayout = (offererCount = 1) => {
 }
 
 describe('AdministrationLayout', () => {
+  it('should render without accessibility violations', async () => {
+    vi.spyOn(
+      useCurrentUserPermissionsModule,
+      'useCurrentUserPermissions'
+    ).mockReturnValue(
+      makeUserPermissions({ isSelectedAdminOffererAssociated: true })
+    )
+
+    const { container } = renderAdministrationLayout(1)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should not display offerer select when there is only one offerer', () => {
     vi.spyOn(
       useCurrentUserPermissionsModule,
@@ -92,6 +113,43 @@ describe('AdministrationLayout', () => {
       screen.getByText(
         'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       )
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId('outlet-content')).not.toBeInTheDocument()
+  })
+
+  it('should render title from route handle title property', () => {
+    vi.spyOn(
+      useCurrentUserPermissionsModule,
+      'useCurrentUserPermissions'
+    ).mockReturnValue(
+      makeUserPermissions({ isSelectedAdminOffererAssociated: true })
+    )
+
+    renderAdministrationLayout(1, { title: "Titre de l'onglet" })
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: "Titre de l'onglet" })
+    ).toBeInTheDocument()
+  })
+
+  it('should prioritize mainTitle over title from route handle when both are provided', () => {
+    vi.spyOn(
+      useCurrentUserPermissionsModule,
+      'useCurrentUserPermissions'
+    ).mockReturnValue(
+      makeUserPermissions({ isSelectedAdminOffererAssociated: true })
+    )
+
+    renderAdministrationLayout(1, {
+      title: "Titre de l'onglet",
+      mainTitle: 'Titre principal de la page',
+    })
+
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Titre principal de la page',
+      })
     ).toBeInTheDocument()
   })
 })
