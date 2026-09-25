@@ -579,7 +579,7 @@ GOOGLE_MAPS_API_KEY = secrets_utils.get("GOOGLE_MAPS_API_KEY")
 # ACCESLIBRE
 ACCESLIBRE_BACKEND = os.environ.get("ACCESLIBRE_BACKEND")
 ACCESLIBRE_API_KEY = secrets_utils.get("ACCESLIBRE_API_KEY")
-ACCESLIBRE_API_URL = "https://acceslibre.beta.gouv.fr/api/erps/"
+ACCESLIBRE_API_URL = os.environ.get("ACCESLIBRE_API_URL", "https://recette.acceslibre.info/api/erps/")
 ACCESLIBRE_SHOULD_AVOID_TOO_MANY_REQUESTS = bool(int(os.environ.get("ACCESLIBRE_SHOULD_AVOID_TOO_MANY_REQUESTS", "1")))
 ACCESLIBRE_REQUEST_TIMEOUT = int(os.environ.get("ACCESLIBRE_REQUEST_TIMEOUT", "6"))
 
