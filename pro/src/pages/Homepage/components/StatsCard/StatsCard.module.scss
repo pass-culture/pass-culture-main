@@ -60,6 +60,10 @@
       background: var(--color-background-info);
       border-radius: 50%;
       padding: rem.torem(4px);
+
+      &-no-data {
+        background: var(--color-background-subtle);
+      }
     }
 
     &-main {

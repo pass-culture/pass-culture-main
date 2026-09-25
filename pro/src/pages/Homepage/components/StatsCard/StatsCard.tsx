@@ -8,13 +8,18 @@ import {
   ButtonSize,
   ButtonVariant,
 } from 'design-system/Button/types'
+import { CumulatedViews } from 'pages/Homepage/components/StatsCard/components/CumulatedViews'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { Select } from 'ui-kit/form/Select/Select'
 import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { api } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type {
+  GetVenueResponseModel,
+  VenueOffersPeriodStatsModel,
+} from '@/apiClient/v1'
 import {
   GET_VENUES_OFFERS_STATS_V2,
   GET_VENUES_STATS_QUERY_KEY,
@@ -23,16 +28,20 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import strokeShowIcon from '@/icons/stroke-show.svg'
 import { Card } from '@/ui-kit/Card/Card'
 
-import { CumulatedViews } from './components/CumulatedViews'
 import { MostViewedOffers } from './components/MostViewedOffers'
+import { OldCumulatedViews } from './components/OldCumulatedViews'
 import styles from './StatsCard.module.scss'
 
 interface StatsCardProps {
   venue: GetVenueResponseModel
 }
 
+type StatsPeriods = 'last3Months' | 'last6Months'
+
 export const StatsCard = ({ venue }: StatsCardProps) => {
   const isStatsV2 = useActiveFeature('WIP_HOME_STATS_V2')
+  const [selectedPeriod, setSelectedPeriod] = useState<StatsPeriods>()
+  const [periodStats, setPeriodStats] = useState<VenueOffersPeriodStatsModel>()
   const { logEvent } = useAnalytics()
 
   const { data: oldStats } = useSWR(
@@ -47,6 +56,25 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
         path: { venue_id: venueId },
       })
   )
+
+  if (isStatsV2 && !selectedPeriod && !isLoading) {
+    if (
+      (stats?.last3Months.cumulatedViews ?? 0) <= 0 &&
+      (stats?.last6Months.cumulatedViews ?? 0) > 0
+    ) {
+      setSelectedPeriod('last6Months')
+    } else {
+      setSelectedPeriod('last3Months')
+    }
+  }
+
+  useEffect(() => {
+    if (selectedPeriod === 'last6Months') {
+      setPeriodStats(stats?.last6Months)
+    } else if (selectedPeriod === 'last3Months') {
+      setPeriodStats(stats?.last3Months)
+    }
+  }, [selectedPeriod, periodStats, stats])
 
   const dailyViews = oldStats?.jsonData.dailyViews ?? []
 
@@ -65,7 +93,7 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
             [styles['has-top-offers']]: topOffers.length > 0,
           })}
         >
-          <CumulatedViews
+          <OldCumulatedViews
             dailyViews={dailyViews}
             totalViewsLast30Days={totalViewsLast30Days}
             showTitle={false}
@@ -79,22 +107,24 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
   const newStatsComponent = (
     <Card>
       {isLoading && <Skeleton height="339px" width="100%" />}
-      {!isLoading && (
+      {isStatsV2 && !isLoading && (
         <>
           <Card.Header title="Statistiques de vos offres individuelles">
             <Select
               className={styles['stats-select']}
               name="stats-period"
               label=""
+              value={selectedPeriod}
               options={[
                 { value: 'last3Months', label: '3 derniers mois' },
                 { value: 'last6Months', label: '6 derniers mois' },
               ]}
-              onChange={(event) =>
+              onChange={(event) => {
+                setSelectedPeriod(event.target.value as StatsPeriods)
                 logEvent(HomepageEvents.CHANGED_STATS_V2_PERIOD, {
                   period: event.target.value,
                 })
-              }
+              }}
             />
           </Card.Header>
           <Card.Content>
@@ -105,19 +135,27 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
             >
               <div>
                 <div className={styles['stats-chart-title']}>
-                  <div className={styles['stats-chart-title-icon']}>
+                  <div
+                    className={cn(styles['stats-chart-title-icon'], {
+                      [styles['stats-chart-title-icon-no-data']]:
+                        (periodStats?.cumulatedViews ?? 0) <= 0,
+                    })}
+                  >
                     <SvgIcon src={strokeShowIcon} width="32" />
                   </div>
                   <div>
                     <p className={styles['stats-chart-title-main']}>
-                      {stats?.last3Months.cumulatedViews} consultations
+                      {periodStats?.cumulatedViews} consultations
                     </p>
                     <p className={styles['stats-chart-title-sub']}>
-                      sur les XXXXX
+                      sur les{' '}
+                      {selectedPeriod === 'last3Months'
+                        ? '3 derniers mois'
+                        : '6 derniers mois'}
                     </p>
                   </div>
                 </div>
-                GRAPHE
+                <CumulatedViews periodStats={periodStats} />
               </div>
               {topOffers.length > 0 && (
                 <MostViewedOffers topOffers={topOffers} />
