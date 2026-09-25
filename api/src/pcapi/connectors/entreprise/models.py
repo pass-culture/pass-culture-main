@@ -47,7 +47,7 @@ class SiretInfo(pydantic_v1.BaseModel):
     diffusible: bool
     name: str
     address: SireneAddress
-    ape_code: str | None
+    ape_code: str
     ape_label: str | None = None  # optional, set only from API Entreprise
     legal_category_code: str
 
