@@ -7,7 +7,6 @@ import {
   defaultGetCollectiveOfferRequest,
   getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
-  getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -74,30 +73,6 @@ describe('CollectiveOfferStockCreation', () => {
     })
 
     expect(await screen.findByTestId('stock-form')).toBeInTheDocument()
-  })
-
-  it('should render collective offer stock form from template', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
-      getCollectiveOfferTemplateFactory({
-        priceDetail: 'Details from template',
-      })
-    )
-    renderCollectiveStockCreation('/offre/A1/collectif/stocks', {
-      offer: getCollectiveOfferFactory({
-        collectiveStock: null,
-        templateId: 12,
-      }),
-    })
-    await waitFor(() => {
-      expect(api.getCollectiveOfferTemplate).toHaveBeenCalledTimes(1)
-    })
-    expect(CollectiveOfferStockForm).toHaveBeenCalled()
-    expect(CollectiveOfferStockForm).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        initialStock: { priceDetail: 'Details from template' },
-      }),
-      undefined
-    )
   })
 
   it('should render collective offer stock form from requested offer', async () => {

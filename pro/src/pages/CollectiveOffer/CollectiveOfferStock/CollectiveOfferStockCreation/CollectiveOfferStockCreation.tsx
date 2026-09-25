@@ -11,7 +11,6 @@ import type {
 } from '@/apiClient/v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
-  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { Mode } from '@/commons/core/OfferEducational/types'
@@ -28,20 +27,16 @@ import {
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferStockForm } from '../components/CollectiveOfferStockForm/CollectiveOfferStockForm'
 
-const BASE_STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] = [
+const STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] = [
   'bookingLimitDatetime',
   'endDatetime',
   'numberOfTickets',
   'startDatetime',
   'price',
+  'numberOfTeachers',
+  'collectiveAdditionalFees',
+  'servicePrice',
 ]
-
-const STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] =
-  BASE_STOCK_KEYS.concat([
-    'numberOfTeachers',
-    'collectiveAdditionalFees',
-    'servicePrice',
-  ])
 
 function isComplete(
   stock: Partial<CollectiveStockCreationBodyModel>
@@ -73,10 +68,10 @@ function handleStockError(
   onError('Une erreur est survenue lors de la création de votre stock.')
 }
 
-function getStockVariant(
-  newCollectiveStock: CollectiveStockCreationBodyModel
+function getCreateStock(
+  collectiveStock: CollectiveStockCreationBodyModel
 ): CollectiveStockCreationBodyModel {
-  return objectFromEntries(STOCK_KEYS.map((k) => [k, newCollectiveStock[k]]))
+  return objectFromEntries(STOCK_KEYS.map((k) => [k, collectiveStock[k]]))
 }
 
 export const CollectiveOfferStockCreation = ({
@@ -87,17 +82,6 @@ export const CollectiveOfferStockCreation = ({
   const isCreation = !location.pathname.includes('edition')
   const { requete: requestId } = queryParamsFromOfferer(location)
   const { mutate } = useSWRConfig()
-
-  const { data: offerFromTemplate } = useSWR(
-    offer.templateId
-      ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offer.templateId]
-      : null,
-    ([, offerTemplateIdParam]) => {
-      return api.getCollectiveOfferTemplate({
-        path: { offer_id: offerTemplateIdParam },
-      })
-    }
-  )
 
   const { data: requestInformations } = useSWR(
     () =>
@@ -126,10 +110,6 @@ export const CollectiveOfferStockCreation = ({
     }
   }
 
-  if (!offer.collectiveStock && offerFromTemplate?.priceDetail) {
-    initialStock.priceDetail = offerFromTemplate.priceDetail
-  }
-
   const departementCode = offer.venue.departementCode ?? ''
   const stepPaths = {
     previous: `/offre/collectif/${offer.id}/creation`,
@@ -141,19 +121,19 @@ export const CollectiveOfferStockCreation = ({
   }
 
   const handleSubmitStock = async (
-    newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
+    collectiveStock: Partial<CollectiveStockCreationBodyModel>
   ): Promise<boolean> => {
     try {
       let response: CollectiveStockResponseModel | null = null
       if (offer.collectiveStock) {
         response = await api.editCollectiveStock({
           path: { collective_stock_id: offer.collectiveStock.id },
-          body: newCollectiveStock,
+          body: collectiveStock,
         })
-      } else if (isComplete(newCollectiveStock)) {
+      } else if (isComplete(collectiveStock)) {
         response = await api.createCollectiveStock({
           body: {
-            ...getStockVariant(newCollectiveStock),
+            ...getCreateStock(collectiveStock),
             offerId: offer.id,
           },
         })
