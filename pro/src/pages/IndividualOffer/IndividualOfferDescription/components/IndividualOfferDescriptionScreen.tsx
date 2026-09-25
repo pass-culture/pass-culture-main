@@ -1,25 +1,13 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useRef } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
+import { useEffect, useId, useState } from 'react'
 
-import { api } from '@/apiClient/api'
-import { isErrorAPIError } from '@/apiClient/helpers'
 import { DisplayableActivity } from '@/apiClient/v1'
-import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   CULTURAL_OUTREACH_ALLOWED_ACTIVITIES,
-  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
-import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import {
   isOfferProductBasedButNotSynchronized,
   isOfferSynchronized,
@@ -28,32 +16,23 @@ import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
-import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import type {
   DetailsFormValues,
   Product,
 } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 import {
-  getFormReadOnlyFields,
   getInitialValuesFromOffer,
   getInitialValuesFromVenue,
   hasMusicType,
+  isSubCategoryCD,
 } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
-import { getValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
 
 import { ProductBanner } from '../../components/ProductBanner/ProductBanner'
 import { SynchronizedBanner } from '../../components/SynchronizedBanner/SynchronizedBanner'
-import {
-  serializeDetailsPatchData,
-  serializeDetailsPostData,
-} from '../commons/serializers'
 import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
 
@@ -66,26 +45,14 @@ export const IndividualOfferDescriptionScreen = () => {
     categories,
     subCategories,
     offer: initialOffer,
-    hasPublishedOfferWithSameEan,
   } = useIndividualOfferContext()
-  const offerIdRef = useRef(initialOffer?.id)
-  // Read by `afterSubmitState` so the success message is shown once the
-  // destination page (or this same page) has taken over, instead of racing with the navigation.
-  const hasSavedOfferRef = useRef(false)
-
-  const navigate = useNavigate()
-  const { pathname } = useLocation()
-  const isOnboarding = pathname.includes('onboarding')
-  const { logEvent } = useAnalytics()
-  const { mutate } = useSWRConfig()
+  const isNewOfferDraft = !initialOffer
   const mode = useOfferWizardMode()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const initialOfferImage = getIndividualOfferImage(initialOffer)
   const extraData = initialOffer?.extraData as OfferExtraData | undefined
   const { handleEanImage } = useIndividualOfferImageUpload(initialOfferImage)
-
-  const isNewOfferDraft = !initialOffer
 
   const getInitialValues = () => {
     return isNewOfferDraft
@@ -95,19 +62,32 @@ export const IndividualOfferDescriptionScreen = () => {
           subcategories: subCategories,
         })
   }
+  const [initialValues, setInitialValues] = useState<DetailsFormValues>(
+    getInitialValues()
+  )
+  const [subcategoryId, setSubcategoryId] = useState<string | undefined>(
+    undefined
+  )
 
-  const form = useForm<DetailsFormValues>({
-    defaultValues: getInitialValues(),
-    resolver: yupResolver<DetailsFormValues, unknown, unknown>(
-      // @ts-expect-error - Waiting for pydanticV2 migration
-      getValidationSchema()
-    ),
-    mode: 'onBlur',
-  })
+  const hasSelectedProduct = !!initialValues.productId
+  const isDraftOfferNotProductBased = isNewOfferDraft && !hasSelectedProduct
 
-  const hasSelectedProduct = !!form.watch('productId')
+  const selectedSubcategoryId = subcategoryId
+  const [subcatErrorForEanCompletion, setSubcatErrorForEanCompletion] =
+    useState<string | undefined>(undefined)
 
-  const selectedSubcategoryId = form.watch('subcategoryId')
+  useEffect(() => {
+    if (
+      isDraftOfferNotProductBased &&
+      isSubCategoryCD(selectedSubcategoryId ?? '')
+    ) {
+      setSubcatErrorForEanCompletion(
+        'Les offres de type CD doivent être liées à un produit.'
+      )
+    } else {
+      setSubcatErrorForEanCompletion(undefined)
+    }
+  }, [isDraftOfferNotProductBased, selectedSubcategoryId])
 
   const isEanSearchAvailable =
     selectedPartnerVenue.activity === DisplayableActivity.RECORD_STORE
@@ -120,108 +100,18 @@ export const IndividualOfferDescriptionScreen = () => {
   const isEanSearchInputDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
 
-  const readOnlyFields = getFormReadOnlyFields(
-    initialOffer,
+  console.log({
+    isNewOfferDraft,
     hasSelectedProduct,
-    selectedPartnerVenue
-  )
-
-  const onSubmit = async (formValues: DetailsFormValues): Promise<boolean> => {
-    try {
-      if (offerIdRef.current) {
-        await mutate(
-          [GET_OFFER_QUERY_KEY, offerIdRef.current],
-          api.patchOffer({
-            path: { offer_id: offerIdRef.current },
-            body: serializeDetailsPatchData(formValues, readOnlyFields),
-          }),
-          { revalidate: false }
-        )
-      } else {
-        await mutate(
-          [GET_OFFER_QUERY_KEY],
-          api.createOffer({ body: serializeDetailsPostData(formValues) }),
-          {
-            revalidate: false,
-            populateCache: (newOffer) => {
-              offerIdRef.current = newOffer.id
-              return newOffer
-            },
-          }
-        )
-
-        // Replace current history entry so that it points to this new offer ID when clicking the browser back button
-        globalThis.history.replaceState(
-          globalThis.history.state,
-          '',
-          getIndividualOfferUrl({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-            offerId: offerIdRef.current,
-            mode: OFFER_WIZARD_MODE.CREATION,
-            isOnboarding,
-          })
-        )
-      }
-
-      if (mode === OFFER_WIZARD_MODE.EDITION) {
-        hasSavedOfferRef.current = true
-      }
-
-      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        offerId: offerIdRef.current,
-        offerType: 'individual',
-        subcategoryId: form.getValues('subcategoryId'),
-      })
-
-      return true
-    } catch (error) {
-      if (isErrorAPIError(error)) {
-        for (const field in error.body) {
-          form.setError(field as keyof DetailsFormValues, {
-            message: error.body[field],
-          })
-        }
-      }
-
-      return false
-    }
-  }
-
-  const afterSubmitPath = () =>
-    getAfterSubmitPath({
-      offerId: offerIdRef.current,
-      mode,
-      isOnboarding,
-      followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
-    })
-  const afterSubmitState = () =>
-    hasSavedOfferRef.current
-      ? { successMessage: 'Votre offre a bien été modifiée.' }
-      : undefined
-  const { navigationGuardedSubmitHandler, navigationGuardDialog } =
-    useFormNavigationGuard({
-      afterSubmitPath,
-      afterSubmitState,
-      form,
-      onSubmit,
-    })
-
-  const handlePreviousStep = () => {
-    navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
-  }
+    initialValues,
+    isDraftOfferNotProductBased,
+    cd: isSubCategoryCD(selectedSubcategoryId ?? ''),
+    selectedSubcategoryId,
+  })
 
   const updateProduct = (ean: string, product: Product) => {
-    const {
-      id,
-      name,
-      description,
-      subcategoryId,
-      gtlId,
-      author,
-      performer,
-      images,
-    } = product
-
+    const { description, gtlId, subcategoryId, images, ...restProduct } =
+      product
     const subcategory = subCategories.find((s) => s.id === subcategoryId)
     if (!subcategory) {
       return handleUnexpectedError(
@@ -243,25 +133,20 @@ export const IndividualOfferDescriptionScreen = () => {
       gtl_id = gtlId || '19000000'
     }
 
-    form.setValue('ean', ean)
-    form.setValue('name', name)
-    form.setValue('description', description || '')
-    form.setValue('categoryId', categoryId)
-    form.setValue('subcategoryId', subcategoryId)
-    form.setValue('gtl_id', gtl_id)
-    form.setValue('author', author)
-    form.setValue('artistOfferLinks', [])
-    form.setValue('performer', performer)
-    form.setValue(
-      'subcategoryConditionalFields',
-      conditionalFields as Array<keyof DetailsFormValues>
-    )
-    form.setValue('productId', id.toString())
-  }
-
-  const resetFormAndEanImage = () => {
-    handleEanImage()
-    form.reset()
+    console.log('COUCOU')
+    setInitialValues((prevInitialValues) => ({
+      ...prevInitialValues,
+      ...restProduct,
+      ean,
+      description: description || '',
+      categoryId,
+      subcategoryId,
+      gtl_id,
+      subcategoryConditionalFields: conditionalFields as Array<
+        keyof DetailsFormValues
+      >,
+      productId: restProduct.id.toString(),
+    }))
   }
 
   return (
@@ -277,40 +162,24 @@ export const IndividualOfferDescriptionScreen = () => {
           isDraftOffer={isNewOfferDraft}
           initialEan={extraData?.ean}
           isProductBased={hasSelectedProduct}
-          onEanReset={resetFormAndEanImage}
+          onEanReset={() => {
+            handleEanImage()
+            setInitialValues(getInitialValues())
+          }}
           onEanSearch={updateProduct}
-          subcategoryId={selectedSubcategoryId}
+          subcatError={subcatErrorForEanCompletion}
         />
       )}
-      <FormProvider {...form}>
-        <form onSubmit={navigationGuardedSubmitHandler}>
-          <FormLayout fullWidthActions>
-            <ScrollToFirstHookFormErrorAfterSubmit />
-            <DetailsForm
-              filteredCategories={categories}
-              filteredSubcategories={subCategories}
-              hasSelectedProduct={hasSelectedProduct}
-              isEanSearchDisplayed={isEanSearchInputDisplayed}
-              readOnlyFields={readOnlyFields}
-              canClaimCulturalOutreach={canClaimCulturalOutreach}
-            />
-          </FormLayout>
 
-          <ActionBar
-            dirtyForm={form.formState.isDirty || isNewOfferDraft}
-            isDisabled={
-              form.formState.isSubmitting ||
-              Boolean(initialOffer && isOfferDisabled(initialOffer)) ||
-              hasPublishedOfferWithSameEan ||
-              (!form.formState.isDirty && mode !== OFFER_WIZARD_MODE.CREATION)
-            }
-            onClickPrevious={handlePreviousStep}
-            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION}
-          />
-        </form>
-      </FormProvider>
-
-      {navigationGuardDialog}
+      <DetailsForm
+        key={initialValues.productId}
+        initialValues={initialValues}
+        onSubcategoryChange={setSubcategoryId}
+        filteredCategories={categories}
+        filteredSubcategories={subCategories}
+        isEanSearchDisplayed={isEanSearchInputDisplayed}
+        canClaimCulturalOutreach={canClaimCulturalOutreach}
+      />
     </>
   )
 }
