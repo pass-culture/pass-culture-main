@@ -71,6 +71,17 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
         for row in rows:
             assert list_of_gdpr_user_extract_data[4].id not in row
 
+    def test_list_displays_extract_scope(self, authenticated_client):
+        users_factories.GdprUserDataExtractBeneficiaryFactory()
+        users_factories.GdprUserDataExtractBeneficiaryFactory(scope=users_models.GdprUserDataExtractScope.INTERNAL_USE)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert [row["Périmètre"] for row in rows] == ["Usage interne", "Demande d'accès jeune"]
+
     def test_display_download_button_when_extract_is_processed(self, authenticated_client):
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
 
@@ -126,6 +137,21 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
         assert int(response.headers["Content-Length"]) == len(expected_data)
         assert response.headers["Content-Disposition"] == f'attachment; filename="{extract.user.email}.zip"'
         assert response.data == expected_data
+
+    def test_download_internal_use_extract_is_suffixed(self, authenticated_client):
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateProcessed=date_utils.get_naive_utc_now(), scope=users_models.GdprUserDataExtractScope.INTERNAL_USE
+        )
+
+        with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
+            fp.write(randbytes(16))
+
+        response = self.post_to_endpoint(
+            authenticated_client, extract_id=extract.id, expected_num_queries=self.expected_num_queries
+        )
+
+        assert response.status_code == 200
+        assert response.headers["Content-Disposition"] == f'attachment; filename="{extract.user.email}_internal.zip"'
 
     def test_extract_not_found(self, authenticated_client):
         expected_url = url_for("backoffice.gdpr_extract.list_gdpr_user_data_extract")

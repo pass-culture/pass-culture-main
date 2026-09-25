@@ -2,7 +2,7 @@
 <html lang="fr">
     <head>
         <meta charset="utf-8">
-        <title>Réponse à ta demande d’accès</title>
+        <title>{% block document_title %}Réponse à ta demande d’accès{% endblock %}</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;1,400');
 
@@ -31,7 +31,7 @@
                 font-size: 16pt;
                 font-weight: bold;
             }
-            h3 {
+            h2 {
                 color: #870087;
                 font-size: 10pt;
                 font-style: normal;
@@ -59,7 +59,7 @@
             }
         </style>
 
-        <meta name="description" content="Réponse à ta demande d’accès">
+        <meta name="description" content="{{ self.document_title() }}">
     </head>
     <body>
         <svg class="headerImage" width="563" height="125" viewBox="0 0 563 125" fill="none" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
@@ -75,7 +75,8 @@
                 </clipPath>
             </defs>
         </svg>
-        <h1>Réponse à ta demande d’accès</h1>
+        <h1>{{ self.document_title() }}</h1>
+        {% block introduction %}
         <div class="purple-background">
             <p>
                 <i>
@@ -88,7 +89,8 @@
                 </i>
             </p>
         </div>
-        <h3>Données de l’utilisateur</h3>
+        {% endblock %}
+        <h2>Données de l’utilisateur</h2>
         <table class="borderless">
             {% if container.internal.user.firstName %}<tr><td>Prénom</td><td>{{container.internal.user.firstName}}</td></tr>{% endif %}
             {% if container.internal.user.lastName %}<tr><td>Nom</td><td>{{container.internal.user.lastName}}</td></tr>{% endif %}
@@ -107,14 +109,41 @@
             {% if container.internal.user.schoolType %}<tr><td>Type d'école</td><td>{{container.internal.user.schoolType.value}}</td></tr>{% endif %}
         </table>
 
-        <h3>Informations marketing</h3>
+        {% if container.internal.accountHistory %}
+            <h2>Historique du compte</h2>
+            {% for accountHistoryEntry in container.internal.accountHistory %}
+                <table class="borderless">
+                    {% if accountHistoryEntry.date %}<tr><td>Date</td><td>{{accountHistoryEntry.date.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
+                    <tr><td>Action</td><td>{{accountHistoryEntry.label}}</td></tr>
+                    {% if accountHistoryEntry.author %}<tr><td>Auteur</td><td>{{accountHistoryEntry.author}}</td></tr>{% endif %}
+                    {% if accountHistoryEntry.comment %}<tr><td>Commentaire</td><td>{{accountHistoryEntry.comment | replace('\n', '<br/>' | safe)}}</td></tr>{% endif %}
+                    {% for detail in accountHistoryEntry.details %}
+                        <tr><td>{% if loop.first %}Détails{% endif %}</td><td>{{detail}}</td></tr>
+                    {% endfor %}
+                </table>
+            {% endfor %}
+        {% endif %}
+
+        {% if container.internal.profileEdits %}
+            <h2>Modifications des informations personnelles par le jeune</h2>
+            {% for profileEdit in container.internal.profileEdits %}
+                <table class="borderless">
+                    {% if profileEdit.date %}<tr><td>Date</td><td>{{profileEdit.date.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
+                    {% for detail in profileEdit.details %}
+                        <tr><td>{% if loop.first %}Modifications{% endif %}</td><td>{{detail}}</td></tr>
+                    {% endfor %}
+                </table>
+            {% endfor %}
+        {% endif %}
+
+        <h2>Informations marketing</h2>
         <table class="borderless">
             <tr><td>Accepte la réception de mails</td><td>{% if container.internal.marketing.marketingEmails%}oui{%else%}non{%endif%}</td></tr>
             <tr><td>Accepte les notifications mobiles</td><td>{% if container.internal.marketing.marketingNotifications%}oui{%else%}non{%endif%}</td></tr>
         </table>
 
         {% if container.internal.loginDevices %}
-            <h3>Historique des moyens de connexion</h3>
+            <h2>Historique des moyens de connexion</h2>
             {% for device in container.internal.loginDevices%}
                 <table class="borderless">
                     <tr><td>Date de première connexion</td><td>{{device.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
@@ -126,10 +155,12 @@
         {% endif %}
 
         {% if container.internal.emailsHistory %}
-            <h3>Historique des changements d’adresse de messagerie</h3>
+            <h2>Historique des changements d’adresse de messagerie</h2>
             {% for history in container.internal.emailsHistory %}
                 <table class="borderless">
                     <tr><td>Date de la demande</td><td>{{history.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
+                    {% if history.label %}<tr><td>Événement</td><td>{{history.label}}</td></tr>{% endif %}
+                    {% if history.author %}<tr><td>Auteur</td><td>{{history.author}}</td></tr>{% endif %}
                     <tr><td>Ancienne adresse email</td><td>{{history.oldEmail}}</td></tr>
                     {%if history.newEmail %}<tr><td>Nouvelle adresse email</td><td>{{history.newEmail}}</td></tr>{% endif %}
                 </table>
@@ -137,7 +168,7 @@
         {% endif %}
 
         {% if container.internal.actionsHistory %}
-            <h3>Historique des blocages du compte « pass Culture »</h3>
+            <h2>Historique des blocages du compte « pass Culture »</h2>
             {% for action in container.internal.actionsHistory %}
                 <table class="borderless">
                     {% if action.actionDate %}<tr><td>Date</td><td>{{action.actionDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
@@ -147,7 +178,7 @@
         {% endif %}
 
         {% if container.internal.beneficiaryValidations %}
-            <h3>Validations d’identité</h3>
+            <h2>Validations d’identité</h2>
             {% for validation in container.internal.beneficiaryValidations %}
                 <table class="borderless">
                     <tr><td>Date de la validation</td><td>{{validation.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
@@ -159,7 +190,7 @@
         {% endif %}
 
         {% if container.internal.deposits %}
-            <h3>Crédits</h3>
+            <h2>Crédits</h2>
             {% for deposit in container.internal.deposits %}
                 <table class="borderless">
                     <tr><td>Date d’obtention</td><td>{{deposit.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
@@ -173,7 +204,7 @@
         {% endif %}
 
         {% if container.internal.bookings %}
-            <h3>Réservations effectuées depuis l’application « pass Culture »</h3>
+            <h2>Réservations effectuées depuis l’application « pass Culture »</h2>
             {% for booking in container.internal.bookings %}
                 <table class="borderless">
                     <tr><td>Nom</td><td>{{booking.name}}</td></tr>
@@ -190,7 +221,7 @@
         {% endif %}
 
         {% if container.internal.chronicles %}
-            <h3>Historique des chroniques</h3>
+            <h2>Historique des chroniques</h2>
             {% for chronicle in container.internal.chronicles %}
                 <table class="borderless">
                     <tr><td>Date</td><td>{{chronicle.dateCreated.strftime('%d/%m/%Y')}}</td></tr>
@@ -208,7 +239,7 @@
         {% endif %}
 
         {% if container.internal.accountUpdateRequests %}
-            <h3>Dossiers Démarche Numérique de mise à jour d'informations personnelles</h3>
+            <h2>Dossiers Démarche Numérique de mise à jour d'informations personnelles</h2>
             {% for update_request in container.internal.accountUpdateRequests %}
                 <table class="borderless">
                     <tr><td>Accords de traitement des données<br/>(Consentement, CGU, accord au traitement<br/>des données, déclaration sur l'honneur)</td><td>{% if update_request.allConditionsChecked%}oui{%else%}non{%endif%}</td></tr>
@@ -230,8 +261,10 @@
                 </table>
             {% endfor %}
         {% endif %}
+    {% block conclusion %}
     <div class="purple-background">
         Bon à savoir : si tu souhaites récupérer ces données dans un format « interopérable » (fichier « .json »), lisible par une machine, tu peux contacter le DPO (dpo@passculture.app) afin d’exercer ton droit à la portabilité.
     </div>
+    {% endblock %}
     </body>
 </html>

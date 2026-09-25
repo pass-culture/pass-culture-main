@@ -103,9 +103,13 @@ def download_gdpr_extract(extract_id: int) -> response_utils.BackofficeResponse:
             code=303,
         )
 
+    filename = extract.user.email
+    if extract.scope == users_models.GdprUserDataExtractScope.INTERNAL_USE:
+        filename += "_internal"
+
     response = make_response(files[0])
     response.headers["Content-Type"] = "application/zip"
-    response.headers["Content-Disposition"] = f'attachment; filename="{extract.user.email}.zip"'
+    response.headers["Content-Disposition"] = f'attachment; filename="{filename}.zip"'
     logger.info(
         "An admin downloaded a user's data",
         extra={
