@@ -15,6 +15,7 @@ import time_machine
 import pcapi.core.mails.testing as mails_testing
 from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors import api_adresse
+from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
@@ -4653,3 +4654,250 @@ class CancelCollectiveBookingsOnVenueClosureTest:
 
         db.session.refresh(venue)
         assert all(booking.isCancelled for booking in venue.collectiveBookings)
+
+
+class BuildOfferImageTest:
+    def test_product_mediation_comes_first(self):
+        offer = offers_factories.OfferFactory(product=offers_factories.ProductFactory())
+        offers_factories.MediationFactory(offer=offer, credit="offer credit")
+        product_mediation = offers_factories.ProductMediationFactory(product=offer.product)
+
+        assert offerers_api.build_offer_image(offer) == offers_models.OfferImage(url=product_mediation.url)
+
+    def test_most_recent_product_mediation_is_used(self):
+        offer = offers_factories.OfferFactory(product=offers_factories.ProductFactory())
+        offers_factories.ProductMediationFactory(product=offer.product)
+        most_recent = offers_factories.ProductMediationFactory(product=offer.product)
+
+        assert offerers_api.build_offer_image(offer) == offers_models.OfferImage(url=most_recent.url)
+
+    def test_most_recent_offer_mediation_is_used(self):
+        offer = offers_factories.OfferFactory()
+        offers_factories.MediationFactory(offer=offer, credit="old")
+        most_recent = offers_factories.MediationFactory(offer=offer, credit="new")
+
+        assert offerers_api.build_offer_image(offer) == offers_models.OfferImage(url=most_recent.thumbUrl, credit="new")
+
+    def test_offer_without_any_mediation(self):
+        offer = offers_factories.OfferFactory()
+
+        assert offerers_api.build_offer_image(offer) is None
+
+
+class TopOfferModelTest:
+    def test_properties_from_headline_offer_with_mediation(self):
+        offer = offers_factories.OfferFactory()
+        offers_factories.HeadlineOfferFactory(offer=offer)
+
+        top_offer = offerers_api.TopOfferModel(offer=offer, views=12, rank=1)
+
+        assert top_offer.offer_id == offer.id
+        assert top_offer.name == offer.name
+        assert top_offer.is_headline_offer is True
+        assert top_offer.image.url == offer.mediations[0].thumbUrl
+
+    def test_properties_from_bare_offer(self):
+        offer = offers_factories.OfferFactory()
+
+        top_offer = offerers_api.TopOfferModel(offer=offer, views=12, rank=1)
+
+        assert top_offer.is_headline_offer is False
+        assert top_offer.image is None
+
+
+class GetViewsByMonthTest:
+    @time_machine.travel("2026-09-15 12:00:00", tick=False)
+    def test_months_with_no_view_are_filled_with_zero(self):
+        rows = [
+            clickhouse_queries.VenueOffersViewsByMonthModel(month=datetime.date(2026, 5, 1), views=12),
+            clickhouse_queries.VenueOffersViewsByMonthModel(month=datetime.date(2026, 8, 1), views=8),
+        ]
+
+        assert offerers_api._get_views_by_month(rows) == [
+            offerers_api.MonthlyViewsModel(month=datetime.date(2026, 4, 1), views=0),
+            offerers_api.MonthlyViewsModel(month=datetime.date(2026, 5, 1), views=12),
+            offerers_api.MonthlyViewsModel(month=datetime.date(2026, 6, 1), views=0),
+            offerers_api.MonthlyViewsModel(month=datetime.date(2026, 7, 1), views=0),
+            offerers_api.MonthlyViewsModel(month=datetime.date(2026, 8, 1), views=8),
+            offerers_api.MonthlyViewsModel(month=datetime.date(2026, 9, 1), views=0),
+        ]
+
+    @time_machine.travel("2026-09-15 12:00:00", tick=False)
+    def test_rows_outside_of_the_last_6_months_are_ignored(self):
+        rows = [
+            clickhouse_queries.VenueOffersViewsByMonthModel(month=datetime.date(2026, 3, 1), views=12),
+            clickhouse_queries.VenueOffersViewsByMonthModel(month=datetime.date(2026, 8, 1), views=8),
+        ]
+
+        assert [(row.month, row.views) for row in offerers_api._get_views_by_month(rows)] == [
+            (datetime.date(2026, 4, 1), 0),
+            (datetime.date(2026, 5, 1), 0),
+            (datetime.date(2026, 6, 1), 0),
+            (datetime.date(2026, 7, 1), 0),
+            (datetime.date(2026, 8, 1), 8),
+            (datetime.date(2026, 9, 1), 0),
+        ]
+
+
+class GetTopOffersViewsTest:
+    rows = [
+        clickhouse_queries.VenueTopOfferByPeriodModel(
+            offer_id="10", consultation_cnt_3m=10, consultation_cnt_6m=30, rank_3m=2, rank_6m=1
+        ),
+        clickhouse_queries.VenueTopOfferByPeriodModel(
+            offer_id="11", consultation_cnt_3m=20, consultation_cnt_6m=20, rank_3m=1, rank_6m=2
+        ),
+        clickhouse_queries.VenueTopOfferByPeriodModel(
+            offer_id="12", consultation_cnt_3m=None, consultation_cnt_6m=15, rank_3m=None, rank_6m=3
+        ),
+        clickhouse_queries.VenueTopOfferByPeriodModel(
+            offer_id="13", consultation_cnt_3m=5, consultation_cnt_6m=5, rank_3m=3, rank_6m=5
+        ),
+        clickhouse_queries.VenueTopOfferByPeriodModel(
+            offer_id="14", consultation_cnt_3m=4, consultation_cnt_6m=4, rank_3m=4, rank_6m=6
+        ),
+    ]
+
+    def test_top_3_over_3_months_sorted_by_rank(self):
+        assert offerers_api._get_top_offers_views(self.rows, months=3) == [
+            offerers_api.OfferViewsModel(offer_id="11", views=20, rank=1),
+            offerers_api.OfferViewsModel(offer_id="10", views=10, rank=2),
+            offerers_api.OfferViewsModel(offer_id="13", views=5, rank=3),
+        ]
+
+    def test_top_3_over_6_months_sorted_by_rank(self):
+        assert offerers_api._get_top_offers_views(self.rows, months=6) == [
+            offerers_api.OfferViewsModel(offer_id="10", views=30, rank=1),
+            offerers_api.OfferViewsModel(offer_id="11", views=20, rank=2),
+            offerers_api.OfferViewsModel(offer_id="12", views=15, rank=3),
+        ]
+
+    def test_no_rows(self):
+        assert offerers_api._get_top_offers_views([], months=3) == []
+
+
+class BuildPeriodStatisticsTest:
+    def test_top_offers_are_mapped_to_their_offer(self):
+        offers = [Mock(), Mock()]
+        top_offers_views = [
+            offerers_api.OfferViewsModel(offer_id="1", views=20, rank=1),
+            offerers_api.OfferViewsModel(offer_id="2", views=10, rank=2),
+        ]
+        offers_mapping = dict(zip(top_offers_views, offers))
+
+        stats = offerers_api._build_period_statistics(top_offers_views, offers_mapping, [])
+
+        assert stats.top_offers == [
+            offerers_api.TopOfferModel(offer=offers[0], views=20, rank=1),
+            offerers_api.TopOfferModel(offer=offers[1], views=10, rank=2),
+        ]
+
+    def test_top_offer_without_a_known_offer_is_ignored(self):
+        offer = Mock()
+        known = offerers_api.OfferViewsModel(offer_id="1", views=20, rank=1)
+        unknown = offerers_api.OfferViewsModel(offer_id="2", views=10, rank=2)
+
+        stats = offerers_api._build_period_statistics([known, unknown], {known: offer}, [])
+
+        assert stats.top_offers == [offerers_api.TopOfferModel(offer=offer, views=20, rank=1)]
+
+    def test_monthly_views_are_summed(self):
+        views_by_month = [
+            offerers_api.MonthlyViewsModel(month=datetime.date(2026, 8, 1), views=12),
+            offerers_api.MonthlyViewsModel(month=datetime.date(2026, 9, 1), views=8),
+        ]
+
+        stats = offerers_api._build_period_statistics([], {}, views_by_month)
+
+        assert stats.cumulated_views == 20
+        assert stats.views_by_month == views_by_month
+
+
+class GetVenueOffersStatisticsV2Test:
+    @patch("pcapi.connectors.clickhouse.queries.VenueOffersViewsByMonthQuery.execute", return_value=[])
+    @patch("pcapi.connectors.clickhouse.queries.VenueTopOffersByPeriodQuery.execute", return_value=[])
+    def test_clickhouse_is_queried_with_venue_id(self, mock_top_offers_query, mock_views_by_month_query):
+        offerers_api.get_venue_offers_statistics_v2(venue_id=12)
+
+        mock_top_offers_query.assert_called_once_with({"venue_id": "12"})
+        mock_views_by_month_query.assert_called_once_with({"venue_id": "12"})
+
+    @patch("pcapi.core.offerers.api._get_top_offers_views", return_value=[])
+    @patch("pcapi.connectors.clickhouse.queries.VenueTopOffersByPeriodQuery.execute")
+    def test_top_offers_are_computed_for_each_period(self, mock_top_offers_query, mock_get_top_offers_views):
+        top_offers_rows = [Mock(name="top_offers_row")]
+        mock_top_offers_query.return_value = top_offers_rows
+
+        offerers_api.get_venue_offers_statistics_v2(venue_id=12)
+
+        assert mock_get_top_offers_views.call_args_list == [
+            mock_call(top_offers_rows, months=3),
+            mock_call(top_offers_rows, months=6),
+        ]
+
+    @patch("pcapi.core.offerers.api.map_top_offers_to_existing_offers", return_value={})
+    @patch("pcapi.core.offerers.api._get_top_offers_views")
+    def test_offers_of_both_periods_are_fetched_from_postgres(self, mock_get_top_offers_views, mock_map_top_offers):
+        top_offers_3_months = [offerers_api.OfferViewsModel(offer_id="1", views=20, rank=1)]
+        top_offers_6_months = [
+            offerers_api.OfferViewsModel(offer_id="1", views=30, rank=1),
+            offerers_api.OfferViewsModel(offer_id="2", views=10, rank=2),
+        ]
+        mock_get_top_offers_views.side_effect = [top_offers_3_months, top_offers_6_months]
+
+        offerers_api.get_venue_offers_statistics_v2(venue_id=12)
+
+        mock_map_top_offers.assert_called_once_with({*top_offers_3_months, *top_offers_6_months}, 12)
+
+    @patch("pcapi.core.offerers.api._get_views_by_month", return_value=[])
+    @patch("pcapi.connectors.clickhouse.queries.VenueOffersViewsByMonthQuery.execute")
+    def test_views_by_month_are_computed_from_clickhouse_rows(self, mock_views_by_month_query, mock_get_views_by_month):
+        views_by_month_rows = [Mock(name="views_by_month_row")]
+        mock_views_by_month_query.return_value = views_by_month_rows
+
+        offerers_api.get_venue_offers_statistics_v2(venue_id=12)
+
+        mock_get_views_by_month.assert_called_once_with(views_by_month_rows)
+
+    @patch("pcapi.core.offerers.api._build_period_statistics")
+    @patch("pcapi.core.offerers.api._get_views_by_month")
+    @patch("pcapi.core.offerers.api.map_top_offers_to_existing_offers")
+    @patch("pcapi.core.offerers.api._get_top_offers_views")
+    def test_each_period_is_built_from_its_top_offers_and_views(
+        self,
+        mock_get_top_offers_views,
+        mock_map_top_offers,
+        mock_get_views_by_month,
+        mock_build_period_statistics,
+    ):
+        top_offers_3_months = [offerers_api.OfferViewsModel(offer_id="1", views=20, rank=1)]
+        top_offers_6_months = [
+            offerers_api.OfferViewsModel(offer_id="1", views=30, rank=1),
+            offerers_api.OfferViewsModel(offer_id="2", views=10, rank=2),
+        ]
+        mock_get_top_offers_views.side_effect = [top_offers_3_months, top_offers_6_months]
+        offers_mapping = {top_offer: Mock(name="offer") for top_offer in top_offers_6_months}
+        mock_map_top_offers.return_value = offers_mapping
+        views_by_month_6_months = [
+            offerers_api.MonthlyViewsModel(month=datetime.date(2026, month, 1), views=month) for month in range(4, 10)
+        ]
+        mock_get_views_by_month.return_value = views_by_month_6_months
+
+        offerers_api.get_venue_offers_statistics_v2(venue_id=12)
+
+        assert mock_build_period_statistics.call_args_list == [
+            mock_call(top_offers_3_months, offers_mapping, views_by_month_6_months[-3:]),
+            mock_call(top_offers_6_months, offers_mapping, views_by_month_6_months),
+        ]
+
+    @patch("pcapi.core.offerers.api._build_period_statistics")
+    def test_periods_are_assembled_in_the_result(self, mock_build_period_statistics):
+        period_3_months = Mock(name="period_3_months")
+        period_6_months = Mock(name="period_6_months")
+        mock_build_period_statistics.side_effect = [period_3_months, period_6_months]
+
+        stats = offerers_api.get_venue_offers_statistics_v2(venue_id=12)
+
+        assert stats == offerers_api.VenueOffersStatisticsV2Model(
+            venue_id=12, last_3_months=period_3_months, last_6_months=period_6_months
+        )
