@@ -5473,7 +5473,9 @@ class CreateVenueTest(PostEndpointHelper):
 
     @pytest.mark.parametrize("form_switch_value, boolean_switch_value", [("on", True), ("", False)])
     def test_create_venue(self, authenticated_client, form_switch_value, boolean_switch_value):
-        venue = offerers_factories.VenueFactory(activity=offerers_models.Activity.MUSEUM)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer__name="Offerer Name", activity=offerers_models.Activity.MUSEUM
+        )
         domains = educational_factories.EducationalDomainFactory.create_batch(3)
 
         form_data = {
@@ -5490,7 +5492,7 @@ class CreateVenueTest(PostEndpointHelper):
         new_venue: offerers_models.Venue = (
             db.session.query(offerers_models.Venue).filter_by(publicName=form_data["public_name"]).one()
         )
-        assert new_venue.name == form_data["public_name"]
+        assert new_venue.name == "Offerer Name"
         assert new_venue.publicName == form_data["public_name"]
         assert new_venue.activity == offerers_models.Activity.BOOKSTORE
         assert new_venue.bookingEmail == form_data["booking_email"]
