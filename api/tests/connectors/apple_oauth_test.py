@@ -9,13 +9,26 @@ from pcapi.connectors.apple_oauth import get_apple_user
 from pcapi.utils import requests
 
 
+valid_json_response = {
+    "access_token": "my.access.token",
+    "refresh_token": "my.access.token",
+    "expires_in": 180,
+    "token_type": "Bearer",
+    "id_token": "eyEncodedIDToken",
+}
+
+
 def test_get_apple_user(mocker, requests_mock):
     mocker.patch("jwt.PyJWKClient.get_signing_key_from_jwt", return_value=MagicMock(key="fake-public-key"))
     mocker.patch("jwt.encode", return_value="eyFakeJwT")
     mocker.patch(
         "jwt.decode", return_value={"sub": "appleUserId", "email": "mail@example.com", "email_verified": "true"}
     )
-    requests_mock.post("https://appleid.apple.com/auth/token", status_code=200, json={"id_token": "eyEncodedIDToken"})
+    requests_mock.post(
+        "https://appleid.apple.com/auth/token",
+        status_code=200,
+        json=valid_json_response,
+    )
 
     user = get_apple_user("valid_auth_code", is_web=True)
 
@@ -78,7 +91,7 @@ def test_logs_and_raises_on_get_signing_key_error(mocker, requests_mock, caplog)
         side_effect=jwt.PyJWKClientError("The JWKS endpoint did not return a JSON object"),
     )
     mocker.patch("jwt.encode", return_value="eyFakeJwT")
-    requests_mock.post("https://appleid.apple.com/auth/token", status_code=200, json={"id_token": "eyEncodedIDToken"})
+    requests_mock.post("https://appleid.apple.com/auth/token", status_code=200, json=valid_json_response)
 
     with caplog.at_level(logging.ERROR):
         with pytest.raises(AppleSignInException):
@@ -88,10 +101,16 @@ def test_logs_and_raises_on_get_signing_key_error(mocker, requests_mock, caplog)
 
 
 def test_logs_and_raises_on_id_token_decoding_error(mocker, requests_mock, caplog):
-    mocker.patch("jwt.PyJWKClient.get_signing_key_from_jwt", return_value=MagicMock(key="fake-public-key"))
-    mocker.patch("jwt.encode", return_value="eyFakeJwT")
-    mocker.patch("jwt.decode", side_effect=jwt.InvalidSignatureError("Signature verification failed"))
-    requests_mock.post("https://appleid.apple.com/auth/token", status_code=200, json={"id_token": "eyEncodedIDToken"})
+    mocker.patch(
+        "pcapi.connectors.apple_oauth.PyJWKClient.get_signing_key_from_jwt",
+        return_value=MagicMock(key="fake-public-key"),
+    )
+    mocker.patch("pcapi.connectors.apple_oauth.jwt.encode", return_value="eyFakeJwT")
+    mocker.patch(
+        "pcapi.connectors.apple_oauth.jwt.decode",
+        side_effect=jwt.InvalidSignatureError("Signature verification failed"),
+    )
+    requests_mock.post("https://appleid.apple.com/auth/token", status_code=200, json=valid_json_response)
 
     with caplog.at_level(logging.ERROR):
         with pytest.raises(AppleSignInException):
