@@ -99,6 +99,20 @@ class CategoryResponseModel(BaseModel):
         orm_mode = True
 
 
+class NfdOfferFormPreviewResponseModel(BaseModel):
+    nature: str
+    domain: str
+    capabilities: list[str]
+    mandatory_fields: list[str]
+    name: str
+    description: str
+    accessibility: dict[str, bool]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
 # escape the inherited alias_generator=to_camel sets by HttpBodyModel
 @pydantic_v2.with_config(pydantic_v2.ConfigDict(extra="forbid"))
 class OfferExtraDataV2(offers_models.OfferExtraData):
