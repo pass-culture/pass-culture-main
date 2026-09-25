@@ -99,11 +99,28 @@ class CategoryResponseModel(BaseModel):
         orm_mode = True
 
 
+class NfdOfferFormOptionResponseModel(BaseModel):
+    value: str
+    label: str
+
+
+class NfdOfferFormFieldResponseModel(BaseModel):
+    type: str
+    required: bool = False
+    label: str = ''
+    options: list[NfdOfferFormOptionResponseModel] = Field(default_factory=list)
+
+
+class NfdOfferFormSectionResponseModel(BaseModel):
+    id: str
+    title: str
+    fields: list[NfdOfferFormFieldResponseModel]
+
+
 class NfdOfferFormPreviewResponseModel(BaseModel):
     nature: str
     domain: str
-    capabilities: list[str]
-    mandatory_fields: list[str]
+    form_definition: list[NfdOfferFormSectionResponseModel]
     name: str
     description: str
     accessibility: dict[str, bool]

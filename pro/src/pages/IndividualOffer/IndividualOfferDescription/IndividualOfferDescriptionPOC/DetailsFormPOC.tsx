@@ -1,8 +1,9 @@
+import { Fragment } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
-import { updateAccessibilityField } from '@/commons/utils/updateAccessibilityField'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
@@ -14,19 +15,29 @@ import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferD
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
-import {
-  HasCapability,
-  OfferCapabilityProvider,
-} from '../components/NfdOfferForm/OfferCapabilityContext'
+import type {
+  NfdOfferFormField,
+  NfdOfferFormSection,
+} from '../components/NfdOfferForm/types'
 
 type DetailsFormProps = {
-  mandatoryFields: string[]
-  capabilities: string[]
+  formDefinition: NfdOfferFormSection[]
 }
 
+const EMPTY_ACCESSIBILITY: AccessibilityFormValues = {
+  visual: false,
+  audio: false,
+  motor: false,
+  mental: false,
+  none: false,
+}
+
+const isAccessibilityOption = (
+  value: string
+): value is keyof AccessibilityFormValues => value in EMPTY_ACCESSIBILITY
+
 export const DetailsFormPOC = ({
-  mandatoryFields,
-  capabilities,
+  formDefinition,
 }: DetailsFormProps): JSX.Element => {
   const {
     formState: { errors },
@@ -34,83 +45,71 @@ export const DetailsFormPOC = ({
     setValue,
     watch,
   } = useFormContext<DetailsFormValues>()
-  const accessibility = watch('accessibility')
 
-  const accessibilityOptions = updateAccessibilityField(setValue, accessibility)
-
-  // using showType for example
-  const bookType = watch('showType')
-
-  return (
-    <OfferCapabilityProvider capabilities={capabilities}>
-      <FormLayout.Section title="À propos de votre offre">
-        <HasCapability name="TITLE">
+  const renderField = (field: NfdOfferFormField): JSX.Element | null => {
+    switch (field.type) {
+      case 'TITLE':
+        return (
           <FormLayout.Row>
             <TextInput
               maxCharactersCount={90}
-              label="Titre de l’offre"
+              label={field.label}
               {...register('name')}
               error={errors.name?.message}
-              required
-              // This is so browsers don't raise any issue / improvement
-              // regarding the existence of an <input type="text" name="name" />
-              // that isnt about an user's name to be autofilled.
+              required={field.required}
               autoComplete="false"
             />
           </FormLayout.Row>
-        </HasCapability>
-        <HasCapability name="DESCRIPTION">
+        )
+      case 'DESCRIPTION':
+        return (
           <FormLayout.Row sideComponent={<MarkdownInfoBox />}>
             <TextArea
-              label="Description"
+              label={field.label}
               maxLength={10000}
               {...register('description')}
               error={errors.description?.message}
             />
           </FormLayout.Row>
-        </HasCapability>
-        <HasCapability name="BOOK_DETAILS">
+        )
+      case 'BOOK_TYPE':
+        return (
           <FormLayout.Row mdSpaceAfter>
             <Select
-              // using showType for example
-              {...register('showType', {
-                onChange: noop,
-              })}
-              label="Type de livre"
-              required={mandatoryFields.includes('BOOK_TYPE')}
-              options={[
-                {
-                  value: 'BD',
-                  label: 'Bande dessinée',
-                },
-                {
-                  value: 'Roman',
-                  label: 'Roman',
-                },
-                { value: 'Manga', label: 'Manga' },
-              ]}
-              defaultOption={{
-                label: 'Choisir un type de livre',
-                value: '',
-              }}
-              value={bookType}
+              {...register('showType', { onChange: noop })}
+              label={field.label}
+              required={field.required}
+              options={field.options}
+              defaultOption={{ label: 'Choisir un type de livre', value: '' }}
+              value={watch('showType')}
             />
           </FormLayout.Row>
-          <FormLayout.Row mdSpaceAfter>
-            <TextInput label="Auteur" maxLength={250} {...register('author')} />
-          </FormLayout.Row>
+        )
+      case 'BOOK_AUTHOR':
+        return (
           <FormLayout.Row mdSpaceAfter>
             <TextInput
-              label="EAN-13 (European Article Numbering"
+              label={field.label}
+              maxLength={250}
+              {...register('author')}
+            />
+          </FormLayout.Row>
+        )
+      case 'EAN':
+        return (
+          <FormLayout.Row mdSpaceAfter>
+            <TextInput
+              label={field.label}
               maxLength={250}
               {...register('ean')}
             />
           </FormLayout.Row>
-        </HasCapability>
-        <HasCapability name="CULTURAL_OUTREACH">
+        )
+      case 'CULTURAL_OUTREACH':
+        return (
           <FormLayout.Row mdSpaceAfter>
             <CheckboxGroup
-              label="Action de médiation"
+              label={field.label}
               variant="detailed"
               error={errors.hasCulturalOutreachClaim?.message}
               options={[
@@ -119,18 +118,17 @@ export const DetailsFormPOC = ({
                   description:
                     'Ex : rencontre avec des artistes, ateliers participatifs, comité de spectacteurs...',
                   checked: Boolean(watch('hasCulturalOutreachClaim')),
-                  onChange: (e) =>
-                    setValue('hasCulturalOutreachClaim', e.target.checked, {
+                  onChange: (event) =>
+                    setValue('hasCulturalOutreachClaim', event.target.checked, {
                       shouldDirty: true,
                     }),
                 },
               ]}
             />
           </FormLayout.Row>
-        </HasCapability>
-      </FormLayout.Section>
-      <FormLayout.Section title="Illustrez votre offre">
-        <HasCapability name="IMAGE_INPUT">
+        )
+      case 'IMAGE_INPUT':
+        return (
           <ImageDragAndDropUploader
             onImageUpload={noop}
             onImageDelete={noop}
@@ -138,33 +136,68 @@ export const DetailsFormPOC = ({
             hideActionButtons
             onImageDropOrSelected={noop}
           />
-        </HasCapability>
-        <HasCapability name="VIDEO_INPUT">
-          <VideoUploader uploadTipsId={''} />
-        </HasCapability>
-      </FormLayout.Section>
-      <HasCapability name="ACCESSIBILITY">
-        {accessibilityOptions && (
-          <FormLayout.Section title="Modalités d’accessibilité">
-            <FormLayout.Row>
-              <CheckboxGroup
-                options={[
+        )
+      case 'VIDEO_INPUT':
+        return <VideoUploader uploadTipsId="" />
+      case 'ACCESSIBILITY': {
+        const accessibilityValues = {
+          ...EMPTY_ACCESSIBILITY,
+          ...watch('accessibility'),
+        }
+
+        return (
+          <FormLayout.Row>
+            <CheckboxGroup
+              options={field.options.flatMap((option) => {
+                if (!isAccessibilityOption(option.value)) {
+                  return []
+                }
+
+                return [
                   {
-                    label: 'Livre en gros caractères',
-                    asset: { variant: 'icon', src: strokeAccessibilityEyeIcon },
-                    sizing: 'fill',
-                    checked: Boolean(accessibility?.visual),
-                    onChange: undefined,
+                    label: option.label,
+                    asset:
+                      option.value === 'visual'
+                        ? {
+                            variant: 'icon' as const,
+                            src: strokeAccessibilityEyeIcon,
+                          }
+                        : undefined,
+                    sizing: 'fill' as const,
+                    checked: accessibilityValues[option.value],
+                    onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+                      setValue(
+                        'accessibility',
+                        {
+                          ...accessibilityValues,
+                          [option.value]: event.target.checked,
+                        },
+                        { shouldDirty: true }
+                      ),
                   },
-                ]}
-                label="Sélectionner l'option si votre offre correspond :"
-                variant="detailed"
-                error={errors.accessibility?.message}
-              />
-            </FormLayout.Row>
-          </FormLayout.Section>
-        )}
-      </HasCapability>
-    </OfferCapabilityProvider>
+                ]
+              })}
+              label={field.label}
+              variant="detailed"
+              error={errors.accessibility?.message}
+            />
+          </FormLayout.Row>
+        )
+      }
+      default:
+        return null
+    }
+  }
+
+  return (
+    <>
+      {formDefinition.map((section) => (
+        <FormLayout.Section key={section.id} title={section.title}>
+          {section.fields.map((field) => (
+            <Fragment key={field.type}>{renderField(field)}</Fragment>
+          ))}
+        </FormLayout.Section>
+      ))}
+    </>
   )
 }

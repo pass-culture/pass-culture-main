@@ -1,4 +1,3 @@
-import { yupResolver } from '@hookform/resolvers/yup'
 import { useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
@@ -14,6 +13,10 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import {
+  isOfferProductBasedButNotSynchronized,
+  isOfferSynchronized,
+} from '@/commons/core/Offers/utils/typology'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -32,10 +35,6 @@ import {
 } from '../commons/serializers'
 import type { DetailsFormValues } from '../commons/types'
 import { getInitialValuesFromVenue } from '../commons/utils'
-import {
-  HasCapability,
-  OfferCapabilityProvider,
-} from '../components/NfdOfferForm/OfferCapabilityContext'
 import type { NfdOfferFormResponse } from '../components/NfdOfferForm/types'
 import { DetailsFormPOC } from './DetailsFormPOC'
 
@@ -60,8 +59,6 @@ export const IndividualOfferDescriptionPOC = () => {
     getNfdOfferForm
   )
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const capabilities = nfdOfferForm?.capabilities ?? []
-  const mandatortyFields = nfdOfferForm?.mandatoryFields ?? []
 
   const mode = useOfferWizardMode()
   const { pathname } = useLocation()
@@ -158,21 +155,18 @@ export const IndividualOfferDescriptionPOC = () => {
     })
 
   return (
-    <OfferCapabilityProvider capabilities={capabilities}>
-      <HasCapability name="EAN_BANNER">
-        <ProductBanner />
-      </HasCapability>
-      <HasCapability name="SYNCHRONIZED_BANNER">
+    <>
+      {isOfferProductBasedButNotSynchronized(initialOffer) && <ProductBanner />}
+      {isOfferSynchronized(initialOffer) && (
         <SynchronizedBanner providerName={initialOffer?.lastProvider?.name} />
-      </HasCapability>
+      )}
       <FormLayout.MandatoryInfo />
       <FormProvider {...form}>
         <form onSubmit={navigationGuardedSubmitHandler}>
           <FormLayout fullWidthActions>
             <ScrollToFirstHookFormErrorAfterSubmit />
             <DetailsFormPOC
-              mandatoryFields={mandatortyFields}
-              capabilities={capabilities}
+              formDefinition={nfdOfferForm?.formDefinition ?? []}
             />
           </FormLayout>
 
@@ -191,6 +185,6 @@ export const IndividualOfferDescriptionPOC = () => {
       </FormProvider>
 
       {navigationGuardDialog}
-    </OfferCapabilityProvider>
+    </>
   )
 }

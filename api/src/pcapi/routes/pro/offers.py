@@ -58,8 +58,52 @@ def get_nfd_offer_form_preview() -> offers_serialize.NfdOfferFormPreviewResponse
     return offers_serialize.NfdOfferFormPreviewResponseModel(
         nature="Bien",
         domain="Livre",
-        capabilities=["TITLE", "DESCRIPTION", "BOOK_DETAILS", "CULTURAL_OUTREACH", "IMAGE_INPUT", "ACCESSIBILITY"],
-        mandatory_fields=["TITLE", "BOOK_TYPE"],
+        form_definition=[
+            offers_serialize.NfdOfferFormSectionResponseModel(
+                id="about",
+                title="À propos de votre offre",
+                fields=[
+                    offers_serialize.NfdOfferFormFieldResponseModel(type="TITLE", label="Titre du livre", required=True),
+                    offers_serialize.NfdOfferFormFieldResponseModel(type="DESCRIPTION", label="Résumé du livre"),
+                    offers_serialize.NfdOfferFormFieldResponseModel(
+                        type="BOOK_TYPE",
+                        required=True,
+                        label="Type de livre",
+                        options=[
+                            offers_serialize.NfdOfferFormOptionResponseModel(value="BD", label="Bande dessinée"),
+                            offers_serialize.NfdOfferFormOptionResponseModel(value="Roman", label="Roman"),
+                            offers_serialize.NfdOfferFormOptionResponseModel(value="Manga", label="Manga"),
+                        ],
+                    ),
+                    offers_serialize.NfdOfferFormFieldResponseModel(type="BOOK_AUTHOR", label="Auteur"),
+                    offers_serialize.NfdOfferFormFieldResponseModel(type="EAN", label="EAN"),
+                    offers_serialize.NfdOfferFormFieldResponseModel(type="CULTURAL_OUTREACH"),
+                ],
+            ),
+            offers_serialize.NfdOfferFormSectionResponseModel(
+                id="media",
+                title="Illustrez votre offre",
+                fields=[
+                    offers_serialize.NfdOfferFormFieldResponseModel(type="IMAGE_INPUT", label="Input d'image"),
+                ],
+            ),
+            offers_serialize.NfdOfferFormSectionResponseModel(
+                id="accessibility",
+                title="Modalités d’accessibilité",
+                fields=[
+                    offers_serialize.NfdOfferFormFieldResponseModel(
+                        type="ACCESSIBILITY",
+                        label="Sélecteur d'accessibilité",
+                        options=[
+                            offers_serialize.NfdOfferFormOptionResponseModel(
+                                value="visual",
+                                label="Livre en gros caractères",
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
         name="",
         description="",
         accessibility={
