@@ -18,6 +18,7 @@ from markupsafe import escape
 import pcapi.core.categories.genres.music
 from pcapi import settings
 from pcapi.connectors.dms.models import GraphQLApplicationStates
+from pcapi.connectors.google_logs import Severity as LogSeverity
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.genres import show
@@ -309,8 +310,17 @@ def format_date_time(
     data: datetime.date | datetime.datetime | None,
     address: geography_models.Address | None = None,
     force_two_lines: bool = False,
+    precision: str = "minute",
 ) -> str:
-    local_date_time = format_date(data, strformat="%d/%m/%Y à %Hh%M", address=address)
+    match precision:
+        case "second":
+            time_format = "%Hh%Mm%S"
+        case "millisecond":
+            time_format = "%H:%M:%S,%f"
+        case _:
+            time_format = "%Hh%M"
+
+    local_date_time = format_date(data, strformat=f"%d/%m/%Y à {time_format}", address=address)
 
     if local_date_time and force_two_lines:
         local_date_time = Markup("{}<br/>{}").format(*local_date_time.split(" ", 1))
@@ -319,7 +329,7 @@ def format_date_time(
         return local_date_time
 
     split_timezone = address.timezone.split("/")
-    paris_date_time = format_date(data, strformat="%d/%m à %Hh%M")
+    paris_date_time = format_date(data, strformat=f"%d/%m à {time_format}")
     if paris_date_time[:5] == local_date_time[:5]:
         paris_date_time = paris_date_time[-5:]
 
@@ -353,6 +363,12 @@ def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
     else:
         end = "∞"
     return f"{start} → {end}"
+
+
+def format_timestamp(timestamp: float | None) -> str:
+    if not timestamp:
+        return ""
+    return format_date_time(datetime.datetime.fromtimestamp(timestamp), precision="millisecond")
 
 
 def format_time(time: int, unit: str = "seconds") -> str:
@@ -2320,6 +2336,30 @@ def format_activity(activity: offerers_models.Activity | None) -> str:
     return ACTIVITY_MAPPING.get(activity, activity.name)
 
 
+def format_log_severity(severity: LogSeverity) -> str:
+    match severity:
+        case LogSeverity.DEFAULT:
+            return format_badge("Défaut", "info")
+        case LogSeverity.DEBUG:
+            return format_badge("Débug", "success")
+        case LogSeverity.INFO:
+            return format_badge("Info", "info")
+        case LogSeverity.NOTICE:
+            return format_badge("Notice", "warning")
+        case LogSeverity.WARNING:
+            return format_badge("Warning", "warning")
+        case LogSeverity.ERROR:
+            return format_badge("Erreur", "danger")
+        case LogSeverity.CRITICAL:
+            return format_badge("Critique", "danger")
+        case LogSeverity.ALERT:
+            return format_badge("Alerte", "danger")
+        case LogSeverity.EMERGENCY:
+            return format_badge("Urgence", "danger")
+        case _:
+            return severity.name.lower()
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -2461,3 +2501,5 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_postal_code_to_departement_code"] = format_postal_code_to_departement_code
     app.jinja_env.filters["format_time"] = format_time
     app.jinja_env.filters["format_cultural_outreach_status"] = format_cultural_outreach_status
+    app.jinja_env.filters["format_timestamp"] = format_timestamp
+    app.jinja_env.filters["format_log_severity"] = format_log_severity

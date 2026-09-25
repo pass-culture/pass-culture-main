@@ -1,0 +1,29 @@
+{% extends "layouts/list.html" %}
+{% import "components/badges.html" as badges with context %}
+{% from "components/forms.html" import build_advanced_filters_form with context %}
+{% from "components/dynamic/spinner.html" import build_loading_spinner %}
+{# configure list layout #}
+{% set force_display_table = force_display_table %}
+{% set hide_count = true %}
+{% block title %}Explorateur de logs{% endblock %}
+{# end configuration #}
+{% block search_block %}
+  {{ build_advanced_filters_form(form, dst) }}
+{% endblock %}
+{% set table_id = "logs-table" %}
+{% block table_header %}
+  <th scope="col">ID</th>
+  <th scope="col">Gravité</th>
+  <th scope="col">Horodatage</th>
+  <th scope="col">Auteur</th>
+  <th scope="col">Connect as</th>
+  <th scope="col">contenu</th>
+  <th scope="col">Extra</th>
+{% endblock %}
+{% block table_body %}
+  <tr id="token-{{ token }}"
+      hx-get="{{ url_for('backoffice.logs.list_logs_rows', search_token=token) }}"
+      hx-trigger="intersect">
+    <td colspan="7">{{ build_loading_spinner() }}</td>
+  </tr>
+{% endblock %}
