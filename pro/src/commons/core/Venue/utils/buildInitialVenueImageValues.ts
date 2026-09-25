@@ -28,5 +28,6 @@ export const buildInitialVenueImageValues = (
     originalImageUrl: bannerMeta?.original_image_url || undefined,
     cropParams,
     credit: bannerMeta?.image_credit || '',
+    alternativeText: bannerMeta?.image_alternative_text || '',
   }
 }

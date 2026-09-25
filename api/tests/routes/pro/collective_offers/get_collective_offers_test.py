@@ -25,7 +25,7 @@ class Returns200Test:
     def test_one_collective_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offer = factories.BookedCollectiveOfferFactory(venue=venue)
+        offer = factories.BookedCollectiveOfferFactory(venue=venue, imageAlternativeText="A collective offer image")
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
@@ -59,6 +59,7 @@ class Returns200Test:
                     "phoneNumber": institution.phoneNumber,
                     "postalCode": institution.postalCode,
                 },
+                "imageAlternativeText": "A collective offer image",
                 "imageUrl": None,
                 "displayedStatus": "BOOKED",
                 "dates": {"start": stock.startDatetime.isoformat() + "Z", "end": stock.endDatetime.isoformat() + "Z"},

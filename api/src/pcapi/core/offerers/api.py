@@ -1769,6 +1769,7 @@ def save_venue_banner(
     venue: models.Venue,
     content: bytes,
     image_credit: str,
+    image_alternative_text: str | None = None,
     crop_params: image_conversion.CropParams | image_conversion.CropParamsV2 | None = None,
 ) -> None:
     """
@@ -1803,6 +1804,7 @@ def save_venue_banner(
         "image_credit": image_credit,
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
+        "image_alternative_text": image_alternative_text,
         "updated_at": updated_at.isoformat(),
     }
     if crop_params:

@@ -27,7 +27,7 @@ export const OfferAppPreview = ({
             <img
               className={style['offer-img']}
               src={image.url}
-              alt="Illustration de l’offre"
+              alt={image?.alternativeText || 'Illustration de l’offre'}
               aria-describedby={
                 offer.activeMediation?.credit ? imageCreditId : undefined
               }

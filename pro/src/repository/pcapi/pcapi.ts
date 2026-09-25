@@ -15,12 +15,14 @@ type VenueImage = {
   height_crop_percent?: number
   width_crop_percent?: number
   image_credit?: string
+  image_alternative_text?: string | null
 }
 
 export const postImageToVenue = async (
   venueId: number,
   banner: File,
   imageCredit: string | null,
+  imageAlternativeText: string | null,
   xCropPercent?: number,
   yCropPercent?: number,
   heightCropPercent?: number,
@@ -38,6 +40,10 @@ export const postImageToVenue = async (
 
   if (imageCredit) {
     venueImage.image_credit = imageCredit
+  }
+
+  if (imageAlternativeText) {
+    venueImage.image_alternative_text = imageAlternativeText
   }
 
   // @ts-expect-error

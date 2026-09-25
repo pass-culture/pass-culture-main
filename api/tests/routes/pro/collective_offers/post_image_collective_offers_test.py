@@ -25,6 +25,7 @@ def get_image_data(file_name: str = "mouette_full_size.jpg"):
     thumb = (IMAGES_DIR / file_name).read_bytes()
     return {
         "credit": "John Do",
+        "alternativeText": "A collective offer image",
         "thumb": (BytesIO(thumb), "image.jpg"),
         "croppingRectX": 0.0,
         "croppingRectY": 0.0,
@@ -55,6 +56,7 @@ class AttachCollectiveOfferImageTest:
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists() is True
         assert offer.imageId is not None
         assert offer.imageCredit is not None
+        assert offer.imageAlternativeText == "A collective offer image"
         assert offer.imageHasOriginal is not None
 
     @pytest.mark.parametrize("Factory, url", factories_urls)

@@ -15,6 +15,7 @@ const MOCK_DATA = {
     url: 'initialImage.jpg',
     originalUrl: 'initialImage.jpg',
     credit: 'initial credit',
+    alternativeText: 'initial alternative text',
     cropParams: {
       xCropPercent: 0,
       yCropPercent: 0,
@@ -31,6 +32,21 @@ describe('useIndividualOfferImageUpload', () => {
     )
 
     expect(result.current.displayedImage).toEqual(MOCK_DATA.initialImage)
+  })
+
+  it('should initialize with the alternative text from the current image', () => {
+    const initialImageWithAlternativeText = {
+      ...MOCK_DATA.initialImage,
+      alternativeText: 'Vue de la salle principale',
+    }
+
+    const { result } = renderHook(() =>
+      useIndividualOfferImageUpload(initialImageWithAlternativeText)
+    )
+
+    expect(result.current.displayedImage).toEqual(
+      initialImageWithAlternativeText
+    )
   })
 
   it('should return nothing as displayed image at first if no initial image was provided', () => {
@@ -64,6 +80,7 @@ describe('useIndividualOfferImageUpload', () => {
         height: 100,
       },
       credit: 'John Do',
+      alternativeText: 'Salle principale vue depuis l’entrée',
     }
 
     act(() => {
@@ -71,6 +88,46 @@ describe('useIndividualOfferImageUpload', () => {
     })
 
     expect(result.current.displayedImage).toEqual(newImage)
+  })
+
+  it('should include alternative text in the created thumbnail payload', async () => {
+    const { result } = renderHook(() =>
+      useIndividualOfferImageUpload(MOCK_DATA.initialImage)
+    )
+
+    vi.mocked(api.createThumbnail).mockResolvedValue({
+      id: 1,
+      url: 'new-thumbnail.jpg',
+      credit: 'John Do',
+      alternativeText: 'Salle principale vue depuis l’entrée',
+    })
+
+    const newImage = {
+      imageFile: new File([''], 'test.jpg'),
+      imageCroppedDataUrl: 'https://cropped.test.url',
+      cropParams: {
+        x: 0.5,
+        y: 0.5,
+        width: 100,
+        height: 100,
+      },
+      credit: 'John Do',
+      alternativeText: 'Salle principale vue depuis l’entrée',
+    }
+
+    act(() => {
+      result.current.onImageUpload(newImage)
+    })
+
+    await act(async () => {
+      await result.current.handleImageOnSubmit(1)
+    })
+
+    expect(api.createThumbnail).toHaveBeenCalledWith({
+      body: expect.objectContaining({
+        alternativeText: 'Salle principale vue depuis l’entrée',
+      }),
+    })
   })
 
   it('should return ean image as displayed image after a prefill (handleEanImage(url))', () => {
@@ -85,6 +142,7 @@ describe('useIndividualOfferImageUpload', () => {
     expect(result.current.displayedImage).toEqual({
       credit: null,
       url: eanImageUrl,
+      alternativeText: null,
     })
   })
 
@@ -113,6 +171,7 @@ describe('useIndividualOfferImageUpload', () => {
       id: 1,
       url: 'new-thumbnail.jpg',
       credit: 'John Do',
+      alternativeText: 'new alt text',
     })
 
     const newImage = {
@@ -125,6 +184,7 @@ describe('useIndividualOfferImageUpload', () => {
         height: 100,
       },
       credit: 'John Do',
+      alternativeText: 'new alt text',
     }
 
     act(() => {
@@ -147,6 +207,7 @@ describe('useIndividualOfferImageUpload', () => {
       id: 1,
       url: 'new-thumbnail.jpg',
       credit: 'John Do',
+      alternativeText: 'new alt text',
     })
 
     const newImage = {
@@ -159,6 +220,7 @@ describe('useIndividualOfferImageUpload', () => {
         height: 100,
       },
       credit: 'John Do',
+      alternativeText: 'new alt text',
     }
 
     act(() => {
@@ -172,6 +234,7 @@ describe('useIndividualOfferImageUpload', () => {
     expect(result.current.displayedImage).toEqual({
       url: 'new-thumbnail.jpg',
       credit: 'John Do',
+      alternativeText: 'new alt text',
     })
   })
 

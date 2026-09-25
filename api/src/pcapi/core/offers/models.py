@@ -313,6 +313,7 @@ class Mediation(PcObject, Model, HasThumbMixin, DeactivableMixin):
     __tablename__ = "mediation"
     thumb_path_component = "mediations"
 
+    alternativeText: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     authorId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True
     )

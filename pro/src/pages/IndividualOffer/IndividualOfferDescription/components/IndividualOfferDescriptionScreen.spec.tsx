@@ -334,7 +334,11 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         imageUploadModule,
         'useIndividualOfferImageUpload'
       ).mockReturnValue({
-        displayedImage: { url: 'my url', credit: null },
+        displayedImage: {
+          url: 'my url',
+          credit: null,
+          alternativeText: 'my alt text',
+        },
         hasUpsertedImage: false,
         onImageDelete: vi.fn(),
         onImageUpload: vi.fn(),

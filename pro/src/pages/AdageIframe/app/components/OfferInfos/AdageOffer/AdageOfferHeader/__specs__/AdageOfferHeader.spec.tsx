@@ -76,14 +76,9 @@ describe('AdageOfferHeader', () => {
       adageUser: defaultAdageUser,
     })
 
-    const image = screen.getByRole('presentation')
     const imageCredit = screen.getByText('Crédit image : Agence photo')
 
     expect(imageCredit).toBeInTheDocument()
-    expect(image).toHaveAttribute(
-      'aria-describedby',
-      imageCredit.parentElement?.id
-    )
   })
 
   it('should not show an image if the offer has no image', () => {

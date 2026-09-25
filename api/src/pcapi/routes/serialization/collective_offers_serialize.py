@@ -89,6 +89,7 @@ class CollectiveOfferResponseModel(HttpBodyModel):
     name: str
     displayedStatus: models.CollectiveOfferDisplayedStatus
     imageUrl: str | None
+    imageAlternativeText: str | None
     location: GetCollectiveOfferLocationModelV2
     dates: DatesModel | None
     # collective offer specific fields
@@ -119,6 +120,7 @@ class CollectiveOfferResponseModel(HttpBodyModel):
             displayedStatus=offer.displayedStatus,
             allowedActions=offer.allowedActions,
             imageUrl=offer.imageUrl,
+            imageAlternativeText=offer.imageAlternativeText,
             location=GetCollectiveOfferLocationModelV2.build(offer),
             stock=serialized_stock,
             educationalInstitution=institution,
@@ -134,6 +136,7 @@ class CollectiveOfferTemplateResponseModel(HttpBodyModel):
     id: int
     name: str
     displayedStatus: models.CollectiveOfferDisplayedStatus
+    imageAlternativeText: str | None
     imageUrl: str | None
     location: GetCollectiveOfferLocationModelV2
     dates: DatesModel | None
@@ -153,6 +156,7 @@ class CollectiveOfferTemplateResponseModel(HttpBodyModel):
             name=offer.name,
             displayedStatus=offer.displayedStatus,
             allowedActions=offer.allowedActions,
+            imageAlternativeText=offer.imageAlternativeText,
             imageUrl=offer.imageUrl,
             dates=dates,
             location=GetCollectiveOfferLocationModelV2.build(offer),
@@ -223,6 +227,7 @@ class GetCollectiveOfferVenueResponseModel(HttpBodyModel):
     name: str
     publicName: str
     bannerUrl: str | None = pydantic.Field(alias="imgUrl")
+    bannerImageAlternativeText: str | None = pydantic.Field(alias="imgAlternativeText")
 
     @classmethod
     def build(cls, venue: offerers_models.Venue) -> typing.Self:
@@ -233,6 +238,7 @@ class GetCollectiveOfferVenueResponseModel(HttpBodyModel):
             name=venue.name,
             publicName=venue.publicName,
             bannerUrl=venue.bannerUrl,
+            bannerImageAlternativeText=venue.bannerMeta.get("image_alternative_text") if venue.bannerMeta else None,
         )
 
 
@@ -255,6 +261,7 @@ class GetCollectiveOfferBaseResponseModel(HttpBodyModel):
     displayedStatus: models.CollectiveOfferDisplayedStatus
     domains: list[OfferDomain]
     interventionArea: list[str]
+    imageAlternativeText: str | None
     imageCredit: str | None
     imageUrl: str | None
     nationalProgram: national_programs.NationalProgramResponseModel | None
@@ -301,6 +308,7 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
             displayedStatus=offer.displayedStatus,
             domains=[OfferDomain.model_validate(domain) for domain in offer.domains],
             interventionArea=offer.interventionArea,
+            imageAlternativeText=offer.imageAlternativeText,
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
             nationalProgram=national_program,
@@ -413,6 +421,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
             displayedStatus=offer.displayedStatus,
             domains=[OfferDomain.model_validate(domain) for domain in offer.domains],
             interventionArea=offer.interventionArea,
+            imageAlternativeText=offer.imageAlternativeText,
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
             nationalProgram=national_program,
@@ -657,6 +666,7 @@ class AttachImageFormModel(HttpBodyModel):
     # but it is not present in the model received by the route itself
     thumb: BaseFile | None = None
     credit: str
+    alternative_text: str = pydantic.Field(max_length=constants.MAX_COLLECTIVE_IMAGE_ALTERNATIVE_TEXT_LENGTH)
     cropping_rect_x: float
     cropping_rect_y: float
     cropping_rect_height: float
