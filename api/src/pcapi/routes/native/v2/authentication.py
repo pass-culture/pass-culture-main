@@ -4,6 +4,7 @@ from hashlib import sha256
 from flask import g
 from flask import request
 from flask_login import current_user
+from sqlalchemy.ext.mutable import MutableDict
 
 import pcapi.core.token as token_utils
 from pcapi.connectors import api_recaptcha
@@ -163,6 +164,8 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) 
 
     email = sso_user.email
     sso_user_id = sso_user.sub
+    sso_extra_data = sso_user.extra_data
+
     single_sign_on = users_repo.get_single_sign_on(sso_provider, sso_user_id)
     if not single_sign_on:
         user = users_repo.find_user_by_email(email)
@@ -210,11 +213,28 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) 
 
         current_provider_sso = None
         user_ssos_for_provider = [sso for sso in user.single_sign_ons if sso.ssoProvider == sso_provider]
+
         if user_ssos_for_provider:
             current_provider_sso = user_ssos_for_provider[0]
             current_provider_sso.ssoUserId = sso_user.sub
+
+            if sso_provider == "apple":
+                extra_data = MutableDict[str, str]()
+
+                if current_provider_sso.ssoExtraData is not None:
+                    extra_data.update(current_provider_sso.ssoExtraData)
+
+                if sso_extra_data:
+                    extra_data.update(sso_extra_data)
+
+                current_provider_sso.ssoExtraData = extra_data or None
         else:
-            current_provider_sso = users_repo.create_single_sign_on(user, sso_provider, sso_user_id)
+            current_provider_sso = users_repo.create_single_sign_on(
+                user,
+                sso_provider,
+                sso_user_id,
+                sso_extra_data,
+            )
             db.session.add(current_provider_sso)
 
     users_api.save_device_info_and_notify_user(user, body.device_info)
