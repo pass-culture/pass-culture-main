@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { createRef } from 'react'
 import { expect, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 import '@testing-library/jest-dom/vitest'
@@ -37,6 +38,14 @@ describe('DetailedModal', () => {
       screen.getByRole('heading', { name: 'Titre de la modale' })
     ).toBeVisible()
     expect(screen.getByText('Contenu de la modale')).toBeVisible()
+  })
+
+  it('should expose the dialog element through ref', () => {
+    const ref = createRef<HTMLDialogElement>()
+
+    renderDetailedModal({ ref })
+
+    expect(ref.current).toBe(screen.getByRole('dialog'))
   })
 
   it('should not have the open attribute when isOpen is false', () => {
