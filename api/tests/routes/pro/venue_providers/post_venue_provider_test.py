@@ -331,7 +331,7 @@ class Returns404Test:
         assert response.status_code == 404
         assert response.json == {
             "allocine": [
-                "Ce lieu n'est pas autorisé à être synchronisé avec Allociné. Veuillez contacter le support si vous souhaitez le faire."
+                "Cette structure n'est pas autorisée à être synchronisée avec Allociné. Veuillez contacter le support si vous souhaitez le faire."
             ]
         }
         assert db.session.query(VenueProvider).count() == 0

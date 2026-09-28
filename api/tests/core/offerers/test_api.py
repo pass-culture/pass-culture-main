@@ -3072,7 +3072,7 @@ class CreateFromOnboardingDataTest:
         assert len(offerer.managedVenues) == 1
         created_venue = offerer.managedVenues[0]
         self.assert_common_venue_attrs(created_venue)
-        assert created_venue.comment == "Lieu sans SIRET car dépend du SIRET d'un autre lieu"
+        assert created_venue.comment == "Structure sans SIRET car dépend du SIRET d'une autre structure"
         assert created_venue.siret is None
         # No pricing point yet
         assert not created_venue.current_pricing_point_id

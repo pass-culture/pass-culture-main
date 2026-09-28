@@ -26,7 +26,7 @@ def get_venue_by_siret(
     )
     if venue is None:
         logger.info("Venue does not exists for given siret", extra={"siret": siret})
-        raise ApiErrors({"siret": "Aucun lieu n'existe pour ce siret"}, status_code=404)
+        raise ApiErrors({"siret": "Aucune structure n'existe pour ce SIRET"}, status_code=404)
 
     return VenueResponse.build(venue=venue, relative=relative)
 
@@ -44,6 +44,6 @@ def get_venue_by_id(
 
     if venue is None:
         logger.info("Venue does not exists for given venue_id", extra={"venue_id": venue_id})
-        raise ApiErrors({"venue_id": "Aucun lieu n'existe pour ce venue_id"}, status_code=404)
+        raise ApiErrors({"venue_id": "Aucune structure n'existe pour ce venue_id"}, status_code=404)
 
     return VenueResponse.build(venue=venue, relative=relative)

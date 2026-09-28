@@ -451,7 +451,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
-        assert response.json == {"venueId": ["Ce lieu n'à pas été trouvé."]}
+        assert response.json == {"venueId": ["Cette structure n'a pas été trouvée."]}
 
     @time_machine.travel(time_travel_str)
     def test_venue_id_not_found(self, public_client, payload):
@@ -459,7 +459,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
 
         response = public_client.post("/v2/collective/offers/", json=payload)
         assert response.status_code == 404
-        assert response.json == {"venueId": ["Ce lieu n'à pas été trouvé."]}
+        assert response.json == {"venueId": ["Cette structure n'a pas été trouvée."]}
 
     @time_machine.travel(time_travel_str)
     def test_invalid_image_size(self, public_client, payload):

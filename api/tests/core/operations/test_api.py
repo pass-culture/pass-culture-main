@@ -73,7 +73,7 @@ class CreateSpecialEventFromTypeformTest:
                 offerer_id=offerer.id,
                 venue_id=venue.id,
             )
-        assert "n'appartient pas à la structure" in str(err.value)
+        assert "n'appartient pas à l'entité juridique" in str(err.value)
 
     def test_check_offerer_exists(self):
         with pytest.raises(ValueError) as err:

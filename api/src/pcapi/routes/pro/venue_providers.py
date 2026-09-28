@@ -116,7 +116,7 @@ def create_venue_provider(
         raise ResourceNotFoundError(
             {
                 "allocine": [
-                    "Ce lieu n'est pas autorisé à être synchronisé avec Allociné. Veuillez contacter le support si vous souhaitez le faire."
+                    "Cette structure n'est pas autorisée à être synchronisée avec Allociné. Veuillez contacter le support si vous souhaitez le faire."
                 ]
             }
         )
@@ -124,7 +124,7 @@ def create_venue_provider(
         raise ResourceNotFoundError(
             {
                 "cinema_provider": [
-                    "Ce lieu n'est pas configuré pour effectuer une synchronisation avec nos fournisseurs."
+                    "Cette structure n'est pas configurée pour effectuer une synchronisation avec nos fournisseurs."
                 ]
             },
         )

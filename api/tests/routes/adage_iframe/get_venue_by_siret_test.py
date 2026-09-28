@@ -101,4 +101,4 @@ class VenueBySiretTest:
 
         # Then
         assert response.status_code == 404
-        assert response.json == {"siret": "Aucun lieu n'existe pour ce siret"}
+        assert response.json == {"siret": "Aucune structure n'existe pour ce SIRET"}

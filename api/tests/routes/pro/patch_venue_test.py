@@ -1172,7 +1172,7 @@ class Returns400Test:
         response = http_client.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
-        assert "Vous ne pouvez pas modifier la raison sociale d'un lieu" in response.json["name"]
+        assert "Vous ne pouvez pas modifier la raison sociale d'une structure" in response.json["name"]
 
     def test_remove_siret(self, app, client) -> None:
         user = users_factories.UserFactory()
@@ -1186,7 +1186,7 @@ class Returns400Test:
         response = http_client.patch(f"/venues/{venue.id}", json={"siret": None})
 
         assert response.status_code == 400
-        assert response.json["siret"] == ["Vous ne pouvez pas supprimer le siret d'un lieu"]
+        assert response.json["siret"] == ["Vous ne pouvez pas supprimer le SIRET d'une structure"]
 
     def test_edit_with_siret_not_tied_to_siren(self, app, client) -> None:
         user = users_factories.UserFactory()

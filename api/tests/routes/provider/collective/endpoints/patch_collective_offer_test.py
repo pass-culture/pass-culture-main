@@ -240,7 +240,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"venueId": other_venue.id})
 
         assert response.status_code == 400
-        assert response.json == {"venueId": ["L'offre ne peut pas être déplacée sur ce lieu."]}
+        assert response.json == {"venueId": ["L'offre ne peut pas être déplacée sur cette structure."]}
 
         offer = db.session.query(models.CollectiveOffer).filter_by(id=offer.id).one()
         assert offer.venueId == venue.id
