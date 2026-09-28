@@ -584,7 +584,7 @@ ACCESLIBRE_SHOULD_AVOID_TOO_MANY_REQUESTS = bool(int(os.environ.get("ACCESLIBRE_
 ACCESLIBRE_REQUEST_TIMEOUT = int(os.environ.get("ACCESLIBRE_REQUEST_TIMEOUT", "6"))
 
 # Recommendation API
-RECOMMENDATION_BACKEND = os.environ.get("RECOMMENDATION_BACKEND", "pcapi.connectors.recommendation.TestingBackend")
+RECOMMENDATION_BACKEND = os.environ.get("RECOMMENDATION_BACKEND", "pcapi.connectors.recommendation.LocalBackend")
 RECOMMENDATION_API_AUTHENTICATION_TOKEN = os.environ.get("RECOMMENDATION_API_AUTHENTICATION_TOKEN", "")
 RECOMMENDATION_API_URL = os.environ.get("RECOMMENDATION_API_URL", "")
 

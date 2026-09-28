@@ -7,6 +7,7 @@ from .test import TestingBackend
 
 __all__ = [
     "HttpBackend",
+    "LocalBackend",
     "TestingBackend",
     "get_playlist",
     "get_similar_artists",

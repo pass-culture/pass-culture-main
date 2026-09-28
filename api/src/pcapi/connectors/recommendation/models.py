@@ -82,7 +82,7 @@ class MatchedArtist(BaseModel):
 
 class SimilarArtistsParams(BaseModel):
     artist_id: str
-    call_id: str
+    call_id: str | None = None
 
 
 class SimilarArtistsResponse(BaseModel):
