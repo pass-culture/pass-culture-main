@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { format } from 'date-fns'
+import { useState } from 'react'
 
 import {
   convertEuroToPacificFranc,
@@ -9,10 +10,7 @@ import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
-import {
-  InvoiceActions,
-  InvoiceActionVariant,
-} from '@/pages/Reimbursements/ReimbursementsInvoices/InvoiceTable/InvoiceActions'
+import { InvoiceActions } from '@/pages/Reimbursements/ReimbursementsInvoices/InvoiceTable/InvoiceActions'
 import { Divider } from '@/ui-kit/Divider/Divider'
 
 import type { ExtendedSettlementResponseModel } from '../SettlementTable/SettlementTable'
@@ -29,6 +27,9 @@ export const SettlementRowInvoicesModal = ({
   onClose,
   settlementRow,
 }: Readonly<SettlementRowInvoicesModalProps>): JSX.Element | null => {
+  const [modalContainer, setModalContainer] =
+    useState<HTMLDialogElement | null>(null)
+
   if (!settlementRow) {
     return null
   }
@@ -44,6 +45,7 @@ export const SettlementRowInvoicesModal = ({
       isOpen={isOpen}
       onClose={onClose}
       title={settlementRow.label}
+      ref={setModalContainer}
     >
       <div className={styles['modal-content']}>
         <p className={styles['modal-content-description']}>{description}</p>
@@ -77,7 +79,7 @@ export const SettlementRowInvoicesModal = ({
             <div className={styles['invoice-actions']}>
               <InvoiceActions
                 invoice={invoice}
-                variant={InvoiceActionVariant.BUTTONS}
+                portalContainer={modalContainer}
               />
             </div>
           </div>
