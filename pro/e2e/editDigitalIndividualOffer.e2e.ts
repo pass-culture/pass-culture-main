@@ -2,6 +2,7 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 import { addDays, format } from 'date-fns'
 
 import { checkAccessibility } from './helpers/accessibility'
+import { expectSuccessSnackbar } from './helpers/assertions'
 import { loginAndNavigate } from './helpers/auth'
 import { isPatchStocksResponse } from './helpers/requests'
 import {
@@ -80,9 +81,7 @@ test.describe('Edit digital individual offers', () => {
       await expect(page).toHaveURL(/\/edition\/description/)
       await page.getByLabel(/Description/).fill('Une description modifiée')
       await page.getByText('Enregistrer les modifications').click()
-      await expect(
-        page.getByText('Votre offre a bien été modifiée.').first()
-      ).toBeVisible()
+      await expectSuccessSnackbar(page, 'Votre offre a bien été modifiée.')
 
       // LOCATION EDITION
       await page.getByRole('link', { name: 'Localisation' }).click()
@@ -91,9 +90,7 @@ test.describe('Edit digital individual offers', () => {
       const randomUrl = 'http://myrandomurl.fr/'
       await page.getByLabel(/URL d’accès à l’offre/).fill(randomUrl)
       await page.getByText('Enregistrer les modifications').click()
-      await expect(
-        page.getByText('Votre offre a bien été modifiée.').first()
-      ).toBeVisible()
+      await expectSuccessSnackbar(page, 'Votre offre a bien été modifiée.')
       await expect(page.getByLabel(/URL d’accès à l’offre/)).toHaveValue(
         randomUrl
       )
