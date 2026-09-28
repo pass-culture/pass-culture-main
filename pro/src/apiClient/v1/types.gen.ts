@@ -1272,6 +1272,20 @@ export type DeleteStockListBody = {
 };
 
 /**
+ * DetachedVenueResponseModel
+ */
+export type DetachedVenueResponseModel = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Publicname
+     */
+    publicName: string;
+};
+
+/**
  * DisplayableActivity
  */
 export enum DisplayableActivity {
@@ -3175,6 +3189,16 @@ export type GetProductInformations = {
      * Subcategoryid
      */
     subcategoryId: string;
+};
+
+/**
+ * GetRejectedBankAccountsQueryModel
+ */
+export type GetRejectedBankAccountsQueryModel = {
+    /**
+     * Offererid
+     */
+    offererId: number;
 };
 
 /**
@@ -5818,6 +5842,37 @@ export type ReimbursementCsvByInvoicesModel = {
      */
     invoicesReferences: Array<string>;
 };
+
+/**
+ * RejectedBankAccountResponseModel
+ */
+export type RejectedBankAccountResponseModel = {
+    /**
+     * Detachedvenues
+     */
+    detachedVenues: Array<DetachedVenueResponseModel>;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Obfuscatediban
+     */
+    obfuscatedIban: string;
+    /**
+     * Rejectedsettlementlabel
+     */
+    rejectedSettlementLabel: string;
+};
+
+/**
+ * RejectedBankAccountsResponseModel
+ */
+export type RejectedBankAccountsResponseModel = Array<RejectedBankAccountResponseModel>;
 
 /**
  * ResetPasswordBodyModel
@@ -8814,6 +8869,40 @@ export type getFinanceHasSettlementResponses = {
 };
 
 export type getFinanceHasSettlementResponse = getFinanceHasSettlementResponses[keyof getFinanceHasSettlementResponses];
+
+export type getFinanceRejectedBankAccountsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Offererid
+         */
+        offererId: number;
+    };
+    url: '/finance/rejected-bank-accounts';
+};
+
+export type getFinanceRejectedBankAccountsErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getFinanceRejectedBankAccountsError = getFinanceRejectedBankAccountsErrors[keyof getFinanceRejectedBankAccountsErrors];
+
+export type getFinanceRejectedBankAccountsResponses = {
+    /**
+     * OK
+     */
+    200: RejectedBankAccountsResponseModel;
+};
+
+export type getFinanceRejectedBankAccountsResponse = getFinanceRejectedBankAccountsResponses[keyof getFinanceRejectedBankAccountsResponses];
 
 export type getFinanceSettlementsData = {
     body?: never;

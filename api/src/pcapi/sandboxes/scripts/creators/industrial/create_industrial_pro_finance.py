@@ -171,6 +171,9 @@ def create_rejected_settlement(user: users_models.User) -> None:
         bankAccount=bank_account,
         timespan=[now - datetime.timedelta(days=365), now - datetime.timedelta(days=5)],
     )
+    # add valid bank accounts to test the "re-linking" of venues
+    factories.BankAccountFactory.create(label="Compte bancaire OK 1", offerer=offerer)
+    factories.BankAccountFactory.create(label="Compte bancaire OK 2", offerer=offerer)
 
     # the batch occurred 5 days ago and the settlement is rejected, in sync with the bank account status
     batch = factories.SettlementBatchFactory.create(name="VIR10", dateValidated=now - datetime.timedelta(days=5))

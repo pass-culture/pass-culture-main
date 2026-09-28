@@ -131,3 +131,28 @@ def get_combined_invoices(query: finance_serialize.GetCombinedInvoicesQueryModel
         return pdf.merge_pdf_files(invoice_pdf_urls)
     except FileNotFoundError as exc:
         raise ApiErrors({"invoice": f"Failed to fetch invoice PDF from url: {exc}"}, status_code=424)
+
+
+@pro_blueprint.route("/finance/rejected-bank-accounts", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(response_model=finance_serialize.RejectedBankAccountsResponseModel, api=blueprint.pro_schema)
+def get_rejected_bank_accounts(
+    query: finance_serialize.GetRejectedBankAccountsQueryModel,
+) -> finance_serialize.RejectedBankAccountsResponseModel:
+    rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
+
+    settlements_and_venues = repository.get_rejected_unresolved_settlements_and_detached_venues(
+        offerer_id=query.offerer_id
+    )
+
+    return finance_serialize.RejectedBankAccountsResponseModel(
+        [
+            finance_serialize.RejectedBankAccountResponseModel.build(
+                bank_account=settlement.bankAccount,
+                rejected_settlement_label=settlement.batch.get_displayed_name(),
+                detached_venues=venues,
+            )
+            for settlement, venues in settlements_and_venues
+        ]
+    )

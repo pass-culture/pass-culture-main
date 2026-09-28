@@ -810,15 +810,18 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             .exists()
         ).scalar()
 
+    def get_active_bank_account_link_at(self, date_time: datetime) -> "VenueBankAccountLink | None":
+        for link in self.bankAccountLinks:
+            if link.is_active_at(date_time):
+                return link
+
+        return None
+
     @property
     def current_bank_account_link(self) -> "VenueBankAccountLink | None":
         now = date_utils.get_naive_utc_now()
 
-        for link in self.bankAccountLinks:
-            if link.is_active_at(now):
-                return link
-
-        return None
+        return self.get_active_bank_account_link_at(now)
 
     @property
     def current_bank_account(self) -> "finance_models.BankAccount | None":

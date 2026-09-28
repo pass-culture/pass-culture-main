@@ -54,6 +54,10 @@ class SettlementListQueryModel(HttpQueryParamsModel):
     name_search: str | None = pydantic.Field(default=None, min_length=1)
 
 
+class GetRejectedBankAccountsQueryModel(HttpQueryParamsModel):
+    offerer_id: int
+
+
 # Response Models
 
 
@@ -111,10 +115,9 @@ def _get_settlement_data(
         return SettlementDisplayedStatus.EXECUTED, []
 
     # check that all detached venues are linked to another bank account
-    detached_venues = [link.venue for link in settlement.bankAccount.venueLinks if not link.is_active_at(now)]
-    one_venue_not_attached = any(venue.current_bank_account_link is None for venue in detached_venues)
-
-    if one_venue_not_attached:
+    detached_venues = settlement.bankAccount.get_detached_venues_at(now)
+    has_venue_not_attached = next(detached_venues, None) is not None
+    if has_venue_not_attached:
         return SettlementDisplayedStatus.REJECTED_UNRESOLVED, []
 
     resolving_settlements = []
@@ -190,6 +193,10 @@ class ManagedVenue(HttpBodyModel):
     state: offerers_models.VenueState | None
 
 
+def _obfuscate_iban(iban: str) -> str:
+    return f"XXXX XXXX XXXX {iban[-4:]}"
+
+
 class BankAccountResponseModel(HttpBodyModel):
     id: int
     is_active: bool
@@ -203,7 +210,39 @@ class BankAccountResponseModel(HttpBodyModel):
     @pydantic.field_validator("iban", mode="after")
     @classmethod
     def obfuscate_iban(cls, iban: str) -> str:
-        return f"XXXX XXXX XXXX {iban[-4:]}"
+        return _obfuscate_iban(iban)
+
+
+class DetachedVenueResponseModel(HttpBodyModel):
+    id: int
+    publicName: str
+
+
+class RejectedBankAccountResponseModel(HttpBodyModel):
+    id: int
+    label: str
+    obfuscatedIban: str
+    rejectedSettlementLabel: str
+    detachedVenues: list[DetachedVenueResponseModel]
+
+    @classmethod
+    def build(
+        cls,
+        bank_account: models.BankAccount,
+        rejected_settlement_label: str,
+        detached_venues: list[offerers_models.Venue],
+    ) -> typing.Self:
+        return cls(
+            id=bank_account.id,
+            label=bank_account.label,
+            obfuscatedIban=_obfuscate_iban(bank_account.iban),
+            rejectedSettlementLabel=rejected_settlement_label,
+            detachedVenues=[DetachedVenueResponseModel.model_validate(venue) for venue in detached_venues],
+        )
+
+
+class RejectedBankAccountsResponseModel(RootModel):
+    root: list[RejectedBankAccountResponseModel]
 
 
 class HasInvoiceResponseModel(HttpBodyModel):

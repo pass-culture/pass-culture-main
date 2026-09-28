@@ -714,3 +714,51 @@ def has_settlement(offerer_id: int) -> bool:
         )
         .exists()
     ).scalar()
+
+
+def get_rejected_unresolved_settlements_and_detached_venues(
+    offerer_id: int,
+) -> list[tuple[models.Settlement, list[offerers_models.Venue]]]:
+    """
+    A settlement is "rejected unresolved" if the venues previously linked to the bank account are not linked to another bank account
+    Return a list of tuples with (rejected settlement, [list of detached venues])
+    """
+
+    query = (
+        db.session.query(models.Settlement)
+        .join(models.Settlement.bankAccount)
+        .join(models.Settlement.batch)
+        .filter(
+            models.BankAccount.offererId == offerer_id,
+            models.Settlement.status == models.SettlementStatus.REJECTED,
+        )
+        .options(
+            # load the bank account
+            sa_orm.contains_eager(models.Settlement.bankAccount).options(
+                # and its links
+                sa_orm.selectinload(models.BankAccount.venueLinks)
+                # for each link, load its venue and the venue links
+                .joinedload(offerers_models.VenueBankAccountLink.venue)
+                .load_only(offerers_models.Venue.id, offerers_models.Venue.publicName)
+                .selectinload(offerers_models.Venue.bankAccountLinks),
+            ),
+            # load the settlement batch
+            sa_orm.contains_eager(models.Settlement.batch).load_only(models.SettlementBatch.name),
+        )
+        .order_by(models.SettlementBatch.dateValidated.desc())
+    )
+
+    now = date_utils.get_naive_utc_now()
+    bank_account_ids = set()
+    result = []
+    for settlement in query:
+        # keep only the first rejected settlement for each bank account
+        if settlement.bankAccountId in bank_account_ids:
+            continue
+
+        detached_venues = list(settlement.bankAccount.get_detached_venues_at(now))
+        if detached_venues:
+            bank_account_ids.add(settlement.bankAccountId)
+            result.append((settlement, detached_venues))
+
+    return result

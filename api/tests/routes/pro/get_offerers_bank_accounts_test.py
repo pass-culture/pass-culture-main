@@ -2,20 +2,28 @@ import datetime
 
 import pytest
 
-import pcapi.core.finance.factories as finance_factories
-import pcapi.core.finance.models as finance_models
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 
+from tests.conftest import TestClient
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
+
 
 class OfferersBankAccountTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_user_cant_access_bank_accounts_of_offerer_it_doesnt_depends_on(self, client):
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # Check user permission on offerer
+    num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
+
+    def test_user_cant_access_bank_accounts_of_offerer_it_doesnt_depends_on(self, client: TestClient):
         pro_user = users_factories.ProFactory()
         offerer_1 = offerers_factories.OffererFactory()
         offerer_2 = offerers_factories.OffererFactory()
@@ -33,8 +41,7 @@ class OfferersBankAccountTest:
             assert response.status_code == 404
             assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
-    @pytest.mark.usefixtures("db_session")
-    def test_user_can_access_bank_accounts_page_even_if_it_doesnt_have_any(self, client):
+    def test_user_can_access_bank_accounts_page_even_if_it_doesnt_have_any(self, client: TestClient):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -42,10 +49,7 @@ class OfferersBankAccountTest:
         http_client = client.with_session_auth(pro_user.email)
 
         offerer_id = offerer.id  # avoid extra SQL query below
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # Check user permission on offerer
-        num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
@@ -56,8 +60,7 @@ class OfferersBankAccountTest:
         assert not bank_accounts
         assert not venues
 
-    @pytest.mark.usefixtures("db_session")
-    def test_users_offerer_can_access_its_bank_accounts(self, client):
+    def test_users_offerer_can_access_its_bank_accounts(self, client: TestClient):
         _another_pro_user = users_factories.ProFactory()
         another_offerer = offerers_factories.OffererFactory()
         another_bank_account = finance_factories.BankAccountFactory(offerer=another_offerer)
@@ -79,10 +82,7 @@ class OfferersBankAccountTest:
         http_client = client.with_session_auth(pro_user.email)
 
         offerer_id = offerer.id  # avoid extra SQL query below
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # Check user permission on offerer
-        num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
@@ -111,8 +111,7 @@ class OfferersBankAccountTest:
         assert not venues[1]["siret"]
         assert not venues[1]["bankAccountId"]
 
-    @pytest.mark.usefixtures("db_session")
-    def test_linked_venues_to_bank_accounts_are_displayed_to_users(self, client):
+    def test_linked_venues_to_bank_accounts_are_displayed_to_users(self, client: TestClient):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -132,10 +131,7 @@ class OfferersBankAccountTest:
         http_client = client.with_session_auth(pro_user.email)
 
         offerer_id = offerer.id  # avoid extra SQL query below
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # Check user permission on offerer
-        num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
@@ -151,8 +147,7 @@ class OfferersBankAccountTest:
         assert linked_venue["commonName"] == expected_venue.publicName
         assert linked_venue["state"] == "CLOSED"
 
-    @pytest.mark.usefixtures("db_session")
-    def test_user_can_only_see_active_bank_accounts(self, client):
+    def test_user_can_only_see_active_bank_accounts(self, client: TestClient):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -162,10 +157,7 @@ class OfferersBankAccountTest:
         http_client = client.with_session_auth(pro_user.email)
 
         offerer_id = offerer.id  # avoid extra SQL query below
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # Check user permission on offerer
-        num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
@@ -178,8 +170,7 @@ class OfferersBankAccountTest:
         assert bank_account["obfuscatedIban"] == f"XXXX XXXX XXXX {expected_bank_account.iban[-4:]}"
         assert bank_account["isActive"] is True
 
-    @pytest.mark.usefixtures("db_session")
-    def test_refused_nor_without_continuation_bank_accounts_arent_displayed(self, client):
+    def test_refused_nor_without_continuation_bank_accounts_arent_displayed(self, client: TestClient):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -195,10 +186,7 @@ class OfferersBankAccountTest:
 
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id  # avoid extra SQL query below
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # Check user permission on offerer
-        num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
@@ -207,8 +195,7 @@ class OfferersBankAccountTest:
         bank_account = offerer["bankAccounts"].pop()
         assert bank_account["id"] == pending_bank_account.id
 
-    @pytest.mark.usefixtures("db_session")
-    def test_we_only_display_up_to_date_venue_link_for_a_given_bank_account(self, client):
+    def test_we_only_display_up_to_date_venue_link_for_a_given_bank_account(self, client: TestClient):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -242,10 +229,7 @@ class OfferersBankAccountTest:
         http_client = client.with_session_auth(pro_user.email)
 
         offerer_id = offerer.id  # avoid extra SQL query below
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # Check user permission on offerer
-        num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
