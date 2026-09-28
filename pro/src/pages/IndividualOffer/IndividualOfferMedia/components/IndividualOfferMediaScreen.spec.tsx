@@ -143,7 +143,7 @@ const LABELS = {
   videoSubSection: 'Ajoutez une vidéo',
   videoInput: 'Lien URL Youtube',
   videoError:
-    'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.',
+    'Veuillez renseigner une URL provenant de la plateforme Youtube. Les chaînes ne sont pas acceptées.',
   previousButtonCreationMode: 'Retour',
   nextButtonCreationMode: 'Enregistrer et continuer',
   nextButtonEditionMode: 'Enregistrer les modifications',

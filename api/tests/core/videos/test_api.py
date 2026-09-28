@@ -32,7 +32,6 @@ class VideoIdExtractionTest:
     @pytest.mark.parametrize(
         "video_url",
         [
-            ("https://www.youtube.com/shorts/dQw4w9WgXcQ"),  # we do not accept shorts
             ("https://www.youtube.com/@Msnight_fall"),  # we do not accept channels
             ("https://www.youtube.com.jesuiscool.fr"),  # we do not accept subdomains, even if you are cool
             "https://vimeo.com/1078258590",
@@ -50,7 +49,7 @@ class VideoIdExtractionTest:
             assert api.extract_video_id(video_url)
         assert (
             str(error.value)
-            == "The video URL must be from the Youtube plateform, it should be public and should not be a short nor a user's profile."
+            == "The video URL must be from the Youtube plateform, it should be public and should not be a user's profile."
         )
 
 

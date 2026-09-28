@@ -86,7 +86,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["videoUrl"] == [
-            "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+            "Veuillez renseigner une URL provenant de la plateforme Youtube. Les chaînes ne sont pas acceptées."
         ]
 
     @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache", side_effect=ExternalAPIException(True))
