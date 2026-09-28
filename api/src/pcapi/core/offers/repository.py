@@ -1533,7 +1533,7 @@ def exclude_offers_from_closed_venues(query: sa_orm.Query[models.Offer]) -> sa_o
 
 def get_next_offer_id_from_database() -> int:
     sequence: sa.Sequence = sa.Sequence("offer_id_seq")
-    return typing.cast(int, db.session.execute(sequence))
+    return db.session.scalar(sequence)
 
 
 def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue, offer_id: int | None) -> bool:
