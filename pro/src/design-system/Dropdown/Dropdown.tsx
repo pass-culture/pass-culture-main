@@ -41,6 +41,8 @@ type BaseProps = DropdownMenu.DropdownMenuProps & {
   open?: boolean
   /** Callback fired on open state change. */
   onOpenChange?: (open: boolean) => void
+  /** Custom container for the portaled dropdown content. */
+  portalContainer?: HTMLElement | null
 }
 
 /**
@@ -89,6 +91,7 @@ export const Dropdown = ({
   trigger,
   open,
   onOpenChange,
+  portalContainer,
   items,
 }: Readonly<DropdownProps>): JSX.Element => {
   // When a custom `trigger` is provided we force its `aria-label` *by default*
@@ -116,7 +119,7 @@ export const Dropdown = ({
     <DropdownMenu.Root open={open} onOpenChange={onOpenChange}>
       <DropdownMenu.Trigger asChild>{renderTrigger()}</DropdownMenu.Trigger>
 
-      <DropdownMenu.Portal>
+      <DropdownMenu.Portal container={portalContainer}>
         <DropdownMenu.Content
           align={align}
           side={side}

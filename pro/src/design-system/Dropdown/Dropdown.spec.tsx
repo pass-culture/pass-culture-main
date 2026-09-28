@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
@@ -59,6 +59,18 @@ describe('<Dropdown />', () => {
       ).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Item 2' })
+      ).toBeInTheDocument()
+    })
+
+    it('should render the menu in a custom portal container', async () => {
+      const portalContainer = document.createElement('div')
+      document.body.appendChild(portalContainer)
+      renderDropdown({ portalContainer })
+
+      await openDropdown()
+
+      expect(
+        within(portalContainer).getByRole('menuitem', { name: 'Item 1' })
       ).toBeInTheDocument()
     })
 
