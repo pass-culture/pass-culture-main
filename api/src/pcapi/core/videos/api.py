@@ -22,7 +22,7 @@ YOUTUBE_REGEX = (
     r"(www\.)?"
     r"(m\.)?"
     r"(youtube\.com\b|youtu\.be\b)"
-    r"(/watch\?v=|/embed/|/v/|/e/|/)(?P<video_id>[\w-]{11})\b"
+    r"(/watch\?v=|/embed/|/v/|/shorts/|/e/|/)(?P<video_id>[\w-]{11})\b"
 )
 
 

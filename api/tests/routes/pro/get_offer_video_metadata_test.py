@@ -61,7 +61,7 @@ class Returns400Test:
             )
         assert response.status_code == 400
         assert response.json["videoUrl"] == [
-            "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+            "Veuillez renseigner une URL provenant de la plateforme Youtube. Les chaînes ne sont pas acceptées."
         ]
 
     def test_get_offer_video_metadata_unknown_url(self, client):
@@ -77,7 +77,7 @@ class Returns400Test:
             response = test_client.get("/get-offer-video-data/?videoUrl=https://www.youtube.com/watch?v=unknown")
         assert response.status_code == 400
         assert response.json["videoUrl"] == [
-            "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+            "Veuillez renseigner une URL provenant de la plateforme Youtube. Les chaînes ne sont pas acceptées."
         ]
 
     @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeNotFoundBackend")

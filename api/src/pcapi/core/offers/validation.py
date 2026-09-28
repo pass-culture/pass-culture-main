@@ -1022,7 +1022,7 @@ def check_video_url(video_url: HttpUrl | None) -> str | None:
         raise api_errors.ApiErrors(
             errors={
                 "videoUrl": [
-                    "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+                    "Veuillez renseigner une URL provenant de la plateforme Youtube. Les chaînes ne sont pas acceptées."
                 ]
             }
         )
