@@ -5,8 +5,8 @@ ACCESLIBRE_RESULTS = {
     "previous": None,
     "results": [
         {
-            "url": "https://acceslibre.beta.gouv.fr/api/erps/le-livre-bateau/",
-            "web_url": "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/le-livre-bateau/",
+            "url": "https://recette.acceslibre.info/api/erps/le-livre-bateau/",
+            "web_url": "https://recette.acceslibre.info/app/59-lille/a/librairie/erp/le-livre-bateau/",
             "uuid": "5cfa5da3-5dac-494d-9061-6a0665072d18",
             "activite": {"nom": "Librairie", "slug": "librairie"},
             "nom": "Le Livre Bateau",
@@ -24,8 +24,8 @@ ACCESLIBRE_RESULTS = {
             "contact_url": None,
             "user_type": "public",
             "accessibilite": {
-                "url": "https://acceslibre.beta.gouv.fr/api/accessibilite/197265/",
-                "erp": "https://acceslibre.beta.gouv.fr/api/erps/le-livre-bateau/",
+                "url": "https://recette.acceslibre.info/api/accessibilite/197265/",
+                "erp": "https://recette.acceslibre.info/api/erps/le-livre-bateau/",
                 "transport": {
                     "transport_station_presence": False,
                     "transport_information": "",
@@ -111,8 +111,8 @@ ACCESLIBRE_RESULTS = {
             "created_at": "2023-03-13T14:50:47.945955+01:00",
         },
         {
-            "url": "https://acceslibre.beta.gouv.fr/api/erps/la-librairie-chouette/",
-            "web_url": "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/la-librairie-chouette/",
+            "url": "https://recette.acceslibre.info/api/erps/la-librairie-chouette/",
+            "web_url": "https://recette.acceslibre.info/app/59-lille/a/librairie/erp/la-librairie-chouette/",
             "uuid": "819cec84-0e29-4eee-a3e2-7945275c9ec6",
             "activite": {"nom": "Librairie", "slug": "librairie"},
             "nom": "La Librairie Chouette",
@@ -130,8 +130,8 @@ ACCESLIBRE_RESULTS = {
             "contact_url": None,
             "user_type": "gestionnaire",
             "accessibilite": {
-                "url": "https://acceslibre.beta.gouv.fr/api/accessibilite/12345678987654321/",
-                "erp": "https://acceslibre.beta.gouv.fr/api/erps/la-librairie-chouette/",
+                "url": "https://recette.acceslibre.info/api/accessibilite/12345678987654321/",
+                "erp": "https://recette.acceslibre.info/api/erps/la-librairie-chouette/",
                 "transport": {
                     "transport_station_presence": True,
                     "transport_information": "La navette du Vieux Lille passe dans la rue qui n'existe pas, il suffit de lui faire signe pour qu'elle s'arrête devant notre porte ou qu'elle vous dépose à la librairie.\r\nLe métro Rihour est à 300m.",
@@ -231,8 +231,8 @@ ACCESLIBRE_BAD_SLUG = {
     "previous": None,
     "results": [
         {
-            "url": "https://acceslibre.beta.gouv.fr/api/erps/le-livre-bateau/",
-            "web_url": "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/le-livre-bateau/",
+            "url": "https://recette.acceslibre.info/api/erps/le-livre-bateau/",
+            "web_url": "https://recette.acceslibre.info/app/59-lille/a/librairie/erp/le-livre-bateau/",
             "uuid": "5cfa5da3-5dac-494d-9061-6a0665072d18",
             "activite": {"nom": "Librairie", "slug": "librairie"},
             "nom": "",
@@ -265,8 +265,8 @@ ACCESLIBRE_BAD_ACTIVITY = {
     "previous": None,
     "results": [
         {
-            "url": "https://acceslibre.beta.gouv.fr/api/erps/le-livre-bateau/",
-            "web_url": "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/le-livre-bateau/",
+            "url": "https://recette.acceslibre.info/api/erps/le-livre-bateau/",
+            "web_url": "https://recette.acceslibre.info/app/59-lille/a/librairie/erp/le-livre-bateau/",
             "uuid": "5cfa5da3-5dac-494d-9061-6a0665072d18",
             "activite": "Chaîne de caracteres",
             "nom": "",
@@ -299,8 +299,8 @@ ACCESLIBRE_RESULTS_BY_NAME = {
     "previous": None,
     "results": [
         {
-            "url": "https://acceslibre.beta.gouv.fr/api/erps/belette-du-nord/",
-            "web_url": "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/belette-du-nord/",
+            "url": "https://recette.acceslibre.info/api/erps/belette-du-nord/",
+            "web_url": "https://recette.acceslibre.info/app/59-lille/a/librairie/erp/belette-du-nord/",
             "uuid": "7b661678-dfb9-4019-b8f4-0ec84249b9c9",
             "activite": {"nom": "Librairie", "slug": "librairie"},
             "nom": "Belette du Nord",
@@ -318,8 +318,8 @@ ACCESLIBRE_RESULTS_BY_NAME = {
             "contact_url": None,
             "user_type": "gestionnaire",
             "accessibilite": {
-                "url": "https://acceslibre.beta.gouv.fr/api/accessibilite/1234578/",
-                "erp": "https://acceslibre.beta.gouv.fr/api/erps/belette-du-nord/",
+                "url": "https://recette.acceslibre.info/api/accessibilite/1234578/",
+                "erp": "https://recette.acceslibre.info/api/erps/belette-du-nord/",
                 "transport": {
                     "transport_station_presence": True,
                     "transport_information": "Metro Rihour",
@@ -405,8 +405,8 @@ ACCESLIBRE_RESULTS_BY_NAME = {
             "created_at": "2022-12-08T12:02:51.533470+01:00",
         },
         {
-            "url": "https://acceslibre.beta.gouv.fr/api/erps/theatre-du-nord/",
-            "web_url": "https://acceslibre.beta.gouv.fr/app/59-lille/a/theatre/erp/theatre-du-nord/",
+            "url": "https://recette.acceslibre.info/api/erps/theatre-du-nord/",
+            "web_url": "https://recette.acceslibre.info/app/59-lille/a/theatre/erp/theatre-du-nord/",
             "uuid": "7104a45e-042a-442c-9ca5-fbdb48ef65f3",
             "activite": {"nom": "Théâtre", "slug": "theatre"},
             "nom": "Théâtre du Nord, Lille",
@@ -424,8 +424,8 @@ ACCESLIBRE_RESULTS_BY_NAME = {
             "contact_url": None,
             "user_type": "gestionnaire",
             "accessibilite": {
-                "url": "https://acceslibre.beta.gouv.fr/api/accessibilite/1919191919919191919/",
-                "erp": "https://acceslibre.beta.gouv.fr/api/erps/theatre-du-nord/",
+                "url": "https://recette.acceslibre.info/api/accessibilite/1919191919919191919/",
+                "erp": "https://recette.acceslibre.info/api/erps/theatre-du-nord/",
                 "transport": {
                     "transport_station_presence": True,
                     "transport_information": "Métro Ligne 1 Station Rihour (à 100m)\r\nParking Grand'Place (à 120m)",
@@ -514,8 +514,8 @@ ACCESLIBRE_RESULTS_BY_NAME = {
 }
 
 ACCESLIBRE_RESULTS_BY_SLUG = {
-    "url": "https://acceslibre.beta.gouv.fr/api/erps/office-du-tourisme-4/",
-    "web_url": "https://acceslibre.beta.gouv.fr/app/69-lyon/a/office-du-tourisme/erp/office-du-tourisme-4/",
+    "url": "https://recette.acceslibre.info/api/erps/office-du-tourisme-4/",
+    "web_url": "https://recette.acceslibre.info/app/69-lyon/a/office-du-tourisme/erp/office-du-tourisme-4/",
     "uuid": "70bf0501-46ef-47d5-a10a-70f15b396e43",
     "activite": {"nom": "Office du tourisme", "slug": "office-du-tourisme"},
     "nom": "Office du Tourisme",
@@ -533,8 +533,8 @@ ACCESLIBRE_RESULTS_BY_SLUG = {
     "contact_url": None,
     "user_type": "gestionnaire",
     "accessibilite": {
-        "url": "https://acceslibre.beta.gouv.fr/api/accessibilite/12404/",
-        "erp": "https://acceslibre.beta.gouv.fr/api/erps/office-du-tourisme-4/",
+        "url": "https://recette.acceslibre.info/api/accessibilite/12404/",
+        "erp": "https://recette.acceslibre.info/api/erps/office-du-tourisme-4/",
         "transport": {
             "transport_station_presence": True,
             "transport_information": "métro A , arrêt Bellecour\r\nmétro D, arrêt Bellecour",
