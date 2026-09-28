@@ -593,13 +593,14 @@ class QuotientFamilialApplicationTest:
     def test_sentry_error_filtered(self):
         captured_events = []
 
-        def mock_transport(event):
-            nonlocal captured_events
+        class MockTransport(sentry_sdk.Transport):
+            def capture_envelope(self, envelope):
+                nonlocal captured_events
 
-            captured_events.append(event)
+                captured_events.append(envelope.get_event())
 
         client = sentry_sdk.Client(
-            dsn="http://public@sentry.local/1", before_send=before_send, transport=mock_transport
+            dsn="http://public@sentry.local/1", before_send=before_send, transport=MockTransport()
         )
 
         user = users_factories.BeneficiaryFactory()
@@ -865,13 +866,14 @@ class DisabledAdultAllowanceTest:
     def test_sentry_error_filtered(self):
         captured_events = []
 
-        def mock_transport(event):
-            nonlocal captured_events
+        class MockTransport(sentry_sdk.Transport):
+            def capture_envelope(self, envelope):
+                nonlocal captured_events
 
-            captured_events.append(event)
+                captured_events.append(envelope.get_event())
 
         client = sentry_sdk.Client(
-            dsn="http://public@sentry.local/1", before_send=before_send, transport=mock_transport
+            dsn="http://public@sentry.local/1", before_send=before_send, transport=MockTransport()
         )
 
         user = users_factories.BeneficiaryFactory()
@@ -1151,13 +1153,14 @@ class DisabledChildEducationAllowanceTest:
     def test_sentry_error_filtered(self):
         captured_events = []
 
-        def mock_transport(event):
-            nonlocal captured_events
+        class MockTransport(sentry_sdk.Transport):
+            def capture_envelope(self, envelope):
+                nonlocal captured_events
 
-            captured_events.append(event)
+                captured_events.append(envelope.get_event())
 
         client = sentry_sdk.Client(
-            dsn="http://public@sentry.local/1", before_send=before_send, transport=mock_transport
+            dsn="http://public@sentry.local/1", before_send=before_send, transport=MockTransport()
         )
 
         user = users_factories.BeneficiaryFactory()
