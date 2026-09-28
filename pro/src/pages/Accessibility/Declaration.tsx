@@ -43,40 +43,65 @@ export const Declaration = () => {
         </li>
       </ul>
       <p className={styles['paragraph']}>
-        Cette déclaration d’accessibilité s’applique au site internet{' '}
+        La présente déclaration d’accessibilité s’applique au site{' '}
         <Link
           color={LinkColor.NEUTRAL}
           to="https://passculture.pro/"
           isExternalLink
-          label="https://passculture.pro/"
+          label="Pass Culture - Espace Partenaires Culturels"
         />
       </p>
       <Title level="2" title="État de conformité" marginBottom="l" />
       <p className={styles['paragraph']}>
-        Le site Pass Culture – Portail Pro est non conforme avec la norme
-        européenne 301 549 (v3.2.1).
+        Le site Pass Culture – Portail Pro est non conforme avec la{' '}
+        <Link
+          color={LinkColor.NEUTRAL}
+          to="https://www.etsi.org/deliver/etsi_en/301500_301599/301549/03.02.01_60/en_301549v030201p.pdf"
+          isExternalLink
+          label="norme européenne 301 549"
+        />{' '}
+        (v3.2.1).
       </p>
       <p className={styles['paragraph']}>
-        La méthodologie d’audit se base sur le Référentiel d'Évaluation de
-        l'Accessibilité Web (RAWeb 1.1), seule méthode opérationnelle publiée à
-        ce jour pour vérifier l’ensemble des critères de la norme européenne.
+        La méthodologie d’audit se base sur{' '}
+        <Link
+          color={LinkColor.NEUTRAL}
+          to="https://accessibilite.public.lu/fr/raweb1.1/index.html"
+          isExternalLink
+          label="le Référentiel d'Évaluation de l'Accessibilité Web (RAWeb 1.1)"
+        />
+        , seule méthode opérationnelle publiée à ce jour pour vérifier
+        l’ensemble des critères de la norme européenne.
       </p>
       <p className={styles['paragraph']}>
-        Le site Pass Culture – Portail Pro (
+        Le site Pass Culture – Espace Partenaire Culturels (
         <Link
           color={LinkColor.NEUTRAL}
           to="https://passculture.pro/"
           isExternalLink
           label="https://passculture.pro/"
         />
-        ) est partiellement conforme avec le RAWeb version 1.1 et le RGAA
-        version 4.1, en raison des non-conformités énumérées dans la section «
-        Résultats des tests ».
+        ) est partiellement conforme avec le{' '}
+        <Link
+          color={LinkColor.NEUTRAL}
+          to="https://accessibilite.public.lu/fr/raweb1.1/index.html"
+          isExternalLink
+          label="RAWeb version 1.1"
+        />{' '}
+        et le{' '}
+        <Link
+          color={LinkColor.NEUTRAL}
+          to="https://www.numerique.gouv.fr/publications/rgaa-accessibilite/"
+          isExternalLink
+          label="RGAA version 4.1"
+        />
+        , en raison des non-conformités énumérées dans la section « Résultats
+        des tests ».
       </p>
       <Title level="2" title="Résultat des tests" marginBottom="l" />
       <p className={styles['paragraph']}>
         L’audit de conformité réalisé par la société Access42 révèle que le site
-        est conforme à 67.65 % au RGAA version 4.1.
+        est conforme à 82.86 % au RGAA version 4.1.
       </p>
       <Title level="2" title="Contenus inaccessibles" marginBottom="l" />
       <p className={styles['paragraph']}>
@@ -86,38 +111,12 @@ export const Declaration = () => {
       <Title level="3" title="Non conformité" marginBottom="l" />
       <ul>
         <li className={styles['list-item']}>
-          [1.2 - RGAA] Une image de décoration au moins n'est pas ignorée des
-          technologies d’assistance.
-        </li>
-        <li className={styles['list-item']}>
           [1.3 - RGAA] L'alternative textuelle d'une image porteuse
           d’information au moins n'est pas pertinente.
         </li>
         <li className={styles['list-item']}>
-          [3.1 - RGAA] Une information au moins est véhiculée uniquement par la
-          couleur.
-        </li>
-        <li className={styles['list-item']}>
-          [5.3 - RGAA] Un tableau utilisé à des fins de présentation au moins
-          n'est pas déclaré pas comme tel et/ou les contenus linéarisés de ce
-          tableau ne se présentent pas dans un ordre logique dans le code
-          source.
-        </li>
-        <li className={styles['list-item']}>
-          [5.4 - RGAA] Le titre d'un tableau de données au moins n'est pas
-          correctement associé au tableau.
-        </li>
-        <li className={styles['list-item']}>
-          [5.5 - RGAA] Le titre d'un tableau de données au moins n'est pas
-          pertinent.
-        </li>
-        <li className={styles['list-item']}>
-          [5.7 - RGAA] Les en-têtes d'un tableau de données au moins ne sont pas
-          correctement associés aux cellules.
-        </li>
-        <li className={styles['list-item']}>
-          [5.8 - RGAA] Un tableau utilisé à des fins de présentation au moins
-          utilise des éléments propres aux tableaux de données.
+          [5.1 - RGAA] Un tableau de données complexe au moins n'a pas de
+          résumé.
         </li>
         <li className={styles['list-item']}>
           [7.1 - RGAA] Une fonctionnalité JavaScript au moins n'est pas
@@ -134,43 +133,27 @@ export const Declaration = () => {
           structurés dans des balises de paragraphes).
         </li>
         <li className={styles['list-item']}>
-          [9.1 - RGAA] La hiérarchie des titres d'une page au moins n'est pas
-          pertinente.
-        </li>
-        <li className={styles['list-item']}>
           [9.2 - RGAA] La structure du document d'une page au moins n'est pas
           cohérente.
         </li>
         <li className={styles['list-item']}>
-          [9.3 - RGAA] Une liste au moins n'est pas correctement structurée.
+          [9.4 - RGAA] Une citation au moins n'est pas identifiée.
         </li>
         <li className={styles['list-item']}>
           [10.4 - RGAA] Un contenu au moins présente des pertes d’information et
           de lisibilité lorsque le texte est agrandi à 200%.
         </li>
         <li className={styles['list-item']}>
-          [10.6 - RGAA] Un lien en environnement de texte au moins n'est pas
-          suffisamment visible.
-        </li>
-        <li className={styles['list-item']}>
           [10.9 - RGAA] Une information au moins est véhiculée uniquement par la
           forme, la taille ou la position.
-        </li>
-        <li className={styles['list-item']}>
-          [11.1 - RGAA] Un champ de formulaire au moins n'a pas d'étiquette.
-        </li>
-        <li className={styles['list-item']}>
-          [11.2 - RGAA] L'étiquette d'un champ de formulaire au moins n'est pas
-          pertinente.
         </li>
         <li className={styles['list-item']}>
           [11.6 - RGAA] Un regroupement de champs de formulaires au moins n'a
           pas de légende.
         </li>
         <li className={styles['list-item']}>
-          [11.10 - RGAA] Le contrôle de saisie d'un champ au moins n'est pas
-          pertinent (absence d'identification des champs obligatoires et/ou
-          absence de présentation des formats de données attendus).
+          [12.8 - RGAA] L'ordre de tabulation pour une page ou un composant au
+          moins n'est pas cohérent.
         </li>
         <li className={styles['list-item']}>
           [13.10 - RGAA] Une fonctionnalité au moins, utilisable au moyen d'un
@@ -184,10 +167,6 @@ export const Declaration = () => {
         <li className={styles['list-item']}>
           [15.3 - RAWeb] Au moins un contenu généré par une transformation des
           contenus n'est pas accessible.
-        </li>
-        <li className={styles['list-item']}>
-          [16.2 - RAWeb] Le service d'assistance ne répond pas aux besoins de
-          communication des personnes handicapées.
         </li>
       </ul>
       <Title
@@ -212,7 +191,8 @@ export const Declaration = () => {
         marginBottom="l"
       />
       <p className={styles['paragraph']}>
-        Cette déclaration a été établie le 10 juillet 2026.
+        Cette déclaration a été établie le 10 juillet 2026. Elle a été mise à
+        jour le 25 septembre 2026.
       </p>
       <Title
         level="3"
@@ -458,11 +438,11 @@ export const Declaration = () => {
         Il est important de rappeler qu’en vertu de l’article 11 de la loi de
         février 2005 :
       </p>
-      <p className={styles['quote']}>
+      <blockquote className={styles['quote']}>
         « la personne handicapée a droit à la compensation des conséquences de
         son handicap, quels que soient l’origine et la nature de sa déficience,
         son âge ou son mode de vie. »
-      </p>
+      </blockquote>
       <p className={styles['paragraph']}>
         Le pass Culture s'engage à prendre les moyens nécessaires afin de donner
         accès, dans un délai raisonnable, aux informations et fonctionnalités
