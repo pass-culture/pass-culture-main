@@ -2,6 +2,7 @@ import datetime
 import enum
 import logging
 import typing
+from dataclasses import dataclass
 
 import pydantic
 from pydantic import RootModel
@@ -54,6 +55,10 @@ class SettlementListQueryModel(HttpQueryParamsModel):
     name_search: str | None = pydantic.Field(default=None, min_length=1)
 
 
+class GetRejectedBankAccountsQueryModel(HttpQueryParamsModel):
+    offerer_id: int
+
+
 # Response Models
 
 
@@ -86,21 +91,28 @@ class SettlementDisplayedStatus(enum.Enum):
     REJECTED_SOLVED = "REJECTED_SOLVED"
 
 
-def _get_settlement_data(
-    settlement: models.Settlement,
-) -> tuple[SettlementDisplayedStatus, list[models.Settlement]]:
-    """
-    Return the settlement displayed status and the settlements that "resolve" the current one
-    i.e that includes its invoices when the current settlement is rejected
+@dataclass
+class SettlementData:
+    displayed_status: SettlementDisplayedStatus
+    resolving_settlements: list[models.Settlement]
+    detached_venues: list[offerers_models.Venue]
 
+
+def get_settlement_data(settlement: models.Settlement) -> SettlementData:
+    """
     Note: when a settlement is rejected, the corresponding bank account becomes invalid and the venues are detached from the bank account
 
-    The settlement displayed status is:
-
+    displayed_status is:
     - EXECUTED = the settlement is not rejected
+    - REJECTED_SOLVED = the settlement is rejected and the invoices are linked to a new (non-rejected) settlement
     - REJECTED_UNRESOLVED = the settlement is rejected and the venues previously linked to the bank account are not linked to another bank account
     - REJECTED_PROCESSED = the settlement is rejected and the venues are linked to another bank account
-    - REJECTED_SOLVED = the settlement is rejected, the venues are linked to another bank account and the invoices are linked to a new (non-rejected) settlement
+
+    resolving_settlements are the settlements that "resolve" the current one, i.e that include its invoices
+    (filled only when displayed_status is REJECTED_SOLVED)
+
+    detached_venues are the venues previously linked to the settlement bank account and that are not currently linked to another account
+    (filled only when displayed_status is REJECTED_UNRESOLVED)
 
     Note: this "python-side" processing trades efficiency for clarity
     If a performance issue appears, the logic can be translated in SQL
@@ -108,15 +120,11 @@ def _get_settlement_data(
     now = get_naive_utc_now()
 
     if settlement.status != models.SettlementStatus.REJECTED:
-        return SettlementDisplayedStatus.EXECUTED, []
+        return SettlementData(
+            displayed_status=SettlementDisplayedStatus.EXECUTED, resolving_settlements=[], detached_venues=[]
+        )
 
-    # check that all detached venues are linked to another bank account
-    detached_venues = [link.venue for link in settlement.bankAccount.venueLinks if not link.is_active_at(now)]
-    one_venue_not_attached = any(venue.current_bank_account_link is None for venue in detached_venues)
-
-    if one_venue_not_attached:
-        return SettlementDisplayedStatus.REJECTED_UNRESOLVED, []
-
+    # check if the rejected settlement invoices have been paid by another settlement
     resolving_settlements = []
     for invoice in settlement.invoices:
         resolving_settlement = next(
@@ -126,12 +134,30 @@ def _get_settlement_data(
         if resolving_settlement:
             resolving_settlements.append(resolving_settlement)
         else:
-            # the invoice is not linked to any valid settlement
-            return SettlementDisplayedStatus.REJECTED_PROCESSED, []
+            # the invoice is not linked to any valid settlement -> the settlement will not be "solved"
+            break
 
-    # all venues are linked to a valid bank account
-    # all invoices are linked to a valid settlement
-    return SettlementDisplayedStatus.REJECTED_SOLVED, resolving_settlements
+    if len(resolving_settlements) == len(settlement.invoices):
+        # all invoices are linked to a valid settlement
+        return SettlementData(
+            displayed_status=SettlementDisplayedStatus.REJECTED_SOLVED,
+            resolving_settlements=resolving_settlements,
+            detached_venues=[],
+        )
+
+    # check that all detached venues are linked to another bank account
+    detached_venues = settlement.bankAccount.get_detached_venues_at(now)
+    if detached_venues:
+        return SettlementData(
+            displayed_status=SettlementDisplayedStatus.REJECTED_UNRESOLVED,
+            resolving_settlements=[],
+            detached_venues=detached_venues,
+        )
+
+    # all venues are linked to a valid bank account, but an invoice is not yet processed
+    return SettlementData(
+        displayed_status=SettlementDisplayedStatus.REJECTED_PROCESSED, resolving_settlements=[], detached_venues=[]
+    )
 
 
 class SettlementResponseModel(HttpBodyModel):
@@ -153,8 +179,8 @@ class SettlementResponseModel(HttpBodyModel):
             reverse=True,
         )
 
-        status, resolving_settlements = _get_settlement_data(settlement)
-        resolved_by = {s.batch.get_displayed_name() for s in resolving_settlements}
+        settlement_data = get_settlement_data(settlement)
+        resolved_by = {s.batch.get_displayed_name() for s in settlement_data.resolving_settlements}
 
         return cls(
             id=settlement.id,
@@ -162,7 +188,7 @@ class SettlementResponseModel(HttpBodyModel):
             date=settlement.batch.dateValidated.date() if settlement.batch.dateValidated else None,
             amount=float(-cents_to_full_unit(settlement.amount)),
             bank_account=settlement.bankAccount.label,
-            status=status,
+            status=settlement_data.displayed_status,
             invoices=[InvoiceResponseV2Model.build(invoice) for invoice in invoices],
             resolved_by=sorted(resolved_by),
         )
@@ -190,6 +216,10 @@ class ManagedVenue(HttpBodyModel):
     state: offerers_models.VenueState | None
 
 
+def _obfuscate_iban(iban: str) -> str:
+    return f"XXXX XXXX XXXX {iban[-4:]}"
+
+
 class BankAccountResponseModel(HttpBodyModel):
     id: int
     is_active: bool
@@ -203,7 +233,39 @@ class BankAccountResponseModel(HttpBodyModel):
     @pydantic.field_validator("iban", mode="after")
     @classmethod
     def obfuscate_iban(cls, iban: str) -> str:
-        return f"XXXX XXXX XXXX {iban[-4:]}"
+        return _obfuscate_iban(iban)
+
+
+class DetachedVenueResponseModel(HttpBodyModel):
+    id: int
+    publicName: str
+
+
+class RejectedBankAccountResponseModel(HttpBodyModel):
+    id: int
+    label: str
+    obfuscatedIban: str
+    rejectedSettlementLabel: str
+    detachedVenues: list[DetachedVenueResponseModel]
+
+    @classmethod
+    def build(
+        cls,
+        bank_account: models.BankAccount,
+        rejected_settlement_label: str,
+        detached_venues: list[offerers_models.Venue],
+    ) -> typing.Self:
+        return cls(
+            id=bank_account.id,
+            label=bank_account.label,
+            obfuscatedIban=_obfuscate_iban(bank_account.iban),
+            rejectedSettlementLabel=rejected_settlement_label,
+            detachedVenues=[DetachedVenueResponseModel.model_validate(venue) for venue in detached_venues],
+        )
+
+
+class RejectedBankAccountsResponseModel(RootModel):
+    root: list[RejectedBankAccountResponseModel]
 
 
 class HasInvoiceResponseModel(HttpBodyModel):

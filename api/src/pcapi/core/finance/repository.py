@@ -663,12 +663,11 @@ def get_settlements_query(
         .options(
             # load the bank account
             sa_orm.contains_eager(models.Settlement.bankAccount).options(
-                sa_orm.load_only(models.BankAccount.label),
+                sa_orm.load_only(models.BankAccount.label, models.BankAccount.iban),
                 # and its links
                 sa_orm.selectinload(models.BankAccount.venueLinks)
                 # for each link, load its venue and the venue links
                 .joinedload(offerers_models.VenueBankAccountLink.venue)
-                .load_only(offerers_models.Venue.id)
                 .selectinload(offerers_models.Venue.bankAccountLinks),
             ),
             # load the settlement batch

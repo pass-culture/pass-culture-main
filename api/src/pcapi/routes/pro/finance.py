@@ -131,3 +131,53 @@ def get_combined_invoices(query: finance_serialize.GetCombinedInvoicesQueryModel
         return pdf.merge_pdf_files(invoice_pdf_urls)
     except FileNotFoundError as exc:
         raise ApiErrors({"invoice": f"Failed to fetch invoice PDF from url: {exc}"}, status_code=424)
+
+
+def _get_unresolved_settlements_and_detached_venues(
+    offerer_id: int,
+) -> list[tuple[models.Settlement, list[offerers_models.Venue]]]:
+    rejected_settlements = repository.get_settlements_query(offerer_id=offerer_id).filter(
+        models.Settlement.status == models.SettlementStatus.REJECTED
+    )
+
+    bank_account_ids = set()
+    settlements_and_venues = []
+    for settlement in rejected_settlements:
+        settlement_data = finance_serialize.get_settlement_data(settlement)
+
+        # we only want the REJECTED_UNRESOLVED settlements, i.e when some venues need to be re-attached to a bank account
+        if settlement_data.displayed_status != finance_serialize.SettlementDisplayedStatus.REJECTED_UNRESOLVED:
+            continue
+
+        # keep only the first settlement for each bank account
+        if settlement.bankAccountId in bank_account_ids:
+            continue
+
+        if settlement_data.detached_venues:
+            bank_account_ids.add(settlement.bankAccountId)
+            settlements_and_venues.append((settlement, settlement_data.detached_venues))
+
+    return settlements_and_venues
+
+
+@pro_blueprint.route("/finance/rejected-bank-accounts", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(response_model=finance_serialize.RejectedBankAccountsResponseModel, api=blueprint.pro_schema)
+def get_rejected_bank_accounts(
+    query: finance_serialize.GetRejectedBankAccountsQueryModel,
+) -> finance_serialize.RejectedBankAccountsResponseModel:
+    rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
+
+    settlements_and_venues = _get_unresolved_settlements_and_detached_venues(query.offerer_id)
+
+    return finance_serialize.RejectedBankAccountsResponseModel(
+        [
+            finance_serialize.RejectedBankAccountResponseModel.build(
+                bank_account=settlement.bankAccount,
+                rejected_settlement_label=settlement.batch.get_displayed_name(),
+                detached_venues=venues,
+            )
+            for settlement, venues in settlements_and_venues
+        ]
+    )
