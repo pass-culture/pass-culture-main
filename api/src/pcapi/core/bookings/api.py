@@ -1624,6 +1624,7 @@ def move_booking(booking: models.Booking, destination_venue_id: int) -> None:
 
     destination_venue = (
         db.session.query(offerers_models.Venue)
+        .join(offerers_models.Venue.managingOfferer)
         .filter(
             offerers_models.Venue.id == destination_venue_id,
             offerers_models.Venue.state.is_distinct_from(offerers_models.VenueState.CLOSING),
