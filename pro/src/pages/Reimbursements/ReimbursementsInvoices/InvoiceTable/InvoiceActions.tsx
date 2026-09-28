@@ -5,6 +5,10 @@ import type { InvoiceResponseV2Model } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import {
+  TABLET_MEDIA_QUERY,
+  useMediaQuery,
+} from '@/commons/hooks/useMediaQuery'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadFile } from '@/commons/utils/downloadFile'
 import { Button } from '@/design-system/Button/Button'
@@ -23,26 +27,19 @@ import {
   DOWNLOAD_INVOICE_LABEL,
   DOWNLOAD_REIMBURSEMENTS_LABEL,
 } from '../constants'
-import styles from './InvoiceActions.module.scss'
-
-export const InvoiceActionVariant = {
-  DROPDOWN: 'DROPDOWN',
-  BUTTONS: 'BUTTONS',
-} as const
-
-export type InvoiceActionVariant = keyof typeof InvoiceActionVariant
 
 type InvoiceActionsProps = {
   invoice: InvoiceResponseV2Model
-  variant?: InvoiceActionVariant
+  portalContainer?: HTMLElement | null
 }
 
 export function InvoiceActions({
   invoice,
-  variant = InvoiceActionVariant.DROPDOWN,
+  portalContainer,
 }: Readonly<InvoiceActionsProps>) {
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
+  const isTabletOrSmaller = useMediaQuery(TABLET_MEDIA_QUERY)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -83,25 +80,6 @@ export function InvoiceActions({
     }
   }
 
-  if (variant === InvoiceActionVariant.BUTTONS) {
-    return (
-      <div className={styles['invoice-action-buttons']}>
-        <Button
-          label={DOWNLOAD_INVOICE_LABEL}
-          onClick={() => downloadPDFFile(invoice.url)}
-          variant={ButtonVariant.SECONDARY}
-          color={ButtonColor.NEUTRAL}
-        />
-        <Button
-          label={DOWNLOAD_REIMBURSEMENTS_LABEL}
-          onClick={() => downloadCSVFile(invoice.reference)}
-          variant={ButtonVariant.SECONDARY}
-          color={ButtonColor.NEUTRAL}
-        />
-      </div>
-    )
-  }
-
   return (
     <Dropdown
       label="Télécharger"
@@ -132,8 +110,9 @@ export function InvoiceActions({
       }
       open={isOpen}
       onOpenChange={setIsOpen}
-      side="right"
-      align="start"
+      side={isTabletOrSmaller ? 'bottom' : 'right'}
+      align={isTabletOrSmaller ? 'center' : 'start'}
+      portalContainer={portalContainer}
     />
   )
 }

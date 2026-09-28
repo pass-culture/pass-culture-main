@@ -10,9 +10,16 @@ import { SettlementRowInvoicesModal } from './SettlementRowInvoicesModal'
 vi.mock(
   '@/pages/Reimbursements/ReimbursementsInvoices/InvoiceTable/InvoiceActions',
   () => ({
-    InvoiceActionVariant: { BUTTONS: 'BUTTONS' },
-    InvoiceActions: ({ invoice }: { invoice: InvoiceResponseV2Model }) => (
-      <button type="button">{`Télécharger ${invoice.reference}`}</button>
+    InvoiceActions: ({
+      invoice,
+      portalContainer,
+    }: {
+      invoice: InvoiceResponseV2Model
+      portalContainer?: HTMLElement | null
+    }) => (
+      <button type="button" data-portal-container={portalContainer?.tagName}>
+        {`Télécharger ${invoice.reference}`}
+      </button>
     ),
   })
 )
@@ -88,6 +95,9 @@ describe('<SettlementRowInvoicesModal />', () => {
     expect(
       screen.getByRole('button', { name: 'Télécharger INV-101' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Télécharger INV-101' })
+    ).toHaveAttribute('data-portal-container', 'DIALOG')
   })
 
   it('should render singular description when invoicesCount is 1', () => {
