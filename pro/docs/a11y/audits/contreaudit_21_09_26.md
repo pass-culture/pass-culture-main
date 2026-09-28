@@ -1,6 +1,6 @@
 <details>
 
-<summary> ⏳ Critère 1.2 - RGAA - Chaque image de décoration sans légende est-elle correctement ignorée par les technologies d'assistance ?</summary>
+<summary> 🟢🟢 Critère 1.2 - RGAA - Chaque image de décoration sans légende est-elle correctement ignorée par les technologies d'assistance ?</summary>
 
 **RAWeb/RGAA** : [Critère 1.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-1-2)
 **Ticket** : [PC-42844](https://passculture.atlassian.net/browse/PC-42844)
@@ -29,9 +29,8 @@ Corrections :
 - Dans les listes d'offres sur la page d'accueil (offres collectives et individuelles) : les thumbnails ont maintenant un `alt="" aria-hidden="true"`
 - Dans toute l'app : ajout de `aria-hidden="true"` sur les `<img alt="" />`
 
-
 **Retours audit** 🔥  
-Texte
+Tout est bien corrigé.
 
 </details>
 
@@ -39,7 +38,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 1.3 - Pour chaque image porteuse d'information ayant une alternative textuelle, cette alternative est-elle pertinente ?</summary>
+<summary> 🔴🟢 Critère 1.3 - Pour chaque image porteuse d'information ayant une alternative textuelle, cette alternative est-elle pertinente ?</summary>
 
 **RAWeb** : [Critère 1.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-1-3)
 **Ticket** : [PC-42845](https://passculture.atlassian.net/browse/PC-42845)  
@@ -57,7 +56,10 @@ Au moins une alternative d'image porteuse d'information n'est pas pertinente.
 - Modifier le aria-label afin de décrire plus précisément la fonctionnalité réelle du composant par "Editeur de cadrage et de zoom de l'image".
 
 **Retours audit** 🔥  
-Texte
+
+La correction est OK, l'étiquette "et de zoom" n'est pas forcément vraie sur le composant, cette partie étant gérée en dehors du canvas, de plus au temps pour moi, j'ai oublié de demander une propriété role="img" sur l'élément <canvas>.
+
+Nouvelle NC : à l'étape "Aperçu" l'image est une image légendée et doit donc avoir une alternative renseignée, selon l'image et le contexte elle peut être générique (ex. "Illustration", "Affiche" etc.)
 
 </details>
 
@@ -65,7 +67,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 3.1 - RGAA - Dans chaque page web, l'information ne doit pas être donnée uniquement par la couleur ?
+<summary> 🟢🟢 Critère 3.1 - RGAA - Dans chaque page web, l'information ne doit pas être donnée uniquement par la couleur ?
 </summary>
 
 **RAWeb/RGAA** : [Critère 3.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-3-1)
@@ -91,8 +93,8 @@ Au moins une information donnée uniquement par la couleur n'a pas d'alternative
 - Ajout d'une icone croix / check pour signifier la validation ou non du critère
 - Epaississement de la bordure dans le cas "sélectionné", pour renforcer la distinction avec le cas "non sélectionné", comme conseillé par mail.
 
-**Retours audit** 🔥  
-Texte
+**Retours audit** 🔥 
+Tout est bien corrigé.
 
 </details>
 
@@ -100,7 +102,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 5.3 - RGAA - Pour chaque tableau de mise en forme, le contenu linéarisé reste-t-il compréhensible ?</summary>
+<summary> 🟢🟢 Critère 5.3 - RGAA - Pour chaque tableau de mise en forme, le contenu linéarisé reste-t-il compréhensible ?</summary>
 
 **RAWeb** : [Critère 5.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-3)
 **Ticket** : [PC-42847](https://passculture.atlassian.net/browse/PC-42847)  
@@ -116,7 +118,7 @@ Les informations ne se présentent pas dans un ordre logique de lecture pour au 
 - Pour le tableau, ajouter le role="presentation" sur la balise `<table>`.
 
 **Retours audit** 🔥  
-TBD
+Tout est bien corrigé.
 
 </details>
 
@@ -124,7 +126,7 @@ TBD
 
 <details>
 
-<summary> ⏳ Critère 5.4 - RGAA - Pour chaque tableau de données ayant un titre, le titre est-il correctement associé au tableau de données ?</summary>
+<summary> 🟢🟢 Critère 5.4 - RGAA - Pour chaque tableau de données ayant un titre, le titre est-il correctement associé au tableau de données ?</summary>
 
 **RAWeb/RGAA** : [Critère 5.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-4)
 **Ticket** : [PC-42848](https://passculture.atlassian.net/browse/PC-42848)
@@ -147,8 +149,8 @@ Par exemple :
   - de `DownloadBookingModal`
   - de `Collaborators`
 
-**Retours audit** 🔥  
-Texte
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>
 
@@ -156,7 +158,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 5.5 - RGAA - Pour chaque tableau de données ayant un titre, celui-ci est-il pertinent ?</summary>
+<summary> 🟢🟢 Critère 5.5 - RGAA - Pour chaque tableau de données ayant un titre, celui-ci est-il pertinent ?</summary>
 
 **RAWeb** : [Critère 5.5](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-5)
 **Ticket** : [PC-42847](https://passculture.atlassian.net/browse/PC-42847)  
@@ -173,8 +175,8 @@ Au moins un titre de tableau de données n'est pas pertinent.
 **Correction** 💡  
 - Pour le tableau, ajoute un titre pertinent.
 
-**Retours audit** 🔥  
-TBD
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>
 
@@ -182,7 +184,7 @@ TBD
 
 <details>
 
-<summary> ⏳ Critère 5.7 - RGAA - Pour chaque tableau de données, la technique appropriée permettant d'associer chaque cellule avec ses en-têtes est-elle utilisée ?</summary>
+<summary> 🟢🟢 Critère 5.7 - RGAA - Pour chaque tableau de données, la technique appropriée permettant d'associer chaque cellule avec ses en-têtes est-elle utilisée ?</summary>
 
 **RAWeb** : [Critère 5.7](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-7)
 **Ticket** : [PC-42850](https://passculture.atlassian.net/browse/PC-42850)  
@@ -199,8 +201,8 @@ Les cellules de données ne sont pas correctement liées aux cellules d'en-tête
 **Correction** 💡  
 - Implémenter le tableau comme un tableau de données complexe en définissant explicitement les relations entre les cellules et leurs en-têtes.
 
-**Retours audit** 🔥  
-TBD
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>
 
@@ -208,7 +210,7 @@ TBD
 
 <details>
 
-<summary> ⏳ Critère 5.8 - RGAA - Chaque tableau de mise en forme ne doit pas utiliser d'éléments propres aux tableaux de données ?</summary>
+<summary> 🟢🟢 Critère 5.8 - RGAA - Chaque tableau de mise en forme ne doit pas utiliser d'éléments propres aux tableaux de données ?</summary>
 
 **RAWeb** : [Critère 5.8](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-8)
 **Ticket** : [PC-42847](https://passculture.atlassian.net/browse/PC-42847)  
@@ -229,8 +231,8 @@ Pour tous les tableaux de mise en forme :
 
 - Supprimer les attributs scope, headers, axis, role="rowheader", role="columnheader".
 
-**Retours audit** 🔥  
-TBD
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>
 
@@ -238,7 +240,7 @@ TBD
 
 <details>
 
-<summary> ⏳ Critère 7.1 - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+<summary> 🔴🔴 Critère 7.1 - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
 
 **RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
 **Ticket** : [PC-43630](https://passculture.atlassian.net/browse/PC-43630)  
@@ -262,7 +264,7 @@ Corrections :
 - Le focus est repositionné sur au choix l'élément précédent ou sur l'élément suivant logique, après lecture de la snackbar si il y a.
 
 **Correction** 💡  
-Texte
+Plusieurs autres corrections n'ont pas été faites (prévu).
 
 </details>
 
@@ -270,7 +272,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 7.5 - RGAA - Dans chaque page web, les messages de statut sont-ils correctement restitués par les technologies d'assistance ?</summary>
+<summary> 🔴🟢 Critère 7.5 - RGAA - Dans chaque page web, les messages de statut sont-ils correctement restitués par les technologies d'assistance ?</summary>
 
 **RAWeb** : [Critère 7.5](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-5)
 **Ticket** : [PC-42853](https://passculture.atlassian.net/browse/PC-42853)  
@@ -297,7 +299,12 @@ P13 → Les offres réservables (collectif)
 - Ajout du rôle status aux blocs représentant des résultats de tableaux vides.
 
 **Retours audit** 🔥  
-TBD
+
+Critère partiellement corrigé. Elements non corrigés :
+
+- Un élément avec le rôle alert est bien présent pour signaler qu’un des critères de validation n’est pas respecté lors de l’import d’une image. Cependant, cet attribut est positionné sur le conteneur regroupant l’ensemble des critères. En conséquence, l’intégralité de la liste des critères est annoncée par les technologies d’assistance, y compris ceux qui ne sont pas concernés par l’erreur.
+- Le message "Votre image à bien été importée". (idem "Brouillon sauvegardé dans la liste des offres")
+- L'ajout d'une vidéo à l'étape « Image et vidéo » repositionne le focus en haut de la page, sans justification, obligeant l'utilisateur à parcourir de nouveau le contenu pour reprendre sa navigation.
 
 </details>
 
@@ -305,7 +312,7 @@ TBD
 
 <details>
 
-<summary> ⏳ Critère 8.9 - Dans chaque page web, les balises ne doivent pas être utilisées uniquement à des fins de présentation ?</summary>
+<summary> 🔴🟢 Critère 8.9 - Dans chaque page web, les balises ne doivent pas être utilisées uniquement à des fins de présentation ?</summary>
 
 **RAWeb/RGAA** : [Critère 8.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-8-9)
 **Tickets** : [PC-42990](https://passculture.atlassian.net/browse/PC-42990) & [PC-42989](https://passculture.atlassian.net/browse/PC-42989) & [PC-42854](https://passculture.atlassian.net/browse/PC-42854)  
@@ -381,7 +388,10 @@ P13 → Les offres réservables (collectif)
 Remplacer les balises `<div>` et `<span>` par des `<p>` ou entourez le texte avec des balises `<p>`.
 
 **Retours audit** 🔥  
-Texte
+Critère partiellement corrigé. Elements non conformes :
+
+- Les textes de la fenêtre "Profil"
+- Les textes de l'aperçu dans l'app à l'étape "Récapitulatif" sont uniquement structurés avec des <div>.
 
 </details>
 
@@ -389,7 +399,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critères 9.1 - RGAA - Dans chaque page web, l'information est-elle structurée par l'utilisation appropriée de titres ?</summary>
+<summary> 🟢🟢 Critères 9.1 - RGAA - Dans chaque page web, l'information est-elle structurée par l'utilisation appropriée de titres ?</summary>
 
 **RAWeb/RGAA** : [Critère 9.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-1)
 **Ticket** : [PC-42855](https://passculture.atlassian.net/browse/PC-42855)  
@@ -411,8 +421,8 @@ Dans la page https://integration.passculture.pro/ecoconception/declaration :
 
 - Transformation des textes servant d’intitulés de sections en véritables titres HTML avec le niveau de hiérarchie adapté (`<h4>` dans ces cas).
 
-**Retours audit** 🔥  
-Texte
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>
 
@@ -420,7 +430,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 9.2 - RGAA - Dans chaque page web, la structure du document est-elle cohérente ?</summary>
+<summary> 🔴🟢 Critère 9.2 - RGAA - Dans chaque page web, la structure du document est-elle cohérente ?</summary>
 
 **RAWeb/RGAA** : [Critère 9.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-2)
 **Ticket** : [PC-42856](https://passculture.atlassian.net/browse/PC-42856)
@@ -449,7 +459,7 @@ Par exemple :
 - Éviter les wrappers génériques pouvant générer des regroupements implicites dans les technologies d’assistance.
 
 **Retours audit** 🔥  
-Texte
+Correction OK sur la page d'inscription, non effectuée sur la page de connexion (prévu).
 
 </details>
 
@@ -457,7 +467,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critères 9.3 - RGAA - Dans chaque page web, chaque liste est-elle correctement structurée ?</summary>
+<summary> 🟢🟢 Critères 9.3 - RGAA - Dans chaque page web, chaque liste est-elle correctement structurée ?</summary>
 
 **RAWeb/RGAA** : [Critère 9.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-3)
 **Ticket** : [PC-42855](https://passculture.atlassian.net/browse/PC-42855)  
@@ -479,8 +489,8 @@ Dans la page https://integration.passculture.pro/ecoconception/declaration :
 
 - On restructure tous le document pour que les critères soient sous forme de liste (`<ul>/<li>`). 
 
-**Retours audit** 🔥  
-Texte
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>
 
@@ -488,7 +498,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 10.4 - RGAA - Dans chaque page web, le texte reste-t-il lisible lorsque la taille des caractères est augmentée jusqu'à 200%, au moins ?</summary>
+<summary> 🔴🟢 Critère 10.4 - RGAA - Dans chaque page web, le texte reste-t-il lisible lorsque la taille des caractères est augmentée jusqu'à 200%, au moins ?</summary>
 
 **RAWeb/RGAA** : [Critère X.X](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-X-X)
 **Ticket** : [PC-XXXXX](https://passculture.atlassian.net/browse/PC-XXXXX)  
@@ -506,7 +516,7 @@ P02 → Inscription et validation
 - Modifier les directives CSS pour rendre tous les contenus lisibles à 200%.
 
 **Retours audit** 🔥  
-Texte
+Correction OK sur la page d'inscription, non effectuée sur la page de connexion (prévu).
 
 </details>
 
@@ -514,7 +524,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critères 10.6 - RGAA - Dans chaque page web, chaque lien dont la nature n'est pas évidente est-il visible par rapport au texte environnant ?</summary>
+<summary> 🟢🟢 Critères 10.6 - RGAA - Dans chaque page web, chaque lien dont la nature n'est pas évidente est-il visible par rapport au texte environnant ?</summary>
 
 **RAWeb/RGAA** : [Critère 10.6](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-6)
 **Ticket** : [PC-42855](https://passculture.atlassian.net/browse/PC-42855)  
@@ -536,8 +546,8 @@ Dans les pages https://integration.passculture.pro/ecoconception/declaration et 
 
 - On change les liens inline `Button` en `Link`, ce qui ajoute un soulignement et une couleur.
 
-**Retours audit** 🔥  
-Texte
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>
 
@@ -545,7 +555,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 10.9 - RGAA - Dans chaque page web, l'information ne doit pas être donnée uniquement par la forme, taille ou position ?</summary>
+<summary> 🔴🟢 Critère 10.9 - RGAA - Dans chaque page web, l'information ne doit pas être donnée uniquement par la forme, taille ou position ?</summary>
 
 **RAWeb** : [Critère 10.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-9)
 **Ticket** : [PC-42860](https://passculture.atlassian.net/browse/PC-42860)  
@@ -562,7 +572,11 @@ P06 → Création offre individuelle (7 étapes et confirmation)
 - Ajout de l'aria-label sur les liens du nouveau composant DS Stepper + un aria-current="step" sur la balise `<li>` contenant le lien.
 
 **Retours audit** 🔥  
-TBD
+
+Critère partiellement corrigé (aria-current="step" doit être positionné sur le composant et non sur l'élément de liste).
+
+- L'indication « étape en cours », positionnée hors écran, est placée en dehors de la balise <a>. Elle n'est donc pas associée au lien et risque de ne pas être restituée lors d'une navigation par les liens
+
 
 </details>
 
@@ -570,7 +584,7 @@ TBD
 
 <details>
 
-<summary> ⏳ Critère 11.1 - RGAA - Chaque champ de formulaire a-t-il une étiquette ?</summary>
+<summary> 🟢🟢 Critère 11.1 - RGAA - Chaque champ de formulaire a-t-il une étiquette ?</summary>
 
 **RAWeb/RGAA** : [Critère 11.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-1)
 **Ticket** : [PC-42861](https://passculture.atlassian.net/browse/PC-42861)  
@@ -595,8 +609,8 @@ Par exemple :
 - Séparation de la légende en deux label "Date de début" et "Date de fin" sur le composant PeriodSelector. 
 - Ajout d'un label sur le champs "Type de période" dans la page Réservation (en plus des deux labels ajoutés ci dessus)
 
-**Retours audit** 🔥  
-Texte
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>
 
@@ -604,7 +618,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 11.2 - RGAA - Chaque étiquette associée à un champ de formulaire est-elle pertinente ?</summary>
+<summary> 🟢🟢 Critère 11.2 - RGAA - Chaque étiquette associée à un champ de formulaire est-elle pertinente ?</summary>
 
 **RAWeb/RGAA** : [Critère 11.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-2)
 **Ticket** : [PC-42862](https://passculture.atlassian.net/browse/PC-42862) & [PC-42957](https://passculture.atlassian.net/browse/PC-42957)  
@@ -643,8 +657,8 @@ P06 → Création offre individuelle (7 étapes et confirmation)
 
 - Fournir une restitution plus explicite de la valeur du zoom, aussi bien visuelle que pour les technologies d’assistance (par exemple en pourcentage : 100 %, 105 %, etc.).
 
-**Retours audit** 🔥  
-Texte
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>
 
@@ -652,7 +666,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 11.6 - RGAA - Dans chaque formulaire, chaque regroupement de champs de formulaire a-t-il une légende ?</summary>
+<summary> 🔴🟢 Critère 11.6 - RGAA - Dans chaque formulaire, chaque regroupement de champs de formulaire a-t-il une légende ?</summary>
 
 **RAWeb/RGAA** : [Critère 11.6](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-6)
 **Ticket** : [PC-42863](https://passculture.atlassian.net/browse/PC-42863)  
@@ -672,7 +686,10 @@ Au moins un regroupement de champs ne possède pas de légende :
 - Utilisation de l'élément <legend> pour donner un titre aux regroupements créés avec <fieldset>.
 
 **Retours audit** 🔥  
-Texte
+
+Critère partiellement corrigé :
+
+- Le regroupement des champs de date (dans les filtres) n'a plus de légende (précédemment nous avions "Période de l'évènement." qui a été supprimé).
 
 </details>
 
@@ -680,7 +697,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 11.10 - RGAA - Dans chaque formulaire, le contrôle de saisie est-il utilisé de manière pertinente ?</summary>
+<summary> 🟢🟢 Critère 11.10 - RGAA - Dans chaque formulaire, le contrôle de saisie est-il utilisé de manière pertinente ?</summary>
 
 **RGAA** : [Critère 11.10](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-10)
 **Ticket** : [PC-42864](https://passculture.atlassian.net/browse/PC-42864)  
@@ -697,8 +714,8 @@ Les messages d'indication ne sont pas correctement reliés à leur champ respect
 **Correction** 💡  
 Relier tous les messages d'aides qui apparaissent à proximité des champs par la relation aria-describedby="id".
 
-**Retours audit** 🔥  
-Texte
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>
 
@@ -706,7 +723,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 15.3 - RAWeb - Le contenu généré par chaque transformation des contenus est-il conforme aux règles d’accessibilité numérique ?</summary>
+<summary> 🔴🟢 Critère 15.3 - RAWeb - Le contenu généré par chaque transformation des contenus est-il conforme aux règles d’accessibilité numérique ?</summary>
 
 **RAWeb/RGAA** : [Critère 15.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-15-3)
 **Ticket** : [PC-42867](https://passculture.atlassian.net/browse/PC-42867)  
@@ -730,7 +747,8 @@ Les informations d'accessibilité définies depuis l'outil d'édition ne sont pa
 - S’assurer que les informations renseignées dans l’outil d’édition sont conservées et correctement restituées dans le contenu publié.
 
 **Retours audit** 🔥  
-Texte
+
+Correction du critère OK sur la partie image (décrite ici), non effectuée sur la partie vidéo (prévu).
 
 </details>
 
@@ -738,7 +756,7 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 16.2 - RAWeb - Le service d’assistance répond aux besoins de communication des personnes handicapées directement ou par l’intermédiaire d’un service de relais ?</summary>
+<summary> 🟢🟢 Critère 16.2 - RAWeb - Le service d’assistance répond aux besoins de communication des personnes handicapées directement ou par l’intermédiaire d’un service de relais ?</summary>
 
 **RAWeb** : [Critère 16.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-16-2)
 **Ticket** : [PC-42868](https://passculture.atlassian.net/browse/PC-42868)  
@@ -752,7 +770,7 @@ Le support d'accessibilité ne répond pas aux emails envoyés à l'adresse four
 **Correction** 💡  
 L'adresse était inaccessible par le support - nous y avons maintenant l'accès. 
 
-**Retours audit** 🔥  
-TBD
+**Retours audit** 🔥
+Tout est bien corrigé.
 
 </details>

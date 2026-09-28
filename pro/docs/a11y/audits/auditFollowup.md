@@ -1,9 +1,9 @@
 # 🌈 Suivi des corrections d’accessibilité
 
-| Conformité | 22/07/2026 |
-| ---------- | ---------- |
-| RGAA 4.1   | 67.65%     |
-| RAWeb 1.1  | 64.79%     |
+| Conformité | 22/07/2026 | 25/09/2026 |
+| ---------- | ---------- | ---------- |
+| RGAA 4.1   | 67.65%     | 82.86%     |
+| RAWeb 1.1  | 64.79%     | 80.82%     |
 
 <br>
 
@@ -15,7 +15,7 @@
 🟠 : partiellement accessible
 
 - **P01** : Tuto de bienvenue 🟠
-- **P02** : Inscription et validation 🟠
+- **P02** : Inscription et validation 🟢
 - **P03** : Connexion 🟠
 - **P04** : Inscription structure 🟠
 - **P05** : Création offre réservable 🟠
@@ -34,6 +34,7 @@
 
 ## 📆 Recettes
 
+- [25/09/2026](contreaudit_21_09_26.md)
 - [following](following.md)
 
 <br>

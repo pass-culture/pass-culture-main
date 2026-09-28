@@ -21,6 +21,27 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 9.4 - Dans chaque page web, chaque citation est-elle correctement indiquée ?</summary>
+
+**RAWeb/RGAA** : [Critère 9.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-4)
+**Ticket** : [PC-43883](https://passculture.atlassian.net/browse/PC-43883)  
+**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+
+**Problème** 😱  
+Texte
+
+**Correction** 💡  
+Texte
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 7.1 - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
 
 **RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
