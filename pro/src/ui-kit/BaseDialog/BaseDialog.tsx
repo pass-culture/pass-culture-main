@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useImperativeHandle, useRef } from 'react'
 
 import styles from './BaseDialog.module.scss'
 
@@ -30,6 +30,7 @@ export interface BaseDialogProps {
    * override that target (e.g. a dropdown trigger instead of a menu item).
    */
   refToFocusOnClose?: React.RefObject<HTMLElement | null>
+  ref?: React.Ref<HTMLDialogElement>
   /**
    * When true, marks this dialog as an eligible target for the snackbar portal.
    * Only set on DetailedModal — not on SimpleModal / navigation guard dialogs.
@@ -53,8 +54,11 @@ export const BaseDialog = ({
   children,
   refToFocusOnClose,
   isSnackBarPortalTarget = false,
+  ref,
 }: BaseDialogProps): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null)
+
+  useImperativeHandle(ref, () => dialogRef.current as HTMLDialogElement, [])
 
   // Synchronizes React's open/closed state with the imperative APIs of the <dialog> tag
   useEffect(() => {
