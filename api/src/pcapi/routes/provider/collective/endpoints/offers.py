@@ -196,7 +196,7 @@ def post_collective_offer_public(
     except exceptions.CulturalPartnerNotFoundException:
         raise api_errors.ApiErrors(errors={"global": ["Non éligible pour les offres collectives."]}, status_code=403)
     except offerers_exceptions.VenueNotFoundException:
-        raise api_errors.ApiErrors(errors={"venueId": ["Ce lieu n'à pas été trouvé."]}, status_code=404)
+        raise api_errors.ApiErrors(errors={"venueId": ["Cette structure n'a pas été trouvée."]}, status_code=404)
 
     # institution errors
     except exceptions.EducationalInstitutionUnknown:
@@ -323,7 +323,7 @@ def patch_collective_offer_public(
     if new_values.get("venueId") and new_values["venueId"] != offer.venueId:
         venue = offerers_repository.find_venue_and_provider_by_id(new_values["venueId"])
         if not venue:
-            raise api_errors.ApiErrors(errors={"venueId": ["Ce lieu n'a pas été trouvé."]}, status_code=404)
+            raise api_errors.ApiErrors(errors={"venueId": ["Cette structure n'a pas été trouvée."]}, status_code=404)
 
         list_venueproviders = [
             venue_provider
@@ -332,14 +332,14 @@ def patch_collective_offer_public(
         ]
         if not list_venueproviders:
             raise api_errors.ApiErrors(
-                errors={"venueId": ["aucun lieu de fournisseur n'a été trouvé."]}, status_code=403
+                errors={"venueId": ["Aucune structure de fournisseur n'a été trouvée."]}, status_code=403
             )
 
         try:
             educational_api_offer.move_collective_offer_venue(offer, venue)
         except offers_exceptions.MoveOfferBaseException:
             raise api_errors.ApiErrors(
-                errors={"venueId": ["L'offre ne peut pas être déplacée sur ce lieu."]}, status_code=400
+                errors={"venueId": ["L'offre ne peut pas être déplacée sur cette structure."]}, status_code=400
             )
 
     # validate image_data
@@ -426,7 +426,7 @@ def patch_collective_offer_public(
     except exceptions.CulturalPartnerNotFoundException:
         raise api_errors.ApiErrors(errors={"global": ["Non éligible pour les offres collectives."]}, status_code=403)
     except offerers_exceptions.VenueNotFoundException:
-        raise api_errors.ApiErrors(errors={"venueId": ["Ce lieu n'a pas été trouvé."]}, status_code=404)
+        raise api_errors.ApiErrors(errors={"venueId": ["Cette structure n'a pas été trouvée."]}, status_code=404)
 
     # institution errors
     except exceptions.EducationalInstitutionIsNotActive:

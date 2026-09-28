@@ -34,9 +34,9 @@ def create_special_event_from_typeform(
     if venue_id:
         venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
         if not venue:
-            raise ValueError(f"Le lieu {venue_id} n'existe pas")
+            raise ValueError(f"La structure {venue_id} n'existe pas")
         if offerer_id and offerer_id != venue.managingOffererId:
-            raise ValueError(f"Le lieu {venue_id} n'appartient pas à la structure {offerer_id}")
+            raise ValueError(f"La structure {venue_id} n'appartient pas à l'entité juridique {offerer_id}")
         if not offerer_id:
             offerer_id = venue.managingOffererId
     elif offerer_id:

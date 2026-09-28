@@ -32,7 +32,7 @@ class CustomReimbursementRuleValidationTest:
         rule = self._make_rule(venueId=venue.id)
         with pytest.raises(exceptions.NotPricingPointVenueForReimbursementRule) as exc:
             validation.validate_reimbursement_rule(rule)
-            assert str(exc) == f"Le lieu {venue.id} - {venue.name} doit être un point de valorisation."
+            assert str(exc) == f"La structure {venue.id} - {venue.name} doit être un point de valorisation."
 
     def test_check_subcategories(self):
         rule = self._make_rule(subcategories=[])

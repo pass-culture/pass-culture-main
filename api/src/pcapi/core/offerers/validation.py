@@ -2,7 +2,6 @@ import typing
 
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 
@@ -22,12 +21,7 @@ def check_accessibility_compliance(venue: "venue_serialize.PostVenueBodyModel") 
         venue.motor_disability_compliant,
         venue.visual_disability_compliant,
     ]:
-        raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
-
-
-def check_siret_does_not_exists(siret: str) -> None:
-    if offerers_repository.find_venue_by_siret(siret):
-        raise ApiErrors(errors={"siret": "Un lieu avec ce SIRET existe déjà"})
+        raise ApiErrors(errors={"global": ["L'accessibilité de la structure doit être définie."]})
 
 
 def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venue) -> None:
@@ -52,11 +46,11 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
         raise ApiErrors(errors={"managingOffererId": ["Vous ne pouvez pas changer la structure d'un lieu"]})
     # modifications.get("siret") may be False if there is no change (ok) OR if it has been cleared (forbidden!)
     if "siret" in modifications and not siret and "comment" not in modifications:
-        raise ApiErrors(errors={"siret": ["Vous ne pouvez pas supprimer le siret d'un lieu"]})
+        raise ApiErrors(errors={"siret": ["Vous ne pouvez pas supprimer le SIRET d'une structure"]})
     if siret:
         venue_with_same_siret = db.session.query(models.Venue).filter_by(siret=siret).one_or_none()
         if venue_with_same_siret:
-            raise ApiErrors(errors={"siret": ["Un lieu avec le même siret existe déjà"]})
+            raise ApiErrors(errors={"siret": ["Une structure avec le même SIRET existe déjà"]})
         if not siret.startswith(venue.managingOfferer.siren):
             raise ApiErrors(
                 errors={
@@ -66,13 +60,13 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
                 }
             )
     if "name" in modifications and modifications["name"] != venue.name and (siret is None or venue.siret == siret):
-        raise ApiErrors(errors={"name": ["Vous ne pouvez pas modifier la raison sociale d'un lieu"]})
+        raise ApiErrors(errors={"name": ["Vous ne pouvez pas modifier la raison sociale d'une structure"]})
     if (
         None in venue_disability_compliance
         and None in modifications_disability_compliance
         and offerers_constants.UNCHANGED not in modifications_disability_compliance
     ):
-        raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
+        raise ApiErrors(errors={"global": ["L'accessibilité de la structure doit être définie."]})
 
 
 def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_point_id: int) -> None:

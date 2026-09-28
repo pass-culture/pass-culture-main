@@ -299,7 +299,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"Le lieu {venue.id} - {venue.name} doit être un point de valorisation."
+            == f"La structure {venue.id} - {venue.name} doit être un point de valorisation."
         )
 
         assert db.session.query(finance_models.CustomReimbursementRule).count() == 0

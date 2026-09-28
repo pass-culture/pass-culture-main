@@ -231,9 +231,9 @@ def create_industrial_gdpr_users() -> None:
 
     user = _create_gdpr_user(
         users_factories.UserFactory,
-        "Email partagé avec un lieu",
+        "Email partagé avec une structure",
         THREE_YEARS_AGO - relativedelta(months=4),
-        "Utilisateur grand public dont l'email est dans un lieu, dernière connexion il y plus de 3 ans",
+        "Utilisateur grand public dont l'email est dans une structure, dernière connexion il y plus de 3 ans",
     )
     subscription_factories.BeneficiaryFraudCheckFactory.create(user=user)
     subscription_factories.BeneficiaryFraudReviewFactory.create(

@@ -119,7 +119,7 @@ class FeatureToggle(enum.Enum):
     )
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
     ENABLE_VENUE_STRICT_SEARCH = (
-        "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
+        "Active le fait d'indiquer si une structure a un moins une offre éligible lors de l'indexation (Algolia)"
     )
     ENABLE_ZENDESK_SELL_CREATION = "Activer la création de nouvelles entrées dans Zendesk Sell (structures et lieux)"
     ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"

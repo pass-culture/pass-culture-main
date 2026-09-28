@@ -26,7 +26,7 @@ def _check_reimbursement_rule_venue_has_siret(rule: models.CustomReimbursementRu
     if rule.venueId:
         venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == rule.venueId).one()
         if not venue.siret:
-            message = f"Le lieu {venue.id} - {venue.name} doit être un point de valorisation."
+            message = f"La structure {venue.id} - {venue.name} doit être un point de valorisation."
             raise exceptions.NotPricingPointVenueForReimbursementRule(message)
 
 

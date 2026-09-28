@@ -104,4 +104,4 @@ class VenueByIdTest:
 
         # Then
         assert response.status_code == 404
-        assert response.json == {"venue_id": "Aucun lieu n'existe pour ce venue_id"}
+        assert response.json == {"venue_id": "Aucune structure n'existe pour ce venue_id"}

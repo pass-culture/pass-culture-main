@@ -2401,7 +2401,7 @@ def create_from_onboarding_data(
         }
         if onboarding_data.create_venue_without_siret:
             comment_and_siret = {
-                "comment": "Lieu sans SIRET car dépend du SIRET d'un autre lieu",
+                "comment": "Structure sans SIRET car dépend du SIRET d'une autre structure",
                 "siret": None,
             }
         else:
