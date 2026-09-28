@@ -161,16 +161,19 @@ def create_rejected_settlement(user: users_models.User) -> None:
 
     # the bank account is refused and the venue link is valid until 5 days ago
     venue = offerers_factories.VenueFactory.create(
-        name="Structure pro finance 3", managingOfferer=offerer, pricing_point="self"
+        name="Structure pro finance détachée", managingOfferer=offerer, pricing_point="self"
     )
     bank_account = factories.BankAccountFactory.create(
-        label="Compte bancaire 3 refusé", offerer=offerer, status=models.BankAccountApplicationStatus.REFUSED
+        label="Compte bancaire refusé", offerer=offerer, status=models.BankAccountApplicationStatus.REFUSED
     )
     offerers_factories.VenueBankAccountLinkFactory.create(
         venue=venue,
         bankAccount=bank_account,
         timespan=[now - datetime.timedelta(days=365), now - datetime.timedelta(days=5)],
     )
+    # add valid bank accounts to test the "re-linking" of venues
+    factories.BankAccountFactory.create(label="Compte bancaire OK 1", offerer=offerer)
+    factories.BankAccountFactory.create(label="Compte bancaire OK 2", offerer=offerer)
 
     # the batch occurred 5 days ago and the settlement is rejected, in sync with the bank account status
     batch = factories.SettlementBatchFactory.create(name="VIR10", dateValidated=now - datetime.timedelta(days=5))
@@ -197,54 +200,76 @@ def create_rejected_processed_solved_settlements(user: users_models.User) -> Non
     offerer = offerers_factories.OffererFactory.create(name="Entité pro finance avec rejets traités")
     offerers_factories.UserOffererFactory.create(offerer=offerer, user=user)
 
-    # the bank account is refused and the venue link is valid until 5 days ago
-    venue = offerers_factories.VenueFactory.create(
-        name="Structure pro finance 4", managingOfferer=offerer, pricing_point="self"
+    # one bank account is refused and the venue link is valid until 5 days ago
+    first_batch_date = now - datetime.timedelta(days=5)
+    venue_1 = offerers_factories.VenueFactory.create(
+        name="Structure pro finance avec rejets résolus", managingOfferer=offerer, pricing_point="self"
     )
-    bank_account = factories.BankAccountFactory.create(
-        label="Compte bancaire 4 refusé", offerer=offerer, status=models.BankAccountApplicationStatus.REFUSED
+    bank_account_1 = factories.BankAccountFactory.create(
+        label="Compte bancaire refusé 1", offerer=offerer, status=models.BankAccountApplicationStatus.REFUSED
     )
     offerers_factories.VenueBankAccountLinkFactory.create(
-        venue=venue,
-        bankAccount=bank_account,
-        timespan=[now - datetime.timedelta(days=365), now - datetime.timedelta(days=5)],
+        venue=venue_1, bankAccount=bank_account_1, timespan=[now - datetime.timedelta(days=365), first_batch_date]
     )
 
-    # the batch occurred 5 days ago with 2 rejected settlements, in sync with the bank account status
-    batch = factories.SettlementBatchFactory.create(name="VIR11", dateValidated=now - datetime.timedelta(days=5))
-    invoice_1 = factories.InvoiceFactory.create(amount=-10000, bankAccount=bank_account, date=batch.dateValidated)
+    # one batch occurred 5 days ago with one rejected settlement, in sync with the bank account status
+    batch_1 = factories.SettlementBatchFactory.create(name="VIR11", dateValidated=first_batch_date)
+    invoice_1 = factories.InvoiceFactory.create(amount=-10000, bankAccount=bank_account_1, date=batch_1.dateValidated)
     settlement_1 = factories.SettlementFactory.create(
         status=models.SettlementStatus.REJECTED,
-        amount=-10000,
-        bankAccount=bank_account,
-        batch=batch,
+        amount=invoice_1.amount,
+        bankAccount=bank_account_1,
+        batch=batch_1,
         invoices=[invoice_1],
     )
     _generate_fake_invoice_pdfs(settlement_1)
-    invoice_2 = factories.InvoiceFactory.create(amount=-5000, bankAccount=bank_account, date=batch.dateValidated)
+
+    # one bank account is refused and the venue links are valid until 4 days go
+    second_batch_date = now - datetime.timedelta(days=4)
+    venue_2 = offerers_factories.VenueFactory.create(
+        name="Structure pro finance avec rejets traités 1", managingOfferer=offerer, pricing_point="self"
+    )
+    venue_3 = offerers_factories.VenueFactory.create(
+        name="Structure pro finance avec rejets traités 2", managingOfferer=offerer, pricing_point="self"
+    )
+    bank_account_2 = factories.BankAccountFactory.create(
+        label="Compte bancaire refusé 2", offerer=offerer, status=models.BankAccountApplicationStatus.REFUSED
+    )
+    for v in (venue_2, venue_3):
+        offerers_factories.VenueBankAccountLinkFactory.create(
+            venue=v, bankAccount=bank_account_2, timespan=[now - datetime.timedelta(days=365), second_batch_date]
+        )
+
+    # one batch occurred 4 days ago with one rejected settlement, in sync with the bank account status
+    batch_2 = factories.SettlementBatchFactory.create(name="VIR12", dateValidated=second_batch_date)
+    invoice_2 = factories.InvoiceFactory.create(amount=-8000, bankAccount=bank_account_2, date=batch_2.dateValidated)
     settlement_2 = factories.SettlementFactory.create(
         status=models.SettlementStatus.REJECTED,
-        amount=-5000,
-        bankAccount=bank_account,
-        batch=batch,
+        amount=invoice_2.amount,
+        bankAccount=bank_account_2,
+        batch=batch_2,
         invoices=[invoice_2],
     )
     _generate_fake_invoice_pdfs(settlement_2)
 
-    # another valid bank account is now linked to the venue
-    new_bank_account = factories.BankAccountFactory.create(label="Compte bancaire 5", offerer=offerer)
+    # another valid bank account is now linked to the venue (previously linked to the first bank account)
+    bank_account_3 = factories.BankAccountFactory.create(label="Compte bancaire OK 1", offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory.create(
-        venue=venue, bankAccount=new_bank_account, timespan=[now - datetime.timedelta(days=4), None]
+        venue=venue_1, bankAccount=bank_account_3, timespan=[now - datetime.timedelta(days=3), None]
     )
 
-    # a new settlement is executed on the new bank account, linked to the second rejected settlement invoice
-    new_batch = factories.SettlementBatchFactory.create(name="VIR13", dateValidated=now - datetime.timedelta(days=3))
+    # add another valid bank account
+    factories.BankAccountFactory.create(label="Compte bancaire OK 2", offerer=offerer)
+
+    # a new settlement is executed on the new bank account, linked to the first rejected settlement invoice
+    third_batch_date = now - datetime.timedelta(days=2)
+    batch_3 = factories.SettlementBatchFactory.create(name="VIR13", dateValidated=third_batch_date)
     factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
-        amount=-5000,
-        bankAccount=new_bank_account,
-        batch=new_batch,
-        invoices=[invoice_2],
+        amount=invoice_1.amount,
+        bankAccount=bank_account_3,
+        batch=batch_3,
+        invoices=[invoice_1],
     )
 
 
