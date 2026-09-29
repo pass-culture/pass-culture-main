@@ -445,7 +445,8 @@ def get_tag_offers_form(product_id: int) -> response_utils.BackofficeResponse:
     product = (
         db.session.query(offers_models.Product)
         .options(sa_orm.selectinload(offers_models.Product.offers))
-        .get(product_id)
+        .filter(offers_models.Product.id == product_id)
+        .one_or_none()
     )
     if not product:
         raise NotFound()
@@ -500,7 +501,7 @@ def get_tag_offers_form(product_id: int) -> response_utils.BackofficeResponse:
 @list_products_blueprint.route("/<int:product_id>/add-criteria", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
 def add_criteria_to_offers(product_id: int) -> response_utils.BackofficeResponse:
-    product = db.session.query(offers_models.Product).get(product_id)
+    product = db.session.query(offers_models.Product).filter(offers_models.Product.id == product_id).one_or_none()
     if not product:
         raise NotFound()
 

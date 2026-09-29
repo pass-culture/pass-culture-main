@@ -224,8 +224,8 @@ class UpdateArtistsFromDeltaTest:
 
         assert "Batch update failed for Artist, retrying one by one" in caplog.text
 
-        updated_artist1 = db.session.query(Artist).get(artist1.id)
-        updated_artist2 = db.session.query(Artist).get(artist2.id)
+        updated_artist1 = db.session.query(Artist).filter(Artist.id == artist1.id).one()
+        updated_artist2 = db.session.query(Artist).filter(Artist.id == artist2.id).one()
 
         assert updated_artist1.name == "New Name 1"
         assert updated_artist2.name == "New Name 2"

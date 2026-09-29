@@ -46,7 +46,11 @@ class QuotientFamilialBonusTaskTest:
             custodian, birth_date.replace(day=1) + relativedelta(years=17) + relativedelta(months=11)
         )
 
-        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
+        fraud_check = (
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter(subscription_models.BeneficiaryFraudCheck.id == fraud_check_id)
+            .one()
+        )
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]
 
@@ -60,7 +64,11 @@ class QuotientFamilialBonusTaskTest:
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check.id)
         tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
 
-        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check.id)
+        fraud_check = (
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter(subscription_models.BeneficiaryFraudCheck.id == fraud_check.id)
+            .one()
+        )
         assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
         assert (
             datetime.datetime.fromisoformat(fraud_check.resultContent["next_retry_at"]) > date_utils.get_naive_utc_now()
@@ -99,7 +107,11 @@ class AdultDisabilityBonusTaskTest:
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check_id)
         tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump())
 
-        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
+        fraud_check = (
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter(subscription_models.BeneficiaryFraudCheck.id == fraud_check_id)
+            .one()
+        )
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
 
@@ -113,7 +125,11 @@ class AdultDisabilityBonusTaskTest:
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check.id)
         tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump())
 
-        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check.id)
+        fraud_check = (
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter(subscription_models.BeneficiaryFraudCheck.id == fraud_check.id)
+            .one()
+        )
         assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
         assert (
             datetime.datetime.fromisoformat(fraud_check.resultContent["next_retry_at"]) > date_utils.get_naive_utc_now()
@@ -154,7 +170,11 @@ class DisabledChildEducationBonusTaskTest:
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check_id)
         tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump())
 
-        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
+        fraud_check = (
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter(subscription_models.BeneficiaryFraudCheck.id == fraud_check.id)
+            .one()
+        )
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
 
@@ -168,7 +188,11 @@ class DisabledChildEducationBonusTaskTest:
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check.id)
         tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump())
 
-        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check.id)
+        fraud_check = (
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter(subscription_models.BeneficiaryFraudCheck.id == fraud_check.id)
+            .one()
+        )
         assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
         assert (
             datetime.datetime.fromisoformat(fraud_check.resultContent["next_retry_at"]) > date_utils.get_naive_utc_now()
