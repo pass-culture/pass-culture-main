@@ -1,19 +1,18 @@
 import logging
 import typing
 
-from pydantic import Field
-from pydantic.v1 import PositiveInt
+import pydantic
 
 from pcapi.core.educational import schemas
 from pcapi.core.offerers.models import Venue
-from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 
 
 logger = logging.getLogger(__name__)
 
 
-class GetRelativeVenuesQueryModel(BaseModel):
+class GetRelativeVenuesQueryModel(HttpQueryParamsModel):
     getRelative: bool = False
 
 
@@ -24,7 +23,7 @@ class VenueDomain(HttpBodyModel):
 
 class VenueLabelModel(HttpBodyModel):
     id: int
-    label: str = Field(alias="name")
+    label: str = pydantic.Field(alias="name")
 
 
 class OffererModel(HttpBodyModel):
@@ -122,9 +121,11 @@ class GetVenuesResponseModel(HttpBodyModel):
     venues: list[VenueModel]
 
 
-class GetAllVenuesQueryModel(BaseModel):
-    page: PositiveInt | None
-    per_page: PositiveInt | None
+class GetAllVenuesQueryModel(HttpQueryParamsModel):
+    page: int | None = pydantic.Field(default=None, gt=0)
+    per_page: int | None = pydantic.Field(default=None, gt=0)
+
+    model_config = pydantic.ConfigDict(alias_generator=None)
 
 
 class PostAdageCulturalPartnerModel(schemas.AdageCulturalPartner):

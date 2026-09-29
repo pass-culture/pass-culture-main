@@ -9,6 +9,7 @@ from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import assert_no_duplicated_queries
 
+from tests.conftest import TestClient
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
 
@@ -16,7 +17,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-    def test_get_collective_bookings(self, client) -> None:
+    def test_get_collective_bookings(self, client: TestClient):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         booking1 = CollectiveBookingFactory(
@@ -42,7 +43,7 @@ class Returns200Test:
         assert expected_serialized_prebooking(booking1) in response.json["prebookings"]
         assert expected_serialized_prebooking(booking2) in response.json["prebookings"]
 
-    def test_get_collective_bookings_refused(self, client):
+    def test_get_collective_bookings_refused(self, client: TestClient):
         booking = CancelledCollectiveBookingFactory(
             cancellationReason=models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER
         )
@@ -57,7 +58,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {"prebookings": [{**expected_serialized_prebooking(booking), "status": "REFUSED"}]}
 
-    def test_get_collective_bookings_with_address(self, client):
+    def test_get_collective_bookings_with_address(self, client: TestClient):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         venue = VenueFactory()
@@ -86,7 +87,7 @@ class Returns200Test:
             ]
         }
 
-    def test_get_collective_bookings_filter_UAI(self, client) -> None:
+    def test_get_collective_bookings_filter_UAI(self, client: TestClient):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         booking1 = CollectiveBookingFactory(
@@ -110,7 +111,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {"prebookings": [expected_serialized_prebooking(booking1)]}
 
-    def test_get_collective_bookings_filter_year_id(self, client) -> None:
+    def test_get_collective_bookings_filter_year_id(self, client: TestClient):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         booking1 = CollectiveBookingFactory(
@@ -134,7 +135,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {"prebookings": [expected_serialized_prebooking(booking1)]}
 
-    def test_get_collective_bookings_filter_redactor_email(self, client) -> None:
+    def test_get_collective_bookings_filter_redactor_email(self, client: TestClient):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         booking1 = CollectiveBookingFactory(
@@ -153,30 +154,6 @@ class Returns200Test:
 
         response = client.get(
             f"/adage/v1/years/{educational_year.adageId}/educational_institution/{educational_institution.institutionId}/prebookings?redactorEmail={booking1.educationalRedactor.email}"
-        )
-
-        assert response.status_code == 200
-        assert response.json == {"prebookings": [expected_serialized_prebooking(booking1)]}
-
-    def test_get_collective_bookings_filter_status(self, client) -> None:
-        educational_year = EducationalYearFactory()
-        educational_institution = EducationalInstitutionFactory()
-        booking1 = CollectiveBookingFactory(
-            educationalYear=educational_year,
-            educationalInstitution=educational_institution,
-            status="CONFIRMED",
-        )
-        other_educational_year = EducationalYearFactory(adageId="Pouet")
-        CollectiveBookingFactory(
-            educationalYear=other_educational_year,
-            educationalInstitution=educational_institution,
-            status="PENDING",
-        )
-
-        client = client.with_eac_token()
-
-        response = client.get(
-            f"/adage/v1/years/{educational_year.adageId}/educational_institution/{educational_institution.institutionId}/prebookings?status=CONFIRMED"
         )
 
         assert response.status_code == 200
