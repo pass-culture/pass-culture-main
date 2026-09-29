@@ -74,7 +74,7 @@ describe('OffersInstantSearch', () => {
     expect(
       (
         await screen.findAllByText(
-          'Lieu inconnu. Tous les résultats sont affichés.'
+          'Structure inconnue. Tous les résultats sont affichés.'
         )
       ).length
     ).toBeGreaterThan(0)
@@ -94,7 +94,7 @@ describe('OffersInstantSearch', () => {
     expect(
       (
         await screen.findAllByText(
-          'Lieu inconnu. Tous les résultats sont affichés.'
+          'Structure inconnue. Tous les résultats sont affichés.'
         )
       ).length
     ).toBeGreaterThan(0)
