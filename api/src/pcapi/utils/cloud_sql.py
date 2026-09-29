@@ -18,18 +18,17 @@ from google.cloud.sql.connector import Connector
 from pcapi import settings
 
 
-_connector: "Connector | None" = None
-_connector_lock = threading.Lock()
+class _ConnectorHolder:
+    lock = threading.Lock()
+    connector: Connector | None = None
 
 
-def _get_connector() -> "Connector":
-    """Return a process-local Cloud SQL ``Connector``.
-    """
-    global _connector
-    with _connector_lock:
-        if _connector is None:
-            _connector = Connector(refresh_strategy="lazy")
-        return _connector
+def _get_connector() -> Connector:
+    """Return the process-local Cloud SQL ``Connector``, creating it on first use."""
+    with _ConnectorHolder.lock:
+        if _ConnectorHolder.connector is None:
+            _ConnectorHolder.connector = Connector(refresh_strategy="lazy")
+        return _ConnectorHolder.connector
 
 
 def get_iam_connection() -> typing.Any:
@@ -58,15 +57,14 @@ def get_engine_kwargs() -> dict:
 
 def dispose_connector() -> None:
     """Close and reset the process-local connector (called before forking Gunicorn workers)."""
-    global _connector
-    with _connector_lock:
-        if _connector is not None:
+    with _ConnectorHolder.lock:
+        if _ConnectorHolder.connector is not None:
             try:
-                _connector.close()
-            except Exception:  # noqa: BLE001 - best-effort cleanup before fork
+                _ConnectorHolder.connector.close()
+            except Exception:
                 # TODO: log this exception somewhere (Sentry?) if it happens in production
                 pass
-            _connector = None
+            _ConnectorHolder.connector = None
 
 
 def apply_session_timeouts(
