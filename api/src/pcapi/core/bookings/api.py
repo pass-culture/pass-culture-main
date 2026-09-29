@@ -385,9 +385,10 @@ def _book_offer(
                         "stock_id": stock.id,
                         "stock_id_at_providers": stock.idAtProviders,
                         "booking_quantity": booking.quantity,
+                        "booking_id": booking.id,
                         "user_id": beneficiary.id,
-                        "feature": "external_providers",
-                        "action": "booking",
+                        "feature": "external_bookings",
+                        "action": "book",
                     },
                     technical_message_id="providers.external.booking",
                 )
@@ -401,15 +402,17 @@ def _book_offer(
                         "stock_id": stock.id,
                         "stock_id_at_providers": stock.idAtProviders,
                         "booking_quantity": booking.quantity,
+                        "booking_id": booking.id,
                         "user_id": beneficiary.id,
                         "exception_type": e.__class__.__name__,
                         "exception_message": str(e),
-                        "feature": "external_providers",
-                        "action": "booking",
+                        "feature": "external_bookings",
+                        "action": "book",
                     },
                     technical_message_id="providers.external.booking",
                 )
                 raise
+
             booking.externalBookings = [
                 models.ExternalBooking(
                     barcode=ticket.barcode,
@@ -420,25 +423,60 @@ def _book_offer(
             ]
 
         if stock.offer.isEventLinkedToTicketingService:
-            start_time = time.time()
-            tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
-            elapsedseconds = time.time() - start_time
-            external_bookings_execution_time_histogram.labels(
-                provider_id=stock.offer.lastProviderId,
-                provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
-                subcategory_id=stock.offer.subcategoryId,
-            ).observe(elapsedseconds)
+            try:
+                start_time = time.time()
+                tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
+                elapsedseconds = time.time() - start_time
+                external_bookings_execution_time_histogram.labels(
+                    provider_id=stock.offer.lastProviderId,
+                    provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
+                    subcategory_id=stock.offer.subcategoryId,
+                ).observe(elapsedseconds)
 
-            booking.externalBookings = [
-                models.ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
-            ]
-            if remaining_quantity is None:
-                stock.quantity = None
-            else:
-                stock.quantity = stock.dnBookedQuantity + remaining_quantity + booking.quantity
+                booking.externalBookings = [
+                    models.ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
+                ]
+                if remaining_quantity is None:
+                    stock.quantity = None
+                else:
+                    stock.quantity = stock.dnBookedQuantity + remaining_quantity + booking.quantity
+
+                logger.info(
+                    "Event tickets successfully booked",
+                    extra={
+                        "provider_id": stock.lastProviderId,
+                        "venue_id": stock.offer.venueId,
+                        "offer_id": stock.offerId,
+                        "stock_id": stock.id,
+                        "stock_id_at_providers": stock.idAtProviders,
+                        "booking_quantity": booking.quantity,
+                        "booking_id": booking.id,
+                        "user_id": beneficiary.id,
+                        "feature": "external_bookings",
+                        "action": "book",
+                    },
+                )
+            except Exception as e:
+                logger.warning(
+                    "Unable to book event tickets",
+                    extra={
+                        "provider_id": stock.lastProviderId,
+                        "venue_id": stock.offer.venueId,
+                        "offer_id": stock.offerId,
+                        "stock_id": stock.id,
+                        "stock_id_at_providers": stock.idAtProviders,
+                        "booking_quantity": booking.quantity,
+                        "booking_id": booking.id,
+                        "user_id": beneficiary.id,
+                        "exception_type": e.__class__.__name__,
+                        "exception_message": str(e),
+                        "feature": "external_bookings",
+                        "action": "book",
+                    },
+                )
+                raise
 
         stock.dnBookedQuantity += booking.quantity
-
         logger.info(
             "Updating dnBookedQuantity after a successful booking",
             extra={
@@ -511,21 +549,6 @@ def book_offer(
         db.session.commit()
         raise
 
-    logger.info(
-        "Beneficiary booked an offer",
-        extra={
-            "actor": beneficiary.id,
-            "offer": stock.offerId,
-            "stock": stock.id,
-            "booking": booking.id,
-            "used": booking.is_used_or_reimbursed,
-            "booking_token": booking.token,
-            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
-            "booking_quantity": booking.quantity,
-            "stock_dnBookedQuantity": stock.dnBookedQuantity,
-            "stock_quantity": stock.quantity,
-        },
-    )
     trigger_events.track_offer_booked_event(beneficiary.id, stock.offer)
     external_bookings_api.send_booking_notification_to_external_service(booking, BookingAction.BOOK)
 

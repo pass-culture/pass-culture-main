@@ -85,6 +85,7 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
                 "provider_id": stock.offer.lastProviderId,
                 "user_id": current_user.id,
                 "booking_quantity": booking.quantity,
+                "booking_id": booking.id,
                 "feature": "bookings",
                 "action": "book",
             },
