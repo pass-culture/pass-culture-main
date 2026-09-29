@@ -8,6 +8,7 @@ describe('getIndividualOfferImage', () => {
         thumbUrl: 'https://image.url',
         credit: 'John Do',
         alternativeText: 'an alt text',
+        authorId: null,
       },
       expectedImage: {
         url: 'https://image.url',
@@ -16,12 +17,15 @@ describe('getIndividualOfferImage', () => {
       },
     },
     {
-      activeMediation: {},
+      activeMediation: null,
       expectedImage: undefined,
     },
     {
       activeMediation: {
+        thumbUrl: null,
         credit: 'John Do',
+        alternativeText: null,
+        authorId: null,
       },
       expectedImage: undefined,
     },
@@ -29,6 +33,8 @@ describe('getIndividualOfferImage', () => {
       activeMediation: {
         thumbUrl: 'https://image.url',
         credit: null,
+        alternativeText: null,
+        authorId: null,
       },
       expectedImage: {
         url: 'https://image.url',
@@ -42,8 +48,6 @@ describe('getIndividualOfferImage', () => {
     'using image from mediation %s',
     ({ activeMediation, expectedImage }) => {
       const offerApi = getIndividualOfferFactory({
-        // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-        // @ts-expect-error
         activeMediation,
       })
 

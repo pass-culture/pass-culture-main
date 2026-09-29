@@ -38,8 +38,6 @@ const SubcategoriesForm = ({
   onReady?: (methods: UseFormReturn<DetailsFormValues>) => void
 }) => {
   const methods = useForm<DetailsFormValues>({
-    // TODO (amine) to remove once model migrated to Pydantic V2
-    // @ts-expect-error
     defaultValues: {
       ...DEFAULT_DETAILS_FORM_VALUES,
     },
@@ -49,7 +47,6 @@ const SubcategoriesForm = ({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: This is a test.
   useEffect(() => {
-    // @ts-expect-error - Waiting for pydanticV2 migration
     onReady?.(methods)
   }, [])
 

@@ -1,4 +1,4 @@
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 
@@ -6,7 +6,7 @@ import styles from './IndividualOfferTitle.module.scss'
 
 type IndividualOfferTitleProps = {
   mode: OFFER_WIZARD_MODE
-  offer?: GetIndividualOfferResponseModel | null
+  offer?: GetIndividualOfferResponseModelV2 | null
 }
 
 export const IndividualOfferTitle = ({

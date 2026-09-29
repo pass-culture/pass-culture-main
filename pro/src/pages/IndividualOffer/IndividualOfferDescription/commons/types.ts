@@ -1,6 +1,6 @@
 import type {
-  ArtistOfferLinkResponseModel,
-  GetIndividualOfferResponseModel,
+  ArtistOfferLinkResponseModelV2,
+  GetIndividualOfferResponseModelV2,
   SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
@@ -17,7 +17,7 @@ export type DetailsFormValues = {
   showSubType?: string
   gtl_id?: string
   author?: string
-  artistOfferLinks: Array<ArtistOfferLinkResponseModel>
+  artistOfferLinks: Array<ArtistOfferLinkResponseModelV2>
   performer?: string
   ean?: string
   eanSearch?: string
@@ -46,6 +46,6 @@ export type Product = {
 }
 
 export type SetDefaultInitialValuesFromOfferProps = {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
   subcategories: SubcategoryResponseModel[]
 }
