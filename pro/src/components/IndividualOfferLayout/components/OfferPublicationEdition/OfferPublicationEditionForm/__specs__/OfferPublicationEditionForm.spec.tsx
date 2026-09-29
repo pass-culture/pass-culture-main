@@ -34,7 +34,7 @@ describe('OfferPublicationEditionForm', () => {
         publicationDatetime: null,
         bookingAllowedDatetime: null,
       }),
-      onSubmit: () => {},
+      onSubmit: () => { },
     })
 
     expect(
@@ -56,7 +56,7 @@ describe('OfferPublicationEditionForm', () => {
         publicationDatetime: null,
         bookingAllowedDatetime: null,
       }),
-      onSubmit: () => {},
+      onSubmit: () => { },
     })
 
     await waitFor(() => {
@@ -85,7 +85,7 @@ describe('OfferPublicationEditionForm', () => {
         publicationDatetime: publicationDateFomatted,
         bookingAllowedDatetime: null,
       }),
-      onSubmit: () => {},
+      onSubmit: () => { },
     })
 
     await waitFor(() => {
@@ -111,7 +111,7 @@ describe('OfferPublicationEditionForm', () => {
         publicationDatetime: new Date().toISOString(),
         bookingAllowedDatetime: bookingAllowedDateFormatted,
       }),
-      onSubmit: () => {},
+      onSubmit: () => { },
     })
 
     await waitFor(() => {

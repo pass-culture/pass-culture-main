@@ -10,11 +10,11 @@ import {
   DisplayableActivity,
   type GetBookingResponse,
   type GetIndividualOfferResponseModelV2,
-  type GetOfferExposureResponseModel,
   type GetOffererNameResponseModel,
   type GetOffererResponseModel,
   type GetOffererVenueResponseModel,
   type GetOffererVenueResponseModel as GetOffererVenueResponseModelNew,
+  type GetOfferExposureResponseModel,
   type GetOfferManagingOffererResponseModelV2,
   type GetOfferStockResponseModel,
   type GetOfferVenueResponseModelV2,
@@ -212,7 +212,7 @@ export const individualOfferContextValuesFactory = (
     hasPublishedOfferWithSameEan: false,
     subCategories: [],
     isEvent: null,
-    setIsControlledEvent: () => {},
+    setIsControlledEvent: () => { },
     ...customIndividualOfferContextValues,
   }
 }
@@ -351,42 +351,42 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
 }
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
-  {
-    activity: DisplayableActivity.OTHER,
-    lastCollectiveDmsApplication: null,
-    hasAdageId: false,
-    hasCreatedOffer: false,
-    name: 'Nom de la structure',
-    publicName: 'Nom public de la structure',
-    id: 1,
-    hasVenueProviders: false,
-    isPermanent: true,
-    bannerUrl: null,
-    bannerMeta: null,
-    siret: null,
-    bookingEmail: null,
-    withdrawalDetails: null,
-    state: null,
-  }
+{
+  activity: DisplayableActivity.OTHER,
+  lastCollectiveDmsApplication: null,
+  hasAdageId: false,
+  hasCreatedOffer: false,
+  name: 'Nom de la structure',
+  publicName: 'Nom public de la structure',
+  id: 1,
+  hasVenueProviders: false,
+  isPermanent: true,
+  bannerUrl: null,
+  bannerMeta: null,
+  siret: null,
+  bookingEmail: null,
+  withdrawalDetails: null,
+  state: null,
+}
 
 export const defaultGetOffererVenueResponseModelNew: GetOffererVenueResponseModelNew =
-  {
-    activity: DisplayableActivity.OTHER,
-    lastCollectiveDmsApplication: null,
-    hasAdageId: false,
-    hasCreatedOffer: false,
-    name: 'Nom de la structure',
-    publicName: 'Nom public de la structure',
-    id: 1,
-    hasVenueProviders: false,
-    isPermanent: true,
-    bannerUrl: null,
-    bannerMeta: null,
-    siret: null,
-    bookingEmail: null,
-    withdrawalDetails: null,
-    state: null,
-  }
+{
+  activity: DisplayableActivity.OTHER,
+  lastCollectiveDmsApplication: null,
+  hasAdageId: false,
+  hasCreatedOffer: false,
+  name: 'Nom de la structure',
+  publicName: 'Nom public de la structure',
+  id: 1,
+  hasVenueProviders: false,
+  isPermanent: true,
+  bannerUrl: null,
+  bannerMeta: null,
+  siret: null,
+  bookingEmail: null,
+  withdrawalDetails: null,
+  state: null,
+}
 
 export const defaultGetVenueResponseModel: GetVenueResponseModel = {
   audioDisabilityCompliant: false,
