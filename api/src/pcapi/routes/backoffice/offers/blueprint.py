@@ -1621,7 +1621,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
 
     if len(offer_ids) > 0:
-        db.session.query(users_models.Favorite).filter(users_models.Favorite.offerId.in_(offer_ids)).delete(
+        db.session.query(users_models.FavoriteOffer).filter(users_models.FavoriteOffer.offerId.in_(offer_ids)).delete(
             synchronize_session=False
         )
         db.session.flush()

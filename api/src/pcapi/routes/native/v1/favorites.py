@@ -1,22 +1,15 @@
 import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 from flask_login import current_user
 from sqlalchemy.dialects.postgresql import insert
 
 from pcapi import settings
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch.trigger_events import track_offer_added_to_favorites_event
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import OffererAddress
-from pcapi.core.offerers.models import Venue
+from pcapi.core.favorites.models import FavoriteOffer
+from pcapi.core.favorites.repository import get_favorites_for
 from pcapi.core.offers.exceptions import OfferNotFound
-from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_offer_by_id
-from pcapi.core.users.models import Favorite
-from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -27,104 +20,6 @@ from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 from .serialization import favorites as serializers
-
-
-def get_favorites_for(user: User, favorite_id: int | None = None) -> list[serializers.FavoriteData]:
-    active_stock_filters = sa.and_(Offer.isActive, Stock.isSoftDeleted.is_(False))
-    stock_filters = sa.and_(
-        sa.not_(Stock.isEventExpired),
-        sa.not_(Stock.hasBookingLimitDatetimePassed),
-        active_stock_filters,
-    )
-    query = (
-        sa.select(
-            Favorite,
-            sa.func.min(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("min_price"),
-            sa.func.max(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("max_price"),
-            sa.func.min(Stock.beginningDatetime)
-            .filter(stock_filters)
-            .over(partition_by=Stock.offerId)
-            .label("min_begin"),
-            sa.func.max(Stock.beginningDatetime)
-            .filter(stock_filters)
-            .over(partition_by=Stock.offerId)
-            .label("max_begin"),
-            # count active stocks of active offers
-            sa.func.count(Stock.id).filter(stock_filters).over(partition_by=Stock.offerId).label("active_stocks"),
-            # count favorites of active offers
-            sa.func.count(Stock.id)
-            .filter(active_stock_filters)
-            .over(partition_by=Stock.offerId)
-            .label("active_offers"),
-        )
-        .join(Favorite.offer)
-        .outerjoin(Offer.stocks)
-        .options(sa_orm.load_only(Favorite.id))
-        .options(
-            sa_orm.joinedload(Favorite.offer)
-            .load_only(
-                Offer.name,
-                Offer.externalTicketOfficeUrl,
-                Offer.url,
-                Offer.subcategoryId,
-                Offer.validation,
-                Offer.publicationDatetime,
-                Offer.bookingAllowedDatetime,
-            )
-            .options(
-                sa_orm.joinedload(Offer.venue)
-                .load_only(Venue.publicName, Venue.name, Venue.state)
-                .options(sa_orm.joinedload(Venue.offererAddress).load_only().joinedload(OffererAddress.address))
-                .options(
-                    sa_orm.joinedload(Venue.managingOfferer).load_only(
-                        Offerer.validationStatus, Offerer.isActive, Offerer.name
-                    )
-                )
-            )
-            .options(
-                sa_orm.joinedload(Offer.mediations).load_only(
-                    Mediation.dateCreated, Mediation.isActive, Mediation.thumbCount, Mediation.credit
-                )
-            )
-            .options(
-                sa_orm.joinedload(Offer.product)
-                .load_only(Product.id, Product.thumbCount)
-                .joinedload(Product.productMediations)
-            )
-            .options(
-                sa_orm.contains_eager(Offer.stocks).load_only(
-                    Stock.beginningDatetime,
-                    Stock.bookingLimitDatetime,
-                    Stock.isSoftDeleted,
-                    Stock.quantity,
-                    Stock.dnBookedQuantity,
-                )
-            )
-            .options(sa_orm.joinedload(Offer.offererAddress).joinedload(OffererAddress.address))
-        )
-        .filter(
-            Favorite.userId == user.id,
-            Offer.isPublished,
-        )
-        .order_by(Favorite.id.desc())
-    )
-
-    if favorite_id:
-        query = query.filter(Favorite.id == favorite_id)
-
-    results = db.session.execute(query).unique().all()
-
-    return [
-        serializers.FavoriteData(
-            favorite=favorite,
-            price=min_price if min_price == max_price else None,
-            start_price=min_price if min_price != max_price else None,
-            date=start_date if start_date == end_date else None,
-            start_date=start_date if start_date != end_date else None,
-            is_expired=active_offers and not active_stocks,
-        )
-        for (favorite, min_price, max_price, start_date, end_date, active_stocks, active_offers) in results
-    ]
 
 
 @blueprint.native_route("/me/favorites", methods=["GET"])
@@ -155,13 +50,13 @@ def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteRe
     if settings.MAX_FAVORITES:
         query = (
             db.session.query(
-                Favorite,
+                FavoriteOffer,
             )
             .join(
-                Favorite.offer,
+                FavoriteOffer.offer,
             )
             .filter(
-                Favorite.userId == current_user.id,
+                FavoriteOffer.userId == current_user.id,
                 Offer.isPublished,
             )
         )
@@ -180,14 +75,14 @@ def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteRe
         raise ResourceNotFoundError()
 
     stmt: sa.sql.dml.ReturningInsert = (
-        insert(Favorite)
+        insert(FavoriteOffer)
         .values({"offerId": body.offer_id, "userId": current_user.id})
         .on_conflict_do_update(
-            index_elements=[Favorite.offerId, Favorite.userId],
+            index_elements=[FavoriteOffer.offerId, FavoriteOffer.userId],
             set_={"offerId": body.offer_id},
         )
         .returning(
-            Favorite.id,
+            FavoriteOffer.id,
             # xmax is a "system" column that returns the transaction id that modified the row.
             # In case of insertion, no row has been modified → xmax = 0
             sa.literal_column("xmax = 0").label("is_inserted"),
@@ -211,5 +106,5 @@ def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteRe
 @authenticated_and_active_user_required
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def delete_favorite(favorite_id: int) -> None:
-    favorite = first_or_404(db.session.query(Favorite).filter_by(id=favorite_id, user=current_user))
+    favorite = first_or_404(db.session.query(FavoriteOffer).filter_by(id=favorite_id, user=current_user))
     db.session.delete(favorite)

@@ -8,6 +8,7 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.cultural_survey.models as cultural_survey_models
 import pcapi.core.educational.models as educational_models
+import pcapi.core.favorites.models as fav_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.geography.models as geography_models
@@ -124,7 +125,7 @@ tables_to_clean: list[type[Model]] = [
     educational_models.CollectiveAdditionalFee,
     educational_models.CollectiveStock,
     offers_models.Stock,
-    users_models.Favorite,
+    fav_models.FavoriteOffer,
     offers_models.Mediation,
     criteria_models.OfferCriterion,
     criteria_models.VenueCriterion,

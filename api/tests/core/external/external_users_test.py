@@ -38,7 +38,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
-from pcapi.core.users.factories import FavoriteFactory
+from pcapi.core.users.factories import FavoriteOfferFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.factories import UnderageBeneficiaryFactory
 from pcapi.core.users.factories import UserFactory
@@ -169,17 +169,17 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
     BookingFactory(
         user=user, amount=100, dateCreated=datetime(2023, 12, 6, 12), status=BookingStatus.CANCELLED
     )  # should be ignored
-    FavoriteFactory(
+    FavoriteOfferFactory(
         user=user,
         offer=OfferFactory(subcategoryId=subcategories.VISITE_LIBRE.id),
         dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=3),
     )
-    FavoriteFactory(
+    FavoriteOfferFactory(
         user=user,
         offer=OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id),
         dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=2),
     )
-    last_favorite = FavoriteFactory(
+    last_favorite = FavoriteOfferFactory(
         user=user,
         offer=OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id),
         dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=1),
@@ -317,7 +317,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
     last_booking = BookingFactory(
         user=user, amount=various_amounts[2], dateCreated=datetime(2023, 12, 6, 13), stock__offer=offer3
     )
-    favorite = FavoriteFactory(user=user, offer=OfferFactory(subcategoryId=subcategories.CONCERT.id))
+    favorite = FavoriteOfferFactory(user=user, offer=OfferFactory(subcategoryId=subcategories.CONCERT.id))
 
     with assert_no_duplicated_queries():
         attributes = get_user_attributes(user)
@@ -630,7 +630,7 @@ def test_get_most_favorite_subcategories_none():
 
 def test_get_most_favorite_subcategories_one():
     user = UserFactory()
-    favorites = FavoriteFactory.create_batch(3, user=user, offer__subcategoryId=subcategories.SEANCE_CINE.id)
+    favorites = FavoriteOfferFactory.create_batch(3, user=user, offer__subcategoryId=subcategories.SEANCE_CINE.id)
 
     assert get_most_favorite_subcategories(favorites) == [subcategories.SEANCE_CINE.id]
 
@@ -638,11 +638,11 @@ def test_get_most_favorite_subcategories_one():
 def test_get_most_favorite_subcategories_two_equal():
     user = UserFactory()
     favorites = [
-        FavoriteFactory(user=user, offer__subcategoryId=subcategories.SEANCE_CINE.id),
-        FavoriteFactory(user=user, offer__subcategoryId=subcategories.MATERIEL_ART_CREATIF.id),
-        FavoriteFactory(user=user, offer__subcategoryId=subcategories.FESTIVAL_MUSIQUE.id),
-        FavoriteFactory(user=user, offer__subcategoryId=subcategories.SEANCE_CINE.id),
-        FavoriteFactory(user=user, offer__subcategoryId=subcategories.FESTIVAL_MUSIQUE.id),
+        FavoriteOfferFactory(user=user, offer__subcategoryId=subcategories.SEANCE_CINE.id),
+        FavoriteOfferFactory(user=user, offer__subcategoryId=subcategories.MATERIEL_ART_CREATIF.id),
+        FavoriteOfferFactory(user=user, offer__subcategoryId=subcategories.FESTIVAL_MUSIQUE.id),
+        FavoriteOfferFactory(user=user, offer__subcategoryId=subcategories.SEANCE_CINE.id),
+        FavoriteOfferFactory(user=user, offer__subcategoryId=subcategories.FESTIVAL_MUSIQUE.id),
     ]
 
     assert set(get_most_favorite_subcategories(favorites)) == {

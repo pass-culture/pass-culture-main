@@ -714,9 +714,9 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         db.session.query(offers_models.Stock).filter(offers_models.Stock.offerId.in_(offers_id_chunk)).delete(
             synchronize_session=False
         )
-        db.session.query(users_models.Favorite).filter(users_models.Favorite.offerId.in_(offers_id_chunk)).delete(
-            synchronize_session=False
-        )
+        db.session.query(users_models.FavoriteOffer).filter(
+            users_models.FavoriteOffer.offerId.in_(offers_id_chunk)
+        ).delete(synchronize_session=False)
         db.session.query(criteria_models.OfferCriterion).filter(
             criteria_models.OfferCriterion.offerId.in_(offers_id_chunk)
         ).delete(synchronize_session=False)

@@ -1455,7 +1455,7 @@ def reject_inappropriate_products(
     )
 
     if offer_ids:
-        db.session.query(users_models.Favorite).filter(users_models.Favorite.offerId.in_(offer_ids)).delete(
+        db.session.query(users_models.FavoriteOffer).filter(users_models.FavoriteOffer.offerId.in_(offer_ids)).delete(
             synchronize_session=False
         )
         on_commit(
@@ -2351,7 +2351,7 @@ def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
 
     related_models = [
         models.Stock,
-        users_models.Favorite,
+        users_models.FavoriteOffer,
         models.Mediation,
         finance_models.CustomReimbursementRule,
         highlights_models.HighlightRequest,

@@ -48,6 +48,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.educational.models import CollectiveOffer
+    from pcapi.core.favorites.models import FavoriteOffer
     from pcapi.core.finance.models import BookingFinanceIncident
     from pcapi.core.finance.models import Deposit
     from pcapi.core.history.models import ActionHistory
@@ -222,8 +223,8 @@ class User(PcObject, Model, DeactivableMixin):
     extraData: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
         MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}"
     )
-    favorites: sa_orm.Mapped[list[Favorite]] = sa_orm.relationship(
-        "Favorite", foreign_keys="Favorite.userId", back_populates="user"
+    favoriteOffers: sa_orm.Mapped[list[FavoriteOffer]] = sa_orm.relationship(
+        "FavoriteOffer", foreign_keys="FavoriteOffer.userId", back_populates="user"
     )
     firstName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
     idPieceNumber: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String, nullable=True, unique=True)
@@ -1012,30 +1013,6 @@ class DomainsCredit:
     all: Credit
     digital: Credit | None = None
     physical: Credit | None = None
-
-
-class Favorite(PcObject, Model):
-    __tablename__ = "favorite"
-
-    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    user: sa_orm.Mapped[User] = sa_orm.relationship("User", foreign_keys=[userId], back_populates="favorites")
-
-    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False
-    )
-    offer: sa_orm.Mapped[Offer] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="favorites")
-
-    dateCreated = sa_orm.mapped_column(sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now)
-
-    __table_args__ = (
-        sa.UniqueConstraint(
-            "userId",
-            "offerId",
-            name="unique_favorite",
-        ),
-    )
 
 
 def split_email(email: str) -> tuple[str, str]:
