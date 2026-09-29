@@ -27,7 +27,8 @@ type VideoUploaderProps = {
 
 export const VideoUploader = ({ uploadTipsId }: VideoUploaderProps) => {
   const [isOpen, setIsOpen] = useState(false)
-  const { videoData, onVideoDelete } = useVideoUploaderContext()
+  const { videoData, onVideoDelete, videoDescription } =
+    useVideoUploaderContext()
   const { videoDuration, videoTitle, videoThumbnailUrl } = videoData ?? {}
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
@@ -59,6 +60,7 @@ export const VideoUploader = ({ uploadTipsId }: VideoUploaderProps) => {
             videoDuration={videoDuration}
             videoTitle={videoTitle}
             videoThumbnailUrl={videoThumbnailUrl}
+            videoDescription={videoDescription}
           />
           <div className={styles['action-wrapper']}>
             <Button

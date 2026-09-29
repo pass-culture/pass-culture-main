@@ -6690,6 +6690,10 @@ export type TotalRevenue = {
  */
 export type UpdateOfferVideoBodyModel = {
     /**
+     * Videodescription
+     */
+    videoDescription?: string | null;
+    /**
      * Videourl
      */
     videoUrl: string | null;
@@ -7070,6 +7074,10 @@ export type VenuesEducationalStatusesResponseModel = {
  * VideoData
  */
 export type VideoData = {
+    /**
+     * Videodescription
+     */
+    videoDescription?: string;
     /**
      * Videoduration
      */

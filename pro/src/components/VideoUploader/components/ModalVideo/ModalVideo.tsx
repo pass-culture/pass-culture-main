@@ -4,6 +4,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { useVideoUploaderContext } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/context/VideoUploaderContext/VideoUploaderContext'
@@ -26,8 +27,16 @@ export const ModalVideo = ({
   addVideoRef,
 }: ModalVideoProps): JSX.Element | null => {
   const [error, setError] = useState<string>()
-  const { videoUrl, videoData, onVideoUpload, setVideoUrl, offerId } =
-    useVideoUploaderContext()
+  const {
+    videoUrl,
+    videoData,
+    onVideoUpload,
+    setVideoUrl,
+    offerId,
+    videoDescription,
+    setVideoDescription,
+  } = useVideoUploaderContext()
+  const [isInformative, setIsInformative] = useState(Boolean(videoDescription))
   const { logEvent } = useAnalytics()
 
   return (
@@ -92,6 +101,30 @@ export const ModalVideo = ({
               setVideoUrl(event.target.value)
             }}
           />
+          <div className={styles['video-description']}>
+            <Checkbox
+              label="Ajouter une description textuelle détaillée"
+              description="Permet aux personnes malvoyantes de prendre connaissance du contexte de la vidéo sous forme de texte."
+              variant="detailed"
+              checked={isInformative}
+              onChange={(e) => {
+                setIsInformative(e.target.checked)
+                if (!e.target.checked) {
+                  setVideoDescription('')
+                }
+              }}
+              collapsed={
+                <TextInput
+                  label="Description textuelle pour les malvoyants"
+                  name="alternativeText"
+                  maxCharactersCount={150}
+                  value={videoDescription ?? ''}
+                  required
+                  onChange={(e) => setVideoDescription(e.target.value)}
+                />
+              }
+            />
+          </div>
         </div>
       </div>
     </DetailedModal>
