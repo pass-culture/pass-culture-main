@@ -572,3 +572,13 @@ class GetIdDocumentForm(utils.PCForm):
 
 class DisconnectNativeUserForm(utils.PCForm):
     comment = fields.PCOptCommentField("Commentaire facultatif à propos de la déconnexion")
+
+
+class CreateExtractUserGdprDataForm(utils.PCForm):
+    scope = fields.PCSelectField(
+        "Format attendu",
+        choices=utils.choices_from_enum(
+            users_models.GdprUserDataExtractScope, formatter=filters.format_gdpr_extract_scope
+        ),
+        default=users_models.GdprUserDataExtractScope.PUBLIC.name,
+    )

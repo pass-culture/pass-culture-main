@@ -91,9 +91,10 @@ def download_gdpr_extract(extract_id: int) -> response_utils.BackofficeResponse:
         )
 
     try:
+        object_id_ext = "pdf" if extract.scope == users_models.GdprUserDataExtractScope.INTERNAL else "zip"
         files = object_storage.get_public_object(
             folder=settings.GCP_GDPR_EXTRACT_FOLDER,
-            object_id=f"{extract.id}.zip",
+            object_id=f"{extract.id}.{object_id_ext}",
             bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
         )
     except base_object_storage.FileNotFound:
@@ -103,9 +104,15 @@ def download_gdpr_extract(extract_id: int) -> response_utils.BackofficeResponse:
             code=303,
         )
 
+    filename = extract.user.email
     response = make_response(files[0])
-    response.headers["Content-Type"] = "application/zip"
-    response.headers["Content-Disposition"] = f'attachment; filename="{extract.user.email}.zip"'
+    if extract.scope == users_models.GdprUserDataExtractScope.INTERNAL:
+        filename += "_internal"
+        response.headers["Content-Type"] = "application/pdf"
+        response.headers["Content-Disposition"] = f'attachment; filename="{filename}.pdf"'
+    else:
+        response.headers["Content-Type"] = "application/zip"
+        response.headers["Content-Disposition"] = f'attachment; filename="{filename}.zip"'
     logger.info(
         "An admin downloaded a user's data",
         extra={

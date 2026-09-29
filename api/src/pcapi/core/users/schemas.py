@@ -83,7 +83,9 @@ class GdprLoginDeviceHistorySerializer(GdprSerializer):
 
 
 class GdprEmailHistory(GdprSerializer):
+    author: str | None = None
     dateCreated: datetime
+    label: str
     newEmail: str | None = None
     oldEmail: str
 
@@ -109,6 +111,14 @@ class GdprBookingSerializer(GdprSerializer):
     offerer: str
 
 
+class GdprAccountHistoryEntry(GdprSerializer):
+    author: str | None = None
+    comment: str | None = None
+    date: datetime | None = None
+    details: list[str] = []
+    label: str
+
+
 class GdprActionHistorySerializer(GdprSerializer):
     actionDate: datetime | None = None
     actionType: history_models.ActionType
@@ -127,6 +137,8 @@ class GdprInternal(GdprSerializer):
     marketing: GdprMarketing
     loginDevices: list[GdprLoginDeviceHistorySerializer]
     emailsHistory: list[GdprEmailHistory]
+    accountHistory: list[GdprAccountHistoryEntry] | None = None
+    profileEdits: list[GdprAccountHistoryEntry] | None = None
     actionsHistory: list[GdprActionHistorySerializer]
     beneficiaryValidations: list[GdprBeneficiaryValidation]
     deposits: list[GdprDepositSerializer]
