@@ -1,10 +1,4 @@
-"""FIXME: Cher·e auteur·ice de cette migration : le message ci-dessous
-apparaît dans la sortie de `alembic history`. Tu dois supprimer ce
-FIXME et faire en sorte que le message ci-dessous soit en anglais,
-clair, en une seule ligne et lisible (un peu comme un message de
-commit). Exemple : Add "blob" column to "offer" table.
-
-add_extra_data_on_sso_table"""
+"""Add extra data in SSO table"""
 
 import sqlalchemy as sa
 from alembic import op
