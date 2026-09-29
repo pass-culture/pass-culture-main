@@ -345,7 +345,6 @@ describe('<IndividualOfferLocationScreen />', () => {
       it('should render without error even when url is null', async () => {
         const props = { offer: { ...onlineOffer, url: null } }
 
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         renderIndividualOfferLocationScreen({ props })
 
         expect(

@@ -53,7 +53,6 @@ describe('getOfferEnhancementActionsVisibility', () => {
     const offer = getIndividualOfferFactory({
       status: OfferStatus.ACTIVE,
       productId: 12,
-      // @ts-expect-error:waiting for backend to migrate to pydantic v2
       thumbUrl: null,
     })
 

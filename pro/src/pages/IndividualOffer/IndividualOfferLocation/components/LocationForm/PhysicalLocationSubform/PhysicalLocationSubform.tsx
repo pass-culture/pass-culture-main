@@ -102,7 +102,6 @@ export const PhysicalLocationSubform = ({
   }
 
   const venueFullText = `${selectedPartnerVenue.publicName} – ${computeAddressDisplayName(
-    // @ts-expect-error:waiting for backend to migrate to pydantic v2
     selectedPartnerVenue.location,
     false
   )}`

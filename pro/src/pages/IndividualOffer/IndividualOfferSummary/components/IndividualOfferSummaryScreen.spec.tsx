@@ -14,7 +14,7 @@ import {
 } from '@/apiClient/compat'
 import {
   DisplayableActivity,
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
   SimplifiedBankAccountStatus,
   type StockStatsResponseModel,
@@ -32,7 +32,7 @@ import {
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferManagingOffererFactory,
@@ -45,8 +45,8 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
-  type RenderWithProvidersOptions,
   renderWithProviders,
+  type RenderWithProvidersOptions,
 } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import {
@@ -418,7 +418,7 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(buttonPublish).not.toBeDisabled()
 
       const mockResponse =
-        new CancelablePromise<GetIndividualOfferResponseModel>((resolve) =>
+        new CancelablePromise<GetIndividualOfferResponseModelV2>((resolve) =>
           setTimeout(() => {
             resolve(getIndividualOfferFactory())
           }, 200)
@@ -719,7 +719,7 @@ describe('IndividualOfferSummaryScreen', () => {
         offer: {
           ...offerBase,
           location: {
-            ...getLocationResponseModel({
+            ...getLocationResponseModelV2({
               label: 'mon adresse',
               city: 'ma ville',
               street: 'ma street',
@@ -732,7 +732,6 @@ describe('IndividualOfferSummaryScreen', () => {
         },
       }
 
-      // @ts-expect-error:waiting for backend to migrate to pydantic v2
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()
@@ -757,7 +756,6 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should render component with new sections and empty address data', async () => {
       contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         location: null,
       })
       const contextValues = {

@@ -165,11 +165,11 @@ def list_offers_home(query: offers_serialize.ListOffersHomeQueryModel) -> offers
 @pro_blueprint.route("/offers/<int:offer_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    response_model=offers_serialize.GetIndividualOfferResponseModelV2,
     api=blueprint.pro_schema,
 )
 @atomic()
-def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel:
+def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModelV2:
     load_all: offers_repository.OFFER_LOAD_OPTIONS = [
         "stock",
         "mediations",
@@ -192,7 +192,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel
         raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModelV2.build(offer)
 
 
 @pro_blueprint.route("/offers/<int:offer_id>/exposure", methods=["GET"])
@@ -375,14 +375,14 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
 @pro_blueprint.route("/v2/offers", methods=["POST"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    response_model=offers_serialize.GetIndividualOfferResponseModelV2,
     on_success_status=201,
     api=blueprint.pro_schema,
 )
 @atomic()
 def create_offer(
     body: offers_serialize.PostCombinedOfferBodyModel,
-) -> offers_serialize.GetIndividualOfferResponseModel:
+) -> offers_serialize.GetIndividualOfferResponseModelV2:
     offer_data = body.root
     venue: offerers_models.Venue = first_or_404(
         db.session.query(offerers_models.Venue)
@@ -423,7 +423,7 @@ def create_offer(
     except artist_exceptions.ArtistException as error:
         raise api_errors.ApiErrors({"artistOfferLinks": [error.message]})
     offer.hasPendingBookings = False
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModelV2.build(offer)
 
 
 @pro_blueprint.route("/offers/publish", methods=["PATCH"])
@@ -432,12 +432,12 @@ def create_offer(
     on_success_status=200,
     on_error_statuses=[404],
     api=blueprint.pro_schema,
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    response_model=offers_serialize.GetIndividualOfferResponseModelV2,
 )
 @atomic()
 def patch_publish_offer(
     body: offers_serialize.PatchOfferPublishBodyModel,
-) -> offers_serialize.GetIndividualOfferResponseModel:
+) -> offers_serialize.GetIndividualOfferResponseModelV2:
     try:
         venue = offerers_repository.get_venue_by_offer_id(body.id)
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -475,7 +475,7 @@ def patch_publish_offer(
         booking_allowed_datetime=body.bookingAllowedDatetime,
     )
 
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModelV2.build(offer)
 
 
 @pro_blueprint.route("/offers/active-status", methods=["PATCH"])
@@ -591,13 +591,13 @@ def _mandatory_extra_data_fields(subcategory_id: str) -> set[str]:
 @pro_blueprint.route("/offers/<int:offer_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    response_model=offers_serialize.GetIndividualOfferResponseModelV2,
     api=blueprint.pro_schema,
 )
 @atomic()
 def patch_offer(
     offer_id: int, body: offers_serialize.PatchOfferBodyModel
-) -> offers_serialize.GetIndividualOfferResponseModel:
+) -> offers_serialize.GetIndividualOfferResponseModelV2:
     try:
         offer = offers_repository.get_offer_by_id(
             offer_id,
@@ -705,7 +705,7 @@ def patch_offer(
         ],
     )
 
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModelV2.build(offer)
 
 
 @pro_blueprint.route("/offers/<int:offer_id>/video", methods=["PUT"])
@@ -842,13 +842,13 @@ def get_music_types() -> offers_serialize.GetMusicTypesResponse:
 @pro_blueprint.route("/offers/<int:offer_id>/price_categories", methods=["PUT"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    response_model=offers_serialize.GetIndividualOfferResponseModelV2,
     api=blueprint.pro_schema,
 )
 @atomic()
 def replace_offer_price_categories(
     offer_id: int, body: offers_serialize.PriceCategoryBody
-) -> offers_serialize.GetIndividualOfferResponseModel:
+) -> offers_serialize.GetIndividualOfferResponseModelV2:
     """
     Replace all price categories of an offer.
 
@@ -884,7 +884,7 @@ def replace_offer_price_categories(
     ]
     offer = offers_repository.get_offer_by_id(offer.id, load_options=load_options)
 
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModelV2.build(offer)
 
 
 @pro_blueprint.route("/offers/<int:venue_id>/ean/<string:ean>", methods=["GET"])
@@ -986,7 +986,7 @@ def get_offer_video_metadata(
 @pro_blueprint.route("/offers/<int:offer_id>/highlight-requests", methods=["POST"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    response_model=offers_serialize.GetIndividualOfferResponseModelV2,
     on_success_status=201,
     api=blueprint.pro_schema,
 )
@@ -994,7 +994,7 @@ def get_offer_video_metadata(
 def post_highlight_request_offer(
     offer_id: int,
     body: offers_schemas.CreateOfferHighlightRequestBodyModel,
-) -> offers_serialize.GetIndividualOfferResponseModel:
+) -> offers_serialize.GetIndividualOfferResponseModelV2:
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue"})
     except exceptions.OfferNotFound:
@@ -1032,4 +1032,4 @@ def post_highlight_request_offer(
         "venue",
     ]
     offer = offers_repository.get_offer_by_id(offer_id, load_options)
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModelV2.build(offer)

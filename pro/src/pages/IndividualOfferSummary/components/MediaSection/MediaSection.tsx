@@ -1,6 +1,6 @@
 import { useId } from 'react'
 
-import type { VideoData } from '@/apiClient/v1'
+import type { VideoDataV2 } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -23,7 +23,7 @@ export interface MediaSectionProps {
   imageUrl?: string | null
   imageCredit?: string | null
   imageAlternativeText?: string | null
-  videoData?: VideoData
+  videoData?: VideoDataV2
   isOnCreation?: boolean
 }
 
