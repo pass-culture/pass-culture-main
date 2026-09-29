@@ -4314,7 +4314,6 @@ class CloseVenueTest:
 
         db.session.refresh(venue)
 
-        assert not venue.contact
         assert venue.current_bank_account_link
         assert venue.state == offerers_models.VenueState.CLOSED
 
@@ -4334,9 +4333,7 @@ class CloseVenueTest:
         assert venue_closed_action.comment == comment
 
     def test_closed_venue_stays_closed_and_nothing_is_done(self):
-        venue = offerers_factories.VenueFactory(
-            state=offerers_models.VenueState.CLOSED, bookingEmail=None, contact=None
-        )
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
         author = users_factories.BaseUserFactory()
 
         with atomic():
@@ -4436,6 +4433,17 @@ class CloseVenueTest:
         assert venue.current_bank_account_link
         mock_send_venue_closure_request_email.assert_called()
 
+    @pytest.mark.features(WIP_CLOSE_VENUE=True)
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_close_venue_reindexes_venue(self, reindex_venue):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        offerers_api.close_venue(venue, author=user_offerer.user)
+
+        assert venue.state == offerers_models.VenueState.CLOSED
+        reindex_venue.assert_called_once_with([venue.id], reason=IndexationReason.VENUE_CLOSED)
+
 
 class ReopenVenueTest:
     """Test the overall behaviour
@@ -4478,7 +4486,7 @@ class ReopenVenueTest:
         assert venue_reopened_action.comment == comment
 
     def test_open_venue_stays_open_and_nothing_is_done(self):
-        venue = offerers_factories.VenueFactory(state=None, bookingEmail=None, contact=None)
+        venue = offerers_factories.VenueFactory(state=None)
         author = users_factories.BaseUserFactory()
 
         with atomic():
@@ -4488,12 +4496,7 @@ class ReopenVenueTest:
         assert venue.state is None
 
     def test_closed_venue_with_closed_offerer_stays_closed_and_nothing_is_done(self):
-        venue = offerers_factories.VenueFactory(
-            state=offerers_models.VenueState.CLOSED,
-            bookingEmail=None,
-            contact=None,
-            managingOfferer=offerers_factories.ClosedOffererFactory(),
-        )
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
         author = users_factories.BaseUserFactory()
 
         with atomic():
@@ -4501,6 +4504,19 @@ class ReopenVenueTest:
 
         db.session.refresh(venue)
         assert venue.state == offerers_models.VenueState.CLOSED
+
+    @pytest.mark.features(WIP_CLOSE_VENUE=True)
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_reopen_venue_reindexes_venue(self, reindex_venue):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, state=offerers_models.VenueState.CLOSED
+        )
+
+        offerers_api.reopen_venue(venue, author=user_offerer.user)
+
+        assert venue.state is None
+        reindex_venue.assert_called_once_with([venue.id], reason=IndexationReason.VENUE_REOPENED)
 
 
 class NullifyVenueEmailsTest:
