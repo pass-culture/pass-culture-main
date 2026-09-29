@@ -3,6 +3,7 @@ import json
 import re
 import typing
 from typing import Any
+from typing import Self
 
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
@@ -13,11 +14,13 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
 from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offers_validation
+from pcapi.core.providers import models as providers_models
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
@@ -27,7 +30,7 @@ from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import highlight_serialize
 from pcapi.routes.serialization.address_serialize import LocationResponseModel
-from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
+from pcapi.routes.serialization.address_serialize import LocationResponseModelV2
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import DecimalField
@@ -412,6 +415,7 @@ class GetOfferStockResponseModel(BaseModel):
         json_encoders = {datetime.datetime: format_into_utc_date}
 
 
+# TODO: keep or delete now ?
 class GetOfferManagingOffererResponseModel(BaseModel):
     id: int
     name: str
@@ -420,48 +424,78 @@ class GetOfferManagingOffererResponseModel(BaseModel):
         orm_mode = True
 
 
-class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
+class GetOfferManagingOffererResponseModelV2(HttpBodyModel):
+    id: int
+    name: str
+
+
+class GetOfferVenueResponseModelV2(HttpBodyModel):
     street: str | None
     bookingEmail: str | None
     city: str | None
     departementCode: str | None
     id: int
-    managingOfferer: GetOfferManagingOffererResponseModel
+    managingOfferer: GetOfferManagingOffererResponseModelV2
     name: str
     postalCode: str | None
     publicName: str
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        getter_dict = VenueAddressInfoGetter
+    @classmethod
+    def build(cls, venue: offerers_models.Venue) -> Self:
+        return cls(
+            bookingEmail=venue.bookingEmail,
+            city=venue.offererAddress.address.city,
+            departementCode=venue.offererAddress.address.departmentCode,
+            id=venue.id,
+            managingOfferer=GetOfferManagingOffererResponseModelV2.model_validate(venue.managingOfferer),
+            name=venue.name,
+            postalCode=venue.offererAddress.address.postalCode,
+            publicName=venue.publicName,
+            street=venue.offererAddress.address.street,
+            audioDisabilityCompliant=venue.audioDisabilityCompliant,
+            mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
+            motorDisabilityCompliant=venue.motorDisabilityCompliant,
+            visualDisabilityCompliant=venue.visualDisabilityCompliant,
+        )
 
 
-class GetOfferLastProviderResponseModel(BaseModel):
+class GetOfferLastProviderResponseModelV2(HttpBodyModel):
     name: str
 
-    class Config:
-        orm_mode = True
+    @classmethod
+    def build(cls, provider: providers_models.Provider | None) -> Self | None:
+        if not provider:
+            return None
+        return cls.model_validate(provider)
 
 
-class GetOfferMediationResponseModel(BaseModel):
+class GetOfferMediationResponseModelV2(HttpBodyModel):
     authorId: str | None
     credit: str | None
     thumbUrl: str | None
     alternativeText: str | None
 
-    class Config:
-        orm_mode = True
+    @classmethod
+    def build(cls, mediation: offers_models.Mediation | None) -> Self | None:
+        if not mediation:
+            return None
+        return cls(
+            authorId=str(mediation.authorId),
+            credit=mediation.credit,
+            thumbUrl=mediation.thumbUrl,
+            alternativeText=mediation.alternativeText,
+        )
 
 
-class PriceCategoryResponseModel(BaseModel):
+class PriceCategoryResponseModelV2(HttpBodyModel):
     id: int
     hasStocks: bool
     label: str
     price: float
-
-    class Config:
-        orm_mode = True
 
     @classmethod
     def build(cls, price_category: offers_models.PriceCategory, has_stocks: bool) -> typing.Self:
@@ -473,42 +507,6 @@ class PriceCategoryResponseModel(BaseModel):
         )
 
 
-def _format_time(time_to_format: datetime.time) -> str:
-    return time_to_format.strftime("%H:%M")
-
-
-class IndividualOfferResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "videoData":
-            meta_data = self._obj.metaData
-            return VideoData.from_orm(meta_data)
-        if key == "extraData" and self._obj.product:
-            self._obj.ean = self._obj.product.ean
-        if key == "extraData" and self._obj.ean:
-            extra_data_copy = self._obj.extraData.copy() if self._obj.extraData else {}
-            extra_data_copy["ean"] = self._obj.ean
-            return extra_data_copy
-        if key == "highlightRequests":
-            return [
-                highlight_request.highlight
-                for highlight_request in self._obj.highlight_requests
-                if highlight_request.highlight.highlight_datespan.upper > datetime.date.today()
-            ]
-        if key == "priceCategories":
-            price_category_ids_with_stocks = {
-                stock.priceCategoryId for stock in self._obj.stocks if stock.priceCategoryId
-            }
-            return [
-                PriceCategoryResponseModel.build(price_category, price_category.id in price_category_ids_with_stocks)
-                for price_category in self._obj.priceCategories
-            ]
-        if key == "location":
-            return offer_location_getter_dict_helper(self._obj)
-        if key == "isHeadlineOffer":
-            return self._obj.is_headline_offer
-        return super().get(key, default)
-
-
 class VideoData(ConfiguredBaseModel):
     videoDuration: int | None
     videoExternalId: str | None
@@ -518,9 +516,17 @@ class VideoData(ConfiguredBaseModel):
     videoDescription: str | None
 
 
-class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
-    activeMediation: GetOfferMediationResponseModel | None
-    artistOfferLinks: list[artist_serialize.ArtistOfferLinkResponseModel]
+class VideoDataV2(HttpBodyModel):
+    videoDuration: int | None = None
+    videoExternalId: str | None = None
+    videoTitle: str | None = None
+    videoThumbnailUrl: str | None = None
+    videoUrl: HttpUrlStr | None = None
+
+
+class GetIndividualOfferResponseModelV2(HttpBodyModel):
+    activeMediation: GetOfferMediationResponseModelV2 | None
+    artistOfferLinks: list[artist_serialize.ArtistOfferLinkResponseModelV2]
     bookingContact: str | None
     bookingsCount: int | None
     bookingEmail: str | None
@@ -530,7 +536,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingAllowedDatetime: datetime.datetime | None
     description: str | None
     durationMinutes: int | None
-    extraData: offers_models.OfferExtraData | None
+    extraData: OfferExtraDataV2 | None
     hasBookingLimitDatetimesPassed: bool
     hasStocks: bool
     isActive: bool
@@ -542,32 +548,112 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     isNational: bool
     isThing: bool
     id: int
-    lastProvider: GetOfferLastProviderResponseModel | None
+    lastProvider: GetOfferLastProviderResponseModelV2 | None
     name: str
-    priceCategories: list[PriceCategoryResponseModel] | None
+    priceCategories: list[PriceCategoryResponseModelV2] | None
     subcategoryId: SubcategoryIdEnum
     productId: int | None
     thumbUrl: str | None
     externalTicketOfficeUrl: str | None
     url: str | None
-    venue: GetOfferVenueResponseModel
+    venue: GetOfferVenueResponseModelV2
     withdrawalDelay: int | None
     withdrawalDetails: str | None
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
     isNonFreeOffer: bool | None
-    videoData: VideoData
-    highlightRequests: list[highlight_serialize.ShortHighlightResponseModel]
+    videoData: VideoDataV2
+    highlightRequests: list[highlight_serialize.ShortHighlightResponseModelV2]
     hasCulturalOutreachClaim: bool
-    location: LocationResponseModel | None
+    location: LocationResponseModelV2 | None
     hasPendingBookings: bool
     isHeadlineOffer: bool
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
-        use_enum_values = True
-        getter_dict = IndividualOfferResponseGetterDict
+    @classmethod
+    def build(cls, offer: offers_models.Offer) -> Self:
+        extra_data = offer.extraData.copy() if offer.extraData else {}
+        ean = offer.product.ean if offer.product else offer.ean
+        if ean:
+            extra_data["ean"] = ean
+
+        highlight_requests = [
+            highlight_request.highlight
+            for highlight_request in offer.highlight_requests
+            if highlight_request.highlight.highlight_datespan.upper > datetime.date.today()
+        ]
+
+        # TODO(xordoquy): remove the stock loop in favor of another DB query
+        price_category_ids_with_stocks = {stock.priceCategoryId for stock in offer.stocks if stock.priceCategoryId}
+        price_categories = [
+            PriceCategoryResponseModelV2.build(price_category, price_category.id in price_category_ids_with_stocks)
+            for price_category in offer.priceCategories
+        ]
+
+        serialized_location = None
+        if offer.offererAddress:
+            is_venue_location = is_venue_address(offer.offererAddress, offer.venue)
+            location_label = offer.venue.publicName if is_venue_location else offer.offererAddress.label
+            serialized_location = LocationResponseModelV2.build(
+                offer.offererAddress, label=location_label, is_venue_location=is_venue_location
+            )
+
+        return cls(
+            activeMediation=GetOfferMediationResponseModelV2.build(offer.activeMediation),
+            artistOfferLinks=[
+                artist_serialize.ArtistOfferLinkResponseModelV2.model_validate(link) for link in offer.artistOfferLinks
+            ],
+            audioDisabilityCompliant=offer.audioDisabilityCompliant,
+            bookingAllowedDatetime=offer.bookingAllowedDatetime,
+            bookingContact=offer.bookingContact,
+            bookingsCount=offer.bookingsCount,
+            bookingEmail=offer.bookingEmail,
+            canBeEvent=offer.canBeEvent,
+            dateCreated=offer.dateCreated,
+            description=offer.description,
+            durationMinutes=offer.durationMinutes,
+            externalTicketOfficeUrl=offer.externalTicketOfficeUrl,
+            extraData=extra_data,
+            hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
+            hasCulturalOutreachClaim=offer.hasCulturalOutreachClaim,
+            hasPendingBookings=offer.hasPendingBookings or False,
+            hasStocks=offer.hasStocks,
+            highlightRequests=[
+                highlight_serialize.ShortHighlightResponseModelV2.model_validate(hl) for hl in highlight_requests
+            ],
+            id=offer.id,
+            isActive=offer.isActive,
+            isDigital=offer.isDigital,
+            isDuo=offer.isDuo,
+            isEditable=offer.isEditable,
+            isEvent=offer.isEvent,
+            isHeadlineOffer=offer.is_headline_offer,
+            isNational=offer.isNational,
+            isNonFreeOffer=offer.isNonFreeOffer,
+            isThing=offer.isThing,
+            lastProvider=GetOfferLastProviderResponseModelV2.build(offer.lastProvider),
+            location=serialized_location,
+            mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
+            motorDisabilityCompliant=offer.motorDisabilityCompliant,
+            name=offer.name,
+            priceCategories=price_categories,
+            productId=offer.productId,
+            publicationDate=offer.publicationDate,
+            publicationDatetime=offer.publicationDatetime,
+            subcategoryId=SubcategoryIdEnum[offer.subcategoryId],
+            status=offer.status,
+            thumbUrl=offer.thumbUrl,
+            url=offer.url,
+            venue=GetOfferVenueResponseModelV2.build(offer.venue),
+            videoData=VideoDataV2.model_validate(offer.metaData or {}),
+            visualDisabilityCompliant=offer.visualDisabilityCompliant,
+            withdrawalDelay=offer.withdrawalDelay,
+            withdrawalDetails=offer.withdrawalDetails,
+            withdrawalType=offer.withdrawalType,
+        )
 
 
 class GetActiveEANOfferResponseModel(BaseModel, AccessibilityComplianceMixin):

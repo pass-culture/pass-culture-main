@@ -2,7 +2,7 @@ import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/
 import { QRCodeSVG } from 'qrcode.react'
 import { useNavigate } from 'react-router'
 
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { OfferStatus } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -29,7 +29,7 @@ import { Title } from '@/ui-kit/Title/Title'
 import styles from './IndividualOfferConfirmationScreen.module.scss'
 
 interface IndividualOfferConfirmationScreenProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 
 export const IndividualOfferConfirmationScreen = ({
