@@ -733,11 +733,12 @@ def get_offers_by_filters(
 
     if period_beginning_date is not None or period_ending_date is not None:
         offer_alias = sa_orm.aliased(models.Offer)
+        venue_alias = sa_orm.aliased(offerers_models.Venue)
         venue_oa_alias = sa_orm.aliased(offerers_models.OffererAddress)
         venue_address_alias = sa_orm.aliased(geography_models.Address)
         stock_query = (
             db.session.query(models.Stock)
-            .join(offer_alias)
+            .join(offer_alias, offer_alias.id == models.Stock.offerId)
             .outerjoin(
                 offerers_models.OffererAddress,
                 offer_alias.offererAddressId == offerers_models.OffererAddress.id,
@@ -746,7 +747,8 @@ def get_offers_by_filters(
                 geography_models.Address,
                 offerers_models.OffererAddress.addressId == geography_models.Address.id,
             )
-            .join(venue_oa_alias.venue)
+            .join(venue_alias, offer_alias.venueId == venue_alias.id)
+            .join(venue_oa_alias, venue_alias.id == venue_oa_alias.venueId)
             .filter(venue_oa_alias.type == offerers_models.LocationType.VENUE_LOCATION)
             .join(venue_address_alias, venue_address_alias.id == venue_oa_alias.addressId)
             .filter(models.Stock.isSoftDeleted.is_(False))
