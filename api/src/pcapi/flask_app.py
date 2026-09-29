@@ -30,6 +30,7 @@ from pcapi.core.logging import install_logging
 from pcapi.models import db
 from pcapi.models import install_models
 from pcapi.scripts.install import install_commands
+from pcapi.utils import cloud_sql
 from pcapi.utils import jwt
 from pcapi.utils import transaction_manager
 from pcapi.utils.json_encoder import EnumJSONEncoder
@@ -332,6 +333,18 @@ with app.app_context():
             raise sa.exc.DisconnectionError(
                 "Connection record belongs to pid %s, "
                 "attempting to check out in pid %s" % (connection_record.info["pid"], pid)
+            )
+
+    if settings.DATABASE_USE_IAM_AUTH:
+        # The libpq `options` connect arg used in user/password mode is psycopg2-specific, so under
+        # pg8000 we apply the server-side timeouts through SET SESSION on each new connection.
+        @sa.event.listens_for(db.engine, "connect")
+        def set_session_timeouts(dbapi_connection: typing.Any, connection_record: typing.Any) -> None:
+            cloud_sql.apply_session_timeouts(
+                dbapi_connection,
+                lock_timeout=settings.DATABASE_LOCK_TIMEOUT,
+                statement_timeout=settings.DATABASE_STATEMENT_TIMEOUT,
+                idle_in_transaction_session_timeout=settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT,
             )
 
 

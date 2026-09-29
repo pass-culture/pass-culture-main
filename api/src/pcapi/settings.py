@@ -76,6 +76,7 @@ DATABASE_INSTANCE_CONNECTION_NAME = os.environ.get("DATABASE_INSTANCE_CONNECTION
 DATABASE_NAME = os.environ.get("DATABASE_NAME", "")
 DATABASE_IAM_USER = os.environ.get("DATABASE_IAM_USER", "")  # IAM DB user (SA email without ".gserviceaccount.com")
 DATABASE_IP_TYPE = os.environ.get("DATABASE_IP_TYPE", "private")  # "private" or "public"
+DATABASE_DRIVER = os.environ.get("DATABASE_DRIVER", "pg8000")  # "pg8000" or "psycopg2"
 
 if DATABASE_USE_IAM_AUTH:
     # Host and credentials come from the Cloud SQL Connector `creator`, not from the URL.

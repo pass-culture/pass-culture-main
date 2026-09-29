@@ -9,6 +9,7 @@ from pydantic_core import to_jsonable_python
 from sqlalchemy.orm import DeclarativeBase
 
 from pcapi import settings
+from pcapi.utils import cloud_sql
 
 
 def install_models() -> None:
@@ -50,9 +51,12 @@ def json_serializer(obj: typing.Any) -> str:
         return pydantic_v1.json.pydantic_encoder(obj)
 
 
+_cloud_sql_options = cloud_sql.get_engine_kwargs()
 _engine_options = {
     "json_serializer": functools.partial(json.dumps, default=json_serializer),
     "pool_size": settings.DATABASE_POOL_SIZE,
+    # In IAM mode this adds a Cloud SQL Connector `creator`; otherwise it is empty.
+    **_cloud_sql_options,
 }
 
 _db_options = []
@@ -64,7 +68,10 @@ if settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT:
     _db_options.append(
         "-c idle_in_transaction_session_timeout=%i" % settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT
     )
-if _db_options:
+
+# The libpq `options` connect arg is psycopg2-specific; under pg8000 (IAM mode) these timeouts are
+# applied via `SET SESSION` in a connect event listener (see flask_app.py).
+if _db_options and not settings.DATABASE_USE_IAM_AUTH:
     _engine_options["connect_args"] = {"options": " ".join(_db_options)}
 
 

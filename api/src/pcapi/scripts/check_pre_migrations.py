@@ -8,6 +8,7 @@ import click
 import sqlalchemy
 
 from pcapi import settings
+from pcapi.utils import cloud_sql
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -30,7 +31,8 @@ def check_pre_migrations(alembic_config_path: str) -> None:
     pre-deployment migrations have not been applied.
     """
     assert settings.DATABASE_URL  # helps mypy
-    engine = sqlalchemy.create_engine(settings.DATABASE_URL)
+    db_iam_connection_kwargs = cloud_sql.get_engine_kwargs()
+    engine = sqlalchemy.create_engine(settings.DATABASE_URL, **db_iam_connection_kwargs)
     with engine.begin() as connection:
         # Avoid useless INFO messages displayed by Alembic when setting up its context.
         alembic.runtime.migration.log.setLevel(logging.WARNING)
