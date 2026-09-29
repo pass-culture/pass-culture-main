@@ -31,7 +31,6 @@ describe('isOfferSynchronizedViaAllocine', () => {
     expect(
       isOfferSynchronizedViaAllocine(
         getIndividualOfferFactory({
-          // @ts-expect-error:waiting for backend to migrate to pydantic v2
           lastProvider: null,
         })
       )

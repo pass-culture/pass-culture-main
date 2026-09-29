@@ -3,7 +3,7 @@ import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
 import type {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetVenueResponseModel,
 } from '@/apiClient/v1'
 import {
@@ -22,7 +22,7 @@ export const saveNonEventOfferPriceTable = async (
     offer,
     venue,
   }: {
-    offer: GetIndividualOfferResponseModel
+    offer: GetIndividualOfferResponseModelV2
     venue: GetVenueResponseModel
   }
 ) => {

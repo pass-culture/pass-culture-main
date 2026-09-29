@@ -1,5 +1,5 @@
 import type {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetOfferStockResponseModel,
   UpsertPriceCategoryModel,
 } from '@/apiClient/v1'
@@ -12,5 +12,5 @@ export type PriceTableEntryModel = Partial<
 export interface PriceTableFormContext {
   isCaledonian: boolean | undefined
   mode: OFFER_WIZARD_MODE
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }

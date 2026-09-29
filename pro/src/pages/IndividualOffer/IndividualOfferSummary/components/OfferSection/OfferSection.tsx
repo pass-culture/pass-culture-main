@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router'
 
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   CULTURAL_OUTREACH_ALLOWED_ACTIVITIES,
@@ -89,7 +89,7 @@ function buildArtisticInfoDescriptions(
 }
 
 interface OfferSummaryProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
   conditionalFields: string[]
 }
 
@@ -226,8 +226,7 @@ export const OfferSection = ({
                 {
                   title: 'Adresse',
                   text: offerData.location
-                    ? // @ts-expect-error:waiting for backend to migrate to pydantic v2
-                      computeAddressDisplayName(offerData.location, false)
+                    ? computeAddressDisplayName(offerData.location, false)
                     : EMPTY_TEXT,
                 },
               ]}

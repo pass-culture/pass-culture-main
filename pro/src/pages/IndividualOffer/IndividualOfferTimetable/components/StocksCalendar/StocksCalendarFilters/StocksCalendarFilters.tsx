@@ -1,5 +1,5 @@
 import {
-  type PriceCategoryResponseModel,
+  type PriceCategoryResponseModelV2,
   StocksOrderedBy,
 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
@@ -16,7 +16,7 @@ import type { StocksTableFilters, StocksTableSort } from '../form/types'
 import styles from './StocksCalendarFilters.module.scss'
 
 export type StocksCalendarFiltersProps = {
-  priceCategories?: Array<PriceCategoryResponseModel> | null
+  priceCategories?: Array<PriceCategoryResponseModelV2> | null
   filters: StocksTableFilters
   sortType: StocksTableSort
   onUpdateFilters: (filters: StocksTableFilters) => void
