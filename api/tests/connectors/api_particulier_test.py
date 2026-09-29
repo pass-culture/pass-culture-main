@@ -374,3 +374,28 @@ class DisabledChildEducationAllowanceTest:
 
         with pytest.raises(exception):
             api_particulier.get_disabled_child_education_allowance(person)
+
+
+class RateLimitTest:
+    def test_rate_limit_lock_fails_api_particulier_calls_early(self, requests_mock):
+        person = subscription_factories.BonusCreditPersonFactory.create()
+        requests_mock.get(
+            api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
+            status_code=429,
+            headers={"retry-after": "37"},
+        )
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded):
+            api_particulier.get_quotient_familial(person)
+
+        requests_mock.reset_mock()
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded):
+            api_particulier.get_quotient_familial(person)
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded):
+            api_particulier.get_disabled_adult_allowance(person)
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded):
+            api_particulier.get_disabled_child_education_allowance(person)
+
+        assert not requests_mock.called

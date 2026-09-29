@@ -1,5 +1,6 @@
 import datetime
 import enum
+import functools
 import logging
 import typing
 
@@ -10,7 +11,9 @@ from pcapi import settings
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
+from pcapi.utils import rate_limit as rate_limit_utils
 from pcapi.utils import requests
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.requests import Response
 
 
@@ -21,6 +24,10 @@ QUOTIENT_FAMILIAL_ENDPOINT = f"{settings.PARTICULIER_API_URL}/v3/dss/quotient_fa
 AAH_ENDPOINT = f"{settings.PARTICULIER_API_URL}/v3/dss/allocation_adulte_handicape/identite"
 AEEH_ENDPOINT = f"{settings.PARTICULIER_API_URL}/v3/dss/allocation_enfant_handicape/identite"
 
+RATE_LIMIT_TIME_WINDOW_SIZE = 60  # seconds
+RATE_LIMIT_KEY = "pcapi:rate_limit:api_particulier"
+RATE_LIMIT_LOCK_KEY = f"{RATE_LIMIT_KEY}:lock"
+
 
 class ParticulierApiException(Exception):
     def __init__(
@@ -30,11 +37,13 @@ class ParticulierApiException(Exception):
         status_code: int,
         error_code: str | None = None,
         error_title: str | None = None,
+        retry_after: int | None = None,
     ) -> None:
         super().__init__(message)
         self.status_code = status_code
         self.error_code = error_code
         self.error_title = error_title
+        self.retry_after = retry_after
 
 
 class ParticulierApiForbidden(ParticulierApiException):
@@ -107,6 +116,44 @@ class QuotientFamilialResponse(BaseModel):
     data: QuotientFamilialData
 
 
+def api_particulier_rate_limited[**P, T](func: typing.Callable[P, T]) -> typing.Callable[P, T]:
+    """
+    Client side rate limit, shared by every worker, so that we stop calling API Particulier
+    before they start rejecting our calls, and stop until `Retry-After` passes once they do.
+    """
+
+    @functools.wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        remaining_lock_seconds = _get_rate_limit_lock_ttl(RATE_LIMIT_LOCK_KEY)
+        if remaining_lock_seconds:
+            raise ParticulierApiRateLimitExceeded("API Particulier is rate limiting us", status_code=429)
+
+        try:
+            with rate_limit_utils.rate_limit(
+                key=RATE_LIMIT_KEY,
+                time_window_size=RATE_LIMIT_TIME_WINDOW_SIZE,
+                max_per_time_window=settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD,
+            ):
+                return func(*args, **kwargs)
+        except rate_limit_utils.RateLimitedError as e:
+            raise ParticulierApiRateLimitExceeded("Client side rate limit reached", status_code=429) from e
+        except ParticulierApiRateLimitExceeded as e:
+            _lock_until_rate_limit_reset(RATE_LIMIT_LOCK_KEY, e.retry_after or RATE_LIMIT_TIME_WINDOW_SIZE)
+            raise
+
+    return wrapper
+
+
+def _get_rate_limit_lock_ttl(lock_key: str) -> int:
+    # `ttl` returns a negative value when the key has no expiry (-1) or does not exist (-2)
+    return max(0, get_redis_client().ttl(lock_key))
+
+
+def _lock_until_rate_limit_reset(lock_key: str, retry_after: int) -> None:
+    get_redis_client().set(lock_key, "1", ex=retry_after)
+
+
+@api_particulier_rate_limited
 def get_quotient_familial(
     custodian: bonus_schemas.BonusCreditPerson, at_date: datetime.date | None = None
 ) -> QuotientFamilialResponse:
@@ -171,6 +218,7 @@ class DisabledAdultAllowanceResponse(BaseModel):
     data: DisabledAdultAllowanceData
 
 
+@api_particulier_rate_limited
 def get_disabled_adult_allowance(person: bonus_schemas.BonusCreditPerson) -> DisabledAdultAllowanceResponse:
     """
     Get whether the person benefits from the disabled adult allowance.
@@ -237,6 +285,7 @@ class DisabledChildEducationAllowanceResponse(BaseModel):
     data: DisabledChildEducationAllowanceData
 
 
+@api_particulier_rate_limited
 def get_disabled_child_education_allowance(
     person: bonus_schemas.BonusCreditPerson,
 ) -> DisabledChildEducationAllowanceResponse:
@@ -315,4 +364,13 @@ def _raise_for_status(response: Response, endpoint_label: str) -> None:
         status_code=response.status_code,
         error_code=error_code,
         error_title=error_title,
+        retry_after=_get_retry_after(response),
     )
+
+
+def _get_retry_after(response: Response) -> int | None:
+    retry_after = response.headers.get("Retry-After")
+    if not retry_after:
+        return None
+
+    return max(0, int(retry_after))
