@@ -45,23 +45,24 @@ type DetailsEanSearchTestProps = Partial<DetailsEanSearchProps> & {
 
 const renderDetailsEanSearch = (props: DetailsEanSearchTestProps = {}) => {
   const {
-    isDraftOffer = false,
+    shouldDisplayClearButton = false,
     wasEanSearchPerformedSuccessfully = false,
     initialEan = '',
     eanSubmitError = '',
     onEanSearch = vi.fn(),
-    onEanReset = vi.fn(),
+    onEanClear = vi.fn(),
   } = props
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <DetailsEanSearch
-        isDraftOffer={isDraftOffer}
+        shouldDisplayClearButton={shouldDisplayClearButton}
         isProductBased={wasEanSearchPerformedSuccessfully}
         initialEan={initialEan}
         eanSubmitError={eanSubmitError}
         onEanSearch={onEanSearch}
-        onEanReset={onEanReset}
+        onEanClear={onEanClear}
+        isRequired={true}
       />
     </IndividualOfferContext.Provider>,
     {
@@ -112,7 +113,7 @@ describe('DetailsEanSearch', () => {
     describe('when no EAN search has been performed', () => {
       it('should call the ean search API when the form is submitted', async () => {
         const onEanSearch = vi.fn()
-        renderDetailsEanSearch({ isDraftOffer: true, onEanSearch })
+        renderDetailsEanSearch({ shouldDisplayClearButton: true, onEanSearch })
 
         await userEvent.type(getInput(), '9781234567897')
         await userEvent.click(getButton())
@@ -128,7 +129,7 @@ describe('DetailsEanSearch', () => {
 
       describe('when the input has format issues', () => {
         it('should display an error message', async () => {
-          renderDetailsEanSearch({ isDraftOffer: true })
+          renderDetailsEanSearch({ shouldDisplayClearButton: true })
 
           await userEvent.type(getInput(), '123')
           await userEvent.tab()
@@ -140,7 +141,7 @@ describe('DetailsEanSearch', () => {
         })
 
         it('should disable the submit button', async () => {
-          renderDetailsEanSearch({ isDraftOffer: true })
+          renderDetailsEanSearch({ shouldDisplayClearButton: true })
 
           expect(getButton()).toBeDisabled()
           await userEvent.type(getInput(), '123')
@@ -152,7 +153,7 @@ describe('DetailsEanSearch', () => {
     describe('when an EAN search is performed succesfully', () => {
       it('should display a success message', async () => {
         renderDetailsEanSearch({
-          isDraftOffer: true,
+          shouldDisplayClearButton: true,
           wasEanSearchPerformedSuccessfully: true,
         })
 
@@ -168,7 +169,7 @@ describe('DetailsEanSearch', () => {
 
       it('should be entirely disabled', async () => {
         renderDetailsEanSearch({
-          isDraftOffer: true,
+          shouldDisplayClearButton: true,
           wasEanSearchPerformedSuccessfully: true,
         })
 
@@ -181,7 +182,7 @@ describe('DetailsEanSearch', () => {
       it('should display an error message if POST API ends with an EAN err', async () => {
         const eanSubmitError = 'This EAN is already used'
         renderDetailsEanSearch({
-          isDraftOffer: true,
+          shouldDisplayClearButton: true,
           wasEanSearchPerformedSuccessfully: true,
           eanSubmitError,
         })
@@ -195,7 +196,7 @@ describe('DetailsEanSearch', () => {
     describe('when an EAN search is performed and ends with a product API error', () => {
       it('should display an error message', async () => {
         vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
-        renderDetailsEanSearch({ isDraftOffer: true })
+        renderDetailsEanSearch({ shouldDisplayClearButton: true })
 
         expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
 
@@ -207,7 +208,7 @@ describe('DetailsEanSearch', () => {
 
       it('should disable the submit button', async () => {
         vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
-        renderDetailsEanSearch({ isDraftOffer: true })
+        renderDetailsEanSearch({ shouldDisplayClearButton: true })
 
         await userEvent.type(getInput(), '9781234567897')
         await userEvent.click(getButton())
@@ -221,10 +222,11 @@ describe('DetailsEanSearch', () => {
     renderWithProviders(
       <IndividualOfferContext.Provider value={contextValue}>
         <DetailsEanSearch
-          isDraftOffer={true}
+          shouldDisplayClearButton={true}
           isProductBased={false}
           onEanSearch={vi.fn()}
-          onEanReset={vi.fn()}
+          onEanClear={vi.fn()}
+          isRequired={true}
         />
       </IndividualOfferContext.Provider>,
       {
@@ -250,7 +252,7 @@ describe('DetailsEanSearch', () => {
 
     it('should init the input with the offer EAN', async () => {
       renderDetailsEanSearch({
-        isDraftOffer: false,
+        shouldDisplayClearButton: false,
         wasEanSearchPerformedSuccessfully: true,
         initialEan,
       })
@@ -262,7 +264,7 @@ describe('DetailsEanSearch', () => {
 
     it('should not display the clear button anymore', async () => {
       renderDetailsEanSearch({
-        isDraftOffer: false,
+        shouldDisplayClearButton: false,
         wasEanSearchPerformedSuccessfully: true,
         initialEan,
       })
