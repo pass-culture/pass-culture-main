@@ -34,7 +34,7 @@ settlements_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 @settlements_blueprint.route("", methods=["GET"])
 def list_settlement_batches() -> response_utils.BackofficeResponse:
     total_amount_subquery = (
-        db.session.query(sa.func.sum(finance_models.Settlement.amount))
+        db.session.query(-sa.func.sum(finance_models.Settlement.amount))
         .filter(finance_models.Settlement.batchId == finance_models.SettlementBatch.id)
         .correlate(finance_models.SettlementBatch)
         .scalar_subquery()
@@ -87,7 +87,7 @@ def get_validate_settlement_batch_form(batch_id: int) -> response_utils.Backoffi
             label=settlement_batch.label,
             count=len(settlement_batch.settlements),
             s=filters.pluralize(len(settlement_batch.settlements)),
-            amount=filters.format_cents(sum(settlement.amount for settlement in settlement_batch.settlements)),
+            amount=filters.format_cents(-sum(settlement.amount for settlement in settlement_batch.settlements)),
             channel=settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL,
         ),
         button_text="Valider",

@@ -1910,11 +1910,11 @@ class GetOffererSettlementsTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "factory,expected_settlement_amount,expected_new_settlement_amount",
         [
-            (offerers_factories.OffererFactory, "33,50 €", "27,50 €"),
+            (offerers_factories.OffererFactory, "+ 33,50 €", "+ 27,50 €"),
             (
                 offerers_factories.CaledonianOffererFactory,
-                "33,50 € (4 000 CFP)",
-                "27,50 € (3 280 CFP)",
+                "+ 33,50 € (+ 4 000 CFP)",
+                "+ 27,50 € (+ 3 280 CFP)",
             ),
         ],
     )
@@ -1945,7 +1945,7 @@ class GetOffererSettlementsTest(GetEndpointHelper):
         new_batch = finance_factories.SettlementBatchFactory(dateValidated=datetime.date(2023, 4, 19))
         finance_factories.SettlementFactory(
             bankAccount=bank_account,
-            amount=3350,
+            amount=-3350,
             batch=batch,
             invoices=[invoice1, invoice2],
             status=finance_models.SettlementStatus.EXECUTED,
@@ -1953,7 +1953,7 @@ class GetOffererSettlementsTest(GetEndpointHelper):
         )
         finance_factories.SettlementFactory(
             bankAccount=rejected_bank_account,
-            amount=2750,
+            amount=-2750,
             batch=batch,
             invoices=[invoice3],
             status=finance_models.SettlementStatus.REJECTED,
@@ -1961,7 +1961,7 @@ class GetOffererSettlementsTest(GetEndpointHelper):
         )
         finance_factories.SettlementFactory(
             bankAccount=new_bank_account,
-            amount=2750,
+            amount=-2750,
             batch=new_batch,
             invoices=[invoice3],
             status=finance_models.SettlementStatus.EXECUTED,

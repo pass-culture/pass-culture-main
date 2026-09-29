@@ -247,10 +247,6 @@ class ApplicationDetail(BaseModel):
     def is_accepted(self) -> bool:
         return self.status == finance_models.BankAccountApplicationStatus.ACCEPTED
 
-    @property
-    def is_refused(self) -> bool:
-        return self.status == finance_models.BankAccountApplicationStatus.REFUSED
-
     @classmethod
     def build(cls, **kwargs: Any) -> Self:
         status = finance_models.BankAccountApplicationStatus(kwargs["status"])

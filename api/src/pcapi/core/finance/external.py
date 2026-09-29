@@ -18,6 +18,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
+from pcapi.utils import db as db_utils
 from pcapi.utils.redis import get_redis_client
 
 
@@ -337,6 +338,22 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
             if bank_account.status != finance_models.BankAccountApplicationStatus.REFUSED:
                 bank_account.status = finance_models.BankAccountApplicationStatus.REFUSED
                 bank_account.label = "REJET BANCAIRE - " + bank_account.label
+
+                now = date_utils.get_naive_utc_now()
+                if bank_account.statusHistory:
+                    current_status_history = [
+                        history for history in bank_account.statusHistory if history.timespan.upper is None
+                    ][0]
+                    current_status_history.timespan = db_utils.make_timerange(
+                        current_status_history.timespan.lower, now
+                    )
+                status_history = finance_models.BankAccountStatusHistory(
+                    bankAccount=bank_account,
+                    status=finance_models.BankAccountApplicationStatus.REFUSED,
+                    timespan=(now,),
+                )
+                db.session.add(status_history)
+
             db.session.add(bank_account)
             transactional_mails.send_settlement_rejected_email_to_pro(settlement)
             finance_api.deprecate_venue_bank_account_links(bank_account, comment)

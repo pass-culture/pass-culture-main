@@ -160,7 +160,7 @@ class SettlementResponseModel(HttpBodyModel):
             id=settlement.id,
             label=settlement.batch.get_displayed_name(),
             date=settlement.batch.dateValidated.date() if settlement.batch.dateValidated else None,
-            amount=float(cents_to_full_unit(settlement.amount)),
+            amount=float(-cents_to_full_unit(settlement.amount)),
             bank_account=settlement.bankAccount.label,
             status=status,
             invoices=[InvoiceResponseV2Model.build(invoice) for invoice in invoices],
