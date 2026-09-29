@@ -28,6 +28,7 @@ import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
+import pcapi.core.favorites.factories as fav_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
@@ -3219,7 +3220,7 @@ class RejectInappropriateProductTest:
         user = users_factories.UserFactory()
 
         for offer in offers:
-            users_factories.FavoriteOfferFactory(offer=offer)
+            fav_factories.FavoriteOfferFactory(offer=offer)
             bookings_factories.BookingFactory(stock__offer=offer)
 
         # When
@@ -3270,7 +3271,7 @@ class RejectInappropriateProductTest:
         user = users_factories.UserFactory()
 
         for offer in offers:
-            users_factories.FavoriteOfferFactory(offer=offer)
+            fav_factories.FavoriteOfferFactory(offer=offer)
             bookings_factories.BookingFactory(stock__offer=offer)
 
         assert db.session.query(users_models.FavoriteOffer).count() == len(offers)
@@ -5128,7 +5129,7 @@ class DeleteOffersRelatedObjectsTest:
     def build_offer_with_related_objects(self):
         offer = factories.OfferFactory()
         factories.StockFactory.create_batch(2, offer=offer)
-        users_factories.FavoriteOfferFactory(offer=offer)
+        fav_factories.FavoriteOfferFactory(offer=offer)
         factories.MediationFactory.create_batch(2, offer=offer)
         criteria_factories.OfferCriterionFactory(offerId=offer.id, criterionId=criteria_factories.CriterionFactory().id)
 
@@ -5243,7 +5244,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
             search.reindex_offer_ids([offer.id])
 
             factories.StockFactory.create_batch(2, offer=offer)
-            users_factories.FavoriteOfferFactory(offer=offer)
+            fav_factories.FavoriteOfferFactory(offer=offer)
             highlights_factories.HighlightRequestFactory(highlight=highlight, offer=offer)
         return offers
 
@@ -5294,7 +5295,7 @@ class DeleteUnbookableUnusedOldOffersTest:
         offer_id = offer.id
 
         factories.StockFactory.create_batch(2, offer=offer, isSoftDeleted=True)
-        users_factories.FavoriteOfferFactory(offer=offer)
+        fav_factories.FavoriteOfferFactory(offer=offer)
 
         api.delete_unbookable_unbooked_old_offers(max_id=offer.id * 2)
         assert_offers_have_been_completely_cleaned([offer_id])
