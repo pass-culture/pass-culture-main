@@ -9,7 +9,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
@@ -123,7 +123,7 @@ describe('IndividualOfferNavigation', () => {
         offer: getIndividualOfferFactory({
           isEvent: true,
           priceCategories: [priceCategoryFactory()],
-          location: getLocationResponseModel(),
+          location: getLocationResponseModelV2(),
           hasStocks: false,
         }),
       })
@@ -291,7 +291,7 @@ describe('IndividualOfferNavigation', () => {
         isEvent: true,
         offer: getIndividualOfferFactory({
           audioDisabilityCompliant: true,
-          location: getLocationResponseModel(),
+          location: getLocationResponseModelV2(),
         }),
       })
 

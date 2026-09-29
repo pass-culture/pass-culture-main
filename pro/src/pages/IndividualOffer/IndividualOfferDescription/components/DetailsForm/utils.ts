@@ -1,10 +1,10 @@
 import type { OfferExtraData } from 'commons/core/Offers/types'
 
 import {
-  type ArtistOfferLinkResponseModel,
+  type ArtistOfferLinkResponseModelV2,
   type CategoryResponseModel,
   DisplayableActivity,
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   type GetProductInformations,
   type GetVenueResponseModel,
   type SubcategoryResponseModel,
@@ -77,9 +77,9 @@ export const buildShowSubTypeOptions = (showType?: string): SelectOption[] => {
 
 // Ensures each artist type (author, performer, stage director) has at least one initial field.
 export const getInitialArtistOfferLinks = (
-  offerLinks: ArtistOfferLinkResponseModel[],
-  defaultLinks: ArtistOfferLinkResponseModel[]
-): ArtistOfferLinkResponseModel[] => {
+  offerLinks: ArtistOfferLinkResponseModelV2[],
+  defaultLinks: ArtistOfferLinkResponseModelV2[]
+): ArtistOfferLinkResponseModelV2[] => {
   const existingArtistTypes = new Set(offerLinks.map((a) => a.artistType))
 
   const missingDefaults = defaultLinks.filter(
@@ -139,7 +139,7 @@ export function getInitialValuesFromVenueAndProduct(
 }
 
 export function getInitialValuesFromOffer(
-  offer: GetIndividualOfferResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   subcategories: SubcategoryResponseModel[]
 ): DetailsFormValues {
   const subcategory = subcategories.find(
@@ -173,7 +173,6 @@ export function getInitialValuesFromOffer(
     author: extraData?.author ?? DEFAULT_DETAILS_FORM_VALUES.author,
     artistOfferLinks: getInitialArtistOfferLinks(
       offer.artistOfferLinks,
-      // @ts-expect-error - Waiting for pydanticV2 migration
       DEFAULT_DETAILS_FORM_VALUES.artistOfferLinks
     ),
     performer: extraData?.performer ?? DEFAULT_DETAILS_FORM_VALUES.performer,
@@ -186,7 +185,7 @@ export function getInitialValuesFromOffer(
 }
 
 export function getAccessibilityFormValuesFromOffer(
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
 ): AccessibilityFormValues {
   const accessibilityBase = {
     audio: !!offer.audioDisabilityCompliant,
@@ -203,7 +202,7 @@ export function getAccessibilityFormValuesFromOffer(
 }
 
 export function getFormReadOnlyFields(
-  offer: GetIndividualOfferResponseModel | null,
+  offer: GetIndividualOfferResponseModelV2 | null,
   hasSelectedProduct: boolean,
   venue: GetVenueResponseModel
 ): string[] {
