@@ -58,6 +58,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     cache_name = f"{_QF_CACHE_KEY}:{quotient_familial_fraud_check.id}"
     most_relevant_result: _ApiParticulierResult[api_particulier.QuotientFamilialResponse] | None = None
     unhandled_api_particulier_errors = []
+    is_result_conclusive = False
     for month in _get_months_when_user_is_17(user):
         try:
             qf_result = _get_and_cache_quotient_familial_result(quotient_familial_fraud_check, month, cache_name)
@@ -72,13 +73,11 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
         else:
             most_relevant_result = max(most_relevant_result, qf_result, key=_get_result_relevance)
 
-        if most_relevant_result.status == subscription_models.FraudCheckStatus.OK:
+        is_result_conclusive = _is_result_conclusive(most_relevant_result)
+        if is_result_conclusive:
             break
 
-    is_result_eligible = (
-        most_relevant_result is not None and most_relevant_result.status == subscription_models.FraudCheckStatus.OK
-    )
-    if unhandled_api_particulier_errors and not is_result_eligible:
+    if unhandled_api_particulier_errors and not is_result_conclusive:
         raise unhandled_api_particulier_errors[-1]
 
     if not most_relevant_result:
@@ -252,6 +251,13 @@ def _get_result_relevance(result: _ApiParticulierResult[typing.Any]) -> tuple[in
         )
 
     return (status_relevance, reason_relevance)
+
+
+def _is_result_conclusive(result: _ApiParticulierResult[typing.Any]) -> bool:
+    if result.status == subscription_models.FraudCheckStatus.OK:
+        return True
+
+    return subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND in result.reason_codes
 
 
 def _update_quotient_familial_fraud_check_content(

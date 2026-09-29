@@ -63,6 +63,8 @@ class QuotientFamilialApplicationTest:
             with caplog.at_level(logging.INFO):
                 bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
+            assert mock.call_count == 1
+
         bonus_fraud_checks = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
@@ -131,6 +133,8 @@ class QuotientFamilialApplicationTest:
             mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=without_child_quotient_familial)
 
             bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+
+            assert mock.call_count == 1
 
         bonus_fraud_checks = [
             fraud_check
@@ -307,6 +311,8 @@ class QuotientFamilialApplicationTest:
 
             with caplog.at_level(logging.INFO):
                 bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+
+            assert mock.call_count == 1
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
