@@ -12,7 +12,7 @@ import pytest
 import sqlalchemy as sa
 import time_machine
 
-import pcapi.core.favorites.models as fav_models
+import pcapi.core.favorites.models as favorite_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors import api_adresse
@@ -25,7 +25,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external_bookings import factories as external_bookings_factories
-from pcapi.core.favorites import factories as fav_factories
+from pcapi.core.favorites import factories as favorite_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
@@ -482,15 +482,15 @@ class DeleteVenueTest:
     def test_delete_venue_should_remove_favorites_of_managed_offers(self):
         venue = offerers_factories.VenueFactory()
         venue_to_delete = offerers_factories.VenueFactory()
-        fav_factories.FavoriteOfferFactory(offer__venue=venue_to_delete)
-        fav_factories.FavoriteOfferFactory(offer__venue=venue)
+        favorite_factories.FavoriteOfferFactory(offer__venue=venue_to_delete)
+        favorite_factories.FavoriteOfferFactory(offer__venue=venue)
         offerers_factories.VenueFactory(managingOfferer=venue_to_delete.managingOfferer)  # remaining venue
 
         offerers_api.delete_venue(venue_to_delete.id)
 
         assert db.session.query(offerers_models.Venue).count() == 2
         assert db.session.query(offers_models.Offer).count() == 1
-        assert db.session.query(fav_models.FavoriteOffer).count() == 1
+        assert db.session.query(favorite_models.FavoriteOffer).count() == 1
 
     def test_delete_venue_should_remove_criterions(self):
         offers_factories.OfferFactory(
@@ -1260,8 +1260,8 @@ class DeleteOffererTest:
     def test_delete_cascade_offerer_should_remove_favorites_of_managed_offers(self):
         # Given
         offerer_to_delete = offerers_factories.OffererFactory()
-        fav_factories.FavoriteOfferFactory(offer__venue__managingOfferer=offerer_to_delete)
-        fav_factories.FavoriteOfferFactory()
+        favorite_factories.FavoriteOfferFactory(offer__venue__managingOfferer=offerer_to_delete)
+        favorite_factories.FavoriteOfferFactory()
 
         # When
         offerers_api.delete_offerer(offerer_to_delete.id)
@@ -1270,7 +1270,7 @@ class DeleteOffererTest:
         assert db.session.query(offerers_models.Offerer).count() == 1
         assert db.session.query(offerers_models.Venue).count() == 1
         assert db.session.query(offers_models.Offer).count() == 1
-        assert db.session.query(fav_models.FavoriteOffer).count() == 1
+        assert db.session.query(favorite_models.FavoriteOffer).count() == 1
 
     def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_offers(self):
         # Given

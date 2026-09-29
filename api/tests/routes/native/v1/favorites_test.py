@@ -14,7 +14,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.external.batch import models as batch_models
 from pcapi.core.external.batch import testing as push_testing
-from pcapi.core.favorites import factories as fav_factories
+from pcapi.core.favorites import factories as favorite_factories
 from pcapi.core.favorites.models import FavoriteOffer
 from pcapi.core.favorites.repository import get_favorites_for
 from pcapi.core.offers import factories as offers_factories
@@ -65,7 +65,7 @@ class GetTest:
             # Event offer with 1 expired stock, 2 futures ones and a mediation
             offer1 = offers_factories.EventOfferFactory(venue=venue, bookingAllowedDatetime=day_before_start)
             offers_factories.MediationFactory(offer=offer1, thumbCount=1, credit="Pour hurlevent !")
-            favorite1 = fav_factories.FavoriteOfferFactory(offer=offer1, user=user)
+            favorite1 = favorite_factories.FavoriteOfferFactory(offer=offer1, user=user)
             # should be ignored because of the date in the past
             offers_factories.EventStockFactory(offer=offer1, beginningDatetime=day_before_start, price=10)
             # 2 valid stocks (different dates and prices)
@@ -75,7 +75,7 @@ class GetTest:
             # Event offer with soft deleted stock and product's image
             offer2 = offers_factories.EventOfferFactory(venue=venue)
             mediation = offers_factories.MediationFactory(offer=offer2, thumbCount=666)
-            favorite2 = fav_factories.FavoriteOfferFactory(offer=offer2, user=user)
+            favorite2 = favorite_factories.FavoriteOfferFactory(offer=offer2, user=user)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=start, price=20, isSoftDeleted=True)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=day_after_start, price=50)
 
@@ -83,13 +83,13 @@ class GetTest:
             offer3 = offers_factories.ThingOfferFactory(
                 venue=venue, subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
             )
-            favorite3 = fav_factories.FavoriteOfferFactory(offer=offer3, user=user)
+            favorite3 = favorite_factories.FavoriteOfferFactory(offer=offer3, user=user)
             offers_factories.ThingStockFactory(offer=offer3, price=10)
 
             # Event offer with passed reservation date
             offer4 = offers_factories.EventOfferFactory(venue=venue)
             offers_factories.MediationFactory(offer=offer4)
-            favorite4 = fav_factories.FavoriteOfferFactory(offer=offer4, user=user)
+            favorite4 = favorite_factories.FavoriteOfferFactory(offer=offer4, user=user)
             stock4 = offers_factories.EventStockFactory(
                 offer=offer4, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=30), price=50
             )
@@ -98,12 +98,12 @@ class GetTest:
             # Event offer in the past
             offer5 = offers_factories.EventOfferFactory(venue=venue)
             offers_factories.MediationFactory(offer=offer5)
-            favorite5 = fav_factories.FavoriteOfferFactory(offer=offer5, user=user)
+            favorite5 = favorite_factories.FavoriteOfferFactory(offer=offer5, user=user)
             offers_factories.EventStockFactory(offer=offer5, beginningDatetime=day_before_start, price=50)
 
             # Event offer with two times the same date / price
             offer6 = offers_factories.EventOfferFactory(venue=venue)
-            favorite6 = fav_factories.FavoriteOfferFactory(offer=offer6, user=user)
+            favorite6 = favorite_factories.FavoriteOfferFactory(offer=offer6, user=user)
             offers_factories.EventStockFactory(offer=offer6, beginningDatetime=day_after_start, price=30)
             offers_factories.EventStockFactory(offer=offer6, beginningDatetime=day_after_start, price=30)
 
@@ -207,9 +207,9 @@ class GetTest:
             # Given
             user = users_factories.UserFactory()
             active_offer = offers_factories.EventOfferFactory()
-            fav_factories.FavoriteOfferFactory(offer=active_offer, user=user)
+            favorite_factories.FavoriteOfferFactory(offer=active_offer, user=user)
             inactive_offer = offers_factories.EventOfferFactory(publicationDatetime=None)
-            fav_factories.FavoriteOfferFactory(offer=inactive_offer, user=user)
+            favorite_factories.FavoriteOfferFactory(offer=inactive_offer, user=user)
 
             # When
             client = client.with_token(user)
@@ -227,7 +227,7 @@ class GetTest:
             offerer = offerers_factories.OffererFactory(name="Pathé Gaumont")
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Ciné Pathé")
             offer = offers_factories.EventOfferFactory(venue=venue)
-            fav_factories.FavoriteOfferFactory(offer=offer, user=user)
+            favorite_factories.FavoriteOfferFactory(offer=offer, user=user)
 
             response = client.with_token(user).get(FAVORITES_URL)
             favorites = response.json["favorites"]
@@ -239,7 +239,7 @@ class GetTest:
             offerer = offerers_factories.OffererFactory(name="Pathé Gaumont")
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Ciné Pathé")
             offer = offers_factories.DigitalOfferFactory(venue=venue)
-            fav_factories.FavoriteOfferFactory(offer=offer, user=user)
+            favorite_factories.FavoriteOfferFactory(offer=offer, user=user)
 
             client = client.with_token(user)
 
@@ -261,36 +261,36 @@ class GetTest:
 
             # Event offer future stock
             offer1 = offers_factories.EventOfferFactory(venue=venue)
-            favorite1 = fav_factories.FavoriteOfferFactory(offer=offer1, user=user)
+            favorite1 = favorite_factories.FavoriteOfferFactory(offer=offer1, user=user)
             offers_factories.EventStockFactory(offer=offer1, beginningDatetime=tomorow, price=10)
 
             # Thing offer with no date
             offer2 = offers_factories.ThingOfferFactory(venue=venue)
-            favorite2 = fav_factories.FavoriteOfferFactory(offer=offer2, user=user)
+            favorite2 = favorite_factories.FavoriteOfferFactory(offer=offer2, user=user)
             offers_factories.ThingStockFactory(offer=offer2, price=10)
 
             # Thing offer with past booking stock
             offer3 = offers_factories.ThingOfferFactory(venue=venue)
-            favorite3 = fav_factories.FavoriteOfferFactory(offer=offer3, user=user)
+            favorite3 = favorite_factories.FavoriteOfferFactory(offer=offer3, user=user)
             offers_factories.ThingStockFactory(offer=offer3, bookingLimitDatetime=yesterday, price=10)
 
             # Event offer with stock in the future but past booking
             offer4 = offers_factories.EventOfferFactory(venue=venue)
-            favorite4 = fav_factories.FavoriteOfferFactory(offer=offer4, user=user)
+            favorite4 = favorite_factories.FavoriteOfferFactory(offer=offer4, user=user)
             offers_factories.EventStockFactory(
                 offer=offer4, beginningDatetime=today, bookingLimitDatetime=yesterday, price=10
             )
 
             # Event offer with soft deleted stock
             offer5 = offers_factories.EventOfferFactory(venue=venue)
-            favorite5 = fav_factories.FavoriteOfferFactory(offer=offer5, user=user)
+            favorite5 = favorite_factories.FavoriteOfferFactory(offer=offer5, user=user)
             offers_factories.EventStockFactory(
                 offer=offer5, beginningDatetime=tomorow, quantity=1, price=10, isSoftDeleted=True
             )
 
             # Event offer with booked stock
             offer6 = offers_factories.EventOfferFactory(venue=venue)
-            favorite6 = fav_factories.FavoriteOfferFactory(offer=offer6, user=user)
+            favorite6 = favorite_factories.FavoriteOfferFactory(offer=offer6, user=user)
             stock6 = offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, quantity=1, price=10)
             bookings_factories.BookingFactory(stock=stock6, user=user)
 
@@ -586,7 +586,7 @@ class DeleteTest:
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
-            favorite = fav_factories.FavoriteOfferFactory(offer=offer, user=user)
+            favorite = favorite_factories.FavoriteOfferFactory(offer=offer, user=user)
             assert db.session.query(FavoriteOffer).count() == 1
 
             # When
@@ -603,7 +603,7 @@ class DeleteTest:
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
-            favorite = fav_factories.FavoriteOfferFactory(offer=offer, user=other_beneficiary)
+            favorite = favorite_factories.FavoriteOfferFactory(offer=offer, user=other_beneficiary)
             assert db.session.query(FavoriteOffer).count() == 1
 
             # When
