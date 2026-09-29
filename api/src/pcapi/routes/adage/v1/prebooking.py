@@ -11,6 +11,9 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
 from pcapi.routes.adage.v1.serialization import constants
+from pcapi.routes.adage.v1.serialization.collective_booking import GetAllBookingsPerYearQueryModel
+from pcapi.routes.adage.v1.serialization.collective_booking import GetEducationalBookingsQueryModel
+from pcapi.routes.adage.v1.serialization.collective_booking import MergeInstitutionPrebookingsModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
@@ -27,7 +30,7 @@ logger = logging.getLogger(__name__)
     api=blueprint.api, response_model=educational_schemas.EducationalBookingsResponse, tags=("get prebookings",)
 )
 def get_educational_bookings(
-    query: educational_schemas.GetEducationalBookingsRequest, year_id: str, uai_code: str
+    query: GetEducationalBookingsQueryModel, year_id: str, uai_code: str
 ) -> educational_schemas.EducationalBookingsResponse:
     educational_bookings = educational_repository.find_collective_bookings_for_adage(
         uai_code=uai_code,
@@ -103,7 +106,7 @@ def refuse_pre_booking(educational_booking_id: int) -> educational_schemas.Educa
 )
 def get_all_bookings_per_year(
     educational_year_id: str,
-    query: educational_schemas.GetAllBookingsPerYearQueryModel,
+    query: GetAllBookingsPerYearQueryModel,
 ) -> educational_schemas.EducationalBookingsPerYearResponse:
     educational_bookings = educational_repository.get_paginated_collective_bookings_for_educational_year(
         educational_year_id,
@@ -122,7 +125,7 @@ def get_all_bookings_per_year(
     on_error_statuses=[404, 422],
     tags=("merge institution",),
 )
-def merge_institution_prebookings(body: educational_schemas.MergeInstitutionPrebookingsQueryModel) -> None:
+def merge_institution_prebookings(body: MergeInstitutionPrebookingsModel) -> None:
     institution_source = educational_repository.find_educational_institution_by_uai_code(body.source_uai)
     if not institution_source:
         raise ApiErrors({"code": "Source institution not found"}, status_code=404)
