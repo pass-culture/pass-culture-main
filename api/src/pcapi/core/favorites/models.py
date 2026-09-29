@@ -1,5 +1,6 @@
 from __future__ import annotations  # to type models before their declaration
 
+import typing
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
@@ -7,11 +8,14 @@ from decimal import Decimal
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-from pcapi.core.offers.models import Offer
-from pcapi.core.users.models import User
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils import date as date_utils
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.offers.models import Offer
+    from pcapi.core.users.models import User
 
 
 @dataclass
