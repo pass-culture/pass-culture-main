@@ -1,6 +1,6 @@
 import {
   type ArtistOfferLinkBodyModelV2,
-  type ArtistOfferLinkResponseModel,
+  type ArtistOfferLinkResponseModelV2,
   ArtistType,
   type PatchOfferBodyModel,
   type PostOfferBodyModel,
@@ -78,7 +78,7 @@ export const serializeExtraData = (formValues: DetailsFormValues) => {
 }
 
 const sanitizeArtistOfferLinks = (
-  artistOfferLinks: ArtistOfferLinkResponseModel[]
+  artistOfferLinks: ArtistOfferLinkResponseModelV2[]
 ): ArtistOfferLinkBodyModelV2[] => {
   return artistOfferLinks
     .filter((artist) => !!artist.artistName?.trim())
@@ -110,7 +110,6 @@ export function serializeDetailsPostData(
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
     visualDisabilityCompliant: formValues.accessibility.visual,
-    // @ts-expect-error - Waiting for pydanticV2 migration
     artistOfferLinks: sanitizeArtistOfferLinks(formValues.artistOfferLinks),
   })
 }
@@ -154,7 +153,6 @@ export function serializeDetailsPatchData(
       visualDisabilityCompliant: formValues.accessibility.visual,
     }),
     ...(!isReadOnly('artistOfferLinks') && {
-      // @ts-expect-error - Waiting for pydanticV2 migration
       artistOfferLinks: sanitizeArtistOfferLinks(formValues.artistOfferLinks),
     }),
   })
