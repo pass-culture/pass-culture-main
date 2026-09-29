@@ -43,7 +43,29 @@ class Returns200Test:
             "videoTitle": "title",
             "videoThumbnailUrl": f"https://example.com/vi/{YOUTUBE_VIDEO_ID}/default.jpg",
             "videoUrl": YOUTUBE_VIDEO_URL,
+            "videoDescription": None,
         }
+
+    @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
+    def test_add_video_description_to_offer(self, mock_get_metadata, client):
+        mock_get_metadata.return_value = youtube.YoutubeVideoMetadata(
+            id=YOUTUBE_VIDEO_ID,
+            title="title",
+            thumbnail_url=f"https://example.com/vi/{YOUTUBE_VIDEO_ID}/default.jpg",
+            duration=300,
+        )
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(venue=venue)
+
+        response = client.with_session_auth("user@example.com").put(
+            self.endpoint.format(offer_id=offer.id),
+            json={"videoUrl": YOUTUBE_VIDEO_URL, "videoDescription": "A video description"},
+        )
+
+        assert response.status_code == 200
+        assert response.json["videoDescription"] == "A video description"
+        assert offer.metaData.videoDescription == "A video description"
 
     def test_remove_video_from_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -69,6 +91,7 @@ class Returns200Test:
             "videoTitle": None,
             "videoThumbnailUrl": None,
             "videoUrl": None,
+            "videoDescription": None,
         }
 
 

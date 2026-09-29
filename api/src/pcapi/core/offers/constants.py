@@ -5,6 +5,7 @@ from pcapi.core.finance.utils import CurrencyEnum
 
 
 MAX_OFFER_NAME_LENGTH: typing.Final = 90
+MAX_OFFER_VIDEO_DESCRIPTION_LENGTH: typing.Final = 150
 
 OFFERS_RECAP_LIMIT: typing.Final = 101
 OFFERS_HOMEPAGE_LIMIT: typing.Final = 3

@@ -704,6 +704,7 @@ class OfferMetaData(PcObject, Model):
     videoThumbnailUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     videoTitle: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     videoUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    videoDescription: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
 
 class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):

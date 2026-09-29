@@ -641,7 +641,9 @@ def update_offer_video(offer_id: int, body: offers_serialize.UpdateOfferVideoBod
 
     try:
         if video_url:
-            videos_api.upsert_video_and_metadata(video_url, offer)
+            videos_api.upsert_video_and_metadata(
+                video_url=video_url, offer=offer, video_description=body.video_description
+            )
         elif offer.metaData and offer.metaData.videoUrl:
             videos_api.remove_video_data_from_offer_metadata(
                 offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl
@@ -662,6 +664,7 @@ def update_offer_video(offer_id: int, body: offers_serialize.UpdateOfferVideoBod
             videoTitle=None,
             videoThumbnailUrl=None,
             videoUrl=None,
+            videoDescription=None,
         )
     return offers_serialize.VideoData.from_orm(offer.metaData)
 
@@ -889,6 +892,7 @@ def get_offer_video_metadata(
         videoTitle=video_metadata.title,
         videoThumbnailUrl=video_metadata.thumbnail_url,
         videoUrl=query.video_url,
+        videoDescription=None,
     )
 
 

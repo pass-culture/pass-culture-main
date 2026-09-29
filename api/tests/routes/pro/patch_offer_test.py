@@ -1758,6 +1758,7 @@ class Returns200Test:
             videoThumbnailUrl="https://example.com/thumbnail.jpg",
             videoTitle="Un titre de vidéo",
             videoUrl="https://www.youtube.com/watch?v=lm20v6ASSFI",
+            videoDescription="Une description de vidéo",
         )
         highlight = highlights_factories.HighlightFactory(name="Un temps fort")
         highlights_factories.HighlightRequestFactory(offer=offer, highlight=highlight)
@@ -1774,6 +1775,7 @@ class Returns200Test:
             "videoThumbnailUrl": "https://example.com/thumbnail.jpg",
             "videoTitle": "Un titre de vidéo",
             "videoUrl": "https://www.youtube.com/watch?v=lm20v6ASSFI",
+            "videoDescription": "Une description de vidéo",
         }
         assert response.json["highlightRequests"] == [{"id": highlight.id, "name": "Un temps fort"}]
         assert response.json["hasCulturalOutreachClaim"] is True

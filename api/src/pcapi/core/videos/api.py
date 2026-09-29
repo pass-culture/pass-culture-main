@@ -104,6 +104,7 @@ def remove_video_data_from_offer_metadata(
 def upsert_video_and_metadata(
     video_url: str,
     offer: offers_models.Offer,
+    video_description: str | None = None,
     provider_id: int | None = None,
 ) -> None:
     cached_video_metadata = get_video_metadata_from_cache(video_url)
@@ -153,6 +154,7 @@ def upsert_video_and_metadata(
     offer.metaData.videoThumbnailUrl = cached_video_metadata.thumbnail_url
     offer.metaData.videoDuration = cached_video_metadata.duration
     offer.metaData.videoUrl = video_url
+    offer.metaData.videoDescription = video_description
 
     db.session.add(offer.metaData)
     db.session.flush()
