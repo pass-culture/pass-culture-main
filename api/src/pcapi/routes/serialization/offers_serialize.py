@@ -52,7 +52,9 @@ def validate_extra_data_size(extra_data: offers_models.OfferExtraData | None) ->
         raise PydanticError("extraData field is too big (maximum 64 Ko).")
 
 
-def validate_extra_data_content(extra_data: offers_models.OfferExtraData | None) -> None:
+def validate_extra_data_content(
+    extra_data: offers_models.OfferExtraData | None,
+) -> None:
     if HTML_INJECTION_REGEX.search(json.dumps(extra_data)):
         raise PydanticError("extraData field includes forbidden caracters or scripts")
 
@@ -228,7 +230,9 @@ class ListOffersStockResponseModel(BaseModel):
         return remainingQuantity
 
 
-def offer_location_getter_dict_helper(offer: offers_models.Offer) -> LocationResponseModel | None:
+def offer_location_getter_dict_helper(
+    offer: offers_models.Offer,
+) -> LocationResponseModel | None:
     if not offer.offererAddress:
         return None
     label = offer.offererAddress.label
@@ -288,6 +292,50 @@ class ListOffersOfferResponseModel(BaseModel):
         getter_dict = ListOffersOfferResponseModelsGetterDict
 
 
+class EventOfferStockResponseModel(HttpBodyModel):
+    id: int
+    remainingQuantity: int | str
+    beginningDatetime: datetime.datetime | None
+
+
+class EventOfferResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    stocks: list[EventOfferStockResponseModel]
+    thumbUrl: str | None
+    status: OfferStatus
+    location: address_serialize.LocationResponseModelV2 | None
+    bookingsCount: int
+    highlightRequests: list[highlight_serialize.ShortHighlightResponseModelV2]
+    hasProAdvice: bool
+
+    @classmethod
+    def build(cls, offer: offers_models.Offer) -> typing.Self:
+        return cls(
+            id=offer.id,
+            name=offer.name,
+            stocks=[EventOfferStockResponseModel.model_validate(stock) for stock in offer.stocks],
+            thumbUrl=offer.thumbUrl,
+            status=offer.status,
+            location=address_serialize.LocationResponseModelV2.build_from_offer_location(
+                offer.offererAddress, offer.venue
+            ),
+            bookingsCount=sum(stock.dnBookedQuantity for stock in offer.stocks),
+            highlightRequests=[
+                highlight_serialize.ShortHighlightResponseModelV2.model_validate(highlight_request.highlight)
+                for highlight_request in offer.highlight_requests
+            ],
+            hasProAdvice=bool(offer.hasProAdvice),
+        )
+
+
+class ListEventOffersResponseModel(HttpBodyModel):
+    events: list[EventOfferResponseModel]
+    page: int
+    pages: int
+    total: int
+
+
 class ListOffersResponseModel(BaseModel):
     __root__: list[ListOffersOfferResponseModel]
 
@@ -295,7 +343,9 @@ class ListOffersResponseModel(BaseModel):
         json_encoders = {datetime.datetime: format_into_utc_date}
 
 
-def _serialize_offer_paginated(offer: offers_models.Offer) -> ListOffersOfferResponseModel:
+def _serialize_offer_paginated(
+    offer: offers_models.Offer,
+) -> ListOffersOfferResponseModel:
     return ListOffersOfferResponseModel.from_orm(offer)
 
 
@@ -307,7 +357,9 @@ def _serialize_stock(stock: offers_models.Stock) -> ListOffersStockResponseModel
     )
 
 
-def serialize_capped_offers(paginated_offers: list[offers_models.Offer]) -> list[ListOffersOfferResponseModel]:
+def serialize_capped_offers(
+    paginated_offers: list[offers_models.Offer],
+) -> list[ListOffersOfferResponseModel]:
     return [_serialize_offer_paginated(offer) for offer in paginated_offers]
 
 
@@ -328,6 +380,17 @@ class ListOffersQueryModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
         arbitrary_types_allowed = True
+
+
+class ListEventOffersQueryModel(HttpQueryParamsModel):
+    venue_id: int
+    page: int = pydantic_v2.Field(default=1, ge=1)
+    name_search: str | None = None
+    status: OfferStatus | None = None
+    creation_mode: str | None = None
+    period_beginning_date: datetime.date | None = None
+    period_ending_date: datetime.date | None = None
+    is_digital: bool | None = None
 
 
 class ListOffersHomeQueryModel(HttpQueryParamsModel):
@@ -561,7 +624,10 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
+        json_encoders = {
+            datetime.datetime: format_into_utc_date,
+            datetime.time: _format_time,
+        }
         use_enum_values = True
         getter_dict = IndividualOfferResponseGetterDict
 

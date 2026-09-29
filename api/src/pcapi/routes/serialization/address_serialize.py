@@ -5,6 +5,8 @@ from pydantic.v1 import validator
 
 from pcapi.core.offerers import schemas as offerers_schema
 from pcapi.core.offerers.models import OffererAddress
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.utils import is_venue_address
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 
@@ -46,6 +48,17 @@ class LocationResponseModelV2(HttpBodyModel):
             latitude=float(offerer_address.address.latitude),
             longitude=float(offerer_address.address.longitude),
             departmentCode=offerer_address.address.departmentCode,
+        )
+
+    @classmethod
+    def build_from_offer_location(cls, offerer_address: OffererAddress | None, venue: Venue) -> typing.Self | None:
+        if offerer_address is None:
+            return None
+        is_venue_location = is_venue_address(offerer_address, venue)
+        return cls.build(
+            offerer_address=offerer_address,
+            label=None if is_venue_location else offerer_address.label,
+            is_venue_location=is_venue_location,
         )
 
 

@@ -72,6 +72,19 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     return offers_serialize.ListOffersResponseModel(__root__=offers_serialize.serialize_capped_offers(paginated_offers))
 
 
+@pro_blueprint.route("/event-offers", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.ListEventOffersResponseModel,
+    api=blueprint.pro_schema,
+)
+@atomic()
+def list_event_offers(
+    query: offers_serialize.ListEventOffersQueryModel,
+) -> offers_serialize.ListEventOffersResponseModel:
+    pass
+
+
 @pro_blueprint.route("/offers/home", methods=["GET"])
 @atomic()
 @login_required

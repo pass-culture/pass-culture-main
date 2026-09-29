@@ -20,6 +20,11 @@ class ShortHighlightResponseModel(ConfiguredBaseModel):
     name: str
 
 
+class ShortHighlightResponseModelV2(HttpBodyModel):
+    id: int
+    name: str
+
+
 class HighlightResponseModel(HttpBodyModel):
     id: int
     availability_datespan: list[date]
