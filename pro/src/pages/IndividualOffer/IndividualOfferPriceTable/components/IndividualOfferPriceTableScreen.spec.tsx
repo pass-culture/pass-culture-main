@@ -231,6 +231,7 @@ describe('<IndividualOfferPriceTableScreen />', () => {
         offer: getIndividualOfferFactory({
           subcategoryId: MOCKED_SUBCATEGORY.CAN_BE_DUO.id,
           lastProvider: { name: 'Provider' },
+          isDuo: true,
         }),
       },
     })
@@ -242,6 +243,9 @@ describe('<IndividualOfferPriceTableScreen />', () => {
     expect(
       screen.getByRole('checkbox', { name: /Accepter les réservations “Duo“/ })
     ).toBeDisabled()
+    expect(
+      screen.getByRole('checkbox', { name: /Accepter les réservations “Duo“/ })
+    ).toBeChecked()
   })
 
   it('should display synchronized banner when offer is synchronized', async () => {

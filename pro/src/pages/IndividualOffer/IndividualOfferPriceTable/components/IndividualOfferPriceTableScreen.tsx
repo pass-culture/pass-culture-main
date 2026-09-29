@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { FormProvider, useForm } from 'react-hook-form'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 
 import type {
@@ -149,15 +149,18 @@ export const IndividualOfferPriceTableScreen = ({
           {canBeDuo && (
             <FormLayout fullWidthActions>
               <FormLayout.Section title="Réservations “Duo”">
-                <DuoCheckbox
-                  {...form.register('isDuo')}
-                  checked={Boolean(form.watch('isDuo'))}
+                <Controller
+                  control={form.control}
+                  name="isDuo"
                   disabled={
                     isOfferDisabled(offer) ||
                     hasPublishedOfferWithSameEan ||
                     isOfferSynchronized(offer) ||
                     isClosed
                   }
+                  render={({ field }) => (
+                    <DuoCheckbox {...field} checked={Boolean(field.value)} />
+                  )}
                 />
               </FormLayout.Section>
             </FormLayout>
