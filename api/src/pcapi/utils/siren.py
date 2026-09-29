@@ -1,5 +1,7 @@
 import re
 
+from pcapi.utils import string as string_utils
+
 
 SIREN_LENGTH = 9
 SIRET_LENGTH = 14
@@ -44,14 +46,14 @@ def complete_siren_or_siret(digits: str) -> str:
 
 
 def is_valid_siren(digits: str) -> bool:
-    if len(digits) != SIREN_LENGTH or not digits.isnumeric():
+    if len(digits) != SIREN_LENGTH or not string_utils.is_numeric(digits):
         return False
 
     return _compute_luhn_sum(digits, SIREN_LENGTH) == 0
 
 
 def is_valid_siret(digits: str) -> bool:
-    if len(digits) != SIRET_LENGTH or not digits.isnumeric():
+    if len(digits) != SIRET_LENGTH or not string_utils.is_numeric(digits):
         return False
 
     if _compute_luhn_sum(digits, SIRET_LENGTH) == 0:
