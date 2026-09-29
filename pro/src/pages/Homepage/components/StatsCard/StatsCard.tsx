@@ -1,13 +1,16 @@
 import { useAnalytics } from 'app/App/analytics/firebase'
 import cn from 'classnames'
-import { HomepageEvents } from 'commons/core/FirebaseEvents/constants'
-import headlineImg from 'components/IndividualOfferLayout/components/OfferHeadlineCard/assets/headline-img.svg'
+import {
+  EngagementEvents,
+  HomepageEvents,
+} from 'commons/core/FirebaseEvents/constants'
 import { Button } from 'design-system/Button/Button'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
 } from 'design-system/Button/types'
+import { ModalHighlight } from 'pages/Homepage/components/HighlightHome/ModalHighlight/ModalHighlight'
 import { CumulatedViews } from 'pages/Homepage/components/StatsCard/components/CumulatedViews'
 import { OldMostViewedOffers } from 'pages/Homepage/components/StatsCard/components/OldMostViewedOffers'
 import { useEffect, useState } from 'react'
@@ -22,6 +25,8 @@ import type {
   VenueOffersPeriodStatsModel,
 } from '@/apiClient/v1'
 import {
+  GET_OFFERS_HOME_QUERY_KEY,
+  GET_VENUE_HEADLINE_OFFER_QUERY_KEY,
   GET_VENUES_OFFERS_STATS_V2,
   GET_VENUES_STATS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
@@ -29,6 +34,8 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import strokeShowIcon from '@/icons/stroke-show.svg'
 import { Card } from '@/ui-kit/Card/Card'
 
+import headlineImg from './assets/headlineImg.svg'
+import highlightImg from './assets/highlightImg.svg'
 import { MostViewedOffers } from './components/MostViewedOffers'
 import { OldCumulatedViews } from './components/OldCumulatedViews'
 import styles from './StatsCard.module.scss'
@@ -42,6 +49,7 @@ type StatsPeriods = 'last3Months' | 'last6Months'
 export const StatsCard = ({ venue }: StatsCardProps) => {
   const isStatsV2 = useActiveFeature('WIP_HOME_STATS_V2')
   const [selectedPeriod, setSelectedPeriod] = useState<StatsPeriods>()
+  const [isHighlightModalOpen, setIsHighlightModalOpen] = useState(false)
   const [periodStats, setPeriodStats] = useState<VenueOffersPeriodStatsModel>()
   const { logEvent } = useAnalytics()
 
@@ -56,6 +64,32 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
       api.getVenueOffersStatsV2({
         path: { venue_id: venueId },
       })
+  )
+
+  const { data: individualOffers = [], isLoading: areOffersLoading } = useSWR(
+    isStatsV2 ? [GET_OFFERS_HOME_QUERY_KEY, venue.id] : null,
+    () => api.listOffersHome({ query: { venueId: venue.id } }),
+    { fallbackData: [] }
+  )
+
+  const { data: rawHeadlineOffer } = useSWR(
+    [GET_VENUE_HEADLINE_OFFER_QUERY_KEY],
+    () => api.getVenueHeadlineOffer({ path: { venue_id: venue.id } }),
+    {
+      onError: (error) => {
+        // 404 is expected when there is no headline offer.
+        if (error.status !== 404) {
+          throw error
+        }
+      },
+      onErrorRetry: (error) => {
+        // By default, SWR retries on error. We don't want to retry on 404,
+        // since it's expected when there is no headline offer.
+        if (error.status === 404) {
+          return
+        }
+      },
+    }
   )
 
   if (isStatsV2 && !selectedPeriod && !isLoading) {
@@ -82,6 +116,9 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
   if (!isStatsV2 && (!oldStats || dailyViews.length < 2)) {
     return null
   }
+  const hasThingOffers = individualOffers.some((offer) => !offer.isEvent)
+  const hasEventOffers = individualOffers.some((offer) => offer.isEvent)
+  const hasBothOfferTypes = hasThingOffers && hasEventOffers
 
   const oldStatsComponent = (
     <Card>
@@ -168,31 +205,116 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
                 hasActiveIndividualOffer={venue.hasActiveIndividualOffer}
               />
             </div>
-            <div>
-              <h3 className={styles['stats-headline-offer-head']}>
-                Améliorez votre visibilité
-              </h3>
-              <div className={styles['stats-headline-offer']}>
-                <SvgIcon
-                  src={headlineImg}
-                  alt=""
-                  width="68"
-                  viewBox="0 0 68 68"
-                  aria-hidden={true}
-                />
-                <p className={styles['stats-headline-offer-title']}>
-                  Doublez les consultations d’une offre en la mettant à la une
-                </p>
-                <div className={styles['stats-headline-offer-button']}>
-                  <Button
-                    variant={ButtonVariant.SECONDARY}
-                    color={ButtonColor.NEUTRAL}
-                    size={ButtonSize.SMALL}
-                    label="Choisir une offre"
-                  />
+            {!areOffersLoading &&
+              ((hasThingOffers && !rawHeadlineOffer) || hasEventOffers) && (
+                <div>
+                  <h3 className={styles['stats-headline-offer-head']}>
+                    Améliorez votre visibilité
+                  </h3>
+                  <div
+                    data-testid="visibility-actions"
+                    className={cn(styles['visibility-actions'], {
+                      [styles['has-both-actions']]:
+                        hasBothOfferTypes && !rawHeadlineOffer,
+                    })}
+                  >
+                    {hasThingOffers && !rawHeadlineOffer && (
+                      <div
+                        className={cn(
+                          styles['visibility-action'],
+                          styles['headline-action']
+                        )}
+                      >
+                        <SvgIcon
+                          src={headlineImg}
+                          alt=""
+                          width="68"
+                          viewBox="0 0 68 68"
+                          aria-hidden={true}
+                        />
+                        <p className={styles['visibility-action-title']}>
+                          Doublez les consultations d’une offre en la mettant à
+                          la une
+                        </p>
+                        <div className={styles['visibility-action-button']}>
+                          <Button
+                            as="router-link"
+                            to="/offres"
+                            variant={ButtonVariant.SECONDARY}
+                            color={ButtonColor.NEUTRAL}
+                            size={ButtonSize.SMALL}
+                            fullWidth
+                            onClick={() =>
+                              logEvent(HomepageEvents.CLICKED_HEADLINE_OFFER)
+                            }
+                            label="Choisir une offre"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {hasEventOffers && !rawHeadlineOffer && (
+                      <div
+                        className={cn(
+                          styles['visibility-action'],
+                          styles['highlight-action']
+                        )}
+                      >
+                        <SvgIcon
+                          src={highlightImg}
+                          alt=""
+                          width="68"
+                          viewBox="0 0 68 68"
+                          aria-hidden={true}
+                        />
+                        <p className={styles['visibility-action-title']}>
+                          Participez à un des temps forts valorisés sur
+                          l’application
+                        </p>
+                        <div className={styles['visibility-action-button']}>
+                          <Button
+                            variant={ButtonVariant.SECONDARY}
+                            color={ButtonColor.NEUTRAL}
+                            size={ButtonSize.SMALL}
+                            fullWidth
+                            onClick={() => {
+                              logEvent(
+                                EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
+                                {
+                                  action: 'discover',
+                                }
+                              )
+                              setIsHighlightModalOpen(true)
+                            }}
+                            label="Voir les prochains temps forts"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {hasEventOffers && rawHeadlineOffer && (
+                      <>
+                        <p>
+                          Si les consultations tardent à venir, pensez à ajuster
+                          vos visuels ou le descriptif de vos offres pour
+                          captiver encore plus les jeunes.
+                        </p>
+                        <Button
+                          variant={ButtonVariant.TERTIARY}
+                          as="a"
+                          to="https://aide.passculture.app/hc/fr/sections/4412332363793-Gestion-et-valorisation-des-offres"
+                          opensInNewTab
+                          label="Voir nos conseils des gestion et valorisation d’offres"
+                        />
+                      </>
+                    )}
+                  </div>
+                  {hasEventOffers && !rawHeadlineOffer && (
+                    <ModalHighlight
+                      isOpen={isHighlightModalOpen}
+                      onClose={() => setIsHighlightModalOpen(false)}
+                    />
+                  )}
                 </div>
-              </div>
-            </div>
+              )}
           </Card.Content>
         </>
       )}
