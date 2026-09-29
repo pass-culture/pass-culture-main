@@ -2651,13 +2651,13 @@ class ListSettlementBatchesTest(GetEndpointHelper):
         batch = finance_factories.SettlementBatchFactory(
             name="VIR1234", label="VIR1234 01/01 - 15/01", dateValidated=datetime.datetime(2026, 1, 18, 12, 34)
         )
-        finance_factories.SettlementFactory(batch=batch, amount=10000, status=finance_models.SettlementStatus.EXECUTED)
-        finance_factories.SettlementFactory(batch=batch, amount=15000, status=finance_models.SettlementStatus.EXECUTED)
+        finance_factories.SettlementFactory(batch=batch, amount=-10000, status=finance_models.SettlementStatus.EXECUTED)
+        finance_factories.SettlementFactory(batch=batch, amount=-15000, status=finance_models.SettlementStatus.EXECUTED)
 
         batch = finance_factories.SettlementBatchFactory(
             name="VIR1235", label="VIR1235 16/01 - 31/01", dateValidated=None
         )
-        finance_factories.SettlementFactory(batch=batch, amount=12000)
+        finance_factories.SettlementFactory(batch=batch, amount=-12000)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
@@ -2691,8 +2691,8 @@ class GetValidateSettlementBatchFormTest(GetEndpointHelper):
         batch = finance_factories.SettlementBatchFactory(
             name="VIR1235", label="VIR1235 16/01 - 31/01", dateValidated=None
         )
-        finance_factories.SettlementFactory(batch=batch, amount=12000)
-        finance_factories.SettlementFactory(batch=batch, amount=3500)
+        finance_factories.SettlementFactory(batch=batch, amount=-12000)
+        finance_factories.SettlementFactory(batch=batch, amount=-3500)
 
         batch_id = batch.id
         with assert_num_queries(self.expected_num_queries):
@@ -2728,7 +2728,7 @@ class ValidateSettlementBatchTest(PostEndpointHelper):
             2, status=finance_models.InvoiceStatus.PENDING_PAYMENT, bankAccount=bank_account
         )
         settlement = finance_factories.SettlementFactory(
-            batch=batch, invoices=invoices, bankAccount=bank_account, amount=3150
+            batch=batch, invoices=invoices, bankAccount=bank_account, amount=-3150
         )
 
         other_batch = finance_factories.SettlementBatchFactory()

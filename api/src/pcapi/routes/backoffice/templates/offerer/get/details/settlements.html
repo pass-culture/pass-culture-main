@@ -15,9 +15,9 @@
       <tr>
         <td>{{ settlement.batch.name }}</td>
         <td>{{ settlement.batch.dateValidated | format_date }}</td>
-        <td>{{ settlement.bankAccount.label }}</td>
+        <td>{{ links.build_bank_account_name_to_details_link(settlement.bankAccount, text_attr="label") }}</td>
         <td>{{ settlement.status | format_settlement_status }}</td>
-        <td>{{ settlement.amount | format_cents(target=settlement.bankAccount.offerer) }}</td>
+        <td>{{ -settlement.amount | format_cents(target=settlement.bankAccount.offerer, is_signed=true) }}</td>
         <td>{{ settlement.invoices | map(attribute="reference") | sort(attribute="reference") | join(", ") | escape }}</td>
       </tr>
     {% endfor %}

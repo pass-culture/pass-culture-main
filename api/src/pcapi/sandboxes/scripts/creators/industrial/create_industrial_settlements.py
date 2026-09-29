@@ -28,7 +28,7 @@ def create_industrial_settlements() -> None:
             for invoice in cashflow.invoices:
                 finance_factories.SettlementFactory(
                     bankAccount=invoice.bankAccount,
-                    amount=abs(invoice.amount),
+                    amount=invoice.amount,
                     batch=settlement_batch,
                     invoices=[invoice],
                     status=finance_models.SettlementStatus.EXECUTED,

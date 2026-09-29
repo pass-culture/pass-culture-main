@@ -376,7 +376,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
                             "value", constants.MISSING_BATCH_LABEL_VALUE
                         ),
                         settlement_date=datetime.date.fromisoformat(settlement_data["Date"]["value"].split("T")[0]),
-                        amount=int(float(settlement_data["Amount"]["value"]) * 100),
+                        amount=-int(float(settlement_data["Amount"]["value"]) * 100),
                     )
                     settlements.append(payload)
                 except Exception as exc:

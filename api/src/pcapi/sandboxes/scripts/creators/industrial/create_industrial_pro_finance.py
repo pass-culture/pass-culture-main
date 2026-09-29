@@ -75,7 +75,7 @@ def create_various_settlements(user: users_models.User) -> None:
     # settlement on batch 1, bank account 1, two invoices (positive and negative amount)
     settlement_1 = factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
-        amount=10000,
+        amount=-10000,
         bankAccount=bank_account_1,
         batch=batch_1,
         invoices=[
@@ -87,7 +87,7 @@ def create_various_settlements(user: users_models.User) -> None:
     # settlement on batch 1, bank account 1, three invoices
     settlement_2 = factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
-        amount=30000,
+        amount=-30000,
         bankAccount=bank_account_1,
         batch=batch_1,
         invoices=[
@@ -100,7 +100,7 @@ def create_various_settlements(user: users_models.User) -> None:
     # settlement on batch 2, bank account 2, two invoices, one is not PAID
     settlement_3 = factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
-        amount=5000,
+        amount=-5000,
         bankAccount=bank_account_2,
         batch=batch_2,
         invoices=[
@@ -117,7 +117,7 @@ def create_various_settlements(user: users_models.User) -> None:
     # settlement on batch 3, bank account 2, one invoice
     settlement_4 = factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
-        amount=4000,
+        amount=-4000,
         bankAccount=bank_account_2,
         batch=batch_3,
         invoices=[
@@ -128,7 +128,7 @@ def create_various_settlements(user: users_models.User) -> None:
     # settlement on batch 3, bank account 2, no invoice
     settlement_5 = factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
-        amount=5000,
+        amount=-5000,
         bankAccount=bank_account_2,
         batch=batch_3,
     )
@@ -138,7 +138,7 @@ def create_various_settlements(user: users_models.User) -> None:
     # when a settlement is rejected, the bank account is refused and the linked venues are detached
     settlement_6 = factories.SettlementFactory.create(
         status=models.SettlementStatus.REJECTED,
-        amount=30000,
+        amount=-30000,
         bankAccount=refused_bank_account,
         batch=batch_4,
         invoices=[
@@ -176,7 +176,11 @@ def create_rejected_settlement(user: users_models.User) -> None:
     batch = factories.SettlementBatchFactory.create(name="VIR10", dateValidated=now - datetime.timedelta(days=5))
     invoice = factories.InvoiceFactory.create(amount=-10000, bankAccount=bank_account, date=batch.dateValidated)
     settlement = factories.SettlementFactory.create(
-        status=models.SettlementStatus.REJECTED, amount=10000, bankAccount=bank_account, batch=batch, invoices=[invoice]
+        status=models.SettlementStatus.REJECTED,
+        amount=-10000,
+        bankAccount=bank_account,
+        batch=batch,
+        invoices=[invoice],
     )
     _generate_fake_invoice_pdfs(settlement)
 
@@ -211,7 +215,7 @@ def create_rejected_processed_solved_settlements(user: users_models.User) -> Non
     invoice_1 = factories.InvoiceFactory.create(amount=-10000, bankAccount=bank_account, date=batch.dateValidated)
     settlement_1 = factories.SettlementFactory.create(
         status=models.SettlementStatus.REJECTED,
-        amount=10000,
+        amount=-10000,
         bankAccount=bank_account,
         batch=batch,
         invoices=[invoice_1],
@@ -220,7 +224,7 @@ def create_rejected_processed_solved_settlements(user: users_models.User) -> Non
     invoice_2 = factories.InvoiceFactory.create(amount=-5000, bankAccount=bank_account, date=batch.dateValidated)
     settlement_2 = factories.SettlementFactory.create(
         status=models.SettlementStatus.REJECTED,
-        amount=5000,
+        amount=-5000,
         bankAccount=bank_account,
         batch=batch,
         invoices=[invoice_2],
@@ -237,7 +241,7 @@ def create_rejected_processed_solved_settlements(user: users_models.User) -> Non
     new_batch = factories.SettlementBatchFactory.create(name="VIR13", dateValidated=now - datetime.timedelta(days=3))
     factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
-        amount=5000,
+        amount=-5000,
         bankAccount=new_bank_account,
         batch=new_batch,
         invoices=[invoice_2],

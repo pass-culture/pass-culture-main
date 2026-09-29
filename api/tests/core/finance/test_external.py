@@ -201,6 +201,8 @@ class PushInvoicesTest:
 
 class GetSettlementsTest:
     def test_get_settlements(self):
+        now = date_utils.get_naive_utc_now()
+
         first_bank_account = offerers_factories.VenueBankAccountLinkFactory(bankAccount__label="First").bankAccount
         second_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
         other_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
@@ -222,6 +224,13 @@ class GetSettlementsTest:
         additional_bank_account = offerers_factories.VenueBankAccountLinkFactory(
             bankAccount__label="Additional"
         ).bankAccount
+        old_additional_ba_status_history = finance_factories.BankAccountStatusHistoryFactory(
+            bankAccount=additional_bank_account,
+            status=finance_models.BankAccountApplicationStatus.ACCEPTED,
+            timespan=[
+                now - datetime.timedelta(days=2),
+            ],
+        )
         additional_invoice = finance_factories.InvoiceFactory(
             bankAccount=additional_bank_account,
             cashflows=[finance_factories.CashflowFactory()],
@@ -229,14 +238,12 @@ class GetSettlementsTest:
         )
         existing_settlement = finance_factories.SettlementFactory(
             bankAccount=additional_bank_account,
-            amount=30000,
+            amount=-30000,
             settlementDate=datetime.date.today() - datetime.timedelta(days=5),
             invoices=[additional_invoice],
             status=finance_models.SettlementStatus.EXECUTED,
             batch__dateValidated=datetime.date.today() - datetime.timedelta(days=4),
         )
-
-        now = date_utils.get_naive_utc_now()
 
         mock_get_settlements_payload = [
             SettlementPayload(
@@ -248,7 +255,7 @@ class GetSettlementsTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                amount=98280,
+                amount=-98280,
             ),
             SettlementPayload(
                 bank_account_id=first_bank_account.id,
@@ -270,7 +277,7 @@ class GetSettlementsTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                amount=98280,
+                amount=-98280,
             ),
             SettlementPayload(
                 bank_account_id=other_bank_account.id,
@@ -281,7 +288,7 @@ class GetSettlementsTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                amount=45000,
+                amount=-45000,
             ),
             SettlementPayload(
                 bank_account_id=other_bank_account.id,
@@ -292,7 +299,7 @@ class GetSettlementsTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                amount=45000,
+                amount=-45000,
             ),
             SettlementPayload(
                 bank_account_id=additional_bank_account.id,
@@ -330,12 +337,25 @@ class GetSettlementsTest:
         assert first_settlement.settlementDate == datetime.date.today()
         assert first_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert first_settlement.dateRejected.timestamp() == pytest.approx(now.timestamp(), rel=1)
-        assert first_settlement.amount == 98280
+        assert first_settlement.amount == -98280
         assert first_settlement.status == finance_models.SettlementStatus.REJECTED
         assert first_settlement.batch == settlement_batch
         assert first_bank_account.venueLinks[0].timespan.upper is not None
         assert first_bank_account.status == finance_models.BankAccountApplicationStatus.REFUSED
         assert first_bank_account.label == "REJET BANCAIRE - First"
+        assert (
+            db.session.query(finance_models.BankAccountStatusHistory)
+            .filter(finance_models.BankAccountStatusHistory.bankAccountId == first_bank_account.id)
+            .count()
+            == 1
+        )
+        first_ba_status_history = (
+            db.session.query(finance_models.BankAccountStatusHistory)
+            .filter(finance_models.BankAccountStatusHistory.bankAccountId == first_bank_account.id)
+            .one()
+        )
+        assert first_ba_status_history.status == finance_models.BankAccountApplicationStatus.REFUSED
+        assert first_ba_status_history.timespan.lower.timestamp() == pytest.approx(now.timestamp(), rel=1)
 
         second_settlement = (
             db.session.query(finance_models.Settlement)
@@ -349,7 +369,7 @@ class GetSettlementsTest:
         assert second_settlement.settlementDate == datetime.date.today()
         assert second_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert second_settlement.dateRejected is None
-        assert second_settlement.amount == 98280
+        assert second_settlement.amount == -98280
         assert second_settlement.status == finance_models.SettlementStatus.ISSUED
         assert second_settlement.batch == settlement_batch
         assert invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
@@ -368,7 +388,7 @@ class GetSettlementsTest:
         assert other_settlement.settlementDate == datetime.date.today()
         assert other_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert other_settlement.dateRejected is None
-        assert other_settlement.amount == 45000
+        assert other_settlement.amount == -45000
         assert other_settlement.status == finance_models.SettlementStatus.ISSUED
         assert other_settlement.batch == settlement_batch
         assert other_invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
@@ -382,6 +402,23 @@ class GetSettlementsTest:
         assert additional_bank_account.venueLinks[0].timespan.upper is not None
         assert additional_bank_account.status == finance_models.BankAccountApplicationStatus.REFUSED
         assert additional_bank_account.label == "REJET BANCAIRE - Additional"
+        assert (
+            db.session.query(finance_models.BankAccountStatusHistory)
+            .filter(finance_models.BankAccountStatusHistory.bankAccountId == additional_bank_account.id)
+            .count()
+            == 2
+        )
+        assert old_additional_ba_status_history.timespan.upper.timestamp() == pytest.approx(now.timestamp(), rel=1)
+        new_additional_ba_status_history = (
+            db.session.query(finance_models.BankAccountStatusHistory)
+            .filter(
+                finance_models.BankAccountStatusHistory.bankAccountId == first_bank_account.id,
+                finance_models.BankAccountStatusHistory.id != old_additional_ba_status_history.id,
+            )
+            .one()
+        )
+        assert new_additional_ba_status_history.status == finance_models.BankAccountApplicationStatus.REFUSED
+        assert new_additional_ba_status_history.timespan.lower.timestamp() == pytest.approx(now.timestamp(), rel=1)
 
         assert len(mails_testing.outbox) == 2
         assert mails_testing.outbox[0]["To"] == first_bank_account.venueLinks[0].venue.bookingEmail

@@ -63,7 +63,7 @@
           <td>{{ invoice.reference }}</td>
           <td>{{ invoice.date | format_date }}</td>
           <td>{{ invoice.status | format_invoice_status }}</td>
-          <td class="text-end">{{ -invoice.amount | format_cents(target=invoice.bankAccount.offerer, is_signed=true) }}</td>
+          <td>{{ -invoice.amount | format_cents(target=invoice.bankAccount.offerer, is_signed=true) }}</td>
           <td>
             <a class="link-primary"
                target="_blank"

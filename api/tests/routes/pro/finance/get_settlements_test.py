@@ -41,13 +41,13 @@ class GetSettlementsTest:
 
         executed_settlement_1 = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
-            amount=10000,
+            amount=-10000,
             bankAccount=bank_account_1,
             batch=batch_2,
         )
         executed_settlement_2 = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
-            amount=20000,
+            amount=-20000,
             bankAccount=bank_account_2,
             batch=batch_1,
         )
@@ -77,7 +77,7 @@ class GetSettlementsTest:
         )
         rejected_settlement = factories.SettlementFactory(
             status=models.SettlementStatus.REJECTED,
-            amount=30000,
+            amount=-30000,
             bankAccount=bank_account_1,
             batch=batch_3,
         )
@@ -168,7 +168,7 @@ class GetSettlementsTest:
         invoice = factories.InvoiceFactory(amount=-10000, bankAccount=bank_account, date=batch.dateValidated)
         settlement = factories.SettlementFactory(
             status=models.SettlementStatus.REJECTED,
-            amount=10000,
+            amount=-10000,
             bankAccount=bank_account,
             batch=batch,
             invoices=[invoice],
@@ -234,7 +234,7 @@ class GetSettlementsTest:
         invoice_2 = factories.InvoiceFactory(amount=-5000, bankAccount=bank_account, date=batch.dateValidated)
         settlement_1 = factories.SettlementFactory(
             status=models.SettlementStatus.REJECTED,
-            amount=10000,
+            amount=-10000,
             bankAccount=bank_account,
             batch=batch,
             invoices=[invoice_1, invoice_2],
@@ -242,7 +242,7 @@ class GetSettlementsTest:
         invoice_3 = factories.InvoiceFactory(amount=-2000, bankAccount=bank_account, date=batch.dateValidated)
         settlement_2 = factories.SettlementFactory(
             status=models.SettlementStatus.REJECTED,
-            amount=2000,
+            amount=-2000,
             bankAccount=bank_account,
             batch=batch,
             invoices=[invoice_3],
@@ -259,14 +259,14 @@ class GetSettlementsTest:
         new_batch_2 = factories.SettlementBatchFactory(name="VIR3", dateValidated=now - datetime.timedelta(days=3))
         settlement_3 = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
-            amount=5000,
+            amount=-5000,
             bankAccount=new_bank_account,
             batch=new_batch_1,
             invoices=[invoice_1],
         )
         settlement_4 = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
-            amount=5000,
+            amount=-5000,
             bankAccount=new_bank_account,
             batch=new_batch_2,
             invoices=[invoice_2],
