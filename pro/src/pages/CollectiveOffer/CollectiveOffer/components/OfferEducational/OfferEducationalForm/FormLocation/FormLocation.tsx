@@ -107,7 +107,7 @@ export const FormLocation = ({
               label: selectedPartnerVenue
                 ? `${selectedPartnerVenue.location?.label} - ${selectedPartnerVenue.location?.street}
                   ${selectedPartnerVenue.location?.postalCode} ${selectedPartnerVenue.location?.city}`
-                : 'Adresse du lieu sélectionné',
+                : 'Adresse de la structure sélectionnée',
               value: selectedPartnerVenue?.location?.id.toString() ?? '',
             },
             {

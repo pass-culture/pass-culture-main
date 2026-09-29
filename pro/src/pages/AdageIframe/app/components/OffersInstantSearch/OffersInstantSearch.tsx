@@ -124,7 +124,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
 
         setFilters({ ...ADAGE_FILTERS_DEFAULT_VALUES, venue: result })
       } catch {
-        snackBar.error('Lieu inconnu. Tous les résultats sont affichés.')
+        snackBar.error('Structure inconnue. Tous les résultats sont affichés.')
       } finally {
         setIsLoadingVenue(false)
       }
