@@ -23,6 +23,7 @@ from pcapi.core.external.attributes.models import BookingsAttributes
 from pcapi.core.external.attributes.models import UserAttributes
 from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.external.batch import testing as batch_testing
+from pcapi.core.favorites.factories import FavoriteOfferFactory
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -38,7 +39,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
-from pcapi.core.users.factories import FavoriteOfferFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.factories import UnderageBeneficiaryFactory
 from pcapi.core.users.factories import UserFactory
