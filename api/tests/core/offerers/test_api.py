@@ -12,6 +12,7 @@ import pytest
 import sqlalchemy as sa
 import time_machine
 
+import pcapi.core.favorites.models as fav_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors import api_adresse
@@ -48,7 +49,6 @@ from pcapi.core.providers import repository as providers_repository
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -490,7 +490,7 @@ class DeleteVenueTest:
 
         assert db.session.query(offerers_models.Venue).count() == 2
         assert db.session.query(offers_models.Offer).count() == 1
-        assert db.session.query(users_models.FavoriteOffer).count() == 1
+        assert db.session.query(fav_models.FavoriteOffer).count() == 1
 
     def test_delete_venue_should_remove_criterions(self):
         offers_factories.OfferFactory(
@@ -1270,7 +1270,7 @@ class DeleteOffererTest:
         assert db.session.query(offerers_models.Offerer).count() == 1
         assert db.session.query(offerers_models.Venue).count() == 1
         assert db.session.query(offers_models.Offer).count() == 1
-        assert db.session.query(users_models.FavoriteOffer).count() == 1
+        assert db.session.query(fav_models.FavoriteOffer).count() == 1
 
     def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_offers(self):
         # Given
