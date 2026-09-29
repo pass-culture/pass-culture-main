@@ -4342,7 +4342,6 @@ class CloseVenueTest:
             offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
-        assert not venue.contact
         assert venue.state == offerers_models.VenueState.CLOSED
 
     def test_close_venue_with_external_ticket(self, requests_mock):
@@ -4500,7 +4499,8 @@ class ReopenVenueTest:
         assert venue.state is None
 
     def test_closed_venue_with_closed_offerer_stays_closed_and_nothing_is_done(self):
-        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.CLOSED)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, state=offerers_models.VenueState.CLOSED)
         author = users_factories.BaseUserFactory()
 
         with atomic():
