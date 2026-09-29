@@ -6,7 +6,7 @@ import { axe } from 'vitest-axe'
 import { api } from '@/apiClient/api'
 import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
 import { ApiError } from '@/apiClient/compat'
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -89,7 +89,9 @@ const TestComponent = () => {
   )
 }
 
-const renderVideoUploaderContext = (offer: GetIndividualOfferResponseModel) => {
+const renderVideoUploaderContext = (
+  offer: GetIndividualOfferResponseModelV2
+) => {
   return renderWithProviders(
     <VideoUploaderContextProvider
       initialVideoData={offer.videoData}

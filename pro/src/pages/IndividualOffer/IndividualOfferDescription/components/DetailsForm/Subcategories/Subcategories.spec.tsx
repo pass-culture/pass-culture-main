@@ -39,7 +39,6 @@ const SubcategoriesForm = ({
   onReady?: (methods: UseFormReturn<DetailsFormValues>) => void
 }) => {
   const methods = useForm<DetailsFormValues>({
-    // TODO (amine) to remove once model migrated to Pydantic V2
     defaultValues: {
       ...DEFAULT_DETAILS_FORM_VALUES,
     },
