@@ -1314,7 +1314,6 @@ def validate_offerer(
 
         # Offers created before validation should be reviewed
         db.session.query(offers_models.Offer).filter(
-            offerers_models.Venue.managingOffererId == offerer.id,
             offers_models.Offer.venueId.in_(
                 db.session.query(offerers_models.Venue)
                 .filter_by(managingOffererId=offerer.id)
