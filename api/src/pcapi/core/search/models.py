@@ -44,3 +44,5 @@ class IndexationReason(enum.Enum):
     VENUE_BANNER_DELETION = "venue-banner-deletion"
     VENUE_BANNER_UPDATE = "venue-banner-update"
     VENUE_PROVIDER_CREATION = "venue-provider-creation"
+    VENUE_CLOSED = "venue-closed"
+    VENUE_REOPENED = "venue-reopened"
