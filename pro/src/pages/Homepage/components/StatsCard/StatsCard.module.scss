@@ -77,42 +77,65 @@
     }
   }
 
-  &-headline-offer {
-    background: var(--color-background-info);
-    display: grid;
-    grid-template: 1fr auto/0.25fr auto;
-    align-items: center;
-    padding: var(--size-spacing-l);
-    gap: var(--size-spacing-l);
-    border-radius: var(--size-border-radius-m);
+  &-headline-offer-head {
+    @include fonts.title3;
 
-    &-head {
-      @include fonts.title3;
+    margin-bottom: var(--size-spacing-s);
+    margin-top: var(--size-spacing-m);
+  }
+}
 
-      margin-bottom: var(--size-spacing-s);
-    }
+.visibility-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--size-spacing-l);
 
-    &-title {
-      @include fonts.body-accent-s;
-
-      color: var(--color-text-default);
-    }
-
-    &-button {
-      grid-column: auto/span 2;
-
-      /* stylelint-disable-next-line selector-max-type */
-      & > button {
-        width: 100%;
-      }
-    }
-
-    @media (min-width: size.$laptop) {
-      grid-template: 1fr/0.25fr 1.5fr 1fr;
-
-      &-button {
-        grid-column: auto;
-      }
+  @media (min-width: size.$laptop) {
+    &.has-both-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
+
+  @media (min-width: size.$desktop) {
+    &:not(.has-both-actions) .visibility-action {
+      grid-template-columns: rem.torem(80px) minmax(0, 1fr) rem.torem(232px);
+    }
+
+    &:not(.has-both-actions) .highlight-action {
+      grid-template-columns: rem.torem(80px) minmax(0, 1fr) rem.torem(264px);
+    }
+
+    &:not(.has-both-actions) .visibility-action-button {
+      grid-column: auto;
+    }
+  }
+}
+
+.visibility-action {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: rem.torem(80px) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--size-spacing-l);
+  padding: var(--size-spacing-l);
+  border-radius: var(--size-border-radius-m);
+}
+
+.visibility-action-button {
+  grid-column: 1 / -1;
+}
+
+.headline-action {
+  background: #f1eaff;
+}
+
+.highlight-action {
+  background: #def4f8;
+}
+
+.visibility-action-title {
+  @include fonts.body-accent-s;
+
+  margin: 0;
+  color: var(--color-text-default);
 }
