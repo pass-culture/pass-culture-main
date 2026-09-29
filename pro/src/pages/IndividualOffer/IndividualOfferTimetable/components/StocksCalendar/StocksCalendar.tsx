@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
 import {
   type EventStockUpdateBodyModel,
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   StocksOrderedBy,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -50,7 +50,7 @@ import { StocksCalendarTable } from './StocksCalendarTable/StocksCalendarTable'
 const STOCKS_PER_PAGE = 20
 
 export type StocksCalendarProps = {
-  readonly offer: GetIndividualOfferResponseModel
+  readonly offer: GetIndividualOfferResponseModelV2
   readonly mode: OFFER_WIZARD_MODE
 }
 
@@ -370,7 +370,7 @@ function RecurrenceModalButton({
   triggerVariant: ButtonVariant
   isDialogOpen: boolean
   setIsDialogOpen: Dispatch<SetStateAction<boolean>>
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
   handleSubmitRecurrenceFormDrawer: (
     values: RecurrenceFormValues
   ) => Promise<void>

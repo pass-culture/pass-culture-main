@@ -1,5 +1,5 @@
 import type {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferResponseModelV2,
   PatchOfferBodyModel,
 } from '@/apiClient/v1'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
@@ -37,7 +37,7 @@ export const toPatchOfferBodyModel = ({
   formValues,
   shouldSendMail,
 }: {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
   formValues: LocationFormValues
   shouldSendMail: boolean
 }): PatchOfferBodyModel => {

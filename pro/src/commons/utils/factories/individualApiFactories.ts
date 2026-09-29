@@ -9,15 +9,15 @@ import {
   type CategoryResponseModel,
   DisplayableActivity,
   type GetBookingResponse,
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   type GetOfferExposureResponseModel,
   type GetOffererNameResponseModel,
   type GetOffererResponseModel,
   type GetOffererVenueResponseModel,
   type GetOffererVenueResponseModel as GetOffererVenueResponseModelNew,
-  type GetOfferManagingOffererResponseModel,
+  type GetOfferManagingOffererResponseModelV2,
   type GetOfferStockResponseModel,
-  type GetOfferVenueResponseModel,
+  type GetOfferVenueResponseModelV2,
   type GetStocksResponseModel,
   type GetVenueResponseModel,
   type ListOffersOfferResponseModel,
@@ -25,7 +25,7 @@ import {
   type ManagedVenue,
   type OfferHomeResponseModel,
   OfferStatus,
-  type PriceCategoryResponseModel,
+  type PriceCategoryResponseModelV2,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
   type VenueProviderResponse,
@@ -87,14 +87,15 @@ export const getOfferExposureFactory = (
 // TODO (igabriele, 2025-08-05): Factories shouldn't set sensitive domain boolean values to true by default or build children that are not guaranteed to be present.
 // This makes writing tests more difficult and increases the risk of false positives.
 export const getIndividualOfferFactory = (
-  customGetIndividualOffer: Partial<GetIndividualOfferResponseModel> = {},
-  venue: GetOfferVenueResponseModel = getOfferVenueFactory()
-): GetIndividualOfferResponseModel => {
+  customGetIndividualOffer: Partial<GetIndividualOfferResponseModelV2> = {},
+  venue: GetOfferVenueResponseModelV2 = getOfferVenueFactory()
+): GetIndividualOfferResponseModelV2 => {
   const id = customGetIndividualOffer.id ?? offerId++
 
   return {
     id,
     name: `Le nom de l’offre ${id}`,
+    description: '',
     isActive: true,
     isEditable: true,
     isEvent: true,
@@ -110,8 +111,6 @@ export const getIndividualOfferFactory = (
     isDuo: true,
     isNational: true,
     subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-    // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-    // @ts-expect-error
     lastProvider: null,
     bookingsCount: 0,
     isNonFreeOffer: true,
@@ -138,13 +137,27 @@ export const getIndividualOfferFactory = (
     },
     highlightRequests: [],
     artistOfferLinks: [],
+    activeMediation: null,
+    bookingAllowedDatetime: null,
+    bookingContact: null,
+    bookingEmail: null,
+    durationMinutes: null,
+    location: null,
+    productId: null,
+    publicationDate: null,
+    publicationDatetime: null,
+    thumbUrl: null,
+    url: null,
+    withdrawalDelay: null,
+    withdrawalDetails: null,
+    withdrawalType: null,
     ...customGetIndividualOffer,
   }
 }
 
 export const priceCategoryFactory = (
-  customPriceCategory: Partial<PriceCategoryResponseModel> = {}
-): PriceCategoryResponseModel => ({
+  customPriceCategory: Partial<PriceCategoryResponseModelV2> = {}
+): PriceCategoryResponseModelV2 => ({
   id: priceCategoryId++,
   hasStocks: false,
   label: 'mon label',
@@ -153,8 +166,8 @@ export const priceCategoryFactory = (
 })
 
 export const getOfferVenueFactory = (
-  customGetOfferVenue: Partial<GetOfferVenueResponseModel> = {}
-): GetOfferVenueResponseModel => {
+  customGetOfferVenue: Partial<GetOfferVenueResponseModelV2> = {}
+): GetOfferVenueResponseModelV2 => {
   const currentVenueId = customGetOfferVenue.id ?? venueId++
 
   return {
@@ -170,13 +183,14 @@ export const getOfferVenueFactory = (
     motorDisabilityCompliant: true,
     audioDisabilityCompliant: true,
     managingOfferer: getOfferManagingOffererFactory(),
+    bookingEmail: null,
     ...customGetOfferVenue,
   }
 }
 
 export const getOfferManagingOffererFactory = (
-  customGetOfferManagingOfferer: Partial<GetOfferManagingOffererResponseModel> = {}
-): GetOfferManagingOffererResponseModel => {
+  customGetOfferManagingOfferer: Partial<GetOfferManagingOffererResponseModelV2> = {}
+): GetOfferManagingOffererResponseModelV2 => {
   const currentOffererId = customGetOfferManagingOfferer.id ?? offererId++
 
   return {

@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import type { ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
+import type { ArtistOfferLinkResponseModelV2, ArtistType } from '@/apiClient/v1'
 
 const eanValidation = yup
   .string()
@@ -16,7 +16,7 @@ const getIndexFromPath = (path?: string): number | null => {
 }
 
 const isDuplicateArtist = (
-  links: ArtistOfferLinkResponseModel[],
+  links: ArtistOfferLinkResponseModelV2[],
   currentIndex: number
 ): boolean => {
   const currentLink = links[currentIndex]
