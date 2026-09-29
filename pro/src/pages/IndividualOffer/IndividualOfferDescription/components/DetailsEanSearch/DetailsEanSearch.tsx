@@ -13,39 +13,36 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCloseIcon from '@/icons/full-close.svg'
 import strokeBarcodeIcon from '@/icons/stroke-barcode.svg'
 import type { Product } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
-import { eanSearchValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
+import {
+  type EanSearchForm,
+  generateEanSearchValidationSchema,
+} from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
 import { EanSearchCallout } from '@/pages/IndividualOffer/IndividualOfferDescription/components/EanSearchCallout/EanSearchCallout'
 
 import styles from './DetailsEanSearch.module.scss'
 
-type EanSearchForm = {
-  eanSearch?: string
-}
-
 export type DetailsEanSearchProps = {
-  isDraftOffer: boolean
+  shouldDisplayClearButton: boolean
   isProductBased: boolean
   initialEan?: string
   eanSubmitError?: string
   onEanSearch: (ean: string, product: Product) => void
-  onEanReset: () => void
-  subcatError?: string
+  onEanClear: () => void
+  isRequired: boolean
 }
 
 export const DetailsEanSearch = ({
-  isDraftOffer,
+  shouldDisplayClearButton,
   isProductBased,
   initialEan,
   eanSubmitError,
   onEanSearch,
-  onEanReset,
-  subcatError,
+  onEanClear,
+  isRequired,
 }: DetailsEanSearchProps): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const [wasCleared, setWasCleared] = useState(false)
-
-  const isDraftOfferProductBased = isDraftOffer && isProductBased
 
   const {
     register,
@@ -57,9 +54,7 @@ export const DetailsEanSearch = ({
     formState: { errors, isValid, isLoading },
   } = useForm<EanSearchForm>({
     defaultValues: { eanSearch: initialEan || '' },
-    resolver: yupResolver<EanSearchForm, unknown, unknown>(
-      eanSearchValidationSchema
-    ),
+    resolver: yupResolver(generateEanSearchValidationSchema(isRequired)),
     mode: 'onChange',
   })
 
@@ -102,9 +97,9 @@ export const DetailsEanSearch = ({
     }
   }
 
-  const onEanClear = () => {
+  const clearEan = () => {
     reset()
-    onEanReset()
+    onEanClear()
     setWasCleared(true)
   }
 
@@ -113,11 +108,6 @@ export const DetailsEanSearch = ({
 
   const shouldButtonBeDisabled =
     isProductBased || !ean || !isValid || !!apiError || isLoading
-  const displayClearButton = isDraftOfferProductBased
-
-  const cumulativeError = subcatError
-    ? `${subcatError}\n${errors.eanSearch?.message || ''}`
-    : errors.eanSearch?.message || ''
 
   return (
     <>
@@ -127,16 +117,16 @@ export const DetailsEanSearch = ({
             <div>
               <TextInput
                 label="Scanner ou rechercher un produit par EAN"
-                error={cumulativeError}
+                error={errors.eanSearch?.message}
                 disabled={shouldInputBeDisabled}
-                required={!!subcatError}
+                required={isRequired}
                 description="Format : EAN à 13 chiffres"
-                {...(displayClearButton
+                {...(shouldDisplayClearButton
                   ? {
                       iconButton: {
                         icon: fullCloseIcon,
                         label: 'Effacer',
-                        onClick: onEanClear,
+                        onClick: clearEan,
                         disabled: isLoading,
                       },
                     }

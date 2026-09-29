@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { DisplayableActivity } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -6,7 +6,6 @@ import {
   CULTURAL_OUTREACH_ALLOWED_ACTIVITIES,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
-import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import {
   isOfferProductBasedButNotSynchronized,
@@ -51,7 +50,6 @@ export const IndividualOfferDescriptionScreen = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const initialOfferImage = getIndividualOfferImage(initialOffer)
-  const extraData = initialOffer?.extraData as OfferExtraData | undefined
   const { handleEanImage } = useIndividualOfferImageUpload(initialOfferImage)
 
   const getInitialValues = () => {
@@ -68,26 +66,6 @@ export const IndividualOfferDescriptionScreen = () => {
   const [subcategoryId, setSubcategoryId] = useState<string | undefined>(
     undefined
   )
-
-  const hasSelectedProduct = !!initialValues.productId
-  const isDraftOfferNotProductBased = isNewOfferDraft && !hasSelectedProduct
-
-  const selectedSubcategoryId = subcategoryId
-  const [subcatErrorForEanCompletion, setSubcatErrorForEanCompletion] =
-    useState<string | undefined>(undefined)
-
-  useEffect(() => {
-    if (
-      isDraftOfferNotProductBased &&
-      isSubCategoryCD(selectedSubcategoryId ?? '')
-    ) {
-      setSubcatErrorForEanCompletion(
-        'Les offres de type CD doivent être liées à un produit.'
-      )
-    } else {
-      setSubcatErrorForEanCompletion(undefined)
-    }
-  }, [isDraftOfferNotProductBased, selectedSubcategoryId])
 
   const isEanSearchAvailable =
     selectedPartnerVenue.activity === DisplayableActivity.RECORD_STORE
@@ -149,15 +127,17 @@ export const IndividualOfferDescriptionScreen = () => {
 
       {isEanSearchInputDisplayed && (
         <DetailsEanSearch
-          isDraftOffer={isNewOfferDraft}
-          initialEan={extraData?.ean}
-          isProductBased={hasSelectedProduct}
-          onEanReset={() => {
+          initialEan={initialOffer?.extraData?.ean}
+          isProductBased={!!initialValues.productId}
+          onEanSearch={updateProduct}
+          shouldDisplayClearButton={
+            isNewOfferDraft && !!initialValues.productId
+          }
+          onEanClear={() => {
             handleEanImage()
             setInitialValues(getInitialValues())
           }}
-          onEanSearch={updateProduct}
-          subcatError={subcatErrorForEanCompletion}
+          isRequired={isSubCategoryCD(subcategoryId ?? '')}
         />
       )}
 
