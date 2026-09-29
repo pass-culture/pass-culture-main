@@ -82,7 +82,21 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
 def list_event_offers(
     query: offers_serialize.ListEventOffersQueryModel,
 ) -> offers_serialize.ListEventOffersResponseModel:
-    pass
+    rest.check_user_has_access_to_venues(current_user, [query.venue_id])
+
+    paginated_offers = offers_repository.get_paginated_event_offers(
+        venue_id=query.venue_id,
+        page=query.page,
+        per_page=offers_constants.EVENT_OFFERS_PER_PAGE,
+        status=query.status,
+        name_search=query.name_search,
+        creation_mode=query.creation_mode,
+        period_beginning_date=query.period_beginning_date,
+        period_ending_date=query.period_ending_date,
+        is_digital=query.is_digital,
+    )
+
+    return offers_serialize.serialize_paginated_event_offers(paginated_offers)
 
 
 @pro_blueprint.route("/offers/home", methods=["GET"])

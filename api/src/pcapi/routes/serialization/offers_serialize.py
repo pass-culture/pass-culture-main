@@ -343,6 +343,17 @@ class ListOffersResponseModel(BaseModel):
         json_encoders = {datetime.datetime: format_into_utc_date}
 
 
+def serialize_paginated_event_offers(
+    paginated_offers: offers_repository.PaginatedEventOffers,
+) -> ListEventOffersResponseModel:
+    return ListEventOffersResponseModel(
+        events=[EventOfferResponseModel.build(offer) for offer in paginated_offers.offers],
+        page=paginated_offers.page,
+        pages=paginated_offers.pages,
+        total=paginated_offers.total,
+    )
+
+
 def _serialize_offer_paginated(
     offer: offers_models.Offer,
 ) -> ListOffersOfferResponseModel:
