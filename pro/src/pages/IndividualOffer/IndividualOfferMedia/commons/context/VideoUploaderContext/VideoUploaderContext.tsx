@@ -15,6 +15,8 @@ import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
   setVideoUrl: Dispatch<SetStateAction<string | null | undefined>>
+  setVideoDescription: Dispatch<SetStateAction<string>>
+  videoDescription: string
   videoData?: VideoData
   handleVideoOnSubmit: () => Promise<VideoData>
   onVideoUpload: (p: onVideoUploadProps) => Promise<void>
@@ -25,7 +27,9 @@ type VideoUploaderContextValues = {
 
 const VideoUploaderContext = createContext<VideoUploaderContextValues>({
   setVideoUrl: noop,
+  setVideoDescription: noop,
   videoData: undefined,
+  videoDescription: '',
   // biome-ignore lint/suspicious/useAwait:  default values
   handleVideoOnSubmit: async () => {
     throw new Error('VideoUploaderContext not provided')
@@ -56,6 +60,9 @@ export function VideoUploaderContextProvider({
   offerId,
 }: Readonly<VideoUploaderContextProviderProps>) {
   const [videoUrl, setVideoUrl] = useState(initialVideoData?.videoUrl)
+  const [videoDescription, setVideoDescription] = useState(
+    initialVideoData?.videoDescription
+  )
   const [videoData, setVideoData] = useState(initialVideoData)
 
   const onVideoUpload = useCallback(
@@ -86,16 +93,19 @@ export function VideoUploaderContextProvider({
       path: { offer_id: offerId },
       body: {
         videoUrl: videoUrl ?? '',
+        videoDescription: videoDescription,
       },
     })
-  }, [videoUrl, offerId])
+  }, [videoUrl, offerId, videoDescription])
 
   const contextValue = useMemo(
     () => ({
       videoUrl,
       videoData,
+      videoDescription,
       handleVideoOnSubmit,
       setVideoUrl,
+      setVideoDescription,
       onVideoUpload,
       onVideoDelete,
       offerId,
@@ -103,7 +113,10 @@ export function VideoUploaderContextProvider({
     [
       videoUrl,
       videoData,
+      videoDescription,
       handleVideoOnSubmit,
+      setVideoUrl,
+      setVideoDescription,
       onVideoUpload,
       onVideoDelete,
       offerId,

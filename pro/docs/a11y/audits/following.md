@@ -188,7 +188,31 @@ P08 : Page d'accueil
 P13 : Les offres réservables (collectif)
 
 **Correction** 💡  
-Ajout de la possibilité d'ajouté un texte alternatif sur les images (collectif, individuel et partenaire culturel), ce texte alternatif est restitué.
+Ajout de la possibilité d'ajouter un texte alternatif sur les images (collectif, individuel et partenaire culturel), ce texte alternatif est restitué.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 15.1 & 15.3 - RAWeb - Conformité des contenus générés par les outils d'édition</summary>
+
+**RAWeb** : [Critère 15.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#topic-15)
+**Ticket** : [PC-42868](https://passculture.atlassian.net/browse/PC-42913)  
+**PR** : [#24389](https://github.com/pass-culture/pass-culture-main/pull/24389)
+
+**Problème** 😱  
+
+Impossible d'ajouter une description sur les vidéos ajoutées par les acteurs culturels, ces description devrait être lues dans l'app jeune
+
+P06 : Création offre individuelle
+
+**Correction** 💡  
+Ajout de la possibilité d'ajouter une description à l'upload d'une vidéo
 
 **Retours audit** 🔥  
 TBD

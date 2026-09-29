@@ -40,21 +40,31 @@ export function SafeImage({
     return placeholder
   }
 
+  const image = (
+    <img
+      className={className}
+      src={sanitizedSrc}
+      alt={alt}
+      aria-describedby={
+        [ariaDescribedBy, credit ? imageCreditId : undefined]
+          .filter(Boolean)
+          .join(' ') || undefined
+      }
+      onError={() => setError(true)}
+      data-testid={testId}
+    />
+  )
+
+  if (!credit) {
+    return image
+  }
+
   return (
     <figure>
-      <img
-        className={className}
-        src={sanitizedSrc}
-        alt={alt}
-        aria-describedby={[ariaDescribedBy, imageCreditId].join(' ')}
-        onError={() => setError(true)}
-        data-testid={testId}
-      />
-      {credit ? (
-        <figcaption id={imageCreditId}>
-          <p className={styles['image-credit-text']}>Crédit image : {credit}</p>
-        </figcaption>
-      ) : null}
+      {image}
+      <figcaption id={imageCreditId}>
+        <p className={styles['image-credit-text']}>Crédit image : {credit}</p>
+      </figcaption>
     </figure>
   )
 }

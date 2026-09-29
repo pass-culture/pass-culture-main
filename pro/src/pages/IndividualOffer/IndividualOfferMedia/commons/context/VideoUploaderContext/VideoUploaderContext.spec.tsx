@@ -15,6 +15,7 @@ import {
 const LABELS = {
   display: {
     input: 'Test input url',
+    description: 'Test video description',
   },
   controls: {
     delete: 'delete',
@@ -29,6 +30,8 @@ const TestComponent = () => {
     videoData,
     handleVideoOnSubmit,
     setVideoUrl,
+    videoDescription,
+    setVideoDescription,
     onVideoUpload,
     onVideoDelete,
   } = useVideoUploaderContext()
@@ -42,6 +45,14 @@ const TestComponent = () => {
           type="text"
           value={videoUrl ?? ''}
           onChange={(e) => setVideoUrl(e.target.value)}
+        />
+      </label>
+      <label>
+        {LABELS.display.description}
+        <input
+          type="text"
+          value={videoDescription ?? ''}
+          onChange={(e) => setVideoDescription(e.target.value)}
         />
       </label>
       <div>
@@ -182,6 +193,34 @@ describe('VideoUploaderContext', () => {
       path: { offer_id: offer.id },
       body: {
         videoUrl: 'http://youtube.url',
+      },
+    })
+  })
+
+  it('should submit the updated video description', async () => {
+    vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({})
+
+    const offer = getIndividualOfferFactory({
+      videoData: {
+        videoUrl: 'http://youtube.url',
+        videoDescription: 'Description initiale',
+      },
+    })
+
+    renderVideoUploaderContext(offer)
+
+    const description = screen.getByLabelText(LABELS.display.description)
+    expect(description).toHaveValue('Description initiale')
+
+    await userEvent.clear(description)
+    await userEvent.type(description, 'Nouvelle description')
+    await userEvent.click(screen.getByText(LABELS.controls.submit))
+
+    expect(api.updateOfferVideo).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: {
+        videoUrl: 'http://youtube.url',
+        videoDescription: 'Nouvelle description',
       },
     })
   })

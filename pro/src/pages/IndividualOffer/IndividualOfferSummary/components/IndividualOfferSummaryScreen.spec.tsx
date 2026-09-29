@@ -147,6 +147,25 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
             params.selectedPartnerVenueHasNonFreeOffers ?? false,
         }),
       },
+      staticData: {
+        musicTypes: [
+          {
+            gtl_id: '07000000',
+            label: 'Metal',
+            canBeEvent: true,
+          },
+          {
+            gtl_id: '02000000',
+            label: 'JAZZ / BLUES',
+            canBeEvent: true,
+          },
+          {
+            gtl_id: '03000000',
+            label: 'Bandes Originales',
+            canBeEvent: false,
+          },
+        ],
+      },
     },
     ...params.options,
   }
@@ -238,24 +257,6 @@ describe('IndividualOfferSummaryScreen', () => {
   }
 
   beforeEach(() => {
-    const musicTypes = [
-      {
-        gtl_id: '07000000',
-        label: 'Metal',
-        canBeEvent: true,
-      },
-      {
-        gtl_id: '02000000',
-        label: 'JAZZ / BLUES',
-        canBeEvent: true,
-      },
-      {
-        gtl_id: '03000000',
-        label: 'Bandes Originales',
-        canBeEvent: false,
-      },
-    ]
-
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -263,7 +264,6 @@ describe('IndividualOfferSummaryScreen', () => {
     vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
       getIndividualOfferFactory()
     )
-    vi.spyOn(api, 'getMusicTypes').mockResolvedValue(musicTypes)
     vi.spyOn(api, 'getStocksStats').mockResolvedValue(stocksStats)
     vi.spyOn(api, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
