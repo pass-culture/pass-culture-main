@@ -4,11 +4,12 @@ import sqlalchemy.orm as sa_orm
 from pcapi.core.favorites import models as favorite_models
 from pcapi.core.offerers import models as offerer_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 
 def get_favorites_for(
-    user: offers_models.User,
+    user: users_models.User,
     favorite_id: int | None = None,
 ) -> list[favorite_models.FavoriteOfferData]:
     active_stock_filters = sa.and_(
