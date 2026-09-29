@@ -40,6 +40,7 @@ class Returns200Test:
             "videoTitle": "Title",
             "videoThumbnailUrl": "https://example.com/high.jpg",
             "videoUrl": video_url,
+            "videoDescription": None,
         }
 
 

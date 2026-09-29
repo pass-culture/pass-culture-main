@@ -87,6 +87,20 @@ class Returns200Test:
         assert "thumbUrl" in response_json
         assert response_json["id"] == offer.id
 
+    def test_returns_video_description(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        offers_factories.OfferMetaDataFactory(
+            offer=offer,
+            videoUrl="https://www.youtube.com/watch?v=uy5z7jiDmlg",
+            videoDescription="A video description",
+        )
+
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+
+        assert response.status_code == 200
+        assert response.json["videoData"]["videoDescription"] == "A video description"
+
     def test_returns_an_active_mediation(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
@@ -236,6 +250,7 @@ class Returns200Test:
                 "videoThumbnailUrl": None,
                 "videoTitle": None,
                 "videoUrl": "https://www.youtube.com/watch?v=WtM4OW2qVjY",
+                "videoDescription": None,
             },
             "withdrawalDetails": "Veuillez chercher votre billet au guichet",
             "withdrawalType": "on_site",

@@ -161,6 +161,9 @@ class PatchOfferBodyModel(HttpBodyModel):
 
 class UpdateOfferVideoBodyModel(HttpBodyModel):
     video_url: HttpUrlStr | None
+    video_description: str | None = pydantic_v2.Field(
+        default=None, max_length=offers_constants.MAX_OFFER_VIDEO_DESCRIPTION_LENGTH
+    )
 
     @pydantic_v2.field_validator("video_url", mode="before")
     @classmethod
@@ -512,6 +515,7 @@ class VideoData(ConfiguredBaseModel):
     videoTitle: str | None
     videoThumbnailUrl: str | None
     videoUrl: HttpUrl | None
+    videoDescription: str | None
 
 
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):

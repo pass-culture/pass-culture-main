@@ -235,7 +235,9 @@ def save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) 
 def update_or_delete_video(video_url: str | None, offer: offers_models.Offer, provider_id: int) -> None:
     if video_url:
         try:
-            videos_api.upsert_video_and_metadata(video_url, offer, provider_id)
+            videos_api.upsert_video_and_metadata(
+                video_url=video_url, offer=offer, video_description=None, provider_id=provider_id
+            )
         except videos_exceptions.YoutubeVideoNotFound:
             raise offers_exceptions.OfferException(
                 {
@@ -252,7 +254,9 @@ def update_or_delete_video(video_url: str | None, offer: offers_models.Offer, pr
 
 def save_video(video_url: str, offer: offers_models.Offer, provider_id: int) -> None:
     try:
-        videos_api.upsert_video_and_metadata(video_url, offer, provider_id)
+        videos_api.upsert_video_and_metadata(
+            video_url=video_url, offer=offer, video_description=None, provider_id=provider_id
+        )
     except videos_exceptions.YoutubeVideoNotFound:
         raise offers_exceptions.OfferException(
             {
