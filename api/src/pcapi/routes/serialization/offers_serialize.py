@@ -680,6 +680,7 @@ class GetProductInformations(BaseModel):
     author: str
     performer: str
     images: dict
+    ean: str | None
 
     @classmethod
     def from_orm(cls, product: offers_models.Product) -> "GetProductInformations":
