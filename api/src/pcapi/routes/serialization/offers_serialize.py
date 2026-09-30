@@ -1,3 +1,4 @@
+import copy
 import datetime
 import json
 import re
@@ -415,15 +416,6 @@ class GetOfferStockResponseModel(BaseModel):
         json_encoders = {datetime.datetime: format_into_utc_date}
 
 
-# TODO: keep or delete now ?
-class GetOfferManagingOffererResponseModel(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
-
-
 class GetOfferManagingOffererResponseModelV2(HttpBodyModel):
     id: int
     name: str
@@ -522,6 +514,7 @@ class VideoDataV2(HttpBodyModel):
     videoTitle: str | None = None
     videoThumbnailUrl: str | None = None
     videoUrl: HttpUrlStr | None = None
+    videoDescription: str | None = None
 
 
 class GetIndividualOfferResponseModelV2(HttpBodyModel):
@@ -575,7 +568,7 @@ class GetIndividualOfferResponseModelV2(HttpBodyModel):
 
     @classmethod
     def build(cls, offer: offers_models.Offer) -> Self:
-        extra_data = offer.extraData.copy() if offer.extraData else {}
+        extra_data = copy.deepcopy(offer.extraData) if offer.extraData else {}
         ean = offer.product.ean if offer.product else offer.ean
         if ean:
             extra_data["ean"] = ean
@@ -589,14 +582,17 @@ class GetIndividualOfferResponseModelV2(HttpBodyModel):
         # TODO(xordoquy): remove the stock loop in favor of another DB query
         price_category_ids_with_stocks = {stock.priceCategoryId for stock in offer.stocks if stock.priceCategoryId}
         price_categories = [
-            PriceCategoryResponseModelV2.build(price_category, price_category.id in price_category_ids_with_stocks)
+            PriceCategoryResponseModelV2.build(
+                price_category=price_category,
+                has_stocks=price_category.id in price_category_ids_with_stocks,
+            )
             for price_category in offer.priceCategories
         ]
 
         serialized_location = None
         if offer.offererAddress:
             is_venue_location = is_venue_address(offer.offererAddress, offer.venue)
-            location_label = offer.venue.publicName if is_venue_location else offer.offererAddress.label
+            location_label = None if is_venue_location else offer.offererAddress.label
             serialized_location = LocationResponseModelV2.build(
                 offer.offererAddress, label=location_label, is_venue_location=is_venue_location
             )
