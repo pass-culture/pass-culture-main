@@ -1,4 +1,4 @@
-import { act, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
@@ -189,11 +189,14 @@ describe('offersSearch component', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderOffersSearchComponent(props, user)
 
-    await act(async () => {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 0)
-      })
+    const domainsFilter = screen.getByRole('button', {
+      name: 'Domaine artistique',
     })
+    await userEvent.click(domainsFilter)
+    expect(
+      await screen.findByRole('checkbox', { name: 'Danse' })
+    ).toBeInTheDocument()
+    await userEvent.click(domainsFilter)
 
     expect(await axe(container)).toHaveNoViolations()
   })

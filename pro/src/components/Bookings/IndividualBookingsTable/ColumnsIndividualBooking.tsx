@@ -6,7 +6,6 @@ import {
 } from '@/commons/utils/convertEuroToPacificFranc'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import type { Column } from '@/ui-kit/Table/Table'
-import tableStyles from '@/ui-kit/Table/Table.module.scss'
 
 import { FilterByBookingStatus } from '../Components/Filters/FilterByBookingStatus'
 import type { BookingsFilters } from '../Components/types'
@@ -16,6 +15,7 @@ import { BookingOfferCell } from './Cells/BookingOfferCell'
 import { BookingStatusCell } from './Cells/BookingStatusCell'
 import { BookingStatusCellHistory } from './Cells/BookingStatusCellHistory'
 import { DetailsButtonCell } from './Cells/DetailsButtonCell'
+import styles from './ColumnsIndividualBooking.module.scss'
 
 type BookingRow = BookingRecapResponseModel & { id: number }
 const priceText = (amount: number) => (amount ? formatPrice(amount) : 'Gratuit')
@@ -83,7 +83,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
     {
       id: 'details',
       label: 'Détails',
-      header: <span className={tableStyles['visually-hidden']}>Détails</span>,
+      header: <span className={styles['visually-hidden']}>Détails</span>,
       render: (row) => (
         <DetailsButtonCell
           controlledId={`booking-details-${row.id}`}

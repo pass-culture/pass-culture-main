@@ -1,4 +1,4 @@
-import { act, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
@@ -18,9 +18,15 @@ vi.mock('@/apiClient/api', () => ({
 vi.mock('../CollectiveOffersCard/CollectiveOffersCard', () => ({
   CollectiveOffersCard: ({
     variant,
+    isLoading,
   }: {
     variant: CollectiveOffersCardVariant
-  }) => <div data-testid={`card-${variant.toLowerCase()}`}>offres</div>,
+    isLoading: boolean
+  }) => (
+    <div data-testid={`card-${variant.toLowerCase()}`} data-loading={isLoading}>
+      offres
+    </div>
+  ),
 }))
 
 describe('CollectiveOffersCardsContainer', () => {
@@ -41,10 +47,15 @@ describe('CollectiveOffersCardsContainer', () => {
       <CollectiveOffersCardsContainer isReadOnly={false} venueId={1} />
     )
 
-    await act(async () => {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 50)
-      })
+    await waitFor(() => {
+      expect(screen.getByTestId('card-template')).toHaveAttribute(
+        'data-loading',
+        'false'
+      )
+      expect(screen.getByTestId('card-bookable')).toHaveAttribute(
+        'data-loading',
+        'false'
+      )
     })
 
     expect(await axe(container)).toHaveNoViolations()

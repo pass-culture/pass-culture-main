@@ -107,7 +107,7 @@ describe('screens | OfferEducational : creation', () => {
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(mockNavigate).toHaveBeenCalledWith(
-      '/offre/4/collectif/stocks?requete=1'
+      `/offre/${offer.id}/collectif/stocks?requete=1`
     )
   })
 })
