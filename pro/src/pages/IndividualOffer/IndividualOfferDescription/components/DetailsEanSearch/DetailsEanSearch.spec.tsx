@@ -161,6 +161,38 @@ describe('DetailsEanSearch', () => {
       })
     })
 
+    describe('when the subcategory requires an EAN', () => {
+      it('should display a (cumulative) error message that cannot be cleared on new inputs', async () => {
+        renderDetailsEanSearch({
+          shouldDisplayClearButton: true,
+          isRequired: true,
+        })
+
+        // Input is now required.
+        const eanInput = getInput()
+        expect(eanInput).toBeRequired()
+
+        // Error cannot be removed by typing in the input.
+        expect(
+          screen.getByText(/doivent être liées à un produit/)
+        ).toBeInTheDocument()
+        await userEvent.type(eanInput, '9781234567897')
+        expect(
+          screen.getByText(/doivent être liées à un produit/)
+        ).toBeInTheDocument()
+      })
+
+      it('should let the submit button enabled', async () => {
+        renderDetailsEanSearch({
+          shouldDisplayClearButton: true,
+          isRequired: true,
+        })
+
+        await userEvent.type(getInput(), '9781234567897')
+        expect(getButton()).not.toBeDisabled()
+      })
+    })
+
     describe('when an EAN search is performed succesfully', () => {
       it('should display a success message', async () => {
         renderDetailsEanSearch({

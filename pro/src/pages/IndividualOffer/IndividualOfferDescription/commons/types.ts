@@ -31,20 +31,6 @@ export type DetailsFormValues = {
   accessibility?: AccessibilityFormValues
 }
 
-export type Product = {
-  id: number
-  name: string
-  description?: string | null
-  subcategoryId: string
-  gtlId: string
-  author: string
-  performer: string
-  images: {
-    recto?: string
-    verso?: string
-  }
-}
-
 export type SetDefaultInitialValuesFromOfferProps = {
   offer: GetIndividualOfferResponseModel
   subcategories: SubcategoryResponseModel[]
