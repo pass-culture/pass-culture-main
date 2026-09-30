@@ -23,7 +23,6 @@ from sqlalchemy.dialects import postgresql
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
-import pcapi.core.favorites.models as favorites_models
 from pcapi.core import search
 from pcapi.core.artist import models as artist_models
 from pcapi.core.bookings import api as bookings_api
@@ -35,6 +34,7 @@ from pcapi.core.cultural_outreach import api as cultural_outreach_api
 from pcapi.core.cultural_outreach import models as cultural_outreach_models
 from pcapi.core.external.compliance.api import search_offers
 from pcapi.core.external.compliance.serialization import SearchOffersRequest
+from pcapi.core.favorites import models as favorites_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
