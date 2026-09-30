@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router'
 
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
@@ -11,7 +12,6 @@ import {
 import fullBackIcon from '@/icons/full-back.svg'
 import strokeRigthIcon from '@/icons/stroke-right.svg'
 
-import { EcoDesignLayout } from './EcoDesignLayout'
 import styles from './EcoDesignMenu.module.scss'
 
 export const EcoDesignMenu = () => {
@@ -24,39 +24,41 @@ export const EcoDesignMenu = () => {
   }
 
   return (
-    <EcoDesignLayout>
-      <h1 className={styles['title']}>
-        Déclaration d'écoconception de l'espace partenaire
-      </h1>
-      <Button
-        onClick={() => backToDefault()}
-        variant={ButtonVariant.TERTIARY}
-        color={ButtonColor.NEUTRAL}
-        icon={fullBackIcon}
-        iconPosition={IconPositionEnum.LEFT}
-        label="Retour"
-      />
-      <div className={styles['pages-buttons-container']}>
+    <FullLayout>
+      <div className={styles['content-wrapper']}>
+        <h1 className={styles['title']}>
+          Déclaration d'écoconception de l'espace partenaire
+        </h1>
         <Button
-          as="router-link"
-          to="/ecoconception/politique"
-          variant={ButtonVariant.SECONDARY}
+          onClick={() => backToDefault()}
+          variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
-          icon={strokeRigthIcon}
-          iconPosition={IconPositionEnum.RIGHT}
-          label="Politique d'écoconception au pass Culture"
+          icon={fullBackIcon}
+          iconPosition={IconPositionEnum.LEFT}
+          label="Retour"
         />
-        <Button
-          as="router-link"
-          to="/ecoconception/declaration"
-          variant={ButtonVariant.SECONDARY}
-          color={ButtonColor.NEUTRAL}
-          icon={strokeRigthIcon}
-          iconPosition={IconPositionEnum.RIGHT}
-          label="Déclaration RGESN"
-        />
+        <div className={styles['pages-buttons-container']}>
+          <Button
+            as="router-link"
+            to="/ecoconception/politique"
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            icon={strokeRigthIcon}
+            iconPosition={IconPositionEnum.RIGHT}
+            label="Politique d'écoconception au pass Culture"
+          />
+          <Button
+            as="router-link"
+            to="/ecoconception/declaration"
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            icon={strokeRigthIcon}
+            iconPosition={IconPositionEnum.RIGHT}
+            label="Déclaration RGESN"
+          />
+        </div>
       </div>
-    </EcoDesignLayout>
+    </FullLayout>
   )
 }
 

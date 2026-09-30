@@ -1,4 +1,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+
+.content-wrapper {
+  max-width: size.$signup-content-width;
+  margin: 0 auto;
+}
 
 .subtitle {
   @include fonts.title4;
