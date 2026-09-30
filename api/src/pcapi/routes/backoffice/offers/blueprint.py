@@ -34,6 +34,7 @@ from pcapi.core.cultural_outreach import api as cultural_outreach_api
 from pcapi.core.cultural_outreach import models as cultural_outreach_models
 from pcapi.core.external.compliance.api import search_offers
 from pcapi.core.external.compliance.serialization import SearchOffersRequest
+from pcapi.core.favorites import models as favorites_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
@@ -1621,9 +1622,9 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
 
     if len(offer_ids) > 0:
-        db.session.query(users_models.Favorite).filter(users_models.Favorite.offerId.in_(offer_ids)).delete(
-            synchronize_session=False
-        )
+        db.session.query(favorites_models.FavoriteOffer).filter(
+            favorites_models.FavoriteOffer.offerId.in_(offer_ids)
+        ).delete(synchronize_session=False)
         db.session.flush()
         on_commit(
             functools.partial(

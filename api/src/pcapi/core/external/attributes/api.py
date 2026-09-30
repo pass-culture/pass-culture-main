@@ -17,6 +17,7 @@ from pcapi.core.educational.repository import has_collective_offers_for_program_
 from pcapi.core.external.attributes import models
 from pcapi.core.external.batch.attributes import update_user_attributes as update_batch_user
 from pcapi.core.external.brevo import update_contact_attributes as update_brevo_user
+from pcapi.core.favorites import models as favorites_models
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
@@ -376,10 +377,10 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
 
     user_bookings = get_user_bookings(user)
     favorites = (
-        db.session.query(users_models.Favorite)
+        db.session.query(favorites_models.FavoriteOffer)
         .filter_by(userId=user.id)
-        .options(joinedload(users_models.Favorite.offer).load_only(offers_models.Offer.subcategoryId))
-        .order_by(users_models.Favorite.id.desc())
+        .options(joinedload(favorites_models.FavoriteOffer.offer).load_only(offers_models.Offer.subcategoryId))
+        .order_by(favorites_models.FavoriteOffer.id.desc())
         .all()
     )
 
@@ -543,7 +544,7 @@ def get_user_bookings(user: users_models.User) -> list[bookings_models.Booking]:
     )
 
 
-def get_most_favorite_subcategories(favorites: list[users_models.Favorite]) -> list[str] | None:
+def get_most_favorite_subcategories(favorites: list[favorites_models.FavoriteOffer]) -> list[str] | None:
     if not favorites:
         return None
 

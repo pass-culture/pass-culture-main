@@ -5,7 +5,7 @@ import pytest
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.pro import new_offerer_validation
-from pcapi.core.offerers import models as offerer_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.factories import UserOffererFactory
 
 
@@ -32,7 +32,7 @@ class SendNewOffererRejectionEmailTest:
 
         # When
         new_offerer_validation.send_new_offerer_rejection_email_to_pro(
-            offerer, offerer_models.OffererRejectionReason.ADAGE_DECLINED
+            offerer, offerers_models.OffererRejectionReason.ADAGE_DECLINED
         )
 
         # Then

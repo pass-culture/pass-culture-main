@@ -1031,14 +1031,6 @@ class NativeUserSessionFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
-class FavoriteFactory(BaseFactory):
-    class Meta:
-        model = models.Favorite
-
-    offer = factory.SubFactory("pcapi.core.offers.factories.OfferFactory")
-    user = factory.SubFactory(UserFactory)
-
-
 # DepositFactory in users module to avoid import loops
 class DepositGrantFactory(BaseFactory):
     class Meta:

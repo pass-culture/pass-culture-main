@@ -6,6 +6,8 @@ from flask import url_for
 
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models as chronicles_models
+from pcapi.core.favorites import factories as favorite_factories
+from pcapi.core.favorites import models as favorites_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
@@ -664,7 +666,7 @@ class DeleteProUserTest(PostEndpointHelper):
 
     def test_delete_pro_user_with_related_objects(self, authenticated_client):
         user = users_factories.NonAttachedProFactory()
-        users_factories.FavoriteFactory(user=user)
+        favorite_factories.FavoriteOfferFactory(user=user)
         offers_factories.MediationFactory(author=user)
         operations_factories.SpecialEventResponseFactory(user=user)
         chronicles_factories.ChronicleFactory(user=user)
@@ -677,7 +679,12 @@ class DeleteProUserTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
-        assert db.session.query(users_models.Favorite).filter(users_models.Favorite.userId == user_id).count() == 0
+        assert (
+            db.session.query(favorites_models.FavoriteOffer)
+            .filter(favorites_models.FavoriteOffer.userId == user_id)
+            .count()
+            == 0
+        )
         assert db.session.query(offers_models.Mediation).one().authorId is None
         assert db.session.query(operations_models.SpecialEventResponse).one().userId is None
         assert db.session.query(chronicles_models.Chronicle).one().userId is None

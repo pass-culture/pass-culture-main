@@ -14,15 +14,16 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.external.batch import models as batch_models
 from pcapi.core.external.batch import testing as push_testing
+from pcapi.core.favorites import factories as favorite_factories
+from pcapi.core.favorites.models import FavoriteOffer
+from pcapi.core.favorites.repository import get_favorites_for
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
-from pcapi.core.users.models import Favorite
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.routes.native.v1.favorites import get_favorites_for
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
@@ -64,7 +65,7 @@ class GetTest:
             # Event offer with 1 expired stock, 2 futures ones and a mediation
             offer1 = offers_factories.EventOfferFactory(venue=venue, bookingAllowedDatetime=day_before_start)
             offers_factories.MediationFactory(offer=offer1, thumbCount=1, credit="Pour hurlevent !")
-            favorite1 = users_factories.FavoriteFactory(offer=offer1, user=user)
+            favorite1 = favorite_factories.FavoriteOfferFactory(offer=offer1, user=user)
             # should be ignored because of the date in the past
             offers_factories.EventStockFactory(offer=offer1, beginningDatetime=day_before_start, price=10)
             # 2 valid stocks (different dates and prices)
@@ -74,7 +75,7 @@ class GetTest:
             # Event offer with soft deleted stock and product's image
             offer2 = offers_factories.EventOfferFactory(venue=venue)
             mediation = offers_factories.MediationFactory(offer=offer2, thumbCount=666)
-            favorite2 = users_factories.FavoriteFactory(offer=offer2, user=user)
+            favorite2 = favorite_factories.FavoriteOfferFactory(offer=offer2, user=user)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=start, price=20, isSoftDeleted=True)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=day_after_start, price=50)
 
@@ -82,13 +83,13 @@ class GetTest:
             offer3 = offers_factories.ThingOfferFactory(
                 venue=venue, subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
             )
-            favorite3 = users_factories.FavoriteFactory(offer=offer3, user=user)
+            favorite3 = favorite_factories.FavoriteOfferFactory(offer=offer3, user=user)
             offers_factories.ThingStockFactory(offer=offer3, price=10)
 
             # Event offer with passed reservation date
             offer4 = offers_factories.EventOfferFactory(venue=venue)
             offers_factories.MediationFactory(offer=offer4)
-            favorite4 = users_factories.FavoriteFactory(offer=offer4, user=user)
+            favorite4 = favorite_factories.FavoriteOfferFactory(offer=offer4, user=user)
             stock4 = offers_factories.EventStockFactory(
                 offer=offer4, beginningDatetime=date_utils.get_naive_utc_now() + timedelta(minutes=30), price=50
             )
@@ -97,12 +98,12 @@ class GetTest:
             # Event offer in the past
             offer5 = offers_factories.EventOfferFactory(venue=venue)
             offers_factories.MediationFactory(offer=offer5)
-            favorite5 = users_factories.FavoriteFactory(offer=offer5, user=user)
+            favorite5 = favorite_factories.FavoriteOfferFactory(offer=offer5, user=user)
             offers_factories.EventStockFactory(offer=offer5, beginningDatetime=day_before_start, price=50)
 
             # Event offer with two times the same date / price
             offer6 = offers_factories.EventOfferFactory(venue=venue)
-            favorite6 = users_factories.FavoriteFactory(offer=offer6, user=user)
+            favorite6 = favorite_factories.FavoriteOfferFactory(offer=offer6, user=user)
             offers_factories.EventStockFactory(offer=offer6, beginningDatetime=day_after_start, price=30)
             offers_factories.EventStockFactory(offer=offer6, beginningDatetime=day_after_start, price=30)
 
@@ -206,9 +207,9 @@ class GetTest:
             # Given
             user = users_factories.UserFactory()
             active_offer = offers_factories.EventOfferFactory()
-            users_factories.FavoriteFactory(offer=active_offer, user=user)
+            favorite_factories.FavoriteOfferFactory(offer=active_offer, user=user)
             inactive_offer = offers_factories.EventOfferFactory(publicationDatetime=None)
-            users_factories.FavoriteFactory(offer=inactive_offer, user=user)
+            favorite_factories.FavoriteOfferFactory(offer=inactive_offer, user=user)
 
             # When
             client = client.with_token(user)
@@ -226,7 +227,7 @@ class GetTest:
             offerer = offerers_factories.OffererFactory(name="Pathé Gaumont")
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Ciné Pathé")
             offer = offers_factories.EventOfferFactory(venue=venue)
-            users_factories.FavoriteFactory(offer=offer, user=user)
+            favorite_factories.FavoriteOfferFactory(offer=offer, user=user)
 
             response = client.with_token(user).get(FAVORITES_URL)
             favorites = response.json["favorites"]
@@ -238,7 +239,7 @@ class GetTest:
             offerer = offerers_factories.OffererFactory(name="Pathé Gaumont")
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Ciné Pathé")
             offer = offers_factories.DigitalOfferFactory(venue=venue)
-            users_factories.FavoriteFactory(offer=offer, user=user)
+            favorite_factories.FavoriteOfferFactory(offer=offer, user=user)
 
             client = client.with_token(user)
 
@@ -260,36 +261,36 @@ class GetTest:
 
             # Event offer future stock
             offer1 = offers_factories.EventOfferFactory(venue=venue)
-            favorite1 = users_factories.FavoriteFactory(offer=offer1, user=user)
+            favorite1 = favorite_factories.FavoriteOfferFactory(offer=offer1, user=user)
             offers_factories.EventStockFactory(offer=offer1, beginningDatetime=tomorow, price=10)
 
             # Thing offer with no date
             offer2 = offers_factories.ThingOfferFactory(venue=venue)
-            favorite2 = users_factories.FavoriteFactory(offer=offer2, user=user)
+            favorite2 = favorite_factories.FavoriteOfferFactory(offer=offer2, user=user)
             offers_factories.ThingStockFactory(offer=offer2, price=10)
 
             # Thing offer with past booking stock
             offer3 = offers_factories.ThingOfferFactory(venue=venue)
-            favorite3 = users_factories.FavoriteFactory(offer=offer3, user=user)
+            favorite3 = favorite_factories.FavoriteOfferFactory(offer=offer3, user=user)
             offers_factories.ThingStockFactory(offer=offer3, bookingLimitDatetime=yesterday, price=10)
 
             # Event offer with stock in the future but past booking
             offer4 = offers_factories.EventOfferFactory(venue=venue)
-            favorite4 = users_factories.FavoriteFactory(offer=offer4, user=user)
+            favorite4 = favorite_factories.FavoriteOfferFactory(offer=offer4, user=user)
             offers_factories.EventStockFactory(
                 offer=offer4, beginningDatetime=today, bookingLimitDatetime=yesterday, price=10
             )
 
             # Event offer with soft deleted stock
             offer5 = offers_factories.EventOfferFactory(venue=venue)
-            favorite5 = users_factories.FavoriteFactory(offer=offer5, user=user)
+            favorite5 = favorite_factories.FavoriteOfferFactory(offer=offer5, user=user)
             offers_factories.EventStockFactory(
                 offer=offer5, beginningDatetime=tomorow, quantity=1, price=10, isSoftDeleted=True
             )
 
             # Event offer with booked stock
             offer6 = offers_factories.EventOfferFactory(venue=venue)
-            favorite6 = users_factories.FavoriteFactory(offer=offer6, user=user)
+            favorite6 = favorite_factories.FavoriteOfferFactory(offer=offer6, user=user)
             stock6 = offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, quantity=1, price=10)
             bookings_factories.BookingFactory(stock=stock6, user=user)
 
@@ -385,8 +386,8 @@ class CreateFavoriteTest:
 
         # Then
         assert response.status_code == 200, response.data
-        assert db.session.query(Favorite).count() == 1
-        favorite = db.session.query(Favorite).first()
+        assert db.session.query(FavoriteOffer).count() == 1
+        favorite = db.session.query(FavoriteOffer).first()
         assert favorite.dateCreated
         assert favorite.userId == user.id
         assert response.json["id"] == favorite.id
@@ -418,7 +419,7 @@ class CreateFavoriteTest:
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer1 = offers_factories.EventOfferFactory(venue=venue)
-        assert db.session.query(Favorite).count() == 0
+        assert db.session.query(FavoriteOffer).count() == 0
 
         client.with_token(user)
 
@@ -429,7 +430,7 @@ class CreateFavoriteTest:
 
         # Then
         assert response.status_code == 200
-        assert db.session.query(Favorite).count() == 1
+        assert db.session.query(FavoriteOffer).count() == 1
 
         expected_push_counts = (
             1  # for user attribute update in android
@@ -445,20 +446,20 @@ class CreateFavoriteTest:
     def when_user_creates_one_favorite_above_the_limit(self, client):
         user = users_factories.UserFactory()
         offer = offers_factories.EventOfferFactory()
-        assert db.session.query(Favorite).count() == 0
+        assert db.session.query(FavoriteOffer).count() == 0
 
         client.with_token(user)
 
         response = client.post(FAVORITES_URL, json={"offerId": offer.id})
 
         assert response.status_code == 200, response.data
-        assert db.session.query(Favorite).count() == 1
+        assert db.session.query(FavoriteOffer).count() == 1
 
         response = client.post(FAVORITES_URL, json={"offerId": offer.id})
 
         assert response.status_code == 400, response.data
         assert response.json == {"code": "MAX_FAVORITES_REACHED"}
-        assert db.session.query(Favorite).count() == 1
+        assert db.session.query(FavoriteOffer).count() == 1
 
     def test_offer_does_not_exist(self, client):
         user = users_factories.UserFactory()
@@ -468,7 +469,7 @@ class CreateFavoriteTest:
 
         # Then
         assert response.status_code == 404
-        assert db.session.query(Favorite).count() == 0
+        assert db.session.query(FavoriteOffer).count() == 0
 
     def test_offer_is_deactivated(self, client):
         user = users_factories.UserFactory()
@@ -479,7 +480,7 @@ class CreateFavoriteTest:
 
         # Then
         assert response.status_code == 404
-        assert db.session.query(Favorite).count() == 0
+        assert db.session.query(FavoriteOffer).count() == 0
 
     @pytest.mark.parametrize(
         "validation_status, status_code, count",
@@ -499,7 +500,7 @@ class CreateFavoriteTest:
 
         # Then
         assert response.status_code == status_code
-        assert db.session.query(Favorite).count() == count
+        assert db.session.query(FavoriteOffer).count() == count
 
     @pytest.mark.parametrize(
         "validation_status, status_code, count",
@@ -521,7 +522,7 @@ class CreateFavoriteTest:
 
         # Then
         assert response.status_code == status_code
-        assert db.session.query(Favorite).count() == count
+        assert db.session.query(FavoriteOffer).count() == count
 
     @pytest.mark.usefixtures("clean_database")
     def test_create_favorite_concurrently(self, client, app, settings):
@@ -569,7 +570,12 @@ class CreateFavoriteTest:
 
         # all returned status codes should be == 200. update_external_user and track_offer_added_to_favorites_event should be called once
         assert set(results) == {(200, 1, 1), (200, 0, 0)}
-        assert db.session.query(Favorite).filter(Favorite.offerId == offer_id, Favorite.userId == user.id).count() == 1
+        assert (
+            db.session.query(FavoriteOffer)
+            .filter(FavoriteOffer.offerId == offer_id, FavoriteOffer.userId == user.id)
+            .count()
+            == 1
+        )
 
 
 class DeleteTest:
@@ -580,15 +586,15 @@ class DeleteTest:
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
-            favorite = users_factories.FavoriteFactory(offer=offer, user=user)
-            assert db.session.query(Favorite).count() == 1
+            favorite = favorite_factories.FavoriteOfferFactory(offer=offer, user=user)
+            assert db.session.query(FavoriteOffer).count() == 1
 
             # When
             response = client.with_token(user).delete(f"{FAVORITES_URL}/{favorite.id}")
 
             # Then
             assert response.status_code == 204
-            assert db.session.query(Favorite).count() == 0
+            assert db.session.query(FavoriteOffer).count() == 0
 
         def when_user_delete_another_user_favorite(self, client):
             # Given
@@ -597,15 +603,15 @@ class DeleteTest:
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
-            favorite = users_factories.FavoriteFactory(offer=offer, user=other_beneficiary)
-            assert db.session.query(Favorite).count() == 1
+            favorite = favorite_factories.FavoriteOfferFactory(offer=offer, user=other_beneficiary)
+            assert db.session.query(FavoriteOffer).count() == 1
 
             # When
             response = client.with_token(user).delete(f"{FAVORITES_URL}/{favorite.id}")
 
             # Then
             assert response.status_code == 404
-            assert db.session.query(Favorite).count() == 1
+            assert db.session.query(FavoriteOffer).count() == 1
 
         def when_user_delete_non_existent_favorite(self, client):
             # Given

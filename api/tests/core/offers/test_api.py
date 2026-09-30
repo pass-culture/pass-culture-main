@@ -28,6 +28,8 @@ import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
+import pcapi.core.favorites.factories as favorite_factories
+import pcapi.core.favorites.models as favorites_models
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
@@ -3219,7 +3221,7 @@ class RejectInappropriateProductTest:
         user = users_factories.UserFactory()
 
         for offer in offers:
-            users_factories.FavoriteFactory(offer=offer)
+            favorite_factories.FavoriteOfferFactory(offer=offer)
             bookings_factories.BookingFactory(stock__offer=offer)
 
         # When
@@ -3248,7 +3250,7 @@ class RejectInappropriateProductTest:
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {
             o.id for o in offers if o.product.id == product1.id
         }
-        assert db.session.query(users_models.Favorite).count() == 1  # product 2
+        assert db.session.query(favorites_models.FavoriteOffer).count() == 1  # product 2
         assert all(booking.isCancelled is True for booking in bookings if booking.stock.offer.product.id == product1)
         assert len(mails_testing.outbox) == 0
 
@@ -3270,10 +3272,10 @@ class RejectInappropriateProductTest:
         user = users_factories.UserFactory()
 
         for offer in offers:
-            users_factories.FavoriteFactory(offer=offer)
+            favorite_factories.FavoriteOfferFactory(offer=offer)
             bookings_factories.BookingFactory(stock__offer=offer)
 
-        assert db.session.query(users_models.Favorite).count() == len(offers)
+        assert db.session.query(favorites_models.FavoriteOffer).count() == len(offers)
         assert db.session.query(bookings_models.Booking).count() == len(offers)
 
         api.reject_inappropriate_products([ean_1], user)
@@ -5128,7 +5130,7 @@ class DeleteOffersRelatedObjectsTest:
     def build_offer_with_related_objects(self):
         offer = factories.OfferFactory()
         factories.StockFactory.create_batch(2, offer=offer)
-        users_factories.FavoriteFactory(offer=offer)
+        favorite_factories.FavoriteOfferFactory(offer=offer)
         factories.MediationFactory.create_batch(2, offer=offer)
         criteria_factories.OfferCriterionFactory(offerId=offer.id, criterionId=criteria_factories.CriterionFactory().id)
 
@@ -5140,7 +5142,7 @@ class DeleteOffersRelatedObjectsTest:
         # not efficient but will be fine for testing
         for offer_id in offer_ids:
             assert db.session.query(models.Stock).filter_by(offerId=offer_id).count() == 0
-            assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() == 0
+            assert db.session.query(favorites_models.FavoriteOffer).filter_by(offerId=offer_id).count() == 0
             assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() == 0
 
     def assert_offer_related_objects_have_not_been_deleted(self, offer_ids):
@@ -5149,7 +5151,7 @@ class DeleteOffersRelatedObjectsTest:
         # not efficient but will be fine for testing
         for offer_id in offer_ids:
             assert db.session.query(models.Stock).filter_by(offerId=offer_id).count() > 0
-            assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() > 0
+            assert db.session.query(favorites_models.FavoriteOffer).filter_by(offerId=offer_id).count() > 0
             assert db.session.query(criteria_models.OfferCriterion).filter_by(offerId=offer_id).count() > 0
             assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() > 0
 
@@ -5166,7 +5168,7 @@ def assert_offers_have_been_completely_cleaned(offer_ids):
         assert offer_id not in search_testing.search_store["offers"]
 
         assert db.session.query(finance_models.CustomReimbursementRule).filter_by(offerId=offer_id).count() == 0
-        assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(favorites_models.FavoriteOffer).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.HeadlineOffer).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(chronicles_models.OfferChronicle).filter_by(offerId=offer_id).count() == 0
@@ -5243,7 +5245,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
             search.reindex_offer_ids([offer.id])
 
             factories.StockFactory.create_batch(2, offer=offer)
-            users_factories.FavoriteFactory(offer=offer)
+            favorite_factories.FavoriteOfferFactory(offer=offer)
             highlights_factories.HighlightRequestFactory(highlight=highlight, offer=offer)
         return offers
 
@@ -5294,7 +5296,7 @@ class DeleteUnbookableUnusedOldOffersTest:
         offer_id = offer.id
 
         factories.StockFactory.create_batch(2, offer=offer, isSoftDeleted=True)
-        users_factories.FavoriteFactory(offer=offer)
+        favorite_factories.FavoriteOfferFactory(offer=offer)
 
         api.delete_unbookable_unbooked_old_offers(max_id=offer.id * 2)
         assert_offers_have_been_completely_cleaned([offer_id])

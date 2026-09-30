@@ -1,24 +1,12 @@
 import typing
-from dataclasses import dataclass
 from datetime import datetime
-from decimal import Decimal
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.favorites.models import FavoriteOfferData
 from pcapi.core.finance.utils import to_cents
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.users.models import ExpenseDomain
-from pcapi.core.users.models import Favorite
 from pcapi.routes.serialization import HttpBodyModel
-
-
-@dataclass
-class FavoriteData:
-    date: datetime | None
-    favorite: Favorite
-    is_expired: bool
-    price: Decimal | None
-    start_date: datetime | None
-    start_price: Decimal | None
 
 
 class FavoriteCoordinates(HttpBodyModel):
@@ -50,7 +38,7 @@ class FavoriteOfferResponse(HttpBodyModel):
     venue_name: str
 
     @classmethod
-    def build(cls, favorite_data: FavoriteData) -> typing.Self:
+    def build(cls, favorite_data: FavoriteOfferData) -> typing.Self:
         offer = favorite_data.favorite.offer
         address = offer.venue.offererAddress.address
         venue_name = offer.venue.managingOfferer.name if offer.isDigital else offer.venue.publicName

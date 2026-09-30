@@ -2,7 +2,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.finance import models as finance_models
-from pcapi.core.offerers import models as offerer_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -49,7 +49,7 @@ def _get_invoices_offerers(query: ReimbursementCsvByInvoicesModel) -> set[int]:
         .join(finance_models.Invoice.bankAccount)
         .join(finance_models.BankAccount.offerer)
         .filter(finance_models.Invoice.reference.in_(query.invoicesReferences))
-        .with_entities(offerer_models.Offerer.id)
+        .with_entities(offerers_models.Offerer.id)
         .all()
     )
     return {offerer.id for offerer in offerers}
