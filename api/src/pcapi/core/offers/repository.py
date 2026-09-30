@@ -801,6 +801,200 @@ def get_offers_by_filters(
     return query
 
 
+class PaginatedEventOffers(typing.NamedTuple):
+    offers: list[models.Offer]
+    page: int
+    pages: int
+    total: int
+
+
+def get_paginated_event_offers(
+    *,
+    venue_id: int,
+    page: int,
+    per_page: int,
+    status: offer_mixin.OfferStatus | None = None,
+    name_search: str | None = None,
+    creation_mode: str | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
+    is_digital: bool | None = None,
+) -> PaginatedEventOffers:
+    query = _get_event_offers_by_filters(
+        venue_id=venue_id,
+        status=status,
+        name_search=name_search,
+        creation_mode=creation_mode,
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
+        is_digital=is_digital,
+    )
+
+    total = query.count()
+    pages = (total + per_page - 1) // per_page
+
+    first_beginning_datetime = (
+        sa.select(sa.func.min(models.Stock.beginningDatetime))
+        .where(
+            models.Stock.offerId == models.Offer.id,
+            models.Stock.isSoftDeleted.is_(False),
+        )
+        .correlate(models.Offer)
+        .scalar_subquery()
+    )
+
+    offers = (
+        query.options(
+            sa_orm.load_only(
+                models.Offer.id,
+                models.Offer.name,
+                models.Offer.validation,
+                models.Offer.offererAddressId,
+                models.Offer.productId,
+                models.Offer.publicationDatetime,
+                models.Offer.bookingAllowedDatetime,
+            )
+        )
+        .options(
+            sa_orm.selectinload(
+                models.Offer.highlight_requests.and_(
+                    highlights_models.HighlightRequest.highlight.has(
+                        sa.func.upper(highlights_models.Highlight.highlight_datespan)
+                        > date_utils.get_naive_utc_now().date()
+                    )
+                )
+            )
+            .joinedload(highlights_models.HighlightRequest.highlight)
+            .load_only(highlights_models.Highlight.id, highlights_models.Highlight.name)
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.venue).options(
+                sa_orm.load_only(
+                    offerers_models.Venue.id,
+                    offerers_models.Venue.publicName,
+                ),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).load_only(
+                    offerers_models.OffererAddress.addressId
+                ),
+            )
+        )
+        .options(
+            sa_orm.selectinload(models.Offer.stocks.and_(models.Stock.isSoftDeleted.is_(False))).load_only(
+                models.Stock.id,
+                models.Stock.beginningDatetime,
+                models.Stock.bookingLimitDatetime,
+                models.Stock.quantity,
+                models.Stock.dnBookedQuantity,
+                models.Stock.isSoftDeleted,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.mediations).load_only(
+                models.Mediation.id,
+                models.Mediation.credit,
+                models.Mediation.dateCreated,
+                models.Mediation.thumbCount,
+                models.Mediation.isActive,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.product)
+            .load_only(
+                models.Product.id,
+                models.Product.thumbCount,
+            )
+            .joinedload(models.Product.productMediations)
+            .load_only(
+                models.ProductMediation.imageType,
+                models.ProductMediation.uuid,
+            )
+        )
+        .options(sa_orm.with_expression(models.Offer.hasProAdvice, get_offer_has_pro_advice_subquery()))
+        .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
+        .order_by(first_beginning_datetime.asc().nulls_last(), models.Offer.id.desc())
+        .offset((page - 1) * per_page)
+        .limit(per_page)
+        .all()
+    )
+
+    return PaginatedEventOffers(offers=offers, page=page, pages=pages, total=total)
+
+
+def _get_event_offers_by_filters(
+    *,
+    venue_id: int,
+    status: offer_mixin.OfferStatus | None = None,
+    name_search: str | None = None,
+    creation_mode: str | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
+    is_digital: bool | None = None,
+) -> sa_orm.Query[models.Offer]:
+    query = db.session.query(models.Offer).filter(
+        models.Offer.venueId == venue_id,
+        models.Offer.isEvent,
+    )
+
+    if creation_mode is not None:
+        query = _filter_by_creation_mode(query, creation_mode)
+
+    if is_digital is True:
+        query = query.filter(models.Offer.hasUrl)
+    elif is_digital is False:
+        query = query.filter(sa.not_(models.Offer.hasUrl))
+
+    if name_search:
+        query = query.filter(models.Offer.name.ilike(f"%{name_search}%"))
+
+    if status is not None:
+        status_filters = models.Offer.get_status_filters(status=status)
+        query = query.filter(*status_filters)
+
+    if period_beginning_date is not None or period_ending_date is not None:
+        offer_timezone = (
+            sa.select(geography_models.Address.timezone)
+            .join(
+                offerers_models.OffererAddress,
+                offerers_models.OffererAddress.addressId == geography_models.Address.id,
+            )
+            .where(offerers_models.OffererAddress.id == models.Offer.offererAddressId)
+            .correlate(models.Offer)
+            .scalar_subquery()
+        )
+        venue_timezone = (
+            sa.select(geography_models.Address.timezone)
+            .join(
+                offerers_models.OffererAddress,
+                offerers_models.OffererAddress.addressId == geography_models.Address.id,
+            )
+            .where(
+                offerers_models.OffererAddress.venueId == venue_id,
+                offerers_models.OffererAddress.type == offerers_models.LocationType.VENUE_LOCATION,
+            )
+            .scalar_subquery()
+        )
+        target_timezone = sa.func.coalesce(offer_timezone, venue_timezone)
+        stock_local_date = sa.cast(
+            sa.func.timezone(target_timezone, sa.func.timezone("UTC", models.Stock.beginningDatetime)),
+            sa.Date,
+        )
+
+        stock_filters = [
+            models.Stock.offerId == models.Offer.id,
+            models.Stock.isSoftDeleted.is_(False),
+        ]
+        if period_beginning_date is not None:
+            stock_filters.append(stock_local_date >= period_beginning_date)
+        if period_ending_date is not None:
+            stock_filters.append(stock_local_date <= period_ending_date)
+
+        query = query.filter(
+            sa.select(1).select_from(models.Stock).where(*stock_filters).correlate(models.Offer).exists()
+        )
+
+    return query
+
+
 def _filter_by_creation_mode(query: sa_orm.Query, creation_mode: str) -> sa_orm.Query:
     if creation_mode == MANUAL_CREATION_MODE:
         query = query.filter(models.Offer.lastProviderId.is_(None))

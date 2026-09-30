@@ -72,6 +72,33 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     return offers_serialize.ListOffersResponseModel(__root__=offers_serialize.serialize_capped_offers(paginated_offers))
 
 
+@pro_blueprint.route("/event-offers", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.ListEventOffersResponseModel,
+    api=blueprint.pro_schema,
+)
+@atomic()
+def list_event_offers(
+    query: offers_serialize.ListEventOffersQueryModel,
+) -> offers_serialize.ListEventOffersResponseModel:
+    rest.check_user_has_access_to_venues(current_user, [query.venue_id])
+
+    paginated_offers = offers_repository.get_paginated_event_offers(
+        venue_id=query.venue_id,
+        page=query.page,
+        per_page=offers_constants.EVENT_OFFERS_PER_PAGE,
+        status=query.status,
+        name_search=query.name_search,
+        creation_mode=query.creation_mode,
+        period_beginning_date=query.period_beginning_date,
+        period_ending_date=query.period_ending_date,
+        is_digital=query.is_digital,
+    )
+
+    return offers_serialize.serialize_paginated_event_offers(paginated_offers)
+
+
 @pro_blueprint.route("/offers/home", methods=["GET"])
 @atomic()
 @login_required

@@ -1706,6 +1706,60 @@ export type EventDateScheduleAndPriceCategoriesCountModel = {
 export type EventDatesInfos = Array<EventDateScheduleAndPriceCategoriesCountModel>;
 
 /**
+ * EventOfferResponseModel
+ */
+export type EventOfferResponseModel = {
+    /**
+     * Bookingscount
+     */
+    bookingsCount: number;
+    /**
+     * Hasproadvice
+     */
+    hasProAdvice: boolean;
+    /**
+     * Highlightrequests
+     */
+    highlightRequests: Array<ShortHighlightResponseModelV2>;
+    /**
+     * Id
+     */
+    id: number;
+    location: LocationResponseModelV2 | null;
+    /**
+     * Name
+     */
+    name: string;
+    status: OfferStatus;
+    /**
+     * Stocks
+     */
+    stocks: Array<EventOfferStockResponseModel>;
+    /**
+     * Thumburl
+     */
+    thumbUrl: string | null;
+};
+
+/**
+ * EventOfferStockResponseModel
+ */
+export type EventOfferStockResponseModel = {
+    /**
+     * Beginningdatetime
+     */
+    beginningDatetime: string | null;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Remainingquantity
+     */
+    remainingQuantity: number | string;
+};
+
+/**
  * EventStockCreateBodyModel
  */
 export type EventStockCreateBodyModel = {
@@ -3865,6 +3919,63 @@ export type ListCollectiveOffersQueryModel = {
  * ListCollectiveOffersResponseModel
  */
 export type ListCollectiveOffersResponseModel = Array<CollectiveOfferResponseModel>;
+
+/**
+ * ListEventOffersQueryModel
+ */
+export type ListEventOffersQueryModel = {
+    /**
+     * Creationmode
+     */
+    creationMode?: string | null;
+    /**
+     * Isdigital
+     */
+    isDigital?: boolean | null;
+    /**
+     * Namesearch
+     */
+    nameSearch?: string | null;
+    /**
+     * Page
+     */
+    page?: number;
+    /**
+     * Periodbeginningdate
+     */
+    periodBeginningDate?: string | null;
+    /**
+     * Periodendingdate
+     */
+    periodEndingDate?: string | null;
+    status?: OfferStatus | null;
+    /**
+     * Venueid
+     */
+    venueId: number;
+};
+
+/**
+ * ListEventOffersResponseModel
+ */
+export type ListEventOffersResponseModel = {
+    /**
+     * Events
+     */
+    events: Array<EventOfferResponseModel>;
+    /**
+     * Page
+     */
+    page: number;
+    /**
+     * Pages
+     */
+    pages: number;
+    /**
+     * Total
+     */
+    total: number;
+};
 
 /**
  * ListFeatureResponseModel
@@ -6118,6 +6229,20 @@ export type SharedLoginUserResponseModel = {
  * ShortHighlightResponseModel
  */
 export type ShortHighlightResponseModel = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
+ * ShortHighlightResponseModelV2
+ */
+export type ShortHighlightResponseModelV2 = {
     /**
      * Id
      */
@@ -8652,6 +8777,65 @@ export type getEducationalInstitutionsResponses = {
 };
 
 export type getEducationalInstitutionsResponse = getEducationalInstitutionsResponses[keyof getEducationalInstitutionsResponses];
+
+export type getEventOffersData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Venueid
+         */
+        venueId: number;
+        /**
+         * Page
+         */
+        page?: number;
+        /**
+         * Namesearch
+         */
+        nameSearch?: string | null;
+        status?: OfferStatus | null;
+        /**
+         * Creationmode
+         */
+        creationMode?: string | null;
+        /**
+         * Periodbeginningdate
+         */
+        periodBeginningDate?: string | null;
+        /**
+         * Periodendingdate
+         */
+        periodEndingDate?: string | null;
+        /**
+         * Isdigital
+         */
+        isDigital?: boolean | null;
+    };
+    url: '/event-offers';
+};
+
+export type getEventOffersErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getEventOffersError = getEventOffersErrors[keyof getEventOffersErrors];
+
+export type getEventOffersResponses = {
+    /**
+     * OK
+     */
+    200: ListEventOffersResponseModel;
+};
+
+export type getEventOffersResponse = getEventOffersResponses[keyof getEventOffersResponses];
 
 export type getFeaturesData = {
     body?: never;
