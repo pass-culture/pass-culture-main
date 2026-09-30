@@ -1,59 +1,8 @@
 import decimal
-from collections.abc import Iterable
 
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
 from pcapi.core.educational.serialization.collective_offer import get_collective_offer_address
-
-
-def get_collective_bookings_per_year_response(
-    bookings: Iterable[models.CollectiveBooking],
-) -> schemas.EducationalBookingsPerYearResponse:
-    serialized_bookings: list[schemas.EducationalBookingPerYearResponse] = []
-
-    for booking in bookings:
-        stock = booking.collectiveStock
-        offer = stock.collectiveOffer
-
-        serialized_bookings.append(
-            schemas.EducationalBookingPerYearResponse(
-                id=booking.id,
-                UAICode=booking.educationalInstitution.institutionId,
-                status=get_collective_booking_status(booking),
-                additionalDetails=offer.additionalDetails,
-                cancellationReason=booking.cancellationReason,
-                confirmationDate=booking.confirmationDate,
-                confirmationLimitDate=booking.confirmationLimitDate,
-                numberOfTickets=stock.numberOfTickets,
-                numberOfTeachers=stock.numberOfTeachers,
-                price=stock.price,
-                servicePrice=stock.servicePrice,
-                additionalFees=[schemas.AdditionalFeeResponse.build(fee) for fee in stock.collectiveAdditionalFees],
-                startDatetime=stock.startDatetime,
-                endDatetime=stock.endDatetime,
-                venueTimezone=offer.venue.offererAddress.address.timezone,
-                name=offer.name,
-                redactorEmail=booking.educationalRedactor.email,
-                domainIds=[domain.id for domain in offer.domains],
-                domainLabels=[domain.name for domain in offer.domains],
-                venueId=offer.venueId,
-                venueName=offer.venue.name,
-                offererName=offer.venue.managingOfferer.name,
-                formats=offer.formats,
-            )
-        )
-
-    return schemas.EducationalBookingsPerYearResponse(bookings=serialized_bookings)
-
-
-def serialize_collective_bookings(
-    educational_bookings: list[models.CollectiveBooking],
-) -> list[schemas.EducationalBookingResponse]:
-    serialized_educational_bookings = []
-    for educational_booking in educational_bookings:
-        serialized_educational_bookings.append(serialize_collective_booking(educational_booking))
-
-    return serialized_educational_bookings
 
 
 def serialize_collective_booking(
