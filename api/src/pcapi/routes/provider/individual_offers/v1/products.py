@@ -219,7 +219,7 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
             booking_allowed_datetime=body.booking_allowed_datetime,
         )
 
-    provider_utils.public_api_add_log_extra(venue=venue.id, ean=create_offer_schema.ean)
+    provider_utils.public_api_add_log_extra(venue_id=venue.id, ean=create_offer_schema.ean)
     if body.stock:
         provider_utils.public_api_add_log_extra(
             stock_price=body.stock.price,
@@ -599,7 +599,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
         offers_tasks.upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
         db.session.refresh(offer)  # to ensure that `offer.activeStocks` is correctly populated
 
-    provider_utils.public_api_add_log_extra(venue=offer.venueId, publication_datetime=publication_datetime)
+    provider_utils.public_api_add_log_extra(venue_id=offer.venueId, publication_datetime=publication_datetime)
     if "stock" in updates and body.stock:
         provider_utils.public_api_add_log_extra(stock_price=body.stock.price, stock_quantity=body.stock.quantity)
 
