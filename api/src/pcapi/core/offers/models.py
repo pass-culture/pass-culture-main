@@ -27,7 +27,6 @@ from pcapi.core.criteria.models import OfferCriterion
 from pcapi.core.cultural_outreach.models import CulturalOutreach
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferLink
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferTemplateLink
-from pcapi.core.favorites.models import FavoriteOffer
 from pcapi.core.finance.models import CustomReimbursementRule
 from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights.models import HighlightRequest
@@ -57,6 +56,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
+    from pcapi.core.favorites.models import FavoriteOffer
     from pcapi.core.history.models import ActionHistory
     from pcapi.core.offerers.models import OffererAddress
     from pcapi.core.offerers.models import Venue
