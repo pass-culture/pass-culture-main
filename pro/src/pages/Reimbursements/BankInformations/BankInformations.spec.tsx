@@ -12,6 +12,7 @@ import { api } from '@/apiClient/api'
 import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
+  type RejectedBankAccountResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -40,7 +41,7 @@ const defaultBankAccountResponseModel: BankAccountResponseModel = {
       state: null,
     },
   ],
-  obfuscatedIban: 'XXXX-123',
+  obfuscatedIban: 'XXXX-1234',
   status: BankAccountApplicationStatus.ACCEPTE,
 }
 
@@ -95,6 +96,7 @@ describe('BankInformations page', () => {
         },
       ],
     })
+    vi.spyOn(api, 'getRejectedBankAccounts').mockResolvedValue([])
   })
 
   it('should render without accessibility violations', async () => {
@@ -392,7 +394,7 @@ describe('BankInformations page', () => {
       bankAccount: {
         id: 1,
         label: 'jacob',
-        obfuscatedIban: 'XXXX-123',
+        obfuscatedIban: 'XXXX-1234',
         isActive: true,
       },
     })
@@ -440,5 +442,71 @@ describe('BankInformations page', () => {
     await waitFor(() => {
       expect(getVenueSpy).toHaveBeenCalledWith({ path: { venue_id: venue.id } })
     })
+  })
+
+  it('should link the venues using the rejected bank account banner', async () => {
+    const detachedVenues = [
+      { id: 1, publicName: 'Structure 1' },
+      { id: 2, publicName: 'Structure 2' },
+    ]
+    const rejectedBankAccount: RejectedBankAccountResponseModel = {
+      id: 10,
+      label: 'Compte 1',
+      obfuscatedIban: 'XXXX XXXX XXXX 1234',
+      rejectedSettlementLabel: 'VIR1',
+      detachedVenues,
+    }
+
+    const getRejectedAccountsSpy = vi
+      .spyOn(api, 'getRejectedBankAccounts')
+      .mockResolvedValue([rejectedBankAccount])
+    const linkVenueSpy = vi.spyOn(api, 'linkVenueToBankAccount')
+    const getOffererBankAccountsSpy = vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    )
+
+    renderBankInformations({ hasValidBankAccount: true })
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    // getRejectedBankAccounts is called once on render
+    // reset the mock to check the second call after bank account replace
+    await waitFor(() => {
+      expect(getRejectedAccountsSpy).toHaveBeenCalledOnce()
+    })
+    getRejectedAccountsSpy.mockClear()
+    getRejectedAccountsSpy.mockResolvedValue([])
+
+    const selectBankAccountButton = screen.getByLabelText(
+      'Compte bancaire de remplacement'
+    )
+    await userEvent.selectOptions(
+      selectBankAccountButton,
+      screen.getByRole('option', { name: 'jacob (IBAN **** 1234)' })
+    )
+
+    const replaceButton = screen.getByRole('button', { name: 'Remplacer' })
+    await userEvent.click(replaceButton)
+
+    await waitFor(() => {
+      expect(linkVenueSpy).toHaveBeenCalledWith({
+        body: { venuesIds: [1, 2] },
+        path: { bank_account_id: 1, offerer_id: 1 },
+      })
+    })
+    await waitFor(() => {
+      expect(getOffererBankAccountsSpy).toHaveBeenLastCalledWith({
+        path: { offerer_id: 1 },
+      })
+    })
+    expect(getRejectedAccountsSpy).toHaveBeenCalledOnce()
+  })
+
+  it('should not display the banner when no rejected bank account', async () => {
+    renderBankInformations({ hasValidBankAccount: true })
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(screen.queryByTestId('banner-content')).not.toBeInTheDocument()
   })
 })

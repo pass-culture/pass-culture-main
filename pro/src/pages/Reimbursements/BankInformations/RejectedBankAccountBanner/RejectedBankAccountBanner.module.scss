@@ -1,0 +1,9 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.banner-content {
+  margin-bottom: var(--size-spacing-s);
+}
+
+.venue-name {
+  @include fonts.body-accent;
+}
