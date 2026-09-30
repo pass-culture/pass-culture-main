@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
+import type { GetProductInformations } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
@@ -12,7 +13,6 @@ import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCloseIcon from '@/icons/full-close.svg'
 import strokeBarcodeIcon from '@/icons/stroke-barcode.svg'
-import type { Product } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 import {
   type EanSearchForm,
   generateEanSearchValidationSchema,
@@ -22,23 +22,19 @@ import { EanSearchCallout } from '@/pages/IndividualOffer/IndividualOfferDescrip
 import styles from './DetailsEanSearch.module.scss'
 
 export type DetailsEanSearchProps = {
-  shouldDisplayClearButton: boolean
-  isProductBased: boolean
-  initialEan?: string
-  eanSubmitError?: string
-  onEanSearch: (ean: string, product: Product) => void
-  onEanClear: () => void
-  isRequired: boolean
+  required: boolean
+  disabled: boolean
+  product?: Partial<GetProductInformations>
+  onProductChange: (product: GetProductInformations | null) => void
+  canClearProduct: boolean
 }
 
 export const DetailsEanSearch = ({
-  shouldDisplayClearButton,
-  isProductBased,
-  initialEan,
-  eanSubmitError,
-  onEanSearch,
-  onEanClear,
-  isRequired,
+  product,
+  onProductChange,
+  canClearProduct,
+  required,
+  disabled,
 }: DetailsEanSearchProps): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
@@ -53,8 +49,8 @@ export const DetailsEanSearch = ({
     setFocus,
     formState: { errors, isValid, isLoading },
   } = useForm<EanSearchForm>({
-    defaultValues: { eanSearch: initialEan || '' },
-    resolver: yupResolver(generateEanSearchValidationSchema(isRequired)),
+    defaultValues: { eanSearch: product?.ean || '' },
+    resolver: yupResolver(generateEanSearchValidationSchema(required)),
     mode: 'onChange',
   })
 
@@ -67,15 +63,6 @@ export const DetailsEanSearch = ({
     }
   }, [wasCleared, setFocus])
 
-  useEffect(() => {
-    if (eanSubmitError) {
-      setError('eanSearch', {
-        type: 'apiError',
-        message: eanSubmitError,
-      })
-    }
-  }, [eanSubmitError, setError])
-
   const onSearch = async (data: EanSearchForm) => {
     if (data.eanSearch) {
       try {
@@ -85,7 +72,7 @@ export const DetailsEanSearch = ({
             offerer_id: selectedPartnerVenue.managingOfferer.id,
           },
         })
-        onEanSearch(data.eanSearch, product)
+        onProductChange({ ...product, ean: data.eanSearch })
       } catch (err) {
         const fallbackMessage = 'Une erreur est survenue lors de la recherche'
         const errorMessage = isErrorAPIError(err)
@@ -99,15 +86,14 @@ export const DetailsEanSearch = ({
 
   const clearEan = () => {
     reset()
-    onEanClear()
+    onProductChange(null)
     setWasCleared(true)
   }
 
   const apiError = errors.eanSearch?.type === 'apiError'
-  const shouldInputBeDisabled = isProductBased || isLoading || isClosed
-
+  const shouldInputBeDisabled = disabled || isLoading || isClosed
   const shouldButtonBeDisabled =
-    isProductBased || !ean || !isValid || !!apiError || isLoading
+    disabled || !ean || !isValid || !!apiError || isLoading
 
   return (
     <>
@@ -119,9 +105,9 @@ export const DetailsEanSearch = ({
                 label="Scanner ou rechercher un produit par EAN"
                 error={errors.eanSearch?.message}
                 disabled={shouldInputBeDisabled}
-                required={isRequired}
+                required={required}
                 description="Format : EAN à 13 chiffres"
-                {...(shouldDisplayClearButton
+                {...(canClearProduct && product?.id
                   ? {
                       iconButton: {
                         icon: fullCloseIcon,
@@ -148,7 +134,7 @@ export const DetailsEanSearch = ({
         </FormLayout>
       </form>
       <output className={styles['details-ean-search-callout']}>
-        {isProductBased && <EanSearchCallout />}
+        {product?.id && <EanSearchCallout />}
       </output>
     </>
   )
