@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { axe } from 'vitest-axe'
@@ -51,10 +51,15 @@ const renderLostPassword = (url: string) => {
 describe('ResetPassword', () => {
   it('should render without accessibility violations', async () => {
     const url = '/demande-mot-de-passe/ABC'
+    const tokenCheck = Promise.resolve()
 
-    vi.spyOn(api, 'postCheckToken').mockResolvedValue()
+    vi.spyOn(api, 'postCheckToken').mockReturnValue(tokenCheck)
 
     const { container } = renderLostPassword(url)
+
+    await act(async () => {
+      await tokenCheck
+    })
 
     expect(
       await screen.findByRole('heading', {

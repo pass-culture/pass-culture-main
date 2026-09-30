@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import type { SWRResponse } from 'swr'
@@ -207,11 +207,11 @@ describe('IndividualVenuePageEdition', () => {
     }
     const { container } = renderForm(venue)
 
-    await screen.findByText(
-      "Publiez une offre pour rendre votre page accessible aux jeunes dans l'application."
-    )
+    await screen.findByText('À propos de votre activité')
 
-    expect(await axe(container)).toHaveNoViolations()
+    await act(async () => {
+      expect(await axe(container)).toHaveNoViolations()
+    })
   })
 
   it('should display access to partner page is impossible warning', async () => {

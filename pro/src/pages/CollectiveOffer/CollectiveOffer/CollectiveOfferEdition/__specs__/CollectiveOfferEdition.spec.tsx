@@ -1,8 +1,4 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
@@ -24,6 +20,7 @@ import { CollectiveOfferEdition } from '../CollectiveOfferEdition'
 vi.mock('@/apiClient/api', () => ({
   api: {
     listEducationalOfferers: vi.fn(),
+    listEducationalDomains: vi.fn(),
   },
 }))
 
@@ -66,6 +63,13 @@ describe('CollectiveOfferEdition', () => {
   })
 
   it('should render without accessibility violations', async () => {
+    const offerersRequest = Promise.resolve({
+      educationalOfferers: [offerer],
+    })
+    const domainsRequest = Promise.resolve([])
+    vi.spyOn(api, 'listEducationalOfferers').mockReturnValue(offerersRequest)
+    vi.spyOn(api, 'listEducationalDomains').mockReturnValue(domainsRequest)
+
     const { container } = renderCollectiveOfferEdition(
       '/offre/edition/collectif',
       {
@@ -73,8 +77,16 @@ describe('CollectiveOfferEdition', () => {
       }
     )
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-    expect(await axe(container)).toHaveNoViolations()
+    await act(async () => {
+      await Promise.all([offerersRequest, domainsRequest])
+    })
+
+    await screen.findByRole('heading', {
+      name: 'Quel est le type de votre offre ?',
+    })
+    await act(async () => {
+      expect(await axe(container)).toHaveNoViolations()
+    })
   })
 
   it('should render collective offer edition form', async () => {
