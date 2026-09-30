@@ -76,6 +76,17 @@ class AdditionalFeeResponse(AdageBaseResponseModel):
         return cls(label=label, amount=fee.amount)
 
 
+class AdditionalFeeResponseV2(HttpBodyModel):
+    label: str
+    amount: float
+
+    @classmethod
+    def build(cls, fee: models.CollectiveAdditionalFee) -> typing.Self:
+        label = fee.label if fee.label else format_collective_additional_fee_type(fee.type)
+
+        return cls(label=label, amount=float(fee.amount))
+
+
 class EducationalBookingResponse(AdageBaseResponseModel):
     accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
@@ -146,39 +157,6 @@ class EducationalBookingsResponse(AdageBaseResponseModel):
 
     class Config:
         title = "List of prebookings"
-
-
-class EducationalBookingPerYearResponse(AdageBaseResponseModel):
-    id: int
-    UAICode: str
-    status: models.CollectiveBookingStatus | CollectiveBookingRefused
-    additionalDetails: str | None
-    cancellationReason: models.CollectiveBookingCancellationReasons | None
-    confirmationDate: datetime.datetime | None
-    confirmationLimitDate: datetime.datetime
-    numberOfTickets: int
-    numberOfTeachers: int
-    price: decimal.Decimal
-    servicePrice: decimal.Decimal
-    additionalFees: list[AdditionalFeeResponse]
-    startDatetime: datetime.datetime
-    endDatetime: datetime.datetime
-    venueTimezone: str
-    name: str
-    redactorEmail: str
-    domainIds: list[int]
-    domainLabels: list[str]
-    venueId: int
-    venueName: str
-    offererName: str
-    formats: list[EacFormat]
-
-    class Config:
-        use_enum_values = True
-
-
-class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
-    bookings: list[EducationalBookingPerYearResponse]
 
 
 class EducationalDepositPeriodResponse(AdageBaseResponseModel):

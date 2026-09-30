@@ -6,14 +6,12 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.institution import create_missing_educational_institution_from_adage
-from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
+from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
+from pcapi.routes.adage.v1.serialization import collective_booking
 from pcapi.routes.adage.v1.serialization import constants
-from pcapi.routes.adage.v1.serialization.collective_booking import GetAllBookingsPerYearQueryModel
-from pcapi.routes.adage.v1.serialization.collective_booking import GetEducationalBookingsQueryModel
-from pcapi.routes.adage.v1.serialization.collective_booking import MergeInstitutionPrebookingsModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
@@ -30,7 +28,7 @@ logger = logging.getLogger(__name__)
     api=blueprint.api, response_model=educational_schemas.EducationalBookingsResponse, tags=("get prebookings",)
 )
 def get_educational_bookings(
-    query: GetEducationalBookingsQueryModel, year_id: str, uai_code: str
+    query: collective_booking.GetEducationalBookingsQueryModel, year_id: str, uai_code: str
 ) -> educational_schemas.EducationalBookingsResponse:
     educational_bookings = educational_repository.find_collective_bookings_for_adage(
         uai_code=uai_code,
@@ -39,7 +37,7 @@ def get_educational_bookings(
     )
 
     return educational_schemas.EducationalBookingsResponse(
-        prebookings=collective_booking_serialize.serialize_collective_bookings(educational_bookings)
+        prebookings=[serialize_collective_booking(booking) for booking in educational_bookings]
     )
 
 
@@ -68,7 +66,7 @@ def confirm_prebooking(educational_booking_id: int) -> educational_schemas.Educa
     except exceptions.EducationalDepositNotFound:
         raise ApiErrors({"code": "DEPOSIT_NOT_FOUND"}, status_code=404)
 
-    return collective_booking_serialize.serialize_collective_booking(educational_booking)
+    return serialize_collective_booking(educational_booking)
 
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/refuse", methods=["POST"])
@@ -93,7 +91,7 @@ def refuse_pre_booking(educational_booking_id: int) -> educational_schemas.Educa
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}, status_code=422)
     except exceptions.CollectiveBookingAlreadyCancelled:
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_ALREADY_CANCELLED"}, status_code=422)
-    return collective_booking_serialize.serialize_collective_booking(educational_booking)
+    return serialize_collective_booking(educational_booking)
 
 
 @blueprint.adage_v1.route("/years/<string:educational_year_id>/prebookings", methods=["GET"])
@@ -101,19 +99,22 @@ def refuse_pre_booking(educational_booking_id: int) -> educational_schemas.Educa
 @adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
-    response_model=educational_schemas.EducationalBookingsPerYearResponse,
+    response_model=collective_booking.EducationalBookingsPerYearResponse,
     tags=("get bookings per year",),
 )
 def get_all_bookings_per_year(
-    educational_year_id: str,
-    query: GetAllBookingsPerYearQueryModel,
-) -> educational_schemas.EducationalBookingsPerYearResponse:
+    educational_year_id: str, query: collective_booking.GetAllBookingsPerYearQueryModel
+) -> collective_booking.EducationalBookingsPerYearResponse:
     educational_bookings = educational_repository.get_paginated_collective_bookings_for_educational_year(
         educational_year_id,
         query.page,
         query.per_page,
     )
-    return collective_booking_serialize.get_collective_bookings_per_year_response(educational_bookings)
+    return collective_booking.EducationalBookingsPerYearResponse(
+        bookings=[
+            collective_booking.EducationalBookingPerYearResponse.build(booking) for booking in educational_bookings
+        ]
+    )
 
 
 @blueprint.adage_v1.route("/prebookings/move", methods=["POST"])
@@ -125,7 +126,7 @@ def get_all_bookings_per_year(
     on_error_statuses=[404, 422],
     tags=("merge institution",),
 )
-def merge_institution_prebookings(body: MergeInstitutionPrebookingsModel) -> None:
+def merge_institution_prebookings(body: collective_booking.MergeInstitutionPrebookingsModel) -> None:
     institution_source = educational_repository.find_educational_institution_by_uai_code(body.source_uai)
     if not institution_source:
         raise ApiErrors({"code": "Source institution not found"}, status_code=404)
