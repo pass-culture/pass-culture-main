@@ -2854,7 +2854,7 @@ def get_offers_stats_by_venue(venue_id: int) -> OffersStatsByVenue:
 
 
 def delete_venue_accessibility_provider(venue: models.Venue) -> None:
-    db.session.query(models.AccessibilityProvider).filter_by(venueId=venue.id).delete(synchronize_session=False)
+    db.session.query(models.AccessibilityProvider).filter_by(venueId=venue.id).delete()
     if is_managed_transaction():
         db.session.flush()
     else:
@@ -3136,8 +3136,6 @@ def match_acceslibre(venue: offerers_models.Venue) -> None:
     old_slug = venue.external_accessibility_id
     old_url = venue.external_accessibility_url
     delete_venue_accessibility_provider(venue)
-    # TODO(xordoquy): see why delete_venue_accessibility_provider doesn't synchronize session
-    db.session.refresh(venue)
     set_accessibility_provider_id(venue)
 
     if not venue.accessibilityProvider:
