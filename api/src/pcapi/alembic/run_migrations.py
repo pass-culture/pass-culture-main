@@ -10,6 +10,7 @@ from sqlalchemy import schema
 
 from pcapi import settings
 from pcapi.models import Model
+from pcapi.models import get_db_connection_args
 
 
 logger = logging.getLogger(__name__)
@@ -62,7 +63,8 @@ def run_online_migrations() -> None:
     if settings.DB_MIGRATION_STATEMENT_TIMEOUT:
         db_options.append("-c statement_timeout=%i" % settings.DB_MIGRATION_STATEMENT_TIMEOUT)
 
-    connectable = create_engine(settings.DATABASE_URL, connect_args={"options": " ".join(db_options)})  # type: ignore[arg-type]
+    connection_args = get_db_connection_args(db_options)
+    connectable = create_engine(settings.DATABASE_URL, connect_args=connection_args)  # type: ignore[arg-type]
     logger.warning(
         "Alembic will use a DB connection with these settings: lock_timeout = %d ms, statement_timeout = %d ms",
         settings.DB_MIGRATION_LOCK_TIMEOUT,

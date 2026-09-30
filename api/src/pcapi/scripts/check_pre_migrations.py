@@ -8,6 +8,7 @@ import click
 import sqlalchemy
 
 from pcapi import settings
+from pcapi.models import get_db_connection_args
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -30,7 +31,8 @@ def check_pre_migrations(alembic_config_path: str) -> None:
     pre-deployment migrations have not been applied.
     """
     assert settings.DATABASE_URL  # helps mypy
-    engine = sqlalchemy.create_engine(settings.DATABASE_URL)
+    connect_args = get_db_connection_args(options=[])
+    engine = sqlalchemy.create_engine(settings.DATABASE_URL, connect_args=connect_args)
     with engine.begin() as connection:
         # Avoid useless INFO messages displayed by Alembic when setting up its context.
         alembic.runtime.migration.log.setLevel(logging.WARNING)
