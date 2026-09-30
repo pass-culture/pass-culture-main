@@ -10,6 +10,7 @@ from prometheus_flask_exporter.multiprocess import GunicornPrometheusMetrics
 
 from pcapi.flask_app import app
 from pcapi.models import db
+from pcapi.utils import cloud_sql
 from pcapi.utils import kubernetes as kubernetes_utils
 
 
@@ -76,12 +77,15 @@ def _clean_up_prometheus_metrics_directory(pid: int) -> None:
 def pre_fork(server, worker):
     """Called before a Gunicorn worker is forked."""
     # We need to drop all connections to the database to prevent those
-    # from being shared among dfferent workers processes once all initialisation
+    # from being shared among different workers processes once all initialisation
     # have been made
     # See https://docs.sqlalchemy.org/en/14/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork
     with app.app_context():
         if db and db.engine:
             db.engine.dispose()
+
+    # The Cloud SQL Connector (IAM mode) is not fork-safe: drop it so each worker builds its own.
+    cloud_sql.dispose_connector()
 
 
 def post_fork(server, worker):

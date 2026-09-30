@@ -6,10 +6,12 @@ import typing
 import sqlalchemy.exc
 from alembic import context
 from sqlalchemy import create_engine
+from sqlalchemy import event
 from sqlalchemy import schema
 
 from pcapi import settings
 from pcapi.models import Model
+from pcapi.utils import cloud_sql
 
 
 logger = logging.getLogger(__name__)
@@ -56,13 +58,28 @@ def include_object(
 
 
 def run_online_migrations() -> None:
-    db_options = []
-    if settings.DB_MIGRATION_LOCK_TIMEOUT:
-        db_options.append("-c lock_timeout=%i" % settings.DB_MIGRATION_LOCK_TIMEOUT)
-    if settings.DB_MIGRATION_STATEMENT_TIMEOUT:
-        db_options.append("-c statement_timeout=%i" % settings.DB_MIGRATION_STATEMENT_TIMEOUT)
+    if settings.DATABASE_USE_IAM_AUTH:
+        # Native Cloud SQL IAM connection (pg8000). The libpq `options` connect arg is
+        # psycopg2-specific, so migration timeouts are applied via SET SESSION on connect.
+        db_iam_connection_kwargs = cloud_sql.get_engine_kwargs()
+        connectable = create_engine(settings.DATABASE_URL, **db_iam_connection_kwargs)  # type: ignore[arg-type]
 
-    connectable = create_engine(settings.DATABASE_URL, connect_args={"options": " ".join(db_options)})  # type: ignore[arg-type]
+        @event.listens_for(connectable, "connect")
+        def _set_migration_timeouts(dbapi_connection: typing.Any, connection_record: typing.Any) -> None:
+            cloud_sql.apply_session_timeouts(
+                dbapi_connection,
+                lock_timeout=settings.DB_MIGRATION_LOCK_TIMEOUT,
+                statement_timeout=settings.DB_MIGRATION_STATEMENT_TIMEOUT,
+            )
+    else:
+        db_options = []
+        if settings.DB_MIGRATION_LOCK_TIMEOUT:
+            db_options.append("-c lock_timeout=%i" % settings.DB_MIGRATION_LOCK_TIMEOUT)
+        if settings.DB_MIGRATION_STATEMENT_TIMEOUT:
+            db_options.append("-c statement_timeout=%i" % settings.DB_MIGRATION_STATEMENT_TIMEOUT)
+
+        connectable = create_engine(settings.DATABASE_URL, connect_args={"options": " ".join(db_options)})  # type: ignore[arg-type]
+
     logger.warning(
         "Alembic will use a DB connection with these settings: lock_timeout = %d ms, statement_timeout = %d ms",
         settings.DB_MIGRATION_LOCK_TIMEOUT,

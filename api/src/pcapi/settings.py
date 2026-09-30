@@ -70,9 +70,23 @@ DB_MIGRATION_LOCK_TIMEOUT = int(os.environ.get("DB_MIGRATION_LOCK_TIMEOUT", "500
 DB_MIGRATION_MAX_ATTEMPTS = int(os.environ.get("DB_MIGRATION_MAX_ATTEMPTS", "30"))
 DB_MIGRATION_RETRY_DELAY = int(os.environ.get("DB_MIGRATION_RETRY_DELAY", "10"))
 DB_MIGRATION_STATEMENT_TIMEOUT = int(os.environ.get("DB_MIGRATION_STATEMENT_TIMEOUT", "60000"))
-DATABASE_URL = (
-    secrets_utils.get("DATABASE_URL") if not (IS_RUNNING_TESTS or IS_E2E_TESTS) else os.environ.get("DATABASE_URL_TEST")
-)
+# Native Cloud SQL connection using IAM authentication (Cloud SQL Python Connector, no sidecar).
+DATABASE_USE_IAM_AUTH = bool(int(os.environ.get("DATABASE_USE_IAM_AUTH", "0")))
+DATABASE_INSTANCE_CONNECTION_NAME = os.environ.get("DATABASE_INSTANCE_CONNECTION_NAME", "")  # project:region:instance
+DATABASE_NAME = os.environ.get("DATABASE_NAME", "")
+DATABASE_IAM_USER = os.environ.get("DATABASE_IAM_USER", "")  # IAM DB user (SA email without ".gserviceaccount.com")
+DATABASE_IP_TYPE = os.environ.get("DATABASE_IP_TYPE", "private")  # "private" or "public"
+DATABASE_DRIVER = os.environ.get("DATABASE_DRIVER", "pg8000")  # "pg8000" or "psycopg2"
+
+if DATABASE_USE_IAM_AUTH:
+    # Host and credentials come from the Cloud SQL Connector `creator`, not from the URL.
+    DATABASE_URL: str | None = "postgresql+pg8000://"
+else:
+    DATABASE_URL = (
+        secrets_utils.get("DATABASE_URL")
+        if not (IS_RUNNING_TESTS or IS_E2E_TESTS)
+        else os.environ.get("DATABASE_URL_TEST")
+    )
 DATABASE_POOL_SIZE = int(os.environ.get("DATABASE_POOL_SIZE", "20"))
 DATABASE_STATEMENT_TIMEOUT = int(os.environ.get("DATABASE_STATEMENT_TIMEOUT", "0"))
 DATABASE_LOCK_TIMEOUT = int(os.environ.get("DATABASE_LOCK_TIMEOUT", "0"))
