@@ -6950,6 +6950,10 @@ export type VideoData = {
  */
 export type VideoDataV2 = {
     /**
+     * Videodescription
+     */
+    videoDescription?: string | null;
+    /**
      * Videoduration
      */
     videoDuration?: number | null;

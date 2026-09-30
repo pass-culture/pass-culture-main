@@ -3248,6 +3248,7 @@ export const zVideoData = z.object({
  * VideoDataV2
  */
 export const zVideoDataV2 = z.object({
+    videoDescription: z.string().nullish().default(null),
     videoDuration: z.int().nullish().default(null),
     videoExternalId: z.string().nullish().default(null),
     videoThumbnailUrl: z.string().nullish().default(null),
