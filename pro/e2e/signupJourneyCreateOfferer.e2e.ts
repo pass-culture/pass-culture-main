@@ -126,6 +126,8 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
       page.getByText('Contrôlez la précision de vos coordonnées GPS.')
     ).toBeVisible()
 
+    await checkAccessibility(page)
+
     await page.getByText('Continuer').click()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
@@ -140,6 +142,8 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
     await expect(page).toHaveURL(/\/inscription\/structure\/confirmation/)
     await expect(page.getByText('10 Rue du test, 75002 Paris')).toBeVisible()
 
+    await checkAccessibility(page)
+
     const createOffererPromise = page.waitForResponse(
       (response) =>
         response.url().includes('/offerers/new') &&
@@ -153,6 +157,7 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
     await expect(
       page.getByText('Où souhaitez-vous diffuser votre première offre ?')
     ).toBeVisible()
+    await checkAccessibility(page)
   })
 })
 
@@ -186,6 +191,7 @@ test.describe('Signup journey with known offerer...', () => {
 
       await expect(page).toHaveURL(/\/inscription\/structure\/identification/)
       await page.getByLabel('Nom public').fill(newVenueName)
+      await checkAccessibility(page)
       // Make the venue open to public
       await page.getByText('Oui').click()
 
@@ -201,6 +207,7 @@ test.describe('Signup journey with known offerer...', () => {
       await page.getByText('Continuer').click()
 
       await expect(page).toHaveURL(/\/inscription\/structure\/confirmation/)
+      await checkAccessibility(page)
 
       const createOffererPromise = page.waitForResponse(
         (response) =>
@@ -217,6 +224,7 @@ test.describe('Signup journey with known offerer...', () => {
           'Votre rattachement est en cours de traitement par les équipes du pass Culture'
         )
       ).toBeVisible()
+      await checkAccessibility(page)
     })
   })
 
@@ -273,6 +281,7 @@ test.describe('Signup journey with known offerer...', () => {
       await page.getByText('Continuer').click()
 
       await expect(page).toHaveURL(/\/inscription\/structure\/activite$/)
+      await checkAccessibility(page)
       await page
         .getByLabel(/Activité principale/)
         .selectOption('Sélectionnez votre activité principale')
@@ -289,6 +298,7 @@ test.describe('Signup journey with known offerer...', () => {
       await page.getByText('Continuer').click()
 
       await expect(page).toHaveURL(/\/inscription\/structure\/confirmation$/)
+      await checkAccessibility(page)
 
       const createOffererPromise = page.waitForResponse(
         (response) =>
@@ -306,6 +316,7 @@ test.describe('Signup journey with known offerer...', () => {
         })
       ).toBeVisible()
       await expect(page.getByText(/3 rue de valois/i)).toBeVisible()
+      await checkAccessibility(page)
     })
 
     test('I should be able to sign up with a new account and a known offerer/venue and then join the space', async ({
@@ -323,6 +334,7 @@ test.describe('Signup journey with known offerer...', () => {
       await doLogin(page, userData.user.email, { retry: true })
       await page.goto('/')
       await expect(page.getByTestId('spinner')).toHaveCount(0)
+      await checkAccessibility(page)
 
       await joinExistingVenueSpace(page, mySiret)
 
@@ -332,6 +344,7 @@ test.describe('Signup journey with known offerer...', () => {
           'Votre rattachement est en cours de traitement par les équipes du pass Culture'
         )
       ).toBeVisible()
+      await checkAccessibility(page)
     })
   })
 })

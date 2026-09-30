@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
@@ -17,9 +18,15 @@ vi.mock('@/apiClient/api', () => ({
 vi.mock('../CollectiveOffersCard/CollectiveOffersCard', () => ({
   CollectiveOffersCard: ({
     variant,
+    isLoading,
   }: {
     variant: CollectiveOffersCardVariant
-  }) => <div data-testid={`card-${variant.toLowerCase()}`}>offres</div>,
+    isLoading: boolean
+  }) => (
+    <div data-testid={`card-${variant.toLowerCase()}`} data-loading={isLoading}>
+      offres
+    </div>
+  ),
 }))
 
 describe('CollectiveOffersCardsContainer', () => {
@@ -28,6 +35,30 @@ describe('CollectiveOffersCardsContainer', () => {
       hasOffers: true,
       offers: [],
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    vi.spyOn(api, 'getCollectiveOffersHome').mockResolvedValueOnce({
+      hasOffers: true,
+      offers: [],
+    })
+
+    const { container } = renderWithProviders(
+      <CollectiveOffersCardsContainer isReadOnly={false} venueId={1} />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('card-template')).toHaveAttribute(
+        'data-loading',
+        'false'
+      )
+      expect(screen.getByTestId('card-bookable')).toHaveAttribute(
+        'data-loading',
+        'false'
+      )
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render template offers before bookable offers when venue has no bookable offers to display', async () => {

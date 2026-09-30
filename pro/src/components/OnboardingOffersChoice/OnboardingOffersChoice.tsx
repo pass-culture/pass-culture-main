@@ -22,10 +22,12 @@ import styles from './OnboardingOffersChoice.module.scss'
 
 interface OnboardingOffersChoiceProps {
   hideSkipOnboardingLink?: boolean
+  titleTag?: 'h2' | 'h3' | 'h4' | 'p'
 }
 
 export const OnboardingOffersChoice = ({
   hideSkipOnboardingLink = false,
+  titleTag,
 }: OnboardingOffersChoiceProps) => {
   const [showModal, setShowModal] = useState(false)
   const { logEvent } = useAnalytics()
@@ -38,7 +40,7 @@ export const OnboardingOffersChoice = ({
           <Card.Image src={individuelle} alt="" />
           <Card.Header
             title="Sur l’application mobile à destination des jeunes"
-            titleTag="h3"
+            titleTag={titleTag}
           />
           <Card.Content>
             <p>

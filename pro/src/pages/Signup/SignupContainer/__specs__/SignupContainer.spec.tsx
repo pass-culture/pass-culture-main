@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { HTTP_STATUS } from '@/apiClient/helpers'
@@ -82,6 +83,14 @@ describe('Signup', () => {
   })
 
   describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = renderSignUp({
+        features: ['WIP_PRE_SIGNUP_SIMULATION'],
+      })
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should hide OperatingProcedures and show stepper with new heading', () => {
       renderSignUp({
         features: ['WIP_PRE_SIGNUP_SIMULATION'],

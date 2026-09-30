@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import {
   DisplayableActivity,
@@ -28,6 +29,12 @@ const renderCollectiveVenuePage = (
   })
 
 describe('CollectiveVenuePage', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveVenuePage()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the section and sub-section titles', () => {
     renderCollectiveVenuePage()
 

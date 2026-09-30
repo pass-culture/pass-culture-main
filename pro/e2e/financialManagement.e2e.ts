@@ -94,6 +94,7 @@ test.describe('Financial Management - messages, links to external help page, rei
       )
       await expect(page.getByTestId('profile-button')).toBeVisible()
       await expect(page.getByTestId('spinner')).toHaveCount(0)
+      await checkAccessibility(page)
     })
 
     test('I should be able to attach and unattach a few venues', async ({
@@ -157,6 +158,7 @@ test.describe('Financial Management - messages, links to external help page, rei
       await expect(linkedVenuesSection.getByText('Mon lieu 3')).toBeVisible()
       await expect(linkedVenuesSection.getByText('Mon lieu 1')).toHaveCount(0)
       await expect(linkedVenuesSection.getByText('Mon lieu 2')).toHaveCount(0)
+      await checkAccessibility(page)
     })
 
     test('I should be able to attach and unattach all venues', async ({
@@ -214,6 +216,7 @@ test.describe('Financial Management - messages, links to external help page, rei
       await expect(linkedVenuesSection.getByText('Mon lieu 1')).toHaveCount(0)
       await expect(linkedVenuesSection.getByText('Mon lieu 2')).toHaveCount(0)
       await expect(linkedVenuesSection.getByText('Mon lieu 3')).toHaveCount(0)
+      await checkAccessibility(page)
     })
   })
 })

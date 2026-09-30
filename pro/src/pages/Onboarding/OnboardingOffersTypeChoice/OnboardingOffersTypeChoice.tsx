@@ -23,7 +23,7 @@ export const OnboardingOffersTypeChoice = () => {
           marginBottom="l"
           marginTop="xxl"
         />
-        <OnboardingOffersChoice />
+        <OnboardingOffersChoice titleTag="h3" />
       </div>
     </OnboardingLayout>
   )

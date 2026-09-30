@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -12,7 +13,7 @@ import {
 
 function renderOfferEducational(props: OfferEducationalProps) {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<OfferEducational {...props} />, {
+  return renderWithProviders(<OfferEducational {...props} />, {
     user,
     storeOverrides: {
       user: {
@@ -27,6 +28,16 @@ function renderOfferEducational(props: OfferEducationalProps) {
 
 describe('screens | OfferEducational : creation offerer step', () => {
   describe('when the offerer is not validated', () => {
+    it('should render without accessibility violations', async () => {
+      const props: OfferEducationalProps = {
+        ...defaultCreationProps,
+        userOfferer: null,
+      }
+      const { container } = renderOfferEducational(props)
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should display specific banner instead of place and referencing banner', async () => {
       const props: OfferEducationalProps = {
         ...defaultCreationProps,

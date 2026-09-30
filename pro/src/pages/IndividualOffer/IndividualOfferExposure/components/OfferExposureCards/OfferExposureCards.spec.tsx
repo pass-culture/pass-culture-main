@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { ExposureEventType } from '@/apiClient/v1'
@@ -38,6 +39,12 @@ const renderOfferExposureCards = ({
 }
 
 describe('OfferExposureCards', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOfferExposureCards()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it.each([
     { bookingsCount: 0, expectedLabel: '0 réservation' },
     { bookingsCount: 2, expectedLabel: '2 réservations' },

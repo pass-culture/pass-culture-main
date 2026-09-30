@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { apiAdage } from '@/apiClient/api'
 import {
@@ -25,7 +26,7 @@ vi.mock('@/commons/utils/config', async () => {
 })
 
 const renderOfferShareLink = (props: OfferShareLinkProps) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <OfferShareLink {...props} />
     </AdageUserContextProvider>
@@ -36,6 +37,12 @@ describe('OfferShareLink', () => {
   const defaultProps: OfferShareLinkProps = {
     offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOfferShareLink(defaultProps)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should open email provider on click', () => {
     renderOfferShareLink(defaultProps)

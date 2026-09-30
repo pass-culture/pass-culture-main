@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
@@ -27,6 +28,12 @@ const renderStatsCard = (hasOffers = true) =>
   )
 
 describe('StatsCard', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderStatsCard()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should not render the card when there is less than 2 days of data', async () => {
     vi.spyOn(api, 'getVenueOffersStats').mockResolvedValue({
       jsonData: { dailyViews: [], topOffers: [], totalViewsLast30Days: 0 },

@@ -1,4 +1,5 @@
 import { expect, test } from './fixtures/adage'
+import { checkAccessibility } from './helpers/accessibility'
 import { expectSuccessSnackbar } from './helpers/assertions'
 import {
   isAdageAddFavoriteResponse,
@@ -187,6 +188,7 @@ test.describe('ADAGE discovery', () => {
       page.getByTestId('favorite-active').click(),
     ])
     await expectSuccessSnackbar(page, 'Supprimé de vos favoris')
+    await checkAccessibility(page)
   })
 
   // À remplacer par un test unitaire/d'intégration ?
@@ -195,6 +197,7 @@ test.describe('ADAGE discovery', () => {
     adageSession,
   }) => {
     await page.goto(`/adage-iframe?token=${adageSession.token}`)
+    await checkAccessibility(page)
     await expect(
       page.getByRole('link', { name: 'Découvrir (Onglet actif)' }).first()
     ).toHaveAttribute('aria-current', 'page')
@@ -209,6 +212,7 @@ test.describe('ADAGE discovery', () => {
     adageSession,
   }) => {
     await page.goto(`/adage-iframe?token=${adageSession.token}`)
+    await checkAccessibility(page)
     await page.getByText(adageSession.data.venueName).click()
 
     await expect(
@@ -224,6 +228,7 @@ test.describe('ADAGE discovery', () => {
     adageSession,
   }) => {
     await page.goto(`/adage-iframe?token=${adageSession.token}`)
+    await checkAccessibility(page)
     await page.getByText('Danse').first().click()
 
     await expect(
@@ -241,6 +246,7 @@ test.describe('ADAGE discovery', () => {
     adageSession,
   }) => {
     await page.goto(`/adage-iframe?token=${adageSession.token}`)
+    await checkAccessibility(page)
     await page.getByText(adageSession.data.venueName).click()
 
     await expect(
@@ -274,6 +280,7 @@ test.describe('ADAGE discovery', () => {
     await page.getByText('Rechercher').click()
     await expect(page.getByTestId('offer-listitem')).toBeVisible()
     await expect(page.getByTestId('offer-description')).not.toBeVisible()
+    await checkAccessibility(page)
   })
 
   test('It should save filter when page changing', async ({
@@ -281,6 +288,7 @@ test.describe('ADAGE discovery', () => {
     adageSession,
   }) => {
     await page.goto(`/adage-iframe?token=${adageSession.token}`)
+    await checkAccessibility(page)
     await page.getByText(adageSession.data.venueName).click()
 
     await expect(
@@ -332,5 +340,6 @@ test.describe('ADAGE discovery', () => {
     await expect(
       page.getByRole('button', { name: /Page 2 sur 19/ })
     ).toBeVisible()
+    await checkAccessibility(page)
   })
 })

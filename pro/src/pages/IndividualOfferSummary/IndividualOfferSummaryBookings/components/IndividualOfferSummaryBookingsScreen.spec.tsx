@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
@@ -21,7 +22,7 @@ import { IndividualOfferSummaryBookingsScreen } from './IndividualOfferSummaryBo
 const render = (offer: GetIndividualOfferResponseModel) => {
   const contextValue = individualOfferContextValuesFactory({ offer })
 
-  renderWithProviders(
+  return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <IndividualOfferSummaryBookingsScreen offer={offer} />
     </IndividualOfferContext.Provider>,
@@ -42,6 +43,28 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
       'getOfferPriceCategoriesAndSchedulesByDates'
     ).mockResolvedValue([])
   })
+  it('should render without accessibility violations', async () => {
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
+      bookingsRecap: [
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+      ],
+      page: 1,
+      pages: 1,
+      total: 1,
+    })
+
+    const offer = getIndividualOfferFactory({ name: 'Offre de test' })
+    const { container } = render(offer)
+
+    await screen.findByRole('button', {
+      name: 'Télécharger les réservations',
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render a list of bookings', async () => {
     const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
@@ -146,10 +169,10 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
         bookingPeriodEndingDate: expect.any(String),
         bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
         eventDate: undefined,
-        offerId: 15,
+        offerId: offer.id,
         offererAddressId: undefined,
         page: 1,
-        venueId: 15,
+        venueId: offer.venue.id,
       },
     })
   })

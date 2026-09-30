@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -29,10 +30,18 @@ function renderIndividualOfferPracticalInfosFormWithdrawal(
       </FormProvider>
     )
   }
-  renderWithProviders(<IndividualOfferPracticalInfosFormWithdrawalWrapper />)
+  return renderWithProviders(
+    <IndividualOfferPracticalInfosFormWithdrawalWrapper />
+  )
 }
 
 describe('IndividualOfferPracticalInfosFormWithdrawal', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIndividualOfferPracticalInfosFormWithdrawal()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the withdrawal delay selects based on the selected withdrawal type', async () => {
     renderIndividualOfferPracticalInfosFormWithdrawal()
 

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -43,6 +44,12 @@ const renderProfile = () =>
   )
 
 describe('UserProfile', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderProfile()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the back button and return to previous page on click', async () => {
     renderProfile()
 

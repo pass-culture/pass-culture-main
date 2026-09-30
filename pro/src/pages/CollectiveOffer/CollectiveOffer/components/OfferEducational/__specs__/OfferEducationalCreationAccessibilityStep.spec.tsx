@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { userOffererFactory } from '@/commons/utils/factories/userOfferersFactories'
@@ -13,7 +14,7 @@ import {
 
 function renderComponent(props: OfferEducationalProps) {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<OfferEducational {...props} />, {
+  return renderWithProviders(<OfferEducational {...props} />, {
     user,
     storeOverrides: {
       user: {
@@ -39,6 +40,12 @@ describe('screens | OfferEducational : accessibility step', () => {
     props = {
       ...defaultCreationProps,
     }
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderComponent(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should prefill intervention and accessibility fields with venue intervention field when selecting venue', async () => {

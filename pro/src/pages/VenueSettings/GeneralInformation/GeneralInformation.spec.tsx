@@ -2,6 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { UseFormRegisterReturn } from 'react-hook-form'
 import { Link } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
@@ -137,6 +138,14 @@ const renderGeneralInformationWithNavigation = (
 }
 
 describe('GeneralInformation', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderGeneralInformation({ id: 1 })
+
+    await screen.findByLabelText('Raison sociale')
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the "Raison sociale" field as disabled', async () => {
     renderGeneralInformation({ id: 1 })
 

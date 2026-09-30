@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import {
   CollectiveBookingCancellationReasons,
@@ -86,6 +87,17 @@ describe('CancelledBanner', () => {
       { storeOverrides }
     )
     expect(screen.getByText(messagePerReason[reason])).toBeInTheDocument()
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <CancelledBanner offerId={2} canDuplicate />,
+      {
+        storeOverrides,
+      }
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display the correct message when no reason are provided', () => {

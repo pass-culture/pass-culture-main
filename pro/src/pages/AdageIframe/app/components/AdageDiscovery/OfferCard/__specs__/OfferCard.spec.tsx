@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
+import { axe } from 'vitest-axe'
 
 import {
   type AuthenticatedResponse,
@@ -51,7 +52,7 @@ const renderOfferCardComponent = (
   { offer, onCardClicked }: CardComponentProps,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
       <OfferCardComponent offer={offer} onCardClicked={onCardClicked} />
     </AdageUserContextProvider>,
@@ -70,6 +71,15 @@ const defaultUseLocationValue = {
 describe('OfferCard component', () => {
   beforeEach(() => {
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOfferCardComponent({
+      offer: mockOffer,
+      onCardClicked: vi.fn(),
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should redirect with "découverte" in url on click in offer card', () => {

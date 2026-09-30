@@ -339,7 +339,7 @@ describe('Homepage', () => {
 
       expect(
         screen.getByRole('heading', {
-          level: 2,
+          level: 1,
           name: 'Diffusez votre première offre et pilotez ici votre activité !',
         })
       ).toBeVisible()

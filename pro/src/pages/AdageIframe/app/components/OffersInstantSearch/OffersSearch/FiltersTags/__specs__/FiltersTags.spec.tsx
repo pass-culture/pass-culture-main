@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { CollectiveLocationType } from '@/apiClient/adage'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -41,7 +42,7 @@ const renderFiltersTag = (
     )
   }
 
-  renderWithProviders(<FiltersTagsWrapper />)
+  return renderWithProviders(<FiltersTagsWrapper />)
 }
 describe('FiltersTag', () => {
   const venueFilter = {
@@ -52,6 +53,15 @@ describe('FiltersTag', () => {
     departementCode: '75',
     adageId: '1',
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderFiltersTag({
+      ...ADAGE_FILTERS_DEFAULT_VALUES,
+      venue: venueFilter,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should display venue name in tag', () => {
     renderFiltersTag({

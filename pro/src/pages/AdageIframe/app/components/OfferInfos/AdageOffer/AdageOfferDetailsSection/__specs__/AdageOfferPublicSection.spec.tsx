@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { StudentLevels } from '@/apiClient/adage'
 import {
@@ -26,6 +27,17 @@ function renderAdageOfferPublicSection(
 }
 
 describe('AdageOfferPublicSection', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageOfferPublicSection({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        students: [StudentLevels.COLL_GE_3E, StudentLevels.COLL_GE_6E],
+      },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the offer students levels', () => {
     renderAdageOfferPublicSection({
       offer: {

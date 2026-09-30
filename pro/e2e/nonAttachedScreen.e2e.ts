@@ -19,6 +19,7 @@ test.describe('Non attached venue', () => {
         'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       )
     ).toBeVisible()
+    await checkAccessibility(page)
   })
   test('I should see the non attached banner in the admin space', async ({
     authenticatedPage: page,
@@ -37,6 +38,7 @@ test.describe('Non attached venue', () => {
         "Les remboursements s'effectuent toutes les 2 à 3 semaines"
       )
     ).toBeVisible()
+    await checkAccessibility(page)
 
     await page
       .getByRole('combobox', { name: 'Entité juridique' })
@@ -46,5 +48,6 @@ test.describe('Non attached venue', () => {
         'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       )
     ).toBeVisible()
+    await checkAccessibility(page)
   })
 })

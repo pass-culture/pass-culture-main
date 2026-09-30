@@ -1,6 +1,7 @@
 import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import {
   CollectiveOfferDisplayedStatus,
@@ -27,7 +28,7 @@ const renderOffers = (
   props: CollectiveOffersScreenProps,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(<CollectiveOffersScreen {...props} />, {
+  return renderWithProviders(<CollectiveOffersScreen {...props} />, {
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory({
@@ -87,6 +88,17 @@ describe('CollectiveOffersScreen', () => {
 
   afterEach(() => {
     window.sessionStorage.clear()
+  })
+
+  it('should render without accessibility violations', async () => {
+    const firstOffer = collectiveOfferFactory()
+    const secondOffer = collectiveOfferFactory()
+    const { container } = renderOffers({
+      ...props,
+      offers: [firstOffer, secondOffer],
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render as much offers as returned by the api', () => {

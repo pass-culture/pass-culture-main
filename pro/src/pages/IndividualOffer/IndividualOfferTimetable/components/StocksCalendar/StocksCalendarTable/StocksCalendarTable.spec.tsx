@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, addSeconds, subDays, subSeconds } from 'date-fns'
+import { axe } from 'vitest-axe'
 
 import { OfferStatus, VenueState } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
@@ -88,6 +89,12 @@ function renderStocksCalendarTable(
 }
 
 describe('StocksCalendarTable', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderStocksCalendarTable({ stocks: [] })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show a placeholder message when there is no stock displayed in the table', () => {
     renderStocksCalendarTable({ stocks: [] })
 

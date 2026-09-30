@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import {
   CollectiveOfferAllowedAction,
@@ -39,7 +40,7 @@ const renderCollectiveOfferSummary = (
   overrides?: RenderWithProvidersOptions,
   venueOverrides?: Partial<GetVenueResponseModel>
 ) => {
-  renderWithProviders(<CollectiveOfferSummary {...props} />, {
+  return renderWithProviders(<CollectiveOfferSummary {...props} />, {
     ...overrides,
     storeOverrides: {
       user: {
@@ -59,6 +60,17 @@ describe('CollectiveOfferSummary', () => {
   const props: CollectiveOfferSummaryProps = {
     offer,
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferSummary({
+      offer: getCollectiveOfferFactory({
+        isPublicApi: true,
+        provider: { name: 'Mollat' },
+      }),
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should show banner if generate from publicApi', () => {
     renderCollectiveOfferSummary({

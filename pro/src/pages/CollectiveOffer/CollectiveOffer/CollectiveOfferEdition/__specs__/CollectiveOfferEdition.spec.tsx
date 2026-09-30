@@ -1,4 +1,9 @@
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -26,7 +31,7 @@ const renderCollectiveOfferEdition = (
   path: string,
   props: MandatoryCollectiveOfferFromParamsProps
 ) => {
-  renderWithProviders(<CollectiveOfferEdition {...props} />, {
+  return renderWithProviders(<CollectiveOfferEdition {...props} />, {
     initialRouterEntries: [path],
     storeOverrides: {
       user: {
@@ -58,6 +63,18 @@ describe('CollectiveOfferEdition', () => {
     vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [offerer],
     })
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferEdition(
+      '/offre/edition/collectif',
+      {
+        ...defaultProps,
+      }
+    )
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render collective offer edition form', async () => {

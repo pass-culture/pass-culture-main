@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -32,7 +33,7 @@ const renderSynchronizationConnexions = async (
   venueProviders: VenueProviderResponse[] = [],
   venueOverrides: Partial<GetVenueResponseModel> = {}
 ) => {
-  renderWithProviders(
+  const renderResult = renderWithProviders(
     <SynchronizationConnexions
       venue={{ ...defaultGetVenue, ...venueOverrides }}
       venueProviders={venueProviders}
@@ -42,6 +43,8 @@ const renderSynchronizationConnexions = async (
   await waitFor(() => {
     expect(screen.getByText('Sélectionner un logiciel')).toBeInTheDocument()
   })
+
+  return renderResult
 }
 
 describe('SynchronizationConnexions', () => {
@@ -55,6 +58,12 @@ describe('SynchronizationConnexions', () => {
         enabledForPro: true,
       },
     ])
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = await renderSynchronizationConnexions()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render the section title', async () => {

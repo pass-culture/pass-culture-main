@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -49,7 +50,7 @@ const renderCollectiveOfferPreviewCreation = (
   props: MandatoryCollectiveOfferFromParamsProps,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <CollectiveOfferPreviewCreation {...props} />
     </AdageUserContextProvider>,
@@ -96,6 +97,16 @@ describe('CollectiveOfferPreviewCreation', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferPreviewCreation(
+      '/offre/A1/collectif/creation/recapitulatif',
+      defaultProps
+    )
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render collective offer preview ', async () => {

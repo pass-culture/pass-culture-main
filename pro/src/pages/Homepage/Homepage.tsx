@@ -57,7 +57,7 @@ export const Homepage = (): JSX.Element => {
     return (
       <div className={styles['onboarding-container']}>
         <Title
-          level="2"
+          level="1"
           title="Diffusez votre première offre et pilotez ici votre activité !"
           marginBottom="xl"
         />
@@ -76,7 +76,7 @@ export const Homepage = (): JSX.Element => {
               />
             </div>
           )}
-        <OnboardingOffersChoice hideSkipOnboardingLink />
+        <OnboardingOffersChoice hideSkipOnboardingLink titleTag="h2" />
       </div>
     )
   }

@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
@@ -11,10 +12,18 @@ import {
 } from '../BookingDetails/BookingDetails'
 
 function renderBookingDetails({ booking }: BookingDetailsProps) {
-  renderWithProviders(<BookingDetails booking={booking} />)
+  return renderWithProviders(<BookingDetails booking={booking} />)
 }
 
 describe('BookingDetails', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderBookingDetails({
+      booking: { ...defaultGetBookingResponse, quantity: 2 },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display duo booking when the booking is for two people', () => {
     renderBookingDetails({
       booking: { ...defaultGetBookingResponse, quantity: 2 },

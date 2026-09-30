@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/dom'
 import userEvent, { type UserEvent } from '@testing-library/user-event'
 import { endOfDay } from 'date-fns'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -149,6 +150,15 @@ describe('OfferEducational > submission', () => {
       venueId: 1,
       visualDisabilityCompliant: true,
     }
+
+    it('should render without accessibility violations', async () => {
+      const { container } = renderOfferEducational({
+        mode: Mode.CREATION,
+        isTemplate: false,
+      })
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
 
     it('should call createCollectiveOffer with all fields on offer creation', async () => {
       const user = userEvent.setup()

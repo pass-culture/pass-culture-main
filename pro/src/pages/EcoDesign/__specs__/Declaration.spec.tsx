@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -13,6 +14,12 @@ const validatedButtonName = /Critères validés/i
 const nonValidatedButtonName = /Critères non validés/i
 
 describe('EcoDesign declaration page', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(<EcoDesignDeclaration />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display declaration information title', () => {
     renderWithProviders(<EcoDesignDeclaration />)
     expect(

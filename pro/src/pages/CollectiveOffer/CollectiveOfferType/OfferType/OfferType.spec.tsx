@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
@@ -30,7 +31,7 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 const renderOfferTypes = (venueOverrides?: Partial<GetVenueResponseModel>) => {
-  renderWithProviders(
+  return renderWithProviders(
     <Routes>
       <Route path="/creation" element={<OfferTypeScreen />} />
       <Route
@@ -75,6 +76,12 @@ describe('OfferType', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOfferTypes()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render the component with button', () => {

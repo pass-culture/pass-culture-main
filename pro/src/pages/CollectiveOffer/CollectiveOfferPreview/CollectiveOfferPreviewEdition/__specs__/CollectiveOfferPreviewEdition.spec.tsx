@@ -1,4 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -32,7 +33,7 @@ const renderCollectiveOfferPreviewEdition = (
   props: MandatoryCollectiveOfferFromParamsProps,
   features?: string[]
 ) => {
-  renderWithProviders(<CollectiveOfferPreviewEdition {...props} />, {
+  return renderWithProviders(<CollectiveOfferPreviewEdition {...props} />, {
     features,
     initialRouterEntries: [path],
     storeOverrides: {
@@ -52,6 +53,16 @@ const defaultProps = {
 describe('CollectiveOfferPreviewCreation', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCollectiveOfferPreviewEdition(
+      '/offre/T-A1/collectif/apercu',
+      defaultProps
+    )
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render collective offer preview edition', async () => {

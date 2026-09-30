@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { add, format, subMonths } from 'date-fns'
+import { axe } from 'vitest-axe'
 
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -13,6 +14,15 @@ const renderCumulatedViews = (props: CumulatedViewsProps) =>
   renderWithProviders(<CumulatedViews {...props} />)
 
 describe('CumulatedViews', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCumulatedViews({
+      dailyViews: [],
+      totalViewsLast30Days: 0,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render empty state when no views data', () => {
     renderCumulatedViews({ dailyViews: [], totalViewsLast30Days: 0 })
 

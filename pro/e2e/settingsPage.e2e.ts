@@ -1,5 +1,6 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
+import { checkAccessibility } from './helpers/accessibility'
 import { expectSuccessSnackbar } from './helpers/assertions'
 import { doLogin } from './helpers/auth'
 import { setFeatureFlags } from './helpers/features'
@@ -24,6 +25,7 @@ test.describe('Settings page', () => {
       page.getByRole('heading', { level: 1, name: 'Paramètres' })
     ).toBeVisible()
     await expect(page.getByTestId('spinner')).toHaveCount(0)
+    await checkAccessibility(page)
 
     await page.getByRole('link', { name: 'Notifications' }).click()
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
@@ -57,6 +59,7 @@ test.describe('Settings page', () => {
     await navBar.getByRole('link', { name: 'Paramètres' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
     await expect(page.getByTestId('spinner')).toHaveCount(0)
+    await checkAccessibility(page)
 
     await page.getByRole('link', { name: 'Notifications' }).click()
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
@@ -84,6 +87,7 @@ test.describe('Settings page', () => {
     await navBar.getByRole('link', { name: 'Paramètres' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
     await expect(page.getByTestId('spinner')).toHaveCount(0)
+    await checkAccessibility(page)
 
     await page.getByRole('link', { name: 'Notifications' }).click()
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
@@ -121,6 +125,7 @@ test.describe('Settings page', () => {
     await navBar.getByRole('link', { name: 'Paramètres' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
     await expect(page.getByTestId('spinner')).toHaveCount(0)
+    await checkAccessibility(page)
 
     await page.getByRole('link', { name: 'Notifications' }).click()
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
@@ -159,6 +164,7 @@ test.describe('Settings page', () => {
     await navBar.getByRole('link', { name: 'Paramètres' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
     await expect(page.getByTestId('spinner')).toHaveCount(0)
+    await checkAccessibility(page)
 
     await page.getByRole('link', { name: 'Notifications' }).click()
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
@@ -198,6 +204,7 @@ test.describe('Settings page', () => {
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
     await page.getByRole('link', { name: 'Gestion de la structure' }).click()
     await expect(page).toHaveURL(/\/parametres\/gestion-structure$/)
+    await checkAccessibility(page)
 
     await page.getByRole('button', { name: 'Fermer la structure' }).click()
 
@@ -236,6 +243,7 @@ test.describe('Settings page', () => {
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
     await page.getByRole('link', { name: 'Gestion de la structure' }).click()
     await expect(page).toHaveURL(/\/parametres\/gestion-structure$/)
+    await checkAccessibility(page)
 
     await page.getByRole('button', { name: 'Fermer la structure' }).click()
 

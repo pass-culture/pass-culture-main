@@ -58,6 +58,8 @@ test.describe('Search individual offers', () => {
     const searchResponse = await searchOffersPromise
     expect(searchResponse.status()).toBe(200)
 
+    await checkAccessibility(page)
+
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
       ['', offerName2.name + ean, `${venue.fullAddress}`, '1 000', 'publiée'],
@@ -83,12 +85,16 @@ test.describe('Search individual offers', () => {
       'INSTRUMENT'
     )
 
+    await checkAccessibility(page)
+
     const searchOffersPromise = page.waitForResponse((response) =>
       response.url().includes('/offers?')
     )
     await page.getByText('Rechercher').click()
     const searchResponse = await searchOffersPromise
     expect(searchResponse.status()).toBe(200)
+
+    await checkAccessibility(page)
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
@@ -121,12 +127,16 @@ test.describe('Search individual offers', () => {
       'ACTIVE'
     )
 
+    await checkAccessibility(page)
+
     const searchOffersPromise = page.waitForResponse((response) =>
       response.url().includes('/offers?')
     )
     await page.getByText('Rechercher').click()
     const searchResponse = await searchOffersPromise
     expect(searchResponse.status()).toBe(200)
+
+    await checkAccessibility(page)
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
@@ -161,6 +171,8 @@ test.describe('Search individual offers', () => {
     await page.getByText('Rechercher').click()
     const searchResponse = await searchOffersPromise
     expect(searchResponse.status()).toBe(200)
+
+    await checkAccessibility(page)
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
@@ -198,6 +210,8 @@ test.describe('Search individual offers', () => {
     await page.getByText('Rechercher').click()
     const searchResponse = await searchOffersPromise
     expect(searchResponse.status()).toBe(200)
+
+    await checkAccessibility(page)
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
@@ -241,6 +255,8 @@ test.describe('Search individual offers', () => {
     let searchResponse = await searchOffersPromise
     expect(searchResponse.status()).toBe(200)
 
+    await checkAccessibility(page)
+
     await page.getByText('Filtrer').click()
 
     await page.getByLabel('Catégorie').selectOption('Livre')
@@ -257,6 +273,8 @@ test.describe('Search individual offers', () => {
     await page.getByText('Rechercher').click()
     searchResponse = await searchOffersPromise
     expect(searchResponse.status()).toBe(200)
+
+    await checkAccessibility(page)
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
@@ -289,6 +307,8 @@ test.describe('Search individual offers', () => {
     ).toHaveValue('')
 
     await page.getByRole('button', { name: 'Rechercher' }).click()
+
+    await checkAccessibility(page)
 
     const expectedResults2 = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],

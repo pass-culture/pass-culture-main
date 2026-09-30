@@ -1,5 +1,6 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
+import { checkAccessibility } from './helpers/accessibility'
 import { MOCKED_BACK_ADDRESS_LABEL, mockAddressSearch } from './helpers/address'
 import { doLogin } from './helpers/auth'
 import { setFeatureFlags } from './helpers/features'
@@ -25,11 +26,13 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
     await doLogin(page, userData.user.email, { retry: true })
     await page.goto('/')
     await expect(page.getByTestId('spinner')).toHaveCount(0)
+    await checkAccessibility(page)
   })
 
   test('I should be able to sign up with a new account and create a new offerer with a not diffusible siret without an address', async ({
     page,
   }) => {
+    await checkAccessibility(page)
     await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
     await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(mySiret)
 
@@ -87,6 +90,7 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
   test('I should be able to sign up with a new account and create a new offerer with a not diffusible siret with an address', async ({
     page,
   }) => {
+    await checkAccessibility(page)
     await mockAddressSearch(page)
 
     await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)

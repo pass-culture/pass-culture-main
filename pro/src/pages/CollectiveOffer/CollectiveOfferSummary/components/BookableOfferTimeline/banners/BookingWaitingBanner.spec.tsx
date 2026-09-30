@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -6,6 +7,20 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { BookingWaitingBanner } from './BookingWaitingBanner'
 
 describe('BookingWaitingBanner', () => {
+  it('should render without accessibility violations', async () => {
+    const inThreeDays = new Date()
+    const { container } = renderWithProviders(
+      <BookingWaitingBanner
+        offerId={123}
+        offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
+        bookingLimitDatetime={inThreeDays.toISOString()}
+        canEditDates
+      />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show expiration warning when offer expires within 7 days', () => {
     const inThreeDays = new Date()
     inThreeDays.setDate(inThreeDays.getDate() + 3)

@@ -2,6 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { beforeEach, expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -73,7 +74,7 @@ const renderIndividualOffers = async (
 ) => {
   const route = computeIndividualOffersUrl(filters)
 
-  renderWithProviders(
+  const renderResult = renderWithProviders(
     <Routes>
       <Route path="/offres" element={<IndividualOffers />} />
       <Route
@@ -101,6 +102,8 @@ const renderIndividualOffers = async (
       within(screen.getByLabelText('Localisation')).getAllByRole('option')
     ).toHaveLength(3)
   })
+
+  return renderResult
 }
 
 describe('IndividualOffers', () => {
@@ -129,6 +132,12 @@ describe('IndividualOffers', () => {
   })
 
   describe('filters', () => {
+    it('should render without accessibility violations', async () => {
+      const { container } = await renderIndividualOffers()
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('should display only selectable categories on filters', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 

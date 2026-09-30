@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { CollectiveLocationType } from '@/apiClient/v1'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -7,6 +8,37 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { CollectiveOfferLocationSection } from '../CollectiveOfferLocationSection'
 
 describe('CollectiveOfferLocationSection', () => {
+  it('should render without accessibility violations', async () => {
+    const offer = getCollectiveOfferTemplateFactory()
+    const { container } = renderWithProviders(
+      <CollectiveOfferLocationSection
+        offer={{
+          ...offer,
+          location: {
+            locationType: CollectiveLocationType.ADDRESS,
+            locationComment: null,
+            location: {
+              label: 'Théâtre de la Corniche',
+              city: 'Marseille',
+              street: '3 Rue Pimpim',
+              postalCode: '13007',
+              isVenueLocation: true,
+              latitude: 2,
+              longitude: 5,
+              id: 1234,
+              isManualEdition: false,
+              banId: null,
+              departmentCode: null,
+              inseeCode: null,
+            },
+          },
+        }}
+      />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the location address and label when offer is located in a specific address', () => {
     const offer = getCollectiveOfferTemplateFactory()
 

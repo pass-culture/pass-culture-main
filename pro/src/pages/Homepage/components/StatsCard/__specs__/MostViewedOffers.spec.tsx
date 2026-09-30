@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -38,6 +39,12 @@ const MOCKED_PROPS: MostViewedOffersProps = {
 }
 
 describe('MostViewedOffers', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderCumulatedViews(MOCKED_PROPS)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render top offers', () => {
     renderCumulatedViews(MOCKED_PROPS)
 

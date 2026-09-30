@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { HTTP_STATUS } from '@/apiClient/helpers'
@@ -57,7 +58,7 @@ vi.mock('react-router', async () => {
 const mockLogEvent = vi.fn()
 
 const renderSignIn = (options?: RenderWithProvidersOptions) => {
-  renderWithProviders(
+  return renderWithProviders(
     <>
       <SignIn />
       <Routes>
@@ -115,6 +116,12 @@ describe('SignIn', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSignIn()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display 2 inputs and one link to account creation and one button to login', () => {

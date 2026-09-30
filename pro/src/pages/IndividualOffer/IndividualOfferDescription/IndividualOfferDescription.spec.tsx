@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import {
   IndividualOfferContext,
@@ -44,6 +45,14 @@ const renderIndividualOfferDescription = (
 }
 
 describe('<IndividualOfferDescription />', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIndividualOfferDescription({
+      offer: getIndividualOfferFactory(),
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the description screen within the offer layout', async () => {
     renderIndividualOfferDescription({ offer: getIndividualOfferFactory() })
 

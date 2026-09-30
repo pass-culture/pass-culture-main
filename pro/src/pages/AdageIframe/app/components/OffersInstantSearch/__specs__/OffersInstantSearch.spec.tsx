@@ -1,4 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { apiAdage } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
@@ -44,7 +45,7 @@ vi.mock('react-instantsearch', async () => {
 })
 
 function renderOffersInstantSearch() {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <OffersInstantSearch />
       <SnackBarContainer />
@@ -53,6 +54,12 @@ function renderOffersInstantSearch() {
 }
 
 describe('OffersInstantSearch', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffersInstantSearch()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show an error message when the venue id is invalid', async () => {
     const mockLocation = {
       ...window.location,

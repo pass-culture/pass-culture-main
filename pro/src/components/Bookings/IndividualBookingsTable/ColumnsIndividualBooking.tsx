@@ -15,6 +15,7 @@ import { BookingOfferCell } from './Cells/BookingOfferCell'
 import { BookingStatusCell } from './Cells/BookingStatusCell'
 import { BookingStatusCellHistory } from './Cells/BookingStatusCellHistory'
 import { DetailsButtonCell } from './Cells/DetailsButtonCell'
+import styles from './ColumnsIndividualBooking.module.scss'
 
 type BookingRow = BookingRecapResponseModel & { id: number }
 const priceText = (amount: number) => (amount ? formatPrice(amount) : 'Gratuit')
@@ -81,7 +82,8 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
     },
     {
       id: 'details',
-      label: '',
+      label: 'Détails',
+      header: <span className={styles['visually-hidden']}>Détails</span>,
       render: (row) => (
         <DetailsButtonCell
           controlledId={`booking-details-${row.id}`}

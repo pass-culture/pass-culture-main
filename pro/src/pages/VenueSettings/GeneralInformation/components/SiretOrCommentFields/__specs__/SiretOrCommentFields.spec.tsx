@@ -3,6 +3,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, type UseFormReturn, useForm } from 'react-hook-form'
 import { expect, vi } from 'vitest'
+import { axe } from 'vitest-axe'
 import * as yup from 'yup'
 
 import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
@@ -89,9 +90,9 @@ function renderSiretOrComment(
     )
   }
 
-  renderWithProviders(<Wrapper />, options)
+  const renderResult = renderWithProviders(<Wrapper />, options)
 
-  return methodsRef
+  return Object.assign(renderResult, methodsRef)
 }
 
 describe('SiretOrCommentFields', () => {
@@ -102,6 +103,12 @@ describe('SiretOrCommentFields', () => {
       formContext: defaultFormContext,
       onAddressUpdate: vi.fn(),
     }
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSiretOrComment(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display Siret when siret is provided', () => {

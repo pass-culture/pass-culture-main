@@ -5,6 +5,7 @@ import {
   expectIndividualModules,
   loginAsAndGoToHomepage,
 } from './fixtures/homepage'
+import { checkAccessibility } from './helpers/accessibility'
 import { doLogin } from './helpers/auth'
 import {
   BASE_API_URL,
@@ -49,6 +50,7 @@ test.describe('when I do collective', () => {
       createProUserWithCollectiveOffers,
       'Mon Lieu A'
     )
+    await checkAccessibility(page)
 
     await expect
       .soft(
@@ -71,6 +73,7 @@ test.describe('when I do collective', () => {
 
   test('with non validated offerer', async ({ page }) => {
     await loginAsAndGoToHomepage(page, createEacWithNonValidatedOfferer)
+    await checkAccessibility(page)
 
     await expect
       .soft(
@@ -87,6 +90,7 @@ test.describe('when I do collective', () => {
 
   test('DMS en instruction', async ({ page }) => {
     await loginAsAndGoToHomepage(page, createEacEnInstruction)
+    await checkAccessibility(page)
 
     await expect
       .soft(page.getByRole('heading', { level: 1, name: /eac_en_instruction/ }))
@@ -98,6 +102,7 @@ test.describe('when I do collective', () => {
 
   test('DMS accepted -30d', async ({ page }) => {
     await loginAsAndGoToHomepage(page, createEacCompleteLt30d)
+    await checkAccessibility(page)
 
     await expect
       .soft(page.getByRole('heading', { level: 1, name: /eac_complete_30-d/ }))
@@ -125,6 +130,7 @@ test.describe('when I do both individual and collective', () => {
       createProUserWithIndividualOffers,
       'Mon Lieu A'
     )
+    await checkAccessibility(page)
 
     await expect
       .soft(
@@ -182,11 +188,12 @@ test.describe('when I have no offers and no collective access', () => {
     await doLogin(page, userData.user.email)
     await page.goto('/accueil')
     await expect(page).toHaveURL(/\/accueil$/)
+    await checkAccessibility(page)
 
     await expect
       .soft(
         page.getByRole('heading', {
-          level: 2,
+          level: 1,
           name: /Diffusez votre première offre et pilotez ici votre activité/i,
         })
       )

@@ -5,6 +5,7 @@ import {
   within,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import type { GetVenueAddressResponseModel } from '@/apiClient/v1'
@@ -128,6 +129,13 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
     vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddress)
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderBookingsRecap()
+
+    await waitForCompleteLoading()
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should show a pre-filter section', async () => {

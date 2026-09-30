@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import * as apiModule from '@/apiClient/api'
 import { type InvoiceResponseV2Model, InvoiceStatus } from '@/apiClient/v1'
@@ -78,6 +79,12 @@ const renderReimbursementsInvoicesTable = (
 }
 
 describe('InvoiceTable', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderReimbursementsInvoicesTable(invoices)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('renders invoice rows correctly', () => {
     renderReimbursementsInvoicesTable(invoices)
 

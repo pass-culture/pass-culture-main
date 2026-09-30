@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import type { AuthenticatedResponse } from '@/apiClient/adage'
 import {
@@ -19,7 +20,7 @@ const renderAdageOfferListCard = (
   },
   adageUser: AuthenticatedResponse | null = defaultAdageUser
 ) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
       <AdageOfferListCard {...props} />
     </AdageUserContextProvider>
@@ -27,6 +28,12 @@ const renderAdageOfferListCard = (
 }
 
 describe('AdageOfferListCard', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdageOfferListCard()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the card with the offer title', () => {
     renderAdageOfferListCard()
 

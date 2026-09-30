@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -15,7 +16,7 @@ window.HTMLElement.prototype.scrollIntoView = vi.fn()
 
 function renderComponent(props: OfferEducationalProps) {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<OfferEducational {...props} />, {
+  return renderWithProviders(<OfferEducational {...props} />, {
     user,
     storeOverrides: {
       user: {
@@ -33,6 +34,12 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
   beforeEach(() => {
     props = defaultCreationProps
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderComponent(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display the right fields and titles', async () => {

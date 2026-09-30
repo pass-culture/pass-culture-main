@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import * as router from 'react-router'
+import { axe } from 'vitest-axe'
 
 import type { LocalOfferersPlaylistOffer } from '@/apiClient/adage'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
@@ -26,7 +27,7 @@ const renderVenueCard = ({
   venue,
   handlePlaylistElementTracking,
 }: VenueCardProps) => {
-  renderWithProviders(
+  return renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <VenueCard
         venue={venue}
@@ -42,6 +43,15 @@ describe('VenueCard', () => {
       new URLSearchParams({ token: '123' }),
       vi.fn(),
     ])
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderVenueCard({
+      venue: mockVenue,
+      handlePlaylistElementTracking: vi.fn(),
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should redirect on click in offer card', () => {

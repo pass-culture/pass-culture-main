@@ -42,7 +42,7 @@ export const AdageHeader = () => {
   const institutionBudget = getEducationalInstitutionBudget.data?.budget
 
   return (
-    <div
+    <header
       className={cn([styles['adage-header']], {
         [styles['adage-header-discovery']]: isDiscoveryPage,
       })}
@@ -80,6 +80,6 @@ export const AdageHeader = () => {
           />{' '}
         </div>
       )}
-    </div>
+    </header>
   )
 }

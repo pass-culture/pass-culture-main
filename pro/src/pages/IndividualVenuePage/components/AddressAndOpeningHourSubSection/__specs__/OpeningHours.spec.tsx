@@ -1,8 +1,15 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { OpeningHoursReadOnly } from '../OpeningHoursReadOnly'
 
 describe('OpeningHours', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(<OpeningHoursReadOnly openingHours={null} />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the closed-all-days message when there are no opening hours', () => {
     render(<OpeningHoursReadOnly openingHours={null} />)
 

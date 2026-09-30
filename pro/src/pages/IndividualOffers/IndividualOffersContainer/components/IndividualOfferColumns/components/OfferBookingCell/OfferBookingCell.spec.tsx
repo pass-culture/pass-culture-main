@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { addDays, format, subDays } from 'date-fns'
+import { axe } from 'vitest-axe'
 
 import { OfferStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
@@ -13,7 +14,7 @@ import {
 } from './OfferBookingCell'
 
 function renderOfferBookingCell(props: OfferBookingCellProps) {
-  renderWithProviders(<OfferBookingCell {...props} />, {
+  return renderWithProviders(<OfferBookingCell {...props} />, {
     storeOverrides: {
       user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
     },
@@ -38,6 +39,19 @@ describe('OfferBookingCell', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  it('should render without accessibility violations', async () => {
+    vi.useRealTimers()
+    const { container } = renderOfferBookingCell({
+      ...defaultProps,
+      offer: listOffersOfferFactory({
+        bookingAllowedDatetime: dayInTheFuture,
+        status: OfferStatus.SCHEDULED,
+      }),
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should show the booking allowed date', () => {

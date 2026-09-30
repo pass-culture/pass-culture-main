@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { type HeadLineOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
@@ -115,6 +116,14 @@ const renderTableWithOffer = (
   )
 }
 describe('getIndividualOfferColumns', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderTableWithOffer()
+
+    await screen.findByText(/Bureau - 3 rue de Valois 75001 Paris/i)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('renders location based on address', async () => {
     renderTableWithOffer()
     expect(

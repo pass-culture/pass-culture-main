@@ -1,8 +1,15 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { OpeningHoursRow } from '../OpeningHoursRow'
 
 describe('OpeningHoursRow', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(<OpeningHoursRow openingHoursForDay={null} />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render nothing when the day is null', () => {
     const { container } = render(<OpeningHoursRow openingHoursForDay={null} />)
 

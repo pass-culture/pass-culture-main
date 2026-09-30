@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -71,6 +72,12 @@ describe('OffersRetentionCard', () => {
       logEvent: mockLogEvent,
     }))
   })
+  it('should render without accessibility violations', async () => {
+    const { container } = renderOffersRetentionCard(OffersCardVariant.TEMPLATE)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display template retention card', () => {
     renderOffersRetentionCard(OffersCardVariant.TEMPLATE)
 

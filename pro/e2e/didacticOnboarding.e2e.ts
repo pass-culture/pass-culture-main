@@ -34,7 +34,9 @@ test.describe('Didactic Onboarding feature', () => {
 
   test('I should be able to skip the onboarding', async ({
     authenticatedPage: page,
+    checkAccessibility,
   }) => {
+    await checkAccessibility()
     // Should not be able to go to home page
     await page.goto('/accueil')
     await expect(
@@ -58,7 +60,9 @@ test.describe('Didactic Onboarding feature', () => {
 
   test('I should not be able to onboard me by submitting an Adage referencing file if I don’t have an Adage ID', async ({
     authenticatedPage: page,
+    checkAccessibility,
   }) => {
+    await checkAccessibility()
     await page.getByLabel('Commencer la création d’offre sur ADAGE').click()
     await expect(
       page.getByRole('heading', { level: 2, name: 'Déposer un dossier ADAGE' })
@@ -83,7 +87,9 @@ test.describe('Didactic Onboarding feature', () => {
 
   test('I should be able to onboard me by submitting an Adage referencing file if I have an Adage ID', async ({
     authenticatedPage: page,
+    checkAccessibility,
   }) => {
+    await checkAccessibility()
     await page.getByLabel('Commencer la création d’offre sur ADAGE').click()
     await expect(
       page.getByRole('heading', { level: 2, name: 'Déposer un dossier ADAGE' })
@@ -128,6 +134,7 @@ test.describe('Didactic Onboarding feature', () => {
 
   test('I should be able to create my first offer automatically', async ({
     authenticatedPage: page,
+    checkAccessibility,
   }) => {
     await page
       .getByLabel('Commencer la création d’offre sur l’application mobile')
@@ -145,6 +152,7 @@ test.describe('Didactic Onboarding feature', () => {
         name: 'Comment souhaitez-vous créer votre 1ère offre ?',
       })
     ).toBeVisible()
+    await checkAccessibility()
 
     await page.getByRole('link', { name: 'Automatiquement' }).click()
 
@@ -165,6 +173,7 @@ test.describe('Didactic Onboarding feature', () => {
 
   test('I should be able to start my first offer manually, saving and resume a draft offer, and publish it to get onboarded', async ({
     authenticatedPage: page,
+    checkAccessibility,
   }) => {
     await page
       .getByLabel('Commencer la création d’offre sur l’application mobile')
@@ -182,6 +191,7 @@ test.describe('Didactic Onboarding feature', () => {
         name: 'Comment souhaitez-vous créer votre 1ère offre ?',
       })
     ).toBeVisible()
+    await checkAccessibility()
 
     await page.getByRole('link', { name: 'Manuellement' }).click()
 
