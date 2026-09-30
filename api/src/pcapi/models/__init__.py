@@ -57,6 +57,12 @@ def get_db_connection_args(options: list[str]) -> dict[str, str]:
         connect_args["options"] = " ".join(options)
     if settings.DATABASE_SSLMODE:
         connect_args["sslmode"] = settings.DATABASE_SSLMODE
+    if settings.DATABASE_SSLROOTCERT:
+        connect_args["sslrootcert"] = settings.DATABASE_SSLROOTCERT
+    if settings.DATABASE_SSLCERT:
+        connect_args["sslcert"] = settings.DATABASE_SSLCERT
+    if settings.DATABASE_SSLKEY:
+        connect_args["sslkey"] = settings.DATABASE_SSLKEY
     return connect_args
 
 

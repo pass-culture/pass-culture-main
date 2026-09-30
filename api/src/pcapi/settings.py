@@ -78,12 +78,11 @@ DATABASE_STATEMENT_TIMEOUT = int(os.environ.get("DATABASE_STATEMENT_TIMEOUT", "0
 DATABASE_LOCK_TIMEOUT = int(os.environ.get("DATABASE_LOCK_TIMEOUT", "0"))
 DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT = int(os.environ.get("DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT", "0"))
 DATABASE_SSLMODE = os.environ.get("DATABASE_SSLMODE", None)
-DATABASE_ALLOWED_SSLMODES = ["disable", "allow", "prefer", "require", "verify-ca", "verify-full"]
-if DATABASE_SSLMODE and DATABASE_SSLMODE not in DATABASE_ALLOWED_SSLMODES:
-    raise ValueError(
-        f"Invalid DATABASE_SSLMODE: {DATABASE_SSLMODE}. "
-        f"Allowed values: {', '.join(DATABASE_ALLOWED_SSLMODES)}"
-    )
+# Paths to the server CA, client certificate and client private key files
+DATABASE_SSLROOTCERT = os.environ.get("DATABASE_SSLROOTCERT", None)
+DATABASE_SSLCERT = os.environ.get("DATABASE_SSLCERT", None)
+DATABASE_SSLKEY = os.environ.get("DATABASE_SSLKEY", None)
+utils.check_database_ssl_settings(DATABASE_SSLMODE, DATABASE_SSLROOTCERT, DATABASE_SSLCERT, DATABASE_SSLKEY)
 
 # Managed databases have specific postgresql users and roles for pcapi, cron, backoffice or console.
 # Pull requests and local envs only have one user.
