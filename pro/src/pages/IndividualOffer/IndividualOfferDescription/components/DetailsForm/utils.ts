@@ -258,7 +258,7 @@ export function getFormReadOnlyFields(
 }
 
 export function getFormV2ReadOnlyFields(
-  offer: GetIndividualOfferResponseModel | null,
+  offer: GetIndividualOfferResponseModelV2 | null,
   venue: GetVenueResponseModel
 ): string[] {
   const isClosed = withVenueHelpers(venue).isClosed
