@@ -1,6 +1,9 @@
 import { useState } from 'react'
 
-import { DisplayableActivity } from '@/apiClient/v1'
+import {
+  DisplayableActivity,
+  type GetProductInformations,
+} from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   CULTURAL_OUTREACH_ALLOWED_ACTIVITIES,
@@ -18,10 +21,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import type {
-  DetailsFormValues,
-  Product,
-} from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 import {
   getInitialValuesFromOffer,
@@ -78,7 +78,13 @@ export const IndividualOfferDescriptionScreen = () => {
   const isEanSearchInputDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
 
-  const updateProduct = (ean: string, product: Product) => {
+  const updateProduct = (product: GetProductInformations | null) => {
+    if (!product) {
+      handleEanImage()
+      setInitialValues(getInitialValues())
+      return
+    }
+
     const { description, gtlId, subcategoryId, images, ...restProduct } =
       product
     const subcategory = subCategories.find((s) => s.id === subcategoryId)
@@ -90,7 +96,8 @@ export const IndividualOfferDescriptionScreen = () => {
 
     const { categoryId, conditionalFields } = subcategory
 
-    const imageUrl = images.recto
+    // TODO(mdesquilbet, 2026-09-30): Update model in backend (and migrate it to Pydantic v2)
+    const imageUrl = images.recto as string | null
     if (imageUrl) {
       handleEanImage(imageUrl)
     }
@@ -105,7 +112,6 @@ export const IndividualOfferDescriptionScreen = () => {
     setInitialValues((prevInitialValues) => ({
       ...prevInitialValues,
       ...restProduct,
-      ean,
       description: description || '',
       categoryId,
       subcategoryId,
@@ -117,6 +123,11 @@ export const IndividualOfferDescriptionScreen = () => {
     }))
   }
 
+  const product = {
+    ean: initialOffer?.extraData?.ean,
+    id: initialValues.productId,
+  } as Partial<GetProductInformations>
+
   return (
     <>
       {isOfferProductBasedButNotSynchronized(initialOffer) && <ProductBanner />}
@@ -127,17 +138,11 @@ export const IndividualOfferDescriptionScreen = () => {
 
       {isEanSearchInputDisplayed && (
         <DetailsEanSearch
-          initialEan={initialOffer?.extraData?.ean}
-          isProductBased={!!initialValues.productId}
-          onEanSearch={updateProduct}
-          shouldDisplayClearButton={
-            isNewOfferDraft && !!initialValues.productId
-          }
-          onEanClear={() => {
-            handleEanImage()
-            setInitialValues(getInitialValues())
-          }}
-          isRequired={isSubCategoryCD(subcategoryId ?? '')}
+          product={product}
+          onProductChange={updateProduct}
+          disabled={!!initialValues.productId}
+          required={isSubCategoryCD(subcategoryId ?? '')}
+          canClearProduct={isNewOfferDraft}
         />
       )}
 
