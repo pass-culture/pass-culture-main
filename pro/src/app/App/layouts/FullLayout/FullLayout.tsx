@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import type React from 'react'
 
 import {
@@ -13,11 +14,13 @@ import styles from './FullLayout.module.scss'
 
 type FullLayoutProps = {
   children: React.ReactNode
+  verticallyCenteredContent?: boolean
   headerPropsOverride?: HeaderProps
 }
 
 export const FullLayout = ({
   children,
+  verticallyCenteredContent = false,
   headerPropsOverride,
 }: Readonly<FullLayoutProps>): JSX.Element => {
   const currentUser = useAppSelector(selectCurrentUser)
@@ -34,8 +37,18 @@ export const FullLayout = ({
         forceShowHelpCenter
         {...headerPropsOverride}
       />
-      <main id="content" className={styles.content} tabIndex={-1}>
-        {children}
+      <main
+        id="content"
+        className={cn(styles.content, {
+          [styles['vertically-centered']]: verticallyCenteredContent,
+        })}
+        tabIndex={-1}
+      >
+        {verticallyCenteredContent ? (
+          <div className={styles['vertically-centered-inner']}>{children}</div>
+        ) : (
+          children
+        )}
       </main>
       <Footer isUnauthenticated={isUnauthenticated} />
     </div>
