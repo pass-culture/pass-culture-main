@@ -45,3 +45,8 @@
   margin-bottom: var(--size-spacing-xxl);
   overflow-wrap: anywhere;
 }
+
+.signin-wrapper {
+  max-width: size.$signup-content-width;
+  margin: 0 auto;
+}
