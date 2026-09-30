@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import { LoggedOutLayout } from '@/app/App/layouts/logged-out/LoggedOutLayout/LoggedOutLayout'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { parse } from '@/commons/utils/query-string'
 import { Button } from '@/design-system/Button/Button'
@@ -35,39 +35,38 @@ export const EmailChangeValidation = () => {
   }
 
   return (
-    <LoggedOutLayout>
-      <Title
-        level="1"
-        title={isSuccess ? 'Et voilà !' : 'Votre lien a expiré !'}
-        marginBottom="xxl"
-      />
-      {isSuccess && (
-        <>
-          <p className={styles['subtitle']}>
-            Merci d’avoir confirmé votre changement d’adresse email.
-          </p>
-          <Button
-            onClick={() => {
-              // redirection using this to handle store reload
-              globalThis.location.href = '/connexion'
-            }}
-            label="Se connecter"
-          />
-        </>
-      )}
-      {!isSuccess && (
-        <>
-          <p className={styles['subtitle']}>
-            Votre adresse email n’a pas été modifiée car le lien reçu par mail
-            expire 24 heures après sa réception.
-          </p>
-          <p className={styles['subtitle']}>
-            Connectez-vous avec votre ancienne adresse email.
-          </p>
-          <Button as="router-link" to="/" label="Se connecter" />
-        </>
-      )}
-    </LoggedOutLayout>
+    <FullLayout verticallyCenteredContent>
+      <div className={styles['content-wrapper']}>
+        {isSuccess && (
+          <>
+            <Title level="1" title="Et voilà !" marginBottom="xxl" />
+            <p className={styles['subtitle']}>
+              Merci d’avoir confirmé votre changement d’adresse email.
+            </p>
+            <Button
+              onClick={() => {
+                // redirection using this to handle store reload
+                globalThis.location.href = '/connexion'
+              }}
+              label="Se connecter"
+            />
+          </>
+        )}
+        {!isSuccess && (
+          <>
+            <Title level="1" title="Votre lien a expiré !" marginBottom="xxl" />
+            <p className={styles['subtitle']}>
+              Votre adresse email n’a pas été modifiée car le lien reçu par mail
+              expire 24 heures après sa réception.
+            </p>
+            <p className={styles['subtitle']}>
+              Connectez-vous avec votre ancienne adresse email.
+            </p>
+            <Button as="router-link" to="/" label="Se connecter" />
+          </>
+        )}
+      </div>
+    </FullLayout>
   )
 }
 
