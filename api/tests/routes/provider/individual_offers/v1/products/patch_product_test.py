@@ -1344,9 +1344,7 @@ class Returns200Test(PatchProductEndpointHelper):
         test_utils.assert_public_api_data_logs_have_been_recorded(
             caplog,
             self._api_key,
-            module="products",
-            function="edit_product",
-            venue=venue_provider.venueId,
+            venue_id=venue_provider.venueId,
             publication_datetime=product.publicationDatetime,
             # the price is logged in cents, as it was sent
             **expected_stock_extra,
