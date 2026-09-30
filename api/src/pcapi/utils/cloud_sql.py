@@ -32,19 +32,35 @@ def _get_connector() -> Connector:
     with _ConnectorHolder.lock:
         if _ConnectorHolder.connector is None:
             _ConnectorHolder.connector = Connector(refresh_strategy="lazy")
+            logger.info(
+                "Created Cloud SQL connector",
+                extra={"instance_connection_name": settings.DATABASE_INSTANCE_CONNECTION_NAME},
+            )
         return _ConnectorHolder.connector
 
 
 def get_iam_connection() -> typing.Any:
     """Open a new connection to Cloud SQL authenticated with IAM."""
-    return _get_connector().connect(
-        settings.DATABASE_INSTANCE_CONNECTION_NAME,
-        settings.DATABASE_DRIVER,
-        user=settings.DATABASE_IAM_USER,
-        db=settings.DATABASE_NAME,
-        ip_type=settings.DATABASE_IP_TYPE,
-        enable_iam_auth=True,
-    )
+    try:
+        return _get_connector().connect(
+            settings.DATABASE_INSTANCE_CONNECTION_NAME,
+            settings.DATABASE_DRIVER,
+            user=settings.DATABASE_IAM_USER,
+            db=settings.DATABASE_NAME,
+            ip_type=settings.DATABASE_IP_TYPE,
+            enable_iam_auth=True,
+        )
+    except Exception:
+        logger.exception(
+            "Could not open IAM connection to Cloud SQL",
+            extra={
+                "instance_connection_name": settings.DATABASE_INSTANCE_CONNECTION_NAME,
+                "iam_user": settings.DATABASE_IAM_USER,
+                "database": settings.DATABASE_NAME,
+                "ip_type": settings.DATABASE_IP_TYPE,
+            },
+        )
+        raise
 
 
 def get_engine_kwargs() -> dict:
