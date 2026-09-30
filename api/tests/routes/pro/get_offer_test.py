@@ -213,7 +213,7 @@ class Returns200Test:
             "thumbUrl": None,
             "url": None,
             "location": {
-                "label": "La petite librairie",
+                "label": None,
                 "id": offer.offererAddress.address.id,
                 "banId": offer.offererAddress.address.banId,
                 "departmentCode": offer.offererAddress.address.departmentCode,
@@ -403,7 +403,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["location"] == {
-            "label": location.label or venue.publicName,
+            "label": location.label,
             "id": location.address.id,
             "banId": location.address.banId,
             "departmentCode": location.address.departmentCode,
