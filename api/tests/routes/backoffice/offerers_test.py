@@ -1642,6 +1642,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
             publicName="NumeroUn",
             managingOfferer=offerer,
             isOpenToPublic=False,
+            state=offerers_models.VenueState.CLOSED,
         )
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
@@ -1660,6 +1661,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(venue_2.id)
         assert rows[0]["SIRET"] == venue_2.siret
+        assert rows[0]["État"] == "Fermé"
         assert rows[0]["Permanent"] == ""
         assert rows[0]["Ouvert au public"] == ""
         assert rows[0]["Nom"] == venue_2.publicName
@@ -1673,6 +1675,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
         assert rows[1]["ID"] == str(venue_1.id)
         assert rows[1]["SIRET"] == venue_1.siret
+        assert rows[1]["État"] == ""
         assert rows[1]["Permanent"] == "Partenaire culturel permanent"
         assert rows[1]["Ouvert au public"] == "Partenaire culturel ouvert au public"
         assert rows[1]["Nom"] == venue_1.publicName

@@ -1332,6 +1332,14 @@ def format_user_offerer_status_badge(user_offerer: offerers_models.UserOfferer) 
     return ""
 
 
+def format_venue_state_badge(state: offerers_models.VenueState | None) -> str:
+    match state:
+        case offerers_models.VenueState.CLOSING | offerers_models.VenueState.CLOSED:
+            return format_badge("Fermé", "danger")
+        case _:
+            return ""
+
+
 def format_confidence_level_badge(
     confidence_level: offerers_models.OffererConfidenceLevel | str | None, show_no_rule: bool = False, info: str = ""
 ) -> str:
@@ -2412,6 +2420,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_show_type"] = format_show_type
     app.jinja_env.filters["format_show_subtype"] = format_show_subtype
     app.jinja_env.filters["format_user_offerer_status_badge"] = format_user_offerer_status_badge
+    app.jinja_env.filters["format_venue_state_badge"] = format_venue_state_badge
     app.jinja_env.filters["get_comparated_format_function"] = get_comparated_format_function
     app.jinja_env.filters["format_offer_types"] = format_offer_types
     app.jinja_env.filters["format_website"] = format_website

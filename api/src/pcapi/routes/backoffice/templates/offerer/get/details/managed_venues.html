@@ -23,6 +23,7 @@
           SIRET
         {%+ endif +%}
       </th>
+      <th scope="col">État</th>
       <th scope="col">Permanent</th>
       <th scope="col">Ouvert au public</th>
       <th scope="col">Activité principale</th>
@@ -43,6 +44,7 @@
         <td class="fw-bolder">{{ links.build_venue_name_to_details_link(venue, text_attr="id") }}</td>
         <td class="text-break">{{ build_connect_as_link(connect_as[venue.id], venue.publicName or venue.name, "link-primary") }}</td>
         <td>{{ links.build_siret_to_external_link(venue) }}</td>
+        <td>{{ venue.state | format_venue_state_badge }}</td>
         <td>
           {% if venue.isPermanent %}
             <span class="visually-hidden">Partenaire culturel permanent</span><i class="bi bi-check-circle-fill"></i>
