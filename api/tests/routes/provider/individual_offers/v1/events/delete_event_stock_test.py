@@ -101,6 +101,7 @@ class DeleteEventStockTest(PublicAPIVenueEndpointHelper):
     def test_should_raise_400_if_event_stock_beginning_date_was_more_than_two_days_ago(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        bookings_factories.BookingFactory(stock=stock)
 
         # update
         event.withdrawalType = WithdrawalTypeEnum.IN_APP

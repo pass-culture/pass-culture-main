@@ -1051,6 +1051,7 @@ class DeleteStockTest:
     def test_cannot_delete_if_too_late(self):
         too_long_ago = date_utils.get_naive_utc_now() - timedelta(days=3)
         stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
+        bookings_factories.BookingFactory(stock=stock)
 
         with pytest.raises(exceptions.OfferException):
             api.delete_stock(stock)

@@ -1376,6 +1376,7 @@ def get_filtered_stocks(
             models.Stock.offerId == offer.id,
             models.Stock.isSoftDeleted == False,
         )
+        .options(sa_orm.joinedload(models.Stock.bookings))
     )
     if only_future_stocks:
         now = datetime.datetime.now(datetime.UTC)

@@ -496,7 +496,7 @@ class Stock(PcObject, Model, SoftDeletableMixin):
 
     @property
     def isEventDeletable(self) -> bool:
-        if not self.beginningDatetime or self.offer.validation == OfferValidationStatus.DRAFT:
+        if not self.beginningDatetime or self.offer.validation == OfferValidationStatus.DRAFT or not self.bookings:
             return True
         limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         return limit_date_for_stock_deletion >= date_utils.get_naive_utc_now()
