@@ -371,6 +371,18 @@ class Returns400Test:
 
         assert response.json["page"] == ["Saisissez un entier valide"]
 
+    @pytest.mark.parametrize("page", [0, -1])
+    def when_page_number_is_not_positive(self, client: Any, page: int):
+        pro = users_factories.ProFactory()
+        venue_id = offerers_factories.VenueFactory().id
+
+        client = client.with_session_auth(pro.email)
+        with assert_num_queries(self.num_queries):
+            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={venue_id}&page={page}")
+            assert response.status_code == 400
+
+        assert response.json == {"page": ["Saisissez un nombre supérieur ou égal à 1"]}
+
     def when_date_format_incorrect(self, client: Any):
         pro = users_factories.ProFactory()
 

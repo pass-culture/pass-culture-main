@@ -99,7 +99,7 @@ class BookingsExportQueryModel(HttpQueryParamsModel):
 
 
 class _BookingsQueryModelBase(HttpQueryParamsModel):
-    page: int = 1
+    page: int = pydantic_v2.Field(default=1, ge=1)
     offer_id: int | None = None
     event_date: date | None = None
     booking_status_filter: BookingStatusFilter | None = None
