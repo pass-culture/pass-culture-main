@@ -26,6 +26,7 @@ import pcapi.core.educational.api.adage as adage_api
 import pcapi.core.favorites.models as favorites_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.history.models as history_models
+import pcapi.core.history.repository as history_repository
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
@@ -3655,6 +3656,10 @@ def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | 
 
     venue.state = None
     history_api.add_action(history_models.ActionType.VENUE_REOPENED, author=author, venue=venue, comment=comment)
+
+    original_user = history_repository.get_latest_venue_closure_user(venue.id)
+    if original_user:
+        transactional_mails.send_venue_reopened_email(venue, original_user)
 
     db.session.flush()
 
