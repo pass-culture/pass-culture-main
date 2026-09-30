@@ -4,7 +4,9 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { type Params, useNavigate, useParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { Title } from '@/ui-kit/Title/Title'
@@ -18,11 +20,26 @@ export type ResetPasswordValues = {
   newConfirmationPassword: string
 }
 
+// TODO (jclery-pass, 2026-09-30): Once WIP_PRE_SIGNUP_SIMULATION is removed,
+// just remove this temporary component and directly use the <FullLayout> inside <ResetPassword>’s render
+const ResetPasswordFullLayout = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => (
+  <FullLayout verticallyCenteredContent>
+    <div className={styles['resetpassword-wrapper']}>{children}</div>
+  </FullLayout>
+)
+
 export const ResetPassword = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true)
   const { token } = useParams<Params>()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
 
   const invalidTokenHandler = useCallback(() => {
     snackBar.error('Le lien est invalide ou a expiré. Veuillez recommencer.')
@@ -66,8 +83,12 @@ export const ResetPassword = (): JSX.Element => {
     return <Spinner />
   }
 
+  const LayoutComponent = isSignupSimulationEnabled
+    ? ResetPasswordFullLayout
+    : SignUpLayout
+
   return (
-    <SignUpLayout>
+    <LayoutComponent>
       <Title
         level="1"
         title="Réinitialisez votre mot de passe"
@@ -82,7 +103,7 @@ export const ResetPassword = (): JSX.Element => {
           <ChangePasswordForm onSubmit={submitChangePassword} />
         </FormProvider>
       </section>
-    </SignUpLayout>
+    </LayoutComponent>
   )
 }
 
