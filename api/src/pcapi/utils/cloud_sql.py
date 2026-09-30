@@ -10,12 +10,16 @@ Local and preview environments keep the user/password ``psycopg2`` connection: t
 ``get_engine_kwargs()`` returns an empty mapping and none of the connector code runs.
 """
 
+import logging
 import threading
 import typing
 
 from google.cloud.sql.connector import Connector
 
 from pcapi import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 class _ConnectorHolder:
@@ -62,8 +66,7 @@ def dispose_connector() -> None:
             try:
                 _ConnectorHolder.connector.close()
             except Exception:
-                # TODO: log this exception somewhere (Sentry?) if it happens in production
-                pass
+                logger.exception("Could not close Cloud SQL connector")
             _ConnectorHolder.connector = None
 
 
