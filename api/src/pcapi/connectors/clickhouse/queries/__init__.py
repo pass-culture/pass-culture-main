@@ -10,6 +10,10 @@ from .top_offers_by_consultation import TopOffersByViewsQuery
 from .total_revenue import TotalExpectedRevenueModel
 from .total_revenue import TotalExpectedRevenueQuery
 from .venue_offers_monthly_views import VenueOffersMonthlyViewsQuery
+from .venue_offers_views_by_month import VenueOffersViewsByMonthModel
+from .venue_offers_views_by_month import VenueOffersViewsByMonthQuery
+from .venue_top_offers_by_period import VenueTopOfferByPeriodModel
+from .venue_top_offers_by_period import VenueTopOffersByPeriodQuery
 from .yearly_revenue import AggregatedCollectiveRevenueModel
 from .yearly_revenue import AggregatedCollectiveRevenueQuery
 from .yearly_revenue import AggregatedIndividualRevenueModel

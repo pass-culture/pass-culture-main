@@ -332,11 +332,14 @@ def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> sa_orm.Q
 
 def get_offers_with_headlines_and_mediations(
     ids: typing.Iterable[int],
+    venue_id: int | None,
 ) -> list[models.Offer]:
+    query = db.session.query(models.Offer).filter(models.Offer.id.in_(ids))
+    if venue_id is not None:
+        query = query.filter(models.Offer.venueId == venue_id)
+
     return (
-        db.session.query(models.Offer)
-        .filter(models.Offer.id.in_(ids))
-        .options(
+        query.options(
             sa_orm.selectinload(models.Offer.mediations),
             sa_orm.joinedload(models.Offer.product).selectinload(models.Product.productMediations),
             sa_orm.selectinload(models.Offer.headlineOffers),

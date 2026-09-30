@@ -40,4 +40,13 @@ class TestingBackend(BaseBackend):
         if query == queries.VenueOffersMonthlyViewsQuery().raw_query:
             return query_mock.VENUE_OFFERS_MONTHLY_VIEWS
 
+        if query == queries.VenueTopOffersByPeriodQuery(months=3).raw_query:
+            return query_mock.VENUE_TOP_OFFERS_LAST_3_MONTHS
+
+        if query == queries.VenueTopOffersByPeriodQuery(months=6).raw_query:
+            return query_mock.VENUE_TOP_OFFERS_LAST_6_MONTHS
+
+        if query == queries.VenueOffersViewsByMonthQuery().raw_query:
+            return query_mock.VENUE_OFFERS_VIEWS_BY_MONTH
+
         return []
