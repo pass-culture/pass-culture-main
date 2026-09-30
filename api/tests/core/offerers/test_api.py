@@ -4425,9 +4425,15 @@ class ReopenVenueTest:
     No need to test every details twice.
     """
 
-    def test_closed_venue_becomes_reopened(self):
+    @patch("pcapi.core.mails.transactional.send_venue_reopened_email")
+    def test_closed_venue_becomes_reopened(self, mock_send_venue_reopened_email):
         venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
         author = users_factories.BaseUserFactory()
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.VENUE_CLOSED,
+            authorUser=author,
+            venue=venue,
+        )
 
         with atomic():
             offerers_api.reopen_venue(venue, author)
@@ -4435,6 +4441,7 @@ class ReopenVenueTest:
         db.session.refresh(venue)
 
         assert venue.state is None
+        mock_send_venue_reopened_email.assert_called()
 
     def test_reopen_venue_adds_immediate_reopen_action_with_comment(self):
         venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
