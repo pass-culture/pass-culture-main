@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 import pytest
 
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
@@ -368,6 +369,7 @@ class CheckStockIsDeletableTest:
     def test_long_begun_event_stock(self):
         too_long_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=3)
         stock = offers_factories.EventStockFactory(beginningDatetime=too_long_ago)
+        bookings_factories.BookingFactory(stock=stock)
 
         with pytest.raises(exceptions.OfferException) as error:
             validation.check_stock_is_deletable(stock)
