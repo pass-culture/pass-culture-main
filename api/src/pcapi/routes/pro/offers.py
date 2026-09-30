@@ -847,6 +847,7 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
                 models.Product.extraData,
                 models.Product.gcuCompatibilityType,
                 models.Product.name,
+                models.Product.ean,
                 models.Product.description,
                 models.Product.subcategoryId,
                 models.Product.thumbCount,
