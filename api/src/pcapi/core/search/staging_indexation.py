@@ -3,7 +3,7 @@ import logging
 import pcapi.core.offers.models as offers_models
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 from pcapi.core.logging import log_elapsed
-from pcapi.core.offerers import models as offerer_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 
 
@@ -31,8 +31,8 @@ def get_offers_for_each_subcategory(size_per_subcategory: int) -> set[int]:
         query = (
             db.session.query(offers_models.Offer)
             .outerjoin(offers_models.Stock)
-            .join(offerer_models.Venue)
-            .join(offerer_models.Offerer)
+            .join(offerers_models.Venue)
+            .join(offerers_models.Offerer)
             .filter(
                 offers_models.Offer.is_eligible_for_search,
                 offers_models.Offer.subcategoryId == subcategory.id,

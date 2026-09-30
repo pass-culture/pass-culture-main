@@ -22,7 +22,7 @@ import sqlalchemy.orm as sa_orm
 import pcapi.connectors.acceslibre as accessibility_provider
 import pcapi.connectors.thumb_storage as storage
 import pcapi.core.educational.api.adage as adage_api
-import pcapi.core.favorites.models as favorite_models
+import pcapi.core.favorites.models as favorites_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -715,8 +715,8 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         db.session.query(offers_models.Stock).filter(offers_models.Stock.offerId.in_(offers_id_chunk)).delete(
             synchronize_session=False
         )
-        db.session.query(favorite_models.FavoriteOffer).filter(
-            favorite_models.FavoriteOffer.offerId.in_(offers_id_chunk)
+        db.session.query(favorites_models.FavoriteOffer).filter(
+            favorites_models.FavoriteOffer.offerId.in_(offers_id_chunk)
         ).delete(synchronize_session=False)
         db.session.query(criteria_models.OfferCriterion).filter(
             criteria_models.OfferCriterion.offerId.in_(offers_id_chunk)

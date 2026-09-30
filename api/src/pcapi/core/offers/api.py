@@ -27,7 +27,7 @@ import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.cultural_outreach.api as cultural_outreach_api
-import pcapi.core.favorites.models as favorite_models
+import pcapi.core.favorites.models as favorites_models
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.highlights.models as highlights_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -1456,8 +1456,8 @@ def reject_inappropriate_products(
     )
 
     if offer_ids:
-        db.session.query(favorite_models.FavoriteOffer).filter(
-            favorite_models.FavoriteOffer.offerId.in_(offer_ids)
+        db.session.query(favorites_models.FavoriteOffer).filter(
+            favorites_models.FavoriteOffer.offerId.in_(offer_ids)
         ).delete(synchronize_session=False)
         on_commit(
             partial(
@@ -2352,7 +2352,7 @@ def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
 
     related_models = [
         models.Stock,
-        favorite_models.FavoriteOffer,
+        favorites_models.FavoriteOffer,
         models.Mediation,
         finance_models.CustomReimbursementRule,
         highlights_models.HighlightRequest,

@@ -23,7 +23,7 @@ from sqlalchemy.dialects import postgresql
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
-import pcapi.core.favorites.models as favorite_models
+import pcapi.core.favorites.models as favorites_models
 from pcapi.core import search
 from pcapi.core.artist import models as artist_models
 from pcapi.core.bookings import api as bookings_api
@@ -1622,8 +1622,8 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
 
     if len(offer_ids) > 0:
-        db.session.query(favorite_models.FavoriteOffer).filter(
-            favorite_models.FavoriteOffer.offerId.in_(offer_ids)
+        db.session.query(favorites_models.FavoriteOffer).filter(
+            favorites_models.FavoriteOffer.offerId.in_(offer_ids)
         ).delete(synchronize_session=False)
         db.session.flush()
         on_commit(

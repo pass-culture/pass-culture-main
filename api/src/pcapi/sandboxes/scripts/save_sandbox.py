@@ -3,7 +3,7 @@ import typing
 
 from pcapi.core import search
 from pcapi.core.artist import models as artists_models
-from pcapi.core.offerers import models as offerer_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.db_utils import clean_all_database
 from pcapi.models import db
@@ -68,8 +68,8 @@ def _index_all_offers() -> None:
     query = (
         db.session.query(offers_models.Offer)
         .outerjoin(offers_models.Stock)
-        .join(offerer_models.Venue)
-        .join(offerer_models.Offerer)
+        .join(offerers_models.Venue)
+        .join(offerers_models.Offerer)
         .filter(offers_models.Offer.is_eligible_for_search)
         .with_entities(offers_models.Offer.id)
     )
@@ -102,7 +102,9 @@ def _index_all_venues() -> None:
 
     search.unindex_all_venues()
     query = (
-        db.session.query(offerer_models.Venue).with_entities(offerer_models.Venue.id).order_by(offerer_models.Venue.id)
+        db.session.query(offerers_models.Venue)
+        .with_entities(offerers_models.Venue.id)
+        .order_by(offerers_models.Venue.id)
     )
     search.reindex_venue_ids([venue_id for (venue_id,) in query])
 
