@@ -156,6 +156,7 @@ class TransactionalEmail(Enum):
     WELCOME_TO_PRO = models.TemplatePro(id_prod=1, id_not_prod=1)
     VENUE_SYNC_DISABLED = models.TemplatePro(id_prod=33, id_not_prod=33)
     VENUE_SYNC_DELETED = models.TemplatePro(id_prod=32, id_not_prod=32)
+    VENUE_PRICING_POINT_CLOSURE_REQUESTED = models.TemplatePro(id_prod=671, id_not_prod=83)
     VENUE_BANK_ACCOUNT_LINK_DEPRECATED = models.TemplatePro(id_prod=29, id_not_prod=29)
     VENUE_REOPENED = models.TemplatePro(id_prod=670, id_not_prod=85)
     BANK_ACCOUNT_VALIDATED = models.TemplatePro(id_prod=28, id_not_prod=28)
