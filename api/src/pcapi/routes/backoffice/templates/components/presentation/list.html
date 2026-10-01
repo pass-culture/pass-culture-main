@@ -29,9 +29,7 @@
            {% if table_id %}id="{{ table_id }}"{% endif %}
            data-pc-table-manager-id="{{ table_name }}"
            data-pc-table-menu-container-id="{{ table_name }}-menu"
-           {%+ if hide_menu +%}
-           data-pc-table-menu-hide="true"
-           {% endif %}
+           {%+ if hide_menu +%} data-pc-table-menu-hide="true" {% endif %}
            data-table-multi-select-id="{{ table_name }}">
       <thead>
         <tr class="bg-secondary-subtle fs-7 align-middle">{{ table_header }}</tr>

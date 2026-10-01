@@ -28,9 +28,9 @@
                 <time datetime="{{ fraud_action['creationDate'] }}">{{ fraud_action['creationDate'] | format_date_time }}</time>
               </td>
               <td>
-                {% if fraud_action['type'] in ('dms', 'educonnect', 'ubble') %}
+                {% if fraud_action["type"] in ("dms", "educonnect", "ubble") %}
                   <span class="text-nowrap">
-                    {% if fraud_action['techId'] | length < 10 %}
+                    {% if fraud_action["techId"] | length < 10 %}
                       {{ fraud_action['techId'] }}
                     {% else %}
                       {{ fraud_action['techId'][:3] }}…{{ fraud_action['techId'][-3:] }}
@@ -52,7 +52,7 @@
                 {% endif %}
               </td>
               <td>
-                {% if fraud_action['applicableEligibilities']|length == 0 %}
+                {% if fraud_action["applicableEligibilities"]|length == 0 %}
                   {{ "NA" | format_badge("secondary") }}
                 {% else %}
                   {% for applicable_eligibility in fraud_action['applicableEligibilities'] %}
@@ -61,14 +61,14 @@
                 {% endif %}
               </td>
               <td>
-                {% if fraud_action['status'] %}
-                  {% if fraud_action['status'].lower() == 'ok' %}
+                {% if fraud_action["status"] %}
+                  {% if fraud_action["status"].lower() == "ok" %}
                     {{ fraud_action['status'].upper() | format_badge("success") }}
-                  {% elif fraud_action['status'].lower() == 'ko' %}
+                  {% elif fraud_action["status"].lower() == "ko" %}
                     {{ fraud_action['status'].upper() | format_badge("danger") }}
-                  {% elif fraud_action['status'].lower() == 'suspicious' %}
+                  {% elif fraud_action["status"].lower() == "suspicious" %}
                     {{ fraud_action['status'].upper() | format_badge("warning") }}
-                  {% elif fraud_action['status'].lower() == 'redirected_to_dms' %}
+                  {% elif fraud_action["status"].lower() == "redirected_to_dms" %}
                     {{ fraud_action['status'].upper() | format_badge("warning") }}
                   {% else %}
                     {{ fraud_action['status'].upper() | format_badge("warning") }}
@@ -77,12 +77,12 @@
               </td>
               <td>{{ fraud_action['reason'] | empty_string_if_null | pc_backoffice_public_account_link_in_comment | safe }}</td>
               <td>
-                {% if fraud_action['type'] not in bonus_fraud_types or can_see_bonus_credit_details %}
+                {% if fraud_action["type"] not in bonus_fraud_types or can_see_bonus_credit_details %}
                   {{ fraud_action['errorCode'] | format_error_codes }}
                 {% endif %}
               </td>
               <td>
-                {% if fraud_action['technicalDetails'] and (fraud_action['type'] not in bonus_fraud_types or can_see_bonus_credit_details) %}
+                {% if fraud_action["technicalDetails"] and (fraud_action["type"] not in bonus_fraud_types or can_see_bonus_credit_details) %}
                   {% set idcheck_history_random_id = random_hash() %}
                   <button class="btn btn-light"
                           type="button"
@@ -142,43 +142,39 @@
         </div>
         <ol class="breadcrumb-container position-relative d-flex m-0 p-0 justify-content-between">
           {% for step in tunnel.steps %}
-            <li {%+ if not loop.last %}
-                style="min-width:200px"
-                {% else %}
-                class="me-3"
-                {% endif %}>
-            {% set div_class %}
-              {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ 'step-disabled' if step.status.disabled }}
-            {% endset %}
-            <div class="steps {{ div_class }}"
-                 disabled
-                 data-bs-toggle="tooltip"
-                 data-bs-placement="top"
-                 data-bs-custom-class="primary-tooltip"
-                 data-bs-title="{{ step.subscription_item_status | format_filter_status }}">
-              <span class="step-number d-flex flex-column justify-content-center align-items-center pe-none position-relative">
-                {% if step.icon %}
-                  <i class="bi {{ step.icon }} pe-none"></i>
-                {% else %}
-                  {{ step.text }}
-                {% endif %}
-                {% set status_icon = step.subscription_item_status | format_user_subscription_tunnel_step_status %}
-                {% if status_icon %}
-                  <div class="step-status-icon-container position-absolute translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
-                    {{ status_icon }}
-                  </div>
-                {% endif %}
-                <div class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</div>
-              </span>
-            </div>
-          </li>
-        {% endfor %}
-      </ol>
+            <li {%+ if not loop.last %} style="min-width:200px" {% else %} class="me-3" {% endif %}>
+              {% set div_class %}
+                {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ 'step-disabled' if step.status.disabled }}
+              {% endset %}
+              <div class="steps {{ div_class }}"
+                   disabled
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="top"
+                   data-bs-custom-class="primary-tooltip"
+                   data-bs-title="{{ step.subscription_item_status | format_filter_status }}">
+                <span class="step-number d-flex flex-column justify-content-center align-items-center pe-none position-relative">
+                  {% if step.icon %}
+                    <i class="bi {{ step.icon }} pe-none"></i>
+                  {% else %}
+                    {{ step.text }}
+                  {% endif %}
+                  {% set status_icon = step.subscription_item_status | format_user_subscription_tunnel_step_status %}
+                  {% if status_icon %}
+                    <div class="step-status-icon-container position-absolute translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
+                      {{ status_icon }}
+                    </div>
+                  {% endif %}
+                  <div class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</div>
+                </span>
+              </div>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+    <div class="fs-3 ps-3 pt-3 mt-3 text-secondary right-scroll">
+      <i class="bi bi-chevron-right"></i>
     </div>
   </div>
-  <div class="fs-3 ps-3 pt-3 mt-3 text-secondary right-scroll">
-    <i class="bi bi-chevron-right"></i>
-  </div>
-</div>
-{% if fraud_actions_desc %}<div class="pt-3">{{ build_idcheck_histories(fraud_actions_desc) }}</div>{% endif %}
+  {% if fraud_actions_desc %}<div class="pt-3">{{ build_idcheck_histories(fraud_actions_desc) }}</div>{% endif %}
 </div>

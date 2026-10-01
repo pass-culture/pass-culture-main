@@ -13,9 +13,7 @@
          data-description="{{ feature_flag.description }}"
          data-name="{{ feature_flag.name }}"
          data-confirm-modal=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}"
-         {%+ if not enabled %}
-         disabled
-         {% endif %} />
+         {%+ if not enabled %} disabled {% endif %} />
 {% endmacro %}
 {% block page %}
   <div class="pt-3 px-5 pc-feature-flip">
