@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 import type { ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
 
-import type { DetailsFormValues } from './types'
+import type { DetailsFormValues } from '../components/DetailsForm/types'
 
 const eanValidation = yup
   .string()
@@ -144,3 +144,17 @@ export const getValidationSchema = () => {
 export const eanSearchValidationSchema = yup.object().shape({
   eanSearch: eanValidation,
 })
+
+export const generateEanSearchValidationSchema = (required: boolean) => {
+  return yup.object().shape({
+    eanSearch: required
+      ? eanValidation.required(
+          'Les offres de type CD doivent être liées à un produit.'
+        )
+      : eanValidation,
+  })
+}
+
+export type EanSearchForm = yup.InferType<
+  ReturnType<typeof generateEanSearchValidationSchema>
+>

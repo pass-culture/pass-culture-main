@@ -9,12 +9,12 @@ import { useIndividualOfferContext } from '@/commons/context/IndividualOfferCont
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner } from '@/design-system/Banner/Banner'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/types'
 import {
   buildCategoryOptions,
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
-} from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
+} from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/utils'
 import { Select } from '@/ui-kit/form/Select/Select'
 
 import { ARTISTIC_INFORMATION_FIELDS } from '../DetailsSubForm/DetailsSubForm'
@@ -24,12 +24,14 @@ interface SubcategoriesProps {
   readOnlyFields: string[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
+  onSubcategoryChange: (subcategoryId: string | undefined) => void
 }
 
 export function Subcategories({
   readOnlyFields,
   filteredCategories,
   filteredSubcategories,
+  onSubcategoryChange,
 }: Readonly<SubcategoriesProps>) {
   const {
     setValue,
@@ -71,6 +73,7 @@ export function Subcategories({
     })
 
     setIsControlledEvent(nextSubcategory.isEvent)
+    onSubcategoryChange(nextSubcategoryId)
   }
 
   const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {

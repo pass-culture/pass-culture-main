@@ -9,6 +9,7 @@ import { api } from '@/apiClient/api'
 import {
   ArtistType,
   DisplayableActivity,
+  type GetVenueResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
@@ -123,7 +124,7 @@ const MOCK_DATA = {
     }),
     subcategoryFactory({
       id: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
-      categoryId: 'MUSIQUE_ENREGISTREE',
+      categoryId: 'A',
       proLabel: 'Vinyles et autres supports',
       conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
     }),
@@ -161,18 +162,20 @@ const renderDetailsScreen = ({
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
     mode,
   }),
+  defaultVenue = defaultPartnerVenue,
 }: {
   contextValue: IndividualOfferContextValues
   mode?: OFFER_WIZARD_MODE
   options?: RenderWithProvidersOptions
   path?: string
+  defaultVenue?: GetVenueResponseModel
 }) => {
   const controlledOptions: RenderWithProvidersOptions = {
     initialRouterEntries: [path],
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
-        selectedPartnerVenue: defaultPartnerVenue,
+        selectedPartnerVenue: defaultVenue,
       },
     },
     user: sharedCurrentUserFactory(),
@@ -844,6 +847,65 @@ describe('<IndividualOfferDescriptionScreen />', () => {
           await waitFor(() => {
             expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
           })
+        })
+      })
+
+      describe('when the subcategory requires an EAN', () => {
+        it('should display a (cumulative) error message that cannot be cleared on new inputs', async () => {
+          const cdSubcategory = subcategoryFactory({
+            id: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+            categoryId: MOCK_DATA.categories[0].id,
+            proLabel: 'CD et autres supports',
+            conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
+          })
+          renderWithRecordStoreVenue({
+            subCategories: [...MOCK_DATA.subCategories, cdSubcategory],
+          })
+
+          await userEvent.selectOptions(
+            await screen.findByLabelText(LABELS.category),
+            MOCK_DATA.categories[0].id
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(LABELS.subcategory),
+            cdSubcategory.id
+          )
+
+          // Input is now required.
+          const eanInput = screen.getByRole('textbox', {
+            name: /Scanner ou rechercher un produit par EAN/,
+          })
+          await waitFor(() => {
+            expect(eanInput).toBeRequired()
+          })
+
+          // Error cannot be removed by typing in the input.
+          expect(
+            screen.getByText(/doivent être liées à un produit/)
+          ).toBeInTheDocument()
+          await userEvent.type(eanInput, '9781234567897')
+          expect(
+            screen.getByText(/doivent être liées à un produit/)
+          ).toBeInTheDocument()
+        })
+
+        it('should let the submit button enabled', async () => {
+          renderWithRecordStoreVenue({
+            offer: getIndividualOfferFactory({
+              subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
+              productId: undefined,
+            }),
+          })
+
+          const eanInput = screen.getByRole('textbox', {
+            name: /Scanner ou rechercher un produit par EAN/,
+          })
+
+          await userEvent.type(eanInput, '9781234567897')
+          const submitButton = screen.getByRole('button', {
+            name: /Rechercher/,
+          })
+          expect(submitButton).not.toBeDisabled()
         })
       })
     })

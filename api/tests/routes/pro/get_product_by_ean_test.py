@@ -59,6 +59,7 @@ class Returns200Test:
             "author": product.extraData.get("author"),
             "performer": product.extraData.get("performer"),
             "images": product.images,
+            "ean": product.ean,
         }
 
     def test_get_product_by_ean_empty_product_description(self, client):

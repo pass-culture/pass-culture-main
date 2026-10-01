@@ -12,7 +12,6 @@ import { subcategoryFactory } from '@/commons/utils/factories/individualApiFacto
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
 
 import {
   DetailsEanSearch,
@@ -47,30 +46,24 @@ type DetailsEanSearchTestProps = Partial<DetailsEanSearchProps> & {
 
 const renderDetailsEanSearch = (props: DetailsEanSearchTestProps = {}) => {
   const {
-    isDraftOffer = false,
+    shouldDisplayClearButton = false,
     wasEanSearchPerformedSuccessfully = false,
-    subcategoryId = DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
     initialEan = '',
     eanSubmitError = '',
     onEanSearch = vi.fn(),
-    onEanReset = vi.fn(),
+    onEanClear = vi.fn(),
   } = props
-
-  const hasCompleteValues = !isDraftOffer || wasEanSearchPerformedSuccessfully
-  const mockedSubCategoryId = hasCompleteValues
-    ? 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE'
-    : subcategoryId
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <DetailsEanSearch
-        isDraftOffer={isDraftOffer}
+        shouldDisplayClearButton={shouldDisplayClearButton}
         isProductBased={wasEanSearchPerformedSuccessfully}
-        subcategoryId={mockedSubCategoryId}
         initialEan={initialEan}
         eanSubmitError={eanSubmitError}
         onEanSearch={onEanSearch}
-        onEanReset={onEanReset}
+        onEanClear={onEanClear}
+        isRequired={true}
       />
     </IndividualOfferContext.Provider>,
     {
@@ -91,7 +84,6 @@ vi.mock('@/apiClient/api', () => ({
 const successMessage = /Ces informations ont été récupérées depuis l’EAN./
 const errorMessage = /Une erreur est survenue lors de la recherche/
 const formatErrorMessage = /doit être composé de 13 chiffres/
-const subCatErrorMessage = /doivent être liées à un produit/
 const clearButtonLabel = /Effacer/
 
 const getInput = () =>
@@ -132,7 +124,7 @@ describe('DetailsEanSearch', () => {
     describe('when no EAN search has been performed', () => {
       it('should call the ean search API when the form is submitted', async () => {
         const onEanSearch = vi.fn()
-        renderDetailsEanSearch({ isDraftOffer: true, onEanSearch })
+        renderDetailsEanSearch({ shouldDisplayClearButton: true, onEanSearch })
 
         await userEvent.type(getInput(), '9781234567897')
         await userEvent.click(getButton())
@@ -148,7 +140,7 @@ describe('DetailsEanSearch', () => {
 
       describe('when the input has format issues', () => {
         it('should display an error message', async () => {
-          renderDetailsEanSearch({ isDraftOffer: true })
+          renderDetailsEanSearch({ shouldDisplayClearButton: true })
 
           await userEvent.type(getInput(), '123')
           await userEvent.tab()
@@ -160,47 +152,51 @@ describe('DetailsEanSearch', () => {
         })
 
         it('should disable the submit button', async () => {
-          renderDetailsEanSearch({ isDraftOffer: true })
+          renderDetailsEanSearch({ shouldDisplayClearButton: true })
 
           expect(getButton()).toBeDisabled()
           await userEvent.type(getInput(), '123')
           expect(getButton()).toBeDisabled()
         })
       })
+    })
 
-      describe('when the subcategory requires an EAN', () => {
-        it('should display a (cumulative) error message that cannot be cleared on new inputs', async () => {
-          renderDetailsEanSearch({
-            isDraftOffer: true,
-            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_CD',
-          })
-
-          // Input is now required.
-          const eanInput = getInput()
-          expect(eanInput).toBeRequired()
-
-          // Error cannot be removed by typing in the input.
-          expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
-          await userEvent.type(eanInput, '9781234567897')
-          expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
+    describe('when the subcategory requires an EAN', () => {
+      it('should display a (cumulative) error message that cannot be cleared on new inputs', async () => {
+        renderDetailsEanSearch({
+          shouldDisplayClearButton: true,
+          isRequired: true,
         })
 
-        it('should let the submit button enabled', async () => {
-          renderDetailsEanSearch({
-            isDraftOffer: true,
-            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_CD',
-          })
+        // Input is now required.
+        const eanInput = getInput()
+        expect(eanInput).toBeRequired()
 
-          await userEvent.type(getInput(), '9781234567897')
-          expect(getButton()).not.toBeDisabled()
+        // Error cannot be removed by typing in the input.
+        expect(
+          screen.getByText(/doivent être liées à un produit/)
+        ).toBeInTheDocument()
+        await userEvent.type(eanInput, '9781234567897')
+        expect(
+          screen.getByText(/doivent être liées à un produit/)
+        ).toBeInTheDocument()
+      })
+
+      it('should let the submit button enabled', async () => {
+        renderDetailsEanSearch({
+          shouldDisplayClearButton: true,
+          isRequired: true,
         })
+
+        await userEvent.type(getInput(), '9781234567897')
+        expect(getButton()).not.toBeDisabled()
       })
     })
 
     describe('when an EAN search is performed succesfully', () => {
       it('should display a success message', async () => {
         renderDetailsEanSearch({
-          isDraftOffer: true,
+          shouldDisplayClearButton: true,
           wasEanSearchPerformedSuccessfully: true,
         })
 
@@ -216,7 +212,7 @@ describe('DetailsEanSearch', () => {
 
       it('should be entirely disabled', async () => {
         renderDetailsEanSearch({
-          isDraftOffer: true,
+          shouldDisplayClearButton: true,
           wasEanSearchPerformedSuccessfully: true,
         })
 
@@ -229,7 +225,7 @@ describe('DetailsEanSearch', () => {
       it('should display an error message if POST API ends with an EAN err', async () => {
         const eanSubmitError = 'This EAN is already used'
         renderDetailsEanSearch({
-          isDraftOffer: true,
+          shouldDisplayClearButton: true,
           wasEanSearchPerformedSuccessfully: true,
           eanSubmitError,
         })
@@ -243,7 +239,7 @@ describe('DetailsEanSearch', () => {
     describe('when an EAN search is performed and ends with a product API error', () => {
       it('should display an error message', async () => {
         vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
-        renderDetailsEanSearch({ isDraftOffer: true })
+        renderDetailsEanSearch({ shouldDisplayClearButton: true })
 
         expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
 
@@ -255,7 +251,7 @@ describe('DetailsEanSearch', () => {
 
       it('should disable the submit button', async () => {
         vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
-        renderDetailsEanSearch({ isDraftOffer: true })
+        renderDetailsEanSearch({ shouldDisplayClearButton: true })
 
         await userEvent.type(getInput(), '9781234567897')
         await userEvent.click(getButton())
@@ -269,11 +265,11 @@ describe('DetailsEanSearch', () => {
     renderWithProviders(
       <IndividualOfferContext.Provider value={contextValue}>
         <DetailsEanSearch
-          isDraftOffer={true}
+          shouldDisplayClearButton={true}
           isProductBased={false}
-          subcategoryId={DEFAULT_DETAILS_FORM_VALUES.subcategoryId}
           onEanSearch={vi.fn()}
-          onEanReset={vi.fn()}
+          onEanClear={vi.fn()}
+          isRequired={true}
         />
       </IndividualOfferContext.Provider>,
       {
@@ -299,7 +295,7 @@ describe('DetailsEanSearch', () => {
 
     it('should init the input with the offer EAN', async () => {
       renderDetailsEanSearch({
-        isDraftOffer: false,
+        shouldDisplayClearButton: false,
         wasEanSearchPerformedSuccessfully: true,
         initialEan,
       })
@@ -311,7 +307,7 @@ describe('DetailsEanSearch', () => {
 
     it('should not display the clear button anymore', async () => {
       renderDetailsEanSearch({
-        isDraftOffer: false,
+        shouldDisplayClearButton: false,
         wasEanSearchPerformedSuccessfully: true,
         initialEan,
       })

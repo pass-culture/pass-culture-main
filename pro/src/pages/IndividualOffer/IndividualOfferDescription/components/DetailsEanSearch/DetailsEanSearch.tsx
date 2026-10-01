@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
+import type { GetProductInformations } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
@@ -12,43 +13,32 @@ import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCloseIcon from '@/icons/full-close.svg'
 import strokeBarcodeIcon from '@/icons/stroke-barcode.svg'
-import type { Product } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
-import { isSubCategoryCD } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
-import { eanSearchValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
+import {
+  type EanSearchForm,
+  generateEanSearchValidationSchema,
+} from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
 import { EanSearchCallout } from '@/pages/IndividualOffer/IndividualOfferDescription/components/EanSearchCallout/EanSearchCallout'
 
 import styles from './DetailsEanSearch.module.scss'
 
-type EanSearchForm = {
-  eanSearch?: string
-}
-
 export type DetailsEanSearchProps = {
-  isDraftOffer: boolean
-  isProductBased: boolean
-  subcategoryId: string
-  initialEan?: string
-  eanSubmitError?: string
-  onEanSearch: (ean: string, product: Product) => void
-  onEanReset: () => void
+  required: boolean
+  disabled: boolean
+  productEan: GetProductInformations['ean']
+  onProductChange: (product: GetProductInformations | null) => void
+  canClearProduct: boolean
 }
 
 export const DetailsEanSearch = ({
-  isDraftOffer,
-  isProductBased,
-  subcategoryId,
-  initialEan,
-  eanSubmitError,
-  onEanSearch,
-  onEanReset,
+  productEan,
+  onProductChange,
+  canClearProduct,
+  required,
+  disabled,
 }: DetailsEanSearchProps): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
   const [wasCleared, setWasCleared] = useState(false)
-  const [subcatError, setSubcatError] = useState<string | null>(null)
-
-  const isDraftOfferProductBased = isDraftOffer && isProductBased
-  const isDraftOfferNotProductBased = isDraftOffer && !isProductBased
 
   const {
     register,
@@ -59,10 +49,8 @@ export const DetailsEanSearch = ({
     setFocus,
     formState: { errors, isValid, isLoading },
   } = useForm<EanSearchForm>({
-    defaultValues: { eanSearch: initialEan || '' },
-    resolver: yupResolver<EanSearchForm, unknown, unknown>(
-      eanSearchValidationSchema
-    ),
+    defaultValues: { eanSearch: productEan || '' },
+    resolver: yupResolver(generateEanSearchValidationSchema(required)),
     mode: 'onChange',
   })
 
@@ -75,23 +63,6 @@ export const DetailsEanSearch = ({
     }
   }, [wasCleared, setFocus])
 
-  useEffect(() => {
-    if (eanSubmitError) {
-      setError('eanSearch', {
-        type: 'apiError',
-        message: eanSubmitError,
-      })
-    }
-  }, [eanSubmitError, setError])
-
-  useEffect(() => {
-    if (isDraftOfferNotProductBased && isSubCategoryCD(subcategoryId)) {
-      setSubcatError('Les offres de type CD doivent être liées à un produit.')
-    } else {
-      setSubcatError(null)
-    }
-  }, [isDraftOfferNotProductBased, subcategoryId])
-
   const onSearch = async (data: EanSearchForm) => {
     if (data.eanSearch) {
       try {
@@ -101,7 +72,7 @@ export const DetailsEanSearch = ({
             offerer_id: selectedPartnerVenue.managingOfferer.id,
           },
         })
-        onEanSearch(data.eanSearch, product)
+        onProductChange({ ...product, ean: data.eanSearch })
       } catch (err) {
         const fallbackMessage = 'Une erreur est survenue lors de la recherche'
         const errorMessage = isErrorAPIError(err)
@@ -113,23 +84,16 @@ export const DetailsEanSearch = ({
     }
   }
 
-  const onEanClear = () => {
+  const clearEan = () => {
     reset()
-    onEanReset()
+    onProductChange(null)
     setWasCleared(true)
   }
 
   const apiError = errors.eanSearch?.type === 'apiError'
-  const shouldInputBeDisabled = isProductBased || isLoading || isClosed
-  const shouldInputBeRequired = !!subcatError
-
+  const shouldInputBeDisabled = disabled || isLoading || isClosed
   const shouldButtonBeDisabled =
-    isProductBased || !ean || !isValid || !!apiError || isLoading
-  const displayClearButton = isDraftOfferProductBased
-
-  const cumulativeError = subcatError
-    ? `${subcatError}\n${errors.eanSearch?.message || ''}`
-    : errors.eanSearch?.message || ''
+    disabled || !ean || !isValid || !!apiError || isLoading
 
   return (
     <>
@@ -139,16 +103,16 @@ export const DetailsEanSearch = ({
             <div>
               <TextInput
                 label="Scanner ou rechercher un produit par EAN"
-                error={cumulativeError}
+                error={errors.eanSearch?.message}
                 disabled={shouldInputBeDisabled}
-                required={shouldInputBeRequired}
+                required={required}
                 description="Format : EAN à 13 chiffres"
-                {...(displayClearButton
+                {...(canClearProduct && productEan
                   ? {
                       iconButton: {
                         icon: fullCloseIcon,
                         label: 'Effacer',
-                        onClick: onEanClear,
+                        onClick: clearEan,
                         disabled: isLoading,
                       },
                     }
@@ -170,7 +134,7 @@ export const DetailsEanSearch = ({
         </FormLayout>
       </form>
       <output className={styles['details-ean-search-callout']}>
-        {isProductBased && <EanSearchCallout />}
+        {productEan && <EanSearchCallout />}
       </output>
     </>
   )
