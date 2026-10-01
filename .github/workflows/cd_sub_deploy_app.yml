@@ -63,6 +63,10 @@ on:
         type: boolean
         required: false
         default: false
+      run_post_within_deploy:
+        type: boolean
+        required: false
+        default: true
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID:
         required: true
@@ -119,8 +123,58 @@ jobs:
         env:
           PCAPI_ENVIRONMENT_SHORT_NAME: ${{ inputs.environment_short_name }}
           PCAPI_VERSION: ${{ inputs.app_version }}
+          RUN_POST_DEPLOY_MIGRATIONS: ${{ inputs.run_post_within_deploy }}
         run: |
-          passdirector pcapi deploy -e "${PCAPI_ENVIRONMENT_SHORT_NAME}" --app-version "${PCAPI_VERSION}"
+          passdirector pcapi deploy -e "${PCAPI_ENVIRONMENT_SHORT_NAME}" --app-version "${PCAPI_VERSION}" --run_post_deploy-migrations="${RUN_POST_DEPLOY_MIGRATIONS}"
+
+  run-api-post-deploy-migrations:
+    name: "Run api post-deploy migrations"
+    needs: deploy-api
+    runs-on: ubuntu-22.04
+    if: inputs.run_post_within_deploy == false
+    environment:
+      name: pcapi-${{ inputs.environment_short_name }}
+      deployment: false
+    permissions:
+      id-token: write
+      contents: read
+    continue-on-error: ${{ inputs.continue_on_error }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Argo Workflows CLI
+        uses: pass-culture/common-workflows/actions/setup-argo@66d0c45fd010bce5b0e7873e862eb54a2d564f39 # v1.0.0
+
+      - name: Install passdirector
+        uses: pass-culture/common-workflows/actions/setup-passdirector@b470d76b19d7f3ebcda367f5e17484228021d388 # v1.0.0
+        with:
+          version: v0.8.3
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
+
+      - name: "Authentification to Google"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          service_account: ${{ vars.PCAPI_CD_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+
+      - name: Authenticate to GKE cluster
+        uses: google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0
+        with:
+          cluster_name: ${{ inputs.workflow_cluster_name }}
+          project_id: ${{ inputs.workflow_project_id }}
+          location: ${{ inputs.location }}
+          use_dns_based_endpoint: true
+
+      - name: "Run post-deploy migrations"
+        shell: bash
+        env:
+          PCAPI_ENVIRONMENT_SHORT_NAME: ${{ inputs.environment_short_name }}
+          PCAPI_VERSION: ${{ inputs.app_version }}
+        run: |
+          passdirector pcapi post -e "${PCAPI_ENVIRONMENT_SHORT_NAME}" --app-version "${PCAPI_VERSION}"
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
@@ -174,13 +228,14 @@ jobs:
   deploys-outcome:
     needs:
       - deploy-api
+      - run-api-post-deploy-migrations
       - deploy-api-doc-on-firebase
       - deploy-pro-on-firebase-testing
       - publish-pro-to-live-on-firebase
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment }}
-      deployment: true # Github creates a deployment for this environment only if all deploys succeed (pcapi, pro, doc)
+      deployment: true # GitHub creates a deployment for this environment only if all deploys succeed (pcapi, pro, doc)
     if: always()
     env:
       ENV: ${{ inputs.environment }}
