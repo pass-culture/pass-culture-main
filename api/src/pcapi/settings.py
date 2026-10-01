@@ -78,7 +78,6 @@ DATABASE_STATEMENT_TIMEOUT = int(os.environ.get("DATABASE_STATEMENT_TIMEOUT", "0
 DATABASE_LOCK_TIMEOUT = int(os.environ.get("DATABASE_LOCK_TIMEOUT", "0"))
 DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT = int(os.environ.get("DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT", "0"))
 DATABASE_SSLMODE = os.environ.get("DATABASE_SSLMODE", None)
-# Paths to the server CA, client certificate and client private key files
 DATABASE_SSLROOTCERT = os.environ.get("DATABASE_SSLROOTCERT", None)
 DATABASE_SSLCERT = os.environ.get("DATABASE_SSLCERT", None)
 DATABASE_SSLKEY = os.environ.get("DATABASE_SSLKEY", None)
@@ -88,7 +87,6 @@ utils.check_database_ssl_settings(DATABASE_SSLMODE, DATABASE_SSLROOTCERT, DATABA
 # Pull requests and local envs only have one user.
 DATABASE_HAS_SPECIFIC_ROLES = bool(int(os.environ.get("DATABASE_HAS_SPECIFIC_ROLES", "1")))
 SQLALCHEMY_ECHO = bool(int(os.environ.get("SQLALCHEMY_ECHO", "0")))
-
 
 # FLASK
 PROFILE_REQUESTS = bool(int(os.environ.get("PROFILE_REQUESTS", "0")))
