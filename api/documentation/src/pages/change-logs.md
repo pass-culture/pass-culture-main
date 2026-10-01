@@ -25,6 +25,13 @@ You will have two dates at your disposal :
 - a `bookingAllowedDatetime` that indicates the date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published.
   :::
 
+## October 2026
+- You can now link artists to live music event offers by providing their ids on music platforms (`isniId`, `spotifyId`, `deezerId`, `appleMusicId`, `geniusId` or `soundcloudId`) in the new `artists` field of `categoryRelatedFields`. This is available on:
+  - [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer)
+  - [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent)
+
+  An artist whose ids are all unknown to us is silently ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked. The linked artists are also returned in the `artists` field of `categoryRelatedFields` in the response of [**Get Event Offer**](/rest-api#tag/Event-Offers/operation/GetEvent).
+
 ## July 2026
 - The `label` field has been added to the response of the [**Get Product Categories endpoint**](/rest-api#tag/Product-Offers/operation/GetProductCategories).
 - The `familyLabel` field has been added to the response of the [**Get Show Types endpoint**](/rest-api#tag/Offer-Attributes/operation/GetShowTypes).

@@ -250,14 +250,8 @@ class _FIELDS:
         description="Video URL, must be from the Youtube plateform, it should be public and should not be a short nor a user's profile. To remove video from an offer, set to `null` ",
         example="https://www.youtube.com/watch?v=0R5PZxOgoz8",
     )
-    ARTISTS_BODY = Field(
-        description=(
-            "Artists to link to the event, identified by their ids on music platforms. "
-            "The list replaces the artists currently linked to the event. Set it to `null` to unlink them all. "
-            "An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response "
-            "to know which artists have actually been linked."
-        ),
-    )
+    ARTISTS_CREATION_BODY = Field(description=descriptions.ARTISTS_DESCRIPTION)
+    ARTISTS_EDITION_BODY = Field(description=descriptions.ARTISTS_EDITION_DESCRIPTION)
     ARTISTS_RESPONSE = Field(description="Artists linked to the event.")
     ARTIST_TYPE = Field(
         description="Role of the artist in the event. The roles allowed depend on the event category.",
