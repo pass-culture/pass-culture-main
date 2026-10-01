@@ -9,33 +9,40 @@
 {% set activate_sortable_columns = not date_created_sort_url %}
 {% block title %}Offres individuelles{% endblock %}
 {% block search_block %}
-  {{ display_selector("form-selector-individual-offer", (
+  {% set search_options = [
     (
-      "Recherche exhaustive des offres",
-      "Accédez à l’ensemble des offres, qu’elles soient réservables ou non, disponibles en base de données.",
-      "advanced-search", page=="offer") ,
+    "Recherche exhaustive des offres",
+    "Accédez à l’ensemble des offres, qu’elles soient réservables ou non, disponibles en base de données.",
+    "advanced-search", page=="offer") ,
+    (
+    "Recherche des offres réservables sur l’app",
+    "Remonte toutes les offres réservables sur l’app, en affichant une seule offre par produit. Si plusieurs acteurs proposent la même, une seule sera affichée.",
+    "algolia-search", page=="algolia"
+    ),
+  ] %}
+  {% if has_permission("SEMANTIC_SEARCH_OFFERS") %}
+    {% set search_options = search_options + [
       (
-        "Recherche des offres réservables sur l’app",
-        "Remonte toutes les offres réservables sur l’app, en affichant une seule offre par produit. Si plusieurs acteurs proposent la même, une seule sera affichée.",
-        "algolia-search", page=="algolia"
+      'Recherche sémantique <i class="bi bi-stars"></i>',
+      "Recherchez des offres via une phrase, thématique ou question.",
+      "llm-search-container",
+      page=="llm"
       ),
-      (
-        'Recherche sémantique <i class="bi bi-stars"></i>',
-        "Recherchez des offres via une phrase, thématique ou question.",
-        "llm-search-container",
-        page=="llm"
-      ),
-  ), '33%', "mb-4") }}
+    ] %}
+  {% endif %}
+  {{ display_selector("form-selector-individual-offer", search_options, (100 / search_options|length)|int|string + '%', "mb-4") }}
   {{ build_advanced_filters_form(advanced_form, advanced_dst, "advanced-search") }}
   {{ build_advanced_filters_form(algolia_form, algolia_dst, "algolia-search") }}
-  <div id="llm-search-container">
-    <span class="fs-7">Décrivez ce que vous cherchez :</span>
-    <ol class="mb-4 ps-4 fs-7">
-      <li>Écrivez votre requête.</li>
-      <li>Vous pouvez l’affiner grâce aux filtres (prix, date, département, catégorie…).</li>
-    </ol>
-    {{ build_advanced_filters_form(llm_form, llm_dst, "llm-search") }}
-  </div>
+  {% if has_permission("SEMANTIC_SEARCH_OFFERS") %}
+    <div id="llm-search-container">
+      <span class="fs-7">Décrivez ce que vous cherchez :</span>
+      <ol class="mb-4 ps-4 fs-7">
+        <li>Écrivez votre requête.</li>
+        <li>Vous pouvez l’affiner grâce aux filtres (prix, date, département, catégorie…).</li>
+      </ol>
+      {{ build_advanced_filters_form(llm_form, llm_dst, "llm-search") }}
+    </div>
+  {% endif %}
 {% endblock %}
 {% set table_id = "offers-table" %}
 {% block table_header %}

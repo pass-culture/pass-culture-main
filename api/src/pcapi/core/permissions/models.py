@@ -77,6 +77,7 @@ class Permissions(enum.Enum):
     READ_BOOKINGS = "visualiser les réservations"
 
     READ_OFFERS = "visualiser les offres, produits, artistes"
+    SEMANTIC_SEARCH_OFFERS = "voir la recherche sémantique d'offres individuelles"
     MANAGE_OFFERS = "gérer les offres"
     MANAGE_ARTISTS = "gérer les artistes"
     BLACKLIST_ARTISTS = "blacklister des artistes"

@@ -917,6 +917,7 @@ def list_algolia_offers() -> response_utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/llm", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.SEMANTIC_SEARCH_OFFERS)
 def list_llm_offers() -> response_utils.BackofficeResponse:
     form = forms.GetOfferLlmSearchForm(formdata=request_utils.get_query_params())
     is_form_empty = True
