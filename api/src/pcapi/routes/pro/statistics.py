@@ -70,6 +70,8 @@ def _aggregate_revenues_by_year(
             income_by_year[str(year)] = {}
         # we don't need to serialize expected_revenue for previous years
         elif year < current_year and hasattr(income_by_year[str(year)], "expected_revenue"):
-            delattr(income_by_year[str(year)], "expected_revenue")
+            income = income_by_year[str(year)]
+            assert isinstance(income, AggregatedRevenueModel)
+            income.expected_revenue = None
 
     return income_by_year
