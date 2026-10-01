@@ -8,12 +8,12 @@ import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
+import { ArtistField } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/DetailsSubForm/components/ArtistField/ArtistField'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/types'
 import {
   buildShowSubTypeOptions,
   hasMusicType,
-} from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
-import { ArtistField } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/DetailsSubForm/components/ArtistField/ArtistField'
+} from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/utils'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
