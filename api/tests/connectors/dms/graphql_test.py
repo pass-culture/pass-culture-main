@@ -63,7 +63,8 @@ class DMSGraphQLTest:
                 / "beneficiaries/get_single_application_details.graphql"
             ).read_text()
         )
-        query_result = self.client.execute(query, variable_values={"applicationNumber": 1})
+        query.variable_values = {"applicationNumber": 1}
+        query_result = self.client.execute(query)
 
         result = dms_models.DmsApplicationResponse(**query_result["dossier"])
         assert result == self.expected_dossier
@@ -75,7 +76,8 @@ class DMSGraphQLTest:
                 / "beneficiaries/get_applications_with_details.graphql"
             ).read_text()
         )
-        result_query = self.client.execute(query, variable_values={"demarcheNumber": 1})
+        query.variable_values = {"demarcheNumber": 1}
+        result_query = self.client.execute(query)
 
         expected = dms_models.DmsProcessApplicationsResponse(
             pageInfo=dms_models.ApplicationPageInfo(endCursor=None, hasNextPage=False),
