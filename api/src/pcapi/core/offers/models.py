@@ -31,6 +31,7 @@ from pcapi.core.finance.models import CustomReimbursementRule
 from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights.models import HighlightRequest
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers.models import Provider
 from pcapi.models import Model
 from pcapi.models import db
@@ -1310,7 +1311,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
         now_utc = datetime.datetime.now(datetime.UTC)
 
-        if not self.publicationDatetime:
+        # The if self.venue else False is a workaround for the case where the offer is not linked to a venue (which should not happen in practice)
+        # But it does happen in one of the syncs with Allociné
+        if not self.publicationDatetime or (self.venue.is_closed if self.venue else False):
             return OfferStatus.INACTIVE
 
         if now_utc < self.publicationDatetime:
@@ -1334,6 +1337,14 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
             (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
             (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
+            # A correlated subquery is more portable, but often performs more poorly at the SQL level.
+            (
+                sa.exists().where(
+                    offerers_models.Venue.id == cls.venueId,
+                    offerers_models.Venue.state == offerers_models.VenueState.CLOSED,
+                ),
+                OfferStatus.INACTIVE.name,
+            ),
             (cls.publicationDatetime.is_(None), OfferStatus.INACTIVE.name),
             (cls.publicationDatetime > sa.func.now(), OfferStatus.SCHEDULED.name),
             (
@@ -1361,9 +1372,15 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
                 return (cls.validation == OfferValidationStatus.REJECTED,)
 
             case OfferStatus.INACTIVE:
+                from pcapi.core.offerers import models as offerer_models
+
                 return (
                     cls.validation == OfferValidationStatus.APPROVED,
-                    cls.publicationDatetime.is_(None),
+                    sa.or_(
+                        # explicit join on Venue
+                        offerer_models.Venue.state == offerers_models.VenueState.CLOSED,
+                        cls.publicationDatetime.is_(None),
+                    ),
                 )
 
             case OfferStatus.SCHEDULED:
