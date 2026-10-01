@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import { expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
@@ -86,7 +86,9 @@ describe('CollectiveOfferCreation', () => {
       name: 'Quel est le type de votre offre ?',
     })
 
-    expect(await axe(container)).toHaveNoViolations()
+    await act(async () => {
+      expect(await axe(container)).toHaveNoViolations()
+    })
   })
 
   it('should render collective offer creation form', async () => {
