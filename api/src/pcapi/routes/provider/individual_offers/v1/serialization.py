@@ -335,8 +335,10 @@ def compute_category_fields_model(
 
     if can_have_artists(subcategory) and method == Method.read:
         specific_fields["artists"] = (list[ArtistResponse], fields.ARTISTS_RESPONSE)
+    elif can_have_artists(subcategory) and method == Method.create:
+        specific_fields["artists"] = (list[ArtistBody] | None, fields.ARTISTS_CREATION_BODY)
     elif can_have_artists(subcategory) and method == Method.edit:
-        specific_fields["artists"] = (list[ArtistBody] | None, fields.ARTISTS_BODY)
+        specific_fields["artists"] = (list[ArtistBody] | None, fields.ARTISTS_EDITION_BODY)
 
     model = pydantic_v1.create_model(f"{subcategory.id}_{method.value}", **specific_fields)
     model.__doc__ = subcategory.pro_label
@@ -472,7 +474,7 @@ if typing.TYPE_CHECKING:
 
     product_category_creation_fields = CategoryRelatedFields
     product_category_reading_fields = CategoryRelatedFields
-    event_category_creation_fields = CategoryRelatedFields
+    event_category_creation_fields = CategoryRelatedFieldsBodyWithArtists
     event_category_edition_fields = CategoryRelatedFieldsBodyWithArtists | None
     event_category_reading_fields = CategoryRelatedFields
     product_category_edition_fields = CategoryRelatedFields

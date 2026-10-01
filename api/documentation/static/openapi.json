@@ -1491,6 +1491,14 @@
             "CONCERT_create": {
                 "description": "Concert",
                 "properties": {
+                    "artists": {
+                        "description": "Artists to link to the event, identified by their ids on music platforms. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistBody"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -1529,7 +1537,7 @@
                 "description": "Concert",
                 "properties": {
                     "artists": {
-                        "description": "Artists to link to the event, identified by their ids on music platforms. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "description": "Artists to link to the event, identified by their ids on music platforms. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all.",
                         "items": {
                             "$ref": "#/components/schemas/ArtistBody"
                         },
@@ -2623,6 +2631,14 @@
             "EVENEMENT_MUSIQUE_create": {
                 "description": "Autre type d'\u00e9v\u00e8nement musical",
                 "properties": {
+                    "artists": {
+                        "description": "Artists to link to the event, identified by their ids on music platforms. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistBody"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -2661,7 +2677,7 @@
                 "description": "Autre type d'\u00e9v\u00e8nement musical",
                 "properties": {
                     "artists": {
-                        "description": "Artists to link to the event, identified by their ids on music platforms. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "description": "Artists to link to the event, identified by their ids on music platforms. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all.",
                         "items": {
                             "$ref": "#/components/schemas/ArtistBody"
                         },
@@ -4107,6 +4123,14 @@
             "FESTIVAL_MUSIQUE_create": {
                 "description": "Festival de musique",
                 "properties": {
+                    "artists": {
+                        "description": "Artists to link to the event, identified by their ids on music platforms. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistBody"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -4145,7 +4169,7 @@
                 "description": "Festival de musique",
                 "properties": {
                     "artists": {
-                        "description": "Artists to link to the event, identified by their ids on music platforms. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "description": "Artists to link to the event, identified by their ids on music platforms. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all.",
                         "items": {
                             "$ref": "#/components/schemas/ArtistBody"
                         },
@@ -5534,6 +5558,14 @@
             "LIVESTREAM_MUSIQUE_create": {
                 "description": "Livestream musical",
                 "properties": {
+                    "artists": {
+                        "description": "Artists to link to the event, identified by their ids on music platforms. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistBody"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    },
                     "author": {
                         "title": "Author",
                         "type": "string"
@@ -5572,7 +5604,7 @@
                 "description": "Livestream musical",
                 "properties": {
                     "artists": {
-                        "description": "Artists to link to the event, identified by their ids on music platforms. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked.",
+                        "description": "Artists to link to the event, identified by their ids on music platforms. An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked. The list replaces the artists currently linked to the event. Set it to `null` to unlink them all.",
                         "items": {
                             "$ref": "#/components/schemas/ArtistBody"
                         },
