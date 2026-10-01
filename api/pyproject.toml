@@ -94,7 +94,7 @@ dependencies = [
 dev = [
   "commitizen==4.18.1",
   "debugpy==1.8.22",
-  "djlint==1.46.1",
+  "djlint==1.46.2",
   "fakeredis==2.38.0",
   "ipdb==0.13.13",
   "jsbeautifier==2.0.3",                  # djlint requires 1.15.1 which is broken

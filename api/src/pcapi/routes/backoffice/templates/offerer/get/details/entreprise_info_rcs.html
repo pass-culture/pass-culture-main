@@ -36,9 +36,9 @@
             {% for observation in rcs_info.observations %}
               <li>
                 {%+ if observation.date +%}
-                {{ observation.date | format_date }} :
+                  {{ observation.date | format_date }} :
                 {%+ else +%}
-                Date inconnue :
+                  Date inconnue :
                 {%+ endif %}
                 {{ observation.label }}
               </li>

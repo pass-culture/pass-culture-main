@@ -6,9 +6,7 @@
        data-pc-ignore-if-query-args="true">
     {% for text, tooltip, value, checked in options %}
       <label class="form-check-label p-3 rounded d-flex {%+ if checked %} pc-display-selector-checked border border-primary {%+ else %} {% endif %}"
-             {%+ if width %}
-             style="width:{{ width }}"
-             {% endif +%}
+             {%+ if width %} style="width:{{ width }}" {% endif +%}
              for="{{ name }}-{{ loop.index }}">
         <input class="form-check-input me-3"
                type="radio"
@@ -18,7 +16,7 @@
                {% if checked %}checked{% endif %}>
         <div>
           <p class="mb-1 text-nowrap">{{ text | safe }}</p>
-          {% if tooltip %}<span class="fs-7 d-inline-block">{{ tooltip  | nl2br }}</span>{% endif %}
+          {% if tooltip %}<span class="fs-7 d-inline-block">{{ tooltip | nl2br }}</span>{% endif %}
         </div>
       </label>
     {% endfor %}
