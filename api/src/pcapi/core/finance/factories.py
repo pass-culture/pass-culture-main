@@ -14,6 +14,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 from pcapi.core.factories import BaseFactory
 from pcapi.core.finance import reimbursement_rules
+from pcapi.core.reference import models as reference_models
 from pcapi.utils import date as date_utils
 
 from . import api
@@ -258,9 +259,20 @@ class InvoiceFactory(BaseFactory[models.Invoice]):
         model = models.Invoice
 
     amount = 1000
-    reference = factory.Sequence("F26{:07}".format)
     token = factory.LazyFunction(secrets.token_urlsafe)
     status = models.InvoiceStatus.PAID
+
+    @classmethod
+    def _create(cls, model_class: type[models.Invoice], *args: typing.Any, **kwargs: typing.Any) -> models.Invoice:
+        # Use the same counter as real invoices so factory ones never duplicate their references
+        if kwargs.get("reference") is None:
+            scheme = reference_models.ReferenceScheme.get_and_lock(
+                name="invoice.reference", year=datetime.date.today().year
+            )
+            kwargs["reference"] = scheme.formatted_reference
+            scheme.increment_after_use()
+
+        return super()._create(model_class, *args, **kwargs)
 
 
 class CashflowBatchFactory(BaseFactory):
