@@ -2989,16 +2989,22 @@ def synchronize_accessibility_with_acceslibre(
     start_batch_index = start_from_batch - 1
     for i in range(start_batch_index, num_batches):
         venues_list = get_open_to_public_venues_with_accessibility_provider(batch_size=batch_size, batch_num=i)
+
+        updates_to_apply = []  # (venue, last_update, accessibility_data, slug, url)
+        providers_to_delete = []  # list providers when slug is lost
+
         for venue in venues_list:
-            assert venue.accessibilityProvider  # helps mypy, ensured by caller
+            assert venue.accessibilityProvider  # helps mypy
+            logger.info("Starting synchronisation for venue %d", venue.id)
             slug = venue.accessibilityProvider.externalAccessibilityId
+            url = venue.accessibilityProvider.externalAccessibilityUrl
             try:
                 last_update, accessibility_data = accessibility_provider.get_accessibility_infos(slug=slug)
             except accessibility_provider.AccesLibreApiException as e:
                 logger.exception(
                     "An error occurred while requesting Acceslibre widget for venue: %s, Error: %s", venue, e
                 )
-                return
+                continue
 
             # If last_update is not None: match still exist
             # Then we update accessibility data if :
@@ -3011,14 +3017,13 @@ def synchronize_accessibility_with_acceslibre(
                 or venue.accessibilityProvider.lastUpdateAtProvider.astimezone(pytz.utc)
                 < last_update.astimezone(pytz.utc)
             ):
-                venue.accessibilityProvider.lastUpdateAtProvider = last_update
-                venue.accessibilityProvider.externalAccessibilityData = (
-                    accessibility_data.dict() if accessibility_data else None
-                )
+                logger.info("New data at acceslibre on %s", last_update)
+                updates_to_apply.append((venue, last_update, accessibility_data, slug, url))
 
             # if last_update is None, the slug has been removed from acceslibre, we try a new match
             # and save accessibility data to DB
             elif not last_update:
+                logger.info("Slug not found at acceslibre, trying to find a new match")
                 try:
                     id_and_url_at_provider = accessibility_provider.get_id_at_accessibility_provider(
                         name=venue.name,
@@ -3031,50 +3036,56 @@ def synchronize_accessibility_with_acceslibre(
                     )
                 except accessibility_provider.AccesLibreApiException as e:
                     logger.exception("An error occurred while requesting Acceslibre for venue: %s, Error: %s", venue, e)
-                    return
+                    continue
+
                 if id_and_url_at_provider:
+                    logger.info("New match found with slug %s", slug)
                     new_slug = id_and_url_at_provider["slug"]
                     new_url = id_and_url_at_provider["url"]
                     try:
                         last_update, accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
                     except accessibility_provider.AccesLibreApiException as e:
-                        logger.exception(
-                            "An error occurred while requesting Acceslibre widget for venue: %s, Error: %s", venue, e
-                        )
-                        return
+                        logger.exception("Error requesting Acceslibre widget for venue: %s, Error: %s", venue, e)
+                        continue
+
                     if last_update and accessibility_data:
-                        venue.accessibilityProvider.externalAccessibilityId = new_slug
-                        venue.accessibilityProvider.externalAccessibilityUrl = new_url
-                        venue.accessibilityProvider.lastUpdateAtProvider = last_update
-                        venue.accessibilityProvider.externalAccessibilityData = (
-                            accessibility_data.dict() if accessibility_data else None
+                        logger.info("Updating accessibility data")
+                        #  updating with new slug
+                        updates_to_apply.append((venue, last_update, accessibility_data, new_slug, new_url))
+                        on_commit(
+                            partial(
+                                logger.info,
+                                "Acceslibre update synchronisation",
+                                extra={
+                                    "analyticsSource": "app-pro",
+                                    "venue_id": venue.id,
+                                    "acceslibre_slug": new_slug,
+                                    "update_message": "New slug found at acceslibre for already synchronized venue",
+                                    "feature": "acceslibre",
+                                    "action": "synchronisation.update",
+                                },
+                                technical_message_id="acceslibre.synchronisation.update",
+                            )
                         )
-                        logger.info(
-                            "Acceslibre update synchronisation",
+
+                else:
+                    logger.info("No match found, deleting link with acceslibre")
+                    providers_to_delete.append(venue.accessibilityProvider)
+                    on_commit(
+                        partial(
+                            logger.info,
+                            "Acceslibre synchronisation loss",
                             extra={
                                 "analyticsSource": "app-pro",
                                 "venue_id": venue.id,
                                 "acceslibre_slug": slug,
-                                "update_message": "New slug found at acceslibre for already synchronized venue",
+                                "update_message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
                                 "feature": "acceslibre",
-                                "action": "synchronisation.update",
+                                "action": "synchronisation.lost",
                             },
-                            technical_message_id="acceslibre.synchronisation.update",
+                            technical_message_id="acceslibre.synchronisation.lost",
                         )
-                else:
-                    logger.info(
-                        "Acceslibre synchronisation loss",
-                        extra={
-                            "analyticsSource": "app-pro",
-                            "venue_id": venue.id,
-                            "acceslibre_slug": slug,
-                            "update_message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
-                            "feature": "acceslibre",
-                            "action": "synchronisation.lost",
-                        },
-                        technical_message_id="acceslibre.synchronisation.lost",
                     )
-                    db.session.delete(venue.accessibilityProvider)
 
             # In case a venue is synchronized but has no data, we want to be informed
             if venue.accessibilityProvider and not venue.accessibilityProvider.externalAccessibilityData:
@@ -3086,11 +3097,34 @@ def synchronize_accessibility_with_acceslibre(
 
         if apply:
             try:
+                logger.info("Batch update AccessibilityProvider")
+                for venue, last_update, accessibility_data, slug, url in updates_to_apply:
+                    assert venue.accessibilityProvider  # helps mypy
+
+                    # only update new slug and url
+                    if venue.accessibilityProvider.externalAccessibilityId != slug:
+                        venue.accessibilityProvider.externalAccessibilityId = slug
+                        venue.accessibilityProvider.externalAccessibilityUrl = url
+                    venue.accessibilityProvider.lastUpdateAtProvider = last_update
+                    venue.accessibilityProvider.externalAccessibilityData = (
+                        accessibility_data.dict() if accessibility_data else None
+                    )
+
+                logger.info("Batch delete stale AccessibilityProvider")
+                for provider in providers_to_delete:
+                    db.session.delete(provider)
+
                 db.session.commit()
-            except sa.exc.SQLAlchemyError:
+            except sa_exc.SQLAlchemyError:
                 logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
         else:
+            logger.info(
+                "Dry-run batch %d complete (%d updates, %d deletions)",
+                i + 1,
+                len(updates_to_apply),
+                len(providers_to_delete),
+            )
             db.session.rollback()
 
         db.session.expunge_all()
@@ -3128,19 +3162,21 @@ def match_acceslibre(venue: offerers_models.Venue) -> None:
         )
 
     set_accessibility_infos_from_provider_id(venue)
-    logger.info(
-        "Acceslibre new synchronisation",
-        extra={
-            "analyticsSource": "app-pro",
-            "venue_id": venue.id,
-            "acceslibre_slug": venue.accessibilityProvider.externalAccessibilityId,
-            "update_message": "New entry found at acceslibre for this venue",
-            "feature": "acceslibre",
-            "action": "synchronisation.created",
-        },
-        technical_message_id="acceslibre.synchronisation.created",
+    on_commit(
+        partial(
+            logger.info,
+            "Acceslibre new synchronisation",
+            extra={
+                "analyticsSource": "app-pro",
+                "venue_id": venue.id,
+                "acceslibre_slug": venue.accessibilityProvider.externalAccessibilityId,
+                "update_message": "New entry found at acceslibre for this venue",
+                "feature": "acceslibre",
+                "action": "synchronisation.created",
+            },
+            technical_message_id="acceslibre.synchronisation.created",
+        )
     )
-    db.session.add(venue)
     db.session.commit()
 
 
