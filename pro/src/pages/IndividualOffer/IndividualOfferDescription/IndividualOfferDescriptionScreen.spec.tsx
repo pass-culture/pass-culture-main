@@ -43,7 +43,7 @@ import {
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 
-import { IndividualOfferDescriptionScreen } from './IndividualOfferDescriptionScreen'
+import { Component as IndividualOfferDescription } from './IndividualOfferDescription'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -184,7 +184,7 @@ const renderDetailsScreen = ({
 
   const element = (
     <IndividualOfferContext.Provider value={contextValue}>
-      <IndividualOfferDescriptionScreen />
+      <IndividualOfferDescription />
     </IndividualOfferContext.Provider>
   )
 
@@ -248,7 +248,7 @@ const userFillsEverything = async () => {
   )
 }
 
-describe('<IndividualOfferDescriptionScreen />', () => {
+describe('<IndividualOfferDescription />', () => {
   let contextValue: IndividualOfferContextValues
   const mockNavigate = vi.fn()
 
