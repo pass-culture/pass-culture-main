@@ -5,6 +5,7 @@ import sqlalchemy as sa
 from dateutil.relativedelta import relativedelta
 from pydantic import BaseModel as BaseModelV2
 
+from pcapi import settings
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors import api_particulier
 from pcapi.core.subscription import models as subscription_models
@@ -15,6 +16,7 @@ from pcapi.core.subscription.bonus.api import apply_for_quotient_familial_bonus
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
+from pcapi.utils import rate_limit as rate_limit_utils
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -195,7 +197,9 @@ def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> 
 
 
 def recover_started_bonus_credit_applications(
-    user_id: int | None = None, cutoff_time: datetime.datetime | None = None, page_size: int = 200
+    user_id: int | None = None,
+    cutoff_time: datetime.datetime | None = None,
+    page_size: int = settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD // 2,
 ) -> list[subscription_models.BeneficiaryFraudCheck]:
     """
     Recovers the `page_size` first started QF/AAH/AEEH fraud checks.
@@ -205,6 +209,22 @@ def recover_started_bonus_credit_applications(
     if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
         logger.warning("Trying to call recover_started_bonus_credit_applications with disabled FF")
         return []
+
+    is_currently_rate_limited = rate_limit_utils.get_rate_limit_lock_ttl(api_particulier.RATE_LIMIT_LOCK_KEY)
+    if is_currently_rate_limited:
+        logger.warning("API Particulier rate limit reached, returning early to respect Retry-After")
+        return []
+
+    remaining_bandwidth = rate_limit_utils.get_current_rate_limit_window_remaining_usage(
+        key=api_particulier.RATE_LIMIT_KEY,
+        time_window_size=api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE,
+        max_per_time_window=settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD,
+    )
+    if not remaining_bandwidth:
+        logger.warning("API Particulier client-side rate limit reached, returning early")
+        return []
+
+    page_size = min(page_size, remaining_bandwidth)
 
     started_bonus_fraud_check_stmt = sa.select(subscription_models.BeneficiaryFraudCheck).filter(
         subscription_models.BeneficiaryFraudCheck.type.in_(
