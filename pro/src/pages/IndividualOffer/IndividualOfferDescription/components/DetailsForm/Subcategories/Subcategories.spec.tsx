@@ -9,7 +9,7 @@ import {
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/types'
 
 import { Subcategories } from './Subcategories'
 

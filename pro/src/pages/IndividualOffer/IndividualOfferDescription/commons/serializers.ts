@@ -9,8 +9,8 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { normalizeRequestBodyProps } from '@/commons/utils/normalizeRequestBodyProps'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 
+import type { DetailsFormValues } from '../components/DetailsForm/types'
 import { EXTRA_DATA_FORM_FIELDS } from './constants'
-import type { DetailsFormValues } from './types'
 
 export const serializeDurationMinutes = (
   durationHour: string

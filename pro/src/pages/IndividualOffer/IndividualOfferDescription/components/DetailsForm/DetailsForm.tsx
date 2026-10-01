@@ -6,10 +6,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type {
-  CategoryResponseModel,
-  SubcategoryResponseModel,
-} from '@/apiClient/v1'
+import { type GetProductInformations, SubcategoryIdEnum } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -33,11 +30,12 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/types'
 import {
   getFormReadOnlyFields,
-  isSubCategoryCD,
-} from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
+  getInitialValuesFromOffer,
+  getInitialValuesFromVenueAndProduct,
+} from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/utils'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
 import {
@@ -49,27 +47,23 @@ import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
 import { Subcategories } from './Subcategories/Subcategories'
 
 type DetailsFormProps = {
-  initialValues: DetailsFormValues
+  product?: GetProductInformations
   isEanSearchDisplayed: boolean
-  filteredCategories: CategoryResponseModel[]
-  filteredSubcategories: SubcategoryResponseModel[]
   canClaimCulturalOutreach: boolean
   onSubcategoryChange: (subcategoryId: string | undefined) => void
 }
 
 export const DetailsForm = ({
-  initialValues,
+  product,
   isEanSearchDisplayed,
-  filteredCategories,
-  filteredSubcategories,
   canClaimCulturalOutreach,
   onSubcategoryChange,
 }: DetailsFormProps): JSX.Element => {
-  const { offer: initialOffer, hasPublishedOfferWithSameEan } =
+  const { offer, categories, subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const mode = useOfferWizardMode()
-  const offerIdRef = useRef(initialOffer?.id)
+  const offerIdRef = useRef(offer?.id)
   // Read by `afterSubmitState` so the success message is shown once the
   // destination page (or this same page) has taken over, instead of racing with the navigation.
   const hasSavedOfferRef = useRef(false)
@@ -78,10 +72,16 @@ export const DetailsForm = ({
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const navigate = useNavigate()
-  const isNewOfferDraft = !initialOffer
+  const isNewOfferDraft = !offer
 
   const form = useForm<DetailsFormValues>({
-    defaultValues: initialValues,
+    defaultValues: isNewOfferDraft
+      ? getInitialValuesFromVenueAndProduct(
+          selectedPartnerVenue,
+          product,
+          subCategories
+        )
+      : getInitialValuesFromOffer(offer, subCategories),
     resolver: yupResolver<DetailsFormValues, unknown, unknown>(
       // @ts-expect-error
       getValidationSchema()
@@ -187,7 +187,7 @@ export const DetailsForm = ({
   const hasSelectedProduct = !!form.watch('productId')
 
   const readOnlyFields = getFormReadOnlyFields(
-    initialOffer,
+    offer,
     hasSelectedProduct,
     selectedPartnerVenue
   )
@@ -253,15 +253,17 @@ export const DetailsForm = ({
           </FormLayout.Section>
           <Subcategories
             readOnlyFields={readOnlyFields}
-            filteredCategories={filteredCategories}
-            filteredSubcategories={filteredSubcategories}
+            filteredCategories={categories}
+            filteredSubcategories={subCategories}
             onSubcategoryChange={onSubcategoryChange}
           />
           {isSubCategorySelected && (
             <DetailsSubForm
               isEanSearchDisplayed={isEanSearchDisplayed}
               isProductBased={hasSelectedProduct}
-              isOfferCD={isSubCategoryCD(subcategoryId)}
+              isOfferCD={
+                subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD
+              }
               readOnlyFields={readOnlyFields}
             />
           )}
@@ -284,7 +286,7 @@ export const DetailsForm = ({
           dirtyForm={form.formState.isDirty || isNewOfferDraft}
           isDisabled={
             form.formState.isSubmitting ||
-            Boolean(initialOffer && isOfferDisabled(initialOffer)) ||
+            Boolean(offer && isOfferDisabled(offer)) ||
             hasPublishedOfferWithSameEan ||
             (!form.formState.isDirty && mode !== OFFER_WIZARD_MODE.CREATION)
           }

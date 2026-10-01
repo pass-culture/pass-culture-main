@@ -24,13 +24,13 @@ import styles from './DetailsEanSearch.module.scss'
 export type DetailsEanSearchProps = {
   required: boolean
   disabled: boolean
-  product?: Partial<GetProductInformations>
+  productEan: GetProductInformations['ean']
   onProductChange: (product: GetProductInformations | null) => void
   canClearProduct: boolean
 }
 
 export const DetailsEanSearch = ({
-  product,
+  productEan,
   onProductChange,
   canClearProduct,
   required,
@@ -49,7 +49,7 @@ export const DetailsEanSearch = ({
     setFocus,
     formState: { errors, isValid, isLoading },
   } = useForm<EanSearchForm>({
-    defaultValues: { eanSearch: product?.ean || '' },
+    defaultValues: { eanSearch: productEan || '' },
     resolver: yupResolver(generateEanSearchValidationSchema(required)),
     mode: 'onChange',
   })
@@ -107,7 +107,7 @@ export const DetailsEanSearch = ({
                 disabled={shouldInputBeDisabled}
                 required={required}
                 description="Format : EAN à 13 chiffres"
-                {...(canClearProduct && product?.id
+                {...(canClearProduct && productEan
                   ? {
                       iconButton: {
                         icon: fullCloseIcon,
@@ -134,7 +134,7 @@ export const DetailsEanSearch = ({
         </FormLayout>
       </form>
       <output className={styles['details-ean-search-callout']}>
-        {product?.id && <EanSearchCallout />}
+        {productEan && <EanSearchCallout />}
       </output>
     </>
   )
