@@ -997,6 +997,7 @@ def get_managed_venues(offerer_id: int) -> response_utils.BackofficeResponse:
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue.isReimbursementSuspended,
                 offerers_models.Venue.isSoftDeleted,
+                offerers_models.Venue.state,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,
