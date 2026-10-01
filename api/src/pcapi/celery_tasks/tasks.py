@@ -29,7 +29,7 @@ def celery_async_task(
     name: str,
     model: type[BaseModelV2] | None = None,
     autoretry_for: tuple[type[Exception], ...] = (),
-    retry_backoff: bool = True,
+    retry_backoff: bool | int = True,
     retry_backoff_max: int = settings.CELERY_TASK_RETRY_BACKOFF_MAX,
     max_retries: int = settings.CELERY_TASK_MAX_RETRIES,
     rate_limit: int | str | None = None,

@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from pydantic import BaseModel as BaseModelV2
 
 from pcapi.celery_tasks.tasks import celery_async_task
+from pcapi.connectors import api_particulier
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus.api import apply_for_adult_disability_bonus
@@ -24,13 +25,19 @@ class BonusTaskPayload(BaseModelV2):
     fraud_check_id: int
 
 
-RETRYABLE_EXCEPTIONS = ()
+RETRYABLE_EXCEPTIONS = (
+    api_particulier.ParticulierApiRateLimitExceeded,
+    api_particulier.ParticulierApiRequestConflict,
+)
 
 
 @celery_async_task(
     name="tasks.api_particulier.default.apply_for_quotient_familial_bonus",
     model=BonusTaskPayload,
     autoretry_for=RETRYABLE_EXCEPTIONS,
+    retry_backoff=api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE,
+    retry_backoff_max=api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE * 4,
+    max_retries=3,
 )
 def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
     if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
@@ -82,6 +89,9 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
     name="tasks.api_particulier.default.apply_for_adult_disability_bonus",
     model=BonusTaskPayload,
     autoretry_for=RETRYABLE_EXCEPTIONS,
+    retry_backoff=api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE,
+    retry_backoff_max=api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE * 4,
+    max_retries=3,
 )
 def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
     if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
@@ -133,6 +143,9 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
     name="tasks.api_particulier.default.apply_for_disabled_child_education_bonus",
     model=BonusTaskPayload,
     autoretry_for=RETRYABLE_EXCEPTIONS,
+    retry_backoff=api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE,
+    retry_backoff_max=api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE * 4,
+    max_retries=3,
 )
 def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> None:
     if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
