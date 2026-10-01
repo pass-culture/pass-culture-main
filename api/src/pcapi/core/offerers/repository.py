@@ -113,49 +113,6 @@ def get_ids_of_venues_with_offers(offererIds: list[int]) -> typing.Iterable[int]
     return [venue_id for (venue_id,) in venues]
 
 
-def get_filtered_venues(
-    pro_user_id: int,
-    active_offerers_only: bool | None = False,
-    offerer_id: int | None = None,
-    validated_offerer: bool | None = None,
-    with_bank_account: bool = False,
-) -> list[models.Venue]:
-    query = (
-        db.session.query(models.Venue)
-        .filter(
-            models.UserOfferer.userId == pro_user_id,
-            models.UserOfferer.isValidated,
-        )
-        .join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
-        .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
-        .options(sa_orm.joinedload(models.Venue.managingOfferer))
-        .options(sa_orm.joinedload(models.Venue.collectiveDomains))
-        .options(sa_orm.joinedload(models.Venue.accessibilityProvider))
-        .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
-    )
-
-    if validated_offerer is not None:
-        if validated_offerer:
-            query = query.filter(models.Offerer.isValidated)
-        else:
-            query = query.filter(models.Offerer.isWaitingForValidation)
-    else:
-        query = query.filter(sa.not_(models.Offerer.isRejected))
-
-    if active_offerers_only:
-        query = query.filter(models.Offerer.isActive.is_(True))
-
-    if offerer_id:
-        query = query.filter(models.Venue.managingOffererId == offerer_id)
-
-    if with_bank_account:
-        query = query.options(
-            sa_orm.selectinload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount)
-        )
-
-    return query.order_by(models.Venue.publicName).all()
-
-
 def find_offerer_by_siren(siren: str) -> models.Offerer | None:
     return db.session.query(models.Offerer).filter_by(siren=siren).one_or_none()
 
