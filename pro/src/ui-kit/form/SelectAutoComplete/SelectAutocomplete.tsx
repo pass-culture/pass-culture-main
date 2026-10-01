@@ -279,6 +279,7 @@ export const SelectAutocomplete = forwardRef(
               onKeyDown={handleKeyDown}
               type="search"
               disabled={disabled}
+              aria-invalid={Boolean(error)}
               aria-autocomplete="list"
               aria-controls={`list-${name}`}
               id={name}
