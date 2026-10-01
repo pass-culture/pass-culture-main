@@ -55,6 +55,7 @@ from .pro.settlement_rejected import send_settlement_rejected_email_to_pro
 from .pro.settlement_validated import send_settlement_validated_email_to_pro
 from .pro.signup_simulation_summary import send_signup_simulation_summary_email
 from .pro.venue_bank_account_link_deprecated import send_venue_bank_account_link_deprecated
+from .pro.venue_closure_request import send_venue_closure_request_email
 from .pro.venue_provider_deleted import send_venue_provider_deleted_email
 from .pro.venue_provider_disabled import send_venue_provider_disabled_email
 from .pro.welcome_to_pro import send_welcome_to_pro_email
