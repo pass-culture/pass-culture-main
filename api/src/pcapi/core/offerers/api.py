@@ -3202,26 +3202,31 @@ def match_venue_with_new_entries(
             db.session.add(venue.accessibilityProvider)
 
 
-def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_days_to_fetch: int = 7) -> None:
+def acceslibre_matching(
+    batch_size: int = 1000, apply: bool = False, start_from_batch: int = 0, n_days_to_fetch: int = 7
+) -> None:
     """
     For all venues opened to public, we are looking for a match at acceslibre
 
     If we use the --start-from-batch option, it will start synchronization from the given batch number
     Use case: synchronization has failed with message "Could not update batch <n>"
     """
-    synchronized_venues_count_before_matching = count_open_to_public_venues_with_accessibility_provider()
-    total_venues_without_provider = count_open_to_public_venues_without_accessibility_provider()
-    num_batches = ceil(total_venues_without_provider / batch_size)
-
-    if start_from_batch > num_batches:
-        logger.info("Start from batch must be less than %d", num_batches)
-        return
-
+    logger.info("Starting acceslibre matching to find new venue synchronization")
     results_list = []
-
+    # first http calls
     for activity in accessibility_provider.AcceslibreActivity:
         if results_by_activity := accessibility_provider.find_new_entries_by_activity(activity, n_days_to_fetch):
             results_list.extend(results_by_activity)
+
+    # then db updates
+    synchronized_venues_count_before_matching = count_open_to_public_venues_with_accessibility_provider()
+
+    # check batch size
+    total_venues_without_provider = count_open_to_public_venues_without_accessibility_provider()
+    num_batches = ceil(total_venues_without_provider / batch_size)
+    if start_from_batch > num_batches:
+        logger.info("Start from batch must be less than %d", num_batches)
+        return
 
     start_batch_index = start_from_batch - 1
 
