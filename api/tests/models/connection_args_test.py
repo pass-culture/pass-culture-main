@@ -3,7 +3,12 @@ import pytest
 from pcapi.models import get_db_connection_args
 
 
-NO_SSL = dict(DATABASE_SSLMODE=None, DATABASE_SSLROOTCERT=None, DATABASE_SSLCERT=None, DATABASE_SSLKEY=None)
+NO_SSL = {
+    "DATABASE_SSLMODE": None,
+    "DATABASE_SSLROOTCERT": None,
+    "DATABASE_SSLCERT": None,
+    "DATABASE_SSLKEY": None,
+}
 
 
 class GetDbConnectionArgsTest:
@@ -16,15 +21,17 @@ class GetDbConnectionArgsTest:
         args = get_db_connection_args(["-c lock_timeout=5000", "-c statement_timeout=60000"])
         assert args == {"options": "-c lock_timeout=5000 -c statement_timeout=60000"}
 
-    @pytest.mark.settings(**NO_SSL, DATABASE_SSLMODE="verify-ca")
+    @pytest.mark.settings(**NO_SSL, **{"DATABASE_SSLMODE": "verify-ca"})
     def test_sslmode_only(self):
         args = get_db_connection_args([])
 
         assert args == {"sslmode": "verify-ca"}
 
-    @pytest.mark.settings(**NO_SSL, DATABASE_SSLMODE="require")
+    @pytest.mark.settings(**NO_SSL, **{"DATABASE_SSLMODE": "require"})
     def test_options_and_sslmode(self):
-        assert get_db_connection_args(["-c lock_timeout=5000"]) == {
+        args = get_db_connection_args(["-c lock_timeout=5000"])
+
+        assert args == {
             "options": "-c lock_timeout=5000",
             "sslmode": "require",
         }
@@ -36,7 +43,9 @@ class GetDbConnectionArgsTest:
         DATABASE_SSLKEY="/etc/pcapi/pg-tls/client.key",
     )
     def test_sslmode_and_certificates(self):
-        assert get_db_connection_args([]) == {
+        args = get_db_connection_args([])
+
+        assert args == {
             "sslmode": "verify-ca",
             "sslrootcert": "/etc/pcapi/pg-tls/root.crt",
             "sslcert": "/etc/pcapi/pg-tls/client.crt",
