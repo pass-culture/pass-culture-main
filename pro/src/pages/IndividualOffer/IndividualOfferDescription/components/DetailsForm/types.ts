@@ -1,8 +1,4 @@
-import type {
-  ArtistOfferLinkResponseModel,
-  GetIndividualOfferResponseModel,
-  SubcategoryResponseModel,
-} from '@/apiClient/v1'
+import type { ArtistOfferLinkResponseModel } from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 
 // TODO (igabriele, 2025-07-24): Make this type stricter (regarding optionals & null vs undefined).
@@ -29,9 +25,4 @@ export type DetailsFormValues = {
   productId?: string
   callId?: string
   accessibility?: AccessibilityFormValues
-}
-
-export type SetDefaultInitialValuesFromOfferProps = {
-  offer: GetIndividualOfferResponseModel
-  subcategories: SubcategoryResponseModel[]
 }

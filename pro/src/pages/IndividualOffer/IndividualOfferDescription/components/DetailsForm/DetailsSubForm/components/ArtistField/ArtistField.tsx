@@ -10,7 +10,7 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/types'
 import { ApiSelect } from '@/ui-kit/form/ApiSelect/ApiSelect'
 
 import styles from './ArtistField.module.scss'
