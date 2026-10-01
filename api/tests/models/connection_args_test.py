@@ -3,8 +3,7 @@ import pytest
 from pcapi.models import get_db_connection_args
 
 
-NO_SSL = {
-    "DATABASE_SSLMODE": None,
+NO_SSL_CERTIFICATES = {
     "DATABASE_SSLROOTCERT": None,
     "DATABASE_SSLCERT": None,
     "DATABASE_SSLKEY": None,
@@ -12,22 +11,22 @@ NO_SSL = {
 
 
 class GetDbConnectionArgsTest:
-    @pytest.mark.settings(**NO_SSL)
+    @pytest.mark.settings(DATABASE_SSLMODE=None, **NO_SSL_CERTIFICATES)
     def test_no_options_and_no_sslmode(self):
         assert get_db_connection_args([]) == {}
 
-    @pytest.mark.settings(**NO_SSL)
+    @pytest.mark.settings(DATABASE_SSLMODE=None, **NO_SSL_CERTIFICATES)
     def test_options_only(self):
         args = get_db_connection_args(["-c lock_timeout=5000", "-c statement_timeout=60000"])
         assert args == {"options": "-c lock_timeout=5000 -c statement_timeout=60000"}
 
-    @pytest.mark.settings(**NO_SSL, **{"DATABASE_SSLMODE": "verify-ca"})
+    @pytest.mark.settings(DATABASE_SSLMODE="verify-ca", **NO_SSL_CERTIFICATES)
     def test_sslmode_only(self):
         args = get_db_connection_args([])
 
         assert args == {"sslmode": "verify-ca"}
 
-    @pytest.mark.settings(**NO_SSL, **{"DATABASE_SSLMODE": "require"})
+    @pytest.mark.settings(DATABASE_SSLMODE="require", **NO_SSL_CERTIFICATES)
     def test_options_and_sslmode(self):
         args = get_db_connection_args(["-c lock_timeout=5000"])
 
