@@ -13,9 +13,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import structure_signup_api
-from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import public_information_serialize
@@ -110,9 +108,6 @@ def get_structure_data(search_input: str) -> sirene_serialize.StructureDataBodyM
     api=blueprint.pro_schema,
 )
 def check_structure(search_input: str) -> None:
-    if not feature.FeatureToggle.WIP_PRE_SIGNUP_SIMULATION.is_active():
-        raise resource_not_found_error()
-
     if not api_entreprise.is_valid_siret(search_input):
         raise sirene_exceptions.InvalidFormatException()
 
@@ -144,9 +139,6 @@ def check_structure(search_input: str) -> None:
 def simulate_signup(
     body: sirene_serialize.SignupSimulationPayload,
 ) -> sirene_serialize.SignupSimulationResponseModel:
-    if not feature.FeatureToggle.WIP_PRE_SIGNUP_SIMULATION.is_active():
-        raise resource_not_found_error()
-
     try:
         data = offerers_api.find_structure_data(body.siret)
     except offerers_exceptions.InactiveSirenException:
@@ -179,9 +171,6 @@ def simulate_signup(
     api=blueprint.pro_schema,
 )
 def send_signup_simulation_summary(body: sirene_serialize.SignupSimulationSummaryPayload) -> None:
-    if not feature.FeatureToggle.WIP_PRE_SIGNUP_SIMULATION.is_active():
-        raise resource_not_found_error()
-
     try:
         data = offerers_api.find_structure_data(body.siret)
     except offerers_exceptions.InactiveSirenException:
