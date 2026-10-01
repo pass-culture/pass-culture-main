@@ -24,7 +24,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
-BATCH_SIZE = 1000
+BATCH_SIZE = 100
 
 
 @blueprint.cli.command("check_active_offerers")
