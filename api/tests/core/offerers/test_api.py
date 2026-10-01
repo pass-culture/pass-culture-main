@@ -3665,15 +3665,19 @@ class AccessibilityProviderTest:
         assert venue.accessibilityProvider.externalAccessibilityUrl == "https://example.com/mock-slug"
 
     def test_synchronize_accessibility_provider_no_data(self):
-        venue = offerers_factories.VenueFactory(name="Une librairie de test")
+        venue = offerers_factories.VenueFactory(name="Une librairie de test", isOpenToPublic=True)
         accessibility_provider = offerers_factories.AccessibilityProviderFactory(
             venue=venue, externalAccessibilityData=None
         )
-        offerers_api.synchronize_accessibility_provider(venue)
+        accessibility_provider_id = accessibility_provider.id
+
+        offerers_api.synchronize_accessibility_with_acceslibre(apply=True)
+
+        accessibility_provider = db.session.get(offerers_models.AccessibilityProvider, accessibility_provider_id)
         assert accessibility_provider.externalAccessibilityData is not None
 
     def test_synchronize_accessibility_provider_with_new_update(self):
-        venue = offerers_factories.VenueFactory(name="Une librairie de test")
+        venue = offerers_factories.VenueFactory(name="Une librairie de test", isOpenToPublic=True)
         accessibility_provider = offerers_factories.AccessibilityProviderFactory(
             venue=venue, lastUpdateAtProvider=datetime.datetime(2023, 2, 1)
         )
@@ -3681,11 +3685,14 @@ class AccessibilityProviderTest:
         accessibility_provider.externalAccessibilityData["audio_description"] = (
             acceslibre_connector.ExpectedFieldsEnum.AUDIODESCRIPTION_NO_DEVICE
         )
+        accessibility_provider_id = accessibility_provider.id
 
         # Synchronize should happen as provider last update is more recent than accessibility_provider.lastUpdateAtProvider
-        offerers_api.synchronize_accessibility_provider(venue)
+        offerers_api.synchronize_accessibility_with_acceslibre(apply=True)
+
+        accessibility_provider = db.session.get(offerers_models.AccessibilityProvider, accessibility_provider_id)
         assert accessibility_provider.externalAccessibilityData["audio_description"] == [
-            acceslibre_connector.ExpectedFieldsEnum.AUDIODESCRIPTION_OCCASIONAL
+            acceslibre_connector.ExpectedFieldsEnum.AUDIODESCRIPTION_OCCASIONAL.value
         ]
 
     @patch("pcapi.connectors.acceslibre.get_accessibility_infos")
@@ -3693,7 +3700,7 @@ class AccessibilityProviderTest:
     def test_synchronize_accessibility_provider_with_new_slug(
         self, mock_get_id_at_accessibility_provider, mock_get_accessibility_infos
     ):
-        venue = offerers_factories.VenueFactory(name="Une librairie de test")
+        venue = offerers_factories.VenueFactory(name="Une librairie de test", isOpenToPublic=True)
         mock_get_id_at_accessibility_provider.side_effect = [
             acceslibre_connector.AcceslibreInfos(slug="nouveau-slug", url="https://nouvelle.adresse/nouveau-slug")
         ]
@@ -3709,7 +3716,11 @@ class AccessibilityProviderTest:
         accessibility_provider = offerers_factories.AccessibilityProviderFactory(
             venue=venue, externalAccessibilityId="slug-qui-n-existe-plus"
         )
-        offerers_api.synchronize_accessibility_provider(venue, force_sync=True)
+        accessibility_provider_id = accessibility_provider.id
+
+        offerers_api.synchronize_accessibility_with_acceslibre(apply=True, force_sync=True)
+        accessibility_provider = db.session.get(offerers_models.AccessibilityProvider, accessibility_provider_id)
+
         assert accessibility_provider.externalAccessibilityId == "nouveau-slug"
         assert accessibility_provider.externalAccessibilityUrl == "https://nouvelle.adresse/nouveau-slug"
 
