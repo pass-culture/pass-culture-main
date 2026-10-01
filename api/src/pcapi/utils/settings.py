@@ -45,9 +45,7 @@ def check_database_ssl_settings(
     """Raise a ValueError if the database SSL settings are inconsistent."""
 
     if sslmode and sslmode not in DATABASE_ALLOWED_SSLMODES:
-        raise ValueError(
-            f"Invalid DATABASE_SSLMODE: {sslmode}. Allowed values: {', '.join(DATABASE_ALLOWED_SSLMODES)}"
-        )
+        raise ValueError(f"Invalid DATABASE_SSLMODE: {sslmode}. Allowed values: {', '.join(DATABASE_ALLOWED_SSLMODES)}")
 
     if sslmode in ("verify-ca", "verify-full"):
         missing_settings = [
