@@ -222,8 +222,8 @@ importers:
         specifier: 1.19.10
         version: 1.19.10(@algolia/client-search@5.59.0)(algoliasearch@5.59.0)(search-insights@2.17.3)
       '@algolia/autocomplete-preset-algolia':
-        specifier: 1.19.10
-        version: 1.19.10(@algolia/client-search@5.59.0)(algoliasearch@5.59.0)
+        specifier: 1.19.11
+        version: 1.19.11(@algolia/client-search@5.59.0)(algoliasearch@5.59.0)
       '@firebase/analytics':
         specifier: 0.10.25
         version: 0.10.25(@firebase/app@0.16.2)
@@ -497,8 +497,20 @@ packages:
       '@algolia/client-search': '>= 4.9.1 < 6'
       algoliasearch: '>= 4.9.1 < 6'
 
+  '@algolia/autocomplete-preset-algolia@1.19.11':
+    resolution: {integrity: sha512-N5VnODgGow3wNJSEhJzYdKoUvjRtI3b9utmPUWBhebMWIicfYj66nc/xozLiuTFq3mT8ns92zrOqFC69BLjN7A==}
+    peerDependencies:
+      '@algolia/client-search': '>= 4.9.1 < 6'
+      algoliasearch: '>= 4.9.1 < 6'
+
   '@algolia/autocomplete-shared@1.19.10':
     resolution: {integrity: sha512-vGJ2MDLgDOK3k256ks6t8u07bX4jdRQ0B/8MuRjjcvGTveVWwOU5lNd564uyuuqPMXQITl03HJx/juMtIFcQRw==}
+    peerDependencies:
+      '@algolia/client-search': '>= 4.9.1 < 6'
+      algoliasearch: '>= 4.9.1 < 6'
+
+  '@algolia/autocomplete-shared@1.19.11':
+    resolution: {integrity: sha512-9oYPEMmMAH+/EDUGKJJ6oX6JI7YNq7tmWTxEbe8r/qmZnM5BoJSzo8C3Wa2Kc/EPyBJjFrjw7qwo7huzqAYW0g==}
     peerDependencies:
       '@algolia/client-search': '>= 4.9.1 < 6'
       algoliasearch: '>= 4.9.1 < 6'
@@ -4737,7 +4749,18 @@ snapshots:
       '@algolia/client-search': 5.59.0
       algoliasearch: 5.59.0
 
+  '@algolia/autocomplete-preset-algolia@1.19.11(@algolia/client-search@5.59.0)(algoliasearch@5.59.0)':
+    dependencies:
+      '@algolia/autocomplete-shared': 1.19.11(@algolia/client-search@5.59.0)(algoliasearch@5.59.0)
+      '@algolia/client-search': 5.59.0
+      algoliasearch: 5.59.0
+
   '@algolia/autocomplete-shared@1.19.10(@algolia/client-search@5.59.0)(algoliasearch@5.59.0)':
+    dependencies:
+      '@algolia/client-search': 5.59.0
+      algoliasearch: 5.59.0
+
+  '@algolia/autocomplete-shared@1.19.11(@algolia/client-search@5.59.0)(algoliasearch@5.59.0)':
     dependencies:
       '@algolia/client-search': 5.59.0
       algoliasearch: 5.59.0
