@@ -1153,7 +1153,7 @@ wheels = [
 
 [[package]]
 name = "google-cloud-bigquery"
-version = "3.45.1"
+version = "3.45.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "google-api-core", extra = ["grpc"] },
@@ -1164,9 +1164,9 @@ dependencies = [
     { name = "python-dateutil" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/60/f6/e12217ae9518d35e014b2302ddd3a7e047c0854c692e536395c12eb4f81c/google_cloud_bigquery-3.45.1.tar.gz", hash = "sha256:f89bb9d1d546b7495a4c3baaea4f2d56c336a4e06581a19acd8eb8547266e591", size = 528170, upload-time = "2026-09-14T18:52:49.522Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/47/d2/8a1d3b94ebab86003661b5264882f2f2d9596b33c77a5c994f3761f4e0ef/google_cloud_bigquery-3.45.2.tar.gz", hash = "sha256:9342158e1a413c66b44b676a42c79cb8d1750da3971b957b267c9327749b4723", size = 529264, upload-time = "2026-09-17T20:30:15.507Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5c/ce/89915c377eaffca9d509e64631185254fa8e07f0fedd3fb749a31f9f7915/google_cloud_bigquery-3.45.1-py3-none-any.whl", hash = "sha256:d58c1b77b7c5ae1a405be7c5341e78ebf61f352173393cf35ef722c1432e6a73", size = 267691, upload-time = "2026-09-14T18:52:27.798Z" },
+    { url = "https://files.pythonhosted.org/packages/2f/64/fc977715bb54d78e4863d705eb6013241ade24247f1373a2be20e05cf6e3/google_cloud_bigquery-3.45.2-py3-none-any.whl", hash = "sha256:6920be2d7199810e2472be58204d7787dcf3cf677a21e682d5c636bae1b082ea", size = 267839, upload-time = "2026-09-17T20:29:41.9Z" },
 ]
 
 [[package]]
@@ -2073,7 +2073,7 @@ requires-dist = [
     { name = "geoalchemy2", specifier = "==0.20.0" },
     { name = "google-api-python-client", specifier = "==2.200.0" },
     { name = "google-auth", specifier = "==2.58.0" },
-    { name = "google-cloud-bigquery", specifier = "==3.45.1" },
+    { name = "google-cloud-bigquery", specifier = "==3.45.2" },
     { name = "google-cloud-iam", specifier = "==2.25.0" },
     { name = "google-cloud-secret-manager", specifier = ">=2.30.0" },
     { name = "google-cloud-storage", specifier = "==3.14.1" },
