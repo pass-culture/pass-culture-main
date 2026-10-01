@@ -303,3 +303,53 @@ class RecoverStartedBonusCreditApplicationsTest:
         tasks.recover_started_bonus_credit_applications(page_size=11)
 
         mocked_apply_for_qf_task.assert_not_called()
+
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.apply_async")
+    def test_recovery_respects_retry_after_lock(
+        self, mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, mocked_apply_for_qf_task, requests_mock
+    ):
+        subscription_factories.QFBonusCreditFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED
+        )
+        subscription_factories.AAHBonusCreditFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED
+        )
+        subscription_factories.AEEHBonusCreditFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED
+        )
+
+        # we got rate limited
+        person = subscription_factories.BonusCreditPersonFactory.create()
+        requests_mock.get(
+            api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
+            status_code=429,
+            headers={"retry-after": "37"},
+        )
+
+        with pytest.raises(api_particulier.ParticulierApiRateLimitExceeded):
+            api_particulier.get_quotient_familial(person)
+
+        tasks.recover_started_bonus_credit_applications()
+
+        mocked_apply_for_qf_task.assert_not_called()
+        mocked_apply_for_aah_task.assert_not_called()
+        mocked_apply_for_aeeh_task.assert_not_called()
+
+    @patch("pcapi.utils.rate_limit.get_current_rate_limit_window_remaining_usage")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.apply_async")
+    def test_recovery_respects_current_bandwidth(
+        self, mocked_apply_for_aah_task, mocked_get_rate_limit_remaining_usage, requests_mock
+    ):
+        subscription_factories.AAHBonusCreditFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED
+        )
+        subscription_factories.AAHBonusCreditFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED
+        )
+        mocked_get_rate_limit_remaining_usage.return_value = 1
+
+        tasks.recover_started_bonus_credit_applications()
+
+        mocked_apply_for_aah_task.assert_called_once()

@@ -13,7 +13,6 @@ from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
 from pcapi.utils import rate_limit as rate_limit_utils
 from pcapi.utils import requests
-from pcapi.utils.redis import get_redis_client
 from pcapi.utils.requests import Response
 
 
@@ -124,7 +123,7 @@ def api_particulier_rate_limited[**P, T](func: typing.Callable[P, T]) -> typing.
 
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
-        remaining_lock_seconds = _get_rate_limit_lock_ttl(RATE_LIMIT_LOCK_KEY)
+        remaining_lock_seconds = rate_limit_utils.get_rate_limit_lock_ttl(RATE_LIMIT_LOCK_KEY)
         if remaining_lock_seconds:
             raise ParticulierApiRateLimitExceeded("API Particulier is rate limiting us", status_code=429)
 
@@ -138,19 +137,12 @@ def api_particulier_rate_limited[**P, T](func: typing.Callable[P, T]) -> typing.
         except rate_limit_utils.RateLimitedError as e:
             raise ParticulierApiRateLimitExceeded("Client side rate limit reached", status_code=429) from e
         except ParticulierApiRateLimitExceeded as e:
-            _lock_until_rate_limit_reset(RATE_LIMIT_LOCK_KEY, e.retry_after or RATE_LIMIT_TIME_WINDOW_SIZE)
+            rate_limit_utils.lock_until_rate_limit_reset(
+                RATE_LIMIT_LOCK_KEY, e.retry_after or RATE_LIMIT_TIME_WINDOW_SIZE
+            )
             raise
 
     return wrapper
-
-
-def _get_rate_limit_lock_ttl(lock_key: str) -> int:
-    # `ttl` returns a negative value when the key has no expiry (-1) or does not exist (-2)
-    return max(0, get_redis_client().ttl(lock_key))
-
-
-def _lock_until_rate_limit_reset(lock_key: str, retry_after: int) -> None:
-    get_redis_client().set(lock_key, "1", ex=retry_after)
 
 
 @api_particulier_rate_limited
