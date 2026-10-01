@@ -155,6 +155,26 @@ class ListOffersTest(GetEndpointHelper):
         assert html_parser.count_table_rows(response.data) == 0
 
     @pytest.mark.parametrize(
+        "bo_user,llm_search_expected",
+        [
+            ("legit_user", True),
+            ("read_only_bo_user", False),
+        ],
+    )
+    def test_llm_search_display_depends_on_permission(
+        self, client, legit_user, read_only_bo_user, bo_user, llm_search_expected
+    ):
+        user = locals()[bo_user]
+        client = client.with_bo_session_auth(user)
+        with assert_num_queries(self.expected_num_queries_with_no_result - 1):
+            response = client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        soup = html_parser.get_soup(response.data)
+        assert bool(soup.find("input", value="llm-search-container")) is llm_search_expected
+        assert bool(soup.find(id="llm-search-container")) is llm_search_expected
+
+    @pytest.mark.parametrize(
         "admin_user,stock_data_expected,tag_data_expected,fraud_rules_expected,fraud_data_expected",
         [
             ("read_only_bo_user", True, False, False, False),
@@ -2182,7 +2202,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
 
 class ListLlmOffersTest(GetEndpointHelper):
     endpoint = "backoffice.offer.list_llm_offers"
-    needed_permission = perm_models.Permissions.READ_OFFERS
+    needed_permission = perm_models.Permissions.SEMANTIC_SEARCH_OFFERS
 
     # - fetch session + user (1 query)
     expected_num_queries_with_no_result = 1

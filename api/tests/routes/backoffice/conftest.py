@@ -179,6 +179,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "data": [
         perm_models.Permissions.READ_OFFERS,
+        perm_models.Permissions.SEMANTIC_SEARCH_OFFERS,
         perm_models.Permissions.MANAGE_ARTISTS,
     ],
     "partenaire_technique": [
@@ -268,6 +269,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_OFFERS,
+        perm_models.Permissions.SEMANTIC_SEARCH_OFFERS,
         perm_models.Permissions.MANAGE_OFFERS,
         perm_models.Permissions.MANAGE_ARTISTS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
