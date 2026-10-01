@@ -42,7 +42,9 @@ interface SigninApiErrorResponse {
 // just remove this temporary component and directly use the <FullLayout> inside <SignIn>’s render
 const SigninFullLayout = ({ children }: { children: React.ReactNode }) => (
   <FullLayout verticallyCenteredContent>
-    <div className={styles['signin-wrapper']}>{children}</div>
+    <div className={styles['signin-wrapper']} data-testid="signin-full-layout">
+      {children}
+    </div>
   </FullLayout>
 )
 

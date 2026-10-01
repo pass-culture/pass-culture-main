@@ -38,7 +38,12 @@ const LostPasswordFullLayout = ({
   children: React.ReactNode
 }) => (
   <FullLayout verticallyCenteredContent>
-    <div className={styles['lostpassword-wrapper']}>{children}</div>
+    <div
+      className={styles['lostpassword-wrapper']}
+      data-testid="lost-password-full-layout"
+    >
+      {children}
+    </div>
   </FullLayout>
 )
 

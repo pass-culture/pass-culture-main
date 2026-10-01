@@ -6,7 +6,10 @@ import { axe } from 'vitest-axe'
 import { api } from '@/apiClient/api'
 import { RECAPTCHA_ERROR } from '@/commons/core/shared/constants'
 import * as utils from '@/commons/utils/recaptcha'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import {
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { LostPassword } from './LostPassword'
@@ -18,16 +21,41 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const renderLostPassword = () => {
+const renderLostPassword = (options?: RenderWithProvidersOptions) => {
   return renderWithProviders(
     <>
       <LostPassword />
       <SnackBarContainer />
-    </>
+    </>,
+    options
   )
 }
 
 describe('LostPassword', () => {
+  describe('FF WIP_PRE_SIGNUP_SIMULATION', () => {
+    it('should use FullLayout when FF is enabled', () => {
+      renderLostPassword({
+        features: ['WIP_PRE_SIGNUP_SIMULATION'],
+      })
+
+      expect(
+        screen.getByTestId('lost-password-full-layout')
+      ).toBeInTheDocument()
+      expect(screen.queryByTestId('sign-up-header')).not.toBeInTheDocument()
+    })
+
+    it('should use default layout when FF is disabled', () => {
+      renderLostPassword({
+        features: [],
+      })
+
+      expect(
+        screen.queryByTestId('lost-password-full-layout')
+      ).not.toBeInTheDocument()
+      expect(screen.getByTestId('sign-up-header')).toBeInTheDocument()
+    })
+  })
+
   describe('when user arrive on reset password page', () => {
     it('should render without accessibility violations', async () => {
       const { container } = renderLostPassword()

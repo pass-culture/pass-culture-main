@@ -4,7 +4,10 @@ import { Route, Routes } from 'react-router'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import {
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 
 import { ResetPassword } from './ResetPassword'
 
@@ -37,18 +40,63 @@ vi.mock('@/commons/hooks/useSnackBar', async () => ({
   }),
 }))
 
-const renderLostPassword = (url: string) => {
+const renderLostPassword = (
+  url: string,
+  options?: RenderWithProvidersOptions
+) => {
   return renderWithProviders(
     <Routes>
       <Route path="/demande-mot-de-passe/:token" element={<ResetPassword />} />
     </Routes>,
     {
       initialRouterEntries: [url],
+      ...options,
     }
   )
 }
 
 describe('ResetPassword', () => {
+  describe('FF WIP_PRE_SIGNUP_SIMULATION', () => {
+    it('should use FullLayout when FF is enabled', async () => {
+      const url = '/demande-mot-de-passe/ABC'
+      const tokenCheck = Promise.resolve()
+
+      vi.spyOn(api, 'postCheckToken').mockReturnValue(tokenCheck)
+
+      renderLostPassword(url, {
+        features: ['WIP_PRE_SIGNUP_SIMULATION'],
+      })
+
+      await act(async () => {
+        await tokenCheck
+      })
+
+      expect(
+        screen.getByTestId('reset-password-full-layout')
+      ).toBeInTheDocument()
+
+      expect(screen.queryByTestId('sign-up-header')).not.toBeInTheDocument()
+    })
+
+    it('should use default layout when FF is disabled', async () => {
+      const url = '/demande-mot-de-passe/ABC'
+      const tokenCheck = Promise.resolve()
+
+      vi.spyOn(api, 'postCheckToken').mockReturnValue(tokenCheck)
+
+      renderLostPassword(url)
+
+      await act(async () => {
+        await tokenCheck
+      })
+
+      expect(
+        screen.queryByTestId('reset-password-full-layout')
+      ).not.toBeInTheDocument()
+      expect(screen.getByTestId('sign-up-header')).toBeInTheDocument()
+    })
+  })
+
   it('should render without accessibility violations', async () => {
     const url = '/demande-mot-de-passe/ABC'
     const tokenCheck = Promise.resolve()
