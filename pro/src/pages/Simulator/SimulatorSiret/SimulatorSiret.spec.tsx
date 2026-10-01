@@ -27,8 +27,7 @@ const renderSimulatorSiret = () => {
   return renderWithProviders(
     <SimulatorContext.Provider value={contextValue}>
       <SimulatorSiret />
-    </SimulatorContext.Provider>,
-    { features: ['WIP_PRE_SIGNUP_SIMULATION'] }
+    </SimulatorContext.Provider>
   )
 }
 

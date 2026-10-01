@@ -6,10 +6,6 @@ import {
   SignupJourneyContextProvider,
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { SignupJourneyStepper } from '@/components/SignupJourneyStepper/SignupJourneyStepper'
-
-import styles from './SignupJourneyRoutes.module.scss'
 
 export const SignupJourneyRoutes = () => {
   useEffect(() => {
@@ -27,9 +23,6 @@ export const SignupJourneyRoutes = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const { offerer, setOfferer } = useSignupJourneyContext()
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
 
   useEffect(() => {
     if (!location.pathname.includes('/inscription/structure/recherche')) {
@@ -43,20 +36,7 @@ export const SignupJourneyRoutes = () => {
   return (
     <FullLayout>
       <SignupJourneyContextProvider>
-        {isSignupSimulationEnabled ? (
-          <Outlet />
-        ) : (
-          // TODO: (jclery, 2026-04-29): Remove all of this with WIP_PRE_SIGNUP_SIMULATION once the feature is enabled
-          <div className={styles['content-with-stepper']}>
-            {location.pathname.includes(
-              '/inscription/structure/rattachement'
-            ) ? null : (
-              <h1 className={styles['title']}>Votre structure</h1>
-            )}
-            <SignupJourneyStepper />
-            <Outlet />
-          </div>
-        )}
+        <Outlet />
       </SignupJourneyContextProvider>
     </FullLayout>
   )

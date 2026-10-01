@@ -525,7 +525,6 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Renseignez votre SIRET',
     },
-    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
     children: routesSimulator,
   },
   {

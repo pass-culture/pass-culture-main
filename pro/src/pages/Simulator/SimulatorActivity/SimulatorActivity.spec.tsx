@@ -27,8 +27,7 @@ const renderSimulatorActivity = () => {
   return renderWithProviders(
     <SimulatorContext.Provider value={contextValue}>
       <SimulatorActivity />
-    </SimulatorContext.Provider>,
-    { features: ['WIP_PRE_SIGNUP_SIMULATION'] }
+    </SimulatorContext.Provider>
   )
 }
 

@@ -111,7 +111,7 @@ describe('<SiretInputForm />', () => {
     renderInputForm()
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678999999'
     )
 
@@ -144,7 +144,7 @@ describe('<SiretInputForm />', () => {
     )
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678999999'
     )
 
@@ -176,7 +176,7 @@ describe('<SiretInputForm />', () => {
     renderInputForm()
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678999999'
     )
 
@@ -217,14 +217,14 @@ describe('<SiretInputForm />', () => {
     ).not.toBeInTheDocument()
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933367'
     )
 
     await waitFor(() => {
-      expect(
-        screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)
-      ).toHaveValue('12345678933367')
+      expect(screen.getByLabelText(/Numéro de SIRET/)).toHaveValue(
+        '12345678933367'
+      )
     })
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
@@ -256,7 +256,7 @@ describe('<SiretInputForm />', () => {
     renderInputForm()
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
@@ -272,10 +272,7 @@ describe('<SiretInputForm />', () => {
   it.each(lenErrorCondition)('should render errors', async (siretValue) => {
     renderInputForm()
 
-    await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
-      siretValue
-    )
+    await userEvent.type(screen.getByLabelText(/Numéro de SIRET/), siretValue)
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
     await waitFor(() => {
       expect(screen.getAllByRole('alert')[0]).toHaveTextContent(
@@ -289,7 +286,7 @@ describe('<SiretInputForm />', () => {
     renderInputForm()
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
@@ -324,7 +321,7 @@ describe('<SiretInputForm />', () => {
     )
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678999999'
     )
 
