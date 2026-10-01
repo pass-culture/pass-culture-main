@@ -40,7 +40,7 @@ export async function goBackToHub(page: Page) {
 export async function joinExistingVenueSpace(page: Page, siret: string) {
   await page.goto('/inscription/structure/recherche')
   await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
-  await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(siret)
+  await page.getByLabel(/Numéro de SIRET/).fill(siret)
 
   const venuesSiretPromise = page.waitForResponse(
     (response) =>

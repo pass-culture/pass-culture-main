@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import cn from 'classnames'
 import { useCallback, useEffect, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate, useSearchParams } from 'react-router'
@@ -19,15 +18,12 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useLogEventOnUnload } from '@/commons/hooks/useLogEventOnUnload'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
-import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
 import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
-import { OperatingProcedures } from './OperationProcedures/OperationProcedures'
 import styles from './SignupContainer.module.scss'
 import { SignupForm } from './SignupForm'
 import { validationSchema } from './validationSchema'
@@ -54,10 +50,7 @@ export const SignupContainer = (): JSX.Element => {
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
-  const [searchParams, _setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
 
   useInitReCaptcha()
 
@@ -161,21 +154,8 @@ export const SignupContainer = (): JSX.Element => {
   }, [logFormAbort])
 
   return (
-    <div
-      className={cn({
-        [styles['validation-container']]: isSignupSimulationEnabled,
-      })}
-    >
+    <div className={styles['validation-container']}>
       <section className={styles['content']}>
-        {!isSignupSimulationEnabled && (
-          <>
-            <OperatingProcedures />
-            <div className={styles['mandatory']}>
-              <MandatoryInfo areAllFieldsMandatory={true} />
-            </div>
-          </>
-        )}
-
         <FormProvider {...hookForm}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <SignupForm />

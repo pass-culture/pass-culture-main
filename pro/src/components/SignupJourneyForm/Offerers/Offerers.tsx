@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
@@ -18,7 +17,6 @@ import {
   tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -26,7 +24,6 @@ import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { generateVenueDataLines } from '@/components/SignupJourneyForm/Offerers/utils'
-import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -42,7 +39,6 @@ import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { Title } from '@/ui-kit/Title/Title'
 
-import { ActionBar } from '../ActionBar/ActionBar'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
@@ -50,10 +46,6 @@ import {
 import styles from './Offerers.module.scss'
 
 export const Offerers = (): JSX.Element => {
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
-
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -141,7 +133,7 @@ export const Offerers = (): JSX.Element => {
       createVenueWithoutSiret: true,
     }
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-      to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+      to: SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION,
       used: SignupJourneyAction.NewOfferer,
     })
     setOfferer(newOfferer)
@@ -208,11 +200,7 @@ export const Offerers = (): JSX.Element => {
   }
 
   return (
-    <div
-      className={cn({
-        [styles['existing-offerers-container']]: isSignupSimulationEnabled,
-      })}
-    >
+    <div className={styles['existing-offerers-container']}>
       <Title level="1" title="Ce SIRET est déjà inscrit" marginBottom="s" />
       <p className={styles['subheading-description']}>
         Ce SIRET est déjà associé à{' '}
@@ -229,22 +217,20 @@ export const Offerers = (): JSX.Element => {
       </div>
 
       <div className={styles['next-actions']}>
-        {isSignupSimulationEnabled && (
-          <Button
-            as="router-link"
-            variant={ButtonVariant.SECONDARY}
-            onClick={() => {
-              setOfferer(null)
-              logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                from: location.pathname,
-                to: SIGNUP_STEP_IDS.STRUCTURE_SEARCH,
-                used: 'Retour',
-              })
-            }}
-            to="/inscription/structure/recherche"
-            label="Retour"
-          />
-        )}
+        <Button
+          as="router-link"
+          variant={ButtonVariant.SECONDARY}
+          onClick={() => {
+            setOfferer(null)
+            logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+              from: location.pathname,
+              to: SIGNUP_STEP_IDS.STRUCTURE_SEARCH,
+              used: 'Retour',
+            })
+          }}
+          to="/inscription/structure/recherche"
+          label="Retour"
+        />
 
         <Button
           onClick={doLinkUserToOfferer}
@@ -267,19 +253,6 @@ export const Offerers = (): JSX.Element => {
             icon={fullNextIcon}
           />
         </>
-      )}
-
-      {!isSignupSimulationEnabled && (
-        <ActionBar
-          previousStepTitle="Retour à la recherche de SIRET"
-          hideRightButton
-          onClickPrevious={() => {
-            setOfferer(null)
-            navigate('/inscription/structure/recherche')
-          }}
-          previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
-          isDisabled={false}
-        />
       )}
 
       <SimpleModal

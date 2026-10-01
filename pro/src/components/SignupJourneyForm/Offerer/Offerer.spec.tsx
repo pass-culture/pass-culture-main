@@ -107,10 +107,7 @@ vi.mock('@/commons/utils/memoize', () => ({
   memoize: (func: unknown) => func,
 }))
 
-const renderOffererScreen = (
-  contextValue: SignupJourneyContextValues,
-  features: string[] = []
-) => {
+const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -133,7 +130,6 @@ const renderOffererScreen = (
       <SnackBarContainer />
     </>,
     {
-      features,
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/recherche'],
     }
@@ -235,33 +231,6 @@ describe('Offerer', () => {
     ).not.toBeInTheDocument()
   })
 
-  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
-    it('should display new heading and hide old subtitle and ActionBar', async () => {
-      contextValue.offerer = null
-      renderOffererScreen(contextValue, ['WIP_PRE_SIGNUP_SIMULATION'])
-
-      expect(
-        await screen.findByRole('heading', { name: 'Votre numéro SIRET' })
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText(/Le SIRET est un identifiant à 14 chiffres/)
-      ).toBeInTheDocument()
-
-      expect(
-        screen.queryByText('Dites-nous pour quelle structure vous travaillez')
-      ).not.toBeInTheDocument()
-
-      expect(
-        screen.queryByRole('button', { name: 'Annuler et quitter' })
-      ).not.toBeInTheDocument()
-
-      expect(
-        screen.getByRole('button', { name: 'Continuer' })
-      ).toBeInTheDocument()
-    })
-  })
-
   it('should not display authentication screen on submit with form error', async () => {
     vi.spyOn(api, 'getStructureData').mockRejectedValue(
       new ApiError(
@@ -279,11 +248,11 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     expect(
-      screen.getByText('Dites-nous pour quelle structure vous travaillez')
+      screen.getByRole('heading', { name: 'Votre numéro SIRET' })
     ).toBeInTheDocument()
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678999999'
     )
 
@@ -291,7 +260,7 @@ describe('Offerer', () => {
 
     expect(screen.queryByText('Authentication screen')).not.toBeInTheDocument()
     expect(
-      screen.getByText('Dites-nous pour quelle structure vous travaillez')
+      screen.getByRole('heading', { name: 'Votre numéro SIRET' })
     ).toBeInTheDocument()
   })
 
@@ -299,12 +268,10 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     expect(
-      await screen.findByText(
-        'Dites-nous pour quelle structure vous travaillez'
-      )
+      await screen.findByRole('heading', { name: 'Votre numéro SIRET' })
     ).toBeInTheDocument()
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -333,7 +300,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -398,7 +365,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -438,7 +405,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -462,7 +429,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -477,27 +444,18 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     expect(
-      await screen.findByText(
-        'Dites-nous pour quelle structure vous travaillez'
-      )
+      await screen.findByRole('heading', { name: 'Votre numéro SIRET' })
     ).toBeInTheDocument()
 
-    expect(screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)).toHaveValue(
-      ''
-    )
+    expect(screen.getByLabelText(/Numéro de SIRET/)).toHaveValue('')
   })
 
   it('should fill siret field only with numbers', async () => {
     renderOffererScreen(contextValue)
 
-    await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
-      'AbdqsI'
-    )
+    await userEvent.type(screen.getByLabelText(/Numéro de SIRET/), 'AbdqsI')
 
-    expect(screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)).toHaveValue(
-      ''
-    )
+    expect(screen.getByLabelText(/Numéro de SIRET/)).toHaveValue('')
   })
 
   it('should render empty siret field error', async () => {
@@ -521,7 +479,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -547,7 +505,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -579,7 +537,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -602,7 +560,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -614,15 +572,6 @@ describe('Offerer', () => {
         ).length
       ).toBeGreaterThan(0)
     })
-  })
-  it('should navigate to /hub when clicking previous button', async () => {
-    renderOffererScreen(contextValue)
-
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Annuler et quitter' })
-    )
-
-    expect(screen.getByText('Hub screen')).toBeInTheDocument()
   })
 
   it('should clean storage, reset activity and clear isOpenToPublic when submitting a different siret while a siren is stored', async () => {
@@ -645,7 +594,7 @@ describe('Offerer', () => {
 
     renderRealOffererScreen()
 
-    const input = screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)
+    const input = screen.getByLabelText(/Numéro de SIRET/)
     await user.clear(input)
     await user.type(input, '12345678933333')
     await user.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -677,7 +626,7 @@ describe('Offerer', () => {
 
     renderRealOffererScreen()
 
-    const input = screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)
+    const input = screen.getByLabelText(/Numéro de SIRET/)
     await user.clear(input)
     await user.type(input, '12345678933333')
     await user.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -707,7 +656,7 @@ describe('Offerer', () => {
 
     renderRealOffererScreen()
 
-    expect(screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)).toHaveValue(
+    expect(screen.getByLabelText(/Numéro de SIRET/)).toHaveValue(
       '12345678933333'
     )
     await user.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -734,7 +683,7 @@ describe('Offerer', () => {
 
     renderRealOffererScreen()
 
-    expect(screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)).toHaveValue(
+    expect(screen.getByLabelText(/Numéro de SIRET/)).toHaveValue(
       '12345678933333'
     )
     await user.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -757,7 +706,7 @@ describe('Offerer', () => {
 
     renderRealOffererScreen()
 
-    const input = screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)
+    const input = screen.getByLabelText(/Numéro de SIRET/)
     await user.clear(input)
     await user.type(input, '12345678933333')
     await user.click(screen.getByRole('button', { name: 'Continuer' }))

@@ -1,5 +1,4 @@
 import {
-  type APIRequestContext,
   expect,
   type Page,
   request as playwrightRequest,
@@ -7,7 +6,6 @@ import {
 } from '@playwright/test'
 
 import { checkAccessibility } from './helpers/accessibility'
-import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL } from './helpers/sandbox'
 
 async function carouselNavigation(page: Page) {
@@ -68,59 +66,16 @@ async function carouselNavigation(page: Page) {
 }
 
 test.describe('Pre signup pages', () => {
-  let requestContext: APIRequestContext
-  test.beforeEach(async () => {
-    requestContext = await playwrightRequest.newContext({
+  test('Navigate through signup simulation', async ({ page }) => {
+    await playwrightRequest.newContext({
       baseURL: BASE_API_URL,
     })
-  })
-  test('Navigate without WIP_PRE_SIGNUP_SIMULATION', async ({ page }) => {
     await page.context().addCookies([
       {
         name: 'pc-pro-orejime',
         value: '{"firebase":false,"hotjar":false,"beamer":false,"sentry":true}',
         domain: 'localhost',
         path: '/',
-      },
-    ])
-    await setFeatureFlags(requestContext, [
-      // DELETE AFTER PR MERGE
-      {
-        name: 'WIP_PRE_SIGNUP_INFO',
-        isActive: true,
-      },
-      {
-        name: 'WIP_PRE_SIGNUP_SIMULATION',
-        isActive: false,
-      },
-    ])
-    await carouselNavigation(page)
-
-    await expect(
-      page.getByRole('heading', {
-        name: 'Créez votre compte',
-      })
-    ).toBeVisible()
-  })
-
-  test('Navigate with WIP_PRE_SIGNUP_SIMULATION', async ({ page }) => {
-    await page.context().addCookies([
-      {
-        name: 'pc-pro-orejime',
-        value: '{"firebase":false,"hotjar":false,"beamer":false,"sentry":true}',
-        domain: 'localhost',
-        path: '/',
-      },
-    ])
-    await setFeatureFlags(requestContext, [
-      // DELETE AFTER PR MERGE
-      {
-        name: 'WIP_PRE_SIGNUP_INFO',
-        isActive: true,
-      },
-      {
-        name: 'WIP_PRE_SIGNUP_SIMULATION',
-        isActive: true,
       },
     ])
     await carouselNavigation(page)

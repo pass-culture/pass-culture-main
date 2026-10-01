@@ -138,8 +138,7 @@ fetchMock.mockResponse(
 )
 
 const renderOffererAuthenticationScreen = (
-  contextValue: SignupJourneyContextValues,
-  features: string[] = []
+  contextValue: SignupJourneyContextValues
 ) => {
   return renderWithProviders(
     <>
@@ -164,7 +163,6 @@ const renderOffererAuthenticationScreen = (
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/identification'],
-      features,
     }
   )
 }
@@ -265,10 +263,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         expect(tryRestoreActivityFromStorage).toHaveBeenCalledWith(setActivity)
       })
       expect(
-        screen.getByRole('heading', {
-          level: 2,
-          name: 'Complétez les informations de votre structure',
-        })
+        screen.getByRole('heading', { level: 1, name: 'Votre structure' })
       ).toBeInTheDocument()
     })
   })
@@ -277,19 +272,18 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     renderOffererAuthenticationScreen(contextValue)
 
     expect(
-      await screen.findByText('Les champs suivis d’un * sont obligatoires.')
+      await screen.findByText(/Les champs suivis d’un \* sont obligatoires./)
     ).toBeInTheDocument()
 
     expect(
       screen.getByRole('button', { name: 'Continuer' })
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Retour' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Modifier le SIRET' })
+    ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('heading', {
-        level: 2,
-        name: 'Complétez les informations de votre structure',
-      })
+      screen.getByRole('heading', { level: 1, name: 'Votre structure' })
     ).toBeInTheDocument()
 
     expect(screen.getByText(/Numéro de SIRET/)).toBeInTheDocument()
@@ -297,12 +291,6 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
 
     expect(screen.getByText(/Raison sociale/)).toBeInTheDocument()
     expect(screen.getByText('Test name')).toBeInTheDocument()
-
-    expect(
-      await screen.findByRole('button', { name: 'Continuer' })
-    ).toBeInTheDocument()
-
-    expect(screen.getByRole('button', { name: 'Retour' })).toBeInTheDocument()
   })
 
   it('should render component with empty adresss', async () => {
@@ -327,10 +315,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   it('should display activity screen on submit', async () => {
     renderOffererAuthenticationScreen(contextValue)
     expect(
-      screen.getByRole('heading', {
-        level: 2,
-        name: 'Complétez les informations de votre structure',
-      })
+      screen.getByRole('heading', { level: 1, name: 'Votre structure' })
     ).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
     await waitFor(() => {
@@ -341,68 +326,61 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   it('should display offerer screen on submit', async () => {
     renderOffererAuthenticationScreen(contextValue)
     expect(
-      screen.getByRole('heading', {
-        level: 2,
-        name: 'Complétez les informations de votre structure',
-      })
+      screen.getByRole('heading', { level: 1, name: 'Votre structure' })
     ).toBeInTheDocument()
-    await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
+    await userEvent.click(
+      screen.getByRole('link', { name: 'Modifier le SIRET' })
+    )
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
   })
 
-  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
-    it('should display new heading and hide old subtitle and ActionBar back button', async () => {
-      renderOffererAuthenticationScreen(contextValue, [
-        'WIP_PRE_SIGNUP_SIMULATION',
-      ])
+  it('should display new heading and hide old subtitle and ActionBar back button', async () => {
+    renderOffererAuthenticationScreen(contextValue)
 
-      expect(
-        await screen.findByRole('heading', { name: 'Votre structure' })
-      ).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'Votre structure' })
+    ).toBeInTheDocument()
 
-      expect(
-        screen.getByText(
-          /Vérifiez les informations récupérées depuis votre SIRET/
-        )
-      ).toBeInTheDocument()
-
-      expect(
-        screen.queryByRole('heading', {
-          name: 'Complétez les informations de votre structure',
-        })
-      ).not.toBeInTheDocument()
-
-      expect(
-        screen.queryByText("Les champs suivis d'un * sont obligatoires")
-      ).not.toBeInTheDocument()
-
-      expect(
-        screen.queryByRole('button', { name: 'Retour' })
-      ).not.toBeInTheDocument()
-
-      expect(
-        screen.getByRole('button', { name: 'Continuer' })
-      ).toBeInTheDocument()
-    })
-
-    it('should log navigation event when clicking "Continuer" button', async () => {
-      renderOffererAuthenticationScreen(contextValue, [
-        'WIP_PRE_SIGNUP_SIMULATION',
-      ])
-
-      await screen.findByRole('button', { name: 'Continuer' })
-
-      await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
-
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
-        {
-          from: location.pathname,
-          to: SIGNUP_STEP_IDS.ACTIVITY,
-          used: 'Continuer',
-        }
+    expect(
+      screen.getByText(
+        /Vérifiez les informations récupérées depuis votre SIRET/
       )
-    })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('heading', {
+        name: 'Complétez les informations de votre structure',
+      })
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText("Les champs suivis d'un * sont obligatoires")
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', { name: 'Modifier le SIRET' })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', { name: 'Continuer' })
+    ).toBeInTheDocument()
+  })
+
+  it('should log navigation event when clicking "Continuer" button', async () => {
+    renderOffererAuthenticationScreen(contextValue)
+
+    await screen.findByRole('button', { name: 'Continuer' })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
+      {
+        from: location.pathname,
+        to: SIGNUP_STEP_IDS.ACTIVITY,
+        used: 'Continuer',
+      }
+    )
   })
 
   describe('not diffusible', () => {

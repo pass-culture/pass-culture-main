@@ -1,6 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import cn from 'classnames'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
@@ -19,7 +18,6 @@ import {
 } from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -27,7 +25,6 @@ import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from '@/components/SignupJourneyForm/Offerer/constants'
-import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { SignupStepper } from '@/components/SignupStepper/SignupStepper'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
@@ -43,7 +40,6 @@ import fullLinkIcon from '@/icons/full-link.svg'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 import { Title } from '@/ui-kit/Title/Title'
 
-import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './OffererAuthentication.module.scss'
 import {
   OffererAuthenticationForm,
@@ -62,10 +58,6 @@ export const OffererAuthentication = (): JSX.Element => {
     activity,
     setActivity,
   } = useSignupJourneyContext()
-
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
 
   const { logEvent } = useAnalytics()
 
@@ -98,10 +90,6 @@ export const OffererAuthentication = (): JSX.Element => {
     banId: offerer?.banId || '',
     inseeCode: offerer?.inseeCode || null,
   }
-
-  const handlePreviousStep = useCallback(() => {
-    navigate('/inscription/structure/recherche')
-  }, [navigate])
 
   const onSubmit = (formValues: OffererAuthenticationFormValues) => {
     // Should never happen, so we use assertOrFrontendError to
@@ -193,26 +181,18 @@ export const OffererAuthentication = (): JSX.Element => {
   }
 
   return (
-    <div
-      className={cn({
-        [styles['offerer-authentication-container']]: isSignupSimulationEnabled,
-      })}
-    >
-      {isSignupSimulationEnabled && (
-        <>
-          <SignupStepper />
-          <Title
-            level="1"
-            title="Votre structure"
-            marginTop="xxl"
-            marginBottom="s"
-          />
-          <p className={styles['subheading-description']}>
-            Vérifiez les informations récupérées depuis votre SIRET et complétez
-            les champs manquants.
-          </p>
-        </>
-      )}
+    <div className={styles['offerer-authentication-container']}>
+      <SignupStepper />
+      <Title
+        level="1"
+        title="Votre structure"
+        marginTop="xxl"
+        marginBottom="s"
+      />
+      <p className={styles['subheading-description']}>
+        Vérifiez les informations récupérées depuis votre SIRET et complétez les
+        champs manquants. Les champs suivis d’un * sont obligatoires.
+      </p>
 
       <FormLayout>
         <FormProvider {...methods}>
@@ -221,17 +201,6 @@ export const OffererAuthentication = (): JSX.Element => {
             onSubmit={methods.handleSubmit(onSubmit)}
             data-testid="signup-offerer-authentication-form"
           >
-            {!isSignupSimulationEnabled && (
-              <>
-                <Title
-                  level="2"
-                  title="Complétez les informations de votre structure"
-                  marginBottom="l"
-                />
-                <FormLayout.MandatoryInfo />
-              </>
-            )}
-
             {!offerer?.isDiffusible && (
               <div className={styles['warning-callout']}>
                 <Banner
@@ -284,31 +253,20 @@ export const OffererAuthentication = (): JSX.Element => {
             </div>
             <OffererAuthenticationForm />
 
-            {isSignupSimulationEnabled ? (
-              <div className={styles['next-actions']}>
-                <Button
-                  type="submit"
-                  label="Continuer"
-                  onClick={() => {
-                    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                      from: location.pathname,
-                      to: SIGNUP_STEP_IDS.ACTIVITY,
-                      used: 'Continuer',
-                    })
-                  }}
-                  disabled={methods.formState.isSubmitting}
-                />
-              </div>
-            ) : (
-              <ActionBar
-                onClickPrevious={handlePreviousStep}
-                previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
-                nextTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
-                previousStepTitle="Retour"
-                nextStepTitle="Continuer"
-                isDisabled={methods.formState.isSubmitting}
+            <div className={styles['next-actions']}>
+              <Button
+                type="submit"
+                label="Continuer"
+                onClick={() => {
+                  logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                    from: location.pathname,
+                    to: SIGNUP_STEP_IDS.ACTIVITY,
+                    used: 'Continuer',
+                  })
+                }}
+                disabled={methods.formState.isSubmitting}
               />
-            )}
+            </div>
           </form>
         </FormProvider>
       </FormLayout>

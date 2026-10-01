@@ -15,7 +15,6 @@ export const routesSimulator: CustomRouteGroupChild[] = [
     handle: {
       title: 'Renseignez votre SIRET',
     },
-    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
   },
   {
     lazy: () =>
@@ -26,7 +25,6 @@ export const routesSimulator: CustomRouteGroupChild[] = [
     handle: {
       title: 'Accueil du public',
     },
-    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
   },
   {
     lazy: () => import('@/pages/Simulator/SimulatorActivity/SimulatorActivity'),
@@ -36,7 +34,6 @@ export const routesSimulator: CustomRouteGroupChild[] = [
     handle: {
       title: 'Quelle est votre activité principale ?',
     },
-    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
   },
   {
     lazy: () => import('@/pages/Simulator/SimulatorTarget/SimulatorTarget'),
@@ -45,7 +42,6 @@ export const routesSimulator: CustomRouteGroupChild[] = [
     handle: {
       title: 'Quels publics souhaitez-vous cibler ?',
     },
-    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
   },
   {
     lazy: () => import('@/pages/Simulator/SimulatorResults/SimulatorResults'),
@@ -54,7 +50,6 @@ export const routesSimulator: CustomRouteGroupChild[] = [
     handle: {
       title: 'Voici les justificatifs à préparer pour votre inscription',
     },
-    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
   },
   {
     lazy: () => import('@/pages/Simulator/SimulatorEmail/SimulatorEmail'),
@@ -63,7 +58,6 @@ export const routesSimulator: CustomRouteGroupChild[] = [
     handle: {
       title: 'Recevez votre liste de justificatifs par email',
     },
-    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
   },
   {
     lazy: () =>
@@ -73,12 +67,10 @@ export const routesSimulator: CustomRouteGroupChild[] = [
     handle: {
       title: 'La liste de justificatifs a bien été envoyée par mail',
     },
-    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
   },
   {
     element: <Navigate to="/inscription/preparation/siret" />,
     loader: noop,
     path: '/inscription/preparation',
-    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
   },
 ]
