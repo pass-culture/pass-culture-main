@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 import type { ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
 
-import type { DetailsFormValues } from './types'
+import type { DetailsFormValues } from '../components/DetailsForm/types'
 
 const eanValidation = yup
   .string()

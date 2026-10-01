@@ -14,7 +14,7 @@ import {
 import { getOfferLastProvider } from '@/commons/utils/factories/providerFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
-import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
+import { DEFAULT_DETAILS_FORM_VALUES } from '../../commons/constants'
 import {
   buildCategoryOptions,
   buildShowSubTypeOptions,
@@ -24,25 +24,11 @@ import {
   getFormReadOnlyFields,
   getInitialArtistOfferLinks,
   getInitialValuesFromOffer,
-  getInitialValuesFromVenue,
+  getInitialValuesFromVenueAndProduct,
   hasMusicType,
-  isSubCategoryCD,
-} from '../utils'
+} from './utils'
 
 const defaultVenue = makeGetVenueResponseModel({ id: 1 })
-
-describe('isSubCategoryCD', () => {
-  it('should return true for SUPPORT_PHYSIQUE_MUSIQUE_CD subcategory', () => {
-    expect(isSubCategoryCD(SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD)).toBe(
-      true
-    )
-  })
-
-  it('should return false for any other subcategory', () => {
-    expect(isSubCategoryCD(SubcategoryIdEnum.SEANCE_CINE)).toBe(false)
-    expect(isSubCategoryCD('')).toBe(false)
-  })
-})
 
 describe('hasMusicType', () => {
   it('should return true if categoryId=LIVRE and has a musicType as a conditional field', () =>
@@ -230,7 +216,7 @@ describe('getInitialArtistOfferLinks', () => {
   })
 })
 
-describe('getInitialValuesFromVenue', () => {
+describe('getInitialValuesFromVenueAndProduct', () => {
   it('should return default form values with venue id and accessibility from the venue', () => {
     const venue = makeGetVenueResponseModel({
       id: 42,
@@ -240,7 +226,7 @@ describe('getInitialValuesFromVenue', () => {
       visualDisabilityCompliant: false,
     })
 
-    const result = getInitialValuesFromVenue(venue)
+    const result = getInitialValuesFromVenueAndProduct(venue)
 
     expect(result).toStrictEqual({
       ...DEFAULT_DETAILS_FORM_VALUES,

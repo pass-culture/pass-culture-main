@@ -1,5 +1,6 @@
 import { ArtistType } from '@/apiClient/v1'
 
+import type { DetailsFormValues } from '../../components/DetailsForm/types'
 import {
   deSerializeDurationMinutes,
   serializeDetailsPatchData,
@@ -7,7 +8,6 @@ import {
   serializeDurationMinutes,
   serializeExtraData,
 } from '../serializers'
-import type { DetailsFormValues } from '../types'
 
 describe('deSerializeDurationMinutes', () => {
   it('should correctly de serialize duration minutes', () => {

@@ -5,8 +5,8 @@ import {
   type CategoryResponseModel,
   DisplayableActivity,
   type GetIndividualOfferResponseModel,
+  type GetProductInformations,
   type GetVenueResponseModel,
-  SubcategoryIdEnum,
   type SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
@@ -18,16 +18,9 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 
-import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
-import { deSerializeDurationMinutes } from './serializers'
-import type {
-  DetailsFormValues,
-  SetDefaultInitialValuesFromOfferProps,
-} from './types'
-
-export const isSubCategoryCD = (subcategoryId: string): boolean => {
-  return subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD
-}
+import { DEFAULT_DETAILS_FORM_VALUES } from '../../commons/constants'
+import { deSerializeDurationMinutes } from '../../commons/serializers'
+import type { DetailsFormValues } from './types'
 
 export const hasMusicType = (
   categoryId: string,
@@ -104,21 +97,53 @@ export const completeSubcategoryConditionalFields = (
     ...(subcategory?.isEvent ? ['durationMinutes'] : []),
   ] as (keyof DetailsFormValues)[]
 
-export function getInitialValuesFromVenue(
-  venue: GetVenueResponseModel
+export function getInitialValuesFromVenueAndProduct(
+  venue: GetVenueResponseModel,
+  product?: GetProductInformations,
+  subcategories: SubcategoryResponseModel[] = []
 ): DetailsFormValues {
-  // @ts-expect-error - Waiting for pydanticV2 migration
-  return {
+  const initialValues = {
     ...DEFAULT_DETAILS_FORM_VALUES,
     accessibility: getAccessibilityInfoFromVenue(venue).accessibility,
     venueId: venue.id.toString(),
   }
+
+  if (!product) {
+    // @ts-expect-error - Waiting for pydanticV2 migration
+    return initialValues
+  }
+
+  const { description, gtlId, subcategoryId, images, ...restProduct } = product
+  const subcategory = subcategories.find((s) => s.id === subcategoryId)
+  assertOrFrontendError(subcategory, 'La categorie du produit est introuvable.')
+  const { categoryId, conditionalFields } = subcategory
+
+  let gtl_id = ''
+  if (hasMusicType(categoryId, conditionalFields)) {
+    // Fallback to "Autre" in case of missing gtlId
+    // to define "Genre musical" when relevant.
+    gtl_id = gtlId || '19000000'
+  }
+
+  // @ts-expect-error - Waiting for pydanticV2 migration
+  return {
+    ...initialValues,
+    ...restProduct,
+    description: description || '',
+    categoryId,
+    subcategoryId,
+    gtl_id,
+    subcategoryConditionalFields: conditionalFields as Array<
+      keyof DetailsFormValues
+    >,
+    productId: restProduct.id.toString(),
+  }
 }
 
-export function getInitialValuesFromOffer({
-  offer,
-  subcategories,
-}: SetDefaultInitialValuesFromOfferProps): DetailsFormValues {
+export function getInitialValuesFromOffer(
+  offer: GetIndividualOfferResponseModel,
+  subcategories: SubcategoryResponseModel[]
+): DetailsFormValues {
   const subcategory = subcategories.find(
     (subcategory: SubcategoryResponseModel) =>
       subcategory.id === offer.subcategoryId
