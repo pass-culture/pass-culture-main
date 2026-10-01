@@ -25,9 +25,10 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # check provider EXISTS
     num_queries += 1  # fetch offers (1 query)
-    num_queries += 1  # fetch stocks (1 query)
-    num_queries += 1  # fetch mediations (1 query)
     num_queries += 1  # fetch price categories (1 query)
+    num_queries += 1  # fetch mediations (1 query)
+    num_queries += 1  # fetch stocks (1 query)
+    num_queries += 1  # fetch venue (1 query)
 
     def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
@@ -59,7 +60,13 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
 
     def test_get_first_page(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offers = offers_factories.EventOfferFactory.create_batch(6, venue=venue_provider.venue)
+        # Add another venue to check for duplicated queries
+        venue2 = offerers_factories.VenueFactory()
+        providers_factories.VenueProviderFactory(venue=venue2, provider=venue_provider.provider)
+
+        offers = offers_factories.EventOfferFactory.create_batch(3, venue=venue_provider.venue)
+        offers_factories.EventOfferFactory.create_batch(3, venue=venue2)
+
         offers_factories.ThingOfferFactory.create_batch(3, venue=venue_provider.venue)  # not returned
 
         venue_id = venue_provider.venueId
@@ -171,7 +178,8 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
         offers_factories.EventOfferFactory(offererAddress=offerer_address_3)
         address_id = offerer_address_1.addressId
 
-        with testing.assert_num_queries(self.num_queries):
+        # num_queries -1 because it doesn't use the venue
+        with testing.assert_num_queries(self.num_queries - 1):
             response = self.make_request(plain_api_key, query_params={"addressId": address_id})
             assert response.status_code == 200
             assert len(response.json["events"]) == 1

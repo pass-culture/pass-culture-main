@@ -302,12 +302,10 @@ def is_sole_user_with_ongoing_activities(user: models.User) -> bool:
         .join(offerers_models.Venue, offers_models.Offer.venueId == offerers_models.Venue.id)
         .where(
             offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId,
-            offers_models.Offer.status.in_(
-                [
-                    OfferStatus.SCHEDULED.name,
-                    OfferStatus.PUBLISHED.name,
-                    OfferStatus.ACTIVE.name,
-                ]
+            sa.or_(
+                sa.and_(*offers_models.Offer.get_status_filters(OfferStatus.SCHEDULED)),
+                sa.and_(*offers_models.Offer.get_status_filters(OfferStatus.PUBLISHED)),
+                sa.and_(*offers_models.Offer.get_status_filters(OfferStatus.ACTIVE)),
             ),
         )
         .correlate(offerers_models.UserOfferer)
