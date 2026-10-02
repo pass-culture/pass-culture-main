@@ -92,13 +92,9 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue.id))
         assert response.status_code == 404
         assert len(caplog.records) == 1
-        assert caplog.records[0].public_api == {
-            "api_key": self._api_key.id,
-            "provider_id": self._api_key.providerId,
-            "module": "products",
-            "function": "post_product_offer",
-            "venue": venue.id,
-        }
+        assert caplog.records[0].api_key_id == self._api_key.id
+        assert caplog.records[0].provider_id == self._api_key.providerId
+        assert caplog.records[0].venue_id == venue.id
 
     def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
@@ -134,9 +130,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         test_utils.assert_public_api_data_logs_have_been_recorded(
             caplog,
             self._api_key,
-            module="products",
-            function="post_product_offer",
-            venue=venue_provider.venueId,
+            venue_id=venue_provider.venue.id,
             ean=payload["categoryRelatedFields"]["ean"],
             publication_datetime=datetime.datetime.now(datetime.UTC),
             booking_allowed_datetime=None,
@@ -238,9 +232,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         test_utils.assert_public_api_data_logs_have_been_recorded(
             caplog,
             self._api_key,
-            module="products",
-            function="post_product_offer",
-            venue=venue_provider.venueId,
+            venue_id=venue_provider.venueId,
             ean=payload["categoryRelatedFields"]["ean"],
             publication_datetime=datetime.datetime.now(datetime.UTC),
             booking_allowed_datetime=None,
