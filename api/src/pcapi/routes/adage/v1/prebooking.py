@@ -11,6 +11,8 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
 from pcapi.routes.adage.v1.serialization import constants
+from pcapi.routes.adage.v1.serialization.collective_booking import EducationalBookingPerYearResponse
+from pcapi.routes.adage.v1.serialization.collective_booking import EducationalBookingsPerYearResponse
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
@@ -98,19 +100,21 @@ def refuse_pre_booking(educational_booking_id: int) -> educational_schemas.Educa
 @adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
-    response_model=educational_schemas.EducationalBookingsPerYearResponse,
+    response_model=EducationalBookingsPerYearResponse,
     tags=("get bookings per year",),
 )
 def get_all_bookings_per_year(
     educational_year_id: str,
     query: educational_schemas.GetAllBookingsPerYearQueryModel,
-) -> educational_schemas.EducationalBookingsPerYearResponse:
+) -> EducationalBookingsPerYearResponse:
     educational_bookings = educational_repository.get_paginated_collective_bookings_for_educational_year(
         educational_year_id,
         query.page,
         query.per_page,
     )
-    return collective_booking_serialize.get_collective_bookings_per_year_response(educational_bookings)
+    return EducationalBookingsPerYearResponse(
+        bookings=[EducationalBookingPerYearResponse.build(booking) for booking in educational_bookings]
+    )
 
 
 @blueprint.adage_v1.route("/prebookings/move", methods=["POST"])
