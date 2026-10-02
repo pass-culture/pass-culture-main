@@ -83,6 +83,10 @@ def get_user_with_credentials(identifier: str, password: str, allow_inactive: bo
     return typing.cast(models.User, user)
 
 
+def find_user_by_id(user_id: int) -> models.User | None:
+    return db.session.query(models.User).filter(models.User.id == user_id).one_or_none()
+
+
 def _find_user_by_email_query(email: str) -> sa_orm.Query:
     return db.session.query(models.User).filter(func.lower(models.User.email) == email_utils.sanitize_email(email))
 

@@ -87,7 +87,7 @@ def reset_stock_quantity(venue: offerers_models.Venue) -> None:
 
 
 def delete_venue_provider(
-    venue_provider: providers_models.VenueProvider, author: users_models.User, send_email: bool = True
+    venue_provider: providers_models.VenueProvider, author: users_models.User | None, send_email: bool = True
 ) -> None:
     payload = offers_tasks.UpdateVenueOffersActiveStatusPayload(
         is_active=False,
