@@ -1,5 +1,7 @@
 import typing
 
+import pydantic
+
 from pcapi.connectors.clickhouse.queries import CollectiveRevenue
 from pcapi.connectors.clickhouse.queries import IndividualRevenue
 from pcapi.connectors.clickhouse.queries import TotalRevenue
@@ -14,7 +16,10 @@ class StatisticsQueryModel(HttpQueryParamsModel):
 
 class AggregatedRevenueModel(HttpBodyModel):
     revenue: CollectiveRevenue | IndividualRevenue | TotalRevenue
-    expected_revenue: CollectiveRevenue | IndividualRevenue | TotalRevenue | None = None
+    expected_revenue: CollectiveRevenue | IndividualRevenue | TotalRevenue | None = pydantic.Field(
+        exclude_if=lambda x: x is None,
+        default=None,
+    )
 
 
 class StatisticsModel(HttpBodyModel):
