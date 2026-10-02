@@ -197,7 +197,7 @@ def update_bo_user(user_id: int) -> response_utils.BackofficeResponse:
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
         old_email = user.email
         try:
-            email_update.full_email_update_by_admin(user, form.email.data)
+            email_update.full_email_update_by_admin(user, author=current_user, email=form.email.data)
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
             flash("L'email est déjà associé à un autre utilisateur", "warning")

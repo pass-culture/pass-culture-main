@@ -83,6 +83,10 @@ class EmailChangeAction(AccountAction):
         return self._email_change.creationDate
 
     @property
+    def authorUser(self) -> users_models.User | None:
+        return self.authorUser
+
+    @property
     def comment(self) -> str | None:
         if not self._email_change.newEmail:
             return f"Lien envoyé à {self._email_change.oldEmail} pour choisir une nouvelle adresse email"

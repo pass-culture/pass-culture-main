@@ -14,10 +14,8 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users import sessions
 from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
 from pcapi.utils.redis import get_redis_client
-from pcapi.utils.repository import transaction
 from pcapi.utils.urls import generate_app_link
 
 
@@ -99,18 +97,20 @@ def generate_and_send_beneficiary_validation_email_for_email_change(user: models
     )
 
 
-def request_email_update(user: models.User) -> None:
+def request_email_update(user: models.User, author: models.User) -> None:
     check_no_ongoing_email_update_request(user)
     check_email_update_attempts_count(user)
 
-    email_history = models.UserEmailHistory.build_update_request(user=user)
+    email_history = models.UserEmailHistory.build_update_request(user, author)
     db.session.add(email_history)
 
     increment_email_update_attempts_count(user)
     send_confirmation_email_for_email_change(user)
 
 
-def confirm_new_email_selection_and_send_mail(user: models.User, encoded_new_mail_token: str, new_email: str) -> None:
+def confirm_new_email_selection_and_send_mail(
+    user: models.User, author: models.User, encoded_new_mail_token: str, new_email: str
+) -> None:
     new_mail_token = token_utils.Token.load_and_check(
         encoded_new_mail_token, token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION
     )
@@ -120,20 +120,20 @@ def confirm_new_email_selection_and_send_mail(user: models.User, encoded_new_mai
     api.check_email_address_does_not_exist(new_email)
     generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
 
-    email_history = models.UserEmailHistory.build_new_email_selection(user, new_email)
+    email_history = models.UserEmailHistory.build_new_email_selection(user, author, new_email)
     db.session.add(email_history)
 
     new_mail_token.expire()
 
 
-def confirm_email_update_request(encoded_token: str) -> models.User:
+def confirm_email_update_request(encoded_token: str, author: models.User) -> models.User:
     """Confirm the email update request for the given user"""
     token = token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
     user = db.session.get(models.User, token.user_id)
     if not user:
         raise exceptions.InvalidToken()
 
-    email_history = models.UserEmailHistory.build_confirmation(user)
+    email_history = models.UserEmailHistory.build_confirmation(user, author)
     db.session.add(email_history)
     token.expire()
 
@@ -234,14 +234,14 @@ def check_pro_email_update_attempts(user: models.User) -> None:
         raise exceptions.EmailUpdateLimitReached()
 
 
-def request_email_update_from_admin(user: models.User, email: str) -> None:
+def request_email_update_from_admin(user: models.User, author: models.User, email: str) -> None:
     """
     When email is changed by admin, it is immediately changed in the user profile.
     User can no longer login with his former email, and must confirm new email.
     """
     api.check_email_address_does_not_exist(email)
 
-    email_history = models.UserEmailHistory.build_update_request(user=user, new_email=email, by_admin=True)
+    email_history = models.UserEmailHistory.build_update_request(user, author, new_email=email)
 
     user.email = email
     user.isEmailValidated = False
@@ -254,7 +254,7 @@ def request_email_update_from_admin(user: models.User, email: str) -> None:
     api.request_email_confirmation(user)
 
 
-def full_email_update_by_admin(user: models.User, email: str, commit: bool = False) -> None:
+def full_email_update_by_admin(user: models.User, author: models.User, email: str, commit: bool = False) -> None:
     """
     Runs the whole email update process at once, without sending any
     confirmation email: log update history, update user's email and
@@ -262,7 +262,7 @@ def full_email_update_by_admin(user: models.User, email: str, commit: bool = Fal
     """
     api.check_email_address_does_not_exist(email)
 
-    admin_update_event = models.UserEmailHistory.build_admin_update(user=user, new_email=email)
+    admin_update_event = models.UserEmailHistory.build_admin_update(user, author, new_email=email)
     db.session.add(admin_update_event)
 
     user.email = email
@@ -277,10 +277,10 @@ def full_email_update_by_admin(user: models.User, email: str, commit: bool = Fal
         db.session.commit()
 
 
-def clear_email_by_admin(user: models.User) -> None:
+def clear_email_by_admin(user: models.User, author: models.User) -> None:
     email = f"{user.id}{constants.DELETED_USER_EMAIL}"
 
-    admin_update_event = models.UserEmailHistory.build_admin_update(user=user, new_email=email)
+    admin_update_event = models.UserEmailHistory.build_admin_update(user, author, new_email=email)
     db.session.add(admin_update_event)
 
     user.email = email
