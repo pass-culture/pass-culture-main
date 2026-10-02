@@ -99,11 +99,11 @@ const BankInformations = (): JSX.Element => {
 
   const bankAccountVenues = bankAccountVenuesQuery.data?.managedVenues
 
-  const updateBankAccountVenuePricingPoint = (venueId: number) => {
+  const updateBankAccountVenuePricingPoint = async (venueId: number) => {
     if (!bankAccountVenuesQuery.data) {
       return
     }
-    bankAccountVenuesQuery.mutate(
+    await bankAccountVenuesQuery.mutate(
       {
         ...bankAccountVenuesQuery.data,
         managedVenues: bankAccountVenuesQuery.data.managedVenues.map((venue) =>
@@ -191,9 +191,9 @@ const BankInformations = (): JSX.Element => {
           offererId={selectedAdminOfferer.id}
           selectedBankAccount={selectedBankAccount}
           managedVenues={bankAccountVenues ?? []}
-          updateBankAccountVenuePricingPoint={
-            updateBankAccountVenuePricingPoint
-          }
+          updateBankAccountVenuePricingPoint={async () => {
+            await updateBankAccountVenuePricingPoint
+          }}
           closeDialog={closeDialog}
           editLinkId={editLinkId}
           addLinkId={addLinkId}

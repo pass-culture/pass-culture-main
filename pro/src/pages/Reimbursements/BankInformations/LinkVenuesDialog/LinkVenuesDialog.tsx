@@ -275,7 +275,7 @@ export const LinkVenuesDialog = ({
           <Button
             onClick={() => {
               setShowUnlinkDialog(false)
-              submitVenuesIds(methods.getValues('venuesIds'), true)
+              void submitVenuesIds(methods.getValues('venuesIds'), true)
             }}
             label="Confirmer"
             key="confirm"

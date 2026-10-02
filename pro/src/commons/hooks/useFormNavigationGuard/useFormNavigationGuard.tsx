@@ -152,9 +152,11 @@ export const useFormNavigationGuard = <
 
       if (resolvedAfterSubmitPath) {
         if (resolvedAfterSubmitState) {
-          navigate(resolvedAfterSubmitPath, { state: resolvedAfterSubmitState })
+          await navigate(resolvedAfterSubmitPath, {
+            state: resolvedAfterSubmitState,
+          })
         } else {
-          navigate(resolvedAfterSubmitPath)
+          await navigate(resolvedAfterSubmitPath)
         }
       } else {
         isSamePath ? form.reset() : form.reset(transformedFormValues)

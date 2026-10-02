@@ -73,7 +73,7 @@ export const IndividualOfferLayout = ({
       return
     }
     snackBar.success('Votre brouillon a bien été supprimé')
-    navigate('/offres')
+    await navigate('/offres')
   }
 
   return (

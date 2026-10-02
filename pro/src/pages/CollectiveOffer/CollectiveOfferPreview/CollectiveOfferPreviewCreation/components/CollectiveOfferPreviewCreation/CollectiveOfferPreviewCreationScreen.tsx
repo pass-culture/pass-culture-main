@@ -67,7 +67,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
           { revalidate: false }
         )
 
-        navigate(confirmationUrl)
+        await navigate(confirmationUrl)
         return
       }
 
@@ -113,7 +113,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
       if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)
       } else {
-        navigate(confirmationUrl)
+        await navigate(confirmationUrl)
       }
     } catch {
       snackBar.error(

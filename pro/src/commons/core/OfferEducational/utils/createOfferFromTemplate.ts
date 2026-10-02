@@ -56,7 +56,7 @@ export const createOfferFromTemplate = async (
         id: response.id,
       })
 
-      navigate(
+      await navigate(
         `/offre/collectif/${response.id}/creation?structure=${offererId}${
           requestId ? `&requete=${requestId}` : ''
         }`

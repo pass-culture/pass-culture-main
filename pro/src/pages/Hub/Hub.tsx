@@ -76,7 +76,7 @@ export const Hub = () => {
         return
       }
 
-      navigate('/accueil')
+      await navigate('/accueil')
     } catch {
       setIsLoading(false)
     }
