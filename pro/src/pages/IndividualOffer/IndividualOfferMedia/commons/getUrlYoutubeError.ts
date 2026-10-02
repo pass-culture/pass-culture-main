@@ -1,14 +1,14 @@
 // This regex is a replicate of what exists backend-side.
 // Mind that frontend / backend controls always match regarding video url.
 const youtubeVideoRegex = new RegExp(
-  /^(https?:\/\/)(www\.)?(m\.)?(youtube\.com\b|youtu\.be\b)(\/watch\?v=|\/embed\/|\/v\/|\/e\/|\/)([\w-]{11}\b)/
+  /^(https?:\/\/)(www\.)?(m\.)?(youtube\.com\b|youtu\.be\b)(\/watch\?v=|\/embed\/|\/shorts\/|\/v\/|\/e\/|\/)([\w-]{11}\b)/
 )
 
 export const getUrlYoutubeError = (url?: string): string | undefined => {
   const INVALID_URL_MSG =
     'Veuillez renseigner une URL valide. Ex : https://exemple.com'
   const NOT_YOUTUBE_MSG =
-    'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.'
+    'Veuillez renseigner une URL provenant de la plateforme Youtube. Les chaînes ne sont pas acceptées.'
 
   if (!url || url.trim() === '') {
     return NOT_YOUTUBE_MSG
