@@ -118,6 +118,30 @@ describe('SignIn', () => {
     )
   })
 
+  describe('FF WIP_PRE_SIGNUP_SIMULATION', () => {
+    it('should use FullLayout when FF is enabled', () => {
+      renderSignIn({ features: ['WIP_PRE_SIGNUP_SIMULATION'] })
+
+      expect(screen.getByTestId('signin-full-layout')).toBeInTheDocument()
+      expect(screen.queryByTestId('sign-up-header')).not.toBeInTheDocument()
+      expect(screen.getAllByText('Obligatoire')).toHaveLength(2)
+      expect(
+        screen.queryByText('Tous les champs sont obligatoires.')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should use default layout when FF is disabled', () => {
+      renderSignIn()
+
+      expect(screen.queryByTestId('signin-full-layout')).not.toBeInTheDocument()
+      expect(screen.getByTestId('sign-up-header')).toBeInTheDocument()
+      expect(
+        screen.getByText('Tous les champs sont obligatoires.')
+      ).toBeVisible()
+      expect(screen.queryAllByText('Obligatoire')).toHaveLength(0)
+    })
+  })
+
   it('should render without accessibility violations', async () => {
     const { container } = renderSignIn()
 

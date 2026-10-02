@@ -12,4 +12,24 @@
   background-color: var(--color-background-default);
   flex-grow: 1;
   padding: size.$full-layout-content-padding;
+
+  &.vertically-centered {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(
+      100vh -
+        (
+          size.$top-menu-height + size.$footer-height +
+          (size.$full-layout-content-padding * 2)
+        )
+    );
+    min-width: 100%;
+  }
+
+  .vertically-centered-inner {
+    flex-grow: 1;
+    min-width: 100%;
+  }
 }

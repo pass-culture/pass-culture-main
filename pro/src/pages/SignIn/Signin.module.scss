@@ -38,3 +38,8 @@
 .text-input {
   margin-bottom: var(--size-spacing-xl);
 }
+
+.signin-wrapper {
+  max-width: size.$signup-content-width;
+  margin: 0 auto;
+}

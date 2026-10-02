@@ -22,6 +22,9 @@ type SigninFormProps = {
 export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
 
   const accountCreationUrl = isAccountCreationAvailable
     ? '/inscription'
@@ -45,7 +48,9 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
               error={errors.email?.message}
               description="Format : email@exemple.com"
               {...register('email')}
-              requiredIndicator="hidden"
+              requiredIndicator={
+                isSignupSimulationEnabled ? 'explicit' : 'hidden'
+              }
             />
           </div>
         </div>
@@ -57,7 +62,9 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             error={errors.password?.message}
             {...register('password')}
             value={watch('password')}
-            requiredIndicator="hidden"
+            requiredIndicator={
+              isSignupSimulationEnabled ? 'explicit' : 'hidden'
+            }
           />
         </div>
         <Button
