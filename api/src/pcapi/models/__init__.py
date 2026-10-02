@@ -50,6 +50,22 @@ def json_serializer(obj: typing.Any) -> str:
         return pydantic_v1.json.pydantic_encoder(obj)
 
 
+def get_db_connection_args(options: list[str]) -> dict[str, str]:
+    """Build psycopg connection arguments from `-c` options and SSL settings."""
+    connect_args: dict[str, str] = {}
+    if options:
+        connect_args["options"] = " ".join(options)
+    if settings.DATABASE_SSLMODE:
+        connect_args["sslmode"] = settings.DATABASE_SSLMODE
+    if settings.DATABASE_SSLROOTCERT:
+        connect_args["sslrootcert"] = settings.DATABASE_SSLROOTCERT
+    if settings.DATABASE_SSLCERT:
+        connect_args["sslcert"] = settings.DATABASE_SSLCERT
+    if settings.DATABASE_SSLKEY:
+        connect_args["sslkey"] = settings.DATABASE_SSLKEY
+    return connect_args
+
+
 _engine_options = {
     "json_serializer": functools.partial(json.dumps, default=json_serializer),
     "pool_size": settings.DATABASE_POOL_SIZE,
@@ -64,8 +80,10 @@ if settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT:
     _db_options.append(
         "-c idle_in_transaction_session_timeout=%i" % settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT
     )
-if _db_options:
-    _engine_options["connect_args"] = {"options": " ".join(_db_options)}
+
+_connection_args = get_db_connection_args(_db_options)
+if _connection_args:
+    _engine_options["connect_args"] = _connection_args
 
 
 class Base(DeclarativeBase):
