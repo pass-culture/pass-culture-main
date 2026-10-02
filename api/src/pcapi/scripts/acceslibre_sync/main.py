@@ -401,6 +401,11 @@ def synchronize_accessibility_with_acceslibre(
     for i in range(start_batch_index, num_batches):
         venues_list = get_open_to_public_venues_with_accessibility_provider(batch_size=batch_size, batch_num=i)
 
+        # prevent idle state for sql transaction during batch
+        db.session.remove()
+        # free memory as well
+        db.session.expunge_all()
+
         updates_to_apply = []  # (venue, last_update, accessibility_data)
         providers_to_delete = []  # liste les providers si slug perdu
 
@@ -537,7 +542,7 @@ def synchronize_accessibility_with_acceslibre(
             )
             db.session.rollback()
 
-        db.session.expunge_all()
+        db.session.remove()
 
     logger.info("Accessibility data synchronization with acceslibre complete successfully")
 
