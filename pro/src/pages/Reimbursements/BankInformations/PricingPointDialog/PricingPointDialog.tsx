@@ -23,7 +23,7 @@ type PricingPointDialogProps = {
   selectedVenue: ManagedVenue | null
   venues: ManagedVenue[]
   closeDialog: () => void
-  updateVenuePricingPoint: (venueId: number) => void
+  updateVenuePricingPoint: (venueId: number) => Promise<void>
 }
 
 export const PricingPointDialog = ({
@@ -56,7 +56,7 @@ export const PricingPointDialog = ({
           venue_id: selectedVenue.id,
         },
       })
-      updateVenuePricingPoint(selectedVenue.id)
+      await updateVenuePricingPoint(selectedVenue.id)
       closeDialog()
 
       snackBar.success('Vos modifications ont bien été prises en compte.')

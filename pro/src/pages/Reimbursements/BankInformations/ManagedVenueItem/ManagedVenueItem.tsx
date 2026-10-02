@@ -18,7 +18,7 @@ import styles from './ManagedVenueItem.module.scss'
 
 type ManagedVenueItemProps = {
   venue: ManagedVenue
-  updateBankAccountVenuePricingPoint: (venueId: number) => void
+  updateBankAccountVenuePricingPoint: (venueId: number) => Promise<void>
   selectedBankAccount: BankAccountResponseModel
   selectedVenuesIds: number[]
   setSelectedVenuesIds: (ids: number[]) => void

@@ -25,7 +25,7 @@ import {
 
 import { LinkVenuesDialog } from './LinkVenuesDialog'
 
-const mockUpdateVenuePricingPoint = vi.fn()
+const mockUpdateVenuePricingPoint = vi.fn(() => Promise.resolve())
 const user = sharedCurrentUserFactory()
 const renderLinkVenuesDialog = (
   offererId: number,
@@ -34,7 +34,7 @@ const renderLinkVenuesDialog = (
   closeDialog: (update?: boolean) => Promise<void> = vi.fn(),
   updateBankAccountVenuePricingPoint: (
     venueId: number
-  ) => void = mockUpdateVenuePricingPoint,
+  ) => Promise<void> = mockUpdateVenuePricingPoint,
   options: RenderWithProvidersOptions = {}
 ) => {
   return renderWithProviders(

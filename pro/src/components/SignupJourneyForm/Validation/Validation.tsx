@@ -171,7 +171,7 @@ export const Validation = (): JSX.Element | undefined => {
         })
       ).unwrap()
 
-      navigate(getUserDefaultPath())
+      await navigate(getUserDefaultPath())
     } catch (e: unknown) {
       if (e === RECAPTCHA_ERROR) {
         snackBar.error(RECAPTCHA_ERROR_MESSAGE)

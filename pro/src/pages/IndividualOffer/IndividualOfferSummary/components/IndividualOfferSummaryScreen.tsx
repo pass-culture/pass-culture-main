@@ -128,7 +128,7 @@ export const IndividualOfferSummaryScreen = ({
       if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)
       } else {
-        navigate(offerConfirmationStepUrl)
+        await navigate(offerConfirmationStepUrl)
       }
     } catch (error) {
       snackBar.error(getHumanReadableApiError(error))

@@ -52,7 +52,7 @@ export function StocksCalendarActionsBar({
     }
 
     await mutate([GET_OFFER_QUERY_KEY, offerId])
-    navigate(
+    await navigate(
       getIndividualOfferUrl({
         offerId: offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,

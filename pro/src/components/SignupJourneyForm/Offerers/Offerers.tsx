@@ -179,7 +179,9 @@ export const Offerers = (): JSX.Element => {
         })
       ).unwrap()
 
-      navigate('/inscription/structure/rattachement/confirmation-rattachement')
+      await navigate(
+        '/inscription/structure/rattachement/confirmation-rattachement'
+      )
     } catch (e) {
       snackBar.error(
         getHumanReadableApiError(

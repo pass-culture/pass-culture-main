@@ -47,7 +47,7 @@ export const ResetPassword = (): JSX.Element => {
       })
 
       snackBar.success('Mot de passe modifié.')
-      navigate('/connexion')
+      await navigate('/connexion')
     } catch {
       invalidTokenHandler()
     }

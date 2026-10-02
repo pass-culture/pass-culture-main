@@ -89,7 +89,7 @@ export const AdditionalFeesForm = ({
         shouldDirty: true,
         shouldTouch: true,
       })
-      form.trigger('collectiveAdditionalFees')
+      void form.trigger('collectiveAdditionalFees')
     }
   }
 

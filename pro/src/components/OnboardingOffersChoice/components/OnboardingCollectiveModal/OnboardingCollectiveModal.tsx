@@ -70,7 +70,7 @@ export const OnboardingCollectiveModal = ({
         ).unwrap()
 
       if (updatedSelectedPartnerVenue?.isOnboarded) {
-        return navigate(getUserDefaultPath())
+        return await navigate(getUserDefaultPath())
       }
 
       // In any other case, it's an error

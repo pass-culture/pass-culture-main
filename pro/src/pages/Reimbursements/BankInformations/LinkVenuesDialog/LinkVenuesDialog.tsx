@@ -28,7 +28,7 @@ interface LinkVenuesDialogProps {
   selectedBankAccount: BankAccountResponseModel
   managedVenues: Array<ManagedVenue>
   closeDialog: (update?: boolean) => Promise<void>
-  updateBankAccountVenuePricingPoint: (venueId: number) => void
+  updateBankAccountVenuePricingPoint: (venueId: number) => Promise<void>
   editLinkId: string
   addLinkId: string
 }
@@ -275,7 +275,7 @@ export const LinkVenuesDialog = ({
           <Button
             onClick={() => {
               setShowUnlinkDialog(false)
-              submitVenuesIds(methods.getValues('venuesIds'), true)
+              void submitVenuesIds(methods.getValues('venuesIds'), true)
             }}
             label="Confirmer"
             key="confirm"
