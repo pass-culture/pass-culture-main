@@ -52,13 +52,15 @@ Texte
 
 **RAWeb/RGAA** : [Critère 9.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-4)
 **Ticket** : [PC-43883](https://passculture.atlassian.net/browse/PC-43883)  
-**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+**PR** : [#24510](https://github.com/pass-culture/pass-culture-main/pull/24510)
 
 **Problème** 😱  
-Texte
+Au moins une citation n'est pas correctement identifiée.
+
+- Le texte "la personne handicapée a droit à la compensation des conséquences de son handicap, quels que soient l’origine et la nature de sa déficience, son âge ou son mode de vie."
 
 **Correction** 💡  
-Texte
+- Implémenter le passage de texte "la personne handicapée a droit à la compensation des conséquences de son handicap, quels que soient l’origine et la nature de sa déficience, son âge ou son mode de vie." dans un élément <blockquote>.
 
 **Retours audit** 🔥  
 Texte
