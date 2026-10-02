@@ -1,11 +1,7 @@
 import { ArtistType } from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 
-import type { DetailsFormValues } from '../../components/DetailsForm/types' // Assuming types are in a sibling file
-import {
-  eanSearchValidationSchema,
-  getValidationSchema,
-} from '../validationSchema'
+import { type DetailsFormValues, getValidationSchema } from './validationSchema'
 
 describe('getValidationSchema', () => {
   const schema = getValidationSchema()
@@ -180,19 +176,5 @@ describe('getValidationSchema', () => {
         'Cet artiste a déjà été ajouté'
       )
     })
-  })
-})
-
-describe('eanSearchValidationSchema', () => {
-  it('should pass with a valid EAN', async () => {
-    await expect(
-      eanSearchValidationSchema.validate({ eanSearch: '1234567890123' })
-    ).resolves.toBeDefined()
-  })
-
-  it('should fail with an invalid EAN', async () => {
-    await expect(
-      eanSearchValidationSchema.validate({ eanSearch: 'invalid' })
-    ).rejects.toThrow()
   })
 })

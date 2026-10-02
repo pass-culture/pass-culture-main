@@ -1,13 +1,13 @@
 import { ArtistType } from '@/apiClient/v1'
 
-import type { DetailsFormValues } from '../../components/DetailsForm/types'
 import {
   deSerializeDurationMinutes,
   serializeDetailsPatchData,
   serializeDetailsPostData,
   serializeDurationMinutes,
   serializeExtraData,
-} from '../serializers'
+} from './serializers'
+import type { DetailsFormValues } from './validationSchema'
 
 describe('deSerializeDurationMinutes', () => {
   it('should correctly de serialize duration minutes', () => {
@@ -38,6 +38,13 @@ describe('serializeExtraData', () => {
     subcategoryConditionalFields: [],
     productId: '',
     artistOfferLinks: [],
+    accessibility: {
+      audio: true,
+      mental: false,
+      motor: true,
+      visual: false,
+      none: false,
+    },
   }
 
   it('should correctly serialize extra data without artistsOfferLinks (product based offer)', () => {
@@ -69,13 +76,11 @@ describe('serializeExtraData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
           artistId: null,
           artistName: 'Aya Nakamura',
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
           artistId: null,
           artistName: 'Marcel et son orchestre',
           artistType: ArtistType.PERFORMER,
@@ -233,7 +238,6 @@ describe('serializeDetailsPostData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
           artistId: null,
           artistName: ' Marcel et son orchestre ',
           artistType: ArtistType.PERFORMER,
@@ -345,7 +349,6 @@ describe('serializeDetailsPatchData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
           artistId: null,
           artistName: ' Marcel et son orchestre ',
           artistType: ArtistType.PERFORMER,

@@ -9,8 +9,8 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { normalizeRequestBodyProps } from '@/commons/utils/normalizeRequestBodyProps'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 
-import type { DetailsFormValues } from '../components/DetailsForm/types'
 import { EXTRA_DATA_FORM_FIELDS } from './constants'
+import type { DetailsFormValues } from './validationSchema'
 
 export const serializeDurationMinutes = (
   durationHour: string
@@ -77,22 +77,16 @@ export const serializeExtraData = (formValues: DetailsFormValues) => {
   })
 }
 
-const serializeArtistOfferLinks = (
+const sanitizeArtistOfferLinks = (
   artistOfferLinks: ArtistOfferLinkResponseModel[]
 ): ArtistOfferLinkBodyModelV2[] => {
-  const links: ArtistOfferLinkBodyModelV2[] = []
-  const validArtistOfferLinks = artistOfferLinks.filter((artist) =>
-    artist.artistName?.trim()
-  )
-  validArtistOfferLinks.forEach((link) => {
-    links.push({
+  return artistOfferLinks
+    .filter((artist) => !!artist.artistName?.trim())
+    .map((link) => ({
       artistId: link.artistId,
       artistName: link.artistName.trim(),
       artistType: link.artistType,
-    })
-  })
-
-  return links
+    }))
 }
 
 export function serializeDetailsPostData(
@@ -116,7 +110,8 @@ export function serializeDetailsPostData(
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
     visualDisabilityCompliant: formValues.accessibility.visual,
-    artistOfferLinks: serializeArtistOfferLinks(formValues.artistOfferLinks),
+    // @ts-expect-error - Waiting for pydanticV2 migration
+    artistOfferLinks: sanitizeArtistOfferLinks(formValues.artistOfferLinks),
   })
 }
 
@@ -159,7 +154,8 @@ export function serializeDetailsPatchData(
       visualDisabilityCompliant: formValues.accessibility.visual,
     }),
     ...(!isReadOnly('artistOfferLinks') && {
-      artistOfferLinks: serializeArtistOfferLinks(formValues.artistOfferLinks),
+      // @ts-expect-error - Waiting for pydanticV2 migration
+      artistOfferLinks: sanitizeArtistOfferLinks(formValues.artistOfferLinks),
     }),
   })
 }

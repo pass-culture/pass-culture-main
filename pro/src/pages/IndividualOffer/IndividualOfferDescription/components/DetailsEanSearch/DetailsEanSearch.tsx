@@ -13,13 +13,13 @@ import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCloseIcon from '@/icons/full-close.svg'
 import strokeBarcodeIcon from '@/icons/stroke-barcode.svg'
-import {
-  type EanSearchForm,
-  generateEanSearchValidationSchema,
-} from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
 import { EanSearchCallout } from '@/pages/IndividualOffer/IndividualOfferDescription/components/EanSearchCallout/EanSearchCallout'
 
 import styles from './DetailsEanSearch.module.scss'
+import {
+  type EanSearchForm,
+  generateEanSearchValidationSchema,
+} from './validationSchema'
 
 export type DetailsEanSearchProps = {
   required: boolean

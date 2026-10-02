@@ -10,9 +10,9 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/types'
 import { ApiSelect } from '@/ui-kit/form/ApiSelect/ApiSelect'
 
+import type { DetailsFormValues } from '../../../validationSchema'
 import styles from './ArtistField.module.scss'
 import avatarPlaceholder from './assets/avatar_placeholder.png'
 
@@ -107,8 +107,6 @@ export function ArtistField({
                   setValue(
                     `artistOfferLinks.${index}`,
                     {
-                      // TODO (amine) to remove once model migrated to Pydantic V2
-                      // @ts-expect-error
                       artistId: null,
                       artistName: artistName,
                       artistType,
@@ -119,8 +117,6 @@ export function ArtistField({
                 onReset={() => {
                   setValue(
                     `artistOfferLinks.${index}`,
-                    // TODO (amine) to remove once model migrated to Pydantic V2
-                    // @ts-expect-error
                     { artistId: null, artistName: '', artistType },
                     { shouldValidate: true }
                   )
@@ -182,8 +178,6 @@ export function ArtistField({
           label={`Ajouter un ${ARTIST_TYPE_LABELS[artistType].toLowerCase()}`}
           onClick={() =>
             append(
-              // TODO (amine) to remove once model migrated to Pydantic V2
-              // @ts-expect-error
               { artistId: null, artistName: '', artistType },
               { shouldFocus: true }
             )

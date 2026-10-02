@@ -1,6 +1,6 @@
 import { ArtistType } from '@/apiClient/v1'
 
-import type { DetailsFormValues } from '../components/DetailsForm/types'
+import type { DetailsFormValues } from './validationSchema'
 
 export const EXTRA_DATA_FORM_FIELDS = [
   'author',
