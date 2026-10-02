@@ -2512,6 +2512,28 @@ def _update_external_offerer(offerer: models.Offerer, *, index_with_reason: Inde
     )
 
 
+def _update_external_venue(venue: offerers_models.Venue, index_with_reason: IndexationReason | None = None) -> None:
+    external_attributes_api.update_external_pro(venue.bookingEmail)
+    zendesk_sell_api.update_offerer(venue.managingOfferer)
+
+    if not index_with_reason:
+        return
+
+    # _reindex_* unindexes venues and offers which are not eligible for search
+    on_commit(functools.partial(search.async_index_venue_ids, [venue.id], reason=index_with_reason))
+    on_commit(functools.partial(search.async_index_offers_of_venue_ids, [venue.id], reason=index_with_reason))
+    packed_collective_ids = db.session.query(educational_models.CollectiveOfferTemplate.id).filter(
+        educational_models.CollectiveOfferTemplate.venueId.in_([venue.id])
+    )
+    on_commit(
+        functools.partial(
+            search.async_index_collective_offer_template_ids,
+            {i for (i,) in packed_collective_ids},
+            reason=index_with_reason,
+        )
+    )
+
+
 def delete_offerer(offerer_id: int) -> None:
     offerer_has_bookings = db.session.query(
         db.session.query(bookings_models.Booking).filter(bookings_models.Booking.offererId == offerer_id).exists()
@@ -3636,10 +3658,9 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
         return
 
     venue.state = models.VenueState.CLOSING
-    nullify_venue_emails(venue, author)
     history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
 
-    _update_external_offerer(venue.managingOfferer)
+    _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_CLOSED)
 
     on_commit(
         functools.partial(
@@ -3655,6 +3676,7 @@ def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | 
 
     venue.state = None
     history_api.add_action(history_models.ActionType.VENUE_REOPENED, author=author, venue=venue, comment=comment)
+    _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_REOPENED)
 
     db.session.flush()
 

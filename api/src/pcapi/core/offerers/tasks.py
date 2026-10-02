@@ -13,7 +13,6 @@ from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers import repository as offers_repository
 from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.transaction_manager import atomic
@@ -102,10 +101,6 @@ class DeactivateVenueOffersPayload(BaseModelV2):
 def deactivate_venue_offers_task(payload: DeactivateVenueOffersPayload) -> None:
     with atomic():
         venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == payload.venue_id).one()
-        offers_query = offers_repository.offers_by_venue_query(
-            venue_id=payload.venue_id, with_publication_datetime=True
-        )
-        offers_api.batch_activate_offers(query=offers_query, activate=False)
 
         offerers_api.cancel_individual_bookings_on_venue_closure(venue.id, payload.author_id)
         offerers_api.cancel_collective_bookings_on_venue_closure(venue.id, payload.author_id)
