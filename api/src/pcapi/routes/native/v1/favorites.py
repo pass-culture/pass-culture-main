@@ -4,8 +4,8 @@ from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch.trigger_events import track_offer_added_to_favorites_event
 from pcapi.core.favorites import api
 from pcapi.core.favorites import exceptions as favorites_exceptions
-from pcapi.core.favorites.api import get_favorite_offers_for
 from pcapi.core.favorites.api import set_offer_as_favorite
+from pcapi.core.favorites.repository import get_favorite_offers_for
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.exceptions import OfferNotFound
 from pcapi.models.api_errors import ApiErrors
@@ -24,7 +24,7 @@ from .serialization import favorites as serializers
 @authenticated_and_active_user_required
 @spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)
 def get_favorites() -> serializers.PaginatedFavoritesResponse:
-    favorites = api.get_favorite_offers_for(current_user)
+    favorites = get_favorite_offers_for(current_user)
 
     return serializers.PaginatedFavoritesResponse(
         page=1,
