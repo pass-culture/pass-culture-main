@@ -131,6 +131,7 @@ def get_capped_offers_for_filters(
                     offerers_models.Venue.id,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
+                    offerers_models.Venue.state,
                 ),
                 sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
                     offerers_models.OffererAddress.address

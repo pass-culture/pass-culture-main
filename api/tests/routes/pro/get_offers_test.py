@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
@@ -441,6 +442,21 @@ class Returns200Test:
 
         offers = offers_repository.get_offers_by_filters(user_id=pro.id).all()
         assert len(offers) == 1
+
+    def should_list_offers_from_closed_venues_as_suspended(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, state=offerers_models.VenueState.CLOSED)
+        active_offer = offers_factories.EventOfferFactory(venue=venue)
+        offers_factories.EventStockFactory(offer=active_offer)
+
+        authenticated_client = client.with_session_auth(email=pro.email)
+        venue_id = venue.id
+        with testing.assert_num_queries(self.number_of_queries):
+            response = authenticated_client.get(f"/offers?venueId={venue_id}")
+        assert response.status_code == 200
+        assert response.json[0]["status"] == "INACTIVE"
 
     def should_return_offers_filtered_by_offerer_address(self, client):
         pro = users_factories.ProFactory()
