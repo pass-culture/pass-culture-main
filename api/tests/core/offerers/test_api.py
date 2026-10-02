@@ -4419,6 +4419,23 @@ class CloseVenueTest:
         assert booking.cancellationReason == bookings_models.BookingCancellationReasons.VENUE_CLOSED
         assert len(mails_testing.outbox) == 1
 
+    @patch("pcapi.core.mails.transactional.send_venue_closure_request_email")
+    def test_pricing_point_venue(self, mock_send_venue_closure_request_email):
+        venue = offerers_factories.VenueBankAccountLinkFactory(venue__state=None).venue
+        offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
+        author = users_factories.BaseUserFactory()
+
+        assert venue.is_pricing_point
+
+        with atomic():
+            offerers_api.close_venue(venue, author)
+
+        db.session.refresh(venue)
+
+        assert venue.state is None
+        assert venue.current_bank_account_link
+        mock_send_venue_closure_request_email.assert_called()
+
 
 class ReopenVenueTest:
     """Test the overall behaviour

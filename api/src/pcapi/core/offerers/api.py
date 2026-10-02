@@ -3631,9 +3631,13 @@ def get_user_pending_and_validated_offerers(
     return PendingAndValidatedOfferers(validated=validated, pending=pending)
 
 
-def close_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
+def close_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> bool:
     if venue.is_closed:
-        return
+        return True
+
+    if venue.is_pricing_point:
+        transactional_mails.send_venue_closure_request_email(venue)
+        return False
 
     venue.state = models.VenueState.CLOSING
     nullify_venue_emails(venue, author)
@@ -3647,6 +3651,7 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
             tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id).model_dump(),
         )
     )
+    return True
 
 
 def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
