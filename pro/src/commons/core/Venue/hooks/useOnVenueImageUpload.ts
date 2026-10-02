@@ -33,10 +33,7 @@ export const useOnVenueImageUpload = (
       imageFile,
       credit,
       alternativeText,
-      cropParams?.x,
-      cropParams?.y,
-      cropParams?.height,
-      cropParams?.width
+      cropParams
     )
     setImageValues(
       buildInitialVenueImageValues(

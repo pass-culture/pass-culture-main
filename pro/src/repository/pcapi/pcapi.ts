@@ -4,6 +4,7 @@
 import { client } from 'repository/pcapi/pcapiClient'
 
 import { stringify } from '@/commons/utils/query-string'
+import type { CroppedRect } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 //
 // venues
@@ -23,19 +24,16 @@ export const postImageToVenue = async (
   banner: File,
   imageCredit: string | null,
   imageAlternativeText: string | null,
-  xCropPercent?: number,
-  yCropPercent?: number,
-  heightCropPercent?: number,
-  widthCropPercent?: number
+  cropParams?: CroppedRect
 ) => {
   const body = new FormData()
   body.append('banner', banner)
 
   const venueImage: VenueImage = {
-    x_crop_percent: xCropPercent,
-    y_crop_percent: yCropPercent,
-    height_crop_percent: heightCropPercent,
-    width_crop_percent: widthCropPercent,
+    x_crop_percent: cropParams?.x,
+    y_crop_percent: cropParams?.y,
+    height_crop_percent: cropParams?.height,
+    width_crop_percent: cropParams?.width,
   }
 
   if (imageCredit) {

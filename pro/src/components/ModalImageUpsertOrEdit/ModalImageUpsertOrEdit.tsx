@@ -2,7 +2,12 @@ import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import type { AvatarEditorRef } from 'react-avatar-editor'
 
-type CroppedRect = { x: number; y: number; width: number; height: number }
+export type CroppedRect = {
+  x: number
+  y: number
+  width: number
+  height: number
+}
 
 import { getFileFromURL } from '@/apiClient/helpers'
 import { useAnalytics } from '@/app/App/analytics/firebase'
