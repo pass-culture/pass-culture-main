@@ -523,9 +523,7 @@ class AcceslibreBackend(BaseBackend):
     def _fetch_request(
         url: str, headers: dict | None = None, params: dict[str, str | int] | None = None
     ) -> requests.Response:
-        return requests.get(
-            url, headers=headers, params=params, timeout=settings.ACCESLIBRE_REQUEST_TIMEOUT, log_info=False
-        )
+        return requests.get(url, headers=headers, params=params, timeout=6, log_info=False)
 
     def _send_request(
         self,
@@ -547,8 +545,8 @@ class AcceslibreBackend(BaseBackend):
             raise AccesLibreApiException(
                 f"Error connecting AccesLibre API for {url} and query parameters: {query_params}"
             )
-        if settings.ACCESLIBRE_SHOULD_AVOID_TOO_MANY_REQUESTS:
-            time.sleep(0.3)  # request limit on acceslibre side is 3 per seconds
+
+        time.sleep(0.3)  # request limit on acceslibre side is 3 per seconds
         if response.status_code == 429:  # handle too many requests
             raw_retry_after = response.headers.get("Retry-After")
             retry_after = int(raw_retry_after) if raw_retry_after and raw_retry_after.isdigit() else None

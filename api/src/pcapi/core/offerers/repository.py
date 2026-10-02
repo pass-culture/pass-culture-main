@@ -10,7 +10,6 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -700,9 +699,9 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
                 models.Offerer.allowedOnAdage,
             ),
             sa_orm.selectinload(models.Offerer.managedVenues).options(
-                sa_orm.selectinload(offerers_models.Venue.collectiveDmsApplications),
-                sa_orm.selectinload(offerers_models.Venue.venueProviders),
-                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+                sa_orm.selectinload(models.Venue.collectiveDmsApplications),
+                sa_orm.selectinload(models.Venue.venueProviders),
+                sa_orm.joinedload(models.Venue.googlePlacesInfo),
             ),
         )
         .one_or_none()
@@ -1096,7 +1095,7 @@ def get_offerer_addresses(
             geography_models.Address.departmentCode,
         )
         .filter(models.Venue.managingOffererId == offerer_id)
-        .filter(offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION)
+        .filter(models.OffererAddress.type == models.LocationType.OFFER_LOCATION)
         .join(geography_models.Address, models.OffererAddress.addressId == geography_models.Address.id)
         .join(models.Venue, models.Venue.id == models.OffererAddress.venueId)
     )
@@ -1132,7 +1131,7 @@ def get_venue_addresses(
         .join(models.OffererAddress.venue)
         .filter(
             models.OffererAddress.venueId == venue_id,
-            models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
+            models.OffererAddress.type == models.LocationType.OFFER_LOCATION,
         )
     )
 
@@ -1259,13 +1258,13 @@ def get_pro_user_timezones(user_id: int) -> set[str]:
     query = (
         db.session.query(geography_models.Address)
         .with_entities(geography_models.Address.timezone)
-        .join(offerers_models.OffererAddress, offerers_models.OffererAddress.addressId == geography_models.Address.id)
-        .join(offerers_models.Venue, offerers_models.OffererAddress.venueId == offerers_models.Venue.id)
+        .join(models.OffererAddress, models.OffererAddress.addressId == geography_models.Address.id)
+        .join(models.Venue, models.OffererAddress.venueId == models.Venue.id)
         .join(
-            offerers_models.UserOfferer,
-            offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId,
+            models.UserOfferer,
+            models.UserOfferer.offererId == models.Venue.managingOffererId,
         )
-        .filter(offerers_models.UserOfferer.userId == user_id)
+        .filter(models.UserOfferer.userId == user_id)
         .distinct()
     )
 
@@ -1276,8 +1275,8 @@ def get_offerer_address_timezone(offerer_address_id: int) -> str:
     return (
         db.session.query(geography_models.Address)
         .with_entities(geography_models.Address.timezone)
-        .join(offerers_models.OffererAddress, offerers_models.OffererAddress.addressId == geography_models.Address.id)
-        .filter(offerers_models.OffererAddress.id == offerer_address_id)
+        .join(models.OffererAddress, models.OffererAddress.addressId == geography_models.Address.id)
+        .filter(models.OffererAddress.id == offerer_address_id)
         .scalar()
     )
 
@@ -1297,14 +1296,14 @@ def get_offer_timezone(offer_id: int) -> str:
         str: The timezone associated with the offer.
     """
     VenueAddress = sa_orm.aliased(geography_models.Address)
-    VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
+    VenueOffererAddress = sa_orm.aliased(models.OffererAddress)
     return (
         db.session.query(offers_models.Offer)
         .with_entities(sa.func.coalesce(geography_models.Address.timezone, VenueAddress.timezone))
         .join(offers_models.Offer.venue)
         .outerjoin(offers_models.Offer.offererAddress)
-        .outerjoin(offerers_models.OffererAddress.address)
-        .join(VenueOffererAddress, offerers_models.Venue.offererAddress)
+        .outerjoin(models.OffererAddress.address)
+        .join(VenueOffererAddress, models.Venue.offererAddress)
         .join(VenueAddress, VenueOffererAddress.address)
         .filter(offers_models.Offer.id == offer_id)
         .scalar()
@@ -1412,4 +1411,69 @@ def _build_offerer_is_onboarded_expression() -> sa.ColumnElement[bool]:
 
     return sa.or_(
         models.Offerer.allowedOnAdage.is_(True), has_adage_id, has_collective_application, has_non_draft_offers
+    )
+
+
+def count_open_to_public_venues_with_accessibility_provider() -> int:
+    return (
+        db.session.query(models.Venue)
+        .join(models.AccessibilityProvider)
+        .filter(models.Venue.isOpenToPublic.is_(True))
+        .count()
+    )
+
+
+def get_open_to_public_venues_with_accessibility_provider(
+    batch_size: int = 1000, batch_num: int = 0
+) -> list[models.Venue]:
+    return (
+        db.session.query(models.Venue)
+        .join(models.Venue.accessibilityProvider)
+        .filter(models.Venue.isOpenToPublic.is_(True))
+        .options(
+            sa_orm.contains_eager(models.Venue.accessibilityProvider),
+            sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address),
+        )
+        .order_by(models.Venue.id.asc())
+        .limit(batch_size)
+        .offset(batch_num * batch_size)
+        .all()
+    )
+
+
+def count_open_to_public_venues_without_accessibility_provider() -> int:
+    return (
+        db.session.query(models.Venue)
+        .outerjoin(models.Venue.accessibilityProvider)
+        .filter(
+            models.Venue.isOpenToPublic.is_(True),
+            models.AccessibilityProvider.id.is_(None),
+        )
+        .count()
+    )
+
+
+def get_open_to_public_venues_without_accessibility_provider(
+    batch_size: int = 1000, batch_num: int = 0
+) -> list[models.Venue]:
+    return (
+        db.session.query(models.Venue)
+        .outerjoin(models.Venue.accessibilityProvider)
+        .filter(
+            models.Venue.isOpenToPublic.is_(True),
+            models.AccessibilityProvider.id.is_(None),
+        )
+        .options(
+            sa_orm.load_only(
+                models.Venue.name,
+                models.Venue.publicName,
+                models.Venue.siret,
+                models.Venue.isOpenToPublic,
+            ),
+            sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address),
+        )
+        .order_by(models.Venue.id.asc())
+        .limit(batch_size)
+        .offset(batch_num * batch_size)
+        .all()
     )
