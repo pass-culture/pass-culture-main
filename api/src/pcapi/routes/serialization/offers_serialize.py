@@ -108,6 +108,37 @@ class CategoryResponseModel(BaseModel):
         orm_mode = True
 
 
+class NfdOfferFormOptionResponseModel(BaseModel):
+    value: str
+    label: str
+
+
+class NfdOfferFormFieldResponseModel(BaseModel):
+    type: str
+    required: bool = False
+    label: str = ''
+    options: list[NfdOfferFormOptionResponseModel] = Field(default_factory=list)
+
+
+class NfdOfferFormSectionResponseModel(BaseModel):
+    id: str
+    title: str
+    fields: list[NfdOfferFormFieldResponseModel]
+
+
+class NfdOfferFormPreviewResponseModel(BaseModel):
+    nature: str
+    domain: str
+    form_definition: list[NfdOfferFormSectionResponseModel]
+    name: str
+    description: str
+    accessibility: dict[str, bool]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
 # escape the inherited alias_generator=to_camel sets by HttpBodyModel
 @pydantic_v2.with_config(pydantic_v2.ConfigDict(extra="forbid"))
 class OfferExtraDataV2(offers_models.OfferExtraData):

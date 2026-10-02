@@ -2,13 +2,14 @@ import { useIndividualOfferContext } from '@/commons/context/IndividualOfferCont
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 
 import { IndividualOfferDescriptionScreen } from './components/IndividualOfferDescriptionScreen'
+import { IndividualOfferDescriptionPOC } from './IndividualOfferDescriptionPOC/IndividualOfferDescriptionPOC'
 
 const IndividualOfferDescription = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
 
   return (
     <IndividualOfferLayout offer={offer}>
-      <IndividualOfferDescriptionScreen key={offer?.id} />
+      <IndividualOfferDescriptionPOC key={offer?.id} />
     </IndividualOfferLayout>
   )
 }
