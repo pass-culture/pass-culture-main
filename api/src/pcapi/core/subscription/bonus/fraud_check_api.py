@@ -60,10 +60,12 @@ def create_disability_bonus_credit_fraud_checks(
     birth_country_cog_code: str | None = None,
     birth_city_cog_code: str | None = None,
     origin: str,
+    next_retry_at: datetime.datetime | None = None,
 ) -> tuple[subscription_models.BeneficiaryFraudCheck, subscription_models.BeneficiaryFraudCheck]:
     eligibility = user.eligibility
     person = _build_bonus_credit_person_for_disability(user, birth_country_cog_code, birth_city_cog_code)
-    next_retry_at = _get_next_bonus_credit_retry_date(origin)
+    if not next_retry_at:
+        next_retry_at = _get_next_bonus_credit_retry_date(origin)
     aah_fraud_check_content = bonus_schemas.AdultDisabilityBonusCreditContent(
         person=person, next_retry_at=next_retry_at
     )
