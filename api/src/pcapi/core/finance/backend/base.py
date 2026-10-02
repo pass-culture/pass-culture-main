@@ -151,6 +151,7 @@ TITLES = {
 class SettlementType(enum.Enum):
     PAYMENT = "Payment"
     VOIDED_PAYMENT = "Voided Payment"
+    REFUND = "Refund"
 
 
 class ExternalType(enum.Enum):
@@ -197,9 +198,9 @@ class SettlementPayload(BaseModelV2):
     external_settlement_id: str
     invoice_external_reference: str
     settlement_type: SettlementType
-    settlement_batch_external_id: str
-    settlement_batch_name: str
-    settlement_batch_label: str
+    settlement_batch_external_id: str | None
+    settlement_batch_name: str | None
+    settlement_batch_label: str | None
     settlement_date: datetime.date
     amount: int
 

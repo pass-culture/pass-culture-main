@@ -1038,7 +1038,10 @@ class SettlementStatus(enum.Enum):
 
 class Settlement(PcObject, Model):
     """This represents the real amount sent to or taken from a bank account.
-    One settlement can be made to pay for multiple invoices."""
+    One settlement can be made to pay for multiple invoices.
+    If the settlement is outgoing (amount<0), there must be a batch.
+    Else, if the settlement is paid by the offerer, there is no batch.
+    """
 
     __tablename__ = "settlement"
 
@@ -1061,10 +1064,10 @@ class Settlement(PcObject, Model):
     status: sa_orm.Mapped[SettlementStatus] = sa_orm.mapped_column(
         db_utils.MagicEnum(SettlementStatus, use_values=True), nullable=False, default=SettlementStatus.ISSUED
     )
-    batchId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("settlement_batch.id"), index=True, nullable=False
+    batchId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("settlement_batch.id"), index=True, nullable=True
     )
-    batch: sa_orm.Mapped["SettlementBatch"] = sa_orm.relationship(
+    batch: sa_orm.Mapped["SettlementBatch | None"] = sa_orm.relationship(
         "SettlementBatch", foreign_keys=[batchId], back_populates="settlements"
     )
     __table_args__ = (

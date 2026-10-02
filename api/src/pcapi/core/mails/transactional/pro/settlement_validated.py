@@ -8,6 +8,7 @@ from pcapi.core.mails.transactional.utils import format_price
 
 def get_settlement_validated_email_data(settlement: finance_models.Settlement) -> models.TransactionalEmailData:
     amount = -finance_utils.cents_to_full_unit(settlement.amount)
+    assert settlement.batch is not None  # settlements are being validated via a batch
     return models.TransactionalEmailData(
         template=TransactionalEmail.SETTLEMENT_VALIDATED.value,
         params={

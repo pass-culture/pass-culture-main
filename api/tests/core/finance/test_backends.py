@@ -13,7 +13,6 @@ from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-from pcapi.core.finance.backend import constants
 from pcapi.core.finance.backend.base import BaseFinanceBackend
 from pcapi.core.finance.backend.base import ExternalType
 from pcapi.core.finance.backend.base import InvoicePayload
@@ -1577,7 +1576,7 @@ class CegidFinanceBackendTest:
                     "note": None,
                     "AdjgDocType": {"value": "Voided Payment"},
                     "adjgRefNbr": {"value": "0032596"},
-                    "Amount": {"value": 982.8},
+                    "Amount": {"value": -982.8},
                     "APInvoice_RefNbr": {"value": "0038380"},
                     "APInvoiceDocType": {"value": "Bill"},
                     "BatchNbr": {"value": "000023"},
@@ -1671,6 +1670,32 @@ class CegidFinanceBackendTest:
                     "VendorName": {"value": "Compte bancaire 13580"},
                     "custom": {},
                 },
+                {
+                    "id": some_uuid,
+                    "rowNumber": 3,
+                    "note": None,
+                    "AdjgDocType": {"value": "Refund"},
+                    "adjgRefNbr": {"value": "0196740"},
+                    "Amount": {"value": 50.0},
+                    "APInvoice_RefNbr": {"value": "0197099"},
+                    "APInvoiceDocType": {"value": "Debit Adj."},
+                    "BatchNbr": {},
+                    "CreatedDateTime": {"value": iso_now},
+                    "Date": {"value": iso_now},
+                    "DescLot": {},
+                    "EstAnnule": {"value": False},
+                    "ModifiedDateTime": {"value": iso_now},
+                    "Ndajustement": {"value": 1},
+                    "NumFacFourn": {"value": "0197099"},
+                    "PaymentStatus": {"value": "Closed"},
+                    "RefFournFact": {"value": "A260000013"},
+                    "RefLot": {},
+                    "Typededocajust": {"value": "REF"},
+                    "TypeFacFour": {"value": "Debit Adj."},
+                    "VendorID": {"value": "22723"},
+                    "VendorName": {"value": "Compte bancaire 22723"},
+                    "custom": {},
+                },
             ],
             "RefFournFact": {},
             "custom": {},
@@ -1687,7 +1712,7 @@ class CegidFinanceBackendTest:
         settlements_payload = finance_backend.get_settlements(datetime.date.today(), datetime.date.today())
         assert request_matcher_put_payment_status.call_count == 1
 
-        assert len(settlements_payload) == 2
+        assert len(settlements_payload) == 3
         assert settlements_payload == [
             SettlementPayload(
                 bank_account_id=13579,
@@ -1698,17 +1723,28 @@ class CegidFinanceBackendTest:
                 settlement_batch_name="VIR123",
                 settlement_batch_label="VIR123 Label",
                 settlement_date=now.date(),
-                amount=-98280,
+                amount=98280,
             ),
             SettlementPayload(
                 bank_account_id=13579,
                 external_settlement_id="0032598",
                 invoice_external_reference="F123456999",
                 settlement_type=SettlementType.PAYMENT,
-                settlement_batch_external_id=constants.MISSING_BATCH_EXTERNAL_ID_VALUE,
-                settlement_batch_name=constants.MISSING_BATCH_NAME_VALUE,
-                settlement_batch_label=constants.MISSING_BATCH_LABEL_VALUE,
+                settlement_batch_external_id=None,
+                settlement_batch_name=None,
+                settlement_batch_label=None,
                 settlement_date=now.date(),
                 amount=-98280,
+            ),
+            SettlementPayload(
+                bank_account_id=22723,
+                external_settlement_id="0196740",
+                invoice_external_reference="A260000013",
+                settlement_type=SettlementType.REFUND,
+                settlement_batch_external_id=None,
+                settlement_batch_name=None,
+                settlement_batch_label=None,
+                settlement_date=now.date(),
+                amount=5000,
             ),
         ]
