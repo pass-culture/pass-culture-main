@@ -14,7 +14,8 @@ import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeC
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { TemplateCollectiveOffersScreen } from '@/pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
-import { Title } from '@/ui-kit/Title/Title'
+
+import styles from './TemplateCollectiveOffers.module.scss'
 
 export const TemplateCollectiveOffers = () => {
   const urlSearchFilters = useQueryCollectiveSearchFilters()
@@ -55,7 +56,7 @@ export const TemplateCollectiveOffers = () => {
 
   return (
     <BasicLayout>
-      <Title level="1" title="Offres vitrines" marginBottom="xxl" />
+      <h1 className={styles['title']}>Offres vitrines</h1>
       {offersQuery.isLoading ? (
         <Spinner />
       ) : (

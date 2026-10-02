@@ -10,9 +10,9 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
 import { useSimulatorContext } from '@/pages/Simulator/SimulatorContext'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { saveSiretToStorage, tryRestoreSiretFromStorage } from '../storage'
+import styles from './SimulatorSiret.module.scss'
 
 export const SimulatorSiret = (): JSX.Element => {
   const navigate = useNavigate()
@@ -50,7 +50,7 @@ export const SimulatorSiret = (): JSX.Element => {
   )
   return (
     <div className={commonStyles['content']}>
-      <Title level="1" title="Renseignez votre SIRET" marginBottom="l" />
+      <h1 className={styles['title']}>Renseignez votre SIRET</h1>
       <p className={commonStyles['subtitle']}>
         Le SIRET est un identifiant à 14 chiffres attribué à chaque structure.
         Vous le trouverez sur vos documents administratifs (avis de situation

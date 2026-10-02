@@ -4,7 +4,6 @@ import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
-import { Title } from '@/ui-kit/Title/Title'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import styles from './WelcomeStepTarget.module.scss'
@@ -13,11 +12,9 @@ const WelcomeStepTarget = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['title-wrapper']}>
-        <Title
-          level="1"
-          title="Deux manières de vous faire connaître"
-          marginBottom="s"
-        />
+        <h1 className={styles['title']}>
+          Deux manières de vous faire connaître
+        </h1>
       </div>
 
       <p className={commonStyles['subtitle']}>

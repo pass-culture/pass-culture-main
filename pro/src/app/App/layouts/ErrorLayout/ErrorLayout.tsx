@@ -5,7 +5,6 @@ import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './ErrorLayout.module.scss'
 
@@ -57,7 +56,7 @@ export const ErrorLayout = ({
     <main className={styles['content-wrapper']}>
       <div className={styles['content']}>
         <SvgIcon className={styles['error-icon']} src={errorIcon} alt="" />
-        <Title level="1" title={mainHeading} marginTop="xxl" marginBottom="l" />
+        <h1 className={styles['title']}>{mainHeading}</h1>
         <p className={styles.description}>{paragraph}</p>
         <div className={styles['nm-redirection-link']}>
           {cta ?? (

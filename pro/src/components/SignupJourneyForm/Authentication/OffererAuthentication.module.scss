@@ -48,3 +48,24 @@
   display: flex;
   justify-content: center;
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-top: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-s);
+  overflow-wrap: anywhere;
+}
+
+.subtitle {
+  @include fonts.title2;
+
+  margin-bottom: var(--size-spacing-l);
+  overflow-wrap: anywhere;
+}
+
+.subtitle-2 {
+  @include fonts.title2;
+
+  overflow-wrap: anywhere;
+}

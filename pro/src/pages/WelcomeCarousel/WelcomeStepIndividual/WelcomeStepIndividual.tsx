@@ -6,7 +6,6 @@ import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
-import { Title } from '@/ui-kit/Title/Title'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import { CardInfo } from '../components/CardInfo'
@@ -17,11 +16,9 @@ const WelcomeStepIndividual = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['title-wrapper']}>
-        <Title
-          level="1"
-          title="Offres pour les jeunes via l’application"
-          marginBottom="s"
-        />
+        <h1 className={styles['title']}>
+          Offres pour les jeunes via l’application
+        </h1>
       </div>
 
       <p className={commonStyles.subtitle}>

@@ -8,7 +8,6 @@ import {
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { SignupJourneyStepper } from '@/components/SignupJourneyStepper/SignupJourneyStepper'
-import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './SignupJourneyRoutes.module.scss'
 
@@ -52,7 +51,7 @@ export const SignupJourneyRoutes = () => {
             {location.pathname.includes(
               '/inscription/structure/rattachement'
             ) ? null : (
-              <Title level="1" title="Votre structure" />
+              <h1 className={styles['title']}>Votre structure</h1>
             )}
             <SignupJourneyStepper />
             <Outlet />

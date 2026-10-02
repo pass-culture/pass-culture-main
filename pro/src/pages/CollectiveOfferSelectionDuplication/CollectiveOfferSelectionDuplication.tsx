@@ -24,7 +24,6 @@ import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { CardLink } from '../../ui-kit/CardLink/CardLink'
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
@@ -119,7 +118,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
   return (
     <BasicLayout isStickyActionBarInChild>
-      <Title level="1" title="Créer une offre réservable" marginBottom="xxl" />
+      <h1 className={styles['title']}>Créer une offre réservable</h1>
       {isCreatingNewOffer ? (
         <div className="container">
           <Spinner message="Création de la nouvelle offre réservable en cours" />

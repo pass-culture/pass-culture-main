@@ -2,7 +2,6 @@ import useSWR, { useSWRConfig } from 'swr'
 
 import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_FAVORITES } from '@/commons/config/swrQueryKeys'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
@@ -43,7 +42,7 @@ export const OffersFavorites = () => {
 
   return (
     <>
-      <Title level="1" title="Mes Favoris" />
+      <h1 className={styles['title']}>Mes Favoris</h1>
       {offers.favoritesTemplate.length === 0 ? (
         <OffersFavoritesNoResult />
       ) : (

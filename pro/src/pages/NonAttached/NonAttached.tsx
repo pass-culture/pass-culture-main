@@ -9,7 +9,6 @@ import {
   IconPositionEnum,
 } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { NonAttachedBanner } from '../../components/NonAttachedBanner/NonAttachedBanner'
 import styles from './NonAttached.module.scss'
@@ -19,11 +18,7 @@ const NonAttached = () => {
 
   return (
     <OnboardingLayout isEntryScreen>
-      <Title
-        level="1"
-        title="Bienvenue sur votre espace partenaire"
-        marginBottom="xxl"
-      />
+      <h1 className={styles['title']}>Bienvenue sur votre espace partenaire</h1>
       <div className={styles['wrapper']}>
         <Button
           onClick={() => navigate('/hub')}

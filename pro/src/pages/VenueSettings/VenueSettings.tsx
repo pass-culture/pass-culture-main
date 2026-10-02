@@ -2,12 +2,13 @@ import { Outlet } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { SettingsTabs } from '@/components/SettingsTabs/SettingsTabs'
-import { Title } from '@/ui-kit/Title/Title'
+
+import styles from './VenueSettings.module.scss'
 
 export const VenueSettings = (): JSX.Element => {
   return (
     <BasicLayout>
-      <Title level="1" title="Paramètres" marginBottom="xxl" />
+      <h1 className={styles['title']}>Paramètres</h1>
       <SettingsTabs />
       <Outlet />
     </BasicLayout>

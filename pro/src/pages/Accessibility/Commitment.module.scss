@@ -10,3 +10,17 @@
 .back-link {
   margin-bottom: var(--size-spacing-xxl);
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-xxl);
+  overflow-wrap: anywhere;
+}
+
+.subtitle {
+  @include fonts.title2;
+
+  margin-bottom: var(--size-spacing-l);
+  overflow-wrap: anywhere;
+}

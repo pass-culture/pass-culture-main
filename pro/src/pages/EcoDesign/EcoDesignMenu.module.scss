@@ -1,3 +1,5 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
 .pages-buttons-container {
   display: flex;
   flex-direction: column;
@@ -5,4 +7,11 @@
   width: 100%;
   margin-top: var(--size-spacing-xxl);
   margin-bottom: var(--size-spacing-xxl);
+}
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-xxl);
+  overflow-wrap: anywhere;
 }

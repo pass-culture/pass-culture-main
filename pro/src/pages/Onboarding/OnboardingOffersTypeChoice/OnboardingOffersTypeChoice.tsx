@@ -1,7 +1,6 @@
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
 import { OnboardingOffersChoice } from '@/components/OnboardingOffersChoice/OnboardingOffersChoice'
 import { Banner } from '@/design-system/Banner/Banner'
-import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './OnboardingOffersTypeChoice.module.scss'
 
@@ -10,19 +9,12 @@ export const OnboardingOffersTypeChoice = () => {
     <OnboardingLayout verticallyCentered isEntryScreen>
       <div className={styles['onboarding-offer-container']}>
         <div className={styles['onboarding-offer-title-wrapper']}>
-          <Title
-            level="1"
-            title="Bienvenue sur pass Culture Pro !"
-            marginBottom="xxl"
-          />
+          <h1 className={styles['title']}>Bienvenue sur pass Culture Pro !</h1>
         </div>
         <Banner title="Notre équipe vous contactera par email pour vous demander vos justificatifs d’inscription. Pensez à vérifier vos spams." />
-        <Title
-          level="2"
-          title="Où souhaitez-vous diffuser votre première offre ?"
-          marginBottom="l"
-          marginTop="xxl"
-        />
+        <h2 className={styles['subtitle']}>
+          Où souhaitez-vous diffuser votre première offre ?
+        </h2>
         <OnboardingOffersChoice titleTag="h3" />
       </div>
     </OnboardingLayout>

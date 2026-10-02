@@ -2,19 +2,17 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Link } from '@/design-system/Link/Link'
 import fullBackIcon from '@/icons/full-back.svg'
-import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './Declaration.module.scss'
 import { EcoDesignLayout } from './EcoDesignLayout'
+import titleStyles from './Policy.module.scss'
 
 export const EcoDesignPolicy = () => {
   return (
     <EcoDesignLayout>
-      <Title
-        level="1"
-        title="Politique d'écoconception au pass Culture"
-        marginBottom="xxl"
-      />
+      <h1 className={titleStyles['title']}>
+        Politique d'écoconception au pass Culture
+      </h1>
       <div className={styles['back-link']}>
         <Button
           as="router-link"
@@ -25,7 +23,7 @@ export const EcoDesignPolicy = () => {
           label="Retour vers la page déclaration d'écoconception"
         />
       </div>
-      <Title level="2" title="Objectifs" marginBottom="l" />
+      <h2 className={titleStyles['subtitle']}>Objectifs</h2>
       <p className={styles['paragraph']}>
         Le service <Link to="https://passculture.pro" label="passculture.pro" />{' '}
         s'inscrit dans une démarche d'écoconception visant à réduire ses impacts
@@ -93,11 +91,9 @@ export const EcoDesignPolicy = () => {
         />
         .
       </p>
-      <Title
-        level="2"
-        title="Score d’avancement dans la mise en œuvre du référentiel"
-        marginBottom="l"
-      />
+      <h2 className={titleStyles['subtitle']}>
+        Score d’avancement dans la mise en œuvre du référentiel
+      </h2>
       <p>Score d’avancement au 31 décembre 2025 : 69%.</p>
       <p>Score d’avancement précédent : première publication.</p>
       <p className={styles['paragraph']}>
@@ -107,11 +103,9 @@ export const EcoDesignPolicy = () => {
         revues et audits seront réalisés tous les ans.
       </p>
 
-      <Title
-        level="2"
-        title="Plan d'avancement dans la démarche d'écoconception du service numérique"
-        marginBottom="l"
-      />
+      <h2 className={titleStyles['subtitle']}>
+        Plan d'avancement dans la démarche d'écoconception du service numérique
+      </h2>
       <p className={styles['paragraph']}>
         Ceci constitue la première déclaration d'écoconception du pass Culture.
         Cette déclaration pâtit d'un manque de mesure sur plusieurs aspects.
@@ -159,20 +153,16 @@ export const EcoDesignPolicy = () => {
           l’EcoIndex
         </li>
       </ul>
-      <Title
-        level="3"
-        title="Chemins critiques et unités fonctionnelles évalués avec le référentiel"
-        marginBottom="l"
-      />
+      <h3 className={titleStyles['section-title']}>
+        Chemins critiques et unités fonctionnelles évalués avec le référentiel
+      </h3>
       <p className={styles['paragraph']}>
         A l’heure actuelle, aucun diagnostic n’a été fait. Les chemins critiques
         seront définis lors de la mise en place de l’outil EcoIndex.
       </p>
-      <Title
-        level="3"
-        title="Référent en écoconception numérique"
-        marginBottom="l"
-      />
+      <h3 className={titleStyles['section-title']}>
+        Référent en écoconception numérique
+      </h3>
       <p className={styles['paragraph']}>
         Une personne est nommée référente écoconception numérique en interne.
         Vous pouvez la contacter à l’adresse suivante{' '}

@@ -4,7 +4,6 @@ import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { UserProfile } from '@/pages/User/UserProfile/UserProfile'
-import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './UserProfile/UserProfile.module.scss'
 
@@ -14,7 +13,7 @@ const Profile = (): JSX.Element => {
   return (
     <FullLayout>
       <div className={styles['content-wrapper']}>
-        <Title level="1" title="Profil" marginBottom="xxl" />
+        <h1 className={styles['title']}>Profil</h1>
         <UserProfile
           userIdentityInitialValues={{
             firstName: currentUser.firstName || '',

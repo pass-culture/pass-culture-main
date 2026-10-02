@@ -1,3 +1,5 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
 .cards {
   display: flex;
   flex-direction: column;
@@ -6,4 +8,11 @@
 
 .helplink {
   margin: var(--size-spacing-xxl) 0;
+}
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-s);
+  overflow-wrap: anywhere;
 }

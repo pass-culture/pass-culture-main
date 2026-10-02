@@ -9,7 +9,6 @@ import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import strokeEventIcon from '@/icons/stroke-events.svg'
 import strokeHourglassIcon from '@/icons/stroke-hourglass.svg'
 import { CardInfo } from '@/pages/WelcomeCarousel/components/CardInfo'
-import { Title } from '@/ui-kit/Title/Title'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import styles from './WelcomeStepCollective.module.scss'
@@ -19,11 +18,7 @@ const WelcomeStepCollective = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['title-wrapper']}>
-        <Title
-          level="1"
-          title="Offres pour les groupes scolaires"
-          marginBottom="s"
-        />
+        <h1 className={styles['title']}>Offres pour les groupes scolaires</h1>
       </div>
       <p className={commonStyles.subtitle}>Intervenez auprès des classes</p>
       <div className={cn(commonStyles[`container`], styles['container'])}>
