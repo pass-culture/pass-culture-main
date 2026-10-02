@@ -19,6 +19,8 @@ from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 logger = logging.getLogger(__name__)
@@ -144,19 +146,16 @@ def sync_user_account_update_requests(
     application_numbers = []
 
     for node in ds_client.get_beneficiary_account_update_nodes(procedure_number=procedure_number, since=since):
-        try:
-            ds_application_id = _sync_ds_application(procedure_number, node, user_id_by_email, set_without_continuation)
-        except Exception:
-            # If we don't rollback here, we will persist in the faulty transaction
-            # and we won't be able to commit at the end of the process and to set the current import `isProcessing` attr to False
-            # Therefore, this import could be seen as on going for other next attempts, forever.
-            db.session.rollback()
-        else:
-            if ds_application_id:
-                application_numbers.append(ds_application_id)
-            # Committing here ensures that we have a proper transaction for each application successfully imported
-            # And that for each faulty application, the failure only impacts that particular one.
-            db.session.commit()
+        with atomic():
+            try:
+                ds_application_id = _sync_ds_application(
+                    procedure_number, node, user_id_by_email, set_without_continuation
+                )
+            except Exception:
+                mark_transaction_as_invalid()
+            else:
+                if ds_application_id:
+                    application_numbers.append(ds_application_id)
 
     logger.info(
         "[DS] Finished processing User Update Account procedure %s.",
