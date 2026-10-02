@@ -747,7 +747,7 @@ def delete_venue(venue_id: int) -> response_utils.BackofficeResponse:
     emails = offerers_repository.get_emails_by_venue(venue)
 
     try:
-        offerers_api.delete_venue(venue.id)
+        offerers_api.delete_venue(venue.id, author_id=current_user.id)
     except offerers_exceptions.CannotDeleteVenueWithBookingsException:
         mark_transaction_as_invalid()
         flash("Impossible de supprimer un partenaire culturel pour lequel il existe des réservations", "warning")

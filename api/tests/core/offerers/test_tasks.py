@@ -210,6 +210,7 @@ class FinalizeClosingVenueTaskTest:
         author = users_factories.BaseUserFactory()
         self.create_synced_offers_with_bookings(venue)
         providers_factories.AllocinePivotFactory(venue=venue)
+        providers_factories.VenueProviderFactory(venue=venue)
 
         payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
         offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
@@ -217,6 +218,7 @@ class FinalizeClosingVenueTaskTest:
         db.session.refresh(venue)
         assert not venue.cinemaProviderPivot
         assert not venue.allocinePivot
+        assert not venue.venueProviders
 
         assert venue.state == offerers_models.VenueState.CLOSED
 
