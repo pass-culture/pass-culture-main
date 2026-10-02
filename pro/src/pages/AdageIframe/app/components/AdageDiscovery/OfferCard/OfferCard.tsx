@@ -38,6 +38,9 @@ export const OfferCardComponent = ({
       ? `${document.referrer}adage/passculture/offres/offerid/${isOfferTemplate}${offer.id}`
       : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
 
+  const offerHasCoords =
+    offer.venue.coordinates.latitude && offer.venue.coordinates.longitude
+
   return (
     <div className={styles['container']}>
       <Link
@@ -96,8 +99,7 @@ export const OfferCardComponent = ({
           <div className={styles['offer-venue-name']}>
             {offer.venue.publicName}
           </div>
-          {offer.venue.coordinates.latitude &&
-            offer.venue.coordinates.longitude &&
+          {offerHasCoords &&
             (adageUser.lat || adageUser.lat === 0) &&
             (adageUser.lon || adageUser.lon === 0) && (
               <div
