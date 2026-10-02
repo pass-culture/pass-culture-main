@@ -41,7 +41,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
-import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
+import * as imageUploadModule from '@/pages/IndividualOffer/commons/useIndividualOfferImageUpload'
 
 import { Component as IndividualOfferDescription } from './IndividualOfferDescription'
 

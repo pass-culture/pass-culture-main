@@ -22,9 +22,9 @@ import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 
+import { useIndividualOfferImageUpload } from '../commons/useIndividualOfferImageUpload'
 import { ProductBanner } from '../components/ProductBanner/ProductBanner'
 import { SynchronizedBanner } from '../components/SynchronizedBanner/SynchronizedBanner'
-import { useIndividualOfferImageUpload } from './commons/useIndividualOfferImageUpload'
 import { DetailsEanSearch } from './components/DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './components/DetailsForm/DetailsForm'
 
@@ -46,16 +46,14 @@ const IndividualOfferDescription = (): JSX.Element | null => {
     undefined
   )
 
-  const isEanSearchAvailable =
-    selectedPartnerVenue.activity === DisplayableActivity.RECORD_STORE
-
   const canClaimCulturalOutreach =
     isCulturalOutreachEnabled &&
     selectedPartnerVenue.activity !== null &&
     CULTURAL_OUTREACH_ALLOWED_ACTIVITIES.has(selectedPartnerVenue.activity)
 
   const isEanSearchInputDisplayed =
-    isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
+    selectedPartnerVenue.activity === DisplayableActivity.RECORD_STORE &&
+    mode === OFFER_WIZARD_MODE.CREATION
 
   const updateProduct = (product: GetProductInformations | null) => {
     if (!product) {
@@ -85,7 +83,7 @@ const IndividualOfferDescription = (): JSX.Element | null => {
         <DetailsEanSearch
           productEan={product?.ean || offer?.extraData?.ean}
           onProductChange={updateProduct}
-          disabled={!!product?.id || !!offer?.productId}
+          disabled={!!product?.id || !!offer?.productId || !!offer?.id}
           required={
             subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD
           }

@@ -29,8 +29,6 @@ import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
-import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/types'
 import {
   getFormReadOnlyFields,
   getInitialValuesFromOffer,
@@ -38,13 +36,14 @@ import {
 } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/utils'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
+import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
+import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
+import { Subcategories } from './Subcategories/Subcategories'
 import {
   serializeDetailsPatchData,
   serializeDetailsPostData,
-} from '../../commons/serializers'
-import { getValidationSchema } from '../../commons/validationSchema'
-import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
-import { Subcategories } from './Subcategories/Subcategories'
+} from './serializers'
+import { type DetailsFormValues, getValidationSchema } from './validationSchema'
 
 type DetailsFormProps = {
   product?: GetProductInformations
@@ -83,7 +82,6 @@ export const DetailsForm = ({
         )
       : getInitialValuesFromOffer(offer, subCategories),
     resolver: yupResolver<DetailsFormValues, unknown, unknown>(
-      // @ts-expect-error
       getValidationSchema()
     ),
     mode: 'onBlur',

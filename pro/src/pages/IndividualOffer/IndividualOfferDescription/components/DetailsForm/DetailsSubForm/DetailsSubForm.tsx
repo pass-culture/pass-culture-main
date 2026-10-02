@@ -7,16 +7,13 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'
-import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
-import { ArtistField } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/DetailsSubForm/components/ArtistField/ArtistField'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/types'
-import {
-  buildShowSubTypeOptions,
-  hasMusicType,
-} from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/utils'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
+import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
+import { buildShowSubTypeOptions, hasMusicType } from '../utils'
+import type { DetailsFormValues } from '../validationSchema'
+import { ArtistField } from './components/ArtistField/ArtistField'
 import styles from './DetailsSubForm.module.scss'
 
 export const ARTISTIC_INFORMATION_FIELDS: (keyof DetailsFormValues)[] = [

@@ -14,8 +14,8 @@ import { api } from '@/apiClient/api'
 import { type ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { resizeImageURL } from '@/commons/utils/resizeImageURL'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/types'
 
+import type { DetailsFormValues } from '../../../validationSchema'
 import { ArtistField } from './ArtistField'
 
 vi.mock('@/apiClient/api', () => ({
