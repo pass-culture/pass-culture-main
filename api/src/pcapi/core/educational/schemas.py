@@ -4,7 +4,6 @@ import decimal
 import typing
 
 import pydantic as pydantic_v2
-from pydantic.v1 import PositiveInt
 from pydantic.v1.fields import Field
 
 from pcapi.core.categories.models import EacFormat
@@ -142,19 +141,6 @@ class RedactorInformation(pydantic_v2.BaseModel):
     uai: str
 
 
-class MergeInstitutionPrebookingsQueryModel(AdageBaseResponseModel):
-    source_uai: str
-    destination_uai: str
-    bookings_ids: list[int]
-
-
-class GetEducationalBookingsRequest(BaseModel):
-    redactorEmail: str | None = Field(description="Email of querying redactor")
-
-    class Config:
-        title = "Prebookings query filters"
-
-
 class EducationalBookingsResponse(AdageBaseResponseModel):
     prebookings: list[EducationalBookingResponse]
 
@@ -203,11 +189,6 @@ class EducationalDepositPeriodResponse(AdageBaseResponseModel):
 class EducationalDepositPeriodResponseV2(HttpBodyModel):
     start: datetime.datetime
     end: datetime.datetime
-
-
-class GetAllBookingsPerYearQueryModel(BaseModel):
-    page: PositiveInt | None
-    per_page: PositiveInt | None
 
 
 @dataclasses.dataclass(kw_only=True, slots=True, frozen=True)
