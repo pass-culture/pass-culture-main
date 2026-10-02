@@ -339,6 +339,19 @@ def _book_offer(
             ),
         )
 
+        log_extra_data = {
+            "provider_id": stock.lastProviderId,
+            "venue_id": stock.offer.venueId,
+            "offer_id": stock.offerId,
+            "stock_id": stock.id,
+            "stock_id_at_providers": stock.idAtProviders,
+            "booking_quantity": booking.quantity,
+            "booking_id": booking.id,
+            "user_id": beneficiary.id,
+            "feature": "external_bookings",
+            "action": "book",
+        }
+
         booking.dateCreated = date_utils.get_naive_utc_now()
         booking.cancellationLimitDate = compute_booking_cancellation_limit_date(
             stock.beginningDatetime, booking.dateCreated
@@ -378,36 +391,16 @@ def _book_offer(
                 ).observe(elapsedseconds)
                 logger.info(
                     "Cinema tickets successfully booked",
-                    extra={
-                        "provider_id": stock.lastProviderId,
-                        "venue_id": stock.offer.venueId,
-                        "offer_id": stock.offerId,
-                        "stock_id": stock.id,
-                        "stock_id_at_providers": stock.idAtProviders,
-                        "booking_quantity": booking.quantity,
-                        "booking_id": booking.id,
-                        "user_id": beneficiary.id,
-                        "feature": "external_bookings",
-                        "action": "book",
-                    },
+                    extra=log_extra_data,
                     technical_message_id="providers.external.booking",
                 )
             except Exception as e:
                 logger.warning(
                     "Unable to book cinema tickets",
                     extra={
-                        "provider_id": stock.lastProviderId,
-                        "venue_id": stock.offer.venueId,
-                        "offer_id": stock.offerId,
-                        "stock_id": stock.id,
-                        "stock_id_at_providers": stock.idAtProviders,
-                        "booking_quantity": booking.quantity,
-                        "booking_id": booking.id,
-                        "user_id": beneficiary.id,
+                        **log_extra_data,
                         "exception_type": e.__class__.__name__,
                         "exception_message": str(e),
-                        "feature": "external_bookings",
-                        "action": "book",
                     },
                     technical_message_id="providers.external.booking",
                 )
@@ -443,35 +436,15 @@ def _book_offer(
 
                 logger.info(
                     "Event tickets successfully booked",
-                    extra={
-                        "provider_id": stock.lastProviderId,
-                        "venue_id": stock.offer.venueId,
-                        "offer_id": stock.offerId,
-                        "stock_id": stock.id,
-                        "stock_id_at_providers": stock.idAtProviders,
-                        "booking_quantity": booking.quantity,
-                        "booking_id": booking.id,
-                        "user_id": beneficiary.id,
-                        "feature": "external_bookings",
-                        "action": "book",
-                    },
+                    extra=log_extra_data,
                 )
             except Exception as e:
                 logger.warning(
                     "Unable to book event tickets",
                     extra={
-                        "provider_id": stock.lastProviderId,
-                        "venue_id": stock.offer.venueId,
-                        "offer_id": stock.offerId,
-                        "stock_id": stock.id,
-                        "stock_id_at_providers": stock.idAtProviders,
-                        "booking_quantity": booking.quantity,
-                        "booking_id": booking.id,
-                        "user_id": beneficiary.id,
-                        "exception_type": e.__class__.__name__,
+                        **log_extra_data,
                         "exception_message": str(e),
-                        "feature": "external_bookings",
-                        "action": "book",
+                        "exception_type": e.__class__.__name__,
                     },
                 )
                 raise
