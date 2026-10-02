@@ -685,7 +685,7 @@ def generate_rsa_keys():
     Concerns are puts on performance over security
     This is for tests purposes, DO NOT copy paste this code for production keys.
     """
-    private_key = rsa.generate_private_key(public_exponent=3, key_size=1024)
+    private_key = rsa.generate_private_key(public_exponent=3, key_size=2048)
     public_key = private_key.public_key()
     private_key_pem_file = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
