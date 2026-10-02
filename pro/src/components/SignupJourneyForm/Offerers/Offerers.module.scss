@@ -32,3 +32,10 @@
   display: flex;
   justify-content: space-between;
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-s);
+  overflow-wrap: anywhere;
+}

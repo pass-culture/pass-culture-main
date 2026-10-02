@@ -42,3 +42,31 @@
 .non-validated-button-closed {
   margin-bottom: var(--size-spacing-xxl);
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-xxl);
+  overflow-wrap: anywhere;
+}
+
+.subtitle {
+  @include fonts.title2;
+
+  margin-bottom: var(--size-spacing-l);
+  overflow-wrap: anywhere;
+}
+
+.section-title {
+  @include fonts.title3;
+
+  margin-bottom: var(--size-spacing-l);
+  overflow-wrap: anywhere;
+}
+
+.subsection-title {
+  @include fonts.title4;
+
+  margin-bottom: var(--size-spacing-l);
+  overflow-wrap: anywhere;
+}

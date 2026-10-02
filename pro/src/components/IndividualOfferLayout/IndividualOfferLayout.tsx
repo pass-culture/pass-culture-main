@@ -79,7 +79,6 @@ export const IndividualOfferLayout = ({
   return (
     <>
       <div className={styles['header-container']}>
-        {/** biome-ignore lint/correctness/noRestrictedElements: Custom <h1> is necessary here as its content may have a JSX Tag element */}
         <h1 className={styles.title}>
           <IndividualOfferTitle offer={offer} mode={mode} />
         </h1>

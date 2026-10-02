@@ -15,3 +15,10 @@
   width: 100%;
   gap: 32px;
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-xxl);
+  overflow-wrap: anywhere;
+}

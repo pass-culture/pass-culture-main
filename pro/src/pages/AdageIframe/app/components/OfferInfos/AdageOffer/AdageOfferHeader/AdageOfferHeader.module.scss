@@ -98,3 +98,9 @@
   }
 }
 
+
+.title {
+  @include fonts.title1;
+
+  overflow-wrap: anywhere;
+}

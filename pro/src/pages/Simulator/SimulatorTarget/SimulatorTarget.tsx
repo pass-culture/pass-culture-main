@@ -9,7 +9,6 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { useSimulatorContext } from '../SimulatorContext'
 import {
@@ -66,11 +65,9 @@ export const SimulatorTarget = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['content']}>
-        <Title
-          level="1"
-          title="Quels publics souhaitez-vous cibler ?"
-          marginBottom="l"
-        />
+        <h1 className={styles['title']}>
+          Quels publics souhaitez-vous cibler ?
+        </h1>
         <p className={commonStyles['subtitle']}>
           Selon votre réponse, nous vous orienterons vers le bon dispositif
           d'inscription.

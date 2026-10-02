@@ -29,3 +29,11 @@
     margin: var(--size-spacing-xxxl) auto;
   }
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-top: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-l);
+  overflow-wrap: anywhere;
+}

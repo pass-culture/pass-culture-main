@@ -3,7 +3,6 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Link } from '@/design-system/Link/Link'
 import { LinkColor } from '@/design-system/Link/types'
 import fullBackIcon from '@/icons/full-back.svg'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { AccessibilityLayout } from './AccessibilityLayout'
 import styles from './Commitment.module.scss'
@@ -11,11 +10,9 @@ import styles from './Commitment.module.scss'
 export const Commitment = () => {
   return (
     <AccessibilityLayout>
-      <Title
-        level="1"
-        title="Les engagements du pass Culture pour l’accessibilité numérique"
-        marginBottom="xxl"
-      />
+      <h1 className={styles['title']}>
+        Les engagements du pass Culture pour l’accessibilité numérique
+      </h1>
       <div className={styles['back-link']}>
         <Button
           to="/accessibilite/"
@@ -61,11 +58,9 @@ export const Commitment = () => {
         avec les publics, d’ingénieurs en informatique, de designeurs, de
         sociologues et de personnes dédiées à la conception du produit.
       </p>
-      <Title
-        level="2"
-        title="L’inclusion au coeur de la stratégie technique"
-        marginBottom="l"
-      />
+      <h2 className={styles['subtitle']}>
+        L’inclusion au coeur de la stratégie technique
+      </h2>
       <p className={styles['paragraph']}>
         Deux audits évaluant l’accessibilité de la version web du pass Culture
         ont déjà été conduits en 2020 et 2022 pour permettre de rendre compte et
@@ -86,11 +81,7 @@ export const Commitment = () => {
         numérique inclusif et ainsi initier des échanges dédiés avec les acteurs
         du monde de l’accessibilité et utilisateurs en situation de handicap.
       </p>
-      <Title
-        level="2"
-        title="Collaboration et sensibilisation"
-        marginBottom="l"
-      />
+      <h2 className={styles['subtitle']}>Collaboration et sensibilisation</h2>
       <p className={styles['paragraph']}>
         Au-delà de la technologie utilisée, les acteurs culturels avec lesquels
         nous travaillons sont sensibilisés à la question de l’accessibilité. Ils

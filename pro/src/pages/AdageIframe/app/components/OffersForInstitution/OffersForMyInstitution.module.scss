@@ -26,3 +26,9 @@
   margin-top: var(--size-spacing-l);
   margin-bottom: var(--size-spacing-xl);
 }
+
+.title {
+  @include fonts.title1;
+
+  overflow-wrap: anywhere;
+}

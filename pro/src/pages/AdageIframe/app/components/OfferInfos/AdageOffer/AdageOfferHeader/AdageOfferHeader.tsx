@@ -13,7 +13,6 @@ import strokeOfferIcon from '@/icons/stroke-offer.svg'
 import strokeUserIcon from '@/icons/stroke-user.svg'
 import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { OfferFavoriteButton } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
 import { OfferShareLink } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferShareLink/OfferShareLink'
@@ -78,7 +77,7 @@ export function AdageOfferHeader({
       </div>
       <div className={styles['offer-header-details']}>
         <div className={styles['offer-header-title-container']}>
-          <Title level="1" title={offer.name} />
+          <h1 className={styles['title']}>{offer.name}</h1>
           {!isPreview && offer.isTemplate && (
             <div className={styles['offer-header-actions']}>
               {adageUser?.role === AdageFrontRoles.REDACTOR && (

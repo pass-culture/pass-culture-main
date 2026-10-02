@@ -53,7 +53,6 @@ import {
 import fullEditIcon from '@/icons/full-edit.svg'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
@@ -242,26 +241,18 @@ export const Validation = (): JSX.Element | undefined => {
       {isSignupSimulationEnabled && (
         <>
           <SignupStepper />
-          <Title
-            level="1"
-            title="Vérifiez vos informations"
-            marginBottom="s"
-            marginTop="xxl"
-          />
+          <h1 className={styles['title']}>Vérifiez vos informations</h1>
         </>
       )}
 
       <div className={styles['validation-screen']}>
         <section>
           <div className={styles['validation-screen-subtitle']}>
-            <Title
-              level="2"
-              title={
-                isSignupSimulationEnabled
-                  ? 'Votre structure'
-                  : 'Vos informations'
-              }
-            />
+            <h2 className={styles['subtitle']}>
+              {isSignupSimulationEnabled
+                ? 'Votre structure'
+                : 'Vos informations'}
+            </h2>
             <Button
               as="router-link"
               to="/inscription/structure/identification"
@@ -288,7 +279,7 @@ export const Validation = (): JSX.Element | undefined => {
         </section>
         <section className={styles['validation-screen']}>
           <div className={styles['validation-screen-subtitle']}>
-            <Title level="2" title="Votre activité" />
+            <h2 className={styles['subtitle']}>Votre activité</h2>
             <Button
               as="router-link"
               to="/inscription/structure/activite"

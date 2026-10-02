@@ -14,7 +14,6 @@ import {
   InfoPanelSurface,
   InfoPanelVariant,
 } from '@/ui-kit/InfoPanelList/types'
-import { Title } from '@/ui-kit/Title/Title'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import styles from './WelcomeStepNextSteps.module.scss'
@@ -27,11 +26,7 @@ const WelcomeStepNextSteps = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['title-wrapper']}>
-        <Title
-          level="1"
-          title="Comment fonctionne l’inscription ?"
-          marginBottom="s"
-        />
+        <h1 className={styles['title']}>Comment fonctionne l’inscription ?</h1>
       </div>
       <p className={commonStyles.subtitle}>
         3 étapes simples avant d’être visible sur le pass Culture

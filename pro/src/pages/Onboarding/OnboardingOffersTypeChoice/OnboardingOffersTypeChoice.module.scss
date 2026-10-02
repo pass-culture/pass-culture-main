@@ -1,3 +1,4 @@
+@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
 .onboarding-offer-container {
@@ -12,3 +13,18 @@
   align-self: center;
 }
 
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-xxl);
+  overflow-wrap: anywhere;
+}
+
+.subtitle {
+  @include fonts.title2;
+
+  margin-top: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-l);
+  overflow-wrap: anywhere;
+}

@@ -3,8 +3,8 @@ import { Outlet, useLocation } from 'react-router'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { Title } from '@/ui-kit/Title/Title'
 
+import styles from './Signup.module.scss'
 import { SignupUnavailable } from './SignupUnavailable/SignupUnavailable'
 export const Signup = () => {
   const isProAccountCreationEnabled = useActiveFeature(
@@ -35,7 +35,7 @@ export const Signup = () => {
   // TODO: (jclery, 2026-05-04): Remove this with WIP_PRE_SIGNUP_SIMULATION once the feature is enabled
   return (
     <SignUpLayout>
-      <Title level="1" title={mainHeading} marginBottom="s" marginTop="xxl" />
+      <h1 className={styles['title']}>{mainHeading}</h1>
       {isProAccountCreationEnabled ? <Outlet /> : <SignupUnavailable />}
     </SignUpLayout>
   )

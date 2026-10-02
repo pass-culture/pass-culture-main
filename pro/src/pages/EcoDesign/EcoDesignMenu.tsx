@@ -10,7 +10,6 @@ import {
 } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import strokeRigthIcon from '@/icons/stroke-right.svg'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { EcoDesignLayout } from './EcoDesignLayout'
 import styles from './EcoDesignMenu.module.scss'
@@ -26,11 +25,9 @@ export const EcoDesignMenu = () => {
 
   return (
     <EcoDesignLayout>
-      <Title
-        level="1"
-        title="Déclaration d'écoconception de l'espace partenaire"
-        marginBottom="xxl"
-      />
+      <h1 className={styles['title']}>
+        Déclaration d'écoconception de l'espace partenaire
+      </h1>
       <Button
         onClick={() => backToDefault()}
         variant={ButtonVariant.TERTIARY}

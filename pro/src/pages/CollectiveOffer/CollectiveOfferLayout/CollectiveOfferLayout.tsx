@@ -15,7 +15,6 @@ import {
   getCollectiveOfferActiveStep,
   getCollectiveOfferTemplateActiveStep,
 } from '@/pages/CollectiveOffer/CollectiveOfferLayout/utils/getActiveStep'
-import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './CollectiveOfferLayout.module.scss'
 import { CollectiveOfferCreationNavigation } from './CollectiveOfferNavigation/CollectiveOfferCreationNavigation'
@@ -116,8 +115,8 @@ export const CollectiveOfferLayout = ({
     <BasicLayout isStickyActionBarInChild>
       <div className={styles['headings-wrapper']}>
         {isTemplate && <Tag label="Offre vitrine" />}
-        <Title level="1" title={getTitle()} />
-        {subTitle && <Title level="2" title={subTitle} />}
+        <h1 className={styles['title']}>{getTitle()}</h1>
+        {subTitle && <h2 className={styles['subtitle']}>{subTitle}</h2>}
       </div>
       {!isClosed && (
         <>

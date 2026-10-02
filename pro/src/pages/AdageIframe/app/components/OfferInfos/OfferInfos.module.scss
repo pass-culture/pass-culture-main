@@ -25,3 +25,11 @@
     padding: 0 rem.torem(24px);
   }
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-top: var(--size-spacing-xl);
+  margin-bottom: var(--size-spacing-xxl);
+  overflow-wrap: anywhere;
+}

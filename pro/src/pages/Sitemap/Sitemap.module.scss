@@ -46,3 +46,10 @@ $max-width-percentage: 60%;
 
   text-decoration: underline;
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-xxl);
+  overflow-wrap: anywhere;
+}

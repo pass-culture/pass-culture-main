@@ -21,3 +21,10 @@
   max-width: rem.torem(360px);
   align-items: center;
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-xxl);
+  overflow-wrap: anywhere;
+}
