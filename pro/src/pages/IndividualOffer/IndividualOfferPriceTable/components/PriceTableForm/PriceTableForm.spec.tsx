@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import {
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
   VenueState,
 } from '@/apiClient/v1'
@@ -47,7 +47,7 @@ const renderPriceTableForm: RenderComponentFunction<
   PriceTableFormProps,
   PriceTableFormContext,
   {
-    offer: GetIndividualOfferResponseModel
+    offer: GetIndividualOfferResponseModelV2
     defaultValues?: PriceTableFormValues
     isVenueClosed?: boolean
   }
@@ -552,7 +552,7 @@ describe('PriceTableForm', () => {
             <PriceTableForm
               isCaledonian={false}
               mode={OFFER_WIZARD_MODE.CREATION}
-              offer={offer as GetIndividualOfferResponseModel}
+              offer={offer as GetIndividualOfferResponseModelV2}
               schemaValidationContext={{
                 isCaledonian: false,
                 mode: OFFER_WIZARD_MODE.CREATION,

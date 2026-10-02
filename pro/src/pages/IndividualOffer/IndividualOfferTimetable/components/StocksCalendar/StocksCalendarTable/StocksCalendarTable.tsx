@@ -3,7 +3,7 @@ import { type ReactNode, useState } from 'react'
 
 import type {
   EventStockUpdateBodyModel,
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
@@ -42,7 +42,7 @@ import {
 
 export type StocksCalendarTableProps = {
   stocks: GetOfferStockResponseModel[]
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
   isLoading: boolean
   hasNoStocks: boolean
   departmentCode: string

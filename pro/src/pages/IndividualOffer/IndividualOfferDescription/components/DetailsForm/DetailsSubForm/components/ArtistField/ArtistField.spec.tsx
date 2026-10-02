@@ -11,7 +11,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import { type ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
+import { type ArtistOfferLinkResponseModelV2, ArtistType } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { resizeImageURL } from '@/commons/utils/resizeImageURL'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
@@ -48,10 +48,10 @@ const renderArtistField = ({
 }: {
   artistType?: ArtistType
   readOnly?: boolean
-  defaultArtistOfferLinks?: ArtistOfferLinkResponseModel[]
+  defaultArtistOfferLinks?: ArtistOfferLinkResponseModelV2[]
 } = {}) => {
   let getValues: UseFormGetValues<{
-    artistOfferLinks: ArtistOfferLinkResponseModel[]
+    artistOfferLinks: ArtistOfferLinkResponseModelV2[]
   }>
 
   const ArtistFieldParentMock = () => {
@@ -293,9 +293,6 @@ describe('ArtistField', () => {
     renderArtistField({
       defaultArtistOfferLinks: [
         {
-          // TODO(rchaffal): remove the @ts-expect-error once ArtistOfferLinkResponseModel is migrated
-          // to pydantic v2 and artistId can be null in generated types
-          // @ts-expect-error: waiting for backend to migrate to pydantic v2
           artistId: null,
           artistName: '',
           artistType: ArtistType.AUTHOR,

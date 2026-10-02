@@ -69,13 +69,11 @@ describe('serializeExtraData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
           artistId: null,
           artistName: 'Aya Nakamura',
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
           artistId: null,
           artistName: 'Marcel et son orchestre',
           artistType: ArtistType.PERFORMER,
@@ -233,7 +231,6 @@ describe('serializeDetailsPostData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
           artistId: null,
           artistName: ' Marcel et son orchestre ',
           artistType: ArtistType.PERFORMER,
@@ -345,7 +342,6 @@ describe('serializeDetailsPatchData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
           artistId: null,
           artistName: ' Marcel et son orchestre ',
           artistType: ArtistType.PERFORMER,

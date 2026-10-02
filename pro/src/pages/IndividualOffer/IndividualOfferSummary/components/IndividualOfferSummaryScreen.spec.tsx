@@ -14,7 +14,7 @@ import {
 } from '@/apiClient/compat'
 import {
   DisplayableActivity,
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
   SimplifiedBankAccountStatus,
   type StockStatsResponseModel,
@@ -32,7 +32,7 @@ import {
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferManagingOffererFactory,
@@ -409,7 +409,7 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(buttonPublish).not.toBeDisabled()
 
       const mockResponse =
-        new CancelablePromise<GetIndividualOfferResponseModel>((resolve) =>
+        new CancelablePromise<GetIndividualOfferResponseModelV2>((resolve) =>
           setTimeout(() => {
             resolve(getIndividualOfferFactory())
           }, 200)
@@ -710,7 +710,7 @@ describe('IndividualOfferSummaryScreen', () => {
         offer: {
           ...offerBase,
           location: {
-            ...getLocationResponseModel({
+            ...getLocationResponseModelV2({
               label: 'mon adresse',
               city: 'ma ville',
               street: 'ma street',
@@ -723,8 +723,6 @@ describe('IndividualOfferSummaryScreen', () => {
         },
       }
 
-      // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-      // @ts-expect-error
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()
@@ -749,8 +747,6 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should render component with new sections and empty address data', async () => {
       contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
-        // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-        // @ts-expect-error
         location: null,
       })
       const contextValues = {
