@@ -276,7 +276,7 @@ def create_rejected_processed_solved_settlements(user: users_models.User) -> Non
 def _generate_fake_invoice_pdfs(settlement: models.Settlement) -> None:
     for invoice in settlement.invoices:
         pdf_title = f"Justificatif n°{invoice.reference}"
-        invoice_settlements = [s.batch.get_displayed_name() for s in invoice.settlements]
+        invoice_settlements = [s.batch.get_displayed_name() for s in invoice.settlements if s.batch]
         invoice_pdf = "<h1>{title}</h1><h2>Virements associés</h2><ul>{settlement_list}</ul>".format(
             title=pdf_title,
             settlement_list="".join([f"<li>{settlement_label}</li>" for settlement_label in invoice_settlements]),

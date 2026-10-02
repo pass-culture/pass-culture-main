@@ -10,7 +10,6 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import conf
 from pcapi.core.finance import models as finance_models
-from pcapi.core.finance.backend import constants as finance_backend_constants
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.core.internal_notifications.transactional import notify_invoices_finished
 from pcapi.core.mails import transactional as transactional_mails
@@ -176,11 +175,11 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
         )
         return
 
-    settlements_by_bank_account_id: dict[str, list[finance_backend.SettlementPayload]] = {}
+    settlement_payloads_by_bank_account_id: dict[str, list[finance_backend.SettlementPayload]] = {}
     external_bank_account_ids = set()
     invoice_references = set()
     for payload in settlement_payloads:
-        settlements_by_bank_account_id.setdefault(str(payload.bank_account_id), []).append(payload)
+        settlement_payloads_by_bank_account_id.setdefault(str(payload.bank_account_id), []).append(payload)
         external_bank_account_ids.add(payload.bank_account_id)
         invoice_references.add(payload.invoice_external_reference)
 
@@ -200,7 +199,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
     loaded_settlements: dict[tuple[int, str], finance_models.Settlement] = {}
     rejected_settlements: list[finance_models.Settlement] = []
 
-    for bank_account_id, settlements in settlements_by_bank_account_id.items():
+    for bank_account_id, settlement_payloads in settlement_payloads_by_bank_account_id.items():
         if bank_account_id not in bank_account_ids:
             logger.warning(
                 "No bank account found on our side for this bank account id",
@@ -208,9 +207,45 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
             )
             continue
 
+        # Deal with refund payloads
+        refund_payloads = (
+            payload for payload in settlement_payloads if payload.settlement_type == SettlementType.REFUND
+        )
+        refund_invoice_ids: list[int] = []
+
+        for payload in refund_payloads:
+            if payload.invoice_external_reference not in invoices_dict:
+                logger.warning(
+                    "No invoice found on our side for this reference",
+                    extra={
+                        "invoice_external_reference": payload.invoice_external_reference,
+                        "bank_account_id": payload.bank_account_id,
+                        "external_settlement_id": payload.external_settlement_id,
+                    },
+                )
+                continue
+
+            invoice = invoices_dict[payload.invoice_external_reference]
+
+            # Create settlement
+            refund_settlement = finance_models.Settlement(
+                settlementDate=payload.settlement_date,
+                externalSettlementId=payload.external_settlement_id,
+                bankAccountId=payload.bank_account_id,
+                amount=payload.amount,
+                invoices=[invoice],
+                batch=None,
+                status=finance_models.SettlementStatus.EXECUTED,
+            )
+            db.session.add(refund_settlement)
+            refund_invoice_ids.append(invoice.id)
+        if refund_invoice_ids:
+            finance_api.validate_invoices(refund_invoice_ids)
+            # TODO send mail to pro for those debit notes
+
         # Deal with paying payloads
         bill_settlement_payloads = (
-            settlement for settlement in settlements if settlement.settlement_type == SettlementType.PAYMENT
+            payload for payload in settlement_payloads if payload.settlement_type == SettlementType.PAYMENT
         )
 
         for payload in bill_settlement_payloads:
@@ -228,7 +263,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
             invoice = invoices_dict[payload.invoice_external_reference]
 
             # Load, get or create settlement_batch
-            if payload.settlement_batch_external_id == finance_backend_constants.MISSING_BATCH_EXTERNAL_ID_VALUE:
+            if payload.settlement_batch_external_id is None:
                 logger.warning(
                     "No settlement batch in the payload",
                     extra={
@@ -237,9 +272,13 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                         "settlement_id": payload.external_settlement_id,
                     },
                 )
+                continue
+
             if payload.settlement_batch_external_id in loaded_settlement_batches:
                 settlement_batch = loaded_settlement_batches[payload.settlement_batch_external_id]
             else:
+                assert payload.settlement_batch_name is not None
+                assert payload.settlement_batch_label is not None
                 settlement_batch = get_or_create_settlement_batch(
                     payload.settlement_batch_external_id, payload.settlement_batch_name, payload.settlement_batch_label
                 )
@@ -277,7 +316,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
 
         # Deal with cancelling payloads
         bill_cancelling_settlement_payloads = (
-            settlement for settlement in settlements if settlement.settlement_type == SettlementType.VOIDED_PAYMENT
+            payload for payload in settlement_payloads if payload.settlement_type == SettlementType.VOIDED_PAYMENT
         )
 
         for payload in bill_cancelling_settlement_payloads:
@@ -333,6 +372,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
         invoice_ids = set()
         for settlement in rejected_settlements:
             invoice_ids |= {invoice.id for invoice in settlement.invoices}
+            assert settlement.batch  # we always have a batch for rejected settlements
             comment = f"Compte bancaire rejeté suite au rejet bancaire du virement {settlement.batch.name}"
             bank_account = settlement.bankAccount
             if bank_account.status != finance_models.BankAccountApplicationStatus.REFUSED:

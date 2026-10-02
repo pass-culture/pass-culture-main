@@ -15,8 +15,6 @@ from pcapi.utils import cache as cache_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 
-from . import constants
-
 
 logger = logging.getLogger(__name__)
 
@@ -356,7 +354,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
         settlements = []
         for settlement_data in response_json["PaymentStatusDetails"]:
-            if settlement_data["AdjgDocType"]["value"] in ("Payment", "Voided Payment"):
+            if settlement_data["AdjgDocType"]["value"] in ("Payment", "Voided Payment", "Refund"):
                 ref_fourn_fact = settlement_data["RefFournFact"].get("value")
                 if not ref_fourn_fact:
                     continue
@@ -366,17 +364,12 @@ class CegidFinanceBackend(BaseFinanceBackend):
                         external_settlement_id=settlement_data["adjgRefNbr"]["value"],
                         invoice_external_reference=re.sub(r"(_R)*$", "", ref_fourn_fact),
                         settlement_type=SettlementType(settlement_data["AdjgDocType"]["value"]),
-                        settlement_batch_external_id=settlement_data.get("BatchNbr", {}).get(
-                            "value", constants.MISSING_BATCH_EXTERNAL_ID_VALUE
-                        ),
-                        settlement_batch_name=settlement_data.get("RefLot", {}).get(
-                            "value", constants.MISSING_BATCH_NAME_VALUE
-                        ),
-                        settlement_batch_label=settlement_data.get("DescLot", {}).get(
-                            "value", constants.MISSING_BATCH_LABEL_VALUE
-                        ),
+                        settlement_batch_external_id=settlement_data.get("BatchNbr", {}).get("value"),
+                        settlement_batch_name=settlement_data.get("RefLot", {}).get("value"),
+                        settlement_batch_label=settlement_data.get("DescLot", {}).get("value"),
                         settlement_date=datetime.date.fromisoformat(settlement_data["Date"]["value"].split("T")[0]),
-                        amount=-int(float(settlement_data["Amount"]["value"]) * 100),
+                        amount=(1 if settlement_data["AdjgDocType"]["value"] == "Refund" else -1)
+                        * int(float(settlement_data["Amount"]["value"]) * 100),
                     )
                     settlements.append(payload)
                 except Exception as exc:

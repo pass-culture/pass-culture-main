@@ -179,8 +179,21 @@ class SettlementResponseModel(HttpBodyModel):
             reverse=True,
         )
 
+        if settlement.amount > 0:  # settlement paid by offerer
+            return cls(
+                id=settlement.id,
+                label="-",
+                date=settlement.settlementDate,
+                amount=float(-cents_to_full_unit(settlement.amount)),
+                bank_account=settlement.bankAccount.label,
+                status=SettlementDisplayedStatus.EXECUTED,
+                invoices=[InvoiceResponseV2Model.build(invoice) for invoice in invoices],
+                resolved_by=[],
+            )
+
         settlement_data = get_settlement_data(settlement)
-        resolved_by = {s.batch.get_displayed_name() for s in settlement_data.resolving_settlements}
+        resolved_by = {s.batch.get_displayed_name() for s in settlement_data.resolving_settlements}  # type: ignore[union-attr]
+        assert settlement.batch  # outgoing batch must have a batch
 
         return cls(
             id=settlement.id,

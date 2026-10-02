@@ -175,7 +175,7 @@ def get_rejected_bank_accounts(
         [
             finance_serialize.RejectedBankAccountResponseModel.build(
                 bank_account=settlement.bankAccount,
-                rejected_settlement_label=settlement.batch.get_displayed_name(),
+                rejected_settlement_label=settlement.batch.get_displayed_name(),  # type: ignore[union-attr]
                 detached_venues=venues,
             )
             for settlement, venues in settlements_and_venues

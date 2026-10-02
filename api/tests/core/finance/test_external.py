@@ -11,7 +11,6 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.finance import external
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-from pcapi.core.finance.backend import constants as finance_backend_constants
 from pcapi.core.finance.backend.base import ExternalType
 from pcapi.core.finance.backend.base import InvoicePayload
 from pcapi.core.finance.backend.base import SettlementPayload
@@ -206,6 +205,7 @@ class GetSettlementsTest:
         first_bank_account = offerers_factories.VenueBankAccountLinkFactory(bankAccount__label="First").bankAccount
         second_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
         other_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+        refund_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
         invoice = finance_factories.InvoiceFactory(
             bankAccount=first_bank_account,
             cashflows=[finance_factories.CashflowFactory()],
@@ -218,6 +218,11 @@ class GetSettlementsTest:
         )
         another_invoice = finance_factories.InvoiceFactory(
             bankAccount=other_bank_account,
+            cashflows=[finance_factories.CashflowFactory()],
+            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
+        )
+        refund_invoice = finance_factories.InvoiceFactory(
+            bankAccount=refund_bank_account,
             cashflows=[finance_factories.CashflowFactory()],
             status=finance_models.InvoiceStatus.PENDING_PAYMENT,
         )
@@ -266,7 +271,7 @@ class GetSettlementsTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                amount=-98280,
+                amount=98280,
             ),
             SettlementPayload(
                 bank_account_id=second_bank_account.id,
@@ -310,7 +315,18 @@ class GetSettlementsTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                amount=-30000,
+                amount=30000,
+            ),
+            SettlementPayload(
+                bank_account_id=refund_bank_account.id,
+                external_settlement_id="0052640",
+                invoice_external_reference=refund_invoice.reference,
+                settlement_type=SettlementType.REFUND,
+                settlement_batch_external_id="UNKNOWN",
+                settlement_batch_name="UNKNOWN",
+                settlement_batch_label="UNKNOWN",
+                settlement_date=date_utils.get_naive_utc_now().date(),
+                amount=7000,
             ),
         ]
 
@@ -323,7 +339,7 @@ class GetSettlementsTest:
         assert db.session.query(finance_models.SettlementBatch).count() == 1
         settlement_batch = db.session.query(finance_models.SettlementBatch).one()
 
-        assert db.session.query(finance_models.Settlement).count() == 4
+        assert db.session.query(finance_models.Settlement).count() == 5
 
         first_settlement = (
             db.session.query(finance_models.Settlement)
@@ -419,6 +435,23 @@ class GetSettlementsTest:
         )
         assert new_additional_ba_status_history.status == finance_models.BankAccountApplicationStatus.REFUSED
         assert new_additional_ba_status_history.timespan.lower.timestamp() == pytest.approx(now.timestamp(), rel=1)
+
+        refund_settlement = (
+            db.session.query(finance_models.Settlement)
+            .filter(
+                finance_models.Settlement.externalSettlementId == "0052640",
+                finance_models.Settlement.bankAccountId == refund_bank_account.id,
+            )
+            .one()
+        )
+        assert refund_settlement.invoices == [refund_invoice]
+        assert refund_settlement.settlementDate == datetime.date.today()
+        assert refund_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
+        assert refund_settlement.dateRejected is None
+        assert refund_settlement.amount == 7000
+        assert refund_settlement.status == finance_models.SettlementStatus.EXECUTED
+        assert refund_settlement.batch is None
+        assert refund_invoice.status == finance_models.InvoiceStatus.PAID
 
         assert len(mails_testing.outbox) == 2
         assert mails_testing.outbox[0]["To"] == first_bank_account.venueLinks[0].venue.bookingEmail
@@ -559,9 +592,9 @@ class GetSettlementsTest:
                 external_settlement_id="0032597",
                 invoice_external_reference=invoice.reference,
                 settlement_type=SettlementType.PAYMENT,
-                settlement_batch_external_id=finance_backend_constants.MISSING_BATCH_EXTERNAL_ID_VALUE,
-                settlement_batch_name=finance_backend_constants.MISSING_BATCH_NAME_VALUE,
-                settlement_batch_label=finance_backend_constants.MISSING_BATCH_LABEL_VALUE,
+                settlement_batch_external_id=None,
+                settlement_batch_name=None,
+                settlement_batch_label=None,
                 settlement_date=now.date(),
                 amount=30000,
             )
@@ -573,7 +606,7 @@ class GetSettlementsTest:
         ):
             external.sync_settlements(datetime.date.today(), datetime.date.today())
 
-        assert db.session.query(finance_models.Settlement).count() == 1
+        assert db.session.query(finance_models.Settlement).count() == 0
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == "WARNING"

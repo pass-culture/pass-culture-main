@@ -6,6 +6,7 @@ from pcapi.utils.date import get_date_formatted_for_email
 
 
 def get_settlement_rejected_email_data(settlement: finance_models.Settlement) -> models.TransactionalEmailData:
+    assert settlement.batch  # we can't have a rejected settlement without a validated batch
     date_validated = settlement.batch.dateValidated
     assert date_validated  # we can't have a rejected settlement without a validated batch
     return models.TransactionalEmailData(
