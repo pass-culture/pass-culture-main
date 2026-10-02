@@ -110,27 +110,6 @@ def request_email_update(user: models.User) -> None:
     send_confirmation_email_for_email_change(user)
 
 
-def confirm_email_update_request_and_send_mail(encoded_token: str) -> None:
-    """Confirm the email update request for the given user"""
-    token = token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
-    user = db.session.get(models.User, token.user_id)
-    if not user:
-        raise exceptions.InvalidToken()
-    new_email = token.data["new_email"]
-    api.check_email_address_does_not_exist(new_email)
-    try:
-        generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
-        with transaction():
-            email_history = models.UserEmailHistory.build_confirmation(user, new_email)
-            db.session.add(email_history)
-        token.expire()
-
-    except Exception as error:
-        raise ApiErrors(
-            errors={"message": f"erreur inattendue: {error}"},
-        )
-
-
 def confirm_new_email_selection_and_send_mail(user: models.User, encoded_new_mail_token: str, new_email: str) -> None:
     new_mail_token = token_utils.Token.load_and_check(
         encoded_new_mail_token, token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION
