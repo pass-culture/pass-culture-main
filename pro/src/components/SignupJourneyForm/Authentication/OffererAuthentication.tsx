@@ -41,7 +41,6 @@ import {
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './OffererAuthentication.module.scss'
@@ -201,12 +200,7 @@ export const OffererAuthentication = (): JSX.Element => {
       {isSignupSimulationEnabled && (
         <>
           <SignupStepper />
-          <Title
-            level="1"
-            title="Votre structure"
-            marginTop="xxl"
-            marginBottom="s"
-          />
+          <h1 className={styles['title']}>Votre structure</h1>
           <p className={styles['subheading-description']}>
             Vérifiez les informations récupérées depuis votre SIRET et complétez
             les champs manquants.
@@ -223,11 +217,9 @@ export const OffererAuthentication = (): JSX.Element => {
           >
             {!isSignupSimulationEnabled && (
               <>
-                <Title
-                  level="2"
-                  title="Complétez les informations de votre structure"
-                  marginBottom="l"
-                />
+                <h2 className={styles['subtitle']}>
+                  Complétez les informations de votre structure
+                </h2>
                 <FormLayout.MandatoryInfo />
               </>
             )}
@@ -260,7 +252,7 @@ export const OffererAuthentication = (): JSX.Element => {
             <div className={styles['displaying-data']}>
               <div className={styles['displaying-data-header']}>
                 <div className={styles['displaying-data-title-wrapper']}>
-                  <Title level="2" title="Informations" />
+                  <h2 className={styles['subtitle-2']}>Informations</h2>
                 </div>
                 <Button
                   as="router-link"

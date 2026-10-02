@@ -10,7 +10,6 @@ import {
 } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import strokeRigthIcon from '@/icons/stroke-right.svg'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { AccessibilityLayout } from './AccessibilityLayout'
 import styles from './AccessibilityMenu.module.scss'
@@ -26,11 +25,7 @@ export function AccessibilityMenu() {
 
   return (
     <AccessibilityLayout>
-      <Title
-        level="1"
-        title="Informations d'accessibilité"
-        marginBottom="xxl"
-      />
+      <h1 className={styles['title']}>Informations d'accessibilité</h1>
       <div className={styles['page-content']}>
         <Button
           onClick={() => backToDefault()}

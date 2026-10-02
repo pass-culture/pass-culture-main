@@ -34,7 +34,6 @@ import {
 } from '@/components/SiretInputForm/SiretInputForm'
 import { Button } from '@/design-system/Button/Button'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
@@ -208,7 +207,7 @@ export const Offerer = (): JSX.Element => {
       {isSignupSimulationEnabled ? (
         <>
           <SignupStepper />
-          <Title level="1" title="Votre numéro SIRET" marginBottom="s" />
+          <h1 className={styles['title']}>Votre numéro SIRET</h1>
           <p className={styles['subheading-description']}>
             Le SIRET est un identifiant à 14 chiffres attribué à chaque
             structure. Vous le trouverez sur vos documents administratifs (avis
@@ -216,11 +215,9 @@ export const Offerer = (): JSX.Element => {
           </p>
         </>
       ) : (
-        <Title
-          level="2"
-          title="Dites-nous pour quelle structure vous travaillez"
-          marginBottom="xxl"
-        />
+        <h2 className={styles['subtitle']}>
+          Dites-nous pour quelle structure vous travaillez
+        </h2>
       )}
       <SiretInputForm
         submitElement={submitElement}

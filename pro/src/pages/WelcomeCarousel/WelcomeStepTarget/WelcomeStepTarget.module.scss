@@ -47,3 +47,10 @@
     @include fonts.title3;
   }
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-s);
+  overflow-wrap: anywhere;
+}

@@ -1,3 +1,5 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
 .container {
   display: flex;
   flex-direction: column;
@@ -6,4 +8,11 @@
 
 .footer {
   margin-top: var(--size-spacing-l);
+}
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-s);
+  overflow-wrap: anywhere;
 }

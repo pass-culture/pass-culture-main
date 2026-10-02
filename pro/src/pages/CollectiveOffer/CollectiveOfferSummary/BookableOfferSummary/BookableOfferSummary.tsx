@@ -56,7 +56,6 @@ import { BookableOfferTimeline } from '@/pages/CollectiveOffer/CollectiveOfferSu
 import { DEFAULT_RECAP_VALUE } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/constants'
 import { formatDateTime } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { DetailItem } from '../components/DetailItem/DetailItem'
 import styles from './BookableOfferSummary.module.scss'
@@ -193,7 +192,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   return (
     <BasicLayout isStickyActionBarInChild>
       <div className={styles['title-wrapper']}>
-        <Title level="1" title={offer.name} marginBottom="xxl" />
+        <h1 className={styles['title']}>{offer.name}</h1>
       </div>
 
       <div className={styles['header-status']}>

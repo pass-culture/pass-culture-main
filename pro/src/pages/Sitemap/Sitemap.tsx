@@ -9,7 +9,6 @@ import {
   IconPositionEnum,
 } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
-import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './Sitemap.module.scss'
 
@@ -175,7 +174,7 @@ export const Sitemap = () => {
   return (
     <FullLayout>
       <div className={styles['content-wrapper']}>
-        <Title level="1" title="Plan du site" marginBottom="xxl" />
+        <h1 className={styles['title']}>Plan du site</h1>
         <Button
           onClick={() => navigate(-1)}
           color={ButtonColor.NEUTRAL}

@@ -24,7 +24,6 @@ import fullLinkIcon from '@/icons/full-link.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
 import strokePartyIcon from '@/icons/stroke-party.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './IndividualOfferConfirmationScreen.module.scss'
 
@@ -77,14 +76,16 @@ export const IndividualOfferConfirmationScreen = ({
     <div className={styles['container']}>
       {isPendingOffer ? (
         <div className={styles['title-wrapper']}>
-          <Title level="1" title="Offre en cours de validation" />
+          <h1 className={styles['title']}>Offre en cours de validation</h1>
           <span className={styles['title-wrapper-icon']}>
             <SvgIcon src={fullWaitIcon} alt="" width="38" />
           </span>
         </div>
       ) : (
         <div className={styles['title-wrapper']}>
-          <Title level="1" title="Votre offre a été publiée avec succès" />
+          <h1 className={styles['title']}>
+            Votre offre a été publiée avec succès
+          </h1>
           <span className={styles['title-wrapper-icon']}>
             <SvgIcon src={strokePartyIcon} alt="" width="38" />
           </span>
@@ -144,7 +145,9 @@ export const IndividualOfferConfirmationScreen = ({
 
       {shouldDisplayCardsSection && (
         <section className={styles['enhancement']}>
-          <Title level="2" title="Allez plus loin et optimisez votre offre :" />
+          <h2 className={styles['subtitle']}>
+            Allez plus loin et optimisez votre offre :
+          </h2>
           <div className={styles['enhancement-cards']}>
             {shouldDisplayRecommendationAction && (
               <OfferRecommendationCard

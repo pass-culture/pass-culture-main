@@ -38,3 +38,10 @@
 .text-input {
   margin-bottom: var(--size-spacing-xl);
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-xxl);
+  overflow-wrap: anywhere;
+}

@@ -66,3 +66,17 @@
   max-width: rem.torem(721px);
 }
 
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-xl);
+  overflow-wrap: anywhere;
+}
+
+.title-2 {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-xxl);
+  overflow-wrap: anywhere;
+}

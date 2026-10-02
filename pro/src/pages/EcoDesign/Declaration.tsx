@@ -9,7 +9,6 @@ import fullBackIcon from '@/icons/full-back.svg'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullUpIcon from '@/icons/full-up.svg'
-import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './Declaration.module.scss'
 import { nonValidatedCriteria, validatedCriteria } from './declarationCriteria'
@@ -22,7 +21,7 @@ export const EcoDesignDeclaration = () => {
 
   return (
     <EcoDesignLayout>
-      <Title level="1" title="Déclaration RGESN" marginBottom="xxl" />
+      <h1 className={styles['title']}>Déclaration RGESN</h1>
 
       <div className={styles['back-link']}>
         <Button
@@ -34,11 +33,10 @@ export const EcoDesignDeclaration = () => {
           label="Retour vers la page déclaration d'écoconception"
         />
       </div>
-      <Title
-        level="2"
-        title="Détails du diagnostic avec le référentiel général de l’écoconception des services numériques"
-        marginBottom="l"
-      />
+      <h2 className={styles['subtitle']}>
+        Détails du diagnostic avec le référentiel général de l’écoconception des
+        services numériques
+      </h2>
       <div className={styles['download-button']}>
         <Button
           as="a"
@@ -105,13 +103,12 @@ export const EcoDesignDeclaration = () => {
         )}
       </div>
 
-      <Title level="3" title="1. Stratégie" marginBottom="l" />
+      <h3 className={styles['section-title']}>1. Stratégie</h3>
 
-      <Title
-        level="4"
-        title="Évaluation de l’utilité du service, en tenant compte de ses impacts environnementaux"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Évaluation de l’utilité du service, en tenant compte de ses impacts
+        environnementaux
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -128,11 +125,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Cibles utilisatrices de l'espace partenaire du pass Culture"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Cibles utilisatrices de l'espace partenaire du pass Culture
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -157,11 +152,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Référent en écoconception numérique"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Référent en écoconception numérique
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -179,11 +172,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Empreinte environnementale du service"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Empreinte environnementale du service
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -199,7 +190,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Données et licence" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>Données et licence</h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -234,13 +225,11 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="3" title="2. Spécifications" marginBottom="l" />
+      <h3 className={styles['section-title']}>2. Spécifications</h3>
 
-      <Title
-        level="4"
-        title="Configuration matérielle minimum pour accéder au service"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Configuration matérielle minimum pour accéder au service
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -292,11 +281,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Stratégie de conception, maintenance et décommissionnement"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Stratégie de conception, maintenance et décommissionnement
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -326,7 +313,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Fournisseurs" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>Fournisseurs</h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -342,11 +329,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Composants d’interface prêts à l’emploi utilisés"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Composants d’interface prêts à l’emploi utilisés
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -361,11 +346,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Liste des services tiers utilisés par le service"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Liste des services tiers utilisés par le service
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -388,13 +371,11 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="3" title="3. Architecture" marginBottom="l" />
+      <h3 className={styles['section-title']}>3. Architecture</h3>
 
-      <Title
-        level="4"
-        title="Choix d’architecture et de composants"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Choix d’architecture et de composants
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -434,7 +415,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Protocoles d’échange utilisés" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>
+        Protocoles d’échange utilisés
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -461,7 +444,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Mise à jour" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>Mise à jour</h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -475,11 +458,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Environnements de développement, de préproduction ou de test"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Environnements de développement, de préproduction ou de test
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -494,13 +475,11 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="3"
-        title="4. Expérience et interface utilisateur"
-        marginBottom="l"
-      />
+      <h3 className={styles['section-title']}>
+        4. Expérience et interface utilisateur
+      </h3>
 
-      <Title level="4" title="UX/UI" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>UX/UI</h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -543,7 +522,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Composants" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>Composants</h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -555,11 +534,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Contenus audiovisuels et animés"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Contenus audiovisuels et animés
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -649,7 +626,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="3" title="5. Contenus" marginBottom="l" />
+      <h3 className={styles['section-title']}>5. Contenus</h3>
 
       <ul>
         <li className={styles['list-item']}>
@@ -666,7 +643,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Images" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>Images</h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -681,7 +658,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Contenus vidéo" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>Contenus vidéo</h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -702,7 +679,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Audio - non applicable" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>Audio - non applicable</h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -711,7 +688,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Documents" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>Documents</h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -736,13 +713,11 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="3" title="6. Frontend" marginBottom="l" />
+      <h3 className={styles['section-title']}>6. Frontend</h3>
 
-      <Title
-        level="4"
-        title="Limites de poids et de requêtes"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Limites de poids et de requêtes
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -756,7 +731,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Stratégie de mise en cache" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>Stratégie de mise en cache</h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -778,11 +753,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Compression des ressources transférées"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Compression des ressources transférées
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -810,7 +783,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="3" title="7. Backend" marginBottom="l" />
+      <h3 className={styles['section-title']}>7. Backend</h3>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -837,7 +810,7 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="3" title="8. Hébergement" marginBottom="l" />
+      <h3 className={styles['section-title']}>8. Hébergement</h3>
 
       <p className={styles['paragraph']}>
         Nom du fournisseur ou prestataire d’hébergement physique des serveurs
@@ -846,11 +819,9 @@ export const EcoDesignDeclaration = () => {
         Saint-Ghislain/Mons, en Belgique.
       </p>
 
-      <Title
-        level="4"
-        title="Engagements écologiques de l'hébergeur"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Engagements écologiques de l'hébergeur
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -924,11 +895,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Efficacité environnementale de l’hébergement du service"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Efficacité environnementale de l’hébergement du service
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -958,11 +927,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Documentation sur l’origine de l’électricité consommée"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Documentation sur l’origine de l’électricité consommée
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -1010,7 +977,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title level="4" title="Localisation de l’hébergement" marginBottom="l" />
+      <h4 className={styles['subsection-title']}>
+        Localisation de l’hébergement
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -1030,11 +999,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Réutilisation de la chaleur fatale"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Réutilisation de la chaleur fatale
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -1047,11 +1014,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title='Données "chaudes" et "froides" hébergées distinctement'
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Données "chaudes" et "froides" hébergées distinctement
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -1061,11 +1026,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Duplication des données lorsque nécessaire"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Duplication des données lorsque nécessaire
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -1075,11 +1038,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Décalage des calculs et mises à jour asynchrones"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Décalage des calculs et mises à jour asynchrones
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -1089,17 +1050,13 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="3"
-        title="9. Algorithmie - Non applicable"
-        marginBottom="l"
-      />
+      <h3 className={styles['section-title']}>
+        9. Algorithmie - Non applicable
+      </h3>
 
-      <Title
-        level="4"
-        title="Justification de la phase d’entraînement"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Justification de la phase d’entraînement
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>
@@ -1113,11 +1070,9 @@ export const EcoDesignDeclaration = () => {
         </li>
       </ul>
 
-      <Title
-        level="4"
-        title="Phase d’entraînement - Non applicable"
-        marginBottom="l"
-      />
+      <h4 className={styles['subsection-title']}>
+        Phase d’entraînement - Non applicable
+      </h4>
       <ul>
         <li className={styles['list-item']}>
           <p className={styles['paragraph']}>

@@ -1,6 +1,5 @@
 import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-import { Title } from '@/ui-kit/Title/Title'
 
 import styles from './UnauthenticatedError.module.scss'
 
@@ -18,7 +17,7 @@ export function UnauthenticatedError(): JSX.Element {
         </div>
       </div>
       <div className={styles['error-content']}>
-        <Title level="1" title="Une erreur s’est produite" marginBottom="l" />
+        <h1 className={styles['title']}>Une erreur s’est produite</h1>
       </div>
     </main>
   )

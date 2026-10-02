@@ -37,3 +37,10 @@
     }
   }
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-l);
+  overflow-wrap: anywhere;
+}

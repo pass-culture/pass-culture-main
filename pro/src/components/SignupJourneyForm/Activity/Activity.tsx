@@ -27,7 +27,6 @@ import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { SignupStepper } from '@/components/SignupStepper/SignupStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import {
@@ -173,12 +172,7 @@ export const Activity = () => {
       {isSignupSimulationEnabled && (
         <>
           <SignupStepper />
-          <Title
-            level="1"
-            title="Votre activité"
-            marginTop="xxl"
-            marginBottom="s"
-          />
+          <h1 className={styles['title']}>Votre activité</h1>
           <p className={styles['subheading-description']}>
             Ces informations déterminent la visibilité de vos offres auprès des
             jeunes et des enseignants. Les champs suivis d’un * sont
@@ -195,11 +189,9 @@ export const Activity = () => {
           >
             {!isSignupSimulationEnabled && (
               <>
-                <Title
-                  level="2"
-                  title="Et enfin, définissez l’activité de votre structure"
-                  marginBottom="l"
-                />
+                <h2 className={styles['subtitle']}>
+                  Et enfin, définissez l’activité de votre structure
+                </h2>
 
                 <FormLayout.MandatoryInfo />
               </>

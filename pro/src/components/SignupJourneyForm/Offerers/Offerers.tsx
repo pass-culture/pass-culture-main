@@ -40,7 +40,6 @@ import { MAYBE_LOCAL_AUTHORITY_APE_CODE } from '@/pages/Signup/SignupContainer/c
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
-import { Title } from '@/ui-kit/Title/Title'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import {
@@ -213,7 +212,7 @@ export const Offerers = (): JSX.Element => {
         [styles['existing-offerers-container']]: isSignupSimulationEnabled,
       })}
     >
-      <Title level="1" title="Ce SIRET est déjà inscrit" marginBottom="s" />
+      <h1 className={styles['title']}>Ce SIRET est déjà inscrit</h1>
       <p className={styles['subheading-description']}>
         Ce SIRET est déjà associé à{' '}
         {pluralizeFr(
