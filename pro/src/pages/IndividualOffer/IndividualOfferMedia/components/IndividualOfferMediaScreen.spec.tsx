@@ -29,7 +29,7 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
-import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
+import * as imageUploadModule from '@/pages/IndividualOffer/commons/useIndividualOfferImageUpload'
 
 import { VideoUploaderContextProvider } from '../commons/context/VideoUploaderContext/VideoUploaderContext'
 import { IndividualOfferMediaScreen } from './IndividualOfferMediaScreen'

@@ -8,16 +8,16 @@ import type {
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner } from '@/design-system/Banner/Banner'
-import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/types'
+import { Select } from '@/ui-kit/form/Select/Select'
+
+import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
+import { ARTISTIC_INFORMATION_FIELDS } from '../DetailsSubForm/DetailsSubForm'
 import {
   buildCategoryOptions,
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
-} from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/utils'
-import { Select } from '@/ui-kit/form/Select/Select'
-
-import { ARTISTIC_INFORMATION_FIELDS } from '../DetailsSubForm/DetailsSubForm'
+} from '../utils'
+import type { DetailsFormValues } from '../validationSchema'
 import styles from './Subcategories.module.scss'
 
 interface SubcategoriesProps {

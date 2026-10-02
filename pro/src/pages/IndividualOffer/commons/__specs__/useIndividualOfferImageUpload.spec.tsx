@@ -1,7 +1,8 @@
 import { act, renderHook } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
+
+import { useIndividualOfferImageUpload } from '../useIndividualOfferImageUpload'
 
 vi.mock('@/apiClient/api', () => ({
   api: {

@@ -18,9 +18,9 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 
-import { DEFAULT_DETAILS_FORM_VALUES } from '../../commons/constants'
-import { deSerializeDurationMinutes } from '../../commons/serializers'
-import type { DetailsFormValues } from './types'
+import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
+import { deSerializeDurationMinutes } from './serializers'
+import type { DetailsFormValues } from './validationSchema'
 
 export const hasMusicType = (
   categoryId: string,
@@ -109,7 +109,6 @@ export function getInitialValuesFromVenueAndProduct(
   }
 
   if (!product) {
-    // @ts-expect-error - Waiting for pydanticV2 migration
     return initialValues
   }
 
@@ -125,7 +124,6 @@ export function getInitialValuesFromVenueAndProduct(
     gtl_id = gtlId || '19000000'
   }
 
-  // @ts-expect-error - Waiting for pydanticV2 migration
   return {
     ...initialValues,
     ...restProduct,
