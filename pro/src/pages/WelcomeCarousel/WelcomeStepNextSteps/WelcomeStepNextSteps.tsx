@@ -3,7 +3,6 @@ import cn from 'classnames'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
 import { WEBINAR_INDIVIDUAL } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -21,9 +20,7 @@ import styles from './WelcomeStepNextSteps.module.scss'
 
 const WelcomeStepNextSteps = (): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const isPreSignupSimulatorFeatureActive = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
+
   return (
     <>
       <div className={commonStyles['title-wrapper']}>
@@ -88,11 +85,7 @@ const WelcomeStepNextSteps = (): JSX.Element => {
       >
         <Button
           as="router-link"
-          to={
-            isPreSignupSimulatorFeatureActive
-              ? '/inscription/preparation/siret'
-              : '/inscription/compte/creation'
-          }
+          to="/inscription/preparation/siret"
           variant={ButtonVariant.PRIMARY}
           label="Démarrer l’inscription"
         />

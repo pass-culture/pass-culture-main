@@ -7,7 +7,6 @@ from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.offerers.structure_signup_api import EligibilityDocument
 from pcapi.core.offerers.structure_signup_api import SignupSimulationMessageLevel
 from pcapi.core.offerers.structure_signup_api import SignupSimulationMessageType
-from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 from tests.conftest import TestClient
 from tests.connectors import api_entreprise_test_data
@@ -19,7 +18,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 VALID_SIRET = "44265836100021"
 
 
-@pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
 class Returns200Test:
     def test_standard_case(self, client: TestClient):
         """structure with default documents and no messages"""
@@ -70,7 +68,6 @@ class Returns200Test:
         }
 
 
-@pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
 class Returns400Test:
     @patch(
         "pcapi.connectors.entreprise.api.get_siret_open_data", side_effect=sirene_exceptions.UnknownEntityException()
@@ -215,18 +212,3 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"targets.0": ["Input should be 'COLLECTIVE' or 'INDIVIDUAL'"]}
-
-
-class Returns404Test:
-    @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=False)
-    def test_with_ff_off(self, client: TestClient):
-        data = {
-            "siret": VALID_SIRET,
-            "isOpenToPublic": True,
-            "targets": ["INDIVIDUAL"],
-            "activity": "MUSEUM",
-        }
-        response = client.post("/structure/simulate-signup", json=data)
-
-        assert response.status_code == 404
-        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

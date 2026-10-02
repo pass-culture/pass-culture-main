@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -23,7 +22,6 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
@@ -39,7 +37,6 @@ import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from '@/components/SignupJourneyForm/Offerer/constants'
-import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { SignupStepper } from '@/components/SignupStepper/SignupStepper'
 import { Banner } from '@/design-system/Banner/Banner'
@@ -51,18 +48,12 @@ import {
   IconPositionEnum,
 } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
-import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 import { Title } from '@/ui-kit/Title/Title'
 
-import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
 
 export const Validation = (): JSX.Element | undefined => {
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
-
   const [loading, setLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
@@ -234,45 +225,26 @@ export const Validation = (): JSX.Element | undefined => {
   ].filter((line) => line !== null)
 
   return (
-    <div
-      className={cn({
-        [styles['validation-container']]: isSignupSimulationEnabled,
-      })}
-    >
-      {isSignupSimulationEnabled && (
-        <>
-          <SignupStepper />
-          <Title
-            level="1"
-            title="Vérifiez vos informations"
-            marginBottom="s"
-            marginTop="xxl"
-          />
-        </>
-      )}
+    <div className={styles['validation-container']}>
+      <SignupStepper />
+      <Title
+        level="1"
+        title="Vérifiez vos informations"
+        marginBottom="s"
+        marginTop="xxl"
+      />
 
       <div className={styles['validation-screen']}>
         <section>
           <div className={styles['validation-screen-subtitle']}>
-            <Title
-              level="2"
-              title={
-                isSignupSimulationEnabled
-                  ? 'Votre structure'
-                  : 'Vos informations'
-              }
-            />
+            <Title level="2" title="Votre structure" />
             <Button
               as="router-link"
               to="/inscription/structure/identification"
               onClick={() => {
                 logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                  to: isSignupSimulationEnabled
-                    ? SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION
-                    : SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-                  used: isSignupSimulationEnabled
-                    ? 'Modifier'
-                    : SignupJourneyAction.UpdateFromValidation,
+                  to: SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION,
+                  used: 'Modifier',
                 })
               }}
               variant={ButtonVariant.SECONDARY}
@@ -294,12 +266,8 @@ export const Validation = (): JSX.Element | undefined => {
               to="/inscription/structure/activite"
               onClick={() => {
                 logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                  to: isSignupSimulationEnabled
-                    ? SIGNUP_STEP_IDS.ACTIVITY
-                    : SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
-                  used: isSignupSimulationEnabled
-                    ? 'Modifier'
-                    : SignupJourneyAction.UpdateFromValidation,
+                  to: SIGNUP_STEP_IDS.ACTIVITY,
+                  used: 'Modifier',
                 })
               }}
               variant={ButtonVariant.SECONDARY}
@@ -315,41 +283,28 @@ export const Validation = (): JSX.Element | undefined => {
         </section>
         <Banner title="Vous pourrez modifier ces informations à tout moment depuis votre espace partenaire." />
 
-        {isSignupSimulationEnabled ? (
-          <div className={styles['next-actions']}>
-            <Button
-              type="button"
-              label="Retour"
-              variant={ButtonVariant.SECONDARY}
-              onClick={() => {
-                logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                  from: location.pathname,
-                  to: SIGNUP_STEP_IDS.ACTIVITY,
-                  used: 'Retour',
-                })
-                handlePreviousStep()
-              }}
-              disabled={loading}
-            />
-            <Button
-              type="button"
-              label="Valider et créer ma structure"
-              onClick={onSubmit}
-              disabled={loading}
-            />
-          </div>
-        ) : (
-          <ActionBar
-            onClickPrevious={handlePreviousStep}
-            previousTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
-            nextTo={SIGNUP_JOURNEY_STEP_IDS.COMPLETED}
-            onClickNext={onSubmit}
-            isDisabled={loading}
-            withRightIcon={false}
-            previousStepTitle="Retour"
-            nextStepTitle="Valider et créer ma structure"
+        <div className={styles['next-actions']}>
+          <Button
+            type="button"
+            label="Retour"
+            variant={ButtonVariant.SECONDARY}
+            onClick={() => {
+              logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                from: location.pathname,
+                to: SIGNUP_STEP_IDS.ACTIVITY,
+                used: 'Retour',
+              })
+              handlePreviousStep()
+            }}
+            disabled={loading}
           />
-        )}
+          <Button
+            type="button"
+            label="Valider et créer ma structure"
+            onClick={onSubmit}
+            disabled={loading}
+          />
+        </div>
       </div>
     </div>
   )

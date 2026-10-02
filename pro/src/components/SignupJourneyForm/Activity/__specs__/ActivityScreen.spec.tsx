@@ -93,10 +93,7 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const renderActivityScreen = (
-  contextValue: SignupJourneyContextValues,
-  features: string[] = []
-) => {
+const renderActivityScreen = (contextValue: SignupJourneyContextValues) => {
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -124,7 +121,6 @@ const renderActivityScreen = (
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/activite'],
-      features,
     }
   )
 }
@@ -162,13 +158,10 @@ describe('screens:SignupJourney::Activity', () => {
     renderActivityScreen(contextValue)
 
     expect(
-      await screen.findByRole('heading', {
-        level: 2,
-        name: 'Et enfin, définissez l’activité de votre structure',
-      })
+      await screen.findByRole('heading', { level: 1, name: 'Votre activité' })
     ).toBeInTheDocument()
     expect(
-      screen.getByText('Les champs suivis d’un * sont obligatoires.')
+      screen.getByText(/Les champs suivis d’un \* sont obligatoires./)
     ).toBeInTheDocument()
     expect(screen.getByLabelText(/Activité principale/)).toHaveValue('')
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
@@ -193,58 +186,56 @@ describe('screens:SignupJourney::Activity', () => {
     ).toBeInTheDocument()
   })
 
-  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
-    it('should display new heading and description instead of old subtitle', async () => {
-      contextValue.activity = null
-      renderActivityScreen(contextValue, ['WIP_PRE_SIGNUP_SIMULATION'])
+  it('should display new heading and description instead of old subtitle', async () => {
+    contextValue.activity = null
+    renderActivityScreen(contextValue)
 
-      expect(
-        await screen.findByRole('heading', { name: 'Votre activité' })
-      ).toBeVisible()
+    expect(
+      await screen.findByRole('heading', { name: 'Votre activité' })
+    ).toBeVisible()
 
-      expect(
-        screen.getByText(
-          /Ces informations déterminent la visibilité de vos offres/
-        )
-      ).toBeVisible()
-
-      expect(
-        screen.queryByRole('heading', {
-          name: /définissez l'activité de votre structure/,
-        })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should log navigation events when clicking "Retour" and "Continuer" buttons', async () => {
-      contextValue.activity = null
-      renderActivityScreen(contextValue, ['WIP_PRE_SIGNUP_SIMULATION'])
-
-      const user = userEvent.setup()
-
-      await screen.findByRole('button', { name: 'Continuer' })
-
-      await user.click(screen.getByRole('button', { name: 'Continuer' }))
-
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
-        {
-          from: location.pathname,
-          to: SIGNUP_STEP_IDS.VALIDATION,
-          used: 'Continuer',
-        }
+    expect(
+      screen.getByText(
+        /Ces informations déterminent la visibilité de vos offres/
       )
+    ).toBeVisible()
 
-      await user.click(screen.getByRole('button', { name: 'Retour' }))
+    expect(
+      screen.queryByRole('heading', {
+        name: /définissez l'activité de votre structure/,
+      })
+    ).not.toBeInTheDocument()
+  })
 
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
-        {
-          from: location.pathname,
-          to: SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION,
-          used: 'Retour',
-        }
-      )
-    })
+  it('should log navigation events when clicking "Retour" and "Continuer" buttons', async () => {
+    contextValue.activity = null
+    renderActivityScreen(contextValue)
+
+    const user = userEvent.setup()
+
+    await screen.findByRole('button', { name: 'Continuer' })
+
+    await user.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
+      {
+        from: location.pathname,
+        to: SIGNUP_STEP_IDS.VALIDATION,
+        used: 'Continuer',
+      }
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Retour' }))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
+      {
+        from: location.pathname,
+        to: SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION,
+        used: 'Retour',
+      }
+    )
   })
 
   describe('Restore contexts from storage', () => {
@@ -324,10 +315,7 @@ describe('screens:SignupJourney::Activity', () => {
     renderActivityScreen(contextValue)
 
     expect(
-      await screen.findByRole('heading', {
-        level: 2,
-        name: 'Et enfin, définissez l’activité de votre structure',
-      })
+      await screen.findByRole('heading', { level: 1, name: 'Votre activité' })
     ).toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -349,10 +337,7 @@ describe('screens:SignupJourney::Activity', () => {
     renderActivityScreen(contextValue)
 
     expect(
-      await screen.findByRole('heading', {
-        level: 2,
-        name: 'Et enfin, définissez l’activité de votre structure',
-      })
+      await screen.findByRole('heading', { level: 1, name: 'Votre activité' })
     ).toBeInTheDocument()
     expect(
       screen.getByLabelText('Aux jeunes via l’application pass Culture')
@@ -378,10 +363,7 @@ describe('screens:SignupJourney::Activity', () => {
     renderActivityScreen(contextValue)
 
     expect(
-      await screen.findByRole('heading', {
-        level: 2,
-        name: 'Et enfin, définissez l’activité de votre structure',
-      })
+      await screen.findByRole('heading', { level: 1, name: 'Votre activité' })
     ).toBeInTheDocument()
     expect(
       screen.getByLabelText('Aux jeunes via l’application pass Culture')
@@ -399,10 +381,7 @@ describe('screens:SignupJourney::Activity', () => {
     renderActivityScreen(contextValue)
 
     expect(
-      await screen.findByRole('heading', {
-        level: 2,
-        name: 'Et enfin, définissez l’activité de votre structure',
-      })
+      await screen.findByRole('heading', { level: 1, name: 'Votre activité' })
     ).toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
@@ -452,10 +431,7 @@ describe('screens:SignupJourney::Activity', () => {
       }
       renderActivityScreen(contextValue)
       expect(
-        await screen.findByRole('heading', {
-          level: 2,
-          name: 'Et enfin, définissez l’activité de votre structure',
-        })
+        await screen.findByRole('heading', { level: 1, name: 'Votre activité' })
       ).toBeInTheDocument()
       expect(screen.getByText(/Domaine\(s\) d’activité \*/)).toBeInTheDocument()
     })
@@ -466,10 +442,7 @@ describe('screens:SignupJourney::Activity', () => {
       }
       renderActivityScreen(contextValue)
       expect(
-        await screen.findByRole('heading', {
-          level: 2,
-          name: 'Et enfin, définissez l’activité de votre structure',
-        })
+        await screen.findByRole('heading', { level: 1, name: 'Votre activité' })
       ).toBeInTheDocument()
       expect(
         screen.queryByText(/Domaine\(s\) d’activité \*/)

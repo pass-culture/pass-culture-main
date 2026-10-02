@@ -23,6 +23,7 @@ test.describe('Redirections', () => {
     ).toBeVisible()
     await checkAccessibility(page)
   })
+
   test('`/inscription` path redirections', async ({ page }) => {
     await page.goto('/inscription')
     await expect(
@@ -30,6 +31,7 @@ test.describe('Redirections', () => {
     ).toBeVisible()
     await checkAccessibility(page)
   })
+
   test('No structure : should add a new structure', async ({ page }) => {
     const requestContext = await request.newContext({
       baseURL: BASE_API_URL,
@@ -40,7 +42,7 @@ test.describe('Redirections', () => {
     await doLogin(page, userData.user.email, { retry: true })
     await page.goto('/')
     await expect(
-      page.getByText('Dites-nous pour quelle structure vous travaillez')
+      page.getByRole('heading', { name: 'Votre numéro SIRET' })
     ).toBeVisible()
     await checkAccessibility(page)
   })
@@ -70,6 +72,7 @@ test.describe('Redirections', () => {
     ).toBeVisible()
     await checkAccessibility(page)
   })
+
   test('Multiple venues and onboarded : should redirect to /hub and have full access', async ({
     page,
   }) => {
@@ -99,6 +102,7 @@ test.describe('Redirections', () => {
     ).toBeVisible()
     await checkAccessibility(page)
   })
+
   test('1 venue non attached : should redirect to /rattachement-en-cours and have hub & admin access', async ({
     page,
   }) => {
@@ -128,6 +132,7 @@ test.describe('Redirections', () => {
     ).toBeVisible()
     await checkAccessibility(page)
   })
+
   test('Multiple venues attached and non-attached : should redirect to hub and have access depending on selected venue', async ({
     page,
   }) => {

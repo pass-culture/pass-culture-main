@@ -53,7 +53,6 @@ const renderSignUp = (options?: RenderWithProvidersOptions) =>
     </Routes>,
     {
       initialRouterEntries: ['/inscription/compte/creation'],
-      features: ['ENABLE_PRO_ACCOUNT_CREATION'],
       ...options,
     }
   )
@@ -82,25 +81,15 @@ describe('Signup', () => {
     Element.prototype.scrollIntoView = vi.fn()
   })
 
-  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
-    it('should render without accessibility violations', async () => {
-      const { container } = renderSignUp({
-        features: ['WIP_PRE_SIGNUP_SIMULATION'],
-      })
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSignUp()
 
-      expect(await axe(container)).toHaveNoViolations()
-    })
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
-    it('should hide OperatingProcedures and show stepper with new heading', () => {
-      renderSignUp({
-        features: ['WIP_PRE_SIGNUP_SIMULATION'],
-      })
-
-      expect(
-        screen.queryByRole('link', {
-          name: /Consulter notre centre d'aide/,
-        })
-      ).not.toBeInTheDocument()
+  describe('render', () => {
+    it('should render with all information', () => {
+      renderSignUp()
 
       expect(
         screen.getByRole('heading', { name: 'Créez votre compte' })
@@ -111,46 +100,18 @@ describe('Signup', () => {
           'Ces informations vous permettront de vous connecter à pass Culture Pro.'
         )
       ).toBeInTheDocument()
-    })
-
-    it('should display "Retour" and "Continuer" buttons instead of "S\'inscrire"', () => {
-      renderSignUp({
-        features: ['WIP_PRE_SIGNUP_SIMULATION'],
-      })
-
-      expect(
-        screen.queryByRole('button', { name: /S'inscrire/ })
-      ).not.toBeInTheDocument()
 
       expect(screen.getByRole('link', { name: 'Retour' })).toBeInTheDocument()
 
       expect(
         screen.getByRole('button', { name: 'Continuer' })
       ).toBeInTheDocument()
-    })
-  })
 
-  describe('render', () => {
-    it('should render with all information', () => {
-      // when the user sees the form
-      renderSignUp()
-
-      // the it should have an external link to the help center
-      expect(
-        screen.getByRole('link', {
-          name: /Consulter notre centre d’aide/,
-        })
-      ).toHaveAttribute(
-        'href',
-        'https://passculture.zendesk.com/hc/fr/articles/4411999179665'
-      )
-      // and an external link to CGU
       expect(
         screen.getByRole('link', {
           name: /Conditions générales d’utilisation/,
         })
       ).toHaveAttribute('href', 'https://pass.culture.fr/cgu-professionnels/')
-      // and a link to signin page
       expect(
         screen.getByRole('link', {
           name: /Se connecter/,
@@ -159,57 +120,49 @@ describe('Signup', () => {
     })
 
     it('should render with all fields', () => {
-      // when the user sees the form
       renderSignUp()
 
-      // then it should have an email field
       expect(
         screen.getByRole('textbox', {
           name: /Adresse email */,
         })
       ).toBeInTheDocument()
-      // and a password field
       expect(screen.getByLabelText(/Mot de passe/)).toBeInTheDocument()
-      // and a last name field
       expect(
         screen.getByRole('textbox', {
           name: /Nom/,
         })
       ).toBeInTheDocument()
-      // and a first name field
       expect(
         screen.getByRole('textbox', {
           name: /Prénom/,
         })
       ).toBeInTheDocument()
-      // and a contact field
       expect(
         screen.getByRole('checkbox', {
           name: /pour recevoir les nouveautés du pass Culture et contribuer à son amélioration/,
         })
       ).toBeInTheDocument()
-      // and a submit button
       expect(
-        screen.getByRole('button', {
-          name: /S’inscrire/,
-        })
+        screen.getByRole('button', { name: 'Continuer' })
       ).toBeInTheDocument()
     })
 
     describe('formlogEvents', () => {
       describe('on component unmount', () => {
         it('should trigger an event with touched fields', async () => {
+          const user = userEvent.setup()
           const { unmount } = renderSignUp()
 
-          await userEvent.type(
+          await user.type(
             screen.getByRole('textbox', {
               name: /Adresse email */,
             }),
             'test@example.com'
           )
           // We simulate onBlur to have email field touched
-          await userEvent.tab()
-          await userEvent.tab()
+          await user.tab()
+          await user.tab()
 
           unmount()
           await waitFor(() => {
@@ -260,44 +213,43 @@ describe('Signup', () => {
     describe('formValidation', () => {
       describe('formValidation', () => {
         it('should enable submit button', async () => {
+          const user = userEvent.setup()
           vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
             remove: vi.fn(),
           } as unknown as HTMLScriptElement)
           vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
           renderSignUp({ features: ['ENABLE_PRO_ACCOUNT_CREATION'] })
-          const submitButton = screen.getByRole('button', {
-            name: /S’inscrire/,
-          })
-          await userEvent.type(
+          await user.type(
             screen.getByRole('textbox', {
               name: /Adresse email */,
             }),
             'test@example.com'
           )
-          await userEvent.type(
+          await user.type(
             screen.getByLabelText(/Mot de passe/),
             'user@AZERTY123'
           )
-          await userEvent.type(
+          await user.type(
             screen.getByRole('textbox', {
               name: /Nom/,
             }),
             'Nom'
           )
-          await userEvent.type(
+          await user.type(
             screen.getByRole('textbox', {
               name: /Prénom/,
             }),
             'Prénom'
           )
+          const submitButton = screen.getByRole('button', { name: 'Continuer' })
           expect(submitButton).toBeEnabled()
 
           // To simulate onBlur event
-          await userEvent.tab()
+          await user.tab()
 
           expect(submitButton).toBeEnabled()
 
-          await userEvent.click(submitButton)
+          await user.click(submitButton)
 
           expect(api.signupPro).toHaveBeenCalledWith({
             body: {
@@ -322,6 +274,7 @@ describe('Signup', () => {
         })
 
         it('should enable submit button without phone number', async () => {
+          const user = userEvent.setup()
           vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
             remove: vi.fn(),
           } as unknown as HTMLScriptElement)
@@ -329,35 +282,33 @@ describe('Signup', () => {
           renderSignUp({
             features: ['ENABLE_PRO_ACCOUNT_CREATION'],
           })
-          const submitButton = screen.getByRole('button', {
-            name: /S’inscrire/,
-          })
-          await userEvent.type(
+          await user.type(
             screen.getByRole('textbox', {
               name: /Adresse email */,
             }),
             'test@example.com'
           )
-          await userEvent.type(
+          await user.type(
             screen.getByLabelText(/Mot de passe/),
             'user@AZERTY123'
           )
-          await userEvent.type(
+          await user.type(
             screen.getByRole('textbox', {
               name: /Nom/,
             }),
             'Nom'
           )
-          await userEvent.type(
+          await user.type(
             screen.getByRole('textbox', {
               name: /Prénom/,
             }),
             'Prénom'
           )
-          await userEvent.tab()
+          await user.tab()
 
+          const submitButton = screen.getByRole('button', { name: 'Continuer' })
           expect(submitButton).toBeEnabled()
-          await userEvent.click(submitButton)
+          await user.click(submitButton)
 
           expect(api.signupPro).toHaveBeenCalledWith({
             body: {
@@ -376,6 +327,7 @@ describe('Signup', () => {
         })
 
         it('should pass through the simulation information when given in the searchParams', async () => {
+          const user = userEvent.setup()
           vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
             remove: vi.fn(),
           } as unknown as HTMLScriptElement)
@@ -385,35 +337,34 @@ describe('Signup', () => {
               '/inscription/compte/creation?isOpenToPublic=true&activity=RECORD_STORE&siret=11111111000011&targets=INDIVIDUAL&targets=COLLECTIVE',
             ],
           })
-          const submitButton = screen.getByRole('button', {
-            name: /S’inscrire/,
-          })
-          await userEvent.type(
+
+          await user.type(
             screen.getByRole('textbox', {
               name: /Adresse email */,
             }),
             'test@example.com'
           )
-          await userEvent.type(
+          await user.type(
             screen.getByLabelText(/Mot de passe/),
             'user@AZERTY123'
           )
-          await userEvent.type(
+          await user.type(
             screen.getByRole('textbox', {
               name: /Nom/,
             }),
             'Nom'
           )
-          await userEvent.type(
+          await user.type(
             screen.getByRole('textbox', {
               name: /Prénom/,
             }),
             'Prénom'
           )
-          await userEvent.tab()
+          await user.tab()
 
+          const submitButton = screen.getByRole('button', { name: 'Continuer' })
           expect(submitButton).toBeEnabled()
-          await userEvent.click(submitButton)
+          await user.click(submitButton)
 
           expect(api.signupPro).toHaveBeenCalledWith({
             body: {
@@ -438,6 +389,7 @@ describe('Signup', () => {
       })
 
       it('should show a notification on api call error', async () => {
+        const user = userEvent.setup()
         vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
           remove: vi.fn(),
         } as unknown as HTMLScriptElement)
@@ -462,30 +414,23 @@ describe('Signup', () => {
         )
         renderSignUp()
 
-        const submitButton = screen.getByRole('button', {
-          name: /S’inscrire/,
-        })
-
-        await userEvent.type(
+        await user.type(
           screen.getByLabelText(/Adresse email/),
           'test@example.com'
         )
-        await userEvent.type(
-          screen.getByLabelText(/Mot de passe/),
-          'user@AZERTY123'
-        )
-        await userEvent.type(screen.getByLabelText(/Nom/), 'Nom')
-        await userEvent.type(screen.getByLabelText(/Prénom/), 'Prénom')
+        await user.type(screen.getByLabelText(/Mot de passe/), 'user@AZERTY123')
+        await user.type(screen.getByLabelText(/Nom/), 'Nom')
+        await user.type(screen.getByLabelText(/Prénom/), 'Prénom')
 
         // To simulate onBlur event
-        await userEvent.tab()
+        await user.tab()
 
-        await userEvent.click(submitButton)
+        await user.click(screen.getByRole('button', { name: 'Continuer' }))
         expect(api.signupPro).toHaveBeenCalledTimes(1)
       })
 
       it('should display error message when RECAPTCHA_ERROR occurs', async () => {
-        // given
+        const user = userEvent.setup()
         const snackBarError = vi.fn()
         vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
           success: vi.fn(),
@@ -496,38 +441,30 @@ describe('Signup', () => {
         } as unknown as HTMLScriptElement)
         vi.spyOn(utils, 'getReCaptchaToken').mockRejectedValue(RECAPTCHA_ERROR)
 
-        // when
         renderSignUp()
-        await userEvent.type(
+        await user.type(
           screen.getByRole('textbox', {
             name: /Adresse email */,
           }),
           'test@example.com'
         )
-        await userEvent.type(
-          screen.getByLabelText(/Mot de passe/),
-          'user@AZERTY123'
-        )
-        await userEvent.type(
+        await user.type(screen.getByLabelText(/Mot de passe/), 'user@AZERTY123')
+        await user.type(
           screen.getByRole('textbox', {
             name: /Nom/,
           }),
           'Nom'
         )
-        await userEvent.type(
+        await user.type(
           screen.getByRole('textbox', {
             name: /Prénom/,
           }),
           'Prénom'
         )
-        await userEvent.tab()
+        await user.tab()
 
-        const submitButton = screen.getByRole('button', {
-          name: /S’inscrire/,
-        })
-        await userEvent.click(submitButton)
+        await user.click(screen.getByRole('button', { name: 'Continuer' }))
 
-        // then
         await waitFor(() => {
           expect(snackBarError).toHaveBeenCalledWith(RECAPTCHA_ERROR_MESSAGE)
         })
@@ -535,7 +472,7 @@ describe('Signup', () => {
       })
 
       it('should handle non-ApiError errors', async () => {
-        // given
+        const user = userEvent.setup()
         const snackBarError = vi.fn()
         vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
           success: vi.fn(),
@@ -547,38 +484,30 @@ describe('Signup', () => {
         vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
         vi.spyOn(api, 'signupPro').mockRejectedValue(new Error('Network error'))
 
-        // when
         renderSignUp()
-        await userEvent.type(
+        await user.type(
           screen.getByRole('textbox', {
             name: /Adresse email */,
           }),
           'test@example.com'
         )
-        await userEvent.type(
-          screen.getByLabelText(/Mot de passe/),
-          'user@AZERTY123'
-        )
-        await userEvent.type(
+        await user.type(screen.getByLabelText(/Mot de passe/), 'user@AZERTY123')
+        await user.type(
           screen.getByRole('textbox', {
             name: /Nom/,
           }),
           'Nom'
         )
-        await userEvent.type(
+        await user.type(
           screen.getByRole('textbox', {
             name: /Prénom/,
           }),
           'Prénom'
         )
-        await userEvent.tab()
+        await user.tab()
 
-        const submitButton = screen.getByRole('button', {
-          name: /S’inscrire/,
-        })
-        await userEvent.click(submitButton)
+        await user.click(screen.getByRole('button', { name: 'Continuer' }))
 
-        // then
         await waitFor(() => {
           expect(api.signupPro).toHaveBeenCalledTimes(1)
         })

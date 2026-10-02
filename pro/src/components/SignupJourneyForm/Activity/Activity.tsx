@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import cn from 'classnames'
 import { useCallback, useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
@@ -20,16 +19,13 @@ import {
   tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { SignupStepper } from '@/components/SignupStepper/SignupStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { Title } from '@/ui-kit/Title/Title'
 
-import { ActionBar } from '../ActionBar/ActionBar'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
@@ -87,10 +83,6 @@ export const Activity = () => {
     initialAddress,
     setInitialAddress,
   } = useSignupJourneyContext()
-
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
 
   const { logEvent } = useAnalytics()
 
@@ -165,27 +157,18 @@ export const Activity = () => {
   ])
 
   return (
-    <div
-      className={cn({
-        [styles['activity-container']]: isSignupSimulationEnabled,
-      })}
-    >
-      {isSignupSimulationEnabled && (
-        <>
-          <SignupStepper />
-          <Title
-            level="1"
-            title="Votre activité"
-            marginTop="xxl"
-            marginBottom="s"
-          />
-          <p className={styles['subheading-description']}>
-            Ces informations déterminent la visibilité de vos offres auprès des
-            jeunes et des enseignants. Les champs suivis d’un * sont
-            obligatoires.
-          </p>
-        </>
-      )}
+    <div className={styles['activity-container']}>
+      <SignupStepper />
+      <Title
+        level="1"
+        title="Votre activité"
+        marginTop="xxl"
+        marginBottom="s"
+      />
+      <p className={styles['subheading-description']}>
+        Ces informations déterminent la visibilité de vos offres auprès des
+        jeunes et des enseignants. Les champs suivis d’un * sont obligatoires.
+      </p>
 
       <FormLayout>
         <FormProvider {...methods}>
@@ -193,58 +176,36 @@ export const Activity = () => {
             onSubmit={methods.handleSubmit(onSubmit)}
             data-testid="signup-activity-form"
           >
-            {!isSignupSimulationEnabled && (
-              <>
-                <Title
-                  level="2"
-                  title="Et enfin, définissez l’activité de votre structure"
-                  marginBottom="l"
-                />
-
-                <FormLayout.MandatoryInfo />
-              </>
-            )}
             <ActivityForm />
 
-            {isSignupSimulationEnabled ? (
-              <div className={styles['next-actions']}>
-                <Button
-                  type="button"
-                  label="Retour"
-                  variant={ButtonVariant.SECONDARY}
-                  onClick={() => {
-                    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                      from: location.pathname,
-                      to: SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION,
-                      used: 'Retour',
-                    })
-                    handlePreviousStep()
-                  }}
-                  disabled={methods.formState.isSubmitting}
-                />
-                <Button
-                  type="submit"
-                  label="Continuer"
-                  onClick={() => {
-                    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                      from: location.pathname,
-                      to: SIGNUP_STEP_IDS.VALIDATION,
-                      used: 'Continuer',
-                    })
-                  }}
-                  disabled={methods.formState.isSubmitting}
-                />
-              </div>
-            ) : (
-              <ActionBar
-                onClickPrevious={handlePreviousStep}
-                isDisabled={methods.formState.isSubmitting}
-                previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
-                nextTo={SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION}
-                nextStepTitle="Continuer"
-                previousStepTitle="Retour"
+            <div className={styles['next-actions']}>
+              <Button
+                type="button"
+                label="Retour"
+                variant={ButtonVariant.SECONDARY}
+                onClick={() => {
+                  logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                    from: location.pathname,
+                    to: SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION,
+                    used: 'Retour',
+                  })
+                  handlePreviousStep()
+                }}
+                disabled={methods.formState.isSubmitting}
               />
-            )}
+              <Button
+                type="submit"
+                label="Continuer"
+                onClick={() => {
+                  logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                    from: location.pathname,
+                    to: SIGNUP_STEP_IDS.VALIDATION,
+                    used: 'Continuer',
+                  })
+                }}
+                disabled={methods.formState.isSubmitting}
+              />
+            </div>
           </form>
         </FormProvider>
       </FormLayout>
