@@ -1,19 +1,16 @@
-import sqlalchemy as sa
 from flask_login import current_user
-from sqlalchemy.dialects.postgresql import insert
 
-from pcapi import settings
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch.trigger_events import track_offer_added_to_favorites_event
-from pcapi.core.favorites.models import FavoriteOffer
-from pcapi.core.favorites.repository import get_favorites_for
+from pcapi.core.favorites import api
+from pcapi.core.favorites import exceptions as favorites_exceptions
+from pcapi.core.favorites.api import get_favorite_offers_for
+from pcapi.core.favorites.api import set_offer_as_favorite
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.exceptions import OfferNotFound
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.repository import get_offer_by_id
-from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.utils import first_or_404
+from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
@@ -27,7 +24,7 @@ from .serialization import favorites as serializers
 @authenticated_and_active_user_required
 @spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)
 def get_favorites() -> serializers.PaginatedFavoritesResponse:
-    favorites = get_favorites_for(current_user)
+    favorites = api.get_favorite_offers_for(current_user)
 
     return serializers.PaginatedFavoritesResponse(
         page=1,
@@ -47,57 +44,29 @@ def get_favorites() -> serializers.PaginatedFavoritesResponse:
 @authenticated_and_active_user_required
 @spectree_serialize(response_model=serializers.FavoriteResponse, on_error_statuses=[400], api=blueprint.api)
 def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteResponse:
-    if settings.MAX_FAVORITES:
-        query = (
-            db.session.query(
-                FavoriteOffer,
-            )
-            .join(
-                FavoriteOffer.offer,
-            )
-            .filter(
-                FavoriteOffer.userId == current_user.id,
-                Offer.isPublished,
-            )
-        )
-        if query.count() >= settings.MAX_FAVORITES:
-            raise ApiErrors({"code": "MAX_FAVORITES_REACHED"})
+    should_track = True
 
     try:
-        offer = get_offer_by_id(body.offer_id, load_options={"venue"})
+        set_offer_as_favorite(current_user, body.offer_id)
+    except favorites_exceptions.AlreadyAsFavorite:
+        should_track = False
+    except favorites_exceptions.MaxFavoritesReached:
+        raise ApiErrors({"code": "MAX_FAVORITES_REACHED"})
     except OfferNotFound as exception:
         raise ResourceNotFoundError() from exception
-
-    if not (offer.venue.managingOfferer.isActive and offer.venue.managingOfferer.isValidated):
+    except favorites_exceptions.InactiveOffer:
         raise ResourceNotFoundError()
 
-    if not offer.isPublished:
-        raise ResourceNotFoundError()
-
-    stmt: sa.sql.dml.ReturningInsert = (
-        insert(FavoriteOffer)
-        .values({"offerId": body.offer_id, "userId": current_user.id})
-        .on_conflict_do_update(
-            index_elements=[FavoriteOffer.offerId, FavoriteOffer.userId],
-            set_={"offerId": body.offer_id},
-        )
-        .returning(
-            FavoriteOffer.id,
-            # xmax is a "system" column that returns the transaction id that modified the row.
-            # In case of insertion, no row has been modified → xmax = 0
-            sa.literal_column("xmax = 0").label("is_inserted"),
-        )
-    )
-    favorite_ids = db.session.execute(stmt).all()
-    favorite_id, inserted = favorite_ids[0]
-
-    if inserted:
+    if should_track:
         update_external_user(current_user)
+        offer = offers_repository.get_offer_by_id(body.offer_id)
         track_offer_added_to_favorites_event(current_user.id, offer)
 
-    favorite_data = get_favorites_for(current_user, favorite_id)[0]
+    favorite_data = get_favorite_offers_for(current_user, offer_id=body.offer_id)[0]
+
     return serializers.FavoriteResponse(
-        id=favorite_data.favorite.id, offer=serializers.FavoriteOfferResponse.build(favorite_data)
+        id=favorite_data.favorite.id,
+        offer=serializers.FavoriteOfferResponse.build(favorite_data),
     )
 
 
@@ -106,5 +75,7 @@ def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteRe
 @authenticated_and_active_user_required
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def delete_favorite(favorite_id: int) -> None:
-    favorite = first_or_404(db.session.query(FavoriteOffer).filter_by(id=favorite_id, user=current_user))
-    db.session.delete(favorite)
+    try:
+        api.delete_favorite_offer(current_user, favorite_id)
+    except favorites_exceptions.FavoriteNotFound:
+        raise resource_not_found_error()
