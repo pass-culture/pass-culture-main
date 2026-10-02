@@ -20,7 +20,7 @@ Bonjour, \n\nJe partage avec vous l’offre pass Culture “${offer.name}”. \n
 
   function handleShareButtonClicked(event: MouseEvent) {
     if (LOGS_DATA) {
-      apiAdage.logTrackingCtaShare({
+      void apiAdage.logTrackingCtaShare({
         body: {
           iframeFrom: location.pathname,
           offerId: offer.id,

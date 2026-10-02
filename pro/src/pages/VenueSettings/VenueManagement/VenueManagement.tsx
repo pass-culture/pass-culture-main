@@ -34,7 +34,7 @@ const VenueManagement = () => {
 
   const onValidateModal = () => {
     setIsCloseVenueModalOpen(false)
-    tryToCloseVenue()
+    void tryToCloseVenue()
   }
 
   const tryToCloseVenue = async () => {

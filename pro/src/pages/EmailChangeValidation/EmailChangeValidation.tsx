@@ -27,7 +27,7 @@ export const EmailChangeValidation = () => {
       }
     }
 
-    changeEmail()
+    void changeEmail()
   }, [location.search])
 
   if (isSuccess === undefined) {

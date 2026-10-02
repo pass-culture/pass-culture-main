@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router'
 
 import { AdageFrontRoles, AdagePlaylistType } from '@/apiClient/adage'
@@ -44,12 +44,14 @@ export const AdageDiscovery = () => {
         adageUser.role !== AdageFrontRoles.READONLY
     )
 
-  if (isFooterSuggestionVisible && !hasSeenAllPlaylist.current) {
-    apiAdage.logHasSeenAllPlaylist({
-      body: { iframeFrom: location.pathname },
-    })
-    hasSeenAllPlaylist.current = true
-  }
+  useEffect(() => {
+    if (isFooterSuggestionVisible && !hasSeenAllPlaylist.current) {
+      hasSeenAllPlaylist.current = true
+      void apiAdage.logHasSeenAllPlaylist({
+        body: { iframeFrom: location.pathname },
+      })
+    }
+  }, [isFooterSuggestionVisible, location.pathname])
 
   const { data: educationalDomains } = useEducationalDomains()
 
@@ -67,7 +69,7 @@ export const AdageDiscovery = () => {
     playlistType,
     numberOfTiles,
   }: PlaylistTracker) {
-    apiAdage.logHasSeenWholePlaylist({
+    void apiAdage.logHasSeenWholePlaylist({
       body: {
         iframeFrom: location.pathname,
         playlistId,
@@ -89,7 +91,7 @@ export const AdageDiscovery = () => {
   const trackPlaylistElementClicked = (
     playlistTrackerParameters: PlaylistTracker
   ) => {
-    apiAdage.logConsultPlaylistElement({
+    void apiAdage.logConsultPlaylistElement({
       body: {
         iframeFrom: location.pathname,
         ...playlistTrackerParameters,

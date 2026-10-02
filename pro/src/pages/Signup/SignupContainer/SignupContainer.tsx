@@ -100,7 +100,7 @@ export const SignupContainer = (): JSX.Element => {
 
   const onHandleSuccess = () => {
     logEvent(Events.SIGNUP_FORM_SUCCESS, {})
-    navigate('/inscription/compte/confirmation', {
+    void navigate('/inscription/compte/confirmation', {
       replace: true,
       state: { email: getValues('email') },
     })

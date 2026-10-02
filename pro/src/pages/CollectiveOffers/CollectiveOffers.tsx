@@ -34,7 +34,7 @@ export const CollectiveOffers = () => {
     delete filters.offererId
     delete filters.venueId
 
-    navigate(
+    void navigate(
       computeCollectiveOffersUrl(filters, DEFAULT_COLLECTIVE_SEARCH_FILTERS),
       {
         replace: true,

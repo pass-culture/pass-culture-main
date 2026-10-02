@@ -146,7 +146,7 @@ export const WelcomeStepHub = (): JSX.Element => {
                 }
                 switch (selectedValue) {
                   case 'partenaire-culturel':
-                    navigate('/bienvenue/publics')
+                    void navigate('/bienvenue/publics')
                     break
                   case 'jeune':
                     globalThis.location.href =

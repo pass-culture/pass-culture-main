@@ -69,10 +69,10 @@ export const useFirebase = (consentedToFirebase: boolean) => {
 
     if (consentedToFirebase) {
       if (!firebaseApp) {
-        loadAnalytics()
+        void loadAnalytics()
       }
     } else if (firebaseApp) {
-      destroyFirebase()
+      void destroyFirebase()
       setIsFirebaseInitialized(false)
     }
   }, [consentedToFirebase])

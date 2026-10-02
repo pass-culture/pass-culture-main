@@ -128,7 +128,7 @@ export const IndividualOfferSummaryScreen = ({
       if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)
       } else {
-        navigate(offerConfirmationStepUrl)
+        await navigate(offerConfirmationStepUrl)
       }
     } catch (error) {
       snackBar.error(getHumanReadableApiError(error))
@@ -165,7 +165,7 @@ export const IndividualOfferSummaryScreen = ({
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
-    navigate(
+    void navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,

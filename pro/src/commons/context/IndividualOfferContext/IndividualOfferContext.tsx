@@ -80,7 +80,7 @@ export const IndividualOfferContextProvider = ({
     {
       onError: (error, key) => {
         if (error.status === 404) {
-          navigate('/404', { state: { from: 'offer' } })
+          void navigate('/404', { state: { from: 'offer' } })
           return
         }
         SWRConfig.onError(error, key, SWRConfig)

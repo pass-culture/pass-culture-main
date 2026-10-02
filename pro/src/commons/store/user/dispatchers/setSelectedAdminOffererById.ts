@@ -69,7 +69,7 @@ export const setSelectedAdminOffererById = createAsyncThunk<
         (isErrorAPIError(err) && err.status !== 0) ||
         err instanceof FrontendError
       ) {
-        logout()
+        await logout()
       }
     }
   }

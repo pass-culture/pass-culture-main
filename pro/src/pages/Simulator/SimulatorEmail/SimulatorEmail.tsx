@@ -94,7 +94,7 @@ export const SimulatorEmail = (): JSX.Element => {
           email: formValues.email,
         },
       })
-      navigate('/inscription/preparation/email-confirmation')
+      await navigate('/inscription/preparation/email-confirmation')
     } catch (error) {
       if (isErrorAPIError(error) && error.status < 500) {
         serializeApiErrors(error.body, setError)

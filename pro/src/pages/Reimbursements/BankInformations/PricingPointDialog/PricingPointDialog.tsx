@@ -116,7 +116,7 @@ export const PricingPointDialog = ({
           onSubmit={(event) => {
             // Necessary to prevent the form submission event from bubbling up and potentially triggering parent Dialog close.
             event.stopPropagation()
-            methods.handleSubmit(onSubmit)(event)
+            void methods.handleSubmit(onSubmit)(event)
           }}
           className={styles['dialog-form']}
         >

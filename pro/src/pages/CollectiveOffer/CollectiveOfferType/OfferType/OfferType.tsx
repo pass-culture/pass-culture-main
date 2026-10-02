@@ -39,7 +39,7 @@ export const OfferTypeScreen = () => {
 
   const onSubmit = async ({ offer }: OfferTypeFormValues) => {
     if (offer.collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE) {
-      return navigate({
+      return await navigate({
         pathname: '/offre/creation/collectif/vitrine',
         search: location.search,
       })
@@ -86,14 +86,14 @@ export const OfferTypeScreen = () => {
           'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
         )
       } else {
-        return navigate({
+        return await navigate({
           pathname: '/offre/creation/collectif/selection',
           search: location.search,
         })
       }
     }
 
-    return navigate({
+    return await navigate({
       pathname: '/offre/creation/collectif',
       search: location.search,
     })

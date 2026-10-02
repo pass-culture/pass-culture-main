@@ -52,13 +52,18 @@ export const CollectiveOffersTemplateLine = ({
 
   const formattedOfferDates = formatOfferDates(offer.dates)
 
-  const onClickCreateBookableOffer = () => {
+  const onClickCreateBookableOffer = async () => {
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
       offerId,
       offerType: 'collective',
       offerStatus: offer.displayedStatus,
     })
-    createOfferFromTemplate(navigate, snackBar, offer.id, selectedPartnerVenue)
+    await createOfferFromTemplate(
+      navigate,
+      snackBar,
+      offer.id,
+      selectedPartnerVenue
+    )
   }
 
   return (

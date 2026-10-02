@@ -104,10 +104,7 @@ describe('useOnVenueImageUpload', () => {
       uploadArgs.imageFile,
       uploadArgs.credit,
       uploadArgs.alternativeText,
-      uploadArgs.cropParams.x,
-      uploadArgs.cropParams.y,
-      uploadArgs.cropParams.height,
-      uploadArgs.cropParams.width
+      uploadArgs.cropParams
     )
 
     expect(buildInitialVenueImageValues).toHaveBeenCalledWith(

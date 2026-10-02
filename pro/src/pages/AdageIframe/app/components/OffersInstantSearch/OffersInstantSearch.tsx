@@ -131,7 +131,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
     }
 
     if (siretParam || venueParam) {
-      setVenueFromUrl()
+      void setVenueFromUrl()
     }
   }, [venueParam, siretParam, relativeOffersIncludedParam, snackBar])
 

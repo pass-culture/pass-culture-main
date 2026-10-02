@@ -53,7 +53,7 @@ export const StoreProvider = ({
       setIsStoreInitialized(true)
     }
 
-    getStoreInitialState()
+    void getStoreInitialState()
   }, [isAdageIframe, dispatch])
 
   if (!isStoreInitialized) {

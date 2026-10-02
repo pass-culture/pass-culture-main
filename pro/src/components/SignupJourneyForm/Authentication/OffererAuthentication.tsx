@@ -100,7 +100,7 @@ export const OffererAuthentication = (): JSX.Element => {
   }
 
   const handlePreviousStep = useCallback(() => {
-    navigate('/inscription/structure/recherche')
+    void navigate('/inscription/structure/recherche')
   }, [navigate])
 
   const onSubmit = (formValues: OffererAuthenticationFormValues) => {
@@ -118,7 +118,7 @@ export const OffererAuthentication = (): JSX.Element => {
     saveOffererToStorage(offererData)
     setOfferer(offererData)
 
-    navigate('/inscription/structure/activite')
+    void navigate('/inscription/structure/activite')
   }
 
   const methods = useForm<OffererAuthenticationFormValues>({
@@ -150,7 +150,7 @@ export const OffererAuthentication = (): JSX.Element => {
         )
       } catch {
         cleanSignupJourneyStorage()
-        navigate('/inscription/structure/recherche')
+        void navigate('/inscription/structure/recherche')
         return
       }
     }

@@ -18,7 +18,7 @@ export const useGetImageBitmap = (file?: File) => {
       }
     }
 
-    updateImageSize()
+    void updateImageSize()
   }, [file])
 
   if (!file) {

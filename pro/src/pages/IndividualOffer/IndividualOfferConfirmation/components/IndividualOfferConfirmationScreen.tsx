@@ -58,7 +58,7 @@ export const IndividualOfferConfirmationScreen = ({
   })
 
   const goToOfferPage = () => {
-    navigate(offerReadOnlyUrl)
+    void navigate(offerReadOnlyUrl)
   }
 
   const {

@@ -49,7 +49,7 @@ export const OfferFavoriteButton = ({
 
       snackBar.success('Supprimé de vos favoris')
 
-      apiAdage.logFavOfferButtonClick({
+      void apiAdage.logFavOfferButtonClick({
         body: {
           offerId: offer.id,
           queryId,
@@ -80,7 +80,7 @@ export const OfferFavoriteButton = ({
 
       snackBar.success('Ajouté à vos favoris')
 
-      apiAdage.logFavOfferButtonClick({
+      void apiAdage.logFavOfferButtonClick({
         body: {
           offerId: offer.id,
           queryId,
@@ -99,7 +99,7 @@ export const OfferFavoriteButton = ({
     setIsLoading(false)
   }
 
-  const handleFavoriteClick = (event: MouseEvent) => {
+  const handleFavoriteClick = async (event: MouseEvent) => {
     event.stopPropagation()
     event.preventDefault()
     if (isLoading) {
@@ -109,9 +109,9 @@ export const OfferFavoriteButton = ({
     setIsLoading(true)
 
     if (isFavorite) {
-      removeFromFavorites()
+      await removeFromFavorites()
     } else {
-      addToFavorites()
+      await addToFavorites()
     }
   }
 

@@ -52,17 +52,17 @@ export const DownloadDropdown = ({
           {
             text: 'Microsoft Excel (.xls)',
             icon: fullDownloadIcon,
-            onClick: () => {
+            onClick: async () => {
               logEvent(logEventName.onSelectXls)
-              onSelect('XLS')
+              await onSelect('XLS')
             },
           },
           {
             text: 'Fichier CSV (.csv)',
             icon: fullDownloadIcon,
-            onClick: () => {
+            onClick: async () => {
               logEvent(logEventName.onSelectCsv)
-              onSelect('CSV')
+              await onSelect('CSV')
             },
           },
         ],

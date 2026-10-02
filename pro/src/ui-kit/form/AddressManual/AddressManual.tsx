@@ -70,7 +70,7 @@ export const AddressManual = ({
 
     methods.setValue(`${prefix}latitude`, latitude)
     methods.setValue(`${prefix}longitude`, longitude)
-    methods.trigger(`${prefix}coords`)
+    void methods.trigger(`${prefix}coords`)
   }
 
   return (

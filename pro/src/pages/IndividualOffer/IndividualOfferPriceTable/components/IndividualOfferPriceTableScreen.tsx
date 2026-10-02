@@ -112,7 +112,7 @@ export const IndividualOfferPriceTableScreen = ({
     })
 
   const handlePreviousStep = () => {
-    navigate(
+    void navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
