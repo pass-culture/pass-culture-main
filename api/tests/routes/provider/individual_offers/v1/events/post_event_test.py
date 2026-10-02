@@ -15,6 +15,8 @@ import time_machine
 from pcapi import settings
 from pcapi.connectors import youtube
 from pcapi.core import testing
+from pcapi.core.artist import factories as artist_factories
+from pcapi.core.artist import models as artist_models
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -142,6 +144,196 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.subcategoryId == "CONCERT"
         assert created_offer.artistOfferLinks == []
+
+    @pytest.mark.parametrize(
+        "request_field,column",
+        [
+            ("spotifyId", "spotify_id"),
+            ("isniId", "isni_id"),
+            ("appleMusicId", "apple_music_id"),
+            ("deezerId", "deezer_id"),
+            ("geniusId", "genius_id"),
+            ("soundcloudId", "soundcloud_id"),
+        ],
+    )
+    def test_should_link_the_artist_found_on_every_platform(self, request_field, column):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        artist = artist_factories.ArtistFactory(name="Barbara")
+        artist_factories.ArtistMusicPlatformFactory(artist=artist, **{column: "some-platform-id"})
+
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["categoryRelatedFields"] = {
+            "category": "CONCERT",
+            "musicType": "ELECTRO-HOUSE",
+            "artists": [{"artistType": "performer", request_field: "some-platform-id"}],
+        }
+        json_body["bookingContact"] = "contact@example.com"
+        response = self.make_request(plain_api_key, json_body=json_body)
+
+        assert response.status_code == 200, response.json
+        assert response.json["categoryRelatedFields"]["artists"] == [{"name": "Barbara", "artistType": "performer"}]
+
+        created_offer = db.session.query(offers_models.Offer).one()
+        links = {(link.artist_id, link.artist_type) for link in created_offer.artistOfferLinks}
+        assert links == {(artist.id, artist_models.ArtistType.PERFORMER)}
+
+    def test_should_pick_the_artist_by_platform_priority(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        spotify_artist = artist_factories.ArtistFactory(name="Barbara")
+        artist_factories.ArtistMusicPlatformFactory(artist=spotify_artist, spotify_id="4TNiKyCX2oCvdo1sTgHcRw")
+        deezer_artist = artist_factories.ArtistFactory(name="Jacques Brel")
+        artist_factories.ArtistMusicPlatformFactory(artist=deezer_artist, deezer_id="3590")
+
+        # spotify has a higher priority
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["categoryRelatedFields"] = {
+            "category": "CONCERT",
+            "musicType": "ELECTRO-HOUSE",
+            "artists": [{"artistType": "performer", "deezerId": "3590", "spotifyId": "4TNiKyCX2oCvdo1sTgHcRw"}],
+        }
+        json_body["bookingContact"] = "contact@example.com"
+        response = self.make_request(plain_api_key, json_body=json_body)
+
+        assert response.status_code == 200, response.json
+        assert response.json["categoryRelatedFields"]["artists"] == [{"name": "Barbara", "artistType": "performer"}]
+
+        created_offer = db.session.query(offers_models.Offer).one()
+        links = {(link.artist_id, link.artist_type) for link in created_offer.artistOfferLinks}
+        assert links == {(spotify_artist.id, artist_models.ArtistType.PERFORMER)}
+
+    @pytest.mark.parametrize("artists", [None, []])
+    def test_should_not_link_any_artist(self, artists):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["categoryRelatedFields"] = {
+            "category": "CONCERT",
+            "musicType": "ELECTRO-HOUSE",
+            "artists": artists,
+        }
+        json_body["bookingContact"] = "contact@example.com"
+        db.session.flush()
+
+        with testing.assert_num_queries(self.num_queries_live_music_event):
+            response = self.make_request(plain_api_key, json_body=json_body)
+
+        assert response.status_code == 200, response.json
+        assert response.json["categoryRelatedFields"]["artists"] == []
+        created_offer = db.session.query(offers_models.Offer).one()
+        assert created_offer.artistOfferLinks == []
+
+    @pytest.mark.parametrize("category", ["SEANCE_CINE", "FESTIVAL_LIVRE"])
+    def test_should_ignore_the_artists_of_an_event_that_is_not_a_live_music_event(self, category):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        artist_factories.ArtistMusicPlatformFactory(
+            artist=artist_factories.ArtistFactory(name="Barbara"),
+            spotify_id="4TNiKyCX2oCvdo1sTgHcRw",
+        )
+
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["categoryRelatedFields"] = {
+            "category": category,
+            "artists": [{"artistType": "performer", "spotifyId": "4TNiKyCX2oCvdo1sTgHcRw"}],
+        }
+        response = self.make_request(plain_api_key, json_body=json_body)
+
+        assert response.status_code == 200, response.json
+        assert "artists" not in response.json["categoryRelatedFields"]
+
+        created_offer = db.session.query(offers_models.Offer).one()
+        assert created_offer.artistOfferLinks == []
+
+    def test_should_raise_400_because_the_artist_type_is_null(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["categoryRelatedFields"] = {
+            "category": "CONCERT",
+            "musicType": "ELECTRO-HOUSE",
+            "artists": [{"artistType": None, "spotifyId": "4TNiKyCX2oCvdo1sTgHcRw"}],
+        }
+        json_body["bookingContact"] = "contact@example.com"
+        response = self.make_request(plain_api_key, json_body=json_body)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "categoryRelatedFields.CONCERT_create.artists.0.artistType": ["none is not an allowed value"]
+        }
+        assert db.session.query(offers_models.Offer).first() is None
+
+    def test_should_raise_400_because_the_artist_type_is_unknown(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["categoryRelatedFields"] = {
+            "category": "CONCERT",
+            "musicType": "ELECTRO-HOUSE",
+            "artists": [{"artistType": "stage_director", "spotifyId": "4TNiKyCX2oCvdo1sTgHcRw"}],
+        }
+        json_body["bookingContact"] = "contact@example.com"
+        response = self.make_request(plain_api_key, json_body=json_body)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "categoryRelatedFields.CONCERT_create.artists.0.artistType": [
+                "value is not a valid enumeration member; permitted: 'author', 'performer'"
+            ]
+        }
+        assert db.session.query(offers_models.Offer).first() is None
+
+    def test_should_raise_400_because_the_artist_has_no_platform_id(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["categoryRelatedFields"] = {
+            "category": "CONCERT",
+            "musicType": "ELECTRO-HOUSE",
+            "artists": [{"artistType": "performer"}],
+        }
+        json_body["bookingContact"] = "contact@example.com"
+        response = self.make_request(plain_api_key, json_body=json_body)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "categoryRelatedFields.CONCERT_create.artists.0.__root__": ["At least one platform id must be set"]
+        }
+        assert db.session.query(offers_models.Offer).first() is None
+
+    def test_should_raise_400_because_the_artist_platform_ids_are_empty(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["categoryRelatedFields"] = {
+            "category": "CONCERT",
+            "musicType": "ELECTRO-HOUSE",
+            "artists": [{"artistType": "performer", "spotifyId": None, "deezerId": ""}],
+        }
+        json_body["bookingContact"] = "contact@example.com"
+        response = self.make_request(plain_api_key, json_body=json_body)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "categoryRelatedFields.CONCERT_create.artists.0.__root__": ["At least one platform id must be set"]
+        }
+        assert db.session.query(offers_models.Offer).first() is None
+
+    def test_should_raise_400_because_the_artist_has_an_unknown_field(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["categoryRelatedFields"] = {
+            "category": "CONCERT",
+            "musicType": "ELECTRO-HOUSE",
+            "artists": [{"artistType": "performer", "wikidataId": "Q1234"}],
+        }
+        json_body["bookingContact"] = "contact@example.com"
+        response = self.make_request(plain_api_key, json_body=json_body)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "categoryRelatedFields.CONCERT_create.artists.0.wikidataId": ["extra fields not permitted"]
+        }
+        assert db.session.query(offers_models.Offer).first() is None
 
     def test_event_with_deprecated_music_type_triggers_warning_log(self, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum

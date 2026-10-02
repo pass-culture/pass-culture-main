@@ -127,4 +127,13 @@ List of cinema offers identified either by a CNC visa or an Allocine Id.
 **ℹ️ Important notice:** For a given identifier, there can be only one offer per location (ie. per venue/address).
 """
 
+ARTISTS_DESCRIPTION = (
+    "Artists to link to the event, identified by their ids on music platforms. "
+    "An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response "
+    "to know which artists have actually been linked."
+)
+ARTISTS_EDITION_DESCRIPTION = (
+    f"{ARTISTS_DESCRIPTION} "
+    "The list replaces the artists currently linked to the event. Set it to `null` to unlink them all."
+)
 ARTIST_PLATFORM_ID_DESCRIPTION = "Id of the artist on {platform}."

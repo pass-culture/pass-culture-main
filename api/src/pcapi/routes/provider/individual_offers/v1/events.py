@@ -119,6 +119,9 @@ def post_event_offer(body: events_serializers.EventOfferCreation) -> events_seri
             offerer_address=offerer_address,
         )
 
+        if artists := getattr(body.category_related_fields, "artists", None):
+            utils.link_artists_to_offer(created_offer, artists)
+
         price_categories = body.price_categories or []
 
         for price_category in price_categories:
