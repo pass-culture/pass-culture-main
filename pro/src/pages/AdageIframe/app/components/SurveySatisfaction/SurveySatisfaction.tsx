@@ -39,7 +39,7 @@ export const SurveySatisfaction = ({
   }
 
   const logOpenSatisfactionSurvey = () => {
-    apiAdage.logOpenSatisfactionSurvey({
+    void apiAdage.logOpenSatisfactionSurvey({
       body: {
         iframeFrom: location.pathname,
         queryId,

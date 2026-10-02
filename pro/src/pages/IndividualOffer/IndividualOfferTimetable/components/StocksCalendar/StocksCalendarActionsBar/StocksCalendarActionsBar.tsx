@@ -34,7 +34,7 @@ export function StocksCalendarActionsBar({
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
   function handlePreviousStep() {
-    navigate(
+    void navigate(
       getIndividualOfferUrl({
         offerId: offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -96,7 +96,7 @@ export function StocksCalendarActionsBar({
         <ActionBar
           onClickPrevious={handlePreviousStep}
           onClickNext={() => {
-            handleNextStep()
+            void handleNextStep()
           }}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE}
           dirtyForm={false}

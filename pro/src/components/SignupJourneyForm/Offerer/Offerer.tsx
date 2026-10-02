@@ -65,7 +65,7 @@ export const Offerer = (): JSX.Element => {
           ? '/inscription/structure/rattachement'
           : '/inscription/structure/identification',
       }
-      navigate(redirection.path)
+      void navigate(redirection.path)
 
       return redirection
     },

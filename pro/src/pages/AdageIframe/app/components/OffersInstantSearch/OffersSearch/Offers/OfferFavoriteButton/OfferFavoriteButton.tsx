@@ -49,7 +49,7 @@ export const OfferFavoriteButton = ({
 
       snackBar.success('Supprimé de vos favoris')
 
-      apiAdage.logFavOfferButtonClick({
+      void apiAdage.logFavOfferButtonClick({
         body: {
           offerId: offer.id,
           queryId,
@@ -80,7 +80,7 @@ export const OfferFavoriteButton = ({
 
       snackBar.success('Ajouté à vos favoris')
 
-      apiAdage.logFavOfferButtonClick({
+      void apiAdage.logFavOfferButtonClick({
         body: {
           offerId: offer.id,
           queryId,

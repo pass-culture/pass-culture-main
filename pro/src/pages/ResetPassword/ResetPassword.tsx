@@ -26,7 +26,7 @@ export const ResetPassword = (): JSX.Element => {
 
   const invalidTokenHandler = useCallback(() => {
     snackBar.error('Le lien est invalide ou a expiré. Veuillez recommencer.')
-    navigate('/demande-mot-de-passe')
+    void navigate('/demande-mot-de-passe')
   }, [navigate, snackBar])
 
   useEffect(() => {

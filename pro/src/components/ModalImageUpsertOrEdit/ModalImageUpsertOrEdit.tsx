@@ -153,7 +153,7 @@ export const ModalImageUpsertOrEdit = ({
     // Waiting the dialog to be opened is a minor optimization to avoid loading an image that
     // might never be displayed since the dialog is always rendered.
     if (open && !draftImage && previouslyUploadedImageUrl) {
-      setImageFromUrl(previouslyUploadedImageUrl)
+      void setImageFromUrl(previouslyUploadedImageUrl)
     }
   }, [open, draftImage, previouslyUploadedImageUrl, snackBar])
 

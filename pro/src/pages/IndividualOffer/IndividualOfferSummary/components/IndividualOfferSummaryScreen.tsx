@@ -165,7 +165,7 @@ export const IndividualOfferSummaryScreen = ({
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
-    navigate(
+    void navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,

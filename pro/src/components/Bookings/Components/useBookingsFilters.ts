@@ -139,7 +139,9 @@ export function useBookingsFilters() {
 
     setUrlParams((prev) => ({ ...prev, ...partialUrlInfo }) as PreFiltersParams)
 
-    navigate(`${currentRoute.pathname}?page=1&${stringify(partialUrlInfo)}`)
+    void navigate(
+      `${currentRoute.pathname}?page=1&${stringify(partialUrlInfo)}`
+    )
   }
 
   const applyNow = () => {

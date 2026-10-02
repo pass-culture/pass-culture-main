@@ -162,7 +162,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
           <ActionsBarSticky>
             <ActionsBarSticky.Right>
               <Button
-                onClick={handleButtonClick}
+                onClick={() => void handleButtonClick}
                 label="Créer l’offre pour l’enseignant"
               />
             </ActionsBarSticky.Right>

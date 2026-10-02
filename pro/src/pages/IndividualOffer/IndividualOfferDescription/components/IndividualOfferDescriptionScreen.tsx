@@ -207,7 +207,7 @@ export const IndividualOfferDescriptionScreen = () => {
     })
 
   const handlePreviousStep = () => {
-    navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
+    void navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
   }
 
   const updateProduct = (ean: string, product: Product) => {

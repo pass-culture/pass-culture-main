@@ -43,7 +43,7 @@ export const ContactButton = ({
 
   const handleButtonClick = () => {
     if (!isPreview) {
-      apiAdage.logContactModalButtonClick({
+      void apiAdage.logContactModalButtonClick({
         body: {
           iframeFrom: location.pathname,
           offerId,

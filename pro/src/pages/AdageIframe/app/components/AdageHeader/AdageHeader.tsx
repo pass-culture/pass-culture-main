@@ -17,7 +17,7 @@ import { AdageHeaderBudget } from './AdageHeaderBudget/AdageHeaderBudget'
 import { AdageHeaderMenu } from './AdageHeaderMenu/AdageHeaderMenu'
 
 function logAdageLinkClick(headerLinkName: AdageHeaderLink) {
-  apiAdage.logHeaderLinkClick({
+  void apiAdage.logHeaderLinkClick({
     body: {
       iframeFrom: location.pathname,
       header_link_name: headerLinkName,

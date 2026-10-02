@@ -132,7 +132,7 @@ export function AdageOfferListCard({
                 onCardClicked?.()
                 if (!e.metaKey) {
                   e.preventDefault()
-                  navigate(`offre/${offer.id}?token=${adageAuthToken}`, {
+                  void navigate(`offre/${offer.id}?token=${adageAuthToken}`, {
                     state: { offer, queryId },
                   })
                 }

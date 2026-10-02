@@ -26,7 +26,9 @@ const NonAttached = () => {
       />
       <div className={styles['wrapper']}>
         <Button
-          onClick={() => navigate('/hub')}
+          onClick={() => {
+            void navigate('/hub')
+          }}
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           icon={fullBackIcon}

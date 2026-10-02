@@ -117,11 +117,11 @@ export const Autocomplete = ({
 
   const isLocalStorageEnabled = storageAvailable('localStorage')
 
-  const logAutocompleteSuggestionClick = async (
+  const logAutocompleteSuggestionClick = (
     suggestionType: SuggestionType,
     suggestionValue: string
   ) => {
-    await apiAdage.logTrackingAutocompleteSuggestionClick({
+    void apiAdage.logTrackingAutocompleteSuggestionClick({
       body: {
         iframeFrom: location.pathname,
         suggestionType,

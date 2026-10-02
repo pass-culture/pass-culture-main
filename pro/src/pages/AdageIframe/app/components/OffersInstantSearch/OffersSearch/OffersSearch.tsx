@@ -204,7 +204,7 @@ export const OffersSearch = ({
 
   useEffect(() => {
     if (mainOffersSearchResults) {
-      logFiltersOnSearch(
+      void logFiltersOnSearch(
         mainOffersSearchResults.nbHits,
         mainOffersSearchResults.queryID
       )

@@ -56,7 +56,7 @@ export const PrebookingButton = ({
 
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA && !isPreview) {
-      apiAdage.logBookingModalButtonClick({
+      void apiAdage.logBookingModalButtonClick({
         body: {
           iframeFrom: location.pathname,
           stockId,

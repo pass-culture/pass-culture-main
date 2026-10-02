@@ -107,7 +107,7 @@ export const OfferHeadlineCard = ({
           size={ButtonSize.SMALL}
           onClick={() => {
             if (isHeadlineOffer) {
-              removeHeadlineOffer({ offerId })
+              void removeHeadlineOffer({ offerId })
               logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
                 offerId,
                 action: 'deleted',
@@ -117,7 +117,7 @@ export const OfferHeadlineCard = ({
             } else if (hasHeadlineOffer && !hasThumb) {
               setIsDialogForHeadlineOfferWithoutImageOpen(true)
             } else if (!hasHeadlineOffer && hasThumb) {
-              upsertHeadlineOffer({
+              void upsertHeadlineOffer({
                 offerId,
                 context: {
                   actionType: 'add',

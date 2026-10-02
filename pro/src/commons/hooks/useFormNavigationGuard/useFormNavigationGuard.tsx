@@ -61,7 +61,7 @@ export const useFormNavigationGuard = <
       return
     }
 
-    navigate(pendingNavigationPath)
+    void navigate(pendingNavigationPath)
     setPendingNavigationPath(null)
   }
 
@@ -93,7 +93,7 @@ export const useFormNavigationGuard = <
       const blockedPath = getBlockedPath()
       blocker.reset()
       if (blockedPath) {
-        navigate(blockedPath, { state })
+        void navigate(blockedPath, { state })
       }
       if (isSamePath) {
         form.reset()
@@ -112,7 +112,7 @@ export const useFormNavigationGuard = <
       const blockedPath = getBlockedPath()
       blocker.reset()
       if (blockedPath) {
-        navigate(blockedPath)
+        void navigate(blockedPath)
         return true
       }
       return false

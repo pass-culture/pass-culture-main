@@ -54,7 +54,9 @@ export const UserProfile = ({
   return (
     <div className={styles['profil-container']}>
       <Button
-        onClick={() => navigate(-1)}
+        onClick={() => {
+          void navigate(-1)
+        }}
         variant={ButtonVariant.TERTIARY}
         color={ButtonColor.NEUTRAL}
         icon={fullBackIcon}

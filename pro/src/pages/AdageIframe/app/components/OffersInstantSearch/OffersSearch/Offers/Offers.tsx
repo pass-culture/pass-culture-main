@@ -106,7 +106,7 @@ export const Offers = ({
 
   useEffect(() => {
     if (isMobileScreen !== undefined) {
-      apiAdage.logOfferListViewSwitch({
+      void apiAdage.logOfferListViewSwitch({
         body: {
           iframeFrom: location.pathname,
           source: adageViewType,
@@ -146,7 +146,7 @@ export const Offers = ({
     const source = button.id === 'list' ? 'grid' : 'list'
     dispatch(setSearchView(viewType))
     if (adageViewType !== viewType) {
-      apiAdage.logOfferListViewSwitch({
+      void apiAdage.logOfferListViewSwitch({
         body: {
           iframeFrom: location.pathname,
           source,
@@ -163,7 +163,7 @@ export const Offers = ({
       return
     }
 
-    apiAdage.logOfferTemplateDetailsButtonClick({
+    void apiAdage.logOfferTemplateDetailsButtonClick({
       body: {
         iframeFrom: location.pathname,
         offerId: isCollectiveOfferTemplate(offer) ? offer.id : offer.stock.id,

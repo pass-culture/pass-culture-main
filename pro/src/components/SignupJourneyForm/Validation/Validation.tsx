@@ -102,7 +102,7 @@ export const Validation = (): JSX.Element | undefined => {
         tryRestoreActivityFromStorage(setActivity)
       } catch {
         cleanSignupJourneyStorage()
-        navigate('/inscription/structure/recherche')
+        void navigate('/inscription/structure/recherche')
         return
       }
     }
@@ -183,7 +183,7 @@ export const Validation = (): JSX.Element | undefined => {
   }
 
   const handlePreviousStep = () => {
-    navigate('/inscription/structure/activite')
+    void navigate('/inscription/structure/activite')
   }
 
   const venueLines = [

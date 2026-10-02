@@ -60,7 +60,7 @@ export const SimulatorTarget = (): JSX.Element => {
   const onSubmit = (formValues: SimulatorTargetAudienceFormValues) => {
     saveTargetAudienceToStorage(formValues.targetAudiences)
     setTargetAudiences(formValues.targetAudiences)
-    navigate('/inscription/preparation/resultats')
+    void navigate('/inscription/preparation/resultats')
   }
 
   return (

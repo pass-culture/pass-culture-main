@@ -63,7 +63,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
   const onCancel = () => {
     form.reset()
-    navigate(getVenuePagePathToNavigateTo())
+    void navigate(getVenuePagePathToNavigateTo())
   }
 
   const onSubmit = async (values: VenueEditionFormValues): Promise<boolean> => {

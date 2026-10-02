@@ -79,7 +79,7 @@ export const LinkVenuesDialog = ({
 
   const handleCancel = () => {
     if (isEqual(selectedVenuesIds, initialVenuesIds)) {
-      closeDialog()
+      void closeDialog()
     } else {
       setShowDiscardDialog(true)
     }
@@ -87,7 +87,7 @@ export const LinkVenuesDialog = ({
 
   const submitVenuesIds = async (venuesIds: number[], hasUnchecked = false) => {
     if (isEqual(venuesIds, initialVenuesIds)) {
-      closeDialog(false)
+      void closeDialog(false)
       return
     }
 
@@ -252,7 +252,7 @@ export const LinkVenuesDialog = ({
           <Button
             onClick={() => {
               setShowDiscardDialog(false)
-              closeDialog()
+              void closeDialog()
             }}
             label="Quitter sans enregistrer"
             key="confirm"

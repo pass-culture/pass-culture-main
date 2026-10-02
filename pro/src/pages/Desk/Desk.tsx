@@ -85,7 +85,7 @@ export const Desk = () => {
       }
     }
 
-    fetchBooking()
+    void fetchBooking()
 
     return () => {
       cancelled = true

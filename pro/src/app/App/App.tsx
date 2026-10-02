@@ -51,7 +51,7 @@ export const App = (): JSX.Element | null => {
               if (location.pathname.startsWith('/adage-iframe')) {
                 return
               }
-              navigate('/404')
+              void navigate('/404')
               return
             }
             snackBar.error(GET_DATA_ERROR_MESSAGE)
