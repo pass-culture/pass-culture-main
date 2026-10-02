@@ -21,27 +21,6 @@ Texte
 
 <details>
 
-<summary> ⏳ Critère 9.4 - Dans chaque page web, chaque citation est-elle correctement indiquée ?</summary>
-
-**RAWeb/RGAA** : [Critère 9.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-4)
-**Ticket** : [PC-43883](https://passculture.atlassian.net/browse/PC-43883)  
-**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
-
-**Problème** 😱  
-Texte
-
-**Correction** 💡  
-Texte
-
-**Retours audit** 🔥  
-Texte
-
-</details>
-
-<br>
-
-<details>
-
 <summary> ⏳ Critère 7.1 - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
 
 **RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
@@ -138,6 +117,8 @@ Texte
 
 <br>
 
+<details>
+
 <summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
 
 **RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
@@ -165,6 +146,69 @@ P06 → Création offre individuelle (7 étapes et confirmation)
 
 **Retours audit** 🔥  
 Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 9.2 - RAWeb - Dans chaque page web, la structure du document est-elle cohérente ?</summary>
+
+**RAWeb/RGAA** : [Critère 9.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-2)
+**Ticket** : [PC-42856](https://passculture.atlassian.net/browse/PC-42856)  
+**PR** : [#24545](https://github.com/pass-culture/pass-culture-main/pull/24545)
+
+**Problème** 😱  
+Le lien portant le logo « Pass Culture Pro, l'espace des acteurs culturels » est positionné entre les éléments `<header>` et `<main>`, sans être inclus dans un repère de page.
+
+**Correction** 💡  
+Le changement de l'ancien layout vers le nouveau `<FullLayout>` corrige de-facto ce problème, qui était lié à l'ancien `<SignUpLayout>`, le logo étant correctement positionné dans le `<header>` du nouveau layout
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 9.4 - Dans chaque page web, chaque citation est-elle correctement indiquée ?</summary>
+
+**RAWeb/RGAA** : [Critère 9.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-4)
+**Ticket** : [PC-43883](https://passculture.atlassian.net/browse/PC-43883)  
+**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+
+**Problème** 😱  
+Texte
+
+**Correction** 💡  
+Texte
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 10.4 - RAWeb - Dans chaque page web, le texte reste-t-il lisible lorsque la taille des caractères est augmentée jusqu’à 200 %, au moins (hors cas particuliers) ?</summary>
+
+**RAWeb/RGAA** : [Critère 10.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-4)
+**Ticket** : [PC-42858](https://passculture.atlassian.net/browse/PC-42858)  
+**PR** : [#24545](https://github.com/pass-culture/pass-culture-main/pull/24545)
+
+**Problème** 😱  
+Le contenu de l'en-tête de la page n'est plus affiché à 200 % de zoom, le `<header>` étant masqué (display: none).
+
+**Correction** 💡  
+Le changement de l'ancien layout vers le nouveau `<FullLayout>` corrige de-facto ce problème, qui était lié à l'ancien `<SignUpLayout>`. Le `<header>` reste bien visible à 200% de zoom dans le nouveau layout.
+
+**Retours audit** 🔥  
+TBD
 
 </details>
 
