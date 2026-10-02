@@ -226,6 +226,9 @@ class User(PcObject, Model, DeactivableMixin):
     favoriteOffers: sa_orm.Mapped[list[FavoriteOffer]] = sa_orm.relationship(
         "FavoriteOffer", foreign_keys="FavoriteOffer.userId", back_populates="user"
     )
+    favoriteArtists: sa_orm.Mapped[list[FavoriteArtist]] = sa_orm.relationship(
+        "FavoriteArtist", foreign_keys="FavoriteArtist.userId", back_populates="user"
+    )
     firstName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
     idPieceNumber: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String, nullable=True, unique=True)
     ineHash: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True, unique=True)
