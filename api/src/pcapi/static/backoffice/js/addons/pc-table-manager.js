@@ -409,7 +409,14 @@ addonList.push(
           $newLines.forEach(($newLine) => {
             this.#initializeRow(defaultConfiguration, $newLine)
             this.#applyConfigurationOnLine(configuration, $newLine)
-            htmx.swap(`tr#${$newLine.id}`, $newLine.outerHTML, {swapStyle: "outerHTML"})
+            if($table.querySelector(`tr#${$newLine.id}`)){
+              // if the line is in the table replace it
+              htmx.swap(`tr#${$newLine.id}`, $newLine.outerHTML, {swapStyle: "outerHTML"})
+            }
+            else{
+              // if the line isn't in the table add it at the end
+              htmx.swap(`table#${$table.id} > tbody`, $newLine.outerHTML, {swapStyle: "beforeend"})
+            }
           })
           // re-init table selection checkboxes and unselect them all
           this.app.addons.PcTableMultiSelectId.refreshTableState($table)
