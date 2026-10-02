@@ -8,6 +8,7 @@ import { axe } from 'vitest-axe'
 import { CollectiveAdditionalFeeType } from '@/apiClient/v1'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 
 import {
   type CollectiveOfferStockFormValues,
@@ -20,6 +21,7 @@ function renderAdditionalFeesForm({
   canEditDiscount = true,
   canEditDetails = true,
   onSubmit = vi.fn(),
+  scrollToError = false,
   priceValues: { servicePrice = 100, price = 100 } = {
     servicePrice: 100,
     price: 100,
@@ -34,6 +36,7 @@ function renderAdditionalFeesForm({
   canEditDiscount?: boolean
   canEditDetails?: boolean
   onSubmit?: () => void
+  scrollToError?: boolean
   priceValues?: {
     servicePrice?: number
     price?: number
@@ -63,6 +66,7 @@ function renderAdditionalFeesForm({
     return (
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
+          {scrollToError && <ScrollToFirstHookFormErrorAfterSubmit />}
           <AdditionalFeesForm canEditDiscount={canEditDiscount} />
           <button type="submit">Enregistrer</button>
         </form>
@@ -111,16 +115,18 @@ describe('AdditionalFeesForm', () => {
     expect(screen.getAllByLabelText(/Prix \(en €\)/)).toHaveLength(2)
   })
 
-  it('should add a row with default values and focus it when clicking "Oui"', async () => {
+  it('should add a row with default values and focus the type field when clicking "Oui"', async () => {
     const user = userEvent.setup()
     renderAdditionalFeesForm({
       initialValues: { hasAdditionalFees: false, collectiveAdditionalFees: [] },
     })
 
-    await user.click(screen.getByRole('radio', { name: 'Oui' }))
+    await user.tab()
+    await user.keyboard('{ArrowRight}')
 
     expect(screen.getAllByLabelText(/Type de frais annexes/)).toHaveLength(1)
     expect(screen.getByLabelText(/Prix \(en €\)/)).toHaveValue(0)
+    expect(screen.getByLabelText(/Type de frais annexes/)).toHaveFocus()
   })
 
   it('should clear all fees and hide fields when clicking "Non"', async () => {
@@ -236,7 +242,11 @@ describe('AdditionalFeesForm', () => {
     expect(screen.getAllByLabelText(/Type de frais annexes/)).toHaveLength(2)
     const feeAmountInputs = screen.getAllByLabelText(/Prix \(en €\)/)
     expect(feeAmountInputs).toHaveLength(2)
-    await waitFor(() => expect(feeAmountInputs[1]).toHaveFocus())
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Ajouter un type de frais annexes' })
+      ).toHaveFocus()
+    )
   })
 
   it('should not display the trash button when only one row remains', () => {
@@ -342,6 +352,33 @@ describe('AdditionalFeesForm', () => {
       expect.anything()
     )
   })
+
+  it.each([
+    ['unselected type', '' as CollectiveAdditionalFeeType],
+    ['missing custom label', CollectiveAdditionalFeeType.OTHER],
+  ])(
+    'should focus the fee type with %s and empty amount on submit',
+    async (_, type) => {
+      const user = userEvent.setup()
+      const scrollIntoView = vi.fn()
+      Element.prototype.scrollIntoView = scrollIntoView
+      renderAdditionalFeesForm({
+        initialValues: {
+          hasAdditionalFees: true,
+          collectiveAdditionalFees: [{ type, label: '', amount: 0 }],
+        },
+        scrollToError: true,
+      })
+
+      await user.clear(screen.getByLabelText(/Prix \(en €\)/))
+      await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+      await waitFor(() => {
+        expect(scrollIntoView).toHaveBeenCalled()
+        expect(screen.getByLabelText(/Type de frais annexes/)).toHaveFocus()
+      })
+    }
+  )
 
   it('should show no-price-increase error on every field', async () => {
     const user = userEvent.setup()

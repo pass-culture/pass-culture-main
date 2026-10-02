@@ -21,17 +21,46 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 12.8 - Dans chaque page web, l'ordre de tabulation est-il cohérent ?</summary>
+
+**RAWeb/RGAA** : [Critère 12.8](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-12-8)
+**Ticket** : [PC-43895](https://passculture.atlassian.net/browse/PC-43895)  
+**PR** : [#24584](https://github.com/pass-culture/pass-culture-main/pull/24584)
+
+**Problème** 😱  
+L'ordre de tabulation dans la page n'est pas cohérent. 
+
+Bloc « Frais annexes » à l’étape « Dates et prix » : après avoir sélectionné « Oui », la navigation au clavier passe directement au champ « Prix (en €) » sans atteindre le champ obligatoire « Type de frais annexes ». 
+
+De plus, lorsque ce champ est en erreur, l’activation du bouton « Enregistrer et continuer » ne repositionne pas le focus sur le champ concerné.
+
+**Correction** 💡  
+Vérifier et corriger l’ordre de tabulation afin qu’il soit cohérent et permette d’atteindre l’ensemble des éléments interactifs dans l’ordre attendu.
+
+Lorsque des erreurs sont détectées après l’activation de « Enregistrer et continuer », repositionner le focus sur le premier champ en erreur.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 9.4 - Dans chaque page web, chaque citation est-elle correctement indiquée ?</summary>
 
 **RAWeb/RGAA** : [Critère 9.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-4)
 **Ticket** : [PC-43883](https://passculture.atlassian.net/browse/PC-43883)  
-**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+**PR** : [#24510](https://github.com/pass-culture/pass-culture-main/pull/24510)
 
 **Problème** 😱  
-Texte
+Au moins une citation n'est pas correctement identifiée.
+
+- Le texte "la personne handicapée a droit à la compensation des conséquences de son handicap, quels que soient l’origine et la nature de sa déficience, son âge ou son mode de vie."
 
 **Correction** 💡  
-Texte
+- Implémenter le passage de texte "la personne handicapée a droit à la compensation des conséquences de son handicap, quels que soient l’origine et la nature de sa déficience, son âge ou son mode de vie." dans un élément <blockquote>.
 
 **Retours audit** 🔥  
 Texte
