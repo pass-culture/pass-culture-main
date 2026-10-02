@@ -331,6 +331,12 @@ class BankAccount(PcObject, Model, DeactivableMixin):
 
         return linked_venues
 
+    def get_detached_venues_at(self, date_time: datetime.datetime) -> typing.Generator["offerers_models.Venue"]:
+        """Among the venues that was previously linked to this bank account, return the venues that have no active bank account link"""
+
+        detached_venues = (link.venue for link in self.venueLinks if not link.is_active_at(date_time))
+        return (venue for venue in detached_venues if venue.get_active_bank_account_link_at(date_time) is None)
+
 
 class BankAccountStatusHistory(PcObject, Model):
     __tablename__ = "bank_account_status_history"

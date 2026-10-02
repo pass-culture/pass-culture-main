@@ -1,0 +1,18 @@
+@use "styles/mixins/_size.scss" as size;
+
+.replace-bank-account-form {
+  background-color: unset;
+}
+
+.replace-bank-account-row-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-self: flex-end;
+  gap: var(--size-spacing-l);
+
+  // match form layout row
+  @media (min-width: size.$laptop) {
+    flex-wrap: unset;
+  }
+}

@@ -7,9 +7,10 @@ import type { BankAccountResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
-  GET_OFFERER_QUERY_KEY,
+  GET_REJECTED_BANK_ACCOUNTS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -24,6 +25,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { AddBankInformationsDialog } from './AddBankInformationsDialog/AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
 import { LinkVenuesDialog } from './LinkVenuesDialog/LinkVenuesDialog'
+import { RejectedBankAccountBanner } from './RejectedBankAccountBanner/RejectedBankAccountBanner'
 
 const BankInformations = (): JSX.Element => {
   const { logEvent } = useAnalytics()
@@ -70,24 +72,34 @@ const BankInformations = (): JSX.Element => {
     }
   )
 
-  if (bankAccountVenuesQuery.isLoading || bankAccountVenuesQuery.isValidating) {
+  const rejectedBankAccountsQuery = useSWR(
+    [GET_REJECTED_BANK_ACCOUNTS_QUERY_KEY, offererId],
+    ([, offererId]) => api.getRejectedBankAccounts({ query: { offererId } }),
+    { fallbackData: [] }
+  )
+
+  if (
+    bankAccountVenuesQuery.isLoading ||
+    bankAccountVenuesQuery.isValidating ||
+    rejectedBankAccountsQuery.isLoading ||
+    rejectedBankAccountsQuery.isValidating
+  ) {
     return <Spinner />
   }
 
-  const updateOfferer = async (offererId: number) => {
-    if (offererId) {
-      await mutate([
-        GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
-        Number(offererId),
-      ])
-      await mutate([GET_OFFERER_QUERY_KEY, Number(offererId)])
-    }
+  const updateOffererBankAccounts = async (offererId: number) => {
+    await mutate([
+      GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
+      offererId,
+    ])
+
+    await mutate([GET_REJECTED_BANK_ACCOUNTS_QUERY_KEY, offererId])
   }
 
   const closeDialog = async (update?: boolean) => {
     if (offererId) {
       if (update) {
-        await updateOfferer(offererId)
+        await updateOffererBankAccounts(offererId)
 
         if (selectedPartnerVenue) {
           await syncVenue(selectedPartnerVenue.id)
@@ -97,7 +109,8 @@ const BankInformations = (): JSX.Element => {
     }
   }
 
-  const bankAccountVenues = bankAccountVenuesQuery.data?.managedVenues
+  const bankAccountsData = bankAccountVenuesQuery.data
+  const rejectedBankAccounts = rejectedBankAccountsQuery.data
 
   const updateBankAccountVenuePricingPoint = (venueId: number) => {
     if (!bankAccountVenuesQuery.data) {
@@ -114,10 +127,47 @@ const BankInformations = (): JSX.Element => {
     )
   }
 
-  const selectedOffererBankAccounts = bankAccountVenuesQuery.data
+  const addBankAccount = () => {
+    setShowAddBankInformationsDialog(true)
+    logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT)
+  }
+
+  const replaceBankAccount = async (
+    bankAccountId: number,
+    venuesIds: number[]
+  ) => {
+    try {
+      await api.linkVenueToBankAccount({
+        body: { venuesIds },
+        path: {
+          offerer_id: offererId,
+          bank_account_id: bankAccountId,
+        },
+      })
+      snackBar.success('Vos modifications ont bien été prises en compte.')
+    } catch {
+      snackBar.error(SENT_DATA_ERROR_MESSAGE)
+
+      return false
+    }
+
+    await updateOffererBankAccounts(offererId)
+
+    return true
+  }
 
   return (
     <div className={styles['bank-information']}>
+      {rejectedBankAccounts.map((bankAccount) => (
+        <RejectedBankAccountBanner
+          key={bankAccount.id}
+          rejectedBankAccount={bankAccount}
+          bankAccounts={bankAccountsData?.bankAccounts ?? []}
+          onAddBankAccount={addBankAccount}
+          onReplaceBankAccount={replaceBankAccount}
+        />
+      ))}
+
       <div>
         {hasBankAccount ? (
           <p>
@@ -142,43 +192,39 @@ const BankInformations = (): JSX.Element => {
             ? ButtonVariant.SECONDARY
             : ButtonVariant.PRIMARY
         }
-        onClick={() => {
-          setShowAddBankInformationsDialog(true)
-          logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT)
-        }}
+        onClick={addBankAccount}
         label="Ajouter un compte bancaire"
       />
 
-      {selectedOffererBankAccounts &&
-        selectedOffererBankAccounts.bankAccounts.length > 0 && (
-          <div
-            className={classNames(
-              styles['bank-information'],
-              styles['bank-information-panels']
-            )}
-          >
-            {selectedOffererBankAccounts.bankAccounts.map((bankAccount) => (
-              <ReimbursementBankAccount
-                bankAccount={bankAccount}
-                key={bankAccount.id}
-                onUpdateButtonClick={(bankAccountId) => {
-                  setSelectedBankAccount(
-                    selectedOffererBankAccounts.bankAccounts.find(
-                      (bankAccount) => bankAccount.id === bankAccountId
-                    ) ?? null
-                  )
-                }}
-                managedVenues={selectedOffererBankAccounts.managedVenues}
-                hasWarning={
-                  selectedAdminOfferer
-                    .venuesWithNonFreeOffersWithoutBankAccounts.length > 0
-                }
-                editLinkId={editLinkId}
-                addLinkId={addLinkId}
-              />
-            ))}
-          </div>
-        )}
+      {bankAccountsData && bankAccountsData.bankAccounts.length > 0 && (
+        <div
+          className={classNames(
+            styles['bank-information'],
+            styles['bank-information-panels']
+          )}
+        >
+          {bankAccountsData.bankAccounts.map((bankAccount) => (
+            <ReimbursementBankAccount
+              bankAccount={bankAccount}
+              key={bankAccount.id}
+              onUpdateButtonClick={(bankAccountId) => {
+                setSelectedBankAccount(
+                  bankAccountsData.bankAccounts.find(
+                    (bankAccount) => bankAccount.id === bankAccountId
+                  ) ?? null
+                )
+              }}
+              managedVenues={bankAccountsData.managedVenues}
+              hasWarning={
+                selectedAdminOfferer.venuesWithNonFreeOffersWithoutBankAccounts
+                  .length > 0
+              }
+              editLinkId={editLinkId}
+              addLinkId={addLinkId}
+            />
+          ))}
+        </div>
+      )}
 
       <AddBankInformationsDialog
         closeDialog={() => {
@@ -190,7 +236,7 @@ const BankInformations = (): JSX.Element => {
         <LinkVenuesDialog
           offererId={selectedAdminOfferer.id}
           selectedBankAccount={selectedBankAccount}
-          managedVenues={bankAccountVenues ?? []}
+          managedVenues={bankAccountsData?.managedVenues ?? []}
           updateBankAccountVenuePricingPoint={
             updateBankAccountVenuePricingPoint
           }
