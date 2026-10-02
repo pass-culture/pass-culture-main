@@ -75,7 +75,7 @@ dependencies = [
   "sentry-sdk[flask,celery]==2.70.0",
   "shapely ==2.1.2",
   "slack-sdk==3.44.1",
-  "spectree ==1.5.8",
+  "spectree==3.0.0",
   # from our private fork
   "sqlalchemy-easy-softdelete",
   "sqlalchemy[mypy]==2.0.54",
