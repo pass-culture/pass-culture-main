@@ -49,6 +49,30 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
+@pro_blueprint.route("/offers/nfd-form-preview", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.NfdOfferFormPreviewResponseModel,
+    api=blueprint.pro_schema,
+)
+def get_nfd_offer_form_preview() -> offers_serialize.NfdOfferFormPreviewResponseModel:
+    return offers_serialize.NfdOfferFormPreviewResponseModel(
+        nature="Bien",
+        domain="Livre",
+        capabilities=["TITLE", "DESCRIPTION", "BOOK_DETAILS", "CULTURAL_OUTREACH", "IMAGE_INPUT", "ACCESSIBILITY"],
+        mandatory_fields=["TITLE", "BOOK_TYPE"],
+        name="",
+        description="",
+        accessibility={
+            "visual": False,
+            "audio": False,
+            "motor": False,
+            "mental": False,
+            "none": False,
+        },
+    )
+
+
 @pro_blueprint.route("/offers", methods=["GET"])
 @login_required
 @spectree_serialize(
