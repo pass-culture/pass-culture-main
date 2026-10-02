@@ -48,6 +48,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.educational.models import CollectiveOffer
+    from pcapi.core.favorites.models import FavoriteArtist
     from pcapi.core.favorites.models import FavoriteOffer
     from pcapi.core.finance.models import BookingFinanceIncident
     from pcapi.core.finance.models import Deposit
