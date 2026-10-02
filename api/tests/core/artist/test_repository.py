@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.artist.factories as artist_factories
+from pcapi.core.artist.repository import get_artist_by_music_platform_id
 from pcapi.core.artist.repository import get_filtered_artists_for_search
 
 
@@ -19,3 +20,26 @@ def test_get_filtered_artists_for_search():
 
     artists_list = get_filtered_artists_for_search("exact_match")
     assert artists_list == [exact_match_artist, artist4, artist2, artist3]
+
+
+class GetArtistByMusicPlatformIdTest:
+    @pytest.mark.parametrize(
+        "platform", ["spotify_id", "isni_id", "apple_music_id", "deezer_id", "genius_id", "soundcloud_id"]
+    )
+    def test_should_find_the_artist_on_every_platform(self, platform):
+        artist = artist_factories.ArtistFactory()
+        artist_factories.ArtistMusicPlatformFactory(artist=artist, **{platform: "some-platform-id"})
+
+        assert get_artist_by_music_platform_id(platform, "some-platform-id") == artist
+
+    def test_should_return_none_when_the_id_is_unknown(self):
+        artist = artist_factories.ArtistFactory()
+        artist_factories.ArtistMusicPlatformFactory(artist=artist, spotify_id="known")
+
+        assert get_artist_by_music_platform_id("spotify_id", "unknown") is None
+
+    def test_should_ignore_a_blacklisted_artist(self):
+        artist = artist_factories.ArtistFactory(is_blacklisted=True)
+        artist_factories.ArtistMusicPlatformFactory(artist=artist, spotify_id="known")
+
+        assert get_artist_by_music_platform_id("spotify_id", "known") is None

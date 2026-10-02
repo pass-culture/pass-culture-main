@@ -12,6 +12,9 @@ from pydantic import RootModel
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
+from pcapi.core.artist import api as artist_api
+from pcapi.core.artist import models as artist_models
+from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
@@ -200,10 +203,48 @@ class CategoryRelatedFields(ExtraDataModel):
     subcategory_id: str = pydantic_v1.Field(alias="category")
 
 
-CATEGORY_RELATED_FIELD_DESCRIPTION = (
-    "Cultural category the offer belongs to. According to the category, some fields may or must be specified."
-)
-CATEGORY_RELATED_FIELD = pydantic_v1.Field(..., description=CATEGORY_RELATED_FIELD_DESCRIPTION)
+class MusicArtistTypeEnum(StrEnum):
+    AUTHOR = artist_models.ArtistType.AUTHOR.value
+    PERFORMER = artist_models.ArtistType.PERFORMER.value
+
+
+class ArtistBody(serialization.ConfiguredBaseModel):
+    """
+    Artist identified by one or more ids from music platforms.
+
+    When several platform ids are provided, they are looked up in this order:
+    ISNI, Spotify, Deezer, Apple Music, Genius, SoundCloud. The first known id
+    determines which artist is linked.
+    """
+
+    artist_type: MusicArtistTypeEnum = fields.ARTIST_TYPE
+    isni_id: str | None = fields.ARTIST_ISNI_ID
+    spotify_id: str | None = fields.ARTIST_SPOTIFY_ID
+    deezer_id: str | None = fields.ARTIST_DEEZER_ID
+    apple_music_id: str | None = fields.ARTIST_APPLE_MUSIC_ID
+    genius_id: str | None = fields.ARTIST_GENIUS_ID
+    soundcloud_id: str | None = fields.ARTIST_SOUNDCLOUD_ID
+
+    @pydantic_v1.root_validator(skip_on_failure=True)
+    def check_at_least_one_platform_id(cls, values: dict) -> dict:
+        if not any(values.get(field) for field in artist_api.MUSIC_PLATFORM_ID_FIELDS_BY_PRIORITY):
+            raise ValueError("At least one platform id must be set")
+        return values
+
+    class Config:
+        extra = "forbid"
+
+
+class ArtistResponse(serialization.ConfiguredBaseModel):
+    name: str | None = fields.ARTIST_NAME
+    artist_type: MusicArtistTypeEnum = fields.ARTIST_TYPE
+
+    @classmethod
+    def build_artist(cls, link: artist_models.ArtistOfferLink) -> "ArtistResponse":
+        return cls(name=link.artist_name, artist_type=MusicArtistTypeEnum(link.artist_type.value))
+
+
+CATEGORY_RELATED_FIELD = pydantic_v1.Field(..., description=descriptions.CATEGORY_RELATED_FIELDS_DESCRIPTION)
 EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic_v1.Field(
     None,
     description="Link displayed to users wishing to book the offer but who do not have credit.",
@@ -265,6 +306,11 @@ class Method(enum.Enum):
     edit = "edit"
 
 
+def can_have_artists(subcategory: subcategories.Subcategory) -> bool:
+    # artists are identified by their ids on music platforms, so only live music events can be linked to them
+    return subcategory.is_event and subcategory.category == pro_categories.MUSIQUE_LIVE
+
+
 def compute_category_fields_model(
     subcategory: subcategories.Subcategory, method: Method
 ) -> type[CategoryRelatedFields]:
@@ -286,6 +332,11 @@ def compute_category_fields_model(
         typing.Literal[subcategory.id],
         pydantic_v1.Field(alias="category"),
     )
+
+    if can_have_artists(subcategory) and method == Method.read:
+        specific_fields["artists"] = (list[ArtistResponse], fields.ARTISTS_RESPONSE)
+    elif can_have_artists(subcategory) and method == Method.edit:
+        specific_fields["artists"] = (list[ArtistBody] | None, fields.ARTISTS_BODY)
 
     model = pydantic_v1.create_model(f"{subcategory.id}_{method.value}", **specific_fields)
     model.__doc__ = subcategory.pro_label
@@ -329,6 +380,13 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
     if show_sub_type:
         serialized_data["showType"] = ShowTypeEnum(show.SHOW_SUB_TYPES_BY_CODE[int(show_sub_type)].slug)
 
+    if can_have_artists(offer.subcategory):
+        return category_fields_model(  # type: ignore[misc, call-arg]
+            **serialized_data,
+            subcategory_id=offer.subcategory.id,
+            artists=[ArtistResponse.build_artist(link) for link in offer.artistOfferLinks],
+        )
+
     return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)  # type: ignore[misc, call-arg]
 
 
@@ -341,7 +399,7 @@ def deserialize_extra_data(
     if not category_related_fields:
         return extra_data
     for field_name, field_value in category_related_fields.dict(exclude_unset=True).items():
-        if field_name in ("subcategory_id", "ean"):
+        if field_name in ("subcategory_id", "ean", "artists"):
             continue
         if field_name == subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
             # Convert musicType slug to musicType and musicSubType codes
@@ -408,20 +466,24 @@ event_category_reading_models = {
 
 
 if typing.TYPE_CHECKING:
+
+    class CategoryRelatedFieldsBodyWithArtists(CategoryRelatedFields):
+        artists: list[ArtistBody] | None
+
     product_category_creation_fields = CategoryRelatedFields
     product_category_reading_fields = CategoryRelatedFields
     event_category_creation_fields = CategoryRelatedFields
-    event_category_edition_fields = CategoryRelatedFields
+    event_category_edition_fields = CategoryRelatedFieldsBodyWithArtists | None
     event_category_reading_fields = CategoryRelatedFields
     product_category_edition_fields = CategoryRelatedFields
 else:
     product_category_creation_fields = typing.Annotated[
         typing.Union[tuple(product_category_creation_models.values())],
-        pydantic_v1.Field(description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+        pydantic_v1.Field(description=descriptions.CATEGORY_RELATED_FIELDS_DESCRIPTION),
     ]
     product_category_reading_fields = typing.Annotated[
         typing.Union[tuple(product_category_reading_models.values())],
-        pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+        pydantic_v1.Field(discriminator="subcategory_id", description=descriptions.CATEGORY_RELATED_FIELDS_DESCRIPTION),
     ]
     product_category_edition_fields = typing.Annotated[
         typing.Union[tuple(product_category_edition_models.values())],
@@ -429,15 +491,18 @@ else:
     ]
     event_category_creation_fields = typing.Annotated[
         typing.Union[tuple(event_category_creation_models.values())],
-        pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+        pydantic_v1.Field(discriminator="subcategory_id", description=descriptions.CATEGORY_RELATED_FIELDS_DESCRIPTION),
     ]
     event_category_edition_fields = typing.Annotated[
-        typing.Union[tuple(event_category_edition_models.values())],
-        pydantic_v1.Field(discriminator="subcategory_id"),
+        typing.Union[tuple(event_category_edition_models.values())] | None,
+        pydantic_v1.Field(
+            discriminator="subcategory_id",
+            description=descriptions.CATEGORY_RELATED_FIELDS_EDITION_DESCRIPTION,
+        ),
     ]
     event_category_reading_fields = typing.Annotated[
         typing.Union[tuple(event_category_reading_models.values())],
-        pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+        pydantic_v1.Field(discriminator="subcategory_id", description=descriptions.CATEGORY_RELATED_FIELDS_DESCRIPTION),
     ]
 
 UNLIMITED_LITERAL = typing.Literal["unlimited"]

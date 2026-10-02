@@ -21,6 +21,13 @@ For in depth explanations about our authentication & authorization system, you [
 
 
 # FIELDS DESCRIPTIONS
+CATEGORY_RELATED_FIELDS_DESCRIPTION = (
+    "Cultural category the offer belongs to. According to the category, some fields may or must be specified."
+)
+CATEGORY_RELATED_FIELDS_EDITION_DESCRIPTION = (
+    "To override category related fields, the category must be specified, even if it cannot be changed. "
+    "Other category related fields may be left undefined to keep their current value."
+)
 OFFER_STATUS_FIELD_DESCRIPTION = """
 **Offer status:**
 
@@ -119,3 +126,5 @@ List of cinema offers identified either by a CNC visa or an Allocine Id.
 
 **ℹ️ Important notice:** For a given identifier, there can be only one offer per location (ie. per venue/address).
 """
+
+ARTIST_PLATFORM_ID_DESCRIPTION = "Id of the artist on {platform}."

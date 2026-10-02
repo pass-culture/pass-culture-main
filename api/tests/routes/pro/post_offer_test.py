@@ -322,6 +322,22 @@ class CreateThingsTest(CreateOfferBase):
             "artistType": "author",
         }
 
+    def test_create_offer_with_an_artist_type_not_allowed_by_the_subcategory(self, auth_client, venue):
+        artist = artist_factories.ArtistFactory()
+
+        payload = {
+            **offer_minimal_shared_data(subcategories.SEANCE_CINE.id, venue),
+            "artistOfferLinks": [{"artistId": artist.id, "artistType": "performer", "artistName": artist.name}],
+        }
+
+        with assert_no_changes(Offer):
+            response = auth_client.post(self.endpoint, json=payload)
+            assert response.status_code == 400
+
+        assert response.json == {
+            "artistOfferLinks": ["`performer` artists are not allowed for the `SEANCE_CINE` category"]
+        }
+
 
 class CreateThingWithEanTest(CreateOfferBase):
     @pytest.mark.parametrize("subcategory_id", THINGS_WITH_EAN)

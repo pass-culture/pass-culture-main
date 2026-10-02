@@ -8,6 +8,8 @@ import time_machine
 from pcapi import settings
 from pcapi.connectors import youtube
 from pcapi.core import testing
+from pcapi.core.artist import factories as artist_factories
+from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import models as offerers_models
@@ -550,6 +552,7 @@ class Returns200Test(PatchEventEndpointHelper):
             "musicSubType": "-1",
         }
         assert response.json["categoryRelatedFields"] == {
+            "artists": [],
             "category": "CONCERT",
             "author": "Ray Charles",
             "musicType": "JAZZ-BLUES",
@@ -1194,6 +1197,137 @@ class Returns200Test(PatchEventEndpointHelper):
         db.session.refresh(event)
         assert event.dateUpdated == before_update
 
+    # --- `artists`
+
+    @pytest.mark.parametrize(
+        "request_field,column",
+        [
+            ("spotifyId", "spotify_id"),
+            ("isniId", "isni_id"),
+            ("appleMusicId", "apple_music_id"),
+            ("deezerId", "deezer_id"),
+            ("geniusId", "genius_id"),
+            ("soundcloudId", "soundcloud_id"),
+        ],
+    )
+    def test_should_look_the_artist_up_on_every_platform(self, request_field, column):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.CONCERT.id,
+            extraData={},
+        )
+        artist = artist_factories.ArtistFactory(name="Barbara")
+        artist_factories.ArtistMusicPlatformFactory(artist=artist, **{column: "some-platform-id"})
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={
+                "categoryRelatedFields": {
+                    "category": "CONCERT",
+                    "artists": [{"artistType": "performer", request_field: "some-platform-id"}],
+                }
+            },
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["categoryRelatedFields"]["artists"] == [{"name": "Barbara", "artistType": "performer"}]
+
+        db.session.refresh(event)
+
+        links = {(link.artist_id, link.artist_type) for link in event.artistOfferLinks}
+        assert links == {(artist.id, artist_models.ArtistType.PERFORMER)}
+
+    def test_should_pick_the_artist_by_platform_priority(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.CONCERT.id,
+            extraData={},
+        )
+        spotify_artist = artist_factories.ArtistFactory(name="Barbara")
+        artist_factories.ArtistMusicPlatformFactory(artist=spotify_artist, spotify_id="4TNiKyCX2oCvdo1sTgHcRw")
+
+        deezer_artist = artist_factories.ArtistFactory(name="Jacques Brel")
+        artist_factories.ArtistMusicPlatformFactory(artist=deezer_artist, deezer_id="3590")
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            # spotify has a higher priority
+            json_body={
+                "categoryRelatedFields": {
+                    "category": "CONCERT",
+                    "artists": [{"artistType": "performer", "deezerId": "3590", "spotifyId": "4TNiKyCX2oCvdo1sTgHcRw"}],
+                }
+            },
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["categoryRelatedFields"]["artists"] == [{"name": "Barbara", "artistType": "performer"}]
+
+        db.session.refresh(event)
+
+        links = {(link.artist_id, link.artist_type) for link in event.artistOfferLinks}
+        assert links == {(spotify_artist.id, artist_models.ArtistType.PERFORMER)}
+
+    def test_should_unlink_every_artist_when_artists_is_null(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.CONCERT.id,
+            extraData={},
+        )
+        artist_factories.ArtistOfferLinkFactory(offer_id=event.id, artist_id=artist_factories.ArtistFactory().id)
+        artist_factories.ArtistOfferLinkFactory(offer_id=event.id, custom_name="Un artiste saisi à la main")
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"categoryRelatedFields": {"category": "CONCERT", "artists": None}},
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["categoryRelatedFields"]["artists"] == []
+
+        db.session.refresh(event)
+
+        links = {(link.artist_id, link.artist_type) for link in event.artistOfferLinks}
+        assert links == set()
+
+    @pytest.mark.parametrize("subcategory_id", [subcategories.SEANCE_CINE.id, subcategories.FESTIVAL_LIVRE.id])
+    def test_should_ignore_the_artists_of_an_event_that_is_not_a_live_music_event(self, subcategory_id):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(
+            venue=venue_provider.venue, provider=venue_provider.provider, subcategoryId=subcategory_id, extraData={}
+        )
+        artist_factories.ArtistMusicPlatformFactory(
+            artist=artist_factories.ArtistFactory(name="Barbara"),
+            spotify_id="4TNiKyCX2oCvdo1sTgHcRw",
+        )
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={
+                "categoryRelatedFields": {
+                    "category": subcategory_id,
+                    "artists": [{"artistType": "performer", "spotifyId": "4TNiKyCX2oCvdo1sTgHcRw"}],
+                }
+            },
+        )
+
+        # like any category related field that does not apply to the category
+        assert response.status_code == 200, response.json
+        assert "artists" not in response.json["categoryRelatedFields"]
+
+        db.session.refresh(event)
+        assert event.artistOfferLinks == []
+
     # --- Response
 
     def test_should_return_the_updated_event(self):
@@ -1771,6 +1905,147 @@ class Returns400Test(PatchEventEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {"global": ["Les extraData des offres avec produit ne sont pas modifiables"]}
+
+    # --- `artists`
+
+    def test_should_raise_400_because_the_artist_type_is_null(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.CONCERT.id,
+            extraData={},
+        )
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={
+                "categoryRelatedFields": {
+                    "category": "CONCERT",
+                    "artists": [{"artistType": None, "spotifyId": "4TNiKyCX2oCvdo1sTgHcRw"}],
+                }
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "categoryRelatedFields.CONCERT_edit.artists.0.artistType": ["none is not an allowed value"]
+        }
+
+    def test_should_raise_400_because_the_artist_type_is_unknown(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.CONCERT.id,
+            extraData={},
+        )
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={
+                "categoryRelatedFields": {
+                    "category": "CONCERT",
+                    "artists": [{"artistType": "stage_director", "spotifyId": "4TNiKyCX2oCvdo1sTgHcRw"}],
+                }
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "categoryRelatedFields.CONCERT_edit.artists.0.artistType": [
+                "value is not a valid enumeration member; permitted: 'author', 'performer'"
+            ]
+        }
+
+    @pytest.mark.parametrize(
+        "artist",
+        [{"artistType": "performer"}, {"artistType": "performer", "spotifyId": None, "deezerId": ""}],
+        ids=["no platform id", "empty platform ids"],
+    )
+    def test_should_raise_400_because_the_artist_has_no_platform_id(self, artist):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.CONCERT.id,
+            extraData={},
+        )
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={"categoryRelatedFields": {"category": "CONCERT", "artists": [artist]}},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "categoryRelatedFields.CONCERT_edit.artists.0.__root__": ["At least one platform id must be set"]
+        }
+
+    def test_should_raise_400_because_the_artist_has_an_unknown_field(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.CONCERT.id,
+            extraData={},
+        )
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={
+                "categoryRelatedFields": {
+                    "category": "CONCERT",
+                    "artists": [{"artistType": "performer", "wikidataId": "Q1234"}],
+                }
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "categoryRelatedFields.CONCERT_edit.artists.0.wikidataId": ["extra fields not permitted"]
+        }
+
+    @pytest.mark.parametrize(
+        "provider_factory",
+        [providers_factories.AllocineProviderFactory, providers_factories.ProviderFactory],
+        ids=["allocine", "other provider"],
+    )
+    def test_should_raise_400_because_the_artists_cannot_be_changed(self, provider_factory):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        synchronizing_provider = provider_factory()
+        event = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=synchronizing_provider,
+            subcategoryId=subcategories.CONCERT.id,
+            extraData={},
+        )
+        assert not event.lastProvider.hasOffererProvider
+        artist_factories.ArtistMusicPlatformFactory(
+            artist=artist_factories.ArtistFactory(name="Barbara"),
+            spotify_id="4TNiKyCX2oCvdo1sTgHcRw",
+        )
+
+        response = self.make_request(
+            plain_api_key,
+            {"event_id": event.id},
+            json_body={
+                "categoryRelatedFields": {
+                    "category": "CONCERT",
+                    "artists": [{"artistType": "performer", "spotifyId": "4TNiKyCX2oCvdo1sTgHcRw"}],
+                }
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"artists": ["You cannot update this field"]}
+        db.session.refresh(event)
+        links = {(link.artist_id, link.artist_type) for link in event.artistOfferLinks}
+        assert links == set()
 
     # --- `image`
 

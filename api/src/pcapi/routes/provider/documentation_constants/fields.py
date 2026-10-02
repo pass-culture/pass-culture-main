@@ -243,9 +243,6 @@ class _FIELDS:
         description="A list of stocks to associate with an event. Each stock represents a unique combination of a date and a price category. To add stocks for multiple price categories on the same date, you must create a separate stock entry for each category.",
         max_items=Offer.MAX_STOCKS_PER_OFFER,
     )
-    EVENT_CATEGORIES_RELATED_FIELDS = Field(
-        description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
-    )
     EVENT_CONDITIONAL_FIELDS = Field(
         description="The keys are fields that should be set in the category_related_fields of an event. The values indicate whether their associated field is mandatory during event creation."
     )
@@ -253,6 +250,39 @@ class _FIELDS:
         description="Video URL, must be from the Youtube plateform, it should be public and should not be a short nor a user's profile. To remove video from an offer, set to `null` ",
         example="https://www.youtube.com/watch?v=0R5PZxOgoz8",
     )
+    ARTISTS_BODY = Field(
+        description=(
+            "Artists to link to the event, identified by their ids on music platforms. "
+            "The list replaces the artists currently linked to the event. Set it to `null` to unlink them all. "
+            "An artist whose ids are unknown to us is ignored: check `categoryRelatedFields.artists` in the response "
+            "to know which artists have actually been linked."
+        ),
+    )
+    ARTISTS_RESPONSE = Field(description="Artists linked to the event.")
+    ARTIST_TYPE = Field(
+        description="Role of the artist in the event. The roles allowed depend on the event category.",
+        example="performer",
+    )
+    ARTIST_SPOTIFY_ID = Field(
+        description=descriptions.ARTIST_PLATFORM_ID_DESCRIPTION.format(platform="Spotify"),
+        example="4TNiKyCX2oCvdo1sTgHcRw",
+    )
+    ARTIST_ISNI_ID = Field(
+        description=descriptions.ARTIST_PLATFORM_ID_DESCRIPTION.format(platform="ISNI"), example="0000000120303402"
+    )
+    ARTIST_APPLE_MUSIC_ID = Field(
+        description=descriptions.ARTIST_PLATFORM_ID_DESCRIPTION.format(platform="Apple Music"), example="3614052"
+    )
+    ARTIST_DEEZER_ID = Field(
+        description=descriptions.ARTIST_PLATFORM_ID_DESCRIPTION.format(platform="Deezer"), example="3590"
+    )
+    ARTIST_GENIUS_ID = Field(
+        description=descriptions.ARTIST_PLATFORM_ID_DESCRIPTION.format(platform="Genius"), example="45678"
+    )
+    ARTIST_SOUNDCLOUD_ID = Field(
+        description=descriptions.ARTIST_PLATFORM_ID_DESCRIPTION.format(platform="SoundCloud"), example="123456789"
+    )
+    ARTIST_NAME = Field(description="Name of the artist.", example="Barbara")
 
     # Booking fields
     BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, example="CONFIRMED")

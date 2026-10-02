@@ -4,6 +4,7 @@ import typing
 import pydantic.v1 as pydantic_v1
 
 from pcapi.routes import serialization as routes_serialization
+from pcapi.routes.provider.documentation_constants import descriptions
 from pcapi.routes.provider.documentation_constants.fields import fields
 from pcapi.routes.provider.individual_offers.v1 import serialization as v1_serialization
 from pcapi.serialization import utils as serialization_utils
@@ -52,7 +53,7 @@ class ProductOfferEdition(v1_serialization.OfferEditionBase):
     offer_id: int
     category_related_fields: v1_serialization.product_category_edition_fields | None = pydantic_v1.Field(
         None,
-        description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
+        description=descriptions.CATEGORY_RELATED_FIELDS_EDITION_DESCRIPTION,
     )
     stock: StockEdition | None = fields.STOCK_EDITION
     name: v1_serialization.OfferName | None = fields.OFFER_NAME

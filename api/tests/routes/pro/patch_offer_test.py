@@ -2232,7 +2232,7 @@ class Returns400Test:
                 "artistOfferLinks": [{"artistId": None, "artistType": "author", "artistName": "Artiste inconnu"}]
             },
             expected_response_json={
-                "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
+                "artistOfferLinks": ["`author` artists are not allowed for the `CARTE_MUSEE` category"]
             },
         )
 
