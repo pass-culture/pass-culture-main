@@ -3,7 +3,11 @@ import { act, screen } from '@testing-library/react'
 import { Link, Route, Routes } from 'react-router'
 import useSWR from 'swr'
 
-import { api, BACKEND_VERSION_MISMATCH_EVENT } from '@/apiClient/api'
+import {
+  api,
+  BACKEND_VERSION_HIGHER_EVENT,
+  BACKEND_VERSION_LOWER_EVENT,
+} from '@/apiClient/api'
 import { App } from '@/app/App/App'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as orejime from '@/app/App/analytics/orejime'
@@ -87,6 +91,9 @@ describe('App', () => {
     renderApp({ user })
 
     expect(await screen.findByText('Sub component')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('heading', { name: 'Mise à jour en cours' })
+    ).toBeNull()
     expect(setUser).toHaveBeenCalledWith({
       id: user.id.toString(),
     })
@@ -111,16 +118,30 @@ describe('App', () => {
     )
   })
 
-  it('should display the refresh page when the API detects a backend mismatch', async () => {
+  it('should display the refresh page when the API detects a backend too high for the front', async () => {
     renderApp()
 
     act(() => {
-      window.dispatchEvent(new Event(BACKEND_VERSION_MISMATCH_EVENT))
+      window.dispatchEvent(new Event(BACKEND_VERSION_HIGHER_EVENT))
     })
 
     expect(
       await screen.findByRole('heading', {
         name: 'Une mise à jour est disponible',
+      })
+    ).toBeInTheDocument()
+  })
+
+  it('should display the standby page when the API detects a backend too low for the front', async () => {
+    renderApp()
+
+    act(() => {
+      window.dispatchEvent(new Event(BACKEND_VERSION_LOWER_EVENT))
+    })
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Mise à jour en cours',
       })
     ).toBeInTheDocument()
   })

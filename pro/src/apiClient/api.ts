@@ -5,7 +5,10 @@ import { client as adageClient } from './adage/client.gen'
 import { notifyIfBackendVersionChanged } from './backendVersionCompatibility'
 import { client as v1Client } from './v1/client.gen'
 
-export { BACKEND_VERSION_MISMATCH_EVENT } from './backendVersionCompatibility'
+export {
+  BACKEND_VERSION_HIGHER_EVENT,
+  BACKEND_VERSION_LOWER_EVENT,
+} from './backendVersionCompatibility'
 
 function createApiErrorInterceptor() {
   return async (

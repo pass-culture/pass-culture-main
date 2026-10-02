@@ -1,27 +1,41 @@
 import { useEffect, useState } from 'react'
 
-import { BACKEND_VERSION_MISMATCH_EVENT } from '@/apiClient/api'
+import {
+  BACKEND_VERSION_HIGHER_EVENT,
+  BACKEND_VERSION_LOWER_EVENT,
+} from '@/apiClient/api'
+import type { VersionComparison } from '@/apiClient/backendVersionCompatibility'
 
-export const useCheckBackendVersion = (): boolean => {
-  const [hasBackendVersionMismatch, setHasBackendVersionMismatch] =
-    useState(false)
+export const useCheckBackendVersion = (): VersionComparison => {
+  const [backendVersionComparison, setBackendVersionComparison] =
+    useState<VersionComparison>('equal')
 
   useEffect(() => {
-    const handleBackendVersionMismatch = () => {
-      setHasBackendVersionMismatch(true)
-    }
+    const handleBackendVersionHigher = () =>
+      setBackendVersionComparison('higher')
+    const handleBackendVersionLower = () => setBackendVersionComparison('lower')
 
     window.addEventListener(
-      BACKEND_VERSION_MISMATCH_EVENT,
-      handleBackendVersionMismatch
+      BACKEND_VERSION_HIGHER_EVENT,
+      handleBackendVersionHigher
     )
 
-    return () =>
+    window.addEventListener(
+      BACKEND_VERSION_LOWER_EVENT,
+      handleBackendVersionLower
+    )
+
+    return () => {
       window.removeEventListener(
-        BACKEND_VERSION_MISMATCH_EVENT,
-        handleBackendVersionMismatch
+        BACKEND_VERSION_HIGHER_EVENT,
+        handleBackendVersionHigher
       )
+      window.removeEventListener(
+        BACKEND_VERSION_LOWER_EVENT,
+        handleBackendVersionLower
+      )
+    }
   }, [])
 
-  return hasBackendVersionMismatch
+  return backendVersionComparison
 }

@@ -24,7 +24,7 @@ export const App = (): JSX.Element | null => {
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const location = useLocation()
-  const hasBackendVersionMismatch = useCheckBackendVersion()
+  const backendVersionMismatch = useCheckBackendVersion()
 
   // Main hooks
   useLoadFeatureFlags()
@@ -38,8 +38,8 @@ export const App = (): JSX.Element | null => {
   useFirebase(consentedToFirebase)
   useLogNavigation()
 
-  if (hasBackendVersionMismatch) {
-    return <BackendVersionMismatch />
+  if (backendVersionMismatch !== 'equal') {
+    return <BackendVersionMismatch type={backendVersionMismatch} />
   }
 
   return (

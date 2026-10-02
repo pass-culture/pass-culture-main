@@ -18,7 +18,7 @@ interface BaseErrorLayoutProps {
   /**
    * Description paragraph to display below the main heading.
    */
-  paragraph: string
+  paragraph: ReactNode
   /**
    * Icon to display in the error page.
    */
