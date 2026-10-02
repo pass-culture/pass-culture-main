@@ -8,6 +8,7 @@ from sqlalchemy.orm import Query
 from sqlalchemy.sql.dml import ReturningInsert
 
 from pcapi import settings
+from pcapi.core.artist.models import Artist
 from pcapi.core.favorites import exceptions
 from pcapi.core.favorites import models
 from pcapi.core.favorites.models import FavoriteArtist
@@ -158,6 +159,24 @@ def get_favorite_offers_for(
     ]
 
 
+def get_favorite_artists_for(
+    user: users_models.User,
+    favorite_id: int | None = None,
+    artist_id: str | None = None,
+) -> list[Artist]:
+    query = sa.select(models.FavoriteArtist).where(models.FavoriteArtist.userId == user.id)
+
+    if favorite_id:
+        query = query.filter(models.FavoriteArtist.id == favorite_id)
+
+    if artist_id:
+        query = query.filter(Artist.id == artist_id)
+
+    results = db.session.scalars(query).all()
+
+    return [row.artist for row in results]
+
+
 ## CREATE function
 def create_favorite_offer(
     user: users_models.User,
@@ -184,6 +203,31 @@ def create_favorite_offer(
     return favorite, is_inserted == 1
 
 
+def create_favorite_artist(
+    user: users_models.User,
+    artist: Artist,
+) -> tuple[models.FavoriteArtist, bool]:
+    stmt: ReturningInsert = (
+        insert(models.FavoriteArtist)
+        .values({"artistId": artist.id, "userId": user.id})
+        .on_conflict_do_update(
+            index_elements=[models.FavoriteArtist.artistId, models.FavoriteArtist.userId],
+            set_={"artistId": artist.id},
+        )
+        .returning(
+            models.FavoriteArtist,
+            # xmax is a "system" column that returns the transaction id that modified the row.
+            # In case of insertion, no row has been modified → xmax = 0
+            sa.literal_column("xmax = 0").label("is_inserted"),
+        )
+    )
+
+    res = db.session.execute(stmt).all()
+    favorite, is_inserted = res[0]
+
+    return favorite, is_inserted == 1
+
+
 ## DELETE Functions
 def delete_favorite(
     type: FAVORITE_TYPES,
@@ -193,6 +237,8 @@ def delete_favorite(
     match type:
         case "offer":
             _model = models.FavoriteOffer
+        case "artist":
+            _model = models.FavoriteArtist
         case _:
             raise exceptions.UnhandledFavoriteType
 
@@ -220,6 +266,8 @@ def has_reached_max_favorites_for(
                     offers_models.Offer.isPublished,
                 )
             )
+        case "artist":
+            query = db.session.query(models.FavoriteArtist).filter(models.FavoriteArtist.userId == user.id)
         case _:
             raise exceptions.UnhandledFavoriteType
 
