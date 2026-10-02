@@ -20,7 +20,7 @@ jobs:
           cache: pnpm
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@72d541f1ed675eed90d94c0ae4fbb70db4a29d33
       - run: pnpm ci
         working-directory: pro
       - run: pnpm build-storybook
