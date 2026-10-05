@@ -257,7 +257,11 @@ def _is_result_conclusive(result: _ApiParticulierResult[typing.Any]) -> bool:
     if result.status == subscription_models.FraudCheckStatus.OK:
         return True
 
-    return subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND in result.reason_codes
+    CONCLUSIVE_KO_REASONS = [
+        subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND,
+        subscription_models.FraudReasonCode.PERSON_NOT_FOUND,
+    ]
+    return any(ko_reason in result.reason_codes for ko_reason in CONCLUSIVE_KO_REASONS)
 
 
 def _update_quotient_familial_fraud_check_content(
