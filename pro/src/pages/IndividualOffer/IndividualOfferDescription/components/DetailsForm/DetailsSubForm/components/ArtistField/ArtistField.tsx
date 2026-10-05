@@ -3,7 +3,6 @@ import { type UseFieldArrayReturn, useFormContext } from 'react-hook-form'
 import { api } from '@/apiClient/api'
 import { type ArtistResponseModel, ArtistType } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { resizeImageURL } from '@/commons/utils/resizeImageURL'
 import { truncateAtWord } from '@/commons/utils/string'
 import { Button } from '@/design-system/Button/Button'
@@ -74,8 +73,6 @@ export function ArtistField({
     }
   }
 
-  const shouldUseImgProxyRequestFormat = useActiveFeature('WIP_IMGPROXY_PRO')
-
   return (
     <>
       {fieldsForType.map(({ field, index }) => {
@@ -140,8 +137,6 @@ export function ArtistField({
                       ? resizeImageURL({
                           imageURL: artist.thumbUrl,
                           width: ARTIST_THUMB_WIDTH,
-                          shouldUseRequestImgproxyFormat:
-                            shouldUseImgProxyRequestFormat,
                         })
                       : null,
                   }))
