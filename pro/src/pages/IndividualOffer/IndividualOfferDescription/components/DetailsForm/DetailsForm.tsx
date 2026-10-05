@@ -71,10 +71,10 @@ export const DetailsForm = ({
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const navigate = useNavigate()
-  const isNewOfferDraft = !offer
+  const isNewDraftOffer = !offer
 
   const form = useForm<DetailsFormValues>({
-    defaultValues: isNewOfferDraft
+    defaultValues: isNewDraftOffer
       ? getInitialValuesFromVenueAndProduct(
           selectedPartnerVenue,
           product,
@@ -169,7 +169,7 @@ export const DetailsForm = ({
     })
 
   const handlePreviousStep = () => {
-    navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
+    void navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
   }
 
   const subcategoryId = form.watch('subcategoryId')
@@ -281,7 +281,7 @@ export const DetailsForm = ({
           )}
         </FormLayout>
         <ActionBar
-          dirtyForm={form.formState.isDirty || isNewOfferDraft}
+          dirtyForm={form.formState.isDirty || isNewDraftOffer}
           isDisabled={
             form.formState.isSubmitting ||
             Boolean(offer && isOfferDisabled(offer)) ||

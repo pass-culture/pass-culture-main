@@ -13,8 +13,8 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
 
+import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 import {
   ARTISTIC_INFORMATION_FIELDS,
   DetailsSubForm,

@@ -14,7 +14,7 @@ import {
 import { getOfferLastProvider } from '@/commons/utils/factories/providerFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
-import { DEFAULT_DETAILS_FORM_VALUES } from '../../commons/constants'
+import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import {
   buildCategoryOptions,
   buildShowSubTypeOptions,
@@ -257,10 +257,7 @@ describe('getInitialValuesFromOffer', () => {
       subcategoryFactory({ id: SubcategoryIdEnum.SEANCE_CINE }),
     ]
 
-    const result = getInitialValuesFromOffer({
-      offer,
-      subcategories,
-    })
+    const result = getInitialValuesFromOffer(offer, subcategories)
 
     expect(result).toStrictEqual({
       author: 'Chuck Norris',
@@ -322,7 +319,7 @@ describe('getInitialValuesFromOffer', () => {
       subcategoryFactory({ id: SubcategoryIdEnum.SEANCE_CINE }),
     ]
 
-    const result = getInitialValuesFromOffer({ offer, subcategories })
+    const result = getInitialValuesFromOffer(offer, subcategories)
 
     expect(result.description).toBe('A custom description')
     expect(result.durationMinutes).toBe('01:30')
