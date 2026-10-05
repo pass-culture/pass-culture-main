@@ -398,7 +398,12 @@ export const ModalImageUpsertOrEdit = ({
                   description="Si cette image n’apparaît pas dans la page, est-ce qu’une information importante est perdue pour l’utilisateur ?"
                   variant="detailed"
                   checked={isInformative}
-                  onChange={(e) => setIsInformative(e.target.checked)}
+                  onChange={(e) => {
+                    setIsInformative(e.target.checked)
+                    if (!e.target.checked) {
+                      setAlternativeText('')
+                    }
+                  }}
                   collapsed={
                     <TextInput
                       label="Texte alternatif de l’image"
