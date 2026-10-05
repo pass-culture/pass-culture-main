@@ -15,8 +15,8 @@ import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
   setVideoUrl: Dispatch<SetStateAction<string | null | undefined>>
-  setVideoDescription: Dispatch<SetStateAction<string>>
-  videoDescription: string
+  setVideoDescription: Dispatch<SetStateAction<string | null | undefined>>
+  videoDescription?: string | null
   videoData?: VideoDataV2
   handleVideoOnSubmit: () => Promise<VideoDataV2>
   onVideoUpload: (p: onVideoUploadProps) => Promise<void>
@@ -115,8 +115,6 @@ export function VideoUploaderContextProvider({
       videoData,
       videoDescription,
       handleVideoOnSubmit,
-      setVideoUrl,
-      setVideoDescription,
       onVideoUpload,
       onVideoDelete,
       offerId,
