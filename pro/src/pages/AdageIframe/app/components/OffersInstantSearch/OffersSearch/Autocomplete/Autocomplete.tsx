@@ -180,7 +180,7 @@ export const Autocomplete = ({
       return {
         ...source,
         sourceId: VENUE_SUGGESTIONS_SOURCE_ID,
-        async onSelect({ item }) {
+        onSelect({ item }) {
           const venueDisplayName = item.venue.publicName ?? item.venue.name
           autocomplete.setQuery('')
           refine('')
@@ -192,10 +192,7 @@ export const Autocomplete = ({
             addSuggestionToHistory(venueDisplayName)
           }
 
-          await logAutocompleteSuggestionClick(
-            SuggestionType.VENUE,
-            venueDisplayName
-          )
+          logAutocompleteSuggestionClick(SuggestionType.VENUE, venueDisplayName)
         },
         getItems(params) {
           if (!params.state.query) {
@@ -258,7 +255,7 @@ export const Autocomplete = ({
             addSuggestionToHistory(item.query)
           }
 
-          await logAutocompleteSuggestionClick(
+          logAutocompleteSuggestionClick(
             itemId <= 2 ? SuggestionType.OFFER_CATEGORY : SuggestionType.OFFER,
             item.query
           )
