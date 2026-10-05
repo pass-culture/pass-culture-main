@@ -7,6 +7,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import factories as providers_factories
 
 from tests.routes.provider.helpers import PublicAPIVenueEndpointHelper
 
@@ -144,6 +145,21 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
             assert response.status_code == 200
 
         assert [event["id"] for event in response.json["events"]] == [event_1.id, event_2.id]
+
+    def test_should_not_return_offers_from_inactive_venue_provider(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue2 = self.setup_venue()
+        providers_factories.VenueProviderFactory(venue=venue2, provider=venue_provider.provider, isActive=False)
+        offers = offers_factories.EventOfferFactory.create_batch(12, venue=venue_provider.venue)
+        offer_from_inactive_venue_provider = offers_factories.EventOfferFactory(venue=venue2)
+
+        with testing.assert_num_queries(self.num_queries - 1):
+            response = self.make_request(plain_api_key)
+            assert response.status_code == 200
+
+        returned_ids = [event["id"] for event in response.json["events"]]
+        assert offer_from_inactive_venue_provider.id not in returned_ids
+        assert returned_ids == [offer.id for offer in offers]
 
     def test_should_return_offers_linked_to_address_id(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

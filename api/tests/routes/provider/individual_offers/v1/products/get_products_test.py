@@ -73,6 +73,22 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
 
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers]
 
+    def test_should_not_return_offers_from_inactive_venue_provider(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue2 = self.setup_venue()
+        providers_factories.VenueProviderFactory(venue=venue2, provider=venue_provider.provider, isActive=False)
+        offers = offers_factories.ThingOfferFactory.create_batch(12, venue=venue_provider.venue)
+        offer_from_inactive_venue_provider = offers_factories.ThingOfferFactory(venue=venue2)
+
+        no_check_on_venue_num_queries = self.num_queries_success - 1
+        with testing.assert_num_queries(no_check_on_venue_num_queries):
+            response = self.make_request(plain_api_key)
+            assert response.status_code == 200
+
+        returned_ids = [product["id"] for product in response.json["products"]]
+        assert offer_from_inactive_venue_provider.id not in returned_ids
+        assert returned_ids == [offer.id for offer in offers]
+
     def test_should_return_offers_linked_to_address_id(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offerer_address_1 = offerers_factories.OfferLocationFactory(offerer=venue_provider.venue.managingOfferer)
