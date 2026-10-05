@@ -23,6 +23,24 @@ from .exceptions import PydanticError
 
 NOW_LITERAL = typing.Literal["now"]
 
+RESERVED_TLD = {
+    "intranet",  # RFC 6762
+    "internal",  # RFC 6762
+    "private",  # RFC 6762
+    "corp",  # RFC 6762
+    "home",  # RFC 6762
+    "lan",  # RFC 6762
+    "local",  # RFC 6762
+    "localhost",  # RFC 2606
+    "test",  # RFC 2606
+    "example",  # RFC 2606
+    "invalid",  # RFC 2606
+    "arpa",  # RFC 6761
+    "goog",  # internaly used by google
+    "svc",  # internaly used by kubernetes
+    "onion",  # tor
+}
+
 
 def to_camel(string: str) -> str:
     # used to define root level lists, see https://docs.pydantic.dev/1.10/usage/models/#custom-root-types
@@ -216,6 +234,7 @@ def check_url[T: (pydantic_v1.HttpUrl | pydantic_v2.HttpUrl | str | None)](
         raise ErrorClass("The url is invalid.")
 
     scheme, netloc, path, _query, _fragment = parse.urlsplit(unquoted_url)
+    netloc = netloc.strip(".")
 
     if "/../" in path:
         raise ErrorClass("Relative path are forbidden.")
@@ -227,6 +246,8 @@ def check_url[T: (pydantic_v1.HttpUrl | pydantic_v2.HttpUrl | str | None)](
         raise ErrorClass("Authenticated urls are forbidden.")
     if "[" in netloc or "]" in netloc:
         raise ErrorClass("IP address are forbidden.")
+    if ":" in netloc:
+        raise ErrorClass("Custom ports are forbidden.")
     if "." not in netloc:
         raise ErrorClass("Top level domains are forbidden.")
     try:
@@ -235,6 +256,10 @@ def check_url[T: (pydantic_v1.HttpUrl | pydantic_v2.HttpUrl | str | None)](
         pass
     else:
         raise ErrorClass("IP address are forbidden.")
+    if netloc.split(".")[-1].isdigit():
+        raise ErrorClass("Digital TLD are forbidden.")
+    if netloc.split(".")[-1] in RESERVED_TLD:
+        raise ErrorClass("Special TLD are forbidden.")
 
     return value
 
