@@ -66,6 +66,7 @@ from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import utils as offerers_utils
+from pcapi.core.offers import api as offers_api
 from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.core.search.models import IndexationReason
@@ -1413,6 +1414,7 @@ def close_offerer(
     author_user: users_models.User | None = None,
     **action_args: typing.Any,
 ) -> None:
+
     if offerer.isClosed:
         raise exceptions.OffererAlreadyClosedException()
 
@@ -1443,6 +1445,15 @@ def close_offerer(
 
     _cancel_individual_bookings_on_offerer_closure(offerer.id, author_id)
     _cancel_collective_bookings_on_offerer_closure(offerer.id, author_id)
+
+    for venue in offerer.managedVenues:
+        offers_api.batch_delete_draft_offers(
+            db.session.query(offers_models.Offer)
+            .filter(offers_models.Offer.venueId == venue.id)
+            .filter(offers_models.Offer.validation == offers_models.OfferValidationStatus.DRAFT)
+        )
+
+        delete_venue_pivots_and_providers(venue.id)
 
     if was_validated:
         _update_external_offerer(offerer, index_with_reason=IndexationReason.OFFERER_DEACTIVATION)
