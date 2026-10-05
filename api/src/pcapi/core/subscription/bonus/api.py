@@ -21,7 +21,7 @@ from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.bonus import staging_api
 from pcapi.core.subscription.bonus import statistics_api
 from pcapi.core.users import models as users_models
-from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils import string as string_utils
 from pcapi.utils.redis import get_redis_client
 from pcapi.utils.transaction_manager import atomic
 
@@ -211,15 +211,17 @@ def _is_user_part_of_tax_household(
     return False
 
 
-def _does_names_match(name_1: str | None, name_2: str | None) -> bool:
+def does_names_match(name_1: str | None, name_2: str | None) -> bool:
     if name_1 is None or name_2 is None:
         return False
-    return clean_accents(name_1).upper() in clean_accents(name_2).upper()
+    names_1 = string_utils.normalize_name(name_1).split()
+    names_2 = string_utils.normalize_name(name_2).split()
+    return all(name in names_2 for name in names_1) or all(name in names_1 for name in names_2)
 
 
 def _does_user_match_person(user: users_models.User, person: api_particulier.ApiParticulierPerson) -> bool:
-    has_first_name_match = _does_names_match(user.firstName, person.prenoms)
-    has_last_name_match = _does_names_match(user.lastName, person.nom_naissance) or _does_names_match(
+    has_first_name_match = does_names_match(user.firstName, person.prenoms)
+    has_last_name_match = does_names_match(user.lastName, person.nom_naissance) or does_names_match(
         user.lastName, person.nom_usage
     )
     has_birth_day_match = user.validatedBirthDate == person.date_naissance

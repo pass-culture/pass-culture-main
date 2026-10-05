@@ -1254,3 +1254,21 @@ class DisabledChildEducationAllowanceTest:
         mock_recredit.assert_not_called()
         assert len(push_testing.requests) == 0
         assert len(mails_testing.outbox) == 0
+
+
+class NameMatchingTest:
+    @pytest.mark.parametrize(
+        "name_1, name_2",
+        [
+            ("some--dashes", "some dashes"),
+            ("missing name", "name"),
+            ("untrimmed ", "untrimmed"),
+            ("w'ith quot'e", "with quote"),
+            ("reversed order", "order reversed"),
+        ],
+    )
+    def test_names_match(self, name_1, name_2):
+        assert bonus_api.does_names_match(name_1, name_2)
+
+    def test_incomplete_does_not_match(self):
+        assert not bonus_api.does_names_match("incomplete name", "incompl name")
