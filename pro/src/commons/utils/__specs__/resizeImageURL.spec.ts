@@ -24,7 +24,6 @@ describe('resizeImageURL', () => {
     const result = resizeImageURL({
       imageURL: mockImageURL,
       width: 300,
-      shouldUseRequestImgproxyFormat: false,
     })
 
     expect(result).toBe(mockImageURL)
@@ -36,7 +35,6 @@ describe('resizeImageURL', () => {
     const result = resizeImageURL({
       imageURL: mockImageURL,
       width: 300,
-      shouldUseRequestImgproxyFormat: false,
     })
 
     expect(result).toBe(mockImageURL)
@@ -50,23 +48,6 @@ describe('resizeImageURL', () => {
     const result = resizeImageURL({
       imageURL: mockImageURL,
       width: 300,
-      shouldUseRequestImgproxyFormat: false,
-    })
-
-    expect(result).toBe(
-      'https://resize.example.com?size=300&filename=bucket/images/photo.jpg'
-    )
-  })
-
-  it('should generate resized URL with imgproxy format', () => {
-    vi.spyOn(configModule, 'IMAGE_RESIZING_URL', 'get').mockReturnValue(
-      'https://resize.example.com'
-    )
-
-    const result = resizeImageURL({
-      imageURL: mockImageURL,
-      width: 300,
-      shouldUseRequestImgproxyFormat: true,
     })
 
     expect(result).toBe(
@@ -86,11 +67,10 @@ describe('resizeImageURL', () => {
     const result = resizeImageURL({
       imageURL: mockImageURL,
       width: 300,
-      shouldUseRequestImgproxyFormat: false,
     })
 
     expect(result).toBe(
-      'https://resize.example.com?size=600&filename=bucket/images/photo.jpg'
+      'https://resize.example.com/insecure/rs:fit:600:600/plain/gs://bucket/images/photo.jpg'
     )
   })
 })

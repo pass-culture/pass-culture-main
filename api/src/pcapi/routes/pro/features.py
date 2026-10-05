@@ -16,7 +16,6 @@ PRO_FEATURES = (
     FeatureToggle.PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.WIP_CLOSE_VENUE,
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
-    FeatureToggle.WIP_IMGPROXY_PRO,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_HOME_STATS_V2,
 )
