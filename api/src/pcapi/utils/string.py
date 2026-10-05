@@ -1,5 +1,7 @@
 import re
 
+from pcapi.utils.clean_accents import clean_accents
+
 
 def to_camelcase(s: str) -> str:
     return re.sub(r"(?!^)_([a-zA-Z])", lambda m: m.group(1).upper(), s)
@@ -29,6 +31,14 @@ def is_numeric(value: str) -> bool:
 def is_canonical_integer(value: str) -> bool:
     # Regex ensures that value is the canonical representation of an unsigned integer: only basic digits and no leading zeros
     return re.fullmatch(r"0|[1-9][0-9]*", value) is not None
+
+
+def normalize_name(name: str) -> str:
+    dashes_regex = r"[\s\-–—]+"
+    name_without_dashes = re.sub(dashes_regex, " ", name)
+    quotes_regex = r"['’]+"
+    name_without_punctuation = re.sub(quotes_regex, "", name_without_dashes)
+    return clean_accents(name_without_punctuation).strip().upper()
 
 
 u_nbsp = "\u00a0"
