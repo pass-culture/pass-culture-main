@@ -73,7 +73,7 @@ export const SignIn = (): JSX.Element => {
 
       await dispatch(initializeUser({ user })).unwrap()
 
-      navigate(getUserDefaultPath())
+      await navigate(getUserDefaultPath())
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
         if (isErrorAPIError(error)) {

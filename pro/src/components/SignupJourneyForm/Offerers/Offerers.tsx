@@ -112,14 +112,14 @@ export const Offerers = (): JSX.Element => {
         tryRestoreInitialAddressFromStorage(setInitialAddress)
       } catch {
         cleanSignupJourneyStorage()
-        navigate('/inscription/structure/recherche')
+        void navigate('/inscription/structure/recherche')
         return
       }
     }
 
     // In case of API error
     if (venuesOfOffererError) {
-      navigate('/inscription/structure/recherche')
+      void navigate('/inscription/structure/recherche')
     }
   }, [
     offerer,
@@ -144,7 +144,7 @@ export const Offerers = (): JSX.Element => {
       used: SignupJourneyAction.NewOfferer,
     })
     setOfferer(newOfferer)
-    navigate('/inscription/structure/identification')
+    void navigate('/inscription/structure/identification')
   }
 
   const doLinkAccount = async () => {
@@ -178,7 +178,9 @@ export const Offerers = (): JSX.Element => {
         })
       ).unwrap()
 
-      navigate('/inscription/structure/rattachement/confirmation-rattachement')
+      await navigate(
+        '/inscription/structure/rattachement/confirmation-rattachement'
+      )
     } catch (e) {
       snackBar.error(
         getHumanReadableApiError(
@@ -274,7 +276,7 @@ export const Offerers = (): JSX.Element => {
           hideRightButton
           onClickPrevious={() => {
             setOfferer(null)
-            navigate('/inscription/structure/recherche')
+            void navigate('/inscription/structure/recherche')
           }}
           previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
           isDisabled={false}

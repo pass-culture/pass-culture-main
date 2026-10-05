@@ -429,7 +429,7 @@ export const CollectiveOfferInstitutionScreen = ({
                         shouldDirty: true,
                         shouldValidate: true,
                       })
-                      onSearchTeacher(searchText)
+                      void onSearchTeacher(searchText)
                     }}
                     disabled={
                       !canEditInstitution ||

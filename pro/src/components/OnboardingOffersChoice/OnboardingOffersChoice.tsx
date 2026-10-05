@@ -61,7 +61,7 @@ export const OnboardingOffersChoice = ({
               onClick={() => {
                 // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API is only available on firefox as of 2025-06-24
                 document.cookie = `${COOKIES.DID_SKIP_ONBOARDING}=true; max-age=0; path=/;`
-                navigate('/onboarding/individuel')
+                void navigate('/onboarding/individuel')
               }}
             />
           </Card.Footer>
@@ -113,7 +113,7 @@ export const OnboardingOffersChoice = ({
               const tomorrow = addDays(new Date(), 1)
               // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API is only available on firefox as of 2025-06-24
               document.cookie = `${COOKIES.DID_SKIP_ONBOARDING}=true; expires=${tomorrow.toUTCString()}; path=/;`
-              navigate('/accueil')
+              void navigate('/accueil')
             }}
           />
         </div>

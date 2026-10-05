@@ -54,7 +54,7 @@ export const SimulatorOpenToPublic = (): JSX.Element => {
     if (formValues.isOpenToPublic !== null) {
       saveOpenToPublicToStorage(formValues.isOpenToPublic)
       setOpenToPublic(formValues.isOpenToPublic)
-      navigate('/inscription/preparation/activite')
+      void navigate('/inscription/preparation/activite')
     }
   }
 

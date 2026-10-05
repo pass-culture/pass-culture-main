@@ -55,13 +55,13 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
       api.getCollectiveOfferRequest({ path: { request_id: Number(id) } })
   )
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     logEvent(Events.CLICKED_CREATE_OFFER_FROM_REQUEST, {
       requestId,
       offerType: 'collective',
       templateOfferId: offerId,
     })
-    createOfferFromTemplate(
+    await createOfferFromTemplate(
       navigate,
       snackBar,
       Number(offerId),
@@ -161,7 +161,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
           <ActionsBarSticky>
             <ActionsBarSticky.Right>
               <Button
-                onClick={handleButtonClick}
+                onClick={() => void handleButtonClick()}
                 label="Créer l’offre pour l’enseignant"
               />
             </ActionsBarSticky.Right>

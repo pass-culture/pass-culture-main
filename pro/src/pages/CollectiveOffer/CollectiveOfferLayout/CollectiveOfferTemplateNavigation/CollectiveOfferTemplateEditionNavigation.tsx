@@ -74,13 +74,13 @@ export const CollectiveOfferTemplateEditionNavigation = ({
     }
   }
 
-  const onCreateOfferFromTemplate = () => {
+  const onCreateOfferFromTemplate = async () => {
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
       offerId,
       offerType: 'collective',
       offerStatus: offer?.displayedStatus,
     })
-    return createOfferFromTemplate(
+    return await createOfferFromTemplate(
       navigate,
       snackBar,
       offerId,

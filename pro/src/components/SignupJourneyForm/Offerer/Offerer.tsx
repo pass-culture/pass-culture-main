@@ -64,7 +64,7 @@ export const Offerer = (): JSX.Element => {
           ? '/inscription/structure/rattachement'
           : '/inscription/structure/identification',
       }
-      navigate(redirection.path)
+      void navigate(redirection.path)
 
       return redirection
     },
@@ -192,7 +192,9 @@ export const Offerer = (): JSX.Element => {
     ) : (
       <ActionBar
         isDisabled={isSubmitting}
-        onClickPrevious={() => navigate('/hub')}
+        onClickPrevious={async () => {
+          await navigate('/hub')
+        }}
         nextStepTitle="Continuer"
         previousStepTitle="Annuler et quitter"
       />

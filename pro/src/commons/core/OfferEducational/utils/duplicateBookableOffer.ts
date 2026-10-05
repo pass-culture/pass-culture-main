@@ -52,7 +52,9 @@ export const duplicateBookableOffer = async (
 
     await postCollectiveOfferImage({ initialValues, snackBar, id: response.id })
 
-    navigate(`/offre/collectif/${response.id}/creation?structure=${offererId}`)
+    await navigate(
+      `/offre/collectif/${response.id}/creation?structure=${offererId}`
+    )
   } catch (error) {
     const message =
       isErrorAPIError(error) && error.status === 400

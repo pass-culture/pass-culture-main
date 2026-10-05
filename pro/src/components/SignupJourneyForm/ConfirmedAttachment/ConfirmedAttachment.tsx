@@ -26,7 +26,7 @@ export const ConfirmedAttachment = (): JSX.Element => {
       used: SignupJourneyAction.WaitingLinkButton,
     })
 
-    navigate(getUserDefaultPath())
+    void navigate(getUserDefaultPath())
   }
   return (
     <div

@@ -21,7 +21,9 @@ const NonAttached = () => {
       <h1 className={styles['title']}>Bienvenue sur votre espace partenaire</h1>
       <div className={styles['wrapper']}>
         <Button
-          onClick={() => navigate('/hub')}
+          onClick={() => {
+            void navigate('/hub')
+          }}
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           icon={fullBackIcon}

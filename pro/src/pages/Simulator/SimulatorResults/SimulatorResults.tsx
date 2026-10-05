@@ -108,7 +108,7 @@ export const SimulatorResults = (): JSX.Element => {
         setShowErrorBanner(true)
       }
     }
-    doCall()
+    void doCall()
   }, [
     activity,
     openToPublic,

@@ -107,11 +107,11 @@ export const Activity = () => {
     saveActivityToStorage(activityFormValues)
     setActivity(activityFormValues)
 
-    navigate('/inscription/structure/confirmation')
+    void navigate('/inscription/structure/confirmation')
   }
 
   const handlePreviousStep = useCallback(() => {
-    navigate('/inscription/structure/identification')
+    void navigate('/inscription/structure/identification')
   }, [navigate])
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export const Activity = () => {
         tryRestoreInitialAddressFromStorage(setInitialAddress)
       } catch {
         cleanSignupJourneyStorage()
-        navigate('/inscription/structure/recherche')
+        void navigate('/inscription/structure/recherche')
         return
       }
     }
@@ -148,7 +148,7 @@ export const Activity = () => {
         }
         // If this is another error, we redirect to the search page
         cleanSignupJourneyStorage()
-        navigate('/inscription/structure/recherche')
+        void navigate('/inscription/structure/recherche')
         return
       }
     }

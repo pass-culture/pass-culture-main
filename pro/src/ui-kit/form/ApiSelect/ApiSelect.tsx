@@ -71,12 +71,12 @@ export function ApiSelect<T extends ApiOption>({
   )
 
   const debouncedOnSearch = useDebouncedCallback((searchText: string) => {
-    fetchOptions(searchText)
+    void fetchOptions(searchText)
   }, DEBOUNCE_TIME_BEFORE_REQUEST)
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only run on mount
   useEffect(() => {
-    value && fetchOptions(value)
+    value && void fetchOptions(value)
   }, [])
 
   const creatableOption = value.length >= minSearchLength ? value : undefined

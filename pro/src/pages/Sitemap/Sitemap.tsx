@@ -176,7 +176,9 @@ export const Sitemap = () => {
       <div className={styles['content-wrapper']}>
         <h1 className={styles['title']}>Plan du site</h1>
         <Button
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            void navigate(-1)
+          }}
           color={ButtonColor.NEUTRAL}
           variant={ButtonVariant.TERTIARY}
           icon={fullBackIcon}

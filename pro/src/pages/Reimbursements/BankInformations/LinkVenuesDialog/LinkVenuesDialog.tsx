@@ -28,7 +28,7 @@ interface LinkVenuesDialogProps {
   selectedBankAccount: BankAccountResponseModel
   managedVenues: Array<ManagedVenue>
   closeDialog: (update?: boolean) => Promise<void>
-  updateBankAccountVenuePricingPoint: (venueId: number) => void
+  updateBankAccountVenuePricingPoint: (venueId: number) => Promise<void>
   editLinkId: string
   addLinkId: string
 }
@@ -79,7 +79,7 @@ export const LinkVenuesDialog = ({
 
   const handleCancel = () => {
     if (isEqual(selectedVenuesIds, initialVenuesIds)) {
-      closeDialog()
+      void closeDialog()
     } else {
       setShowDiscardDialog(true)
     }
@@ -87,7 +87,7 @@ export const LinkVenuesDialog = ({
 
   const submitVenuesIds = async (venuesIds: number[], hasUnchecked = false) => {
     if (isEqual(venuesIds, initialVenuesIds)) {
-      closeDialog(false)
+      void closeDialog(false)
       return
     }
 
@@ -252,7 +252,7 @@ export const LinkVenuesDialog = ({
           <Button
             onClick={() => {
               setShowDiscardDialog(false)
-              closeDialog()
+              void closeDialog()
             }}
             label="Quitter sans enregistrer"
             key="confirm"
@@ -275,7 +275,7 @@ export const LinkVenuesDialog = ({
           <Button
             onClick={() => {
               setShowUnlinkDialog(false)
-              submitVenuesIds(methods.getValues('venuesIds'), true)
+              void submitVenuesIds(methods.getValues('venuesIds'), true)
             }}
             label="Confirmer"
             key="confirm"

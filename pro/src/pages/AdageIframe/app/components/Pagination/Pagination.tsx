@@ -55,11 +55,11 @@ export const CustomPagination = ({
 
         // Clicked page is the immediate previous page
         if (newPage === currentRefinement) {
-          logPagination(PaginationType.PREVIOUS)
+          void logPagination(PaginationType.PREVIOUS)
         }
         // Clicked page is the immediate next page
         else if (newPage === currentRefinement + 2) {
-          logPagination(PaginationType.NEXT)
+          void logPagination(PaginationType.NEXT)
         }
       }}
     />

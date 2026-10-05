@@ -20,7 +20,7 @@ export const EcoDesignMenu = () => {
   const navigate = useNavigate()
 
   const backToDefault = () => {
-    isUserConnected ? navigate('/accueil') : navigate('/connexion')
+    isUserConnected ? void navigate('/accueil') : void navigate('/connexion')
   }
 
   return (

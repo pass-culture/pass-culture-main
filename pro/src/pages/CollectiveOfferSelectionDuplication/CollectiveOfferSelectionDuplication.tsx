@@ -168,7 +168,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                           label={offer.name}
                           description={selectedPartnerVenue.publicName}
                           onClick={() => {
-                            handleOfferCardSelected(offer.id)
+                            void handleOfferCardSelected(offer.id)
                           }}
                         />
                       </li>

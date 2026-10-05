@@ -130,7 +130,7 @@ export const IndividualOfferLocationScreen = ({
     })
 
   const handlePreviousStep = () => {
-    navigate(
+    void navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,

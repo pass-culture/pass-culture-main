@@ -55,7 +55,7 @@ export const AdageOffer = ({
     const sourceValue = params.get('source')
     const queryId = state?.queryId
 
-    apiAdage.logConsultOffer({
+    void apiAdage.logConsultOffer({
       body: {
         iframeFrom: pathname,
         offerId: offer.id,

@@ -60,7 +60,7 @@ export const IndividualOffers = () => {
       audience?: Audience
     }
   ) => {
-    navigate(computeIndividualOffersUrl(filters), { replace: true })
+    void navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
 
   const venueAddressQuery = useVenueAddresses(

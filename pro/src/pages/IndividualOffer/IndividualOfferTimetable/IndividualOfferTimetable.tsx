@@ -17,7 +17,7 @@ export const IndividualOfferTimetable = (): JSX.Element | null => {
   }
 
   if (!offer.isEvent) {
-    navigate('/404')
+    void navigate('/404')
   }
 
   return (

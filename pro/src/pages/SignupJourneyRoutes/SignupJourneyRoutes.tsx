@@ -35,7 +35,7 @@ export const SignupJourneyRoutes = () => {
     if (!location.pathname.includes('/inscription/structure/recherche')) {
       if (offerer?.siret === '' || offerer?.siren === '') {
         setOfferer(null)
-        navigate('/inscription/structure/recherche')
+        void navigate('/inscription/structure/recherche')
       }
     }
   }, [offerer?.siren, offerer?.siret, location.pathname, navigate, setOfferer])

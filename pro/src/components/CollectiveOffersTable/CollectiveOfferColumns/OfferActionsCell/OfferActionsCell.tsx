@@ -223,7 +223,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       status: offer.displayedStatus,
     })
 
-    return navigate(to)
+    void navigate(to)
   }
 
   const canDuplicateOffer = isActionAllowedOnCollectiveOffer(

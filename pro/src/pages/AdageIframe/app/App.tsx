@@ -1,5 +1,6 @@
 import { setUser } from '@sentry/browser'
 import type { JSX } from 'react'
+import { useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
@@ -41,12 +42,19 @@ export const App = (): JSX.Element => {
     setUser({ email: user.email })
   }
 
-  if (LOGS_DATA && user) {
-    logCatalogView({
-      iframeFrom: location.pathname,
-      source: siret || venueId ? 'partnersMap' : 'homepage',
-    })
-  }
+  useEffect(() => {
+    if (!LOGS_DATA || !user) {
+      return
+    }
+
+    void logCatalogView(
+      {
+        iframeFrom: location.pathname,
+        source: siret || venueId ? 'partnersMap' : 'homepage',
+      },
+      { throwOnError: false }
+    )
+  }, [location.pathname, logCatalogView, siret, user, venueId])
 
   if (isLoading) {
     return <LoaderPage />

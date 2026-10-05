@@ -63,7 +63,7 @@ export const SimulatorActivity = (): JSX.Element => {
     if (formValues.activity !== undefined) {
       setActivity(formValues.activity)
       saveActivityToStorage(formValues.activity)
-      navigate('/inscription/preparation/publics')
+      void navigate('/inscription/preparation/publics')
     }
   }
 

@@ -2,7 +2,12 @@ import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import type { AvatarEditorRef } from 'react-avatar-editor'
 
-type CroppedRect = { x: number; y: number; width: number; height: number }
+export type CroppedRect = {
+  x: number
+  y: number
+  width: number
+  height: number
+}
 
 import { getFileFromURL } from '@/apiClient/helpers'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -153,7 +158,7 @@ export const ModalImageUpsertOrEdit = ({
     // Waiting the dialog to be opened is a minor optimization to avoid loading an image that
     // might never be displayed since the dialog is always rendered.
     if (open && !draftImage && previouslyUploadedImageUrl) {
-      setImageFromUrl(previouslyUploadedImageUrl)
+      void setImageFromUrl(previouslyUploadedImageUrl)
     }
   }, [open, draftImage, previouslyUploadedImageUrl, snackBar])
 

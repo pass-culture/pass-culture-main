@@ -111,7 +111,7 @@ export const AddressSelect = forwardRef(
     )
 
     const debouncedOnSearch = useDebouncedCallback((searchText: string) => {
-      fetchOptions(searchText)
+      void fetchOptions(searchText)
     }, DEBOUNCE_TIME_BEFORE_REQUEST)
 
     const normalizeStrForAdressSearch = (str: string): string => {
@@ -130,7 +130,7 @@ export const AddressSelect = forwardRef(
     // biome-ignore lint/correctness/useExhaustiveDependencies: only run on mount
     useEffect(() => {
       if (inputRef.current?.value) {
-        fetchOptions(inputRef.current?.value)
+        void fetchOptions(inputRef.current?.value)
       }
     }, [])
 

@@ -73,7 +73,7 @@ export const IndividualOfferLayout = ({
       return
     }
     snackBar.success('Votre brouillon a bien été supprimé')
-    navigate('/offres')
+    await navigate('/offres')
   }
 
   return (
@@ -115,7 +115,7 @@ export const IndividualOfferLayout = ({
                   Vous ne pouvez pas publier 2 offres avec un EAN similaire.
                 </p>
                 <Button
-                  onClick={onDeleteOfferWithAlreadyExistingEan}
+                  onClick={() => void onDeleteOfferWithAlreadyExistingEan()}
                   variant={ButtonVariant.TERTIARY}
                   color={ButtonColor.NEUTRAL}
                   size={ButtonSize.SMALL}

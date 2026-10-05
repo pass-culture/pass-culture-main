@@ -36,7 +36,7 @@ export const useFocus = (): void => {
     if (successMessage) {
       snackBar.success(successMessage)
       hasActiveSnackBarRef.current = true
-      navigate(location.pathname + location.search, {
+      void navigate(location.pathname + location.search, {
         replace: true,
         state: null,
       })
