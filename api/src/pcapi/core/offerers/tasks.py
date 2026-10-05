@@ -1,8 +1,10 @@
 import logging
+from functools import partial
 
 import sqlalchemy.orm as sa_orm
 from pydantic import BaseModel as BaseModelV2
 
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
@@ -17,6 +19,7 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import on_commit
 
 
 logger = logging.getLogger(__name__)
@@ -127,5 +130,7 @@ def deactivate_venue_offers_task(payload: DeactivateVenueOffersPayload) -> None:
 
         venue.state = offerers_models.VenueState.CLOSED
         db.session.flush()
+
+        on_commit(partial(transactional_mails.send_venue_closed_email_to_author, venue.id))
 
         logger.info("closing venue: closed", extra={"venue_id": venue.id})

@@ -1,12 +1,16 @@
 import datetime
+from dataclasses import asdict
 from unittest.mock import patch
 
 import pytest
 import time_machine
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi.connectors.entreprise.models import SirenInfo
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import tasks as offerers_tasks
@@ -247,3 +251,21 @@ class FinalizeClosingVenueTaskTest:
             stock__offer__publicationDatetime=now,
             stock__offer__lastProviderId=boost_pivot.providerId,
         )
+
+    def test_email_is_sent_to_author(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.BaseUserFactory()
+
+        history_factories.ActionHistoryFactory(
+            authorUser=author, venue=venue, actionType=history_models.ActionType.VENUE_CLOSED
+        )
+
+        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
+
+        db.session.refresh(venue)
+        assert len(mails_testing.outbox) == 1
+
+        mail = mails_testing.outbox[0]
+        assert mail["template"] == asdict(TransactionalEmail.VENUE_CLOSED_CONFIRMATION.value)
+        assert mail["To"] == author.email
