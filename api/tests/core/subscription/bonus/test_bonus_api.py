@@ -366,6 +366,8 @@ class QuotientFamilialApplicationTest:
             with caplog.at_level(logging.INFO):
                 bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
+            assert mock.call_count == 1
+
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
         assert bonus_fraud_check.source_data() == bonus_schemas.QuotientFamilialBonusCreditContent(
