@@ -84,7 +84,7 @@
           {% if offer.product or offer.ean %}
             <h5>Informations techniques</h5>
             {% if offer.idAtProvider %}
-              {% call description_detail_horizontal("Identifiant chez le fournisseur") %}
+              {% call description_detail_horizontal("Identifiant chez le partenaire technique") %}
                 {{ offer.idAtProvider }}
                 {{ clipboard.copy_to_clipboard(offer.idAtProvider, "Copier") }}
               {% endcall %}

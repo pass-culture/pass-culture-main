@@ -4618,7 +4618,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Utilisateur de la dernière validation" not in descriptions
         assert "Date de la dernière validation" not in descriptions
 
-        assert descriptions["Identifiant chez le fournisseur"] == "pouet provider"
+        assert descriptions["Identifiant chez le partenaire technique"] == "pouet provider"
         assert descriptions["Langue"] == "VO"
         assert descriptions["Durée"] == "133 minutes"
         assert descriptions["Description"] == "description"

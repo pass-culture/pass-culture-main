@@ -48,7 +48,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     NAME = "Nom de l'offre"
     SYNCHRONIZED = "Offre synchronisée"
     PRICE = "Prix"
-    PROVIDER = "Fournisseur"
+    PROVIDER = "Partenaire technique"
     STATUS = "Statut"
     OFFERER = "Entité juridique"
     TAG = "Tag"
