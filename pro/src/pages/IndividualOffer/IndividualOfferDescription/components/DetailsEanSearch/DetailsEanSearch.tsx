@@ -17,6 +17,7 @@ import { EanSearchCallout } from '@/pages/IndividualOffer/IndividualOfferDescrip
 
 import styles from './DetailsEanSearch.module.scss'
 import {
+  EAN_REQUIRED_MESSAGE,
   type EanSearchForm,
   generateEanSearchValidationSchema,
 } from './validationSchema'
@@ -51,7 +52,7 @@ export const DetailsEanSearch = ({
   } = useForm<EanSearchForm>({
     defaultValues: { eanSearch: productEan || '' },
     resolver: yupResolver(generateEanSearchValidationSchema(required)),
-    mode: 'onChange',
+    mode: 'onTouched',
   })
 
   const ean = watch('eanSearch', '')
@@ -103,7 +104,10 @@ export const DetailsEanSearch = ({
             <div>
               <TextInput
                 label="Scanner ou rechercher un produit par EAN"
-                error={errors.eanSearch?.message}
+                error={
+                  errors.eanSearch?.message ||
+                  (required && !productEan ? EAN_REQUIRED_MESSAGE : undefined)
+                }
                 disabled={shouldInputBeDisabled}
                 required={required}
                 description="Format : EAN à 13 chiffres"

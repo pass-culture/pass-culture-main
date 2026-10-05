@@ -8,12 +8,13 @@ const eanValidation = yup
     test: (ean) => !ean || ean.length === 13,
   })
 
+export const EAN_REQUIRED_MESSAGE =
+  'Les offres de type CD doivent être liées à un produit.'
+
 export const generateEanSearchValidationSchema = (required: boolean) => {
   return yup.object().shape({
     eanSearch: required
-      ? eanValidation.required(
-          'Les offres de type CD doivent être liées à un produit.'
-        )
+      ? eanValidation.required(EAN_REQUIRED_MESSAGE)
       : eanValidation,
   })
 }

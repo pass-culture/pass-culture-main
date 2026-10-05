@@ -1,61 +1,1229 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router'
+import { Route, Routes } from 'react-router'
+import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
+import { api } from '@/apiClient/api'
+import {
+  ArtistType,
+  DisplayableActivity,
+  type GetVenueResponseModel,
+  OfferStatus,
+  SubcategoryIdEnum,
+  type SubcategoryResponseModel,
+  VenueState,
+} from '@/apiClient/v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
+  CATEGORY_STATUS,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import * as useOfferWizardModeHook from '@/commons/hooks/useOfferWizardMode'
+import {
+  categoryFactory,
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
+  subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import {
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
+import * as imageUploadModule from '@/pages/IndividualOffer/commons/useIndividualOfferImageUpload'
 
 import { Component as IndividualOfferDescription } from './IndividualOfferDescription'
 
-vi.mock('./components/IndividualOfferDescriptionScreen', () => ({
-  IndividualOfferDescriptionScreen: () => (
-    <div data-testid="description-screen" />
-  ),
+vi.mock('@/apiClient/api', () => ({
+  api: {
+    createOffer: vi.fn(),
+    getActiveVenueOfferByEan: vi.fn(),
+    getProductByEan: vi.fn(),
+    getMusicTypes: vi.fn(),
+    patchOffer: vi.fn(),
+  },
 }))
 
-const renderIndividualOfferDescription = (
-  contextValues: Partial<IndividualOfferContextValues> = {}
-) => {
-  const contextValue: IndividualOfferContextValues = {
-    ...individualOfferContextValuesFactory(),
-    ...contextValues,
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useNavigate: vi.fn(),
+    useParams: vi.fn(),
+    useLocation: vi.fn(),
+  }
+})
+
+vi.mock('@/commons/utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: vi.fn(() => true),
+}))
+
+vi.mock('use-debounce', async () => ({
+  ...(await vi.importActual('use-debounce')),
+  useDebouncedCallback: vi.fn((fn) => fn),
+}))
+
+const mockLogEvent = vi.fn()
+const scrollIntoViewMock = vi.fn()
+
+const DEFAULTS = {
+  mode: OFFER_WIZARD_MODE.CREATION,
+  submitButtonLabel: 'Enregistrer et continuer',
+}
+
+const MOCK_DATA = {
+  title: 'My super offer',
+  description: 'My super description',
+  categories: [
+    categoryFactory({
+      id: 'A',
+      proLabel: 'Catégorie A',
+      isSelectable: true,
+    }),
+  ],
+  subCategories: [
+    subcategoryFactory({
+      id: 'virtual',
+      categoryId: 'A',
+      proLabel: 'Sous catégorie online de A',
+      isEvent: false,
+      conditionalFields: ['author', 'durationMinutes'],
+      canBeDuo: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+    }),
+    subcategoryFactory({
+      id: 'physical',
+      categoryId: 'A',
+      proLabel: 'Sous catégorie offline de A',
+      isEvent: false,
+      conditionalFields: ['ean', 'showType', 'gtl_id'],
+      canBeDuo: true,
+      canBeWithdrawable: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+    }),
+    subcategoryFactory({
+      id: 'physicalBis',
+      categoryId: 'A',
+      proLabel: 'Autre sous catégorie offline de A',
+      isEvent: false,
+      conditionalFields: [],
+      canBeDuo: true,
+      canBeWithdrawable: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+    }),
+    subcategoryFactory({
+      id: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+      categoryId: 'A',
+      proLabel: 'Vinyles et autres supports',
+      conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
+    }),
+  ],
+  ean: '1234567891234',
+  showType: 'Cirque',
+  showSubType: 'Clown',
+  musicType: 'Pop',
+}
+
+const LABELS = {
+  title: /Titre de l’offre/,
+  description: /Description/,
+  category: /Catégorie/,
+  subcategory: /Sous-catégorie/,
+  ean: /EAN/,
+  showType: /Type de spectacle/,
+  showSubType: /Sous-type/,
+  musicType: /Genre musical/,
+}
+
+const defaultPartnerVenue = makeGetVenueResponseModel({
+  id: 189,
+  audioDisabilityCompliant: true,
+  mentalDisabilityCompliant: true,
+  motorDisabilityCompliant: true,
+  visualDisabilityCompliant: true,
+})
+
+const renderDetailsScreen = ({
+  contextValue,
+  mode = DEFAULTS.mode,
+  options = {},
+  path = getIndividualOfferPath({
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+    mode,
+  }),
+  defaultVenue = defaultPartnerVenue,
+}: {
+  contextValue: IndividualOfferContextValues
+  mode?: OFFER_WIZARD_MODE
+  options?: RenderWithProvidersOptions
+  path?: string
+  defaultVenue?: GetVenueResponseModel
+}) => {
+  const controlledOptions: RenderWithProvidersOptions = {
+    initialRouterEntries: [path],
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: defaultVenue,
+      },
+    },
+    user: sharedCurrentUserFactory(),
+    ...options,
   }
 
-  return renderWithProviders(
+  const element = (
     <IndividualOfferContext.Provider value={contextValue}>
       <IndividualOfferDescription />
-    </IndividualOfferContext.Provider>,
-    {
-      storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
-          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
-        },
-      },
-    }
+    </IndividualOfferContext.Provider>
+  )
+
+  return renderWithProviders(
+    <>
+      <Routes>
+        <Route
+          path={getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+            mode,
+          })}
+          element={element}
+        />
+        <Route
+          path={`/onboarding${getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+            mode,
+          })}`}
+          element={element}
+        />
+      </Routes>
+      <SnackBarContainer />
+    </>,
+    controlledOptions
+  )
+}
+
+const userFillsEverything = async () => {
+  await userEvent.type(screen.getByLabelText(LABELS.title), MOCK_DATA.title)
+  await userEvent.type(
+    screen.getByLabelText(LABELS.description),
+    MOCK_DATA.description
+  )
+
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.category),
+    MOCK_DATA.categories[0].id
+  )
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.subcategory),
+    (
+      MOCK_DATA.subCategories.find(
+        (s) => s.id === 'physical'
+      ) as SubcategoryResponseModel
+    ).proLabel
+  )
+
+  await userEvent.type(screen.getByLabelText(LABELS.ean), MOCK_DATA.ean)
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.showType),
+    MOCK_DATA.showType
+  )
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.showSubType),
+    MOCK_DATA.showSubType
+  )
+
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.musicType),
+    MOCK_DATA.musicType
   )
 }
 
 describe('<IndividualOfferDescription />', () => {
-  it('should render without accessibility violations', async () => {
-    const { container } = renderIndividualOfferDescription({
-      offer: getIndividualOfferFactory(),
+  let contextValue: IndividualOfferContextValues
+  const mockNavigate = vi.fn()
+
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = scrollIntoViewMock
+    vi.mocked(router.useNavigate).mockReturnValue(mockNavigate)
+    vi.mocked(router.useLocation).mockReturnValue({
+      pathname: '/offre/creation/description',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default',
     })
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
+
+    contextValue = individualOfferContextValuesFactory({
+      categories: MOCK_DATA.categories,
+      subCategories: MOCK_DATA.subCategories,
+      offer: null,
+    })
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderDetailsScreen({ contextValue })
 
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should render the description screen within the offer layout', async () => {
-    renderIndividualOfferDescription({ offer: getIndividualOfferFactory() })
+  it('should render the component', async () => {
+    renderDetailsScreen({ contextValue })
 
-    expect(await screen.findByTestId('description-screen')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'À propos de votre offre' })
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'Type d’offre' })
+    ).toBeInTheDocument()
+    expect(screen.getByText(DEFAULTS.submitButtonLabel)).toBeInTheDocument()
+  })
+
+  it('should display product banner when offer is product-based and not synchronized', async () => {
+    renderDetailsScreen({
+      contextValue: individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'physical' as SubcategoryIdEnum,
+          productId: 1,
+          lastProvider: undefined,
+        }),
+      }),
+    })
+
+    expect(
+      await screen.findByText(
+        'Des informations proviennent d’un EAN et ne peuvent pas être modifiées depuis l’espace partenaire'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should display synchronized banner when offer is synchronized', async () => {
+    renderDetailsScreen({
+      contextValue: individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'physical' as SubcategoryIdEnum,
+          lastProvider: { name: 'Allocine' },
+        }),
+      }),
+    })
+
+    expect(
+      await screen.findByText('Cette offre est synchronisée avec Allocine')
+    ).toBeInTheDocument()
+  })
+
+  describe('since media page exists', () => {
+    it('should not display any image input', async () => {
+      renderDetailsScreen({
+        contextValue,
+      })
+
+      await screen.findByRole('heading', { name: 'À propos de votre offre' })
+      expect(
+        screen.queryByRole('heading', { name: 'Illustrez votre offre' })
+      ).toBeFalsy()
+    })
+
+    it('should not call any image api on submit', async () => {
+      const mockHandleImageOnSubmit = vi.fn().mockResolvedValue(undefined)
+      vi.spyOn(
+        imageUploadModule,
+        'useIndividualOfferImageUpload'
+      ).mockReturnValue({
+        displayedImage: {
+          url: 'my url',
+          credit: null,
+          alternativeText: 'my alt text',
+        },
+        hasUpsertedImage: false,
+        onImageDelete: vi.fn(),
+        onImageUpload: vi.fn(),
+        handleEanImage: vi.fn(),
+        handleImageOnSubmit: mockHandleImageOnSubmit,
+      })
+
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+      vi.spyOn(api, 'createOffer').mockResolvedValue(
+        getIndividualOfferFactory({
+          id: 12,
+        })
+      )
+      vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+        { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
+      ])
+
+      renderDetailsScreen({
+        contextValue,
+      })
+      await userFillsEverything()
+
+      await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+      expect(mockHandleImageOnSubmit).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  it('should display the accessibility field', () => {
+    renderDetailsScreen({ contextValue })
+
+    expect(
+      screen.getByRole('heading', { name: 'Modalités d’accessibilité' })
+    ).toBeInTheDocument()
+  })
+
+  it('should not display the venues select (the venue is already selected via the partner venue switcher)', () => {
+    renderDetailsScreen({ contextValue })
+
+    expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
+  })
+
+  it('should display the full form when categories, and subcategories has been selected', async () => {
+    renderDetailsScreen({ contextValue })
+    const categoriesInput = await screen.findByLabelText(/Catégorie/)
+    expect(categoriesInput).toBeEnabled()
+    await userEvent.selectOptions(categoriesInput, 'A')
+
+    const subcategoriesInput = await screen.findByLabelText(/Sous-catégorie/)
+    expect(subcategoriesInput).toBeEnabled()
+    await userEvent.selectOptions(subcategoriesInput, 'physical')
+
+    expect(
+      await screen.findByRole('heading', { name: 'Informations artistiques' })
+    ).toBeInTheDocument()
+  })
+
+  it('should disable the form when selected partner venue is closed', async () => {
+    renderDetailsScreen({
+      contextValue,
+      options: {
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedPartnerVenue: makeGetVenueResponseModel({
+              id: 189,
+              state: VenueState.CLOSED,
+            }),
+          },
+        },
+      },
+    })
+
+    expect(await screen.findByLabelText(/Titre de l’offre/)).toBeDisabled()
+  })
+
+  it('should show errors in the form when not all field has been filled', async () => {
+    renderDetailsScreen({ contextValue })
+
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+    expect(
+      screen.getByText('Veuillez sélectionner une catégorie')
+    ).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Catégorie/),
+      'A'
+    )
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+    expect(
+      screen.getByText('Veuillez sélectionner une sous-catégorie')
+    ).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Sous-catégorie/),
+      'physical'
+    )
+
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+    expect(screen.getByText('Veuillez renseigner un titre')).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner un type de spectacle')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner un sous-type de spectacle')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner un genre musical')
+    ).toBeInTheDocument()
+  })
+
+  it('should display error from api on fields', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+    vi.spyOn(api, 'createOffer').mockRejectedValue({
+      message: 'oups',
+      name: 'ApiError',
+      body: { ean: 'broken ean from api' },
+    })
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+      { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
+    ])
+
+    renderDetailsScreen({ contextValue })
+
+    await userEvent.type(
+      screen.getByLabelText(/Titre de l’offre/),
+      'My super offer'
+    )
+    await userEvent.type(
+      screen.getByLabelText(/Description/),
+      'My super description'
+    )
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Catégorie/),
+      'A'
+    )
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Sous-catégorie/),
+      'physical'
+    )
+
+    await userEvent.type(screen.getByLabelText(/EAN/), '1234567891234')
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Type de spectacle/),
+      'Cirque'
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Sous-type/),
+      'Clown'
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Genre musical/),
+      'Pop'
+    )
+
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+
+    expect(screen.getByText('broken ean from api')).toBeInTheDocument()
+  })
+
+  it('should submit the form with correct payload', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+    vi.spyOn(api, 'createOffer').mockResolvedValue(
+      getIndividualOfferFactory({
+        id: 12,
+      })
+    )
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+      { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
+    ])
+
+    renderDetailsScreen({ contextValue })
+    await userFillsEverything()
+
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+
+    expect(api.createOffer).toHaveBeenCalledOnce()
+    expect(api.createOffer).toHaveBeenCalledWith({
+      body: {
+        artistOfferLinks: [],
+        audioDisabilityCompliant: true,
+        description: 'My super description',
+        durationMinutes: null,
+        extraData: {
+          author: null,
+          ean: '1234567891234',
+          gtl_id: 'pop',
+          showSubType: '205',
+          showType: '200',
+          performer: null,
+          speaker: null,
+          stageDirector: null,
+          visa: null,
+        },
+        hasCulturalOutreachClaim: false,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        name: 'My super offer',
+        subcategoryId: 'physical',
+        venueId: 189,
+        visualDisabilityCompliant: true,
+        productId: null,
+      },
+    })
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        offerId: 12,
+        offerType: 'individual',
+        subcategoryId: 'physical',
+      }
+    )
+  })
+
+  it('should submit the form with correct payload in edition ', async () => {
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+      getIndividualOfferFactory({
+        id: 12,
+      })
+    )
+
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+      { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
+    ])
+    contextValue.offer = getIndividualOfferFactory({
+      id: 12,
+      subcategoryId: 'physicalBis' as SubcategoryIdEnum,
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistName: 'Le Poing de Chuck',
+          artistType: ArtistType.PERFORMER,
+        },
+        {
+          artistId: '2',
+          artistName: 'JCVD',
+          artistType: ArtistType.STAGE_DIRECTOR,
+        },
+        {
+          artistId: '3',
+          artistName: 'Chuck Norris',
+          artistType: ArtistType.AUTHOR,
+        },
+      ],
+    })
+
+    renderDetailsScreen({ contextValue })
+
+    await userEvent.clear(screen.getByLabelText(/Titre de l’offre/))
+    await userEvent.type(
+      screen.getByLabelText(/Titre de l’offre/),
+      'My super offer'
+    )
+    await userEvent.type(
+      screen.getByLabelText(/Description/),
+      'My super description'
+    )
+
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
+
+    expect(api.patchOffer).toHaveBeenCalledOnce()
+    expect(api.patchOffer).toHaveBeenCalledWith({
+      path: { offer_id: 12 },
+      body: {
+        artistOfferLinks: [
+          {
+            artistId: '1',
+            artistName: 'Le Poing de Chuck',
+            artistType: 'performer',
+          },
+          {
+            artistId: '2',
+            artistName: 'JCVD',
+            artistType: 'stage_director',
+          },
+          {
+            artistId: '3',
+            artistName: 'Chuck Norris',
+            artistType: 'author',
+          },
+        ],
+        audioDisabilityCompliant: true,
+        description: 'My super description',
+        durationMinutes: null,
+        extraData: {
+          author: 'Chuck Norris',
+          gtl_id: null,
+          ean: '1234567891234',
+          performer: 'Le Poing de Chuck',
+          showSubType: 'PEGI 18',
+          showType: 'Cinéma',
+          speaker: "Chuck Norris n'a pas besoin de doubleur",
+          stageDirector: 'JCVD',
+          visa: 'USA',
+        },
+        hasCulturalOutreachClaim: false,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        name: 'My super offer',
+        visualDisabilityCompliant: true,
+      },
+    })
+  })
+
+  describe('about categories / subcategories selection', () => {
+    it('should render an error when no selection has been made', async () => {
+      renderDetailsScreen({ contextValue })
+
+      const titleInput = screen.getByLabelText(LABELS.title)
+      await userEvent.type(titleInput, MOCK_DATA.title)
+
+      await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+      const error = screen.getByText('Veuillez sélectionner une catégorie')
+      expect(error).toBeInTheDocument()
+    })
+  })
+
+  describe('on creation', () => {
+    describe('about EAN search', () => {
+      const eanSearchTitle = /Scanner ou rechercher un produit par EAN/
+      const eanInputLabel = /Scanner ou rechercher un produit par EAN/
+      const eanSearchButtonLabel = /Rechercher/
+      const eanResetButtonLabel = /Effacer/
+
+      const renderWithRecordStoreVenue = (
+        overrides: Partial<IndividualOfferContextValues> = {}
+      ) => {
+        const context = individualOfferContextValuesFactory({
+          categories: MOCK_DATA.categories,
+          subCategories: MOCK_DATA.subCategories,
+          offer: null,
+          ...overrides,
+        })
+        renderDetailsScreen({
+          contextValue: context,
+          path: getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          options: {
+            storeOverrides: {
+              user: {
+                currentUser: sharedCurrentUserFactory(),
+                selectedPartnerVenue: makeGetVenueResponseModel({
+                  id: 2,
+                  activity: DisplayableActivity.RECORD_STORE,
+                }),
+              },
+            },
+          },
+        })
+      }
+
+      it('should render EAN search for record stores as a venue', async () => {
+        renderWithRecordStoreVenue()
+
+        await waitFor(() => {
+          expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
+        })
+      })
+
+      it('should not render EAN search for other venues', () => {
+        renderDetailsScreen({
+          contextValue: individualOfferContextValuesFactory({
+            categories: MOCK_DATA.categories,
+            subCategories: MOCK_DATA.subCategories,
+            offer: null,
+          }),
+          path: getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          options: {
+            storeOverrides: {
+              user: {
+                currentUser: sharedCurrentUserFactory(),
+                selectedPartnerVenue: makeGetVenueResponseModel({
+                  id: 3,
+                  activity: DisplayableActivity.FESTIVAL,
+                }),
+              },
+            },
+          },
+        })
+        expect(screen.queryByText(eanSearchTitle)).toBeFalsy()
+      })
+
+      describe('when a local draft offer is being created', () => {
+        it('should prefill the form with EAN search result', async () => {
+          const ean = '9781234567897'
+          const productData = {
+            id: 0,
+            name: 'Music has the right to children',
+            description: 'An album by Boards of Canada',
+            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+            gtlId: '08000000',
+            author: 'Boards of Canada',
+            performer: 'Boards of Canada',
+            images: {
+              recto: 'https://www.example.com/image.jpg',
+            },
+          }
+          vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
+          renderWithRecordStoreVenue()
+          const button = screen.getByRole('button', {
+            name: eanSearchButtonLabel,
+          })
+          const input = screen.getByRole('textbox', { name: eanInputLabel })
+          await userEvent.type(input, ean)
+          await userEvent.click(button)
+          const nameInputLabel = /Titre de l’offre/
+          const inputName = screen.getByRole('textbox', {
+            name: nameInputLabel,
+          })
+          expect(inputName).toHaveValue(productData.name)
+          expect(inputName).toBeDisabled()
+        })
+
+        it('should reset the prefilled form when EAN search is cleared', async () => {
+          const ean = '9781234567897'
+          const productData = {
+            id: 0,
+            name: 'Music has the right to children',
+            description: 'An album by Boards of Canada',
+            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+            gtlId: '08000000',
+            author: 'Boards of Canada',
+            performer: 'Boards of Canada',
+            images: {
+              recto: 'https://www.example.com/image.jpg',
+            },
+          }
+          vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
+          renderWithRecordStoreVenue()
+          const button = screen.getByRole('button', {
+            name: eanSearchButtonLabel,
+          })
+          const input = screen.getByRole('textbox', { name: eanInputLabel })
+          await userEvent.type(input, ean)
+          await userEvent.click(button)
+          const resetButton = screen.getByRole('button', {
+            name: eanResetButtonLabel,
+          })
+          await userEvent.click(resetButton)
+          const nameInputLabel = /Titre de l’offre/
+          const inputName = screen.getByRole('textbox', {
+            name: nameInputLabel,
+          })
+          const image = screen.queryByTestId('image-preview')
+          expect(inputName).toHaveValue('')
+          expect(image).not.toBeInTheDocument()
+        })
+
+        it('should disabled all fields if another offer with the same EAN is already published', async () => {
+          vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
+            id: 1,
+            dateCreated: '',
+            isActive: true,
+            name: 'test',
+            status: OfferStatus.DRAFT,
+            subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
+          })
+          renderWithRecordStoreVenue({
+            hasPublishedOfferWithSameEan: true,
+            offer: getIndividualOfferFactory({
+              subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
+              productId: 1,
+            }),
+          })
+
+          await waitFor(() => {
+            const inputName = screen.getByRole('textbox', {
+              name: /Titre de l’offre/,
+            })
+            expect(inputName).toBeDisabled()
+          })
+        })
+      })
+
+      describe('when the draft offer being created is no longer local but posted', () => {
+        it('should render EAN search when the draft offer is product-based', async () => {
+          renderWithRecordStoreVenue({
+            offer: getIndividualOfferFactory({
+              subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
+              productId: 1,
+            }),
+          })
+
+          await waitFor(() => {
+            expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
+          })
+        })
+      })
+
+      describe('when the subcategory requires an EAN', () => {
+        it('should display a (cumulative) error message that cannot be cleared on new inputs', async () => {
+          const cdSubcategory = subcategoryFactory({
+            id: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+            categoryId: MOCK_DATA.categories[0].id,
+            proLabel: 'CD et autres supports',
+            conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
+          })
+          renderWithRecordStoreVenue({
+            subCategories: [...MOCK_DATA.subCategories, cdSubcategory],
+          })
+
+          await userEvent.selectOptions(
+            await screen.findByLabelText(LABELS.category),
+            MOCK_DATA.categories[0].id
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(LABELS.subcategory),
+            cdSubcategory.id
+          )
+
+          // Input is now required.
+          const eanInput = screen.getByRole('textbox', {
+            name: /Scanner ou rechercher un produit par EAN/,
+          })
+          await waitFor(() => {
+            expect(eanInput).toBeRequired()
+          })
+
+          // Error cannot be removed by typing in the input.
+          expect(
+            screen.getByText(/doivent être liées à un produit/)
+          ).toBeInTheDocument()
+          await userEvent.type(eanInput, '9781234567897')
+          expect(
+            screen.getByText(/doivent être liées à un produit/)
+          ).toBeInTheDocument()
+        })
+
+        it('should let the submit button enabled', async () => {
+          const cdSubcategory = subcategoryFactory({
+            id: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+            categoryId: MOCK_DATA.categories[0].id,
+            proLabel: 'CD et autres supports',
+            conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
+          })
+          renderWithRecordStoreVenue({
+            subCategories: [...MOCK_DATA.subCategories, cdSubcategory],
+          })
+
+          await userEvent.selectOptions(
+            await screen.findByLabelText(LABELS.category),
+            MOCK_DATA.categories[0].id
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(LABELS.subcategory),
+            cdSubcategory.id
+          )
+
+          const eanInput = screen.getByRole('textbox', {
+            name: /Scanner ou rechercher un produit par EAN/,
+          })
+
+          await userEvent.type(eanInput, '9781234567897')
+          const submitButton = screen.getByRole('button', {
+            name: /Rechercher/,
+          })
+          expect(submitButton).not.toBeDisabled()
+        })
+      })
+    })
+
+    it('should initialize the accessibility field with the selected partner venue data', async () => {
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                audioDisabilityCompliant: true,
+                mentalDisabilityCompliant: false,
+                motorDisabilityCompliant: true,
+                visualDisabilityCompliant: false,
+              }),
+            },
+          },
+        },
+      })
+
+      expect(
+        await screen.findByRole('checkbox', { name: 'Auditif' })
+      ).toBeChecked()
+      expect(
+        await screen.findByRole('checkbox', { name: 'Psychique ou cognitif' })
+      ).not.toBeChecked()
+      expect(
+        await screen.findByRole('checkbox', { name: 'Moteur' })
+      ).toBeChecked()
+      expect(
+        await screen.findByRole('checkbox', { name: 'Visuel' })
+      ).not.toBeChecked()
+      expect(
+        await screen.findByRole('checkbox', { name: 'Non accessible' })
+      ).not.toBeChecked()
+    })
+  })
+
+  describe('on edition', () => {
+    beforeEach(() => {
+      vi.spyOn(useOfferWizardModeHook, 'useOfferWizardMode').mockReturnValue(
+        OFFER_WIZARD_MODE.EDITION
+      )
+    })
+
+    it('should not render EAN search', () => {
+      const context = individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'physical' as SubcategoryIdEnum,
+        }),
+      })
+
+      renderDetailsScreen({
+        contextValue: context,
+        mode: OFFER_WIZARD_MODE.EDITION,
+      })
+
+      expect(
+        screen.queryByText(/Scanner ou rechercher un produit par EAN/)
+      ).toBeFalsy()
+    })
+
+    it('should display categories and subcategories as disabled', () => {
+      const context = individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'physical' as SubcategoryIdEnum,
+        }),
+      })
+
+      renderDetailsScreen({
+        contextValue: context,
+        mode: OFFER_WIZARD_MODE.EDITION,
+      })
+
+      expect(screen.getByLabelText(/Catégorie/)).toBeDisabled()
+      expect(screen.getByLabelText(/Sous-catégorie/)).toBeDisabled()
+    })
+
+    it("should set the accessibility field to readonly when it's a pending offer", async () => {
+      const contextValue = individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'virtual' as SubcategoryIdEnum,
+          status: OfferStatus.PENDING,
+        }),
+        subCategories: MOCK_DATA.subCategories,
+      })
+
+      renderDetailsScreen({
+        contextValue,
+        mode: OFFER_WIZARD_MODE.EDITION,
+      })
+
+      expect(
+        await screen.findByRole('checkbox', { name: 'Visuel' })
+      ).toBeDisabled()
+    })
+
+    it('should show a success snackbar and not navigate in edition mode', async () => {
+      vi.spyOn(api, 'patchOffer').mockResolvedValue(
+        getIndividualOfferFactory({ id: 12 })
+      )
+
+      const context = individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          id: 12,
+          subcategoryId: 'physicalBis' as SubcategoryIdEnum,
+        }),
+      })
+
+      renderDetailsScreen({
+        contextValue: context,
+        mode: OFFER_WIZARD_MODE.EDITION,
+      })
+
+      await userEvent.type(
+        await screen.findByLabelText(LABELS.title),
+        ' modifié'
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Enregistrer les modifications' })
+      )
+
+      await waitFor(() => {
+        expect(
+          screen.getAllByText('Votre offre a bien été modifiée.').length
+        ).toBeGreaterThan(0)
+      })
+
+      expect(mockNavigate).not.toHaveBeenCalled()
+    })
+  })
+
+  it('should use selectedPartnerVenue from Redux store for initial values on creation', () => {
+    renderDetailsScreen({
+      contextValue,
+      options: {
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedPartnerVenue: makeGetVenueResponseModel({
+              id: 777,
+              audioDisabilityCompliant: true,
+              mentalDisabilityCompliant: false,
+              motorDisabilityCompliant: true,
+              visualDisabilityCompliant: false,
+            }),
+          },
+        },
+      },
+    })
+
+    expect(screen.getByRole('checkbox', { name: /Auditif/ })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /Moteur/ })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /Visuel/ })).not.toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /Psychique ou cognitif/ })
+    ).not.toBeChecked()
+  })
+
+  describe('cultural outreach checkbox', () => {
+    it('should render the checkbox when FF is enabled and venue activity is allowed', async () => {
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                activity: DisplayableActivity.MUSEUM,
+              }),
+            },
+          },
+        },
+      })
+
+      expect(await screen.findByText('Action de médiation')).toBeInTheDocument()
+    })
+
+    it('should NOT render the checkbox when FF is disabled', async () => {
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                activity: DisplayableActivity.MUSEUM,
+              }),
+            },
+          },
+        },
+      })
+
+      await screen.findByRole('heading', { name: 'À propos de votre offre' })
+      expect(screen.queryByText('Action de médiation')).not.toBeInTheDocument()
+    })
+
+    it('should NOT render the checkbox when activity is not allowed', async () => {
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                activity: DisplayableActivity.RECORD_STORE,
+              }),
+            },
+          },
+        },
+      })
+
+      await screen.findByRole('heading', { name: 'À propos de votre offre' })
+      expect(screen.queryByText('Action de médiation')).not.toBeInTheDocument()
+    })
+
+    it.each([OfferStatus.PENDING, OfferStatus.REJECTED])(
+      'should disable the checkbox when offer status is %s',
+      async (status) => {
+        const context = individualOfferContextValuesFactory({
+          categories: MOCK_DATA.categories,
+          subCategories: MOCK_DATA.subCategories,
+          offer: getIndividualOfferFactory({
+            subcategoryId: 'physicalBis' as SubcategoryIdEnum,
+            hasCulturalOutreachClaim: true,
+            status,
+          }),
+        })
+
+        renderDetailsScreen({
+          contextValue: context,
+          mode: OFFER_WIZARD_MODE.EDITION,
+          options: {
+            features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+            storeOverrides: {
+              user: {
+                currentUser: sharedCurrentUserFactory(),
+                selectedPartnerVenue: makeGetVenueResponseModel({
+                  id: 1,
+                  activity: DisplayableActivity.MUSEUM,
+                }),
+              },
+            },
+          },
+        })
+
+        const checkbox = await screen.findByRole('checkbox', {
+          name: /L\u2019offre inclut une action de médiation spécifique/,
+        })
+        expect(checkbox).toBeDisabled()
+        expect(checkbox).toBeChecked()
+      }
+    )
+  })
+
+  describe('onboarding', () => {
+    beforeEach(() => {
+      vi.spyOn(useOfferWizardModeHook, 'useOfferWizardMode').mockReturnValue(
+        OFFER_WIZARD_MODE.CREATION
+      )
+    })
+
+    it('should display with the lateral bar', async () => {
+      renderDetailsScreen({ contextValue })
+      await userEvent.click(screen.getByText('Retour'))
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('/offre/creation')
+      })
+    })
+
+    it('should redirect to the offer creation type screen', async () => {
+      vi.mocked(router.useLocation).mockReturnValue({
+        pathname: '/onboarding/offre/individuelle/creation/description',
+        search: '',
+        hash: '',
+        state: null,
+        key: 'default',
+      })
+      renderDetailsScreen({
+        contextValue,
+        mode: OFFER_WIZARD_MODE.CREATION,
+        path: `/onboarding${getIndividualOfferPath({
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}`,
+      })
+      await userEvent.click(screen.getByText('Retour'))
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('/onboarding/individuel')
+      })
+    })
   })
 })
