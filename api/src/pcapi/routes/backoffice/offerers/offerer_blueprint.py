@@ -1303,13 +1303,14 @@ def get_settlements(offerer_id: int) -> response_utils.BackofficeResponse:
     settlements = (
         db.session.query(finance_models.Settlement)
         .join(finance_models.Settlement.bankAccount)
-        .join(finance_models.Settlement.batch)
+        .outerjoin(finance_models.Settlement.batch)
         .filter(finance_models.BankAccount.offererId == offerer_id)
         .options(
             sa_orm.load_only(
                 finance_models.Settlement.id,
                 finance_models.Settlement.amount,
                 finance_models.Settlement.status,
+                finance_models.Settlement.settlementDate,
             ),
             sa_orm.contains_eager(finance_models.Settlement.bankAccount)
             .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label)

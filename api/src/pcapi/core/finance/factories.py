@@ -258,7 +258,7 @@ class InvoiceFactory(BaseFactory[models.Invoice]):
     class Meta:
         model = models.Invoice
 
-    amount = 1000
+    amount = -1000
     token = factory.LazyFunction(secrets.token_urlsafe)
     status = models.InvoiceStatus.PAID
 
@@ -266,9 +266,8 @@ class InvoiceFactory(BaseFactory[models.Invoice]):
     def _create(cls, model_class: type[models.Invoice], *args: typing.Any, **kwargs: typing.Any) -> models.Invoice:
         # Use the same counter as real invoices so factory ones never duplicate their references
         if kwargs.get("reference") is None:
-            scheme = reference_models.ReferenceScheme.get_and_lock(
-                name="invoice.reference", year=datetime.date.today().year
-            )
+            scheme_name = "invoice.reference" if kwargs["amount"] <= 0 else "debit_note.reference"
+            scheme = reference_models.ReferenceScheme.get_and_lock(name=scheme_name, year=datetime.date.today().year)
             kwargs["reference"] = scheme.formatted_reference
             scheme.increment_after_use()
 
