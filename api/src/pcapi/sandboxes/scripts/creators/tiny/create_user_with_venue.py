@@ -1,17 +1,22 @@
 import datetime
 import logging
+import pathlib
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
-from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
-from pcapi.core.educational.factories import PublishedCollectiveOfferFactory
-from pcapi.core.educational.models import EducationalDomain
+from pcapi.core.educational.repository import find_educational_institution_by_uai_code
+from pcapi.core.educational.utils import UAI_FOR_FAKE_TOKEN
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.models import db
+from pcapi.sandboxes.scripts.utils.storage_utils import add_image_to_offer
+from pcapi.sandboxes.thumbs import generic_pictures
 from pcapi.utils import date as date_utils
 
 
@@ -33,6 +38,14 @@ def create_tiny_venue() -> None:
         collectiveEmail="email@exemple.com",
         isPermanent=True,
     )
+    landscape_image_path = pathlib.Path(generic_pictures.__path__[0]) / "landscape_01.jpg"
+    offerers_api.save_venue_banner(
+        user=user_offerer.user,
+        venue=venue,
+        content=landscape_image_path.read_bytes(),
+        image_credit="industrial sandbox picture provider",
+        image_alternative_text="Image de mon petit lieu",
+    )
     offer_event = EventOfferFactory.create(
         name="Conférence gesticulée",
         venue=venue,
@@ -45,16 +58,36 @@ def create_tiny_venue() -> None:
     )
     BookingFactory.create(quantity=1, stock=stock)
 
-    domain = db.session.query(EducationalDomain).first()
-    CollectiveOfferTemplateFactory.create(
+    domain = db.session.query(educational_models.EducationalDomain).first()
+    template = educational_factories.CollectiveOfferTemplateFactory.create(
         name="Conférence gesticulée",
         venue=venue,
         bookingEmails=[email],
         domains=[domain],
     )
-    PublishedCollectiveOfferFactory(
+    add_image_to_offer(template, "collective_offer_1.png")
+    educational_institution = find_educational_institution_by_uai_code(UAI_FOR_FAKE_TOKEN)
+    collective_offer = educational_factories.PublishedCollectiveOfferFactory(
         name="Ma petite offre réservable",
         venue=venue,
         domains=[domain],
+        institution=educational_institution,
     )
-    logger.info("end create tiny venue with 1 booked offers")
+    add_image_to_offer(
+        collective_offer, "collective_offer_2.jpg", alternative_text="Image de ma petite offre réservable"
+    )
+    educational_factories.PlaylistFactory.create(
+        distanceInKm=50,
+        collective_offer_template=template,
+        type=educational_models.PlaylistType.NEW_OFFER,
+        institution=educational_institution,
+    )
+    educational_factories.PlaylistFactory.create(
+        distanceInKm=50,
+        collective_offer_template=template,
+        type=educational_models.PlaylistType.NEW_OFFERER,
+        institution=educational_institution,
+        venue=venue,
+    )
+
+    logger.info("end create tiny venue with 1 booked offers, individual & collective")
