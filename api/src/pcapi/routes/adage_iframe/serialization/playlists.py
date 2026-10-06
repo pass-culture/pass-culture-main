@@ -6,6 +6,7 @@ class LocalOfferersPlaylistOffer(HttpBodyModel):
     name: str
     distance: float | None
     imgUrl: str | None
+    imgAlternativeText: str | None
     publicName: str
     city: str | None
 
