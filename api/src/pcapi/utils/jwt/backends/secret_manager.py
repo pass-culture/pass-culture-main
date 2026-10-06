@@ -4,6 +4,7 @@ import logging
 from dataclasses import dataclass
 
 import jwt
+from redis import exceptions as redis_exceptions
 
 from pcapi import settings
 from pcapi.connectors.google_secret_manager import SecretManagerBackend
@@ -83,7 +84,10 @@ class JwtSecretManagerBackend(JwtBaseBackend):
 
         if key_dict:
             self._key_by_kid = key_dict
-            get_redis_client().hset(REDIS_KEY, mapping=key_dict)  # type: ignore [arg-type]
+            try:
+                get_redis_client().hset(REDIS_KEY, mapping=key_dict)  # type: ignore [arg-type]
+            except redis_exceptions.ConnectionError:
+                logger.warning("Could not connect to redis, jwt keyring fallback not updated")
             self._update_current()
         else:
             raise ValueError("No versions were found for secret %s " % settings.JWT_KEY_SECRET_NAME)

@@ -5,6 +5,7 @@ from enum import Enum
 from uuid import UUID
 
 import flask
+from redis import exceptions as redis_exceptions
 
 from pcapi import settings
 from pcapi.connectors.google_secret_manager import SecretManagerBackend
@@ -134,7 +135,11 @@ def configure_session_keys(*, default_session_key: str, session_keys_secret: str
         if not key_dict:
             raise ValueError("Error while building the session keyring, no backup available in redis")
 
-        get_redis_client().hset(redis_key, mapping=key_dict)  # type: ignore [arg-type]
+        try:
+            get_redis_client().hset(redis_key, mapping=key_dict)  # type: ignore [arg-type]
+        except redis_exceptions.ConnectionError:
+            logger.warning("Could not connect to redis, session keyring fallback not updated")
+
         flask.current_app.config["SECRET_KEY"] = key_dict.pop(  # the newest key will be used to sign new sessions
             max(key_dict.keys())
         )

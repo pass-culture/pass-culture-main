@@ -5,6 +5,7 @@ from unittest import mock
 import jwt
 import pytest
 from flask import current_app
+from redis.exceptions import ConnectionError
 
 from pcapi import settings
 from pcapi.connectors import google_secret_manager
@@ -61,6 +62,22 @@ class InitializationTest:
     def test_no_secret_name(self):
         with pytest.raises(ValueError):
             JwtSecretManagerBackend()
+
+    def test_no_redis(self, secret_manager):
+        redis = mock.MagicMock()
+        redis.hset.side_effect = ConnectionError
+
+        with mock.patch("pcapi.utils.jwt.backends.secret_manager.get_redis_client", return_value=redis):
+            backend = JwtSecretManagerBackend()
+            redis.hset.assert_called_once()
+
+        assert backend._current_key.kid == "4"
+        assert backend._current_key.key == "secret-with-id-four"
+        assert backend._key_by_kid == {
+            "4": "secret-with-id-four",
+            "3": "secret-with-id-three",
+            "1": "secret-with-id-one",
+        }
 
     def test_no_secret_manager_fallback_redis(self, clear_redis):
         redis_mapping = {"123": "a key", "456": "another key"}
