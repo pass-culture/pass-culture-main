@@ -247,6 +247,10 @@ class GetVenuesListForm(utils.PCForm):
         "Uniquement les entités juridiques validées",
         full_row=True,
     )
+    state = fields.PCSelectMultipleField(
+        "Etat de fermeture",
+        choices=utils.choices_from_enum(offerers_models.VenueState),
+    )
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(

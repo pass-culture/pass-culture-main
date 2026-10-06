@@ -301,6 +301,27 @@ class ListVenuesTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(venue.id)
         assert rows[0]["Entité juridique"] == offerer.name
 
+    def test_list_venues_by_state(self, authenticated_client):
+        # non-matching venues added in venues fixture
+        offerer = offerers_factories.OffererFactory()
+        # 2 opened venues
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
+        closed_venue = offerers_factories.VenueFactory(managingOfferer=offerer, state=offerers_models.VenueState.CLOSED)
+
+        offerer_id = offerer.id
+        # 1 more request is necessary to prefill form choices with selected offerer(s)
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(
+                url_for(self.endpoint, offerer=offerer_id, state=offerers_models.VenueState.CLOSED.name)
+            )
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert int(rows[0]["ID"]) == closed_venue.id
+        assert rows[0]["Entité juridique"] == offerer.name
+
 
 class GetVenueTest(GetEndpointHelper):
     endpoint = "backoffice.venue.get"
