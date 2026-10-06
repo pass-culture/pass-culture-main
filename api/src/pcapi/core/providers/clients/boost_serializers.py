@@ -125,7 +125,7 @@ class SaleConfirmationResponse(pydantic.BaseModel):
 
 class SalePreparation(pydantic.BaseModel):
     id: int
-    idVendor: int
+    idVendor: int | None = None
     idShowtime: int
     nbPlaceSelected: int
     placePrice: float
