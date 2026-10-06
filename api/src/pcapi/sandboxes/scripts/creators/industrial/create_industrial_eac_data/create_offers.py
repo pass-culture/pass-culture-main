@@ -23,9 +23,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.crea
 )
 from pcapi.sandboxes.scripts.getters.pro import get_national_programs_and_domains
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.sandboxes.scripts.utils.storage_utils import add_image_to_offer
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
-from pcapi.utils.image_conversion import DO_NOT_CROP
 
 
 @log_func_duration
@@ -432,16 +432,6 @@ def create_offers_base_list(
             )
             templates.append(template)
     return offers, templates
-
-
-def add_image_to_offer(
-    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate, image_name: str
-) -> None:
-    with open(
-        f"./src/pcapi/sandboxes/thumbs/collectif/{image_name}",
-        mode="rb",
-    ) as file:
-        offer.set_image(image=file.read(), credit="CC-BY-SA WIKIPEDIA", crop_params=DO_NOT_CROP)
 
 
 def create_collective_offers_with_different_displayed_status(
