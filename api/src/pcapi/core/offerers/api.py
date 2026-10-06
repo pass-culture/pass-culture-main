@@ -2514,8 +2514,9 @@ def _update_external_offerer(offerer: models.Offerer, *, index_with_reason: Inde
 
 
 def _update_external_venue(venue: offerers_models.Venue, index_with_reason: IndexationReason | None = None) -> None:
-    external_attributes_api.update_external_pro(venue.bookingEmail)
-    zendesk_sell_api.update_offerer(venue.managingOfferer)
+    for email in offerers_repository.get_emails_by_venue(venue):
+        external_attributes_api.update_external_pro(email)
+    zendesk_sell_api.update_venue(venue)
 
     if not index_with_reason:
         return
@@ -2524,7 +2525,7 @@ def _update_external_venue(venue: offerers_models.Venue, index_with_reason: Inde
     on_commit(functools.partial(search.async_index_venue_ids, [venue.id], reason=index_with_reason))
     on_commit(functools.partial(search.async_index_offers_of_venue_ids, [venue.id], reason=index_with_reason))
     packed_collective_ids = db.session.query(educational_models.CollectiveOfferTemplate.id).filter(
-        educational_models.CollectiveOfferTemplate.venueId.in_([venue.id])
+        educational_models.CollectiveOfferTemplate.venueId == venue.id
     )
     on_commit(
         functools.partial(
