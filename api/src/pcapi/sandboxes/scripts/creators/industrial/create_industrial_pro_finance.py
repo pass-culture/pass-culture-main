@@ -47,6 +47,9 @@ def create_various_settlements(user: users_models.User) -> None:
     venue_2 = offerers_factories.VenueFactory.create(
         name="Structure pro finance 2", managingOfferer=offerer, pricing_point="self"
     )
+    venue_3 = offerers_factories.VenueFactory.create(
+        name="Structure pro finance 3", managingOfferer=offerer, pricing_point="self"
+    )
     bank_account_1 = factories.BankAccountFactory.create(
         label="Compte bancaire 1", offerer=offerer, status=models.BankAccountApplicationStatus.ACCEPTED
     )
@@ -55,6 +58,9 @@ def create_various_settlements(user: users_models.User) -> None:
     )
     bank_account_2 = factories.BankAccountFactory.create(
         label="Compte bancaire 2", offerer=offerer, status=models.BankAccountApplicationStatus.ACCEPTED
+    )
+    bank_account_3 = factories.BankAccountFactory.create(
+        label="Compte bancaire 3", offerer=offerer, status=models.BankAccountApplicationStatus.ACCEPTED
     )
     offerers_factories.VenueBankAccountLinkFactory.create(
         venue=venue_1,
@@ -65,6 +71,7 @@ def create_various_settlements(user: users_models.User) -> None:
         venue=venue_1, bankAccount=bank_account_1, timespan=[now - datetime.timedelta(days=3), None]
     )
     offerers_factories.VenueBankAccountLinkFactory.create(venue=venue_2, bankAccount=bank_account_2)
+    offerers_factories.VenueBankAccountLinkFactory.create(venue=venue_3, bankAccount=bank_account_3)
 
     # settlement batch
     batch_1 = factories.SettlementBatchFactory.create(name="VIR1", dateValidated=now - datetime.timedelta(days=3))
@@ -148,6 +155,20 @@ def create_various_settlements(user: users_models.User) -> None:
         ],
     )
     _generate_fake_invoice_pdfs(settlement_6)
+
+    # debit note settlement paid by offerer : no batch, one invoice
+    settlement_debit_note = factories.SettlementFactory.create(
+        status=models.SettlementStatus.EXECUTED,
+        amount=9000,
+        bankAccount=bank_account_3,
+        batch=None,
+        invoices=[
+            factories.InvoiceFactory.create(
+                amount=9000, bankAccount=bank_account_3, date=now - datetime.timedelta(days=4)
+            ),
+        ],
+    )
+    _generate_fake_invoice_pdfs(settlement_debit_note)
 
 
 @log_func_duration
