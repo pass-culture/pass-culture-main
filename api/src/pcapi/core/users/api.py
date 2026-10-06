@@ -1748,7 +1748,11 @@ def revoke_sso_access(
     user: models.User,
     providers: SingleSignOnProviders | list[SingleSignOnProviders] | Literal["__all__"],
 ) -> None:
+    """
+    Revoke any single sign-on connections from a user to an external providers.
 
+    Delete also the linked SSOUser from our database.
+    """
     if not isinstance(providers, list) and providers != "__all__":
         providers = [providers]
 
