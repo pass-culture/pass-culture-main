@@ -151,16 +151,18 @@ def edit_venue(venue_id: int, body: venue_serialize.EditVenueBodyModel) -> venue
             del modifications["publicName"]
         else:
             modifications["publicName"] = venue.name
-    update_location_attrs = body.dict(include=location_fields, exclude_unset=True)
+    update_location_attrs = body.model_dump(include=location_fields, exclude_unset=True)
     location_modifications = {
         field: value
         for field, value in update_location_attrs.items()
         if venue.offererAddress.address.field_exists_and_has_changed(field, value)
     }
     validation.check_venue_edition(modifications, venue)
-    if "activity" in modifications:
+
+    # if activity or isOpenToPublic is modified, we must check that the resulting activity / isOpenToPublic couple is valid
+    if "activity" in modifications or "isOpenToPublic" in modifications:
         validation.check_activity_according_to_open_to_public(
-            modifications["activity"], modifications.get("isOpenToPublic", venue.isOpenToPublic)
+            modifications.get("activity", venue.activity), modifications.get("isOpenToPublic", venue.isOpenToPublic)
         )
 
     venue = offerers_api.update_venue(

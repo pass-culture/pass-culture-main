@@ -272,7 +272,7 @@ class Returns200Test:
     ) -> None:
         user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=date_utils.get_naive_utc_now())
         venue = offerers_factories.VenueFactory(
-            venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
+            activity=offerers_models.Activity.ARTISTIC_PRACTICE,
             managingOfferer=user_offerer.offerer,
             isOpenToPublic=True,
             isPermanent=True,
@@ -420,7 +420,9 @@ class Returns200Test:
         address = geography_factories.AddressFactory(
             banId=None, street="2 Rue de Valois", postalCode="75000", city="Paris", latitude=48.87055, longitude=2.34765
         )
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress__address=address)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, offererAddress__address=address, isOpenToPublic=True
+        )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
@@ -1276,6 +1278,23 @@ class Returns400Test:
             },
             venue,
         )
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json == {"activity": ["Activité non reconnue."]}
+
+    def test_update_invalid_is_open_to_public(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
+            activity=offerers_models.Activity.CINEMA,
+            isOpenToPublic=True,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        venue_data = {"isOpenToPublic": False}
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 400

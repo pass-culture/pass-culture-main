@@ -108,7 +108,8 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
 
 
 def check_activity_according_to_open_to_public(
-    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic, is_open_to_public: bool
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | offerers_models.Activity,
+    is_open_to_public: bool,
 ) -> None:
     if is_open_to_public:
         if activity.value not in offerers_models.ActivityOpenToPublic:
