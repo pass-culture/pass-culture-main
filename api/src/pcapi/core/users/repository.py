@@ -238,3 +238,7 @@ def fill_phone_number_on_all_users_offerer_without_any(offerer_id: int, phone_nu
         {"phoneNumber": phone_number}, synchronize_session=False
     )
     db.session.flush()
+
+
+def delete_sso_user(sso_id: int) -> None:
+    db.session.query(models.SingleSignOn).filter_by(id=sso_id).delete(synchronize_session=False)

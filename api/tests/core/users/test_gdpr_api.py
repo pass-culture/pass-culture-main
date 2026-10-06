@@ -2379,7 +2379,7 @@ class AnonymizeUserByIdTest:
         )
 
         with mock.patch("pcapi.core.users.api.revoke_apple_user") as apple_api:
-            revoke_sso_access(user)
+            revoke_sso_access(user, "__all__")
             apple_api.assert_called_once_with("a-good-refresh-token", False)
 
         assert db.session.query(SingleSignOn).filter(SingleSignOn.userId == user.id).count() == 0

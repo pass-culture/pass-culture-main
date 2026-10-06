@@ -5,6 +5,7 @@ import re
 import typing
 from dataclasses import asdict
 from decimal import Decimal
+from typing import Literal
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -73,7 +74,6 @@ class T_UNCHANGED(enum.Enum):
 UNCHANGED = T_UNCHANGED.TOKEN
 
 EMAIL_CONFIRMATION_TEST_EMAIL_PATTERN = "+e2e@"
-
 
 logger = logging.getLogger(__name__)
 
@@ -1738,8 +1738,18 @@ def extend_deposit_validity(user: models.User, new_expiration_date: datetime.dat
     external_attributes_api.update_external_user(user)
 
 
-def revoke_sso_access(user: models.User) -> None:
+def revoke_sso_access(
+    user: models.User,
+    providers: str | list[str] | Literal["__all__"],
+) -> None:
+
+    if isinstance(providers, str) and providers != "__all__":
+        providers = [providers]
+
     for sso in user.single_sign_ons:
+        if providers != "__all__" and sso.ssoProvider not in providers:
+            continue
+
         if sso.ssoProvider == "apple":
             # Trying to revoke Apple SSO from pc-api.
             # Revocation on Apple could fail, due to bad refresh_token, but user
@@ -1758,5 +1768,4 @@ def revoke_sso_access(user: models.User) -> None:
                         extra={"user_id": user.id, "exc": str(exc)},
                     )
 
-    db.session.query(models.SingleSignOn).filter(models.SingleSignOn.userId == user.id).delete()
-    db.session.flush()
+        users_repository.delete_sso_user(sso.id)

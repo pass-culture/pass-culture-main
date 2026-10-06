@@ -178,7 +178,7 @@ def anonymize_user(
         .delete()
     )
 
-    users_api.revoke_sso_access(user)
+    users_api.revoke_sso_access(user, "__all__")
 
     if external_email_anonymized:
         user.replace_roles_by_anonymized_role()
@@ -422,7 +422,7 @@ def pre_anonymize_user(user: models.User, author: models.User, is_backoffice_act
         is_backoffice_action=is_backoffice_action,
     )
 
-    users_api.revoke_sso_access(user)
+    users_api.revoke_sso_access(user, "__all__")
 
     db.session.add(models.GdprUserAnonymization(user=user))
     db.session.flush()
