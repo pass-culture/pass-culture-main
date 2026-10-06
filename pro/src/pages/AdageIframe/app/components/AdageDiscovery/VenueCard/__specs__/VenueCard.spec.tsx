@@ -11,6 +11,7 @@ import { VenueCard, type VenueCardProps } from '../VenueCard'
 
 const mockVenue: LocalOfferersPlaylistOffer = {
   imgUrl: 'testImageUrl.com',
+  imgAlternativeText: 'testImageAltText',
   name: 'Le nom administratif du lieu',
   publicName: 'Mon super lieu',
   distance: 2,

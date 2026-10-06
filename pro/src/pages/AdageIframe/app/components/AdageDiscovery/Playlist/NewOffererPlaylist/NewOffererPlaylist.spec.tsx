@@ -25,6 +25,7 @@ const mockNewOffererPlaylist: LocalOfferersPlaylistOffer = {
   distance: 5,
   id: 1,
   imgUrl: 'mock',
+  imgAlternativeText: 'mock alt',
   name: 'venuePlaylist offer 1',
   publicName: 'Venue playlist offer 1',
 }
