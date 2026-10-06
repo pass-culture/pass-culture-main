@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
+from redis.exceptions import ConnectionError
 
 from pcapi.connectors.google_secret_manager import Secret
 from pcapi.connectors.google_secret_manager import SecretManagerException
@@ -119,6 +120,33 @@ class ConfigureSessionKeysTest:
                 _common.configure_session_keys(
                     default_session_key=legacy_key, session_keys_secret="key/secret/manager", redis_key=REDIS_KEY
                 )
+
+                assert current_app.config["SECRET_KEY"] == expected_key
+                assert current_app.config["SECRET_KEY_FALLBACKS"] == fallbacks
+
+    def test_with_only_secret_name_no_redis(self, clear_redis):
+        expected_key = "expected_key"
+        fallbacks = ["key 1", "key 2"]
+        secret_manager_values = [
+            Secret(name="3", creation_timestamp=123456, value=expected_key),
+            Secret(name="2", creation_timestamp=123455, value=fallbacks[0]),
+            Secret(name="1", creation_timestamp=123454, value=fallbacks[1]),
+        ]
+
+        secret_manager = MagicMock()
+        secret_manager.get_last_secret_versions.return_value = secret_manager_values
+
+        redis = MagicMock()
+        redis.hset.side_effect = ConnectionError
+
+        with patch("pcapi.core.users.sessions._common.SecretManagerBackend", return_value=secret_manager):
+            with patch("pcapi.core.users.sessions._common.get_redis_client", return_value=redis):
+                with patch("pcapi.core.users.sessions._common.flask.current_app") as current_app:
+                    current_app.config = {}
+                    _common.configure_session_keys(
+                        default_session_key="", session_keys_secret="key/secret/manager", redis_key=REDIS_KEY
+                    )
+                    redis.hset.assert_called_once()
 
                 assert current_app.config["SECRET_KEY"] == expected_key
                 assert current_app.config["SECRET_KEY_FALLBACKS"] == fallbacks
