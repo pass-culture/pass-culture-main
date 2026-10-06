@@ -249,7 +249,6 @@ def update_venue(
     venue_snapshot.add_action()
 
     if modifications.get("activity", None):
-        assert venue.activity  # helps mypy, activity has been modified, is not null if we are here and set above
         venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(venue.activity)
 
     if "volunteeringUrl" in modifications:
