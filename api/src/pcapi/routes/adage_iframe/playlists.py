@@ -163,6 +163,7 @@ def _serialize_playlist_item_with_venue(
 
     return playlists_serializers.LocalOfferersPlaylistOffer(
         imgUrl=playlist_item.venue.bannerUrl,
+        imgAlternativeText=(playlist_item.venue.bannerMeta or {}).get("image_alternative_text"),
         publicName=playlist_item.venue.publicName,
         name=playlist_item.venue.name,
         distance=_format_distance(playlist_item.distanceInKm),
