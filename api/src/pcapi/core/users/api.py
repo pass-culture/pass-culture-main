@@ -75,6 +75,12 @@ UNCHANGED = T_UNCHANGED.TOKEN
 
 EMAIL_CONFIRMATION_TEST_EMAIL_PATTERN = "+e2e@"
 
+
+class SingleSignOnProviders(enum.StrEnum):
+    APPLE = "apple"
+    GOOGLE = "google"
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -1740,17 +1746,17 @@ def extend_deposit_validity(user: models.User, new_expiration_date: datetime.dat
 
 def revoke_sso_access(
     user: models.User,
-    providers: str | list[str] | Literal["__all__"],
+    providers: SingleSignOnProviders | list[SingleSignOnProviders] | Literal["__all__"],
 ) -> None:
 
-    if isinstance(providers, str) and providers != "__all__":
+    if not isinstance(providers, list) and providers != "__all__":
         providers = [providers]
 
     for sso in user.single_sign_ons:
         if providers != "__all__" and sso.ssoProvider not in providers:
             continue
 
-        if sso.ssoProvider == "apple":
+        if sso.ssoProvider == SingleSignOnProviders.APPLE:
             # Trying to revoke Apple SSO from pc-api.
             # Revocation on Apple could fail, due to bad refresh_token, but user
             # can do it on their side (follow doc linked in revoke_apple_user function)
