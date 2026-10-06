@@ -684,7 +684,7 @@ class CollectiveOfferOnAddressVenueLocationFactory(PublishedCollectiveOfferFacto
     offererAddress = factory.SubFactory(
         offerers_factories.OfferLocationFactory,
         address=factory.SelfAttribute("..venue.offererAddress.address"),
-        label=factory.SelfAttribute("..venue.publicName"),
+        label=None,
     )
 
 
@@ -713,7 +713,7 @@ class CollectiveOfferTemplateOnAddressVenueLocationFactory(CollectiveOfferTempla
     offererAddress = factory.SubFactory(
         offerers_factories.OfferLocationFactory,
         address=factory.SelfAttribute("..venue.offererAddress.address"),
-        label=factory.SelfAttribute("..venue.publicName"),
+        label=None,
         venueId=factory.SelfAttribute("..venue.id"),
     )
 
