@@ -124,7 +124,6 @@ def create_account(
         phoneNumber=phone_number,
         lastConnectionDate=date_utils.get_naive_utc_now(),
     )
-    db.session.add(user)
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
@@ -137,7 +136,9 @@ def create_account(
     if firebase_pseudo_id:
         user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id
 
+    db.session.add(user)
     db.session.flush()
+
     if remote_updates:
         external_attributes_api.update_external_user(user)
 
@@ -170,8 +171,7 @@ def setup_login(
     if not sso_provider or not sso_user_id:
         raise exceptions.MissingLoginMethod()
 
-    single_sign_on = users_repository.create_single_sign_on(user, sso_provider, sso_user_id, sso_extra_data)
-    db.session.add(single_sign_on)
+    users_repository.create_single_sign_on(user, sso_provider, sso_user_id, sso_extra_data)
 
 
 def _update_user_information(

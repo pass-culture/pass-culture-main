@@ -211,7 +211,6 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) 
             user.password = None
             user.isEmailValidated = True
 
-        current_provider_sso = None
         user_ssos_for_provider = [sso for sso in user.single_sign_ons if sso.ssoProvider == sso_provider]
 
         if user_ssos_for_provider:
@@ -229,13 +228,12 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) 
 
                 current_provider_sso.ssoExtraData = extra_data or None
         else:
-            current_provider_sso = users_repo.create_single_sign_on(
+            users_repo.create_single_sign_on(
                 user,
                 sso_provider,
                 sso_user_id,
                 sso_extra_data,
             )
-            db.session.add(current_provider_sso)
 
     users_api.save_device_info_and_notify_user(user, body.device_info)
 
