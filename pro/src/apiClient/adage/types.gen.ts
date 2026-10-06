@@ -683,6 +683,10 @@ export type LocalOfferersPlaylistOffer = {
      */
     id: number;
     /**
+     * Imgalternativetext
+     */
+    imgAlternativeText: string | null;
+    /**
      * Imgurl
      */
     imgUrl: string | null;

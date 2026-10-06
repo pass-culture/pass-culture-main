@@ -62,10 +62,10 @@ export const OfferCardComponent = ({
         <div className={styles['offer-image-container']}>
           {offer.imageUrl ? (
             <img
-              alt=""
-              aria-hidden
+              alt={offer.imageAlternativeText || ''}
               className={styles['offer-image']}
               loading="lazy"
+              aria-hidden={!offer.imageAlternativeText}
               src={offer.imageUrl}
               width={216}
             />

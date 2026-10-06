@@ -27,8 +27,8 @@ export const VenueCard = ({
     >
       {venue.imgUrl ? (
         <img
-          alt=""
-          aria-hidden
+          alt={venue.imgAlternativeText || ''}
+          aria-hidden={!venue.imgAlternativeText}
           className={styles['venue-image']}
           loading="lazy"
           src={venue.imgUrl}
