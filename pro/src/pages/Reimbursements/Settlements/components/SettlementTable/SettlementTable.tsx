@@ -130,7 +130,7 @@ export const SettlementTable = ({
       sortable: true,
       ordererField: 'label',
       render: (settlement) => (
-        <p className={styles['cell-label']}>{settlement.label}</p>
+        <p className={styles['cell-label']}>{settlement.label ?? '-'}</p>
       ),
     },
     {
@@ -177,10 +177,17 @@ export const SettlementTable = ({
       sortable: true,
       ordererField: 'amount',
       render: (settlement: ExtendedSettlementResponseModel) => (
-        <p className={styles['cell-amount']}>
+        <p
+          className={cn(styles['cell-amount'], {
+            [styles['negative-amount']]: settlement.amount < 0,
+            [styles['positive-amount']]: settlement.amount > 0,
+          })}
+        >
           {settlement.isCaledonian
-            ? formatPacificFranc(convertEuroToPacificFranc(settlement.amount))
-            : formatPrice(settlement.amount)}
+            ? formatPacificFranc(convertEuroToPacificFranc(settlement.amount), {
+                signDisplay: 'always',
+              })
+            : formatPrice(settlement.amount, { signDisplay: 'always' })}
         </p>
       ),
     },
@@ -190,8 +197,9 @@ export const SettlementTable = ({
       sortable: true,
       ordererField: 'invoicesCount',
       render: (settlement) =>
-        settlement.status === SettlementDisplayedStatus.EXECUTED &&
-        settlement.invoicesCount,
+        settlement.status === SettlementDisplayedStatus.EXECUTED && (
+          <p>{settlement.invoicesCount}</p>
+        ),
     },
     {
       id: 'actions',

@@ -369,6 +369,51 @@ class GetSettlementsTest:
             },
         ]
 
+    def test_get_settlements_debit_note(self, client: TestClient):
+        user_offerer = offerers_factories.UserOffererFactory()
+        bank_account = factories.BankAccountFactory(offerer=user_offerer.offerer)
+        date = get_naive_utc_now() - datetime.timedelta(days=1)
+        settlement = factories.RefundSettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            amount=10000,
+            bankAccount=bank_account,
+            settlementDate=date,
+            invoices=[factories.InvoiceFactory.create(amount=10000, bankAccount=bank_account, date=date)],
+        )
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+        [invoice] = settlement.invoices
+
+        num_queries = self.num_queries
+        num_queries += 1  # selectinload venue bank account links
+        num_queries += 1  # selectinload invoices
+        num_queries += 1  # selectinload invoices -> settlements
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params={"offererId": offerer_id})
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "id": settlement.id,
+                "label": None,
+                "date": date.date().isoformat(),
+                "amount": -100,
+                "bankAccount": "pass Culture",
+                "status": "EXECUTED",
+                "invoices": [
+                    {
+                        "reference": invoice.reference,
+                        "date": invoice.date.date().isoformat(),
+                        "amount": -100,
+                        "url": invoice.url,
+                        "status": "paid",
+                    },
+                ],
+                "resolvedBy": [],
+            }
+        ]
+
     def test_get_settlements_bank_account_filter(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
 
@@ -417,25 +462,50 @@ class GetSettlementsTest:
             bankAccount=bank_account,
             batch__dateValidated=datetime.datetime.fromisoformat("2021-06-01"),
         )
+        _debit_note_before = factories.RefundSettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            settlementDate=datetime.datetime.fromisoformat("2021-06-01"),
+        )
         settlement_lower_bound = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
             bankAccount=bank_account,
             batch__dateValidated=datetime.datetime.fromisoformat("2021-07-01"),
+        )
+        debit_note_lower_bound = factories.RefundSettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            settlementDate=datetime.datetime.fromisoformat("2021-07-01"),
         )
         settlement_within = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
             bankAccount=bank_account,
             batch__dateValidated=datetime.datetime.fromisoformat("2021-07-15"),
         )
+        debit_note_within = factories.RefundSettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            settlementDate=datetime.datetime.fromisoformat("2021-07-15"),
+        )
         settlement_upper_bound = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
             bankAccount=bank_account,
             batch__dateValidated=datetime.datetime.fromisoformat("2021-07-31"),
         )
+        debit_note_upper_bound = factories.RefundSettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            settlementDate=datetime.datetime.fromisoformat("2021-07-31"),
+        )
         _settlement_after = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
             bankAccount=bank_account,
             batch__dateValidated=datetime.datetime.fromisoformat("2021-08-01"),
+        )
+        _debit_note_after = factories.RefundSettlementFactory(
+            status=models.SettlementStatus.EXECUTED,
+            bankAccount=bank_account,
+            settlementDate=datetime.datetime.fromisoformat("2021-08-01"),
         )
 
         client = client.with_session_auth(user_offerer.user.email)
@@ -451,11 +521,14 @@ class GetSettlementsTest:
             )
 
         assert response.status_code == 200
-        assert len(response.json) == 3
+        assert len(response.json) == 6
         assert {result["id"] for result in response.json} == {
             settlement_lower_bound.id,
+            debit_note_lower_bound.id,
             settlement_within.id,
+            debit_note_within.id,
             settlement_upper_bound.id,
+            debit_note_upper_bound.id,
         }
 
     def test_get_settlements_name_filter(self, client: TestClient):

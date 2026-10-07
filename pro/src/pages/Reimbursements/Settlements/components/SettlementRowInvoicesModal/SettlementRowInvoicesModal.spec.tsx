@@ -80,7 +80,8 @@ describe('<SettlementRowInvoicesModal />', () => {
 
     // Titre et description (pluriel)
     expect(screen.getByText('VIR-001')).toBeInTheDocument()
-    expect(screen.getByText('2 justificatifs - 250,00 €')).toBeInTheDocument()
+    expect(screen.getByText('2 justificatifs')).toBeInTheDocument()
+    expect(screen.getByText('250,00 €')).toBeInTheDocument()
 
     // Liste des justificatifs
     expect(screen.getByText('INV-101')).toBeInTheDocument()
@@ -103,6 +104,7 @@ describe('<SettlementRowInvoicesModal />', () => {
   it('should render singular description when invoicesCount is 1', () => {
     const singleInvoiceRow = {
       ...BASE_SETTLEMENT_ROW,
+      amount: BASE_SETTLEMENT_ROW.invoices[0].amount,
       invoicesCount: 1,
       invoices: [BASE_SETTLEMENT_ROW.invoices[0]],
     }
@@ -115,7 +117,29 @@ describe('<SettlementRowInvoicesModal />', () => {
       />
     )
 
-    expect(screen.getByText('1 justificatif - 250,00 €')).toBeInTheDocument()
+    expect(screen.getByText('1 justificatif')).toBeInTheDocument()
+    expect(screen.getByText('200,00 €')).toBeInTheDocument() // settlement
+    expect(screen.getByText('+ 200,00 €')).toBeInTheDocument() // invoice
+  })
+
+  it('should render correctly when the settlement is a debit note', () => {
+    const singleInvoiceRow = {
+      ...BASE_SETTLEMENT_ROW,
+      amount: -250.0,
+      invoicesCount: 1,
+      invoices: [{ ...BASE_SETTLEMENT_ROW.invoices[0], amount: -250.0 }],
+    }
+
+    render(
+      <SettlementRowInvoicesModal
+        isOpen={true}
+        onClose={vi.fn()}
+        settlementRow={singleInvoiceRow}
+      />
+    )
+
+    expect(screen.getByText('1 justificatif')).toBeInTheDocument()
+    expect(screen.getAllByText('- 250,00 €')).toHaveLength(2) // one for settlement, one for invoice
   })
 
   it('should format amounts in Pacific Francs when isCaledonian is true', () => {
@@ -132,8 +156,9 @@ describe('<SettlementRowInvoicesModal />', () => {
       />
     )
 
-    expect(screen.getByText(/2 justificatifs - 29\s835\sF/)).toBeInTheDocument()
-    expect(screen.getByText(/\+\s23\s865\sF/)).toBeInTheDocument()
+    expect(screen.getByText('2 justificatifs')).toBeInTheDocument()
+    expect(screen.getByText('29 835 F')).toBeInTheDocument()
+    expect(screen.getByText('+ 23 865 F')).toBeInTheDocument()
   })
 
   it('should call onClose when close button is clicked', async () => {
