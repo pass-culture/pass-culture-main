@@ -34,6 +34,8 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.bonus import constants as bonus_constants
+from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -2911,7 +2913,7 @@ class GetQFBonusCreditRequestFormTest(GetEndpointHelper):
 
         assert "Vous pouvez demander la bonification" in html_parser.content_as_text(response.data)
 
-    @pytest.mark.parametrize("num_fraud_checks", [1, users_constants.MAX_QF_BONUS_RETRIES])
+    @pytest.mark.parametrize("num_fraud_checks", [1, bonus_constants.MAX_QF_BONUS_RETRIES])
     def test_get_bonus_credit_request_form_already_tried(self, authenticated_client, num_fraud_checks):
         user = users_factories.BeneficiaryFactory()
         subscription_factories.QFBonusCreditFraudCheckFactory.create_batch(
@@ -3015,7 +3017,7 @@ class QFBonusCreditRequestTest(PostEndpointHelper):
         assert response.status_code == 303
 
         mock_task.assert_called_once()
-        qf_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+        qf_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
             user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
         )
         assert len(qf_fraud_checks) == 1
@@ -3050,7 +3052,7 @@ class QFBonusCreditRequestTest(PostEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "La demande de bonification QF est en cours."
 
-        qf_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+        qf_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
             user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
         )
         assert len(qf_fraud_checks) == 1
@@ -3076,7 +3078,9 @@ class QFBonusCreditRequestTest(PostEndpointHelper):
             "Les données envoyées comportent des erreurs. Ville de naissance du représentant légal (s'il est né en France) : "
             "obligatoire lorsque le représentant légal est né en France ;"
         )
-        assert not users_api.get_bonus_credit_fraud_checks(user, subscription_models.FraudCheckType.QF_BONUS_CREDIT)
+        assert not bonus_fraud_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        )
 
     def test_city_is_set_but_country_is_not_france(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
@@ -3092,7 +3096,9 @@ class QFBonusCreditRequestTest(PostEndpointHelper):
             "Les données envoyées comportent des erreurs. Ville de naissance du représentant légal (s'il est né en France) : "
             "doit rester vide lorsque le représentant légal n'est pas né en France ;"
         )
-        assert not users_api.get_bonus_credit_fraud_checks(user, subscription_models.FraudCheckType.QF_BONUS_CREDIT)
+        assert not bonus_fraud_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        )
 
     @pytest.mark.parametrize(
         "user_factory",
@@ -3232,7 +3238,7 @@ class DisabilityBonusCreditRequestTest(PostEndpointHelper):
         assert response.status_code == 303
 
         mock_adult_task.assert_called_once()
-        aah_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+        aah_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
             user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
         )
         assert len(aah_fraud_checks) == 1
@@ -3245,7 +3251,7 @@ class DisabilityBonusCreditRequestTest(PostEndpointHelper):
         assert person["birth_city_cog_code"] == "84137"
 
         mock_child_task.assert_called_once()
-        aeeh_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+        aeeh_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
             user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
         )
         assert len(aeeh_fraud_checks) == 1
@@ -3275,7 +3281,7 @@ class DisabilityBonusCreditRequestTest(PostEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "La demande de bonification AAH/AEEH est en cours."
 
-        aah_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+        aah_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
             user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
         )
         assert len(aah_fraud_checks) == 1
@@ -3287,7 +3293,7 @@ class DisabilityBonusCreditRequestTest(PostEndpointHelper):
         assert person["birth_country_cog_code"] == "99101"
         assert "birth_city_cog_code" not in person
 
-        aeeh_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+        aeeh_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
             user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
         )
         assert len(aeeh_fraud_checks) == 1
@@ -3313,8 +3319,12 @@ class DisabilityBonusCreditRequestTest(PostEndpointHelper):
             "Les données envoyées comportent des erreurs. Ville de naissance du jeune (s'il est né en France) : "
             "obligatoire lorsque le jeune est né en France ;"
         )
-        assert not users_api.get_bonus_credit_fraud_checks(user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT)
-        assert not users_api.get_bonus_credit_fraud_checks(user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT)
+        assert not bonus_fraud_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
+        )
+        assert not bonus_fraud_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
+        )
 
     def test_city_is_set_but_country_is_not_france(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
@@ -3330,8 +3340,12 @@ class DisabilityBonusCreditRequestTest(PostEndpointHelper):
             "Les données envoyées comportent des erreurs. Ville de naissance du jeune (s'il est né en France) : "
             "doit rester vide lorsque le jeune n'est pas né en France ;"
         )
-        assert not users_api.get_bonus_credit_fraud_checks(user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT)
-        assert not users_api.get_bonus_credit_fraud_checks(user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT)
+        assert not bonus_fraud_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
+        )
+        assert not bonus_fraud_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
+        )
 
     @pytest.mark.parametrize(
         "user_factory",

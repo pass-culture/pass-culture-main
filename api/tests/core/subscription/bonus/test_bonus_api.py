@@ -8,6 +8,7 @@ from unittest.mock import patch
 import pytest
 import requests_mock
 import sentry_sdk
+import time_machine
 from dateutil.relativedelta import relativedelta
 
 import pcapi.core.external.batch.testing as push_testing
@@ -21,6 +22,7 @@ import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 import pcapi.utils.date as date_utils
+from pcapi import settings
 from pcapi.connectors import api_particulier
 from pcapi.core.external.batch import models as batch_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -1272,3 +1274,102 @@ class NameMatchingTest:
 
     def test_incomplete_does_not_match(self):
         assert not bonus_api.does_names_match("incomplete name", "incompl name")
+
+
+@pytest.mark.usefixtures("db_session")
+class QFBonusCreditEligibilityTest:
+    def test_eighteen_year_old_is_eligible(self):
+        user = users_factories.BeneficiaryFactory(age=18)
+
+        qf_bonification_status = bonus_api.get_user_qf_bonification_status(user)
+
+        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.ELIGIBLE
+
+    def test_nineteen_year_old_within_extended_cutoff_is_eligible(self):
+        # user is 19 years old at the cutoff date
+        birth_date = settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME - relativedelta(years=19)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
+
+        day_before_user_turns_20 = birth_date + relativedelta(years=20, days=-1)
+        with time_machine.travel(day_before_user_turns_20):
+            qf_bonification_status = bonus_api.get_user_qf_bonification_status(user)
+
+        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.ELIGIBLE
+
+    def test_nineteen_year_old_after_extended_cutoff_not_eligible(self):
+        # user is 19 years old the day after the cutoff date
+        birth_date = settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME - relativedelta(years=19, days=-1)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
+
+        day_when_user_is_19 = birth_date + relativedelta(years=19)
+        with time_machine.travel(day_when_user_is_19):
+            qf_bonification_status = bonus_api.get_user_qf_bonification_status(user)
+
+        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
+
+    def test_nineteen_year_old_before_extended_cutoff_not_eligible(self):
+        # user is 19 years old the day before the credit v3 decree
+        birth_date = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=19, days=1)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
+
+        day_when_user_is_19 = birth_date + relativedelta(years=19)
+        with time_machine.travel(day_when_user_is_19):
+            qf_bonification_status = bonus_api.get_user_qf_bonification_status(user)
+
+        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
+
+
+@pytest.mark.usefixtures("db_session")
+class DisabilityBonusCreditEligibilityTest:
+    def test_eighteen_year_old_is_eligible(self):
+        user = users_factories.BeneficiaryFactory(age=18)
+
+        disability_bonification_status = bonus_api.get_user_disability_bonification_status(user)
+
+        assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
+
+    def test_nineteen_year_old_within_extended_cutoff_is_eligible(self):
+        # user is 19 years old at the cutoff date
+        birth_date = settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME - relativedelta(years=19)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
+
+        day_before_user_turns_20 = birth_date + relativedelta(years=20, days=-1)
+        with time_machine.travel(day_before_user_turns_20):
+            disability_bonification_status = bonus_api.get_user_disability_bonification_status(user)
+
+        assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
+
+    def test_nineteen_year_old_after_extended_cutoff_not_eligible(self):
+        # user is 19 years old the day after the cutoff date
+        birth_date = settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME - relativedelta(years=19, days=-1)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
+
+        day_when_user_is_19 = birth_date + relativedelta(years=19)
+        with time_machine.travel(day_when_user_is_19):
+            disability_bonification_status = bonus_api.get_user_disability_bonification_status(user)
+
+        assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    def test_nineteen_year_old_before_extended_cutoff_not_eligible(self):
+        # user is 19 years old the day before the credit v3 decree
+        birth_date = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=19, days=1)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
+
+        day_when_user_is_19 = birth_date + relativedelta(years=19)
+        with time_machine.travel(day_when_user_is_19):
+            disability_bonification_status = bonus_api.get_user_disability_bonification_status(user)
+
+        assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    def test_started_automatic_fraud_check_ignored(self):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.AAHBonusCreditFraudCheckFactory(
+            user=user, status=subscription_models.FraudCheckStatus.STARTED, reason=f"{bonus_constants.AUTOMATIC_ORIGIN}"
+        )
+        subscription_factories.AEEHBonusCreditFraudCheckFactory(
+            user=user, status=subscription_models.FraudCheckStatus.STARTED, reason=f"{bonus_constants.AUTOMATIC_ORIGIN}"
+        )
+
+        disability_bonification_status = bonus_api.get_user_disability_bonification_status(user)
+
+        assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.ELIGIBLE

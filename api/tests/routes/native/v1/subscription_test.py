@@ -19,7 +19,6 @@ from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -1229,7 +1228,7 @@ class QuotientFamilialBonusTest:
     def test_create_bonus_fraud_check_not_eligible_after_too_many_retries(self, client):
         user = users_factories.BeneficiaryFactory()
         subscription_factories.QFBonusCreditFraudCheckFactory.create_batch(
-            size=users_constants.MAX_QF_BONUS_RETRIES, user=user, status=subscription_models.FraudCheckStatus.KO
+            size=bonus_constants.MAX_QF_BONUS_RETRIES, user=user, status=subscription_models.FraudCheckStatus.KO
         )
 
         response = client.with_token(user).post(

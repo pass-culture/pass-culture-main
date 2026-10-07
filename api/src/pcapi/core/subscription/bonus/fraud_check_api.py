@@ -13,6 +13,27 @@ from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 
+def get_bonus_credit_fraud_checks(
+    user: users_models.User, fraud_check_type: subscription_models.FraudCheckType | None = None
+) -> list[subscription_models.BeneficiaryFraudCheck]:
+    if fraud_check_type:
+        allowed_fraud_check_types = [fraud_check_type]
+    else:
+        allowed_fraud_check_types = [
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+        ]
+
+    # `user.beneficiaryFraudChecks` are ordered by creation date
+    return [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type in allowed_fraud_check_types
+        and fraud_check.status != subscription_models.FraudCheckStatus.MOCK_CONFIG
+    ]
+
+
 def create_qf_bonus_credit_fraud_check(
     user: users_models.User,
     *,

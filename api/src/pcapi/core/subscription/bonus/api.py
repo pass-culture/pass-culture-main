@@ -21,6 +21,7 @@ from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.bonus import staging_api
 from pcapi.core.subscription.bonus import statistics_api
 from pcapi.core.users import models as users_models
+from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils.redis import get_redis_client
 from pcapi.utils.transaction_manager import atomic
@@ -530,3 +531,209 @@ def _grant_bonus(
         bonus_fraud_api.delete_bonus_fraud_checks(user)
 
     return given_recredit, attempts_count
+
+
+def get_user_is_eligible_for_qf_bonification(user: users_models.User, *, is_from_backoffice: bool = False) -> bool:
+    excluded_statuses = {
+        bonus_schemas.QFBonificationStatus.GRANTED,
+        bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE,
+    }
+    if not is_from_backoffice:
+        excluded_statuses |= {
+            bonus_schemas.QFBonificationStatus.TOO_MANY_RETRIES,
+            bonus_schemas.QFBonificationStatus.STARTED,
+        }
+    return get_user_qf_bonification_status(user) not in excluded_statuses
+
+
+def get_user_is_eligible_for_disability_bonification(
+    user: users_models.User, *, is_from_backoffice: bool = False
+) -> bool:
+    excluded_statuses = {
+        bonus_schemas.DisabilityBonificationStatus.GRANTED,
+        bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE,
+    }
+    if not is_from_backoffice:
+        excluded_statuses |= {
+            bonus_schemas.DisabilityBonificationStatus.TOO_MANY_RETRIES,
+            bonus_schemas.DisabilityBonificationStatus.STARTED,
+        }
+    return get_user_disability_bonification_status(user) not in excluded_statuses
+
+
+def get_user_qf_bonification_status(user: users_models.User) -> bonus_schemas.QFBonificationStatus:
+    deposit = user.deposit
+    if not deposit:
+        return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
+
+    if deposit.type != finance_models.DepositType.GRANT_17_18:
+        return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
+
+    has_received_bonus = finance_models.RecreditType.BONUS_CREDIT in [
+        recredit.recreditType for recredit in deposit.recredits
+    ]
+    if has_received_bonus:
+        return bonus_schemas.QFBonificationStatus.GRANTED
+
+    has_eligible_age = False
+    if user.age == 18:
+        has_eligible_age = True
+    elif user.age == 19 and user.birth_date is not None:
+        nineteenth_birthday = user.birth_date + relativedelta(years=19)
+        has_eligible_age = (
+            settings.CREDIT_V3_DECREE_DATETIME.date()
+            <= nineteenth_birthday
+            <= settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME.date()
+        )
+
+    if not has_eligible_age:
+        return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
+
+    qf_bonus_credit_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
+        user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
+    )
+    bonus_fraud_check = qf_bonus_credit_fraud_checks[-1] if qf_bonus_credit_fraud_checks else None
+    bonus_fraud_check_status = bonus_fraud_check.status if bonus_fraud_check is not None else None
+
+    if bonus_fraud_check_status in (
+        subscription_models.FraudCheckStatus.STARTED,
+        subscription_models.FraudCheckStatus.PENDING,
+    ):
+        return bonus_schemas.QFBonificationStatus.STARTED
+
+    has_never_completely_tried = bonus_fraud_check_status in (
+        None,
+        subscription_models.FraudCheckStatus.CANCELED,
+        subscription_models.FraudCheckStatus.ERROR,
+    )
+
+    if has_never_completely_tried:
+        return bonus_schemas.QFBonificationStatus.ELIGIBLE
+
+    if bonus_fraud_check_status == subscription_models.FraudCheckStatus.KO:
+        reason_codes = (bonus_fraud_check.reasonCodes if bonus_fraud_check else None) or []
+
+        number_of_user_retries = sum(
+            1
+            for fraud_check in qf_bonus_credit_fraud_checks
+            if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
+        )
+        if number_of_user_retries >= bonus_constants.MAX_QF_BONUS_RETRIES:
+            return bonus_schemas.QFBonificationStatus.TOO_MANY_RETRIES
+
+        if subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD in reason_codes:
+            return bonus_schemas.QFBonificationStatus.NOT_IN_TAX_HOUSEHOLD
+
+        if subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH in reason_codes:
+            return bonus_schemas.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH
+
+        if subscription_models.FraudReasonCode.PERSON_NOT_FOUND in reason_codes:
+            return bonus_schemas.QFBonificationStatus.CUSTODIAN_NOT_FOUND
+
+        if subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND in reason_codes:
+            return bonus_schemas.QFBonificationStatus.APPLICATION_NOT_FOUND
+
+    return bonus_schemas.QFBonificationStatus.KO
+
+
+def get_user_disability_bonification_status(user: users_models.User) -> bonus_schemas.DisabilityBonificationStatus:
+    """
+    Get only the AEEH bonus credit status.
+    The AAH bonus credit status follows it closely: both are created and handled at the same time.
+    """
+    deposit = user.deposit
+    if not deposit:
+        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    if deposit.type != finance_models.DepositType.GRANT_17_18:
+        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    has_received_bonus = finance_models.RecreditType.BONUS_CREDIT in [
+        recredit.recreditType for recredit in deposit.recredits
+    ]
+    if has_received_bonus:
+        return bonus_schemas.DisabilityBonificationStatus.GRANTED
+
+    has_eligible_age = False
+    if user.age == 18:
+        has_eligible_age = True
+    elif user.age == 19 and user.birth_date is not None:
+        nineteenth_birthday = user.birth_date + relativedelta(years=19)
+        has_eligible_age = (
+            settings.CREDIT_V3_DECREE_DATETIME.date()
+            <= nineteenth_birthday
+            <= settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME.date()
+        )
+
+    if not has_eligible_age:
+        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    aeeh_bonus_credit_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
+        user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
+    )
+    if not aeeh_bonus_credit_fraud_checks:
+        return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
+
+    aeeh_bonus_fraud_check = aeeh_bonus_credit_fraud_checks[-1]
+    aeeh_fraud_check_status = aeeh_bonus_fraud_check.status
+    is_pending_fraud_check = aeeh_fraud_check_status in (
+        subscription_models.FraudCheckStatus.STARTED,
+        subscription_models.FraudCheckStatus.PENDING,
+    )
+    is_automatic_fraud_check = aeeh_bonus_fraud_check.reason is not None and aeeh_bonus_fraud_check.reason.startswith(
+        bonus_constants.AUTOMATIC_ORIGIN
+    )
+    if is_pending_fraud_check and not is_automatic_fraud_check:
+        return bonus_schemas.DisabilityBonificationStatus.STARTED
+
+    has_never_completely_tried = aeeh_fraud_check_status in (
+        None,
+        subscription_models.FraudCheckStatus.CANCELED,
+        subscription_models.FraudCheckStatus.ERROR,
+    )
+    if has_never_completely_tried or (is_pending_fraud_check and is_automatic_fraud_check):
+        return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
+
+    if aeeh_fraud_check_status == subscription_models.FraudCheckStatus.KO:
+        reason_codes = (aeeh_bonus_fraud_check.reasonCodes if aeeh_bonus_fraud_check else None) or []
+
+        if aeeh_bonus_fraud_check:
+            fraud_created_date_in_user_departement_tz = date_utils.utc_datetime_to_department_timezone(
+                aeeh_bonus_fraud_check.dateCreated, user.departementCode
+            ).date()
+            today_user_departement_tz = date_utils.utc_datetime_to_department_timezone(
+                date_utils.get_naive_utc_now(), user.departementCode
+            ).date()
+            # normally, fraud_created_date_in_user_departement_tz can't be > today, but you never know.
+            if fraud_created_date_in_user_departement_tz >= today_user_departement_tz:
+                return bonus_schemas.DisabilityBonificationStatus.TOO_MANY_RETRIES
+
+        if subscription_models.FraudReasonCode.PERSON_NOT_FOUND in reason_codes:
+            return bonus_schemas.DisabilityBonificationStatus.PERSON_NOT_FOUND
+
+        if subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND in reason_codes:
+            return bonus_schemas.DisabilityBonificationStatus.APPLICATION_NOT_FOUND
+
+        if subscription_models.FraudReasonCode.NOT_RECIPIENT in reason_codes:
+            return bonus_schemas.DisabilityBonificationStatus.NOT_RECIPIENT
+
+    return bonus_schemas.DisabilityBonificationStatus.KO
+
+
+def get_user_remaining_bonus_attempts(user: users_models.User) -> int:
+    qf_bonification_status = get_user_qf_bonification_status(user)
+
+    if qf_bonification_status in (
+        bonus_schemas.QFBonificationStatus.TOO_MANY_RETRIES,
+        bonus_schemas.QFBonificationStatus.GRANTED,
+    ):
+        return 0
+
+    ko_qf_bonus_credit_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        and fraud_check.status == subscription_models.FraudCheckStatus.KO
+        if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
+    ]
+    return bonus_constants.MAX_QF_BONUS_RETRIES - len(ko_qf_bonus_credit_fraud_checks)
