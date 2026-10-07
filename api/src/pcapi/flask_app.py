@@ -6,7 +6,6 @@ import typing
 
 import flask.wrappers
 import prometheus_flask_exporter.multiprocess
-import redis
 import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -33,6 +32,7 @@ from pcapi.scripts.install import install_commands
 from pcapi.utils import jwt
 from pcapi.utils import transaction_manager
 from pcapi.utils.json_encoder import EnumJSONEncoder
+from pcapi.utils.redis import connect_redis
 from pcapi.utils.sentry import SCRUBBED_INFO_PLACEHOLDER
 from pcapi.utils.sentry import init_sentry_sdk
 
@@ -267,7 +267,7 @@ app.url_map.strict_slashes = False
 
 
 with app.app_context():
-    app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)  # type: ignore [attr-defined]
+    connect_redis()
     jwt.setup_backend(app)
 
 

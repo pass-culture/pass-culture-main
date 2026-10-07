@@ -9,13 +9,13 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 
-class Returns204Tests:
+class Returns204Test:
     @pytest.mark.usefixtures("db_session")
     @pytest.mark.usefixtures("rsa_keys")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
-    @mock.patch("pcapi.flask_app.redis.client.Redis.set")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.execute")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.delete")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.get")
+    @mock.patch("pcapi.utils.redis.redis.client.Redis.set")
     @mock.patch("pcapi.core.mails.transactional.send_signup_email_confirmation_to_pro")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
     def test_passwordless_login_workflow_on_signup(
@@ -68,10 +68,10 @@ class Returns204Tests:
 class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     @pytest.mark.usefixtures("rsa_keys")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
-    @mock.patch("pcapi.flask_app.redis.client.Redis.set")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.execute")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.delete")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.get")
+    @mock.patch("pcapi.utils.redis.redis.client.Redis.set")
     @mock.patch("pcapi.core.mails.transactional.send_signup_email_confirmation_to_pro")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
     def test_invalid_user_id(
@@ -119,10 +119,10 @@ class Returns404Test:
 
     @pytest.mark.usefixtures("db_session")
     @pytest.mark.usefixtures("rsa_keys")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
-    @mock.patch("pcapi.flask_app.redis.client.Redis.set")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.execute")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.delete")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.get")
+    @mock.patch("pcapi.utils.redis.redis.client.Redis.set")
     @mock.patch("pcapi.core.mails.transactional.send_signup_email_confirmation_to_pro")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
     def test_expired_token(

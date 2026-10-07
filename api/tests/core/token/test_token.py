@@ -337,10 +337,10 @@ class PasswordLessLoginTokenTest:
     @pytest.mark.settings(
         PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
     )
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
-    @mock.patch("pcapi.flask_app.redis.client.Redis.set")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.execute")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.delete")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.get")
+    @mock.patch("pcapi.utils.redis.redis.client.Redis.set")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
     def test_can_successfully_consume_passwordless_login_token(
         self, mocked_uuid, mocked_redis_set, mocked_pipeline_get, mocked_pipeline_del, mocked_pipeline_execute
@@ -376,10 +376,10 @@ class PasswordLessLoginTokenTest:
     @pytest.mark.settings(
         PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
     )
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
-    @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
-    @mock.patch("pcapi.flask_app.redis.client.Redis.set")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.execute")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.delete")
+    @mock.patch("pcapi.utils.redis.redis.client.Pipeline.get")
+    @mock.patch("pcapi.utils.redis.redis.client.Redis.set")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
     def test_aborting_auto_login_when_token_payload_and_redis_queue_mismatch(
         self, mocked_uuid, mocked_redis_set, mocked_pipeline_get, mocked_pipeline_del, mocked_pipeline_execute, caplog
