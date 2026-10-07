@@ -5,7 +5,6 @@ import re
 import typing
 from dataclasses import asdict
 from decimal import Decimal
-from typing import Literal
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -79,6 +78,7 @@ EMAIL_CONFIRMATION_TEST_EMAIL_PATTERN = "+e2e@"
 class SingleSignOnProviders(enum.StrEnum):
     APPLE = "apple"
     GOOGLE = "google"
+    ALL = "__all__"
 
 
 logger = logging.getLogger(__name__)
@@ -593,7 +593,7 @@ def change_email(
     db.session.query(models.UserSession).filter_by(userId=current_user.id).delete(synchronize_session=False)
     sessions.disconnect_native_user_sessions(user_id=current_user.id)
 
-    revoke_sso_access(current_user, "__all__")
+    revoke_sso_access(current_user, SingleSignOnProviders.ALL)
 
     if transaction_manager.is_managed_transaction():
         db.session.flush()
@@ -1747,18 +1747,16 @@ def extend_deposit_validity(user: models.User, new_expiration_date: datetime.dat
 
 def revoke_sso_access(
     user: models.User,
-    providers: SingleSignOnProviders | list[SingleSignOnProviders] | Literal["__all__"],
+    provider: SingleSignOnProviders,
 ) -> None:
     """
     Revoke any single sign-on connections from a user to an external providers.
 
     Delete also the linked SSOUser from our database.
     """
-    if not isinstance(providers, list) and providers != "__all__":
-        providers = [providers]
 
     for sso in user.single_sign_ons:
-        if providers != "__all__" and sso.ssoProvider not in providers:
+        if provider not in [sso.ssoProvider, SingleSignOnProviders.ALL]:
             continue
 
         if sso.ssoProvider == SingleSignOnProviders.APPLE:

@@ -43,6 +43,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as brevo_testing
+from pcapi.core.users.api import SingleSignOnProviders
 from pcapi.core.users.api import revoke_sso_access
 from pcapi.core.users.models import SingleSignOn
 from pcapi.models import db
@@ -2379,7 +2380,7 @@ class AnonymizeUserByIdTest:
         )
 
         with mock.patch("pcapi.core.users.api.revoke_apple_user") as apple_api:
-            revoke_sso_access(user, "__all__")
+            revoke_sso_access(user, SingleSignOnProviders.ALL)
             apple_api.assert_called_once_with("a-good-refresh-token", False)
 
         assert db.session.query(SingleSignOn).filter(SingleSignOn.userId == user.id).count() == 0

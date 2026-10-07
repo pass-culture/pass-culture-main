@@ -12,6 +12,7 @@ from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users import sessions
+from pcapi.core.users.api import SingleSignOnProviders
 from pcapi.core.users.api import revoke_sso_access
 from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models import db
@@ -294,7 +295,7 @@ def full_email_update_by_admin(user: models.User, email: str, commit: bool = Fal
     db.session.query(models.UserSession).filter_by(userId=user.id).delete(synchronize_session=False)
     sessions.disconnect_native_user_sessions(user.id)
 
-    revoke_sso_access(user, "__all__")
+    revoke_sso_access(user, SingleSignOnProviders.ALL)
 
     if commit:
         db.session.commit()

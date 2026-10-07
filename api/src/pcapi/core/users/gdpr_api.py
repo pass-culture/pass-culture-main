@@ -45,6 +45,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import schemas
+from pcapi.core.users.api import SingleSignOnProviders
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -178,7 +179,7 @@ def anonymize_user(
         .delete()
     )
 
-    users_api.revoke_sso_access(user, "__all__")
+    users_api.revoke_sso_access(user, SingleSignOnProviders.ALL)
 
     if external_email_anonymized:
         user.replace_roles_by_anonymized_role()
@@ -422,7 +423,7 @@ def pre_anonymize_user(user: models.User, author: models.User, is_backoffice_act
         is_backoffice_action=is_backoffice_action,
     )
 
-    users_api.revoke_sso_access(user, "__all__")
+    users_api.revoke_sso_access(user, SingleSignOnProviders.ALL)
 
     db.session.add(models.GdprUserAnonymization(user=user))
     db.session.flush()
