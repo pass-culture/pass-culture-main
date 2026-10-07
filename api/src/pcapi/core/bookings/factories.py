@@ -128,4 +128,5 @@ class FraudulentBookingTagFactory(BaseFactory):
         model = models.FraudulentBookingTag
 
     booking = factory.SubFactory(BookingFactory)
+    venue = factory.SelfAttribute("booking.venue")
     author = factory.SubFactory(users_factories.AdminFactory)

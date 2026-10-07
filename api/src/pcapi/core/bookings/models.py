@@ -732,4 +732,12 @@ class FraudulentBookingTag(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
     )
 
+    # venueId is already stored on booking, but also added here so that we don't have to scan all venue bookings
+    # to check whether a venue has fraudulent bookings or not in the backoffice (performance issue).
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False
+    )
+
+    venue: sa_orm.Mapped["offerers_models.Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
+
     author: sa_orm.Mapped["users_models.User | None"] = sa_orm.relationship("User", foreign_keys=[authorId])

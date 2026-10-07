@@ -155,7 +155,9 @@ def tag_bookings_as_fraudulent(bookings_ids: list[int], send_emails: bool) -> No
     )
     tokens_by_email = defaultdict(list)
     for booking in bookings:
-        fraudulent_booking_tag = bookings_models.FraudulentBookingTag(booking=booking, author=current_user)
+        fraudulent_booking_tag = bookings_models.FraudulentBookingTag(
+            booking=booking, venue=booking.venue, author=current_user
+        )
         if booking_email := booking.stock.offer.bookingEmail or booking.venue.bookingEmail:
             tokens_by_email[booking_email].append(booking.token)
         db.session.add(fraudulent_booking_tag)

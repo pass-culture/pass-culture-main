@@ -186,9 +186,8 @@ def get_venue(venue_id: int) -> sa.engine.Row:
     if access_control.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
         has_fraudulent_booking_query: sa.sql.selectable.Exists | sa.sql.elements.Null = (
             sa.select(1)
-            .select_from(bookings_models.Booking)
-            .join(bookings_models.FraudulentBookingTag)
-            .where(bookings_models.Booking.venueId == offerers_models.Venue.id)
+            .select_from(bookings_models.FraudulentBookingTag)
+            .where(bookings_models.FraudulentBookingTag.venueId == offerers_models.Venue.id)
             .correlate(offerers_models.Venue)
             .exists()
         )
