@@ -6609,6 +6609,7 @@ class MarkBookingAsFraudulentTest(PostEndpointHelper):
         fraudulent_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
         assert len(fraudulent_tags) == 1
         assert fraudulent_tags[0].bookingId == booking.id
+        assert fraudulent_tags[0].venueId == booking.venue.id
 
 
 class MarkBookingAsNotFraudulentTest(PostEndpointHelper):
