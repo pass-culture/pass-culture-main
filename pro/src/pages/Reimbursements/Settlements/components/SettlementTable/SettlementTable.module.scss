@@ -24,6 +24,14 @@
   white-space: nowrap;
 }
 
+.negative-amount {
+  color: var(--color-text-error);
+}
+
+.positive-amount {
+  color: var(--color-text-success);
+}
+
 .cell-actions {
   text-align: right;
   white-space: nowrap;

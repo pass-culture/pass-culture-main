@@ -133,12 +133,49 @@ describe('<SettlementTable />', () => {
     expect(screen.getByRole('cell', { name: 'Compte principal' })).toBeVisible()
     expect(screen.getByRole('cell', { name: '3' })).toBeVisible()
     expect(screen.getByRole('cell', { name: 'Virement émis' })).toBeVisible()
-    expect(screen.getByRole('cell', { name: /^150,00\s€$/ })).toBeVisible()
+    expect(screen.getByRole('cell', { name: /^\+ 150,00\s€$/ })).toBeVisible()
     expect(screen.getByRole('button', { name: 'Voir plus' })).toBeVisible()
     const tooltips = screen.getAllByRole('tooltip', { hidden: true })
     expect(tooltips).toHaveLength(2)
     expect(tooltips[0]).toHaveTextContent('Tout sélectionner')
     expect(tooltips[1]).toHaveTextContent('Compte principal')
+  })
+
+  it('renders the settlement row with formatted data for a debit note', () => {
+    renderSettlementTable({
+      settlements: [
+        {
+          id: 1,
+          label: null,
+          date: '2024-06-01',
+          bankAccount: 'pass Culture',
+          status: SettlementDisplayedStatus.EXECUTED,
+          amount: -150,
+          invoices: [
+            {
+              reference: 'J123456789',
+              date: '2024-06-01',
+              amount: -150,
+              url: 'J123456789.invoice',
+              status: InvoiceStatus.PAID,
+            },
+          ],
+          resolvedBy: [],
+        },
+      ],
+    })
+
+    expect(screen.getByRole('cell', { name: '-' })).toBeVisible()
+    expect(screen.getByRole('cell', { name: '01/06/2024' })).toBeVisible()
+    expect(screen.getByRole('cell', { name: 'pass Culture' })).toBeVisible()
+    expect(screen.getByRole('cell', { name: '1' })).toBeVisible()
+    expect(screen.getByRole('cell', { name: 'Virement émis' })).toBeVisible()
+    expect(screen.getByRole('cell', { name: /^- 150,00\s€$/ })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Voir plus' })).toBeVisible()
+    const tooltips = screen.getAllByRole('tooltip', { hidden: true })
+    expect(tooltips).toHaveLength(2)
+    expect(tooltips[0]).toHaveTextContent('Tout sélectionner')
+    expect(tooltips[1]).toHaveTextContent('pass Culture')
   })
 
   it('renders the rejected settlement differently', () => {
@@ -210,7 +247,7 @@ describe('<SettlementTable />', () => {
   it('formats the amount in pacific francs for a Caledonian offerer', () => {
     renderSettlementTable({}, { isCaledonian: true })
 
-    expect(screen.getByText('17 900 F')).toBeVisible()
+    expect(screen.getByText('+ 17 900 F')).toBeVisible()
   })
 
   it('shows the missing bank account empty state when hasBankAccount is false', () => {

@@ -6008,7 +6008,7 @@ export type SettlementResponseModel = {
     /**
      * Label
      */
-    label: string;
+    label: string | null;
     /**
      * Resolvedby
      */

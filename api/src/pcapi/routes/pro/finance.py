@@ -1,3 +1,5 @@
+import typing
+
 from flask_login import current_user
 from flask_login import login_required
 
@@ -175,7 +177,8 @@ def get_rejected_bank_accounts(
         [
             finance_serialize.RejectedBankAccountResponseModel.build(
                 bank_account=settlement.bankAccount,
-                rejected_settlement_label=settlement.batch.get_displayed_name(),  # type: ignore[union-attr]
+                # as the settlements are rejected, they must have a batch (only outgoing settlements can be rejected)
+                rejected_settlement_label=typing.cast(models.SettlementBatch, settlement.batch).get_displayed_name(),
                 detached_venues=venues,
             )
             for settlement, venues in settlements_and_venues

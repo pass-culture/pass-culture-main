@@ -655,7 +655,7 @@ def get_settlements_query(
     settlements_query = (
         db.session.query(models.Settlement)
         .join(models.Settlement.bankAccount)
-        .join(models.Settlement.batch)
+        .outerjoin(models.Settlement.batch)
         .filter(
             models.BankAccount.offererId == offerer_id,
             models.Settlement.status != models.SettlementStatus.ISSUED,
@@ -688,14 +688,20 @@ def get_settlements_query(
     if bank_account_id is not None:
         settlements_query = settlements_query.filter(models.BankAccount.id == bank_account_id)
 
+    # the date of a settlement corresponds to the batch date when there is one, otherwise to settlementDate
+    date_column = sa.case(
+        (models.Settlement.batchId.is_not(None), models.SettlementBatch.dateValidated),
+        else_=models.Settlement.settlementDate,
+    )
+
     if date_from is not None:
         datetime_from = convert_to_datetime(date_from)
-        settlements_query = settlements_query.filter(models.SettlementBatch.dateValidated >= datetime_from)
+        settlements_query = settlements_query.filter(date_column >= datetime_from)
 
     if date_until is not None:
         # add one day to get all settlements until the day date_until included
         datetime_until = convert_to_datetime(date_until) + datetime.timedelta(days=1)
-        settlements_query = settlements_query.filter(models.SettlementBatch.dateValidated < datetime_until)
+        settlements_query = settlements_query.filter(date_column < datetime_until)
 
     if name_search is not None:
         settlements_query = settlements_query.filter(models.SettlementBatch.name.ilike(f"%{name_search}%"))

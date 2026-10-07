@@ -117,8 +117,6 @@ def get_settlement_data(settlement: models.Settlement) -> SettlementData:
     Note: this "python-side" processing trades efficiency for clarity
     If a performance issue appears, the logic can be translated in SQL
     """
-    now = get_naive_utc_now()
-
     if settlement.status != models.SettlementStatus.REJECTED:
         return SettlementData(
             displayed_status=SettlementDisplayedStatus.EXECUTED, resolving_settlements=[], detached_venues=[]
@@ -146,6 +144,7 @@ def get_settlement_data(settlement: models.Settlement) -> SettlementData:
         )
 
     # check that all detached venues are linked to another bank account
+    now = get_naive_utc_now()
     detached_venues = settlement.bankAccount.get_detached_venues_at(now)
     if detached_venues:
         return SettlementData(
@@ -162,7 +161,7 @@ def get_settlement_data(settlement: models.Settlement) -> SettlementData:
 
 class SettlementResponseModel(HttpBodyModel):
     id: int
-    label: str
+    label: str | None
     date: datetime.date | None
     amount: float
     bank_account: str
@@ -179,31 +178,42 @@ class SettlementResponseModel(HttpBodyModel):
             reverse=True,
         )
 
-        if settlement.amount > 0:  # settlement paid by offerer
-            return cls(
-                id=settlement.id,
-                label="-",
-                date=settlement.settlementDate,
-                amount=float(-cents_to_full_unit(settlement.amount)),
-                bank_account=settlement.bankAccount.label,
-                status=SettlementDisplayedStatus.EXECUTED,
-                invoices=[InvoiceResponseV2Model.build(invoice) for invoice in invoices],
-                resolved_by=[],
-            )
+        # these fields are computed differently depending on the settlement amount sign
+        label: str | None
+        date: datetime.date | None
+        bank_account: str
+        status: SettlementDisplayedStatus
+        resolved_by: list[str]
 
-        settlement_data = get_settlement_data(settlement)
-        resolved_by = {s.batch.get_displayed_name() for s in settlement_data.resolving_settlements}  # type: ignore[union-attr]
-        assert settlement.batch  # outgoing batch must have a batch
+        if settlement.amount > 0:
+            # the settlement is paid by the offerer, it has no batch
+            label = None
+            date = settlement.settlementDate
+            bank_account = "pass Culture"  # allows the offerer to easily identify that this settlement is paid to us
+            status = SettlementDisplayedStatus.EXECUTED
+            resolved_by = []
+        else:
+            # the settlement is outgoing, it must have a batch
+            assert settlement.batch is not None
+            settlement_data = get_settlement_data(settlement)
+
+            label = settlement.batch.get_displayed_name()
+            date = settlement.batch.dateValidated.date() if settlement.batch.dateValidated else None
+            bank_account = settlement.bankAccount.label
+            status = settlement_data.displayed_status
+            resolved_by = sorted(
+                {s.batch.get_displayed_name() for s in settlement_data.resolving_settlements if s.batch is not None}
+            )
 
         return cls(
             id=settlement.id,
-            label=settlement.batch.get_displayed_name(),
-            date=settlement.batch.dateValidated.date() if settlement.batch.dateValidated else None,
+            label=label,
+            date=date,
             amount=float(-cents_to_full_unit(settlement.amount)),
-            bank_account=settlement.bankAccount.label,
-            status=settlement_data.displayed_status,
+            bank_account=bank_account,
+            status=status,
             invoices=[InvoiceResponseV2Model.build(invoice) for invoice in invoices],
-            resolved_by=sorted(resolved_by),
+            resolved_by=resolved_by,
         )
 
 

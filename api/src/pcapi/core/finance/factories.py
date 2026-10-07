@@ -308,8 +308,16 @@ class SettlementFactory(BaseFactory[models.Settlement]):
     settlementDate = factory.LazyFunction(date_utils.get_naive_utc_now)
     externalSettlementId = factory.Sequence("1{:06}".format)
     bankAccount = factory.SubFactory(BankAccountFactory)
+    amount = -10000
+    batch: factory.SubFactory | None = factory.SubFactory(SettlementBatchFactory)
+
+
+class RefundSettlementFactory(SettlementFactory):
+    class Meta:
+        model = models.Settlement
+
     amount = 10000
-    batch = factory.SubFactory(SettlementBatchFactory)
+    batch = None
 
 
 # Factories below are deprecated and should probably NOT BE USED in

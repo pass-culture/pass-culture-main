@@ -34,21 +34,24 @@ export const SettlementRowInvoicesModal = ({
     return null
   }
 
-  let description = `${settlementRow.invoicesCount} ${pluralizeFr(settlementRow.invoicesCount, 'justificatif', 'justificatifs')} - `
-
-  description += settlementRow.isCaledonian
+  const description = `${settlementRow.invoicesCount} ${pluralizeFr(settlementRow.invoicesCount, 'justificatif', 'justificatifs')}`
+  const amount = settlementRow.isCaledonian
     ? formatPacificFranc(convertEuroToPacificFranc(settlementRow.amount))
     : formatPrice(settlementRow.amount)
+
+  const title = settlementRow.amount < 0 ? 'Note de débit' : settlementRow.label
 
   return (
     <DetailedModal
       isOpen={isOpen}
       onClose={onClose}
-      title={settlementRow.label}
+      title={title}
       ref={setModalContainer}
     >
       <div className={styles['modal-content']}>
         <p className={styles['modal-content-description']}>{description}</p>
+        <p className={styles['modal-content-description']}>{amount}</p>
+
         {settlementRow.invoices.map((invoice) => (
           <div key={invoice.reference}>
             <Divider />
