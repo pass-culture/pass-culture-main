@@ -191,16 +191,20 @@ def get_venue(venue_id: int) -> sa.engine.Row:
     else:
         has_fraudulent_booking_query = sa.null()
 
+    now = date_utils.get_naive_utc_now()
+    offerer_reimbursement_rule = sa_orm.aliased(finance_models.CustomReimbursementRule)
+
     venue_query = (
         db.session.query(
             offerers_models.Venue,
             has_fraudulent_booking_query.label("has_fraudulent_booking"),
         )
+        .join(offerers_models.Venue.managingOfferer)
         .outerjoin(
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
-                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
+                offerers_models.VenueBankAccountLink.timespan.contains(now),
             ),
         )
         .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
@@ -208,7 +212,21 @@ def get_venue(venue_id: int) -> sa.engine.Row:
             offerers_models.VenuePricingPointLink,
             sa.and_(
                 offerers_models.Venue.id == offerers_models.VenuePricingPointLink.venueId,
-                offerers_models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
+                offerers_models.VenuePricingPointLink.timespan.contains(now),
+            ),
+        )
+        .outerjoin(
+            finance_models.CustomReimbursementRule,
+            sa.and_(
+                offerers_models.VenuePricingPointLink.pricingPointId == finance_models.CustomReimbursementRule.venueId,
+                finance_models.CustomReimbursementRule.timespan.contains(now),
+            ),
+        )
+        .outerjoin(
+            offerer_reimbursement_rule,
+            sa.and_(
+                offerers_models.Offerer.id == offerer_reimbursement_rule.offererId,
+                offerer_reimbursement_rule.timespan.contains(now),
             ),
         )
         .outerjoin(
@@ -217,13 +235,16 @@ def get_venue(venue_id: int) -> sa.engine.Row:
         )
         .filter(offerers_models.Venue.id == venue_id)
         .options(
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+            sa_orm.contains_eager(offerers_models.Venue.managingOfferer)
+            .load_only(
                 offerers_models.Offerer.siren,
                 offerers_models.Offerer.validationStatus,
                 offerers_models.Offerer.isActive,
                 offerers_models.Offerer.allowedOnAdage,
                 offerers_models.Offerer.name,
-            ),
+            )
+            .contains_eager(offerers_models.Offerer.custom_reimbursement_rules.of_type(offerer_reimbursement_rule))
+            .load_only(offerer_reimbursement_rule.rate, offerer_reimbursement_rule.timespan),
             sa_orm.joinedload(offerers_models.Venue.contact),
             sa_orm.joinedload(offerers_models.Venue.venueLabel),
             sa_orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
@@ -248,8 +269,12 @@ def get_venue(venue_id: int) -> sa.engine.Row:
                 offerers_models.OffererConfidenceRule.confidenceLevel
             ),
             sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
-            sa_orm.contains_eager(offerers_models.Venue.pricing_point_links).contains_eager(
-                offerers_models.VenuePricingPointLink.pricingPoint, alias=pricing_point
+            sa_orm.contains_eager(offerers_models.Venue.pricing_point_links)
+            .contains_eager(offerers_models.VenuePricingPointLink.pricingPoint, alias=pricing_point)
+            .contains_eager(offerers_models.Venue.custom_reimbursement_rules)
+            .load_only(
+                finance_models.CustomReimbursementRule.rate,
+                finance_models.CustomReimbursementRule.timespan,
             ),
             sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
             .load_only(offerers_models.VenueBankAccountLink.timespan)

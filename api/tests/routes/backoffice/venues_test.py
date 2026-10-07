@@ -385,6 +385,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Site web : https://www.example.com" in response_text
         assert "Page Acceslibre : Non renseigné" in response_text
         assert "Page bénévolat : Non renseigné" in response_text
+        assert "Tarif dérogatoire : Non renseigné" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Partenaire culturel" in badges
@@ -599,6 +600,49 @@ class GetVenueTest(GetEndpointHelper):
 
         response_text = html_parser.content_as_text(response.data)
         assert "Page bénévolat : https://www.jeveuxaider.gouv.fr/organisations/oulala" in response_text
+
+    def test_get_venue_with_custom_reimbursement_rule_on_venue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        finance_factories.CustomReimbursementRuleFactory(
+            venue=venue, rate=0.975, timespan=(datetime(2026, 1, 1), datetime(2050, 12, 31))
+        )
+
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Tarif dérogatoire : 97,50 % (01/01/2026 → 31/12/2050)" in response_text
+
+    def test_get_venue_with_custom_reimbursement_rule_on_pricing_point(self, authenticated_client):
+        pricing_point = offerers_factories.VenueFactory()
+        finance_factories.CustomReimbursementRuleFactory(
+            venue=pricing_point, rate=0.96, timespan=(datetime(2026, 1, 1), None)
+        )
+        venue = offerers_factories.VenueFactory(pricing_point=pricing_point)
+
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Tarif dérogatoire : 96,00 % (01/01/2026 → ∞)" in response_text
+
+    def test_get_venue_with_custom_reimbursement_rule_on_offerer(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        finance_factories.CustomReimbursementRuleFactory(
+            offerer=venue.managingOfferer, rate=0.9, timespan=(datetime(2026, 1, 1), None)
+        )
+
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Tarif dérogatoire : 90,00 % (01/01/2026 → ∞)" in response_text
 
     class SuspendReimbursementButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION

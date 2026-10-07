@@ -290,6 +290,18 @@
                   {{ build_lazy_modal(url_for("backoffice.venue.get_set_pricing_point_form", venue_id=venue.id) , "set-venue-pricing-point") }}
                 {% endif %}
               {% endcall %}
+              {% call description("Tarif dérogatoire") %}
+                {% set pricing_point = venue.current_pricing_point %}
+                {% if pricing_point.custom_reimbursement_rules %}
+                  {{ pricing_point.custom_reimbursement_rules[0].rate | format_rate_multiply_by_100 }}
+                  ({{ pricing_point.custom_reimbursement_rules[0].timespan | format_timespan }})
+                {% elif venue.managingOfferer.custom_reimbursement_rules %}
+                  {{ venue.managingOfferer.custom_reimbursement_rules[0].rate | format_rate_multiply_by_100 }}
+                  ({{ venue.managingOfferer.custom_reimbursement_rules[0].timespan | format_timespan }})
+                {% else %}
+                  {{ none | placeholder_if_empty }}
+                {% endif %}
+              {% endcall %}
             </div>
           </div>
         </div>
