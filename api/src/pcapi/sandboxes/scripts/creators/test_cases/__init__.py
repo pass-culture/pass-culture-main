@@ -2,6 +2,7 @@ import datetime
 import itertools
 import pathlib
 import random
+import typing
 
 from dateutil.relativedelta import relativedelta
 from factory.faker import faker
@@ -751,6 +752,14 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
     offers_factories.StockFactory.create(quantity=random.randint(10, 100), offer=offer)
 
 
+@log_func_duration
+def create_cinema_data() -> None:
+    venues = _create_allocine_venues()
+    products = create_movie_products()
+    create_offer_and_stocks_for_cinemas(venues, products)
+    create_enriched_screenings_for_movie_page(venues)
+
+
 def create_offer_and_stocks_for_cinemas(
     venues: list[offerers_models.Venue], products: list["offers_models.Product"]
 ) -> None:
@@ -791,11 +800,126 @@ def create_offer_and_stocks_for_cinemas(
                 bookings_factories.BookingFactory.create(stock=product_stocks[stock_idx % len(product_stocks)])
 
 
-@log_func_duration
-def create_cinema_data() -> None:
-    venues = _create_allocine_venues()
-    products = create_movie_products()
-    create_offer_and_stocks_for_cinemas(venues, products)
+def create_enriched_screenings_for_movie_page(venues: list[offerers_models.Venue]) -> None:
+    assert len(venues) > 2
+    product = offers_factories.ProductFactory.create(
+        subcategoryId=subcategories.SEANCE_CINE.id,
+        description="Film avec projections 3D/IMAX/Avant-première/etc.",
+        name="Film avec séances enrichies",
+        extraData={"allocineId": 200_000},
+        durationMinutes=90,
+    )
+    image_paths = itertools.cycle(pathlib.Path(generic_picture_thumbs.__path__[0]).iterdir())
+    mediation = offers_factories.ProductMediationFactory.create(product=product, imageType=ImageType.POSTER)
+    thumb_storage.create_thumb(product, next(image_paths).read_bytes(), keep_ratio=True, object_id=mediation.uuid)
+
+    def extract_values(data: dict | list | str) -> typing.Generator[str]:
+        if isinstance(data, dict):
+            for val in data.values():
+                yield from extract_values(val)
+        elif isinstance(data, list):
+            for item in data:
+                yield from extract_values(item)
+        elif data is not None:
+            yield data
+
+    no_features = {
+        "features": {
+            "language": None,
+            "audio": None,
+            "video": None,
+            "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+            "specialEventType": None,
+        },
+        "price": 8,
+    }
+    without_audio_nor_special_event = {
+        "features": {
+            "language": "VF",
+            "audio": "DOLBY_ATMOS",
+            "video": None,
+            "accessibility": {"audio": [], "mental": [], "motor": ["PMR"], "visual": ["GRETA"]},
+            "specialEventType": None,
+        },
+        "price": 15,
+    }
+    without_video_nor_special_event = {
+        "features": {
+            "language": "VF",
+            "audio": "DOLBY_ATMOS",
+            "video": None,
+            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["GRETA"]},
+            "specialEventType": None,
+        },
+        "price": 12.50,
+    }
+    without_special_event = {
+        "features": {
+            "language": "VF",
+            "audio": "DOLBY_ATMOS",
+            "video": "SCREEN_X",
+            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": ["PMR"], "visual": []},
+            "specialEventType": None,
+        },
+        "price": 17.80,
+    }
+    without_accessibility_features = {
+        "features": {
+            "language": "VF",
+            "audio": "DOLBY_ATMOS",
+            "video": "SCREEN_X",
+            "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+            "specialEventType": "AVANT_PREMIERE",
+        },
+        "price": 19.1,
+    }
+    all_features = {
+        "features": {
+            "language": "VF",
+            "audio": "DOLBY_ATMOS",
+            "video": "SCREEN_X",
+            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": ["PMR"], "visual": ["GRETA"]},
+            "specialEventType": "AVANT_PREMIERE",
+        },
+        "price": 20.99,
+    }
+    in_7_days = datetime.date.today() + datetime.timedelta(days=7)
+    venue_without_features = venues[0]
+    offer_without_features = offers_factories.OfferFactory(product=product, venue=venue_without_features)
+    # 5 stocks is a minimum to able horizontal scrolling on mobile screens
+    for hour, minute in ((5, 0), (11, 15), (14, 30), (18, 30), (21, 45)):
+        _no_feature_stock = offers_factories.StockFactory(
+            offer=offer_without_features,
+            features=list(extract_values(no_features)),
+            price=no_features["price"],
+            beginningDatetime=datetime.datetime.combine(in_7_days, datetime.time(hour=hour, minute=minute)),
+        )
+
+    venue_with_all_features = venues[1]
+    offer_with_all_features = offers_factories.OfferFactory(product=product, venue=venue_with_all_features)
+    for hour, minute in ((5, 0), (11, 15), (14, 30), (18, 30), (21, 45)):
+        _fully_featured_stock = offers_factories.StockFactory(
+            offer=offer_with_all_features,
+            features=list(extract_values(all_features)),
+            price=all_features["price"],
+            beginningDatetime=datetime.datetime.combine(in_7_days, datetime.time(hour=hour, minute=minute)),
+        )
+
+    venue_with_mixed_features = venues[2]
+    offer_with_mixed_features = offers_factories.OfferFactory(product=product, venue=venue_with_mixed_features)
+    for stock_features, hour, minute in (
+        (without_audio_nor_special_event, 5, 0),
+        (without_video_nor_special_event, 11, 15),
+        (without_special_event, 14, 30),
+        (without_accessibility_features, 18, 30),
+        (all_features, 21, 45),
+    ):
+        offers_factories.StockFactory(
+            offer=offer_with_mixed_features,
+            features=list(extract_values(stock_features)),
+            price=stock_features["price"],
+            beginningDatetime=datetime.datetime.combine(in_7_days, datetime.time(hour=hour, minute=minute)),
+        )
 
 
 def create_movie_products(offset: int = 0) -> list["offers_models.Product"]:
