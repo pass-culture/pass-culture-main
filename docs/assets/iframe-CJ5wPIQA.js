@@ -1,1 +1,0 @@
-import{t as e}from"./iframe-CTtCrUR0.js";e();
