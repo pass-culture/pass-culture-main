@@ -248,7 +248,7 @@ class GetVenuesListForm(utils.PCForm):
         full_row=True,
     )
     state = fields.PCSelectMultipleField(
-        "Etat de fermeture",
+        "État de fermeture",
         choices=utils.choices_from_enum(offerers_models.VenueState),
     )
     limit = fields.PCLimitField(
@@ -280,10 +280,11 @@ class GetVenuesListForm(utils.PCForm):
                 self.q.data,
                 self.activity.data,
                 self.venue_label.data,
+                self.department.data,
                 self.criteria.data,
                 self.offerer.data,
                 self.regions.data,
-                self.department.data,
+                self.state.data,
                 self.provider.data,
             )
         )
