@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { forwardRef } from 'react'
 import {
@@ -12,7 +12,6 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { type ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { resizeImageURL } from '@/commons/utils/resizeImageURL'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 
@@ -82,7 +81,7 @@ const renderArtistField = ({
   }
 
   return {
-    ...renderWithProviders(<Wrapper />),
+    ...render(<Wrapper />),
     getValues: () => getValues(),
   }
 }
