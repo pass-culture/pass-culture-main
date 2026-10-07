@@ -592,7 +592,8 @@ def change_email(
 
     db.session.query(models.UserSession).filter_by(userId=current_user.id).delete(synchronize_session=False)
     sessions.disconnect_native_user_sessions(user_id=current_user.id)
-    db.session.query(models.SingleSignOn).filter_by(userId=current_user.id).delete(synchronize_session=False)
+
+    revoke_sso_access(current_user, "__all__")
 
     if transaction_manager.is_managed_transaction():
         db.session.flush()
