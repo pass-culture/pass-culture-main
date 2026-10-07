@@ -32,5 +32,5 @@ class Returns200Test:
             "id": artist2.id,
             "name": artist2.name,
             "description": artist2.description,
-            "thumbUrl": f"{settings.GCP_BUCKET_NAME}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{artist2.mediation_uuid}",
+            "thumbUrl": f"{settings.GCP_READ_BUCKET_NAME}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{artist2.mediation_uuid}",
         } in response.json

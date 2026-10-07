@@ -186,5 +186,5 @@ class Artist(Model):
     @property
     def mediationUrl(self) -> str | None:
         if self.mediation_uuid:
-            return f"{settings.GCP_BUCKET_NAME}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{self.mediation_uuid}"
+            return f"{settings.GCP_READ_BUCKET_NAME}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{self.mediation_uuid}"
         return None

@@ -353,6 +353,7 @@ DS_LOGGER_ERROR = bool(int(os.environ.get("DS_LOGGER_ERROR", "0")))
 DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID = os.environ.get("DEMARCHES_SIMPLIFIEES_USER_ACCOUNT_UPDATE_PROCEDURE_ID", "0")
 
 # OBJECT STORAGE
+# This URL is only used for reads
 OBJECT_STORAGE_URL = os.environ.get("OBJECT_STORAGE_URL", "")
 OBJECT_STORAGE_PROVIDER = os.environ.get("OBJECT_STORAGE_PROVIDER")
 LOCAL_STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / "static" / "object_store_data"
@@ -373,7 +374,12 @@ DATA_ALLOCINE_POSTERS_FOLDER_NAME = os.environ.get("DATA_ALLOCINE_POSTERS_FOLDER
 
 
 # GOOGLE
+# This is the bucket used to push assets to. But not necessarily the buckets clients will read from.
 GCP_BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME", "")
+# This is the bucket that will be returned by the API for the clients to read from.
+# It may or may not be the same as GCP_BUCKET_NAME. Not setting them the same makes migrating from one
+# bucket to another possible
+GCP_READ_BUCKET_NAME = os.environ.get("GCP_READ_BUCKET_NAME", "")
 GCP_DATA_BUCKET_NAME = secrets_utils.get("GCP_DATA_BUCKET_NAME", "")
 GCP_DATA_PROJECT_ID = secrets_utils.get("GCP_DATA_PROJECT_ID", "")
 GCP_DATA_PRODUCT_MEDIATION_BUCKET_NAME = os.environ.get("GCP_DATA_PRODUCT_MEDIATION_BUCKET_NAME", "")
