@@ -8,6 +8,7 @@ export interface CustomRouteHandle {
    * - the hidden Accessibility Title read by screen readers (see `usePageTitle`)
    */
   title: string
+  mainTitle?: string
 }
 
 interface CustomRouteBase extends NonIndexRouteObject {
