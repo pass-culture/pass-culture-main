@@ -88,6 +88,8 @@ jobs:
       apply_algolia_config: true
       deploy_api: true
       deploy_pro: true
+      # TODO(fseguin-pass): switch to true when we are confident
+      run_post_within_deploy: false
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
