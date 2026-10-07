@@ -99,6 +99,60 @@ Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 
 D'autres informations sont disponibles sur le [README de Pro](./pro/README.md)
 
+### Lancer les applications manuellement
+
+#### Prérequis (BDD + données)
+
+Dans une session de terminal (ou en mode daemon via l'option `-d` placée après la commande `up`) :
+
+```sh
+docker compose -f ./docker-compose-backend.yml up postgres postgres-test redis # start only databases
+```
+
+Puis :
+
+```sh
+cd api
+uv venv --python 3.13
+uv sync
+source .venv/bin/activate
+alembic upgrade pre@head && alembic upgrade post@head # migrate database schemas
+flask sandbox -n industrial # seed database with sandbox data
+```
+
+#### Backend api
+
+```sh
+cd api
+source .venv/bin/activate
+python src/pcapi/app.py
+```
+
+#### Backoffice
+
+```sh
+cd api
+source .venv/bin/activate
+python src/pcapi/backoffice_app.py
+```
+
+#### Portail pro
+
+```sh
+cd pro
+pnpm i
+pnpm start
+```
+
+### Application native jeunes (webview)
+
+Cloner `pass-culture-app-native` si ce n'est pas déjà fait. Puis :
+
+```
+mise x node@25 yarn@4 -- yarn install
+API_BASE_URL=http://localhost:5001 mise x node@25 yarn@4 -- yarn start:web:testing
+```
+
 ### Commandes utiles
 
 - Rebuild : `pc rebuild-backend` (reconstruire l'image docker sans cache)
