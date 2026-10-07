@@ -60,7 +60,7 @@ def get_email_update_status() -> serializers.EmailUpdateStatusResponse:
 @atomic()
 def update_user_email() -> None:
     try:
-        email_api.request_email_update(current_user)
+        email_api.request_email_update(current_user, author=current_user)
     except exceptions.EmailUpdateTokenExists as e:
         raise account_errors.EmailUpdatePendingError() from e
     except exceptions.EmailUpdateLimitReached as e:
@@ -123,7 +123,9 @@ def select_new_email(body: serializers.NewEmailSelectionRequest) -> None:
             status_code=403,
         )
     try:
-        email_api.confirm_new_email_selection_and_send_mail(current_user, body.token, body.new_email)
+        email_api.confirm_new_email_selection_and_send_mail(
+            current_user, author=current_user, encoded_new_mail_token=body.token, new_email=body.new_email
+        )
     except exceptions.InvalidToken as e:
         raise api_errors.ApiErrors(
             {"code": "INVALID_TOKEN", "message": "Aucune demande de changement d'email en cours"},

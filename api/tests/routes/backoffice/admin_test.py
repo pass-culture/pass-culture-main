@@ -496,6 +496,21 @@ class GetBoUserTest(GetEndpointHelper):
         assert descriptions["Date de création du compte"] == user.dateCreated.strftime("%d/%m/%Y")
         assert "Date de dernière connexion" not in descriptions
 
+    def test_get_bo_user_with_email_change_author(self, authenticated_client, legit_user):
+        user = users_factories.AdminFactory(dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=180))
+        users_factories.EmailAdminUpdateEntryFactory(user=user, author=legit_user)
+
+        user_id = user.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
+        assert len(rows) == 2
+        assert rows[0]["Type"] == "Changement d'email par l'admin"
+        assert rows[0]["Auteur"] == legit_user.full_name
+        assert rows[1]["Type"] == "Création du compte"
+
     def test_get_suspended_bo_user_with_history(self, authenticated_client, legit_user):
         user = users_factories.AdminFactory(
             isActive=False, roles=[], dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=180)

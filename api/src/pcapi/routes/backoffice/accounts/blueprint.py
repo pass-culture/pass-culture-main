@@ -650,7 +650,11 @@ def render_public_account_details(
             .load_only(  # User.full_name
                 users_models.User.firstName, users_models.User.lastName, users_models.User.email
             ),
-            sa_orm.subqueryload(users_models.User.email_history),
+            sa_orm.subqueryload(users_models.User.email_history)
+            .joinedload(users_models.UserEmailHistory.author)
+            .load_only(  # User.full_name
+                users_models.User.firstName, users_models.User.lastName, users_models.User.email
+            ),
             sa_orm.subqueryload(users_models.User.gdprUserDataExtracts),
             sa_orm.subqueryload(users_models.User.tags),
         )
@@ -1865,7 +1869,7 @@ def update_public_account(user_id: int) -> response_utils.BackofficeResponse:
     if email_changed:
         # Do not log email change in snapshot, since it is already logged in user_email_history table
         try:
-            email_update.full_email_update_by_admin(user, form.email.data)
+            email_update.full_email_update_by_admin(user, author=current_user, email=form.email.data)
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
             flash("L'email est déjà associé à un autre utilisateur", "warning")
@@ -2514,7 +2518,7 @@ def clear_email(user_id: int) -> response_utils.BackofficeResponse:
         raise NotFound()
 
     original_email = user.email
-    email_update.clear_email_by_admin(user)
+    email_update.clear_email_by_admin(user, author=current_user)
 
     flash(Markup("L'adresse email <strong>{email}</strong> a été libérée.").format(email=original_email), "success")
 
@@ -2796,7 +2800,7 @@ def batch_suspend_public_account() -> response_utils.BackofficeResponse:
             is_backoffice_action=True,
         )
         if form.clear_email.data:
-            email_update.clear_email_by_admin(user)
+            email_update.clear_email_by_admin(user, author=current_user)
     flash("Les comptes ont été suspendus", "success")
 
     return _render_public_account_rows(form.object_ids_list)

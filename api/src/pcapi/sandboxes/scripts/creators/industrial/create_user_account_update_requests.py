@@ -50,6 +50,7 @@ def create_user_account_update_requests() -> None:
     )
     users_factories.EmailAdminUpdateEntryFactory.create(
         user=email_accepted_request.user,
+        author=instructor,
         oldUserEmail=email_accepted_request.oldEmail.split("@")[0],
         oldDomainEmail=email_accepted_request.oldEmail.split("@")[1],
         newUserEmail=email_accepted_request.user.email.split("@")[0],

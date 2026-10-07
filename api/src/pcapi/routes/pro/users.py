@@ -179,7 +179,7 @@ def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
             {"email": ["Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"]}
         )
     try:
-        email_api.request_email_update_from_pro(user, body.email, body.password)
+        email_api.request_email_update_from_pro(user, author=user, email=body.email, password=body.password)
     except users_exceptions.EmailUpdateTokenExists:
         raise ApiErrors({"email": ["Une demande de modification d'adresse email est déjà en cours"]})
     except users_exceptions.EmailUpdateInvalidPassword:

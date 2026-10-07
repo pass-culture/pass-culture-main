@@ -102,7 +102,11 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
             sa_orm.joinedload(users_models.User.action_history)
             .joinedload(history_models.ActionHistory.authorUser)
             .load_only(users_models.User.firstName, users_models.User.lastName),
-            sa_orm.joinedload(users_models.User.email_history),
+            sa_orm.joinedload(users_models.User.email_history)
+            .joinedload(users_models.UserEmailHistory.author)
+            .load_only(  # User.full_name
+                users_models.User.firstName, users_models.User.lastName, users_models.User.email
+            ),
             sa_orm.joinedload(users_models.User.backoffice_profile)
             .joinedload(perm_models.BackOfficeUserProfile.roles)
             .joinedload(perm_models.Role.permissions),
@@ -197,7 +201,7 @@ def update_bo_user(user_id: int) -> response_utils.BackofficeResponse:
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
         old_email = user.email
         try:
-            email_update.full_email_update_by_admin(user, form.email.data)
+            email_update.full_email_update_by_admin(user, author=current_user, email=form.email.data)
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
             flash("L'email est déjà associé à un autre utilisateur", "warning")

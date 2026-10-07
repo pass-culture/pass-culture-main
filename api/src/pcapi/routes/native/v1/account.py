@@ -147,7 +147,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> seriali
     user = get_or_404(users_models.User, token.user_id)
 
     try:
-        email_api.update.validate_email_update_request(user=user, new_email=token.data["new_email"])
+        email_api.update.validate_email_update_request(user=user, author=user, new_email=token.data["new_email"])
     except pydantic_v1.ValidationError:
         raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},

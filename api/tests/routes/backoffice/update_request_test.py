@@ -1194,6 +1194,7 @@ class AcceptTest(PostEndpointHelper):
         assert history.oldEmail == update_request.oldEmail
         assert history.newEmail == update_request.newEmail
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+        assert history.author == legit_user
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
@@ -1211,6 +1212,8 @@ class AcceptTest(PostEndpointHelper):
         assert len(duplicate_user.action_history) == 1
         assert duplicate_user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
         assert duplicate_user.action_history[0].authorUser == legit_user
+        assert len(duplicate_user.email_history) == 1
+        assert duplicate_user.email_history[0].author == legit_user
         assert duplicate_user.action_history[0].extraData == {
             "ds_dossier_id": 21268381,
             "ds_procedure_id": 104118,

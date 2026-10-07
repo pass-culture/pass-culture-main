@@ -34,6 +34,7 @@ class ProUpdateEmailTest:
 
         assert response.status_code == 204
         assert pro.email == self.origin_email
+        assert pro.email_history[0].author == pro
         assert mails_testing.outbox[0]["To"] == self.origin_email
         assert mails_testing.outbox[0]["params"] == {
             "NEW_EMAIL": self.new_email,

@@ -34,6 +34,7 @@ class TokenPatchValidateEmailTest:
 
         assert response.status_code == 204
         assert pro.email == self.new_email
+        assert pro.email_history[0].author == pro
 
     def test_expired_token(self, client: Any) -> None:
         with mock.patch("flask.current_app.redis_client", fakeredis.FakeStrictRedis()):

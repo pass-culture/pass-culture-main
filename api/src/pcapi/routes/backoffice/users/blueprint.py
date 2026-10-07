@@ -106,7 +106,7 @@ def suspend_user(user_id: int) -> response_utils.BackofficeResponse:
         )
         email = user.email
         if getattr(form, "clear_email", None) and form.clear_email.data:
-            email_update.clear_email_by_admin(user)
+            email_update.clear_email_by_admin(user, author=current_user)
         flash(
             Markup("Le compte de l'utilisateur <b>{email}</b> ({user_id}) a été suspendu").format(
                 email=email, user_id=user.id
