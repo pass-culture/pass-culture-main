@@ -62,7 +62,9 @@ def create_disability_fraud_checks_retroactively(
     while True:
         current_page += 1
         with atomic():
-            keyset_paginated_stmt = credit_v3_stmt.where(Deposit.id > from_deposit_id).order_by(Deposit.id)
+            keyset_paginated_stmt = (
+                credit_v3_stmt.where(Deposit.id > from_deposit_id).order_by(Deposit.id).limit(page_size)
+            )
             deposits = db.session.scalars(keyset_paginated_stmt).all()
 
             if not deposits:
@@ -104,18 +106,18 @@ def maybe_create_disability_bonus_credits_attempts(
     deposit = user.deposit
     if not deposit:
         logger.error("User %s has no deposit", user.id)
-        return
+        return None
 
     if user.received_bonus_credit:
         logger.warning(
-            "Bonus credit exclusion did not work and user %s with deposit %s got included", user.id, user.deposit.id
+            "Bonus credit exclusion did not work and user %s with deposit %s got included", user.id, deposit.id
         )
-        return
+        return None
 
     DISABILITY_TYPES = [FraudCheckType.AAH_BONUS_CREDIT, FraudCheckType.AEEH_BONUS_CREDIT]
     fraud_check_types = [fraud_check.type for fraud_check in user.beneficiaryFraudChecks]
     if any(disability_type in fraud_check_types for disability_type in DISABILITY_TYPES):
-        return
+        return None
 
     return create_disability_bonus_credit_fraud_checks(
         user,
