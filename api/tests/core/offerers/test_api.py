@@ -3554,7 +3554,6 @@ class AccessibilityProviderTest:
                 apply=True,
                 force_sync=False,
                 batch_size=2,
-                start_from_batch=1,
             )
 
     @patch("pcapi.connectors.acceslibre.get_accessibility_infos")
@@ -3584,7 +3583,6 @@ class AccessibilityProviderTest:
             apply=True,
             force_sync=False,
             batch_size=2,
-            start_from_batch=1,
         )
 
         # We have 5 synchronized venues and "last_update" is not None, we should call 5 times get_accessibility_infos
@@ -3626,7 +3624,6 @@ class AccessibilityProviderTest:
             offerers_api.acceslibre_matching(
                 batch_size=10,
                 apply=True,
-                start_from_batch=1,
                 n_days_to_fetch=7,
             )
 
@@ -3654,7 +3651,6 @@ class AccessibilityProviderTest:
         offerers_api.acceslibre_matching(
             batch_size=4,
             apply=True,
-            start_from_batch=1,
             n_days_to_fetch=7,
         )
 
@@ -3875,7 +3871,7 @@ class AccessibilityProviderTest:
         venues_list.append(venue)
 
         # match result is given by find_new_entries_by_activity in TestingBackend class in acceslibre connector
-        offerers_api.acceslibre_matching(batch_size=1000, apply=True, start_from_batch=1)
+        offerers_api.acceslibre_matching(batch_size=1000, apply=True)
 
         assert (
             venue.external_accessibility_url == "https://acceslibre.beta.gouv.fr/app/activite/mon-lieu-chez-acceslibre/"

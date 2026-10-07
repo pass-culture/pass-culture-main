@@ -166,26 +166,18 @@ def synchronize_venues_banners_with_google_places(frequency: int = 1) -> None:
 @click.option("--apply", is_flag=True)
 @click.option("--force-sync", is_flag=True)
 @click.option("--batch-size", type=int, default=BATCH_SIZE, help="Size of venues batches to synchronize")
-@click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
 def synchronize_accessibility_with_acceslibre(
-    apply: bool = False, force_sync: bool = False, batch_size: int = BATCH_SIZE, start_from_batch: int = 1
+    apply: bool = False, force_sync: bool = False, batch_size: int = BATCH_SIZE
 ) -> None:
-    offerers_api.synchronize_accessibility_with_acceslibre(
-        apply=apply, force_sync=force_sync, batch_size=batch_size, start_from_batch=start_from_batch
-    )
+    offerers_api.synchronize_accessibility_with_acceslibre(apply=apply, force_sync=force_sync, batch_size=batch_size)
 
 
 @blueprint.cli.command("acceslibre_matching")
 @click.option("--apply", is_flag=True)
 @click.option("--batch-size", type=int, default=BATCH_SIZE, help="Size of venues batches to synchronize")
-@click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
 @click.option("--n-days-to-fetch", type=int, default=7, help="Number of days to look for new data at acceslibre")
-def acceslibre_matching(
-    apply: bool = False, batch_size: int = BATCH_SIZE, start_from_batch: int = 1, n_days_to_fetch: int = 7
-) -> None:
-    offerers_api.acceslibre_matching(
-        batch_size=batch_size, apply=apply, start_from_batch=start_from_batch, n_days_to_fetch=n_days_to_fetch
-    )
+def acceslibre_matching(apply: bool = False, batch_size: int = BATCH_SIZE, n_days_to_fetch: int = 7) -> None:
+    offerers_api.acceslibre_matching(batch_size=batch_size, apply=apply, n_days_to_fetch=n_days_to_fetch)
 
 
 @blueprint.cli.command("clean_unused_offerer_address")

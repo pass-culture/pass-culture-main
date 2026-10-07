@@ -2966,7 +2966,7 @@ def get_open_to_public_venues_by_ids(
 
 
 def synchronize_accessibility_with_acceslibre(
-    apply: bool = False, force_sync: bool = False, batch_size: int = 100, start_from_batch: int = 1
+    apply: bool = False, force_sync: bool = False, batch_size: int = 100
 ) -> None:
     """
     For all venues synchronized with acceslibre, we fetch on a weekly basis the
@@ -2974,20 +2974,12 @@ def synchronize_accessibility_with_acceslibre(
 
     If we use the --force_sync flag, it will not check for last_update_at
 
-    If we use the --start-from-batch option, it will start synchronization from the given batch number
-    Use case: synchronization has failed with message "Could not update batch <n>"
-
     If externalAccessibilityId can't be found at acceslibre, we try to find a new match
     """
     venue_ids_to_proceed = get_open_to_public_venue_ids(with_accessibility_provider=True)
     num_batches = ceil(len(venue_ids_to_proceed) / batch_size)
 
-    if start_from_batch > num_batches:
-        logger.error("Start from batch must be less than %d", num_batches)
-        return
-
-    start_batch_index = start_from_batch - 1
-    for i in range(start_batch_index, num_batches):
+    for i in range(num_batches):
         batch_ids = venue_ids_to_proceed[i * batch_size : (i + 1) * batch_size]
 
         venues_list = get_open_to_public_venues_by_ids(batch_ids, with_accessibility_provider=True)
@@ -3203,14 +3195,9 @@ def match_venue_with_new_entries(
             db.session.add(venue.accessibilityProvider)
 
 
-def acceslibre_matching(
-    batch_size: int = 100, apply: bool = False, start_from_batch: int = 0, n_days_to_fetch: int = 7
-) -> None:
+def acceslibre_matching(batch_size: int = 100, apply: bool = False, n_days_to_fetch: int = 7) -> None:
     """
     For all venues opened to public, we are looking for a match at acceslibre
-
-    If we use the --start-from-batch option, it will start synchronization from the given batch number
-    Use case: synchronization has failed with message "Could not update batch <n>"
     """
     logger.info("Starting acceslibre matching to find new venue synchronization")
     results_list = []
@@ -3226,13 +3213,8 @@ def acceslibre_matching(
     # check batch size
     venues_ids_without_accessibility_provider = get_open_to_public_venue_ids(with_accessibility_provider=False)
     num_batches = ceil(len(venues_ids_without_accessibility_provider) / batch_size)
-    if start_from_batch > num_batches:
-        logger.error("Start from batch must be less than %d", num_batches)
-        return
 
-    start_batch_index = start_from_batch - 1
-
-    for i in range(start_batch_index, num_batches):
+    for i in range(num_batches):
         batch_ids = venues_ids_without_accessibility_provider[i * batch_size : (i + 1) * batch_size]
         venues_list = get_open_to_public_venues_by_ids(batch_ids, with_accessibility_provider=False)
         match_venue_with_new_entries(venues_list, results_list)
