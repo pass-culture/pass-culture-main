@@ -8,7 +8,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 # pre/post deployment: pre
 # revision identifiers, used by Alembic.
 revision = "7b723528671a"
-down_revision = "44509d16b9bf"
+down_revision = "e110c346c6c4"
 branch_labels: tuple[str] | None = None
 depends_on: list[str] | None = None
 
