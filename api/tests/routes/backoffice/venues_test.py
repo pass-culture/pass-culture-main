@@ -301,6 +301,18 @@ class ListVenuesTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(venue.id)
         assert rows[0]["Entité juridique"] == offerer.name
 
+    def test_list_venues_by_state(self, authenticated_client, venues):
+        closed_venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, state=offerers_models.VenueState.CLOSED.name))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert int(rows[0]["ID"]) == closed_venue.id
+        assert rows[0]["Entité juridique"] == closed_venue.managingOfferer.name
+
 
 class GetVenueTest(GetEndpointHelper):
     endpoint = "backoffice.venue.get"
