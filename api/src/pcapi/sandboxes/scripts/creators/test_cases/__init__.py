@@ -766,31 +766,17 @@ def create_offer_and_stocks_for_cinemas(
 ) -> None:
     for venue in venues:
         for idx, product in enumerate(products):
-            movie_offer = offers_factories.OfferFactory.create(
-                name=product.name,
-                product=product,
-                subcategoryId=subcategories.SEANCE_CINE.id,
-                venue=venue,
-            )
-            mediation = offers_factories.MediationFactory.create(offer=movie_offer)
-            image_as_bytes = read_sandbox_mediation_asset(movie_offer.subcategoryId)
-            thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
-
-            product_stocks = []
-            for daydelta in range(0, 20, 4):
+            movie_offer = offers_factories.OfferFactory(product=product, venue=venue)
+            stocks = []
+            for daydelta in (0, 30, 7):
                 day = datetime.date.today() + datetime.timedelta(days=daydelta)
                 for hour in (11, 17, 21):
                     beginning_datetime = datetime.datetime.combine(day, datetime.time(hour=hour))
-                    is_full = hour == 5
-                    quantity = daydelta * hour + 1 if not is_full else 0
-                    stock = offers_factories.StockFactory.create(
-                        offer=movie_offer,
-                        beginningDatetime=beginning_datetime,
-                        bookingLimitDatetime=beginning_datetime - datetime.timedelta(minutes=30),
-                        quantity=quantity,
+                    quantity = daydelta * hour + 1
+                    stock = offers_factories.StockFactory(
+                        offer=movie_offer, beginningDatetime=beginning_datetime, quantity=quantity
                     )
-                    if not is_full:
-                        product_stocks.append(stock)
+                    stocks.append(stock)
 
             product_bookings = idx + 1
             # We want the two most popular products to have the same number of bookings
@@ -798,7 +784,7 @@ def create_offer_and_stocks_for_cinemas(
                 product_bookings -= 1
 
             for stock_idx in range(product_bookings):
-                bookings_factories.BookingFactory.create(stock=product_stocks[stock_idx % len(product_stocks)])
+                bookings_factories.BookingFactory(stock=stocks[stock_idx % len(stocks)])
 
 
 def create_enriched_screenings_for_movie_page(venues: list[offerers_models.Venue]) -> None:
@@ -1050,16 +1036,21 @@ def create_enriched_screenings_for_cinema_page(
 
 
 def create_movie_products(offset: int = 0) -> list["offers_models.Product"]:
-    return [
-        offers_factories.ProductFactory.create(
+    image_paths = itertools.cycle(pathlib.Path(generic_picture_thumbs.__path__[0]).iterdir())
+    products = []
+    for i in range(1 + offset, 4 + offset):
+        product = offers_factories.ProductFactory.create(
             subcategoryId=subcategories.SEANCE_CINE.id,
             description=f"Description du film {i}",
             name=f"Film {i}",
             extraData={"allocineId": 100_000 + i},
             durationMinutes=115 + i,
         )
-        for i in range(1 + offset, 2 + offset)
-    ]
+        mediation = offers_factories.ProductMediationFactory.create(product=product, imageType=ImageType.POSTER)
+        thumb_storage.create_thumb(product, next(image_paths).read_bytes(), keep_ratio=True, object_id=mediation.uuid)
+        products.append(product)
+
+    return products
 
 
 def _create_allocine_venues() -> list[offerers_models.Venue]:
