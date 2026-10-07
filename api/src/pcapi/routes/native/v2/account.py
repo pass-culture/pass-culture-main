@@ -24,8 +24,9 @@ from .serialization import account as serializers
 
 
 @blueprint.native_route("/profile/email_update/status", version="v2", methods=["GET"])
-@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.EmailUpdateStatusResponse)
+@atomic()
 @authenticated_and_active_user_required
+@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.EmailUpdateStatusResponse)
 def get_email_update_status() -> serializers.EmailUpdateStatusResponse:
     latest_email_update_event = email_repository.get_email_update_latest_event(current_user)
     if not latest_email_update_event:
@@ -55,9 +56,9 @@ def get_email_update_status() -> serializers.EmailUpdateStatusResponse:
 
 
 @blueprint.native_route("/profile/update_email", version="v2", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_and_active_user_required
 @atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 def update_user_email() -> None:
     try:
         email_api.request_email_update(current_user)
@@ -68,10 +69,10 @@ def update_user_email() -> None:
 
 
 @blueprint.native_route("/profile/email_update/confirm", version="v2", methods=["POST"])
+@atomic()
 @spectree_serialize(
     on_success_status=200, api=blueprint.api, response_model=serializers.EmailChangeConfirmationResponse
 )
-@atomic()
 def confirm_email_update(
     body: v1_serializers.ChangeBeneficiaryEmailBody,
 ) -> serializers.EmailChangeConfirmationResponse:
@@ -105,17 +106,17 @@ def confirm_email_update(
 
 
 @blueprint.native_route("/profile/email_update/new_password", version="v2", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
 @atomic()
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 def select_new_password(body: authentication_serializers.ResetPasswordRequest) -> None:
     user = api.reset_password_with_token(body.new_password, body.reset_password_token)
     api.create_recently_reset_password_token(user)
 
 
 @blueprint.native_route("/profile/email_update/new_email", version="v2", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_and_active_user_required
 @atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 def select_new_email(body: serializers.NewEmailSelectionRequest) -> None:
     if current_user.password is None:
         raise api_errors.ApiErrors(
