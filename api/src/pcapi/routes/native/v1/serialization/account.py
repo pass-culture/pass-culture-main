@@ -16,6 +16,7 @@ from pcapi.core.finance.utils import to_cents
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import profile_options
+from pcapi.core.subscription.bonus import api as bonus_api
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
@@ -254,13 +255,13 @@ class UserProfileResponse(HttpBodyModel):
                 ),
                 phone_number=user.phoneNumber,
                 postal_code=user.postalCode,
-                qf_bonification_status=users_api.get_user_qf_bonification_status(user),
-                disability_bonification_status=users_api.get_user_disability_bonification_status(user),
+                qf_bonification_status=bonus_api.get_user_qf_bonification_status(user),
+                disability_bonification_status=bonus_api.get_user_disability_bonification_status(user),
                 recredit_amount_to_show=to_cents(user.recreditAmountToShow)
                 if user.recreditAmountToShow is not None
                 else None,
                 recredit_type_to_show=users_api.get_latest_user_recredit_type(user),
-                remaining_bonus_attempts=users_api.get_user_remaining_bonus_attempts(user),
+                remaining_bonus_attempts=bonus_api.get_user_remaining_bonus_attempts(user),
                 requires_id_check=subscription_api.requires_identity_check_step(user),
                 roles=user.roles,
                 show_eligible_card=not user.has_beneficiary_role and user.is_18_or_above_eligible,

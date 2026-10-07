@@ -40,6 +40,7 @@ from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.bonus import api as bonus_api
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
@@ -286,11 +287,11 @@ def _get_account_details_actions(user: users_models.User) -> DetailsActions:
 
     if access_control.has_current_user_permission(
         perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
-    ) and users_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
+    ) and bonus_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
         account_details_actions.add_action(AccountDetailsActionType.QF_BONUS)
     if access_control.has_current_user_permission(
         perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
-    ) and users_api.get_user_is_eligible_for_disability_bonification(user, is_from_backoffice=True):
+    ) and bonus_api.get_user_is_eligible_for_disability_bonification(user, is_from_backoffice=True):
         account_details_actions.add_action(AccountDetailsActionType.DISABILITY_BONUS)
     if access_control.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT) and (
         user.is_beneficiary or user.roles == []
@@ -1740,7 +1741,7 @@ def _get_step_tunnel_bonus_credit(user: users_models.User) -> list[RegistrationS
             ),
         ]
 
-    bonus_fraud_checks = users_api.get_bonus_credit_fraud_checks(user)
+    bonus_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(user)
     if not bonus_fraud_checks:
         return []
 
@@ -2001,7 +2002,7 @@ def _fetch_user_for_bonus(user_id: int) -> users_models.User:
 def get_request_qf_bonus_credit_form(user_id: int) -> response_utils.BackofficeResponse:
     user = _fetch_user_for_bonus(user_id)
 
-    if not users_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
+    if not bonus_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
         # This should not happen because button should not be displayed, except if the credit is granted in the meantime
         return render_template(
             "components/dynamic/modal_form.html",
@@ -2011,7 +2012,9 @@ def get_request_qf_bonus_credit_form(user_id: int) -> response_utils.BackofficeR
         )
 
     try:
-        fraud_checks = users_api.get_bonus_credit_fraud_checks(user, subscription_models.FraudCheckType.QF_BONUS_CREDIT)
+        fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        )
         content = fraud_checks[-1].source_data()
         assert isinstance(content, bonus_schemas.QuotientFamilialBonusCreditContent)
         custodian = content.custodian
@@ -2049,7 +2052,7 @@ def get_request_qf_bonus_credit_form(user_id: int) -> response_utils.BackofficeR
 def request_qf_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
     user = _fetch_user_for_bonus(user_id)
 
-    if not users_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
+    if not bonus_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
         # This should not happen because form should not be displayed, except if the credit is granted in the meantime
         flash("Ce compte n'est pas éligible à une bonification QF", "warning")
 
@@ -2092,7 +2095,7 @@ def request_qf_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
 def get_request_disability_bonus_credit_form(user_id: int) -> response_utils.BackofficeResponse:
     user = _fetch_user_for_bonus(user_id)
 
-    if not users_api.get_user_is_eligible_for_disability_bonification(user, is_from_backoffice=True):
+    if not bonus_api.get_user_is_eligible_for_disability_bonification(user, is_from_backoffice=True):
         # This should not happen because button should not be displayed, except if the credit is granted in the meantime
         return render_template(
             "components/dynamic/modal_form.html",
@@ -2102,13 +2105,13 @@ def get_request_disability_bonus_credit_form(user_id: int) -> response_utils.Bac
         )
 
     try:
-        aah_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+        aah_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
             user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
         )
         aah_content = aah_fraud_checks[-1].source_data()
         assert isinstance(aah_content, bonus_schemas.AdultDisabilityBonusCreditContent)
 
-        aeeh_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+        aeeh_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
             user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
         )
         aeeh_content = aeeh_fraud_checks[-1].source_data()
@@ -2145,7 +2148,7 @@ def get_request_disability_bonus_credit_form(user_id: int) -> response_utils.Bac
 def request_disability_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
     user = _fetch_user_for_bonus(user_id)
 
-    if not users_api.get_user_is_eligible_for_disability_bonification(user, is_from_backoffice=True):
+    if not bonus_api.get_user_is_eligible_for_disability_bonification(user, is_from_backoffice=True):
         # This should not happen because form should not be displayed, except if the credit is granted in the meantime
         flash("Ce compte n'est pas éligible à une bonification AAH/AEEH", "warning")
 

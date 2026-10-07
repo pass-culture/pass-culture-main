@@ -700,7 +700,7 @@ class AccountTest:
     def test_get_user_profile_bonification_qf_status_too_many_retries(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
         subscription_factories.QFBonusCreditFraudCheckFactory.create_batch(
-            size=users_constants.MAX_QF_BONUS_RETRIES,
+            size=bonus_constants.MAX_QF_BONUS_RETRIES,
             user=user,
             status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=[subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD],

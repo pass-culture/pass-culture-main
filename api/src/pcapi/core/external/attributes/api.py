@@ -24,6 +24,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import models as offers_models
+from pcapi.core.subscription.bonus import api as bonus_api
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
@@ -564,9 +565,7 @@ def _get_user_bonification_attribute(user: users_models.User) -> bonus_schemas.Q
      - GRANTED
      - KO
     """
-    from pcapi.core.users import api as users_api
-
-    bonification_status = users_api.get_user_qf_bonification_status(user)
+    bonification_status = bonus_api.get_user_qf_bonification_status(user)
     if bonification_status in (
         bonus_schemas.QFBonificationStatus.APPLICATION_NOT_FOUND,
         bonus_schemas.QFBonificationStatus.CUSTODIAN_NOT_FOUND,
