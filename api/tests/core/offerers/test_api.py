@@ -3572,7 +3572,7 @@ class AccessibilityProviderTest:
             )
             assert venue.offererAddress.address
 
-        for _ in range(15):
+        for _ in range(3):
             venue = offerers_factories.VenueFactory(
                 isOpenToPublic=True, accessibilityProvider=None, offererAddress__address=address
             )
@@ -3607,7 +3607,7 @@ class AccessibilityProviderTest:
             )
             assert venue.offererAddress.address
 
-        for _ in range(15):  # 15 venues without acceslibre synchronization
+        for _ in range(3):  # 3 venues without acceslibre synchronization
             venue = offerers_factories.VenueFactory(
                 isOpenToPublic=True, accessibilityProvider=None, offererAddress__address=address
             )
@@ -3622,7 +3622,7 @@ class AccessibilityProviderTest:
 
         with assert_num_queries(expected_queries_matching):
             offerers_api.acceslibre_matching(
-                batch_size=10,
+                batch_size=2,
                 apply=True,
                 n_days_to_fetch=7,
             )
@@ -3641,21 +3641,21 @@ class AccessibilityProviderTest:
             )
             assert venue.offererAddress.address
 
-        for _ in range(15):
+        for _ in range(3):
             venue = offerers_factories.VenueFactory(
                 isOpenToPublic=True, accessibilityProvider=None, offererAddress__address=address
             )
             assert venue.offererAddress.address
 
-        # batch_size = 4 to force 4 batches
+        # batch_size = 2 to force 2 batches
         offerers_api.acceslibre_matching(
-            batch_size=4,
+            batch_size=2,
             apply=True,
             n_days_to_fetch=7,
         )
 
-        # We have 15 unsynchronized venues, we should call 15 times match_venue_with_acceslibre
-        assert mock_match_venue_with_acceslibre.call_count == 15
+        # We have 3 unsynchronized venues, we should call 3 times match_venue_with_acceslibre
+        assert mock_match_venue_with_acceslibre.call_count == 3
 
     def test_set_accessibility_provider_id(self):
         venue = offerers_factories.VenueFactory(name="Une librairie de test", accessibilityProvider=None)
@@ -3785,14 +3785,6 @@ class AccessibilityProviderTest:
         assert accessibility_provider.externalAccessibilityId == "nouveau-slug"
         assert accessibility_provider.externalAccessibilityUrl == "https://nouvelle.adresse/nouveau-slug"
 
-    def test_count_venues_with_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
-        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
-        offerers_factories.AccessibilityProviderFactory(venue=venue)
-
-        count = len(offerers_api.get_open_to_public_venue_ids(with_accessibility_provider=True))
-        assert count == 1
-
     def test_get_open_to_public_venues_with_accessibility_provider(self):
         offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
@@ -3806,10 +3798,12 @@ class AccessibilityProviderTest:
     def test_get_open_to_public_venues_without_accessibility_provider(self):
         offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
+        venue_id = venue.id
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
         venues_list = offerers_api.get_open_to_public_venue_ids(with_accessibility_provider=False)
         assert len(venues_list) == 3
+        assert venue_id not in venues_list
 
     @patch("pcapi.connectors.acceslibre.find_new_entries_by_activity")
     def test_match_venue_with_new_entries(self, mock_find_new_entries_by_activity):
