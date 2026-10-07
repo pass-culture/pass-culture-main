@@ -755,3 +755,51 @@ class UserAccountUpdateRequestTest:
     def test_is_user_set_manually(self, flags, expected_result):
         update_request = users_factories.LostCredentialsUpdateRequestFactory(flags=flags)
         assert update_request.is_user_set_manually is expected_result
+
+
+@pytest.mark.usefixtures("db_session")
+class UserEmailHistoryTest:
+    @pytest.mark.parametrize(
+        "build, author_factory, expected_event_type",
+        [
+            ("build_update_request", users_factories.UserFactory, user_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST),
+            (
+                "build_update_request",
+                users_factories.AdminFactory,
+                user_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST,
+            ),
+            ("build_validation", users_factories.UserFactory, user_models.EmailHistoryEventTypeEnum.VALIDATION),
+            ("build_validation", users_factories.AdminFactory, user_models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION),
+        ],
+    )
+    def test_event_type_depends_on_author_role(self, build, author_factory, expected_event_type):
+        user = users_factories.UserFactory()
+        author = author_factory()
+
+        history = getattr(user_models.UserEmailHistory, build)(user, author=author, new_email="new@example.com")
+
+        assert history.eventType == expected_event_type
+        assert history.user == user
+        assert history.author == author
+
+    def test_author_is_not_listed_in_their_own_email_history(self):
+        user = users_factories.UserFactory()
+        admin = users_factories.AdminFactory()
+
+        history = user_models.UserEmailHistory.build_admin_update(user, author=admin, new_email="new@example.com")
+        db.session.add(history)
+        db.session.flush()
+
+        assert user.email_history == [history]
+        assert admin.email_history == []
+
+    def test_author_is_cleared_when_the_author_is_deleted(self):
+        user = users_factories.UserFactory()
+        admin = users_factories.UserFactory()
+        history = users_factories.EmailAdminUpdateEntryFactory(user=user, author=admin)
+
+        db.session.query(user_models.User).filter_by(id=admin.id).delete(synchronize_session=False)
+        db.session.refresh(history)
+
+        assert history.authorId is None
+        assert history.userId == user.id

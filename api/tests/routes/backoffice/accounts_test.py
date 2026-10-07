@@ -1962,6 +1962,15 @@ class GetPublicAccountTest(GetEndpointHelper):
                 }
             },
         )
+        users_factories.EmailUpdateEntryFactory(
+            user=user, author=user, creationDate=date_utils.get_naive_utc_now() - relativedelta(days=28)
+        )
+        users_factories.EmailAdminUpdateEntryFactory(
+            user=user, author=legit_user, creationDate=date_utils.get_naive_utc_now() - relativedelta(days=25)
+        )
+        users_factories.EmailValidationEntryFactory(
+            user=user, creationDate=date_utils.get_naive_utc_now() - relativedelta(days=20)
+        )
 
         # Here we want to check that it does not crash with None date in the history (legacy action migrated)
         # Force actionDate because it was replaced with default (now) when inserted in database
@@ -1977,7 +1986,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         assert response.status_code == 200
         history_rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
-        assert len(history_rows) == 9
+        assert len(history_rows) == 12
 
         assert history_rows[0]["Type"] == "Étape de vérification"
         assert history_rows[0]["Date/Heure"].startswith(datetime.date.today().strftime("%d/%m/%Y à"))
@@ -1999,40 +2008,58 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert history_rows[3]["Commentaire"] == "phone_validation, age-17-18, ok, raison inconnue, None"
         assert not history_rows[3]["Auteur"]
 
-        assert history_rows[4]["Type"] == "Modification des informations"
+        assert history_rows[4]["Type"] == "Validation de changement d'email"
         assert history_rows[4]["Date/Heure"].startswith(
-            (datetime.date.today() - relativedelta(days=30)).strftime("%d/%m/%Y à ")
+            (datetime.date.today() - relativedelta(days=20)).strftime("%d/%m/%Y à ")
         )
-        assert history_rows[4]["Commentaire"].startswith("Informations modifiées :")
-        assert "Nom : Pignon → Leblanc" in history_rows[4]["Commentaire"]
-        assert "Prénom : suppression de : François" in history_rows[4]["Commentaire"]
-        assert "Date de naissance : 2001-04-14 → 2000-09-19" in history_rows[4]["Commentaire"]
-        assert history_rows[4]["Auteur"] == admin.full_name
+        assert not history_rows[4]["Auteur"]
 
-        assert history_rows[5]["Type"] == "Compte réactivé"
+        assert history_rows[5]["Type"] == "Changement d'email par l'admin"
         assert history_rows[5]["Date/Heure"].startswith(
-            (datetime.date.today() - relativedelta(days=35)).strftime("%d/%m/%Y à ")
+            (datetime.date.today() - relativedelta(days=25)).strftime("%d/%m/%Y à ")
         )
-        assert history_rows[5]["Commentaire"] == unsuspended.comment
-        assert history_rows[5]["Auteur"] == admin.full_name
+        assert history_rows[5]["Auteur"] == legit_user.full_name
 
-        assert history_rows[6]["Type"] == "Création du compte"
+        assert history_rows[6]["Type"] == "Demande de changement d'email"
         assert history_rows[6]["Date/Heure"].startswith(
-            (datetime.date.today() - relativedelta(days=40)).strftime("%d/%m/%Y à ")
+            (datetime.date.today() - relativedelta(days=28)).strftime("%d/%m/%Y à ")
         )
-        assert not history_rows[6]["Commentaire"]
         assert history_rows[6]["Auteur"] == user.full_name
 
-        assert history_rows[7]["Type"] == "Attribution d'un crédit"
+        assert history_rows[7]["Type"] == "Modification des informations"
         assert history_rows[7]["Date/Heure"].startswith(
+            (datetime.date.today() - relativedelta(days=30)).strftime("%d/%m/%Y à ")
+        )
+        assert history_rows[7]["Commentaire"].startswith("Informations modifiées :")
+        assert "Nom : Pignon → Leblanc" in history_rows[7]["Commentaire"]
+        assert "Prénom : suppression de : François" in history_rows[7]["Commentaire"]
+        assert "Date de naissance : 2001-04-14 → 2000-09-19" in history_rows[7]["Commentaire"]
+        assert history_rows[7]["Auteur"] == admin.full_name
+
+        assert history_rows[8]["Type"] == "Compte réactivé"
+        assert history_rows[8]["Date/Heure"].startswith(
+            (datetime.date.today() - relativedelta(days=35)).strftime("%d/%m/%Y à ")
+        )
+        assert history_rows[8]["Commentaire"] == unsuspended.comment
+        assert history_rows[8]["Auteur"] == admin.full_name
+
+        assert history_rows[9]["Type"] == "Création du compte"
+        assert history_rows[9]["Date/Heure"].startswith(
             (datetime.date.today() - relativedelta(days=40)).strftime("%d/%m/%Y à ")
         )
-        assert history_rows[7]["Commentaire"] == "Attribution d'un crédit 17-18 de 150,00 €"
+        assert not history_rows[9]["Commentaire"]
+        assert history_rows[9]["Auteur"] == user.full_name
 
-        assert history_rows[8]["Type"] == "Compte suspendu"
-        assert not history_rows[8]["Date/Heure"]  # Empty date, at the end of the list
-        assert history_rows[8]["Commentaire"].startswith("Fraude suspicion")
-        assert history_rows[8]["Auteur"] == legit_user.full_name
+        assert history_rows[10]["Type"] == "Attribution d'un crédit"
+        assert history_rows[10]["Date/Heure"].startswith(
+            (datetime.date.today() - relativedelta(days=40)).strftime("%d/%m/%Y à ")
+        )
+        assert history_rows[10]["Commentaire"] == "Attribution d'un crédit 17-18 de 150,00 €"
+
+        assert history_rows[11]["Type"] == "Compte suspendu"
+        assert not history_rows[11]["Date/Heure"]  # Empty date, at the end of the list
+        assert history_rows[11]["Commentaire"].startswith("Fraude suspicion")
+        assert history_rows[11]["Auteur"] == legit_user.full_name
 
     @pytest.mark.parametrize(
         "fraud_check_factory, fraud_check_type, reason_code, expected_reason_text",
@@ -2263,6 +2290,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert history.oldEmail == old_email
         assert history.newEmail == expected_new_email
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+        assert history.author == legit_user
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -2336,6 +2364,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert history.oldEmail == "ed@example.com"
         assert history.newEmail == "mc@example.com"
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+        assert history.author == legit_user
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -2405,7 +2434,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert response.status_code == 400
         assert len(mails_testing.outbox) == 0
 
-    def test_update_email_triggers_history_token_and_mail(self, authenticated_client):
+    def test_update_email_triggers_history_token_and_mail(self, legit_user, authenticated_client):
         user, _, _, _, _, _ = create_bunch_of_accounts()
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form={"email": "Updated@example.com"})
@@ -2426,6 +2455,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert len(email_history) == 1
 
         assert email_history[0].eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+        assert email_history[0].author == legit_user
         assert email_history[0].oldEmail == "gg@example.net"
         assert email_history[0].newEmail == "updated@example.com"
 
@@ -3443,8 +3473,9 @@ class GetPublicAccountHistoryTest:
         email_confirmation = users_factories.EmailConfirmationEntryFactory(
             user=user, creationDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=5)
         )
+        admin = users_factories.AdminFactory()
         email_validation = users_factories.EmailValidationEntryFactory(
-            user=user, creationDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=5)
+            user=user, author=admin, creationDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=5)
         )
 
         history = get_public_account_history(user)
@@ -3454,10 +3485,12 @@ class GetPublicAccountHistoryTest:
         assert history[0].actionType == "Validation de changement d'email"
         assert history[0].actionDate == email_validation.creationDate
         assert history[0].comment == f"de {email_validation.oldEmail} à {email_validation.newEmail}"
+        assert history[0].authorUser == admin
 
         assert history[1].actionType == "Confirmation de changement d'email"
         assert history[1].actionDate == email_confirmation.creationDate
         assert history[1].comment == f"de {email_confirmation.oldEmail} à {email_confirmation.newEmail}"
+        assert history[1].authorUser is None
 
         assert history[2].actionType == "Demande de changement d'email"
         assert history[2].actionDate == email_request.creationDate
@@ -6082,7 +6115,7 @@ class ClearEmailTest(PostEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
-    def test_clear_email(self, authenticated_client):
+    def test_clear_email(self, legit_user, authenticated_client):
         user = users_factories.UserFactory(isActive=False)
         old_email = user.email
 
@@ -6096,6 +6129,7 @@ class ClearEmailTest(PostEndpointHelper):
         assert history.oldEmail == old_email
         assert history.newEmail == user.email
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+        assert history.author == legit_user
 
         assert f"L'adresse email {old_email} a été libérée" in html_parser.extract_alert(response.data)
 

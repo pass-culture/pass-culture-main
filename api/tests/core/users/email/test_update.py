@@ -30,7 +30,7 @@ class RequestEmailUpdateTest:
     def test_request_email_update_history(self):
         user = users_factories.UserFactory()
 
-        email_update.request_email_update(user)
+        email_update.request_email_update(user, author=user)
 
         reloaded_user = db.session.get(User, user.id)
         assert len(reloaded_user.email_history) == 1
@@ -40,6 +40,7 @@ class RequestEmailUpdateTest:
         assert history.newUserEmail is None
         assert history.newDomainEmail is None
         assert history.eventType == EmailHistoryEventTypeEnum.UPDATE_REQUEST
+        assert history.author == user
         assert history.id is not None
 
 
@@ -53,6 +54,7 @@ class EmailUpdateConfirmationTest:
         assert user == returned_user
         assert len(user.email_history) == 1
         assert user.email_history[0].eventType == EmailHistoryEventTypeEnum.CONFIRMATION
+        assert user.email_history[0].author == user
 
         assert not token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
 
@@ -83,6 +85,7 @@ class EmailUpdateCancellationTest:
         assert len(email_history) == 2
         assert email_history[0].eventType == EmailHistoryEventTypeEnum.UPDATE_REQUEST
         assert email_history[1].eventType == EmailHistoryEventTypeEnum.CANCELLATION
+        assert email_history[1].author == user
 
         # Account is suspended
         assert user.is_active is False
@@ -138,3 +141,42 @@ class EmailUpdateCancellationTest:
 
         # Token is not deleted
         assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
+
+
+class RequestEmailUpdateFromAdminTest:
+    def test_history_is_authored_by_the_admin(self):
+        user = users_factories.UserFactory(email="old@example.com")
+        admin = users_factories.AdminFactory()
+
+        email_update.request_email_update_from_admin(user, author=admin, email="new@example.com")
+
+        assert user.email == "new@example.com"
+        assert len(user.email_history) == 1
+        assert user.email_history[0].eventType == EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST
+        assert user.email_history[0].author == admin
+
+
+class FullEmailUpdateByAdminTest:
+    def test_history_is_authored_by_the_admin(self):
+        user = users_factories.UserFactory(email="old@example.com")
+        admin = users_factories.AdminFactory()
+
+        email_update.full_email_update_by_admin(user, author=admin, email="new@example.com")
+
+        assert user.email == "new@example.com"
+        assert len(user.email_history) == 1
+        assert user.email_history[0].eventType == EmailHistoryEventTypeEnum.ADMIN_UPDATE
+        assert user.email_history[0].author == admin
+
+
+class ClearEmailByAdminTest:
+    def test_history_is_authored_by_the_admin(self):
+        user = users_factories.UserFactory(email="old@example.com")
+        admin = users_factories.AdminFactory()
+
+        email_update.clear_email_by_admin(user, author=admin)
+
+        assert user.email == f"{user.id}@email.supprime"
+        assert len(user.email_history) == 1
+        assert user.email_history[0].eventType == EmailHistoryEventTypeEnum.ADMIN_UPDATE
+        assert user.email_history[0].author == admin

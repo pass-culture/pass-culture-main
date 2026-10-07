@@ -118,7 +118,11 @@ def get_details(user_id: int) -> response_utils.BackofficeResponse:
             sa_orm.contains_eager(users_models.User.action_history).options(
                 sa_orm.joinedload(history_models.ActionHistory.authorUser)
             ),
-            sa_orm.selectinload(users_models.User.email_history),
+            sa_orm.selectinload(users_models.User.email_history)
+            .joinedload(users_models.UserEmailHistory.author)
+            .load_only(  # User.full_name
+                users_models.User.firstName, users_models.User.lastName, users_models.User.email
+            ),
         )
         .one_or_none()
     )
@@ -181,7 +185,7 @@ def update_pro_user(user_id: int) -> response_utils.BackofficeResponse:
         snapshot.set("email", old=old_email, new=form.email.data)
 
         try:
-            email_update.request_email_update_from_admin(user, form.email.data)
+            email_update.request_email_update_from_admin(user, author=current_user, email=form.email.data)
         except users_exceptions.EmailExistsError:
             mark_transaction_as_invalid()
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")

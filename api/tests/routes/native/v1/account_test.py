@@ -1571,6 +1571,8 @@ class ValidateEmailTest:
 
         user = db.session.get(users_models.User, user.id)
         assert user.email == self.new_email
+        assert user.email_history[0].eventType == users_models.EmailHistoryEventTypeEnum.VALIDATION
+        assert user.email_history[0].author == user
 
     @patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
     def test_dms_adoption_on_email_validation_for_eligible_user(self, try_dms_orphan_adoption_mock, app, client):
@@ -1651,6 +1653,7 @@ class CancelEmailChangeTest:
         assert not token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
         assert mails_testing.outbox[0]["params"]["FIRSTNAME"] == user.firstName
         assert get_email_update_latest_event(user).eventType == users_models.EmailHistoryEventTypeEnum.CANCELLATION
+        assert get_email_update_latest_event(user).author == user
         assert user.account_state == users_models.AccountState.SUSPENDED
 
     mock_redis_client = fakeredis.FakeStrictRedis()

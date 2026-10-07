@@ -233,6 +233,10 @@ class UpdateProUserTest(PostEndpointHelper):
         assert pro_user.notificationSubscriptions["marketing_email"] is True
         assert pro_user.notificationSubscriptions["marketing_push"] is False
 
+        assert len(pro_user.email_history) == 1
+        assert pro_user.email_history[0].eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST
+        assert pro_user.email_history[0].author == legit_user
+
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.authorUser == legit_user
@@ -316,11 +320,12 @@ class GetProUserHistoryTest(GetEndpointHelper):
         action1 = history_factories.ActionHistoryFactory(
             user=pro_user, actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=5)
         )
+        admin = users_factories.AdminFactory()
         email_request = users_factories.EmailUpdateEntryFactory(
-            user=pro_user, creationDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=4)
+            user=pro_user, author=admin, creationDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=4)
         )
         email_validation = users_factories.EmailValidationEntryFactory(
-            user=pro_user, creationDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=3)
+            user=pro_user, author=pro_user, creationDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=3)
         )
         action2 = history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=2),
@@ -349,12 +354,12 @@ class GetProUserHistoryTest(GetEndpointHelper):
         assert rows[1]["Type"] == "Validation de changement d'email"
         assert rows[1]["Date/Heure"] == format_date(email_validation.creationDate, "%d/%m/%Y à %Hh%M")
         assert rows[1]["Commentaire"] == f"de {email} à {email}.update"
-        assert rows[1]["Auteur"] == ""
+        assert rows[1]["Auteur"] == pro_user.full_name
 
         assert rows[2]["Type"] == "Demande de changement d'email"
         assert rows[2]["Date/Heure"] == format_date(email_request.creationDate, "%d/%m/%Y à %Hh%M")
         assert rows[2]["Commentaire"] == f"de {email} à {email}.update"
-        assert rows[2]["Auteur"] == ""
+        assert rows[2]["Auteur"] == admin.full_name
 
         assert rows[3]["Type"] == "Commentaire interne"
         assert rows[3]["Date/Heure"] == format_date(action1.actionDate, "%d/%m/%Y à %Hh%M")

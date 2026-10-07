@@ -1047,6 +1047,11 @@ class UserEmailHistory(PcObject, Model):
     newUserEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(120), nullable=True, unique=False)
     newDomainEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(120), nullable=True, unique=False)
 
+    authorId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
+    author: sa_orm.Mapped[User | None] = sa_orm.relationship("User", foreign_keys=[authorId])
+
     creationDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
@@ -1068,11 +1073,13 @@ class UserEmailHistory(PcObject, Model):
         user: User,
         new_email: str | None,
         event_type: EmailHistoryEventTypeEnum,
+        author: User,
     ) -> UserEmailHistory:
         old_user_email, old_domain_email = split_email(user.email)
         new_user_email, new_domain_email = split_email(new_email) if new_email else (None, None)
         return cls(
             user=user,
+            author=author,
             oldUserEmail=old_user_email,
             oldDomainEmail=old_domain_email,
             newUserEmail=new_user_email,
@@ -1081,32 +1088,32 @@ class UserEmailHistory(PcObject, Model):
         )
 
     @classmethod
-    def build_update_request(cls, user: User, new_email: str | None = None, by_admin: bool = False) -> UserEmailHistory:
-        if by_admin:
-            return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST)
-        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST)
+    def build_update_request(cls, user: User, new_email: str | None = None, *, author: User) -> UserEmailHistory:
+        if author.has_admin_role:
+            return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST, author=author)
+        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST, author=author)
 
     @classmethod
-    def build_confirmation(cls, user: User, new_email: str | None = None) -> UserEmailHistory:
-        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.CONFIRMATION)
+    def build_confirmation(cls, user: User, *, author: User) -> UserEmailHistory:
+        return cls._build(user, new_email=None, event_type=EmailHistoryEventTypeEnum.CONFIRMATION, author=author)
 
     @classmethod
-    def build_cancellation(cls, user: User, new_email: str | None) -> UserEmailHistory:
-        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.CANCELLATION)
+    def build_cancellation(cls, user: User, new_email: str | None, *, author: User) -> UserEmailHistory:
+        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.CANCELLATION, author=author)
 
     @classmethod
-    def build_new_email_selection(cls, user: User, new_email: str) -> UserEmailHistory:
-        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION)
+    def build_new_email_selection(cls, user: User, new_email: str, *, author: User) -> UserEmailHistory:
+        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION, author=author)
 
     @classmethod
-    def build_validation(cls, user: User, new_email: str, by_admin: bool) -> UserEmailHistory:
-        if by_admin:
-            return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_VALIDATION)
-        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.VALIDATION)
+    def build_validation(cls, user: User, new_email: str, *, author: User) -> UserEmailHistory:
+        if author.has_admin_role:
+            return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_VALIDATION, author=author)
+        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.VALIDATION, author=author)
 
     @classmethod
-    def build_admin_update(cls, user: User, new_email: str) -> UserEmailHistory:
-        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_UPDATE)
+    def build_admin_update(cls, user: User, new_email: str, *, author: User) -> UserEmailHistory:
+        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_UPDATE, author=author)
 
     @hybrid_property
     def oldEmail(self) -> str:

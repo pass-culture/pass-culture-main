@@ -456,11 +456,11 @@ def accept(ds_application_id: int) -> response_utils.BackofficeResponse:
                 },
                 is_backoffice_action=True,
             )
-            email_update.clear_email_by_admin(duplicate_user)
+            email_update.clear_email_by_admin(duplicate_user, author=current_user)
 
         assert update_request.newEmail  # helps mypy
         # EmailExistsError should not happen because of duplicate check above
-        email_update.full_email_update_by_admin(user, update_request.newEmail)
+        email_update.full_email_update_by_admin(user, author=current_user, email=update_request.newEmail)
         db.session.flush()
 
     external_attributes_api.update_external_user(user)

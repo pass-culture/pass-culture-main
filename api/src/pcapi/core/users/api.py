@@ -578,8 +578,9 @@ def check_email_address_does_not_exist(email: str) -> None:
 def change_email(
     current_user: models.User,
     new_email: str,
+    author: models.User,
 ) -> None:
-    email_history = models.UserEmailHistory.build_validation(user=current_user, new_email=new_email, by_admin=False)
+    email_history = models.UserEmailHistory.build_validation(current_user, new_email, author=author)
 
     current_user.email = new_email
     db.session.add(current_user)
@@ -612,7 +613,7 @@ def change_pro_user_email(
     if not current_user or current_user.id != user_id:
         raise exceptions.UserDoesNotExist()
     check_email_address_does_not_exist(new_email)
-    change_email(current_user, new_email)
+    change_email(current_user, new_email=new_email, author=current_user)
 
 
 def update_user_password(user: models.User, new_password: str) -> None:
@@ -1054,7 +1055,7 @@ def search_public_account_in_history_email(search_query: str) -> tuple[sa_orm.Qu
 
     # including old emails: look for validated email updates inside user_email_history
     return (
-        accounts.join(models.UserEmailHistory)
+        accounts.join(models.User.email_history)
         .filter(
             typing.cast(sa_orm.Mapped[str], models.UserEmailHistory.oldEmail) == sanitized_term,
             models.UserEmailHistory.eventType.in_(

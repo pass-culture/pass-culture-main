@@ -165,6 +165,7 @@ class SuspendUserTest(PostEndpointHelper):
         assert user.email == f"{user.id}@email.supprime"
         assert len(user.action_history) == 1
         assert len(user.email_history) == 1
+        assert user.email_history[0].author == beneficiary_fraud_admin
 
     def test_suspend_pro_user(self, client, pro_fraud_admin):
         user = offerers_factories.UserOffererFactory().user

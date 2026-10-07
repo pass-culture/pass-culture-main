@@ -30,6 +30,7 @@ class UpdateUserEmailTest:
 
         user = db.session.query(users_models.User).filter_by(email=self.identifier).one()
         assert user.email == self.identifier  # email not updated until validation link is used
+        assert user.email_history[0].author == user
         assert len(mails_testing.outbox) == 1  # one confirmation email to the current address
 
         base_url_params = _get_last_sent_email_url_params()
@@ -136,6 +137,8 @@ class NewEmailSelectionTest:
 
         assert response.status_code == 204, response.json
         assert not token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION, user.id)
+        assert user.email_history[0].eventType == users_models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION
+        assert user.email_history[0].author == user
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["params"]["FIRSTNAME"] == user.firstName

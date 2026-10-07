@@ -378,7 +378,7 @@ class ChangeUserEmailTest:
         users_factories.UserSessionFactory(user=user)
 
         # When
-        email_update.validate_email_update_request(user=user, new_email=self.new_email)
+        email_update.validate_email_update_request(user=user, author=user, new_email=self.new_email)
 
         # Then
         db.session.refresh(user)
@@ -393,6 +393,7 @@ class ChangeUserEmailTest:
         assert history.oldEmail == self.old_email
         assert history.newEmail == self.new_email
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.VALIDATION
+        assert history.author == user
         assert history.id is not None
 
     def test_change_user_email_new_email_already_existing(self):
@@ -403,7 +404,7 @@ class ChangeUserEmailTest:
 
         # When
         with pytest.raises(users_exceptions.EmailExistsError):
-            email_update.validate_email_update_request(user=user, new_email=self.new_email)
+            email_update.validate_email_update_request(user=user, author=user, new_email=self.new_email)
 
         # Then
         db.session.refresh(user)
@@ -431,13 +432,13 @@ class ChangeUserEmailTest:
         users_factories.UserSessionFactory(user=user)
 
         # first call, email is updated as expected
-        email_update.validate_email_update_request(user=user, new_email=self.new_email)
+        email_update.validate_email_update_request(user=user, author=user, new_email=self.new_email)
 
         db.session.refresh(user)
         assert user.email == self.new_email
 
         # second call, no error, no update
-        email_update.validate_email_update_request(user=user, new_email=self.new_email)
+        email_update.validate_email_update_request(user=user, author=user, new_email=self.new_email)
         db.session.refresh(user)
         assert user.email == self.new_email
 
@@ -447,7 +448,7 @@ class ChangeUserEmailTest:
         users_factories.UserSessionFactory(user=user)
 
         # When
-        email_update.validate_email_update_request(user=user, new_email=self.new_email)
+        email_update.validate_email_update_request(user=user, author=user, new_email=self.new_email)
 
         assert brevo_testing.brevo_requests == [
             {
