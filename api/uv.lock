@@ -1122,15 +1122,15 @@ wheels = [
 
 [[package]]
 name = "google-auth"
-version = "2.58.0"
+version = "2.59.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
     { name = "pyasn1-modules" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ac/ca/f398a483ce5aad18ca2f735646e45ccee2439bd94a41a4ad0cfa646bd495/google_auth-2.58.0.tar.gz", hash = "sha256:55e30cf15e737de92c5323d78cda8a83fcd57e7ffbaf900c4600039fd60a80fd", size = 380018, upload-time = "2026-09-09T20:49:38.043Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/81/e3/9f752a968e487fbc10b2c2a1dd561b62489f923972911009577bb88fe7bb/google_auth-2.59.1.tar.gz", hash = "sha256:ce50fc533ac02f489a2b183a0c156672c376ecb2091b1127bc7efba2975fff27", size = 384298, upload-time = "2026-09-30T17:26:25.738Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/13/477d90d09591b3938b45c4e11f4d8a51291682112cb5efcac961e815d562/google_auth-2.58.0-py3-none-any.whl", hash = "sha256:8a9c4645bb4c8e91668fb1934b95ae6a8687084232753639220ba9bf04a1610d", size = 262404, upload-time = "2026-09-09T20:49:33.951Z" },
+    { url = "https://files.pythonhosted.org/packages/03/38/311ac322f46ecd789f1342bb7adb0a14b940cf54b5db0e92d4f449aa6cf8/google_auth-2.59.1-py3-none-any.whl", hash = "sha256:89c3f931683a482ac97e61df7eb9da5e08a91703f3c752b2377d72cfb7d69e6a", size = 263519, upload-time = "2026-09-30T17:26:24.017Z" },
 ]
 
 [package.optional-dependencies]
@@ -2072,7 +2072,7 @@ requires-dist = [
     { name = "flask-wtf", specifier = "==1.3.0" },
     { name = "geoalchemy2", specifier = "==0.20.0" },
     { name = "google-api-python-client", specifier = "==2.201.0" },
-    { name = "google-auth", specifier = "==2.58.0" },
+    { name = "google-auth", specifier = "==2.59.1" },
     { name = "google-cloud-bigquery", specifier = "==3.45.2" },
     { name = "google-cloud-iam", specifier = "==2.25.0" },
     { name = "google-cloud-secret-manager", specifier = ">=2.30.0" },
