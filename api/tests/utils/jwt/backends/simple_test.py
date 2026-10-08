@@ -40,7 +40,7 @@ class EncodeTest:
         assert decoded["exp"] > time()
 
     def test_custom_key(self):
-        key = "a-secret-key"
+        key = "a-secret-key-with-at-least-32-bytes"  # gitleaks:ignore
         payload = {"iat": int(time()), "nbf": int(time()), "exp": int(time()) + 60, "data": "plouf"}
 
         token = JwtSimpleBackend().encode(payload, key)
@@ -63,7 +63,7 @@ class DecodeTest:
         payload = {
             "token": "value",
         }
-        token = jwt.encode(payload, "an-invalid-key")
+        token = jwt.encode(payload, "an-invalid-key-with-at-least-32-bytes")
 
         with pytest.raises(jwt.exceptions.InvalidSignatureError):
             JwtSimpleBackend().decode(jwt_token=token)

@@ -15,9 +15,9 @@ from pcapi.utils.jwt.backends.secret_manager import JwtSecretManagerBackend
 
 
 SECRETS = {
-    "1": "secret-with-id-one",
-    "3": "secret-with-id-three",
-    "4": "secret-with-id-four",
+    "1": "secret-with-id-one-with-at-least-32-bytes",
+    "3": "secret-with-id-three-with-at-least-32-bytes",
+    "4": "secret-with-id-four-with-at-least-32-bytes",
 }
 
 
@@ -46,11 +46,11 @@ class InitializationTest:
     def test_nominal(self, secret_manager):
         backend = JwtSecretManagerBackend()
         assert backend._current_key.kid == "4"
-        assert backend._current_key.key == "secret-with-id-four"
+        assert backend._current_key.key == "secret-with-id-four-with-at-least-32-bytes"
         assert backend._key_by_kid == {
-            "4": "secret-with-id-four",
-            "3": "secret-with-id-three",
-            "1": "secret-with-id-one",
+            "4": "secret-with-id-four-with-at-least-32-bytes",
+            "3": "secret-with-id-three-with-at-least-32-bytes",
+            "1": "secret-with-id-one-with-at-least-32-bytes",
         }
 
     @pytest.mark.settings(JWT_SECRET_KEY="")
@@ -72,11 +72,11 @@ class InitializationTest:
             redis.hset.assert_called_once()
 
         assert backend._current_key.kid == "4"
-        assert backend._current_key.key == "secret-with-id-four"
+        assert backend._current_key.key == "secret-with-id-four-with-at-least-32-bytes"
         assert backend._key_by_kid == {
-            "4": "secret-with-id-four",
-            "3": "secret-with-id-three",
-            "1": "secret-with-id-one",
+            "4": "secret-with-id-four-with-at-least-32-bytes",
+            "3": "secret-with-id-three-with-at-least-32-bytes",
+            "1": "secret-with-id-one-with-at-least-32-bytes",
         }
 
     def test_no_secret_manager_fallback_redis(self, clear_redis):
@@ -108,7 +108,7 @@ class EncodeTest:
 
         token = JwtSecretManagerBackend().encode(payload)
 
-        assert jwt.decode(token, "secret-with-id-four", algorithms=[ALGORITHM_HS_256]) == payload
+        assert jwt.decode(token, "secret-with-id-four-with-at-least-32-bytes", algorithms=[ALGORITHM_HS_256]) == payload
         assert token.split(".")[0] == b64encode(b'{"alg":"HS256","kid":"4","typ":"JWT"}').decode().strip("=")
 
     def test_missing_fields(self, secret_manager):
@@ -116,14 +116,14 @@ class EncodeTest:
 
         token = JwtSecretManagerBackend().encode(payload)
 
-        decoded = jwt.decode(token, "secret-with-id-four", algorithms=[ALGORITHM_HS_256])
+        decoded = jwt.decode(token, "secret-with-id-four-with-at-least-32-bytes", algorithms=[ALGORITHM_HS_256])
         assert decoded["data"] == payload["data"]
         assert time() - 2 < decoded["iat"] < time()
         assert time() - 2 < decoded["nbf"] < time()
         assert decoded["exp"] > time()
 
     def test_custom_key(self, secret_manager):
-        key = "a-secret-key"
+        key = "a-secret-key-with-at-least-32-bytes"  # gitleaks:ignore
         payload = {"iat": int(time()), "nbf": int(time()), "exp": int(time()) + 60, "data": "plouf"}
 
         token = JwtSecretManagerBackend().encode(payload, key)
@@ -137,7 +137,7 @@ class DecodeTest:
         payload = {
             "token": "value",
         }
-        token = jwt.encode(payload, "secret-with-id-four", headers={"kid": "4"})
+        token = jwt.encode(payload, "secret-with-id-four-with-at-least-32-bytes", headers={"kid": "4"})
 
         decoded = JwtSecretManagerBackend().decode(jwt_token=token)
 
@@ -147,7 +147,7 @@ class DecodeTest:
         payload = {
             "token": "value",
         }
-        token = jwt.encode(payload, "secret-with-id-one", headers={"kid": "1"})
+        token = jwt.encode(payload, "secret-with-id-one-with-at-least-32-bytes", headers={"kid": "1"})
 
         decoded = JwtSecretManagerBackend().decode(jwt_token=token)
 
@@ -157,7 +157,7 @@ class DecodeTest:
         payload = {
             "token": "value",
         }
-        token = jwt.encode(payload, "secret-with-id-four", headers={"kid": "invalid"})
+        token = jwt.encode(payload, "secret-with-id-four-with-at-least-32-bytes", headers={"kid": "invalid"})
 
         with pytest.raises(jwt.exceptions.InvalidKeyError):
             JwtSecretManagerBackend().decode(jwt_token=token)
@@ -166,7 +166,7 @@ class DecodeTest:
         payload = {
             "token": "value",
         }
-        token = jwt.encode(payload, "secret-with-id-four", headers={"kid": "1"})
+        token = jwt.encode(payload, "secret-with-id-four-with-at-least-32-bytes", headers={"kid": "1"})
 
         with pytest.raises(jwt.exceptions.InvalidTokenError):
             JwtSecretManagerBackend().decode(jwt_token=token)
@@ -185,7 +185,7 @@ class DecodeTest:
         payload = {
             "token": "value",
         }
-        token = jwt.encode(payload, "an-invalid-key")
+        token = jwt.encode(payload, "an-invalid-key-with-at-least-32-bytes")
 
         with pytest.raises(jwt.exceptions.InvalidSignatureError):
             JwtSecretManagerBackend().decode(jwt_token=token)
@@ -195,7 +195,7 @@ class DecodeTest:
             JwtSecretManagerBackend().decode(jwt_token="not a token")
 
     def decode_with_custom_key(self, secret_manager):
-        custom_key = "a-random-key-without-data"
+        custom_key = "a-random-key-without-data-with-at-least-32-bytes"
         payload = {
             "token": "value",
         }
