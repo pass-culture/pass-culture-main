@@ -1,8 +1,9 @@
 {
-  "biome.lsp.bin": "pro/node_modules/.bin/biome",
+  "biome.lsp.bin": "${workspaceFolder}/pro/node_modules/.bin/biome",
   "editor.formatOnSave": true,
-   "editor.codeActionsOnSave": {
+  "editor.codeActionsOnSave": {
     "source.addMissingImports": "always",
+    "source.organizeImports": "explicit",
     "source.fixAll.biome": "explicit"
   },
   "mypy-type-checker.cwd": "${workspaceFolder}/api",
@@ -11,7 +12,7 @@
   "mypy-type-checker.reportingScope": "workspace",
   "python.testing.cwd": "${workspaceFolder}/api",
   "python.testing.pytestEnabled": true,
-    "python.testing.pytestArgs": [
+  "python.testing.pytestArgs": [
     "-vv",
     "-s",
     "--color=yes",
@@ -34,5 +35,10 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
-  }
+  },
+  "cssVariables.lookupFiles": [
+    "${workspaceFolder}/pro/node_modules/@pass-culture/design-system/lib/pro/light.css",
+    "**/*.css",
+    "**/*.scss"
+  ]
 }

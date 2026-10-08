@@ -1,10 +1,12 @@
 {
   "recommendations": [
     "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
     "vitest.explorer",
     "stylelint.vscode-stylelint",
     "biomejs.biome",
+    "vunguyentuan.vscode-css-variables",
+    "ms-python.vscode-pylance",
+    "ms-python.python",
     "charliermarsh.ruff",
     "ms-python.mypy-type-checker"
   ]
