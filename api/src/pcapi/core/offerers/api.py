@@ -22,6 +22,8 @@ from dateutil.relativedelta import relativedelta
 
 import pcapi.connectors.acceslibre as accessibility_provider
 import pcapi.connectors.thumb_storage as storage
+import pcapi.core.criteria.api as criteria_api
+import pcapi.core.criteria.constants as criteria_constants
 import pcapi.core.educational.api.adage as adage_api
 import pcapi.core.favorites.models as favorites_models
 import pcapi.core.finance.models as finance_models
@@ -3636,6 +3638,13 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
         return True
 
     if venue.is_pricing_point:
+        # Add tag
+        closure_request_tag = criteria_api.get_or_create_criteria(
+            name=criteria_constants.CLOSURE_REQUEST_LABEL,
+            description=criteria_constants.CLOSURE_REQUEST_DESCRIPTION,
+            category_labels=[criteria_constants.SUPPORT_CATEGORY_LABEL],
+        )
+        criteria_api.link_criterion_to_venue(criterion=closure_request_tag, venue=venue)
         transactional_mails.send_venue_closure_request_email(venue)
         return False
 

@@ -1498,7 +1498,7 @@ def close_venue(venue_id: int) -> response_utils.BackofficeResponse:
                 "Le SIRET du partenaire culturel <b>{name}</b> est utilisé comme SIRET de valorisation "
                 "par une autre structure. Déplacez le point de valorisation avant de fermer la structure"
             ).format(name=venue.name),
-            "error",
+            "warning",
         )
     elif offerers_api.close_venue(venue, author=current_user, comment=form.comment.data):
         flash(Markup("Le partenaire culturel <b>{name}</b> a été fermé").format(name=venue.name), "success")
@@ -1507,7 +1507,7 @@ def close_venue(venue_id: int) -> response_utils.BackofficeResponse:
             Markup("Le partenaire culturel <b>{name}</b> n'a pas pu être fermé pour une raison à déterminer").format(
                 name=venue.name
             ),
-            "error",
+            "warning",
         )
 
     return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)

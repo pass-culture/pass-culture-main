@@ -21,6 +21,8 @@ from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
+from pcapi.core.criteria import api as criteria_api
+from pcapi.core.criteria import constants as criteria_constants
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
@@ -4431,10 +4433,12 @@ class CloseVenueTest:
             offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
+        tag = criteria_api.get_or_create_criteria(name=criteria_constants.CLOSURE_REQUEST_LABEL)
 
         assert venue.state is None
         assert venue.current_bank_account_link
         mock_send_venue_closure_request_email.assert_called()
+        assert venue.criteria == [tag]
 
 
 class ReopenVenueTest:
