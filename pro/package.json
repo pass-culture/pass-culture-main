@@ -111,7 +111,7 @@
     "prettier": "3.9.9",
     "regenerator-runtime": "0.14.1",
     "rollup-plugin-visualizer": "7.0.1",
-    "sass": "1.105.0",
+    "sass": "1.105.1",
     "storybook": "10.6.0",
     "storybook-addon-remix-react-router": "7.0.0",
     "stylelint": "16.26.1",
