@@ -103,7 +103,7 @@
     "@vitest/coverage-istanbul": "4.1.11",
     "axe-core": "4.13.0",
     "check-unused-css": "0.5.5",
-    "dotenv": "17.4.2",
+    "dotenv": "18.0.3",
     "jsdom": "30.0.1",
     "knip": "6.38.0",
     "node-fetch": "3.3.2",
