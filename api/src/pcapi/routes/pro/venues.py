@@ -333,5 +333,6 @@ def _build_venue_response(venue: Venue) -> venue_serialize.GetVenueResponseModel
     return venue_serialize.GetVenueResponseModel.build(
         venue,
         has_non_free_offers=offerers_repository.venue_has_non_free_offers(venue.id),
+        has_highlight_request=offerers_repository.venue_has_highlight_request(venue.id),
         is_onboarded=is_offerer_onboarded,
     )
