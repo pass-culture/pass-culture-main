@@ -10,6 +10,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.highlights import models as highlights_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
@@ -1176,6 +1177,20 @@ def get_venue_pro_advices(venue_id: int, offset: int, limit: int | None) -> list
 
 def venue_has_non_free_offers(venue_id: int) -> bool:
     return venue_has_non_free_individual_offers(venue_id) or venue_has_non_free_collective_offers(venue_id)
+
+
+def venue_has_highlight_request(venue_id: int) -> bool:
+    query = (
+        db.session.query(highlights_models.HighlightRequest)
+        .join(offers_models.Offer, highlights_models.HighlightRequest.offerId == offers_models.Offer.id)
+        .join(highlights_models.HighlightRequest.highlight)
+        .filter(
+            offers_models.Offer.venueId == venue_id,
+            highlights_models.Highlight.availability_datespan.contains(datetime.date.today()),
+        )
+    )
+
+    return db.session.query(query.exists()).scalar()
 
 
 def venue_has_non_free_individual_offers(venue_id: int) -> bool:

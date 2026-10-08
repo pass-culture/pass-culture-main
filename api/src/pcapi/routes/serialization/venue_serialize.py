@@ -123,6 +123,7 @@ class GetVenueResponseModel(HttpBodyModel):
     bankAccountStatus: venue_finance_serialize.SimplifiedBankAccountStatus | None
     has_non_free_offers: bool
     can_display_highlights: bool
+    hasHighlightRequest: bool
     has_non_draft_offers: bool
     volunteeringUrl: HttpUrlStr | None
     audioDisabilityCompliant: bool | None
@@ -136,6 +137,7 @@ class GetVenueResponseModel(HttpBodyModel):
         cls,
         venue: offerers_models.Venue,
         has_non_free_offers: bool,
+        has_highlight_request: bool,
         is_onboarded: bool,
     ) -> typing.Self:
         external_accessibility_data = None
@@ -219,6 +221,7 @@ class GetVenueResponseModel(HttpBodyModel):
             bankAccountStatus=venue_finance_serialize.parse_venue_bank_account_status(venue),
             has_non_free_offers=has_non_free_offers,
             can_display_highlights=venue.can_display_highlights,
+            hasHighlightRequest=has_highlight_request,
             has_non_draft_offers=venue.has_non_draft_offers,
             volunteeringUrl=venue.volunteeringUrl,
             audioDisabilityCompliant=venue.audioDisabilityCompliant,
