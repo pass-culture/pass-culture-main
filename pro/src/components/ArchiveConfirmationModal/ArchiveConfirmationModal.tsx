@@ -27,6 +27,7 @@ interface OfferEducationalModalProps<T extends Offer> {
   hasMultipleOffers?: boolean
   selectedOffers?: T[]
   isDialogOpen: boolean
+  refToFocusOnClose?: React.RefObject<HTMLElement | null>
 }
 
 export const ArchiveConfirmationModal = <T extends Offer>({
@@ -36,6 +37,7 @@ export const ArchiveConfirmationModal = <T extends Offer>({
   selectedOffers = [],
   offer,
   isDialogOpen,
+  refToFocusOnClose,
 }: OfferEducationalModalProps<T>): JSX.Element => {
   const { logEvent } = useAnalytics()
 
@@ -69,6 +71,7 @@ export const ArchiveConfirmationModal = <T extends Offer>({
       }
       isOpen={isDialogOpen}
       onClose={onDismiss}
+      refToFocusOnClose={refToFocusOnClose}
       actionButtons={[
         <Button
           key="cancel"

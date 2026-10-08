@@ -313,6 +313,9 @@ describe('BookableOfferSummary', () => {
       .mockResolvedValueOnce()
 
     renderBookableOfferSummary(props)
+    const backButton = screen.getByRole('link', {
+      name: 'Retour à la liste des offres',
+    })
 
     const cancelButton = screen.getByRole('button', {
       name: 'Annuler la réservation',
@@ -329,7 +332,8 @@ describe('BookableOfferSummary', () => {
     await userEvent.click(confirmButton)
 
     expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
+      'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
+      backButton.id
     )
 
     await waitFor(() => {

@@ -19,10 +19,12 @@ import { OfferStatusCell } from './components/OfferStatusCell/OfferStatusCell'
 interface GetIndividualOfferColumnsProps {
   headlineOffer: HeadLineOfferResponseModel | null
   isReadOnly: boolean
+  searchBtnId?: string
 }
 export function getIndividualOfferColumns({
   headlineOffer,
   isReadOnly,
+  searchBtnId,
 }: GetIndividualOfferColumnsProps): Column<ListOffersOfferResponseModel>[] {
   const columns: Column<ListOffersOfferResponseModel>[] = [
     {
@@ -108,6 +110,7 @@ export function getIndividualOfferColumns({
             isHeadline={offer.id === headlineOffer?.id}
             editionOfferLink={offerLink}
             editionStockLink={editionStockLink}
+            searchBtnId={searchBtnId}
           />
         )
       },

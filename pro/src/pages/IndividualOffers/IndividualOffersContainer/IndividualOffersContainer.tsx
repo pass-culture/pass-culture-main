@@ -140,6 +140,7 @@ export const IndividualOffersContainer = ({
   const columns = getIndividualOfferColumns({
     headlineOffer,
     isReadOnly: isClosed,
+    searchBtnId: searchButtonId,
   })
 
   const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({

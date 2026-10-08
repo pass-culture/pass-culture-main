@@ -21,6 +21,27 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43906](https://passculture.atlassian.net/browse/PC-43906)  
+**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+
+**Problème** 😱  
+A la fermeture des modales, le focus n’est pas replacé de manière logique.
+
+**Correction** 💡  
+Repositionner le focus de manière logique après la validation du formulaire.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 12.8 - Dans chaque page web, l'ordre de tabulation est-il cohérent ?</summary>
 
 **RAWeb/RGAA** : [Critère 12.8](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-12-8)

@@ -57,12 +57,14 @@ type CollectiveOfferTemplateNavigationProps = {
   pathname: string
   isCreation: boolean
   offer?: GetCollectiveOfferTemplateResponseModel
+  backBtnId?: string
 }
 
 function _renderCollectiveOfferTemplateNavigation({
   offer,
   isCreation,
   pathname,
+  backBtnId,
 }: CollectiveOfferTemplateNavigationProps) {
   const activeStep = getCollectiveOfferTemplateActiveStep(pathname)
   if (isCreation) {
@@ -73,7 +75,12 @@ function _renderCollectiveOfferTemplateNavigation({
       />
     )
   }
-  return <CollectiveOfferTemplateEditionNavigation offer={offer} />
+  return (
+    <CollectiveOfferTemplateEditionNavigation
+      offer={offer}
+      backBtnId={backBtnId}
+    />
+  )
 }
 
 export interface CollectiveOfferLayoutProps {
@@ -85,6 +92,7 @@ export interface CollectiveOfferLayoutProps {
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
+  backBtnId?: string
 }
 
 export const CollectiveOfferLayout = ({
@@ -94,6 +102,7 @@ export const CollectiveOfferLayout = ({
   isTemplate = false,
   requestId = null,
   offer,
+  backBtnId,
 }: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
   const pathname = location.pathname
@@ -127,6 +136,7 @@ export const CollectiveOfferLayout = ({
                   isCreation,
                   pathname,
                   offer,
+                  backBtnId,
                 })
               : _renderCollectiveOfferNavigation({
                   isCreation,

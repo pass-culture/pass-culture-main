@@ -7,12 +7,14 @@ interface OfferEducationalModalProps {
   onDismiss(): void
   onValidate(): void
   isDialogOpen: boolean
+  refToFocusOnClose?: React.RefObject<HTMLElement | null>
 }
 
 export const CancelCollectiveBookingModal = ({
   onDismiss,
   onValidate,
   isDialogOpen,
+  refToFocusOnClose,
 }: OfferEducationalModalProps): JSX.Element => {
   const modalTitle =
     'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ? '
@@ -23,6 +25,7 @@ export const CancelCollectiveBookingModal = ({
       title={modalTitle}
       isOpen={isDialogOpen}
       onClose={onDismiss}
+      refToFocusOnClose={refToFocusOnClose}
       actionButtons={[
         <Button
           onClick={onDismiss}

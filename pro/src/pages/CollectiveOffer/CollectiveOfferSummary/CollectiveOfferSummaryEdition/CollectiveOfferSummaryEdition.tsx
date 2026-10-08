@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -29,6 +31,7 @@ export const CollectiveOfferSummaryEdition = ({
 }: CollectiveOfferSummaryEditionProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const backBtnId = useId()
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
@@ -51,6 +54,7 @@ export const CollectiveOfferSummaryEdition = ({
       subTitle={offer.name}
       isTemplate={offer.isTemplate}
       offer={offer}
+      backBtnId={backBtnId}
     >
       <OfferEducationalActions
         className={styles.actions}
@@ -69,6 +73,7 @@ export const CollectiveOfferSummaryEdition = ({
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <Button
+            id={backBtnId}
             as="router-link"
             to={computeCollectiveOffersUrl({}, undefined, offer.isTemplate)}
             label="Retour à la liste des offres"

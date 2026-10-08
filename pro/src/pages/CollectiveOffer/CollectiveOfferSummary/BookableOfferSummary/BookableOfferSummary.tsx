@@ -66,6 +66,7 @@ export type BookableOfferSummaryProps = {
 
 export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const imageCreditId = useId()
+  const backBtnId = useId()
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -93,7 +94,8 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
       await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
       setIsCancelBookingModalOpen(false)
       snackBar.success(
-        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
+        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
+        backBtnId
       )
     } catch {
       snackBar.error(
@@ -145,7 +147,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
 
       setIsArchiveModalOpen(false)
 
-      snackBar.success('L’offre a bien été archivée')
+      snackBar.success('L’offre a bien été archivée', backBtnId)
     } catch {
       snackBar.error('Une erreur est survenue lors de l’archivage de l’offre')
     }
@@ -396,6 +398,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <Button
+            id={backBtnId}
             as="router-link"
             to={computeCollectiveOffersUrl({})}
             label="Retour à la liste des offres"
