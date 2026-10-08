@@ -3,6 +3,7 @@ import typing
 from datetime import date
 from datetime import datetime
 
+import flask
 import pydantic
 from pydantic.json_schema import SkipJsonSchema
 from spectree.models import BaseFile
@@ -677,7 +678,17 @@ class AttachImageFormModel(HttpBodyModel):
         try:
             result = super().model_validate(*args, **kwargs)
         except pydantic.ValidationError:
-            logger.exception("Error during AttachImageFormModel validation")
+            # A 400 is returned to the client, so this should not be a Sentry error
+            logger.warning(
+                "Error during AttachImageFormModel validation",
+                exc_info=True,
+                extra={
+                    "content_type": flask.request.content_type,
+                    "content_length": flask.request.content_length,
+                    "form_keys": list(flask.request.form),
+                    "file_keys": list(flask.request.files),
+                },
+            )
             raise
 
         return result
