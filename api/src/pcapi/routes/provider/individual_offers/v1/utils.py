@@ -403,6 +403,10 @@ def update_artist_offer_links(offer: offers_models.Offer, artists: list[serializ
     if offer.productId:
         raise api_errors.ApiErrors({"artists": ["You cannot update this field for an event linked to a product"]})
 
+    link_artists_to_offer(offer, artists)
+
+
+def link_artists_to_offer(offer: offers_models.Offer, artists: list[serialization.ArtistBody] | None) -> None:
     artists = artists or []
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
 
