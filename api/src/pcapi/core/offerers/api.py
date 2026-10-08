@@ -645,7 +645,7 @@ def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
 
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
-    delete_venue_pivots(venue_id)
+    delete_venue_pivots_and_providers(venue_id)
 
     # Warning: we should only delete rows where the "venueId" is the
     # venue to delete. We should NOT delete rows where the
@@ -3693,7 +3693,7 @@ def nullify_venue_emails(venue: models.Venue, author: users_models.User) -> None
     db.session.flush()
 
 
-def delete_venue_pivots(venue_id: int) -> None:
+def delete_venue_pivots_and_providers(venue_id: int, author_id: int | None = None) -> None:
     pivot = (
         db.session.query(providers_models.CinemaProviderPivot)
         .filter(providers_models.CinemaProviderPivot.venueId == venue_id)
@@ -3723,6 +3723,23 @@ def delete_venue_pivots(venue_id: int) -> None:
     db.session.query(providers_models.AllocinePivot).filter(providers_models.AllocinePivot.venueId == venue_id).delete(
         synchronize_session=False
     )
+
+    # The list is added to make sure we work on a frozen list. In some cases SQLAlchemy modifies
+    # the query results while we loop on it. `list()` avoids this side effect.
+    venue_provider_list = list(
+        db.session.query(providers_models.VenueProvider)
+        .filter(providers_models.VenueProvider.venueId == venue_id)
+        .all()
+    )
+    if venue_provider_list:
+        author = None
+        if author_id:
+            author = users_repository.find_user_by_id(author_id)
+        for venue_provider in venue_provider_list:
+            # imported here to avoid circular imports
+            import pcapi.core.providers.api as providers_api
+
+            providers_api.delete_venue_provider(venue_provider=venue_provider, author=author, send_email=False)
 
 
 def venue_has_ongoing_bookings(venue: models.Venue) -> bool:

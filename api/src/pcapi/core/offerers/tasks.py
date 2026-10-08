@@ -120,7 +120,7 @@ def deactivate_venue_offers_task(payload: DeactivateVenueOffersPayload) -> None:
 
         logger.info("closing venue: draft offers deleted", extra={"venue_id": venue.id})
 
-        offerers_api.delete_venue_pivots(venue.id)
+        offerers_api.delete_venue_pivots_and_providers(venue.id, payload.author_id)
         db.session.flush()
 
         logger.info("closing venue: pivots deleted", extra={"venue_id": venue.id})
