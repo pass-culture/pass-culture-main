@@ -38,6 +38,10 @@ describe('ImageDragAndDrop', () => {
     const input = screen.getByTestId('file-input')
     expect(input).toBeInTheDocument()
     expect(input).toHaveAttribute('type', 'file')
+    expect(input).toHaveAccessibleDescription(
+      /Formats acceptés.*JPG, JPEG, PNG, mpo, webP.*Poids maximal du fichier.*10 Mo.*Résolution maximale de l’image.*80 Mégapixels/
+    )
+    expect(screen.getByRole('list').children).toHaveLength(3)
     expect(input).toHaveAttribute(
       'accept',
       'image/jpeg,.jpeg,.jpg,image/png,.png,image/mpo,.mpo,image/webp,.webp'
@@ -86,6 +90,9 @@ describe('ImageDragAndDrop', () => {
         })
       )
     })
+    expect(screen.getByTestId('file-input')).toHaveAccessibleDescription(
+      /Formats acceptés.*JPG, JPEG, PNG, mpo, webP.*Poids maximal du fichier.*10 Mo.*Résolution maximale de l’image.*80 Mégapixels/
+    )
   })
 
   it('should display the appropriate err message when an invalid file type is dropped & call onError', async () => {
@@ -100,13 +107,29 @@ describe('ImageDragAndDrop', () => {
 
     const onError = vi.fn()
     render(<ImageDragAndDrop onError={onError} />)
+    const input = screen.getByTestId('file-input')
 
     fireEvent.drop(screen.getByTestId('image-drag-and-drop'), data)
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        /Le format de l’image n’est pas valide/
+      expect(screen.getAllByRole('alert', { hidden: true })).toHaveLength(1)
+      expect(screen.getByRole('alert', { hidden: true })).toHaveAttribute(
+        'aria-hidden',
+        'true'
       )
+      expect(screen.getByRole('alert', { hidden: true })).toHaveTextContent(
+        'Le format de l’image n’est pas valide'
+      )
+      expect(input).toHaveAccessibleDescription(
+        'Le format de l’image n’est pas valide'
+      )
+      expect(screen.getByRole('list').children).toHaveLength(3)
+      expect(
+        screen.getByRole('alert', { hidden: true }).closest('ul')
+      ).toBeNull()
+      expect(
+        screen.getByRole('img', { name: 'Critère non respecté' })
+      ).toBeInTheDocument()
     })
 
     expect(onError).toHaveBeenCalledWith(['file-invalid-type'])
@@ -126,8 +149,12 @@ describe('ImageDragAndDrop', () => {
     fireEvent.drop(screen.getByTestId('image-drag-and-drop'), data)
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        /Le poids du fichier est trop lourd/
+      expect(screen.getAllByRole('alert', { hidden: true })).toHaveLength(1)
+      expect(screen.getByRole('alert', { hidden: true })).toHaveTextContent(
+        'Le poids du fichier est trop lourd'
+      )
+      expect(screen.getByTestId('file-input')).toHaveAccessibleDescription(
+        'Le poids du fichier est trop lourd'
       )
     })
 
@@ -171,9 +198,13 @@ describe('ImageDragAndDrop', () => {
       fireEvent.drop(screen.getByTestId('image-drag-and-drop'), data)
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toHaveTextContent(
-          /L’image doit faire au moins/
-        )
+        expect(screen.getAllByRole('alert', { hidden: true })).toHaveLength(2)
+        expect(
+          screen.getByText('L’image doit faire au moins 600 pixels de haut')
+        ).toBeInTheDocument()
+        expect(
+          screen.getByText('L’image doit faire au moins 400 pixels de large')
+        ).toBeInTheDocument()
       })
 
       expect(onError).toHaveBeenCalledWith([

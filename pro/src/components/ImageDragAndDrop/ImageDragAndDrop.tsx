@@ -1,5 +1,11 @@
 import cn from 'classnames'
-import { type ForwardedRef, forwardRef, useId, useState } from 'react'
+import {
+  type ForwardedRef,
+  forwardRef,
+  useId,
+  useImperativeHandle,
+  useState,
+} from 'react'
 import { useDropzone } from 'react-dropzone'
 
 import fullValidateIcon from '@/icons/full-validate.svg'
@@ -134,6 +140,7 @@ export const ImageDragAndDrop = forwardRef(
         setHasInput(true)
         onError?.(errors)
         setIsDraggedOver(false)
+        inputRef.current?.focus({ preventScroll: true })
       },
     })
 
@@ -150,6 +157,7 @@ export const ImageDragAndDrop = forwardRef(
     inputProps.disabled = disabled
     inputProps.id = useId()
     delete inputProps.style
+    useImperativeHandle(dragAndDropInputRef, () => inputRef.current)
 
     const errors = fileRejections.reduce(
       (acc, rejections) => {
@@ -175,28 +183,51 @@ export const ImageDragAndDrop = forwardRef(
       errors.hasWrongHeight
 
     const ariaId = useId()
-
-    const errorMessage = (
-      <>
-        {hasInput && (
-          <>
-            <p>Erreurs: </p>
-            {errors.hasWrongType && 'Le format de l’image n’est pas valide'}
-            {errors.hasWrongSize && 'Le poids du fichier est trop lourd'}
-            {errors.hasWrongDimensions &&
-              "Image trop volumineuse. La résolution maximale acceptée est d'environ 80 millions de pixels (9000 x 9000 pixels)"}
-            {minSizes?.height &&
-              errors.hasWrongHeight &&
-              `L’image doit faire au moins ${minSizes.height} pixels de haut`}
-            {minSizes?.width &&
-              errors.hasWrongWidth &&
-              `L’image doit faire au moins ${minSizes.width} pixels de large`}
-            {!hasError && <span>&nbsp;</span>}
-          </>
-        )}
-        {!hasInput && <span>&nbsp;</span>}
-      </>
+    const descriptionId = `drag-and-drop-description-${ariaId}`
+    const errorMessageIds = {
+      format: `drag-and-drop-format-error-${ariaId}`,
+      size: `drag-and-drop-size-error-${ariaId}`,
+      resolution: `drag-and-drop-resolution-error-${ariaId}`,
+      height: `drag-and-drop-height-error-${ariaId}`,
+      width: `drag-and-drop-width-error-${ariaId}`,
+    }
+    const errorMessages = [
+      errors.hasWrongType
+        ? {
+            id: errorMessageIds.format,
+            message: 'Le format de l’image n’est pas valide',
+          }
+        : undefined,
+      errors.hasWrongSize
+        ? {
+            id: errorMessageIds.size,
+            message: 'Le poids du fichier est trop lourd',
+          }
+        : undefined,
+      errors.hasWrongDimensions
+        ? {
+            id: errorMessageIds.resolution,
+            message:
+              "Image trop volumineuse. La résolution maximale acceptée est d'environ 80 millions de pixels (9000 x 9000 pixels)",
+          }
+        : undefined,
+      errors.hasWrongHeight && minSizes?.height
+        ? {
+            id: errorMessageIds.height,
+            message: `L’image doit faire au moins ${minSizes.height} pixels de haut`,
+          }
+        : undefined,
+      errors.hasWrongWidth && minSizes?.width
+        ? {
+            id: errorMessageIds.width,
+            message: `L’image doit faire au moins ${minSizes.width} pixels de large`,
+          }
+        : undefined,
+    ].filter(
+      (error): error is { id: string; message: string } => error !== undefined
     )
+    const errorDescriptionIds = errorMessages.map(({ id }) => id).join(' ')
+
     return (
       <div className={cn(styles['image-drag-and-drop-container'])}>
         <div
@@ -229,22 +260,29 @@ export const ImageDragAndDrop = forwardRef(
               'Déposez votre image ici'
             ) : (
               <>
-                <p>Glissez et déposez votre image</p>
-                <span>
-                  {' ou '}
+                <p aria-hidden>Glissez et déposez votre image</p>
+                <div>
+                  <p
+                    className={styles['image-drag-and-drop-text-or']}
+                    aria-hidden
+                  >
+                    {' ou '}
+                  </p>
                   <label
                     id={`drag-and-drop-label-${ariaId}`}
                     className={styles['image-drag-and-drop-text-highlight']}
                     htmlFor={inputProps.id}
+                    aria-hidden
                   >
                     Importez une image
                   </label>
                   <input
                     {...inputProps}
                     id={id}
-                    ref={dragAndDropInputRef}
                     aria-labelledby={`drag-and-drop-label-${ariaId}`}
-                    aria-describedby={`drag-and-drop-description-${ariaId}`}
+                    aria-describedby={
+                      hasError ? errorDescriptionIds : descriptionId
+                    }
                     aria-invalid={hasError ? 'true' : 'false'}
                     className={cn(styles['image-drag-and-drop-input'], {
                       [styles['image-drag-and-drop-input-error']]: hasError,
@@ -274,24 +312,16 @@ export const ImageDragAndDrop = forwardRef(
                       onClick?.()
                     }}
                   />
-                </span>
+                </div>
               </>
             )}
           </div>
         </div>
         <div
-          id={`drag-and-drop-description-${ariaId}`}
+          id={descriptionId}
           className={styles['image-drag-and-drop-description']}
         >
-          <div
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-            className={styles['visually-hidden']}
-          >
-            {hasError ? errorMessage : <span>&nbsp;</span>}
-          </div>
-          <div className={styles['image-drag-and-drop-description']}>
+          <ul className={styles['image-drag-and-drop-description-list']}>
             <ImageConstraintCheck
               label="Formats acceptés"
               constraint="JPG, JPEG, PNG, mpo, webP"
@@ -326,8 +356,20 @@ export const ImageDragAndDrop = forwardRef(
                 hasError={errors.hasWrongWidth}
               />
             )}
-          </div>
+          </ul>
         </div>
+        {errorMessages.map(({ id, message }) => (
+          <div
+            key={id}
+            id={id}
+            role="alert"
+            aria-live="assertive"
+            aria-hidden="true"
+            className={styles['visually-hidden']}
+          >
+            {message}
+          </div>
+        ))}
       </div>
     )
   }
