@@ -94,7 +94,7 @@ def create_disability_fraud_checks_retroactively(
 
 def compute_next_retry_at(total_created: int) -> datetime:
     # spreading the recovery timings across time allows human trafic retries during the recovery period
-    STARVATION_MARGIN = 1.2
+    STARVATION_MARGIN = 4.5
     offset = total_created / PARTICULIER_API_RATE_LIMIT_THRESHOLD * RATE_LIMIT_TIME_WINDOW_SIZE
 
     return get_naive_utc_now() + relativedelta(seconds=int(offset * STARVATION_MARGIN))
