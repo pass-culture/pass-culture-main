@@ -279,8 +279,8 @@ importers:
         specifier: 9.4.0
         version: 9.4.0(react@19.3.0)
       libphonenumber-js:
-        specifier: 1.13.13
-        version: 1.13.13
+        specifier: 1.13.14
+        version: 1.13.14
       lodash.invert:
         specifier: 4.3.0
         version: 4.3.0
@@ -3449,8 +3449,8 @@ packages:
   known-css-properties@0.37.0:
     resolution: {integrity: sha512-JCDrsP4Z1Sb9JwG0aJ8Eo2r7k4Ou5MwmThS/6lcIe1ICyb7UBJKGRIUUdqc2ASdE/42lgz6zFUnzAIhtXnBVrQ==}
 
-  libphonenumber-js@1.13.13:
-    resolution: {integrity: sha512-hV6SmWnyQ8U1QXhhqbqYBHIStNnscG7A5XbGodgdHhf/8N5PwhYpJA5U/yHDjYwPYTd8uNGXqq416XctuvK2PA==}
+  libphonenumber-js@1.13.14:
+    resolution: {integrity: sha512-llihgCcx0BFLksecLP+x1J+6JDE1GsXS1RN/LoPF6qcwpeQcnjj0lcvZxY8AzbEpYwyZWPZW/nDuqkqzm3amiw==}
 
   lightningcss-android-arm64@1.33.0:
     resolution: {integrity: sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==}
@@ -7382,7 +7382,7 @@ snapshots:
 
   known-css-properties@0.37.0: {}
 
-  libphonenumber-js@1.13.13: {}
+  libphonenumber-js@1.13.14: {}
 
   lightningcss-android-arm64@1.33.0:
     optional: true
