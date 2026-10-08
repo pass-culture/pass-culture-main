@@ -212,6 +212,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
             payload for payload in settlement_payloads if payload.settlement_type == SettlementType.REFUND
         )
         refund_invoice_ids: list[int] = []
+        refund_settlements: list[finance_models.Settlement] = []
 
         for payload in refund_payloads:
             if payload.invoice_external_reference not in invoices_dict:
@@ -238,10 +239,14 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                 status=finance_models.SettlementStatus.EXECUTED,
             )
             db.session.add(refund_settlement)
+            refund_settlements.append(refund_settlement)
             refund_invoice_ids.append(invoice.id)
-        if refund_invoice_ids:
-            finance_api.validate_invoices(refund_invoice_ids)
-            # TODO send mail to pro for those debit notes
+
+        db.session.flush()
+
+        for refund_settlement in refund_settlements:
+            transactional_mails.send_refund_settlement_received(refund_settlement)
+        finance_api.validate_invoices(refund_invoice_ids)
 
         # Deal with paying payloads
         bill_settlement_payloads = (

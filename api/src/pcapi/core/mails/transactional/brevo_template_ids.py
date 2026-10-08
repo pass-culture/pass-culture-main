@@ -163,6 +163,7 @@ class TransactionalEmail(Enum):
     EXTERNAL_BOOKING_SUPPORT_CANCELLATION = models.TemplatePro(id_prod=26, id_not_prod=26)
     SETTLEMENT_VALIDATED = models.TemplatePro(id_prod=648, id_not_prod=82)
     SETTLEMENT_REJECTED = models.TemplatePro(id_prod=649, id_not_prod=81)
+    REFUND_SETTLEMENT_RECEIVED = models.TemplatePro(id_prod=685, id_not_prod=89)
 
     # Finance incidents
     RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS = models.TemplatePro(id_prod=77, id_not_prod=54)
