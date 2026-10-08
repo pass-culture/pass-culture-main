@@ -51,7 +51,7 @@ class DecodeJWTTokenTest:
         assert decoded["data"] == "value"
 
     def test_decode_jwt_token_invalid_key(self):
-        token = jwt.encode({"data": "value"}, key="secret jwt key", algorithm=ALGORITHM_HS_256)
+        token = jwt.encode({"data": "value"}, key="secret jwt key with at least 32 bytes", algorithm=ALGORITHM_HS_256)
 
         with pytest.raises(jwt.exceptions.InvalidSignatureError):
             decode_jwt_token(token)
