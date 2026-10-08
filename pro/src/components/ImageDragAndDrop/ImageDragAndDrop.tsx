@@ -122,27 +122,28 @@ export const ImageDragAndDrop = forwardRef(
       }
     }
 
-    const { getRootProps, getInputProps, fileRejections } = useDropzone({
-      accept: ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
-      maxFiles: 1,
-      maxSize: MAX_FILE_SIZE,
-      onDragEnter: () => {
-        setCustomErrors([])
-        setIsDraggedOver(true)
-      },
-      onDragLeave: () => setIsDraggedOver(false),
-      onDropAccepted: (files) => {
-        void handleDrop(files)
-      },
-      onDropRejected: (files) => {
-        const file = files[0]
-        const errors = file.errors.map((e) => e.code)
-        setHasInput(true)
-        onError?.(errors)
-        setIsDraggedOver(false)
-        inputRef.current?.focus({ preventScroll: true })
-      },
-    })
+    const { getRootProps, getInputProps, fileRejections, inputRef } =
+      useDropzone({
+        accept: ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
+        maxFiles: 1,
+        maxSize: MAX_FILE_SIZE,
+        onDragEnter: () => {
+          setCustomErrors([])
+          setIsDraggedOver(true)
+        },
+        onDragLeave: () => setIsDraggedOver(false),
+        onDropAccepted: (files) => {
+          void handleDrop(files)
+        },
+        onDropRejected: (files) => {
+          const file = files[0]
+          const errors = file.errors.map((e) => e.code)
+          setHasInput(true)
+          onError?.(errors)
+          setIsDraggedOver(false)
+          inputRef.current?.focus({ preventScroll: true })
+        },
+      })
 
     const rootProps = getRootProps()
     // role="presentation" on <div> is redundant,
@@ -256,65 +257,58 @@ export const ImageDragAndDrop = forwardRef(
             />
           )}
           <div className={styles['image-drag-and-drop-text']}>
-            {isDraggedOver ? (
-              'Déposez votre image ici'
-            ) : (
-              <>
-                <p aria-hidden>Glissez et déposez votre image</p>
-                <div>
-                  <p
-                    className={styles['image-drag-and-drop-text-or']}
-                    aria-hidden
-                  >
-                    {' ou '}
-                  </p>
-                  <label
-                    id={`drag-and-drop-label-${ariaId}`}
-                    className={styles['image-drag-and-drop-text-highlight']}
-                    htmlFor={inputProps.id}
-                    aria-hidden
-                  >
-                    Importez une image
-                  </label>
-                  <input
-                    {...inputProps}
-                    id={id}
-                    aria-labelledby={`drag-and-drop-label-${ariaId}`}
-                    aria-describedby={
-                      hasError ? errorDescriptionIds : descriptionId
-                    }
-                    aria-invalid={hasError ? 'true' : 'false'}
-                    className={cn(styles['image-drag-and-drop-input'], {
-                      [styles['image-drag-and-drop-input-error']]: hasError,
-                      [styles['image-drag-and-drop-input-disabled']]: disabled,
-                    })}
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                    data-testid="file-input"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setHasInput(false)
+            <p aria-hidden>
+              {isDraggedOver
+                ? 'Déposez votre image ici'
+                : 'Glissez et déposez votre image'}
+            </p>
+            <div hidden={isDraggedOver}>
+              <p className={styles['image-drag-and-drop-text-or']} aria-hidden>
+                {' ou '}
+              </p>
+              <label
+                id={`drag-and-drop-label-${ariaId}`}
+                className={styles['image-drag-and-drop-text-highlight']}
+                htmlFor={inputProps.id}
+                aria-hidden
+              >
+                Importez une image
+              </label>
+            </div>
+            <input
+              {...inputProps}
+              id={id}
+              aria-label="Importez une image"
+              aria-describedby={hasError ? errorDescriptionIds : descriptionId}
+              aria-invalid={hasError ? 'true' : 'false'}
+              className={cn(styles['image-drag-and-drop-input'], {
+                [styles['image-drag-and-drop-input-error']]: hasError,
+                [styles['image-drag-and-drop-input-disabled']]: disabled,
+              })}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              data-testid="file-input"
+              onClick={(e) => {
+                e.stopPropagation()
+                setHasInput(false)
 
-                      // Clear the input value to allow re-uploading the same file.
-                      if (
-                        dragAndDropInputRef &&
-                        typeof dragAndDropInputRef !== 'function' &&
-                        dragAndDropInputRef.current
-                      ) {
-                        dragAndDropInputRef.current.value = ''
-                        dragAndDropInputRef.current.dispatchEvent(
-                          new Event('input', { bubbles: true })
-                        )
-                      }
+                // Clear the input value to allow re-uploading the same file.
+                if (
+                  dragAndDropInputRef &&
+                  typeof dragAndDropInputRef !== 'function' &&
+                  dragAndDropInputRef.current
+                ) {
+                  dragAndDropInputRef.current.value = ''
+                  dragAndDropInputRef.current.dispatchEvent(
+                    new Event('input', { bubbles: true })
+                  )
+                }
 
-                      onClick?.()
-                    }}
-                  />
-                </div>
-              </>
-            )}
+                onClick?.()
+              }}
+            />
           </div>
         </div>
         <div
@@ -364,7 +358,6 @@ export const ImageDragAndDrop = forwardRef(
             id={id}
             role="alert"
             aria-live="assertive"
-            aria-hidden="true"
             className={styles['visually-hidden']}
           >
             {message}

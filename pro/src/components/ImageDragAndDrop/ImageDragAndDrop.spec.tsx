@@ -56,16 +56,18 @@ describe('ImageDragAndDrop', () => {
     const data = mockData([file])
 
     render(<ImageDragAndDrop />)
+    const input = screen.getByTestId('file-input')
 
     fireEvent.dragEnter(screen.getByTestId('image-drag-and-drop'), data)
     await waitFor(() => {
       expect(screen.getByText(/Déposez votre image ici/)).toBeInTheDocument()
+      expect(screen.getByTestId('file-input')).toBe(input)
     })
 
     expect(
       screen.queryByText(/Glissez et déposez votre image ou/)
     ).not.toBeInTheDocument()
-    expect(screen.queryByText(/Importez une image/)).not.toBeInTheDocument()
+    expect(screen.getByText(/Importez une image/)).not.toBeVisible()
   })
 
   it('should call onDropOrSelected when a valid file is dropped', async () => {
@@ -112,21 +114,16 @@ describe('ImageDragAndDrop', () => {
     fireEvent.drop(screen.getByTestId('image-drag-and-drop'), data)
 
     await waitFor(() => {
-      expect(screen.getAllByRole('alert', { hidden: true })).toHaveLength(1)
-      expect(screen.getByRole('alert', { hidden: true })).toHaveAttribute(
-        'aria-hidden',
-        'true'
-      )
-      expect(screen.getByRole('alert', { hidden: true })).toHaveTextContent(
+      expect(screen.getAllByRole('alert')).toHaveLength(1)
+      expect(screen.getByRole('alert')).toHaveTextContent(
         'Le format de l’image n’est pas valide'
       )
       expect(input).toHaveAccessibleDescription(
         'Le format de l’image n’est pas valide'
       )
+      expect(input).toHaveFocus()
       expect(screen.getByRole('list').children).toHaveLength(3)
-      expect(
-        screen.getByRole('alert', { hidden: true }).closest('ul')
-      ).toBeNull()
+      expect(screen.getByRole('alert').closest('ul')).toBeNull()
       expect(
         screen.getByRole('img', { name: 'Critère non respecté' })
       ).toBeInTheDocument()
@@ -149,8 +146,8 @@ describe('ImageDragAndDrop', () => {
     fireEvent.drop(screen.getByTestId('image-drag-and-drop'), data)
 
     await waitFor(() => {
-      expect(screen.getAllByRole('alert', { hidden: true })).toHaveLength(1)
-      expect(screen.getByRole('alert', { hidden: true })).toHaveTextContent(
+      expect(screen.getAllByRole('alert')).toHaveLength(1)
+      expect(screen.getByRole('alert')).toHaveTextContent(
         'Le poids du fichier est trop lourd'
       )
       expect(screen.getByTestId('file-input')).toHaveAccessibleDescription(
@@ -198,7 +195,7 @@ describe('ImageDragAndDrop', () => {
       fireEvent.drop(screen.getByTestId('image-drag-and-drop'), data)
 
       await waitFor(() => {
-        expect(screen.getAllByRole('alert', { hidden: true })).toHaveLength(2)
+        expect(screen.getAllByRole('alert')).toHaveLength(2)
         expect(
           screen.getByText('L’image doit faire au moins 600 pixels de haut')
         ).toBeInTheDocument()
