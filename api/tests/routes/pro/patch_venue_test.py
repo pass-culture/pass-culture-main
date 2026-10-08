@@ -336,8 +336,7 @@ class Returns200Test:
             street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
         )
         venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            offererAddress__address=initial_address,
+            managingOfferer=user_offerer.offerer, offererAddress__address=initial_address, isOpenToPublic=True
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
