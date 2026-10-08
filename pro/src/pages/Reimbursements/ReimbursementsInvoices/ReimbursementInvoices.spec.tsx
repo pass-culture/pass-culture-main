@@ -186,7 +186,9 @@ describe('reimbursementsWithFilters', () => {
       })
     ).toBeInTheDocument()
 
-    expect(screen.getByText('Trop perçu')).toBeInTheDocument()
+    expect(
+      screen.getByRole('cell', { name: 'Note de débit' })
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('checkbox', {
         name: 'Sélectionner la ligne du 03/11/2022',

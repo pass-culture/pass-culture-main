@@ -117,7 +117,7 @@ export const InvoicesFilters = ({
             defaultOption={{ label: 'Tous les types', value: 'ALL_AMOUNTS' }}
             options={[
               { label: 'Remboursement', value: 'POSITIVE_AMOUNT' },
-              { label: 'Trop-perçu', value: 'NEGATIVE_AMOUNT' },
+              { label: 'Note de débit', value: 'NEGATIVE_AMOUNT' },
             ]}
             value={amount}
             onChange={({ target: { value } }) =>
