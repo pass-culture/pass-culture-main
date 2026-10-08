@@ -42,7 +42,7 @@ class _ApiParticulierResult[
     response: ResponseT | None
     status: subscription_models.FraudCheckStatus
     reason_codes: list[subscription_models.FraudReasonCode]
-    http_status_code: int
+    http_status_code: int | None
     error_code: str | None = None
 
 
@@ -57,10 +57,57 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
         return
 
     cache_name = f"{_QF_CACHE_KEY}:{quotient_familial_fraud_check.id}"
+    qf_result = _get_qf_most_relevant_result(quotient_familial_fraud_check, cache_name)
+    if not qf_result:
+        logger.error(
+            "No Quotient Familial was found",
+            extra={"beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
+        )
+        return
+
+    granted_after_attempts: int | None = None
+    with atomic():
+        if qf_result.status == subscription_models.FraudCheckStatus.KO:
+            _update_quotient_familial_fraud_check_content(quotient_familial_fraud_check, qf_result)
+            _decline_bonus(quotient_familial_fraud_check, qf_result)
+
+            transactional_mails.send_bonus_declined_email(user)
+
+        elif qf_result.status == subscription_models.FraudCheckStatus.OK:
+            given_recredit, attempts_count = _grant_bonus(quotient_familial_fraud_check, qf_result)
+
+            if given_recredit:
+                granted_after_attempts = attempts_count
+                trigger_events.track_has_received_bonus(user.id)
+                transactional_mails.send_bonus_granted_email(user)
+
+        else:
+            raise NotImplementedError(f"no handler was implemented for {qf_result.status}")
+
+        external_attributes_api.update_external_user(user)
+
+    get_redis_client().delete(cache_name)
+    statistics_api.record_bonus_attempt(
+        subscription_models.FraudCheckType.QF_BONUS_CREDIT, qf_result.reason_codes, granted_after_attempts
+    )
+
+
+def _get_qf_most_relevant_result(
+    quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck, cache_name: str
+) -> _ApiParticulierResult[api_particulier.QuotientFamilialResponse] | None:
+    if not _has_quotient_familial_eligible_age(quotient_familial_fraud_check.user):
+        return _ApiParticulierResult(
+            response=None,
+            status=subscription_models.FraudCheckStatus.KO,
+            reason_codes=[subscription_models.FraudReasonCode.NOT_ELIGIBLE],
+            http_status_code=None,
+            error_code=None,
+        )
+
     most_relevant_result: _ApiParticulierResult[api_particulier.QuotientFamilialResponse] | None = None
     unhandled_api_particulier_errors = []
     is_result_conclusive = False
-    for month in _get_months_when_user_is_17(user):
+    for month in _get_months_when_user_is_17(quotient_familial_fraud_check.user):
         try:
             qf_result = _get_and_cache_quotient_familial_result(quotient_familial_fraud_check, month, cache_name)
         except api_particulier.ParticulierApiRateLimitExceeded:
@@ -81,38 +128,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     if unhandled_api_particulier_errors and not is_result_conclusive:
         raise unhandled_api_particulier_errors[-1]
 
-    if not most_relevant_result:
-        logger.error(
-            "No Quotient Familial was found or none were requested",
-            extra={"beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
-        )
-        return
-
-    granted_after_attempts: int | None = None
-    with atomic():
-        if most_relevant_result.status == subscription_models.FraudCheckStatus.KO:
-            _update_quotient_familial_fraud_check_content(quotient_familial_fraud_check, most_relevant_result)
-            _decline_bonus(quotient_familial_fraud_check, most_relevant_result)
-
-            transactional_mails.send_bonus_declined_email(user)
-
-        elif most_relevant_result.status == subscription_models.FraudCheckStatus.OK:
-            given_recredit, attempts_count = _grant_bonus(quotient_familial_fraud_check, most_relevant_result)
-
-            if given_recredit:
-                granted_after_attempts = attempts_count
-                trigger_events.track_has_received_bonus(user.id)
-                transactional_mails.send_bonus_granted_email(user)
-
-        else:
-            raise NotImplementedError(f"no handler was implemented for {most_relevant_result.status}")
-
-        external_attributes_api.update_external_user(user)
-
-    get_redis_client().delete(cache_name)
-    statistics_api.record_bonus_attempt(
-        subscription_models.FraudCheckType.QF_BONUS_CREDIT, most_relevant_result.reason_codes, granted_after_attempts
-    )
+    return most_relevant_result
 
 
 def _get_months_when_user_is_17(user: users_models.User) -> list[datetime.date]:
@@ -121,8 +137,7 @@ def _get_months_when_user_is_17(user: users_models.User) -> list[datetime.date]:
         raise ValueError("Beneficiaries applying for the bonus are expected to have a non-null birth date")
 
     MONTHS_IN_A_YEAR = 12
-    api_particulier_cutoff_date = datetime.date.today() - relativedelta(months=23)
-    cutoff_month = api_particulier_cutoff_date.replace(day=1)
+    cutoff_month = _get_quotient_familial_retention_cutoff_month()
     seventeenth_birth_month = birth_date.replace(day=1) + relativedelta(years=17)
 
     months_when_user_is_17 = []
@@ -586,6 +601,7 @@ def get_user_qf_bonification_status(user: users_models.User) -> bonus_schemas.QF
             <= settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME.date()
         )
 
+    has_eligible_age = _has_quotient_familial_eligible_age(user)
     if not has_eligible_age:
         return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
 
@@ -634,6 +650,38 @@ def get_user_qf_bonification_status(user: users_models.User) -> bonus_schemas.QF
             return bonus_schemas.QFBonificationStatus.APPLICATION_NOT_FOUND
 
     return bonus_schemas.QFBonificationStatus.KO
+
+
+def _has_quotient_familial_eligible_age(user: users_models.User) -> bool:
+    if user.age == 18:
+        return True
+
+    if user.age != 19:
+        return False
+
+    if user.birth_date is None:
+        return False
+
+    nineteenth_birthday = user.birth_date + relativedelta(years=19)
+    is_19th_birthday_too_late = (
+        datetime.datetime.combine(nineteenth_birthday, datetime.datetime.min.time())
+        > settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME
+    )
+    if is_19th_birthday_too_late:
+        return False
+
+    # we need to be able to fetch at least the QF of the user when they are 17 years and 11 months old
+    eighteenth_birthday = user.birth_date + relativedelta(years=18)
+    quotient_familial_cutoff_month = _get_quotient_familial_retention_cutoff_month()
+    is_18th_birthday_late_enough = eighteenth_birthday.replace(day=1) > quotient_familial_cutoff_month
+    return is_18th_birthday_late_enough
+
+
+def _get_quotient_familial_retention_cutoff_month() -> datetime.date:
+    api_particulier_cutoff_date = datetime.date.today() - relativedelta(
+        months=bonus_constants.QUOTIENT_FAMILIAL_MONTH_RETENTION
+    )
+    return api_particulier_cutoff_date.replace(day=1)
 
 
 def get_user_disability_bonification_status(user: users_models.User) -> bonus_schemas.DisabilityBonificationStatus:

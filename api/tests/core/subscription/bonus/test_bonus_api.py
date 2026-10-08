@@ -616,6 +616,21 @@ class QuotientFamilialApplicationTest:
 
         assert len(mocked_get_quotient_familial.mock_calls) == 1
 
+    @patch("pcapi.connectors.api_particulier.get_quotient_familial")
+    def test_does_not_call_quotient_familial_before_retention_cutoff(self, mocked_get_quotient_familial):
+        too_late = date_utils.get_naive_utc_now() - relativedelta(years=19, months=11)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=too_late.date())
+        bonus_fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+
+        assert len(mocked_get_quotient_familial.mock_calls) == 0
+        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+
     @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=0)
     def test_sentry_error_filtered(self):
         captured_events = []
@@ -1285,31 +1300,29 @@ class QFBonusCreditEligibilityTest:
 
         assert qf_bonification_status == bonus_schemas.QFBonificationStatus.ELIGIBLE
 
-    def test_nineteen_year_old_within_extended_cutoff_is_eligible(self):
+    @time_machine.travel(settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME)
+    def test_nineteen_year_old_within_retention_cutoff_is_eligible(self):
         # user is 19 years old at the cutoff date
-        birth_date = settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME - relativedelta(years=19)
+        birth_date = datetime.date.today() - relativedelta(years=19, months=10)
         user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
 
-        day_before_user_turns_20 = birth_date + relativedelta(years=20, days=-1)
-        with time_machine.travel(day_before_user_turns_20):
-            qf_bonification_status = bonus_api.get_user_qf_bonification_status(user)
+        qf_bonification_status = bonus_api.get_user_qf_bonification_status(user)
 
         assert qf_bonification_status == bonus_schemas.QFBonificationStatus.ELIGIBLE
+
+    @time_machine.travel(settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME)
+    def test_nineteen_year_old_before_retention_cutoff_is_eligible(self):
+        # user is 19 years old at the cutoff date
+        birth_date = datetime.date.today() - relativedelta(years=19, months=11)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
+
+        qf_bonification_status = bonus_api.get_user_qf_bonification_status(user)
+
+        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
 
     def test_nineteen_year_old_after_extended_cutoff_not_eligible(self):
         # user is 19 years old the day after the cutoff date
         birth_date = settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME - relativedelta(years=19, days=-1)
-        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
-
-        day_when_user_is_19 = birth_date + relativedelta(years=19)
-        with time_machine.travel(day_when_user_is_19):
-            qf_bonification_status = bonus_api.get_user_qf_bonification_status(user)
-
-        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
-
-    def test_nineteen_year_old_before_extended_cutoff_not_eligible(self):
-        # user is 19 years old the day before the credit v3 decree
-        birth_date = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=19, days=1)
         user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
 
         day_when_user_is_19 = birth_date + relativedelta(years=19)
