@@ -417,12 +417,14 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
         onDismiss={() => setIsCancelledBookingModalOpen(false)}
         onValidate={cancelBooking}
         isDialogOpen={isCancelledBookingModalOpen}
+        refToFocusOnClose={dropdownTriggerRef}
       />
       <ArchiveConfirmationModal
         onDismiss={() => setIsArchivedModalOpen(false)}
         onValidate={archiveOffer}
         offer={offer}
         isDialogOpen={isArchivedModalOpen}
+        refToFocusOnClose={dropdownTriggerRef}
       />
     </div>
   )

@@ -21,6 +21,31 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43906](https://passculture.atlassian.net/browse/PC-43906)  
+**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+
+**Problème** 😱  
+
+- Désormais, avec Tab / Shift + Tab, le focus ne boucle plus dans les modales : il finit par atteindre les composants du navigateur, sans toutefois sortir réellement de la modale. Ce comportement est constaté sur l’ensemble des modales du site.
+- A la fermeture des modales, le focus n’est pas replacé de manière logique.
+
+**Correction** 💡  
+
+- Vu par mail : le problème provient probablement du navigateur et pas de notre implémentation.
+- Repositionner le focus de manière logique après la validation du formulaire.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 10.9 - Dans chaque page web, l'information ne doit pas être donnée uniquement par la forme, taille ou position.</summary>
 
 **RAWeb/RGAA** : [Critère 10.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-9)

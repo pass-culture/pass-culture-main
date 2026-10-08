@@ -6,12 +6,14 @@ type ConfirmVenueClosedModalProps = {
   isPricingPoint: boolean
   onValidate: () => void
   isOpen: boolean
+  refToFocusOnClose: React.RefObject<HTMLElement | null>
 }
 
 export const ConfirmVenueClosedModal = ({
   isPricingPoint,
   onValidate,
   isOpen,
+  refToFocusOnClose,
 }: ConfirmVenueClosedModalProps): JSX.Element => {
   return (
     <SimpleModal
@@ -19,6 +21,7 @@ export const ConfirmVenueClosedModal = ({
       title="Votre demande de fermeture a bien été prise en compte."
       isOpen={isOpen}
       onClose={onValidate}
+      refToFocusOnClose={refToFocusOnClose}
       actionButtons={[
         <Button onClick={onValidate} label="J'ai compris" key="confirm" />,
       ]}
