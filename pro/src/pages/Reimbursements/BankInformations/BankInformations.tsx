@@ -173,8 +173,8 @@ const BankInformations = (): JSX.Element => {
                   selectedAdminOfferer
                     .venuesWithNonFreeOffersWithoutBankAccounts.length > 0
                 }
-                editLinkId={editLinkId}
-                addLinkId={addLinkId}
+                editLinkId={`${editLinkId}-${bankAccount.id}`}
+                addLinkId={`${addLinkId}-${bankAccount.id}`}
               />
             ))}
           </div>
@@ -195,8 +195,8 @@ const BankInformations = (): JSX.Element => {
             updateBankAccountVenuePricingPoint
           }
           closeDialog={closeDialog}
-          editLinkId={editLinkId}
-          addLinkId={addLinkId}
+          editLinkId={`${editLinkId}-${selectedBankAccount.id}`}
+          addLinkId={`${addLinkId}-${selectedBankAccount.id}`}
         />
       )}
     </div>
