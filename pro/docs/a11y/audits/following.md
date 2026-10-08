@@ -21,6 +21,27 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 7.5 - Dans chaque page web, les messages de statut sont-ils correctement restitués par les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.5](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-5)
+**Ticket** : [PC-43948](https://passculture.atlassian.net/browse/PC-43948)  
+**PR** : [#24639](https://github.com/pass-culture/pass-culture-main/pull/24639)
+
+**Problème** 😱  
+Un élément avec le rôle alert est bien présent pour signaler qu’un des critères de validation n’est pas respecté lors de l’import d’une image. Cependant, cet attribut est positionné sur le conteneur regroupant l’ensemble des critères. En conséquence, l’intégralité de la liste des critères est annoncée par les technologies d’assistance, y compris ceux qui ne sont pas concernés par l’erreur.
+
+**Correction** 💡  
+Positionner le rôle alert uniquement sur les éléments réellement en erreur, afin d’éviter la restitution globale de contenus non pertinents.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 12.8 - Dans chaque page web, l'ordre de tabulation est-il cohérent ?</summary>
 
 **RAWeb/RGAA** : [Critère 12.8](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-12-8)
