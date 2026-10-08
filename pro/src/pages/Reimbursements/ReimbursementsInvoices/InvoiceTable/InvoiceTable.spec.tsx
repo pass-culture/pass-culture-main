@@ -218,8 +218,12 @@ describe('InvoiceTable', () => {
   it('should display the correct document type based on amount', () => {
     renderReimbursementsInvoicesTable(invoices)
 
-    expect(screen.getByText('Remboursement')).toBeInTheDocument() // INV-001
-    expect(screen.getByText(/Trop\s?perçu/)).toBeInTheDocument() // INV-002
+    expect(
+      screen.getByRole('cell', { name: 'Remboursement' })
+    ).toBeInTheDocument() // INV-001
+    expect(
+      screen.getByRole('cell', { name: 'Note de débit' })
+    ).toBeInTheDocument() // INV-002
   })
 
   it('should format dates correctly to DD/MM/YYYY', () => {

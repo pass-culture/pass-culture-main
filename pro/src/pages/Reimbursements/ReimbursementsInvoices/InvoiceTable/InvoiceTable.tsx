@@ -81,7 +81,7 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
       invoice.amount >= 0 ? (
         <span className={styles['cell-document-type']}>Remboursement</span>
       ) : (
-        <span className={styles['cell-document-type']}>Trop&nbsp;perçu</span>
+        <span className={styles['cell-document-type']}>Note de débit</span>
       ),
   },
   {
@@ -163,7 +163,7 @@ export const InvoiceTable = ({
   return (
     <div className={styles['invoices-table']}>
       <Table
-        title="Justificatif de remboursement ou de trop perçu"
+        title="Justificatif de remboursement ou de note de débit"
         columns={columns}
         data={invoices}
         selectable={true}
