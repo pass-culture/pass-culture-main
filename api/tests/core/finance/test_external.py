@@ -453,16 +453,24 @@ class GetSettlementsTest:
         assert refund_settlement.batch is None
         assert refund_invoice.status == finance_models.InvoiceStatus.PAID
 
-        assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0]["To"] == first_bank_account.venueLinks[0].venue.bookingEmail
-        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.SETTLEMENT_REJECTED.value)
+        assert len(mails_testing.outbox) == 3
+        assert mails_testing.outbox[0]["To"] == refund_bank_account.venueLinks[0].venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.REFUND_SETTLEMENT_RECEIVED.value)
         assert mails_testing.outbox[0]["params"] == {
+            "FORMATTED_MONTANT_REMBOURSEMENT": "70 €",
+            "SETTLEMENT_DATE": date_utils.get_date_formatted_for_email(refund_settlement.settlementDate),
+            "REFERENCE": refund_invoice.reference,
+        }
+
+        assert mails_testing.outbox[1]["To"] == first_bank_account.venueLinks[0].venue.bookingEmail
+        assert mails_testing.outbox[1]["template"] == asdict(TransactionalEmail.SETTLEMENT_REJECTED.value)
+        assert mails_testing.outbox[1]["params"] == {
             "DATE_VIREMENT": date_utils.get_date_formatted_for_email(existing_settlement.batch.dateValidated)
         }
 
-        assert mails_testing.outbox[1]["To"] == additional_bank_account.venueLinks[0].venue.bookingEmail
-        assert mails_testing.outbox[1]["template"] == asdict(TransactionalEmail.SETTLEMENT_REJECTED.value)
-        assert mails_testing.outbox[1]["params"] == {
+        assert mails_testing.outbox[2]["To"] == additional_bank_account.venueLinks[0].venue.bookingEmail
+        assert mails_testing.outbox[2]["template"] == asdict(TransactionalEmail.SETTLEMENT_REJECTED.value)
+        assert mails_testing.outbox[2]["params"] == {
             "DATE_VIREMENT": date_utils.get_date_formatted_for_email(existing_settlement.batch.dateValidated)
         }
 
