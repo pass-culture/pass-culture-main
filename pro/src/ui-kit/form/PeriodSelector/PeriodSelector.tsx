@@ -7,6 +7,7 @@ import styles from './PeriodSelector.module.scss'
 
 interface PeriodSelectorProps {
   className?: string
+  legend?: string
   onBeginningDateChange: (date: string) => void
   onEndingDateChange: (date: string) => void
   isDisabled?: boolean
@@ -22,6 +23,7 @@ interface PeriodSelectorProps {
 
 export const PeriodSelector = ({
   className,
+  legend = 'Période',
   onBeginningDateChange,
   onEndingDateChange,
   isDisabled,
@@ -35,6 +37,7 @@ export const PeriodSelector = ({
 
   return (
     <fieldset disabled={isDisabled}>
+      <legend className={styles['visually-hidden']}>{legend}</legend>
       <div className={cn(styles['period-filter-inputs'], className)}>
         <div className={styles['period-filter-inputs-datepicker']}>
           <label htmlFor={`field-date-begin-${ariaId}`}>Date de début</label>

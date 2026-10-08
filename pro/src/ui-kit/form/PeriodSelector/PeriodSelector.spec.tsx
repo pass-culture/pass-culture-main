@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
@@ -25,6 +25,19 @@ describe('PeriodSelector', () => {
 
     expect(await axe(container)).toHaveNoViolations()
   })
+
+  it.each(['Période', 'Période de l’évènement'])(
+    'should label the date group with the legend "%s"',
+    (legend) => {
+      renderPeriodSelector(legend === 'Période' ? {} : { legend })
+
+      const group = screen.getByRole('group', { name: legend })
+
+      expect(group.querySelector('legend')).toHaveTextContent(legend)
+      expect(within(group).getByLabelText('Date de début')).toBeVisible()
+      expect(within(group).getByLabelText('Date de fin')).toBeVisible()
+    }
+  )
 
   it('should call onBeginningDateChange and onEndingDateChange', async () => {
     renderPeriodSelector()

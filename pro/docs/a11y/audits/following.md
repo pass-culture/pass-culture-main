@@ -21,6 +21,34 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 11.6 - Dans chaque formulaire, chaque regroupement de champs de même nature a-t-il une légende ?</summary>
+
+**RAWeb/RGAA** : [Critère 11.6](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-6)
+**Ticket** : [PC-43894](https://passculture.atlassian.net/browse/PC-43894)  
+**PR** : [#24675](https://github.com/pass-culture/pass-culture-main/pull/24675)
+
+**Problème** 😱  
+P09 → Les offres individuelles
+P13 → Les offres réservables (collectif)
+
+Le regroupement des champs « Date de début » et « Date de fin » dans les filtres ne possède plus de légende : l'intitulé « Période de l’évènement » a été supprimé.
+
+**Correction** 💡  
+- Ajout d'un élément `<legend>` dans le `<fieldset>` du composant partagé `PeriodSelector` pour donner un nom accessible au regroupement de champs de dates.
+- Utilisation de la légende « Période de l’évènement » pour les offres individuelles et réservables.
+- Ajout d'une légende configurable avec « Période » par défaut pour les autres usages du composant, dont les offres vitrines.
+- Masquage visuel de la légende avec le mixin d'accessibilité existant, tout en conservant sa restitution par les lecteurs d'écran.
+- Le nom accessible étant fourni par la `<legend>` du `<fieldset>`, aucun attribut `aria-label` ou `aria-labelledby` supplémentaire n'est nécessaire.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 12.8 - Dans chaque page web, l'ordre de tabulation est-il cohérent ?</summary>
 
 **RAWeb/RGAA** : [Critère 12.8](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-12-8)

@@ -135,6 +135,7 @@ export const IndividualOffersSearchFilters = ({
 
       <FormLayout.Row inline mdSpaceAfter>
         <PeriodSelector
+          legend="Période de l’évènement"
           onBeginningDateChange={handleDateChange('periodBeginningDate')}
           onEndingDateChange={handleDateChange('periodEndingDate')}
           isDisabled={disableAllFilters}
