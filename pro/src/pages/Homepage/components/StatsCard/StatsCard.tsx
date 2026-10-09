@@ -68,13 +68,17 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
 
   const { data: individualOffers = [], isLoading: areOffersLoading } = useSWR(
     isStatsV2 ? [GET_OFFERS_HOME_QUERY_KEY, venue.id] : null,
-    () => api.listOffersHome({ query: { venueId: venue.id } }),
+    ([, venueId]) => api.listOffersHome({ query: { venueId } }),
     { fallbackData: [] }
   )
 
-  const { data: rawHeadlineOffer } = useSWR(
-    [GET_VENUE_HEADLINE_OFFER_QUERY_KEY],
-    () => api.getVenueHeadlineOffer({ path: { venue_id: venue.id } }),
+  const {
+    data: rawHeadlineOffer,
+    error: headlineOfferError,
+    isLoading: isHeadlineOfferLoading,
+  } = useSWR(
+    [GET_VENUE_HEADLINE_OFFER_QUERY_KEY, venue.id],
+    ([, venueId]) => api.getVenueHeadlineOffer({ path: { venue_id: venueId } }),
     {
       onError: (error) => {
         // 404 is expected when there is no headline offer.
@@ -116,9 +120,16 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
   if (!isStatsV2 && (!oldStats || dailyViews.length < 2)) {
     return null
   }
-  const hasThingOffers = individualOffers.some((offer) => !offer.isEvent)
+  const hasHeadlineOffer = !headlineOfferError && !!rawHeadlineOffer
   const hasEventOffers = individualOffers.some((offer) => offer.isEvent)
-  const hasBothOfferTypes = hasThingOffers && hasEventOffers
+  const showHeadlineAction = individualOffers.length > 0 && !hasHeadlineOffer
+  const showHighlightAction = hasEventOffers && !venue.hasHighlightRequest
+  const showVisibilityAdvice =
+    hasHeadlineOffer && (venue.hasHighlightRequest || !hasEventOffers)
+  const showVisibilitySection =
+    !areOffersLoading &&
+    !isHeadlineOfferLoading &&
+    (showHeadlineAction || showHighlightAction || showVisibilityAdvice)
 
   const oldStatsComponent = (
     <Card>
@@ -205,116 +216,113 @@ export const StatsCard = ({ venue }: StatsCardProps) => {
                 hasActiveIndividualOffer={venue.hasActiveIndividualOffer}
               />
             </div>
-            {!areOffersLoading &&
-              ((hasThingOffers && !rawHeadlineOffer) || hasEventOffers) && (
-                <div>
-                  <h3 className={styles['stats-headline-offer-head']}>
-                    Améliorez votre visibilité
-                  </h3>
-                  <div
-                    data-testid="visibility-actions"
-                    className={cn(styles['visibility-actions'], {
-                      [styles['has-both-actions']]:
-                        hasBothOfferTypes && !rawHeadlineOffer,
-                    })}
-                  >
-                    {hasThingOffers && !rawHeadlineOffer && (
-                      <div
-                        className={cn(
-                          styles['visibility-action'],
-                          styles['headline-action']
-                        )}
-                      >
-                        <SvgIcon
-                          src={headlineImg}
-                          alt=""
-                          width="68"
-                          viewBox="0 0 68 68"
-                          aria-hidden={true}
-                        />
-                        <p className={styles['visibility-action-title']}>
-                          Doublez les consultations d’une offre en la mettant à
-                          la une
-                        </p>
-                        <div className={styles['visibility-action-button']}>
-                          <Button
-                            as="router-link"
-                            to="/offres"
-                            variant={ButtonVariant.SECONDARY}
-                            color={ButtonColor.NEUTRAL}
-                            size={ButtonSize.SMALL}
-                            fullWidth
-                            onClick={() =>
-                              logEvent(HomepageEvents.CLICKED_HEADLINE_OFFER)
-                            }
-                            label="Choisir une offre"
-                          />
-                        </div>
-                      </div>
-                    )}
-                    {hasEventOffers && !rawHeadlineOffer && (
-                      <div
-                        className={cn(
-                          styles['visibility-action'],
-                          styles['highlight-action']
-                        )}
-                      >
-                        <SvgIcon
-                          src={highlightImg}
-                          alt=""
-                          width="68"
-                          viewBox="0 0 68 68"
-                          aria-hidden={true}
-                        />
-                        <p className={styles['visibility-action-title']}>
-                          Participez à un des temps forts valorisés sur
-                          l’application
-                        </p>
-                        <div className={styles['visibility-action-button']}>
-                          <Button
-                            variant={ButtonVariant.SECONDARY}
-                            color={ButtonColor.NEUTRAL}
-                            size={ButtonSize.SMALL}
-                            fullWidth
-                            onClick={() => {
-                              logEvent(
-                                EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
-                                {
-                                  action: 'discover',
-                                }
-                              )
-                              setIsHighlightModalOpen(true)
-                            }}
-                            label="Voir les prochains temps forts"
-                          />
-                        </div>
-                      </div>
-                    )}
-                    {hasEventOffers && rawHeadlineOffer && (
-                      <>
-                        <p>
-                          Si les consultations tardent à venir, pensez à ajuster
-                          vos visuels ou le descriptif de vos offres pour
-                          captiver encore plus les jeunes.
-                        </p>
+            {showVisibilitySection && (
+              <div>
+                <h3 className={styles['stats-headline-offer-head']}>
+                  Améliorez votre visibilité
+                </h3>
+                <div
+                  data-testid="visibility-actions"
+                  className={cn(styles['visibility-actions'], {
+                    [styles['has-both-actions']]:
+                      showHeadlineAction && showHighlightAction,
+                  })}
+                >
+                  {showHeadlineAction && (
+                    <div
+                      className={cn(
+                        styles['visibility-action'],
+                        styles['headline-action']
+                      )}
+                    >
+                      <SvgIcon
+                        src={headlineImg}
+                        alt=""
+                        width="68"
+                        viewBox="0 0 68 68"
+                        aria-hidden={true}
+                      />
+                      <p className={styles['visibility-action-title']}>
+                        Doublez les consultations d’une offre en la mettant à la
+                        une
+                      </p>
+                      <div className={styles['visibility-action-button']}>
                         <Button
-                          variant={ButtonVariant.TERTIARY}
-                          as="a"
-                          to="https://aide.passculture.app/hc/fr/sections/4412332363793-Gestion-et-valorisation-des-offres"
-                          opensInNewTab
-                          label="Voir nos conseils des gestion et valorisation d’offres"
+                          as="router-link"
+                          to="/offres"
+                          variant={ButtonVariant.SECONDARY}
+                          color={ButtonColor.NEUTRAL}
+                          size={ButtonSize.SMALL}
+                          fullWidth
+                          onClick={() =>
+                            logEvent(HomepageEvents.CLICKED_HEADLINE_OFFER)
+                          }
+                          label="Choisir une offre"
                         />
-                      </>
-                    )}
-                  </div>
-                  {hasEventOffers && !rawHeadlineOffer && (
-                    <ModalHighlight
-                      isOpen={isHighlightModalOpen}
-                      onClose={() => setIsHighlightModalOpen(false)}
-                    />
+                      </div>
+                    </div>
+                  )}
+                  {showHighlightAction && (
+                    <div
+                      className={cn(
+                        styles['visibility-action'],
+                        styles['highlight-action']
+                      )}
+                    >
+                      <SvgIcon
+                        src={highlightImg}
+                        alt=""
+                        width="68"
+                        viewBox="0 0 68 68"
+                        aria-hidden={true}
+                      />
+                      <p className={styles['visibility-action-title']}>
+                        Participez à un des temps forts valorisés sur
+                        l’application
+                      </p>
+                      <div className={styles['visibility-action-button']}>
+                        <Button
+                          variant={ButtonVariant.SECONDARY}
+                          color={ButtonColor.NEUTRAL}
+                          size={ButtonSize.SMALL}
+                          fullWidth
+                          onClick={() => {
+                            logEvent(
+                              EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
+                              { action: 'discover' }
+                            )
+                            setIsHighlightModalOpen(true)
+                          }}
+                          label="Voir les prochains temps forts"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {showVisibilityAdvice && (
+                    <>
+                      <p>
+                        Si les consultations tardent à venir, pensez à ajuster
+                        vos visuels ou le descriptif de vos offres pour captiver
+                        encore plus les jeunes.
+                      </p>
+                      <Button
+                        variant={ButtonVariant.TERTIARY}
+                        as="a"
+                        to="https://aide.passculture.app/hc/fr/sections/4412332363793-Gestion-et-valorisation-des-offres"
+                        opensInNewTab
+                        label="Voir nos conseils des gestion et valorisation d’offres"
+                      />
+                    </>
                   )}
                 </div>
-              )}
+                {showHighlightAction && (
+                  <ModalHighlight
+                    isOpen={isHighlightModalOpen}
+                    onClose={() => setIsHighlightModalOpen(false)}
+                  />
+                )}
+              </div>
+            )}
           </Card.Content>
         </>
       )}
