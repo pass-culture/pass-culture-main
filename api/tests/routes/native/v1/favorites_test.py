@@ -16,7 +16,7 @@ from pcapi.core.external.batch import models as batch_models
 from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.favorites import factories as favorite_factories
 from pcapi.core.favorites.models import FavoriteOffer
-from pcapi.core.favorites.repository import get_favorites_for
+from pcapi.core.favorites.repository import get_favorite_offers_for
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
@@ -532,6 +532,7 @@ class CreateFavoriteTest:
         client_with_user = client.with_token(user)
 
         def add_to_favorite(position):
+
             def slow_get_favorites(*args, **kwargs):
                 time.sleep(position % 2)
                 # return the mocked function's return value
@@ -543,19 +544,21 @@ class CreateFavoriteTest:
                     "pcapi.routes.native.v1.favorites.track_offer_added_to_favorites_event",
                 ) as track_offer_added_to_favorites_event_mock,
                 mock.patch(
-                    "pcapi.routes.native.v1.favorites.get_favorites_for", wraps=get_favorites_for
+                    "pcapi.routes.native.v1.favorites.get_favorite_offers_for", wraps=get_favorite_offers_for
                 ) as get_favorites_for_mock,
             ):
                 # Use the app context in the new thread
                 app.app_context().push()
                 # Simulate a slow db transaction so we can get the race condition
                 get_favorites_for_mock.side_effect = slow_get_favorites
+
                 # Allow lock_timeout to be sure that the db transaction is waiting while another transaction is inserting the same row
                 db.session.execute(sa.text("SET LOCAL lock_timeout='3s'"))
                 try:
                     response = client_with_user.post(FAVORITES_URL, json={"offerId": offer_id})
                 finally:
                     db.session.execute(sa.text(f"SET LOCAL lock_timeout='{settings.DATABASE_LOCK_TIMEOUT}'"))
+
             return (
                 response.status_code,
                 update_external_user_mock.call_count,
