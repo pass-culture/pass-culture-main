@@ -1500,15 +1500,9 @@ def close_venue(venue_id: int) -> response_utils.BackofficeResponse:
             ).format(name=venue.name),
             "warning",
         )
-    elif offerers_api.close_venue(venue, author=current_user, comment=form.comment.data):
-        flash(Markup("Le partenaire culturel <b>{name}</b> a été fermé").format(name=venue.name), "success")
     else:
-        flash(
-            Markup("Le partenaire culturel <b>{name}</b> n'a pas pu être fermé pour une raison à déterminer").format(
-                name=venue.name
-            ),
-            "warning",
-        )
+        offerers_api.close_venue(venue, author=current_user, comment=form.comment.data)
+        flash(Markup("Le partenaire culturel <b>{name}</b> a été fermé").format(name=venue.name), "success")
 
     return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 

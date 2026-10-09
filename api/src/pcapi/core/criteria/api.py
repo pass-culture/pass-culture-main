@@ -5,6 +5,8 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
 from pcapi.utils.transaction_manager import atomic
 
+from . import constants
+
 
 def get_or_create_category(label: str) -> criteria_models.CriterionCategory:
     result = (
@@ -39,3 +41,18 @@ def link_criterion_to_venue(criterion: criteria_models.Criterion, venue: offerer
             db.session.flush([link])
     except sa_exc.IntegrityError:
         pass
+
+
+def unlink_criterion_from_venue(criterion: criteria_models.Criterion, venue: offerers_models.Venue) -> None:
+    db.session.query(criteria_models.VenueCriterion).filter(
+        criteria_models.VenueCriterion.criterionId == criterion.id,
+        criteria_models.VenueCriterion.venueId == venue.id,
+    ).delete()
+
+
+def get_closure_request_tag() -> criteria_models.Criterion:
+    return get_or_create_criteria(
+        name=constants.CLOSURE_REQUEST_LABEL,
+        description=constants.CLOSURE_REQUEST_DESCRIPTION,
+        category_labels=[constants.SUPPORT_CATEGORY_LABEL],
+    )
