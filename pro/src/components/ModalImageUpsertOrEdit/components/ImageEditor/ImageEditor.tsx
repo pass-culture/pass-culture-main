@@ -148,10 +148,7 @@ export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
         ref={(el) =>
           el
             ?.querySelector('canvas')
-            ?.setAttribute(
-              'aria-label',
-              "Editeur de cadrage et de zoom de l'image"
-            )
+            ?.setAttribute('aria-label', "Editeur de cadrage de l'image")
         }
       >
         <AvatarEditor
