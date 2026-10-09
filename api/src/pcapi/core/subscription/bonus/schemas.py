@@ -71,6 +71,7 @@ class QuotientFamilialBonusCreditContent(BaseModelV2):
     http_status_code: int | None = None
     error_code: str | None = None
     next_retry_at: datetime.datetime
+    request_id: str | None = None
 
 
 class AdultDisabilityBonusCreditContent(BaseModelV2):
@@ -79,6 +80,7 @@ class AdultDisabilityBonusCreditContent(BaseModelV2):
     http_status_code: int | None = None
     error_code: str | None = None
     next_retry_at: datetime.datetime
+    request_id: str | None = None
 
 
 class DisabledChildEducationRecipientStatus(enum.StrEnum):
@@ -93,6 +95,7 @@ class DisabledChildEducationBonusCreditContent(BaseModelV2):
     http_status_code: int | None = None
     error_code: str | None = None
     next_retry_at: datetime.datetime
+    request_id: str | None = None
 
 
 class QFBonificationStatus(enum.Enum):

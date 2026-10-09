@@ -37,12 +37,14 @@ class ParticulierApiException(Exception):
         error_code: str | None = None,
         error_title: str | None = None,
         retry_after: int | None = None,
+        request_id: str | None = None,
     ) -> None:
         super().__init__(message)
         self.status_code = status_code
         self.error_code = error_code
         self.error_title = error_title
         self.retry_after = retry_after
+        self.request_id = request_id
 
 
 class ParticulierApiForbidden(ParticulierApiException):
@@ -357,6 +359,7 @@ def _raise_for_status(response: Response, endpoint_label: str) -> None:
         error_code=error_code,
         error_title=error_title,
         retry_after=_get_retry_after(response),
+        request_id=response.headers.get("X-Request-ID"),
     )
 
 
