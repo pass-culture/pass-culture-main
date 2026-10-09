@@ -25,6 +25,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
     num_queries_success = 1  # # select api_key, offerer and provider
     num_queries_success += 1  # check venue_provider exists
     num_queries_success += 1  # fetch offers
+    num_queries_success += 1  # fetch venues
     num_queries_success += 1  # fetch stocks
     num_queries_success += 1  # fetch mediations
     num_queries_success += 1  # fetch price categories
@@ -66,8 +67,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         ) + offers_factories.ThingOfferFactory.create_batch(12, venue=venue2)
         offers_factories.ThingOfferFactory()
 
-        no_check_on_venue_num_queries = self.num_queries_success - 1
-        with testing.assert_num_queries(no_check_on_venue_num_queries):
+        with testing.assert_num_queries(self.num_queries_success):
             response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
@@ -99,7 +99,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         offers_factories.ThingOfferFactory(offererAddress=offerer_address_3)
         address_id = offerer_address_1.addressId
 
-        with testing.assert_num_queries(self.num_queries_success):
+        with testing.assert_num_queries(self.num_queries_success - 1):
             response = self.make_request(plain_api_key, query_params={"addressId": address_id})
 
             assert response.status_code == 200
