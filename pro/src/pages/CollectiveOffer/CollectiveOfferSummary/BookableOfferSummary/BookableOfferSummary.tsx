@@ -10,7 +10,7 @@ import {
   type GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
@@ -190,11 +190,10 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     ? `- ${offer.institution.postalCode}`
     : ''
   return (
-    <BasicLayout isStickyActionBarInChild>
+    <ContentLayout>
       <div className={styles['title-wrapper']}>
         <h1 className={styles['title']}>{offer.name}</h1>
       </div>
-
       <div className={styles['header-status']}>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
       </div>
@@ -392,7 +391,6 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           />
         )}
       </div>
-
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <Button
@@ -413,6 +411,6 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
         onValidate={cancelBooking}
         isDialogOpen={isCancelBookingModalOpen}
       />
-    </BasicLayout>
+    </ContentLayout>
   )
 }

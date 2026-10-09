@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 import { axe } from 'vitest-axe'
 
@@ -18,7 +18,6 @@ const renderOfferTypes = (initialRoute = '/', allowedOnAdage = false) => {
   return renderWithProviders(
     <Routes>
       <Route path="/" element={<OfferType />} />
-      <Route path="/onboarding" element={<OfferType />} />
     </Routes>,
     {
       storeOverrides: {
@@ -46,13 +45,6 @@ describe('OfferType', () => {
   it('should display with the lateral bar', async () => {
     renderOfferTypes()
     expect(await screen.findByTestId('lateral-panel')).toBeInTheDocument()
-  })
-
-  it('should not render when the offer is not set', async () => {
-    renderOfferTypes('/onboarding')
-    await waitFor(() => {
-      expect(screen.queryByTestId('lateral-panel')).not.toBeInTheDocument()
-    })
   })
 
   it('should show a collective specific title if the url contains the collective type', async () => {

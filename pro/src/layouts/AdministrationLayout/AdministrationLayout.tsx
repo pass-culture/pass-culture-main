@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router'
 
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import { useCurrentUserPermissions } from '@/commons/auth/useCurrentUserPermissions'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
@@ -18,7 +18,7 @@ export const AdministrationLayout = () => {
   const title = currentRoute.handle?.title ?? ''
 
   return (
-    <BasicLayout isAdminArea>
+    <ContentLayout isAdminArea>
       <h1 className={styles['title']}>{title}</h1>
       {offererNames.length > 1 && <OffererSelect />}
       {userPermissions.isSelectedAdminOffererAssociated ? (
@@ -26,6 +26,6 @@ export const AdministrationLayout = () => {
       ) : (
         <NonAttachedBanner></NonAttachedBanner>
       )}
-    </BasicLayout>
+    </ContentLayout>
   )
 }

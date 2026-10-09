@@ -7,7 +7,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 0 rem.torem(10px);
+  padding: 0;
   min-height: size.$action-bar-sticky-height;
   align-items: center;
   display: flex;
@@ -69,6 +69,8 @@
     margin-bottom: var(--size-spacing-l);
     box-shadow: var(--shadow-overlay);
     border-radius: var(--size-border-radius-m);
+    padding-left: var(--size-spacing-l);
+    padding-right: var(--size-spacing-l);
   }
 
   &-embedded-flat {
@@ -84,21 +86,9 @@
   }
 }
 
-@media (min-width: size.$laptop) {
-  .actions-bar-new-interface {
-    padding-right: size.$main-content-padding;
-    padding-left: calc(rem.torem(size.$side-nav-width) + rem.torem(32px));
-  }
-
-  .actions-bar-new-interface.actions-bar-embedded {
-    padding-left: size.$main-content-padding;
-  }
-}
-
 @media (min-width: size.$tablet) {
   .actions-bar {
-    position: fixed;
-    box-shadow: var(--shadow-overlay);
+    position: sticky;
     border-top: unset;
 
     &-new-interface {

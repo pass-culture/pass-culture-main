@@ -6,10 +6,14 @@
   flex-direction: column;
   height: 100vh; /* full sidebar height */
   justify-content: space-between;
+
+  &-list {
+    margin-bottom: var(--size-spacing-m);
+  }
 }
 
 .footer {
-  padding: var(--size-spacing-s) 0;
+  padding: var(--size-spacing-m) 0;
 
   & .review {
     padding: var(--size-spacing-s) var(--size-spacing-l);
@@ -22,9 +26,11 @@
   }
 }
 
-.separator-line {
-  background-color: var(--separator-color-subtle);
-  margin: 0 rem.torem(16px);
-  height: rem.torem(1px);
-  margin-bottom: var(--size-spacing-l);
+.separator {
+  margin-top: auto;
+
+  &-line {
+    background-color: var(--separator-color-subtle);
+    height: rem.torem(1px);
+  }
 }

@@ -5,7 +5,7 @@ import { Link, Route, Routes } from 'react-router'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { BasicLayout } from '../../layouts/BasicLayout/BasicLayout'
+import { ContentLayout } from '../../layouts/ContentLayout/ContentLayout'
 import { SignUpLayout } from '../../layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useFocus } from '../useFocus'
 
@@ -25,10 +25,10 @@ const renderUseFocusRoutes = (url = '/accueil') => {
         element={
           <>
             <FocusTopPageOrBackToNavLink />
-            <BasicLayout>
+            <ContentLayout>
               <h1>Accueil</h1>
               <Link to="/connection">Log Out</Link>
-            </BasicLayout>
+            </ContentLayout>
           </>
         }
       />
