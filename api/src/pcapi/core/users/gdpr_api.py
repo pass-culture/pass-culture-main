@@ -46,9 +46,11 @@ from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import schemas
 from pcapi.core.users.api import SingleSignOnProviders
+from pcapi.core.users.email import constants as email_constants
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.backoffice import filters as backoffice_filters
 from pcapi.utils import date as date_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.date import get_naive_utc_now
@@ -688,11 +690,12 @@ def clean_gdpr_extracts() -> None:
 
 
 def delete_gdpr_extract(extract_id: int) -> None:
-    object_storage.delete_public_object(
-        folder=settings.GCP_GDPR_EXTRACT_FOLDER,
-        object_id=f"{extract_id}.zip",
-        bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
-    )
+    for extension in ("zip", "pdf"):
+        object_storage.delete_public_object(
+            folder=settings.GCP_GDPR_EXTRACT_FOLDER,
+            object_id=f"{extract_id}.{extension}",
+            bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
+        )
     db.session.query(models.GdprUserDataExtract).filter(models.GdprUserDataExtract.id == extract_id).delete()
 
 
@@ -824,34 +827,72 @@ def _extract_gdpr_deposits(user: models.User) -> list[schemas.GdprDepositSeriali
     ]
 
 
-def _extract_gdpr_email_history(user: models.User) -> list[schemas.GdprEmailHistory]:
+def _format_gdpr_author(author: models.User | None, user: models.User) -> str | None:
+    """Only the extracted user is named: employees and third parties are reduced to their ID."""
+    if author is None:
+        return None
+    if author.id == user.id:
+        return f"{author.full_name} (ID : {author.id})"
+    if author.has_admin_role or author.backoffice_profile is not None:
+        return f"Interne (ID : {author.id})"
+
+    return f"Tiers (ID : {author.id})"
+
+
+def _format_gdpr_email_history_author(history: models.UserEmailHistory, user: models.User) -> str | None:
+    """Entries older than the `authorId` column have no author.
+
+    An admin event type still tells that an employee made it, any other type can only come from the user.
+    """
+    if history.author is None and history.eventType in email_constants.ADMIN_EMAIL_HISTORY_EVENT_TYPES:
+        return "Interne (Inconnu)"
+
+    return _format_gdpr_author(history.author or user, user)
+
+
+def _extract_gdpr_email_history(
+    user: models.User, scope: models.GdprUserDataExtractScope
+) -> list[schemas.GdprEmailHistory]:
+    event_types = (
+        set(models.EmailHistoryEventTypeEnum)
+        if scope == models.GdprUserDataExtractScope.INTERNAL
+        else {
+            models.EmailHistoryEventTypeEnum.CONFIRMATION,
+            models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
+        }
+    )
     emails = (
         db.session.query(models.UserEmailHistory)
         .filter(
             models.UserEmailHistory.userId == user.id,
-            models.UserEmailHistory.eventType.in_(
-                [
-                    models.EmailHistoryEventTypeEnum.CONFIRMATION,
-                    models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
-                ]
+            models.UserEmailHistory.eventType.in_(event_types),
+        )
+        .options(
+            sa_orm.joinedload(models.UserEmailHistory.author).load_only(
+                models.User.id, models.User.firstName, models.User.lastName, models.User.email, models.User.roles
             ),
+            sa_orm.joinedload(models.UserEmailHistory.author)
+            .joinedload(models.User.backoffice_profile)
+            .load_only(permissions_models.BackOfficeUserProfile.id),
         )
         .order_by(models.UserEmailHistory.id)
         .all()
     )
-    emails_history = []
-    for history in emails:
-        new_email = None
-        if history.newUserEmail:
-            new_email = f"{history.newUserEmail}@{history.newDomainEmail}"
-        emails_history.append(
-            schemas.GdprEmailHistory(
-                oldEmail=f"{history.oldUserEmail}@{history.oldDomainEmail}",
-                newEmail=new_email,
-                dateCreated=history.creationDate,
-            )
+
+    return [
+        schemas.GdprEmailHistory(
+            oldEmail=history.oldEmail,
+            newEmail=history.newEmail,
+            dateCreated=history.creationDate,
+            label=email_constants.EMAIL_HISTORY_EVENT_TYPE_LABELS[history.eventType],
+            author=(
+                _format_gdpr_email_history_author(history, user)
+                if scope == models.GdprUserDataExtractScope.INTERNAL
+                else None
+            ),
         )
-    return emails_history
+        for history in emails
+    ]
 
 
 def _extract_gdpr_action_history(user: models.User) -> list[schemas.GdprActionHistorySerializer]:
@@ -964,6 +1005,79 @@ def _extract_gdpr_brevo_data(user: models.User) -> dict:
     return get_raw_contact_data(user.email, user.has_any_pro_role)
 
 
+def _format_profile_edit_value(value: typing.Any) -> str | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return "Oui" if value else "Non"
+    return str(value)
+
+
+def _format_profile_edit(name: str, modified_info: dict) -> str:
+    label = constants.USER_PROFILE_EDIT_LABELS.get(name, name)
+    old_info = _format_profile_edit_value(modified_info.get("old_info"))
+    new_info = _format_profile_edit_value(modified_info.get("new_info"))
+
+    if old_info is None:
+        return f"{label} : ajout de : {new_info}"
+    if new_info is None:
+        return f"{label} : suppression de : {old_info}"
+    return f"{label} : {old_info} → {new_info}"
+
+
+def _get_account_history_details(action: history_models.ActionHistory) -> list[str]:
+    extra_data = action.extraData or {}
+    details = []
+    if action.actionType == history_models.ActionType.USER_SUSPENDED and extra_data.get("reason"):
+        reason_label = constants.SUSPENSION_REASON_CHOICES.get(
+            constants.SuspensionReason(extra_data["reason"]), "Raison inconnue"
+        )
+        details.append(f"Raison : {reason_label}")
+    details.extend(
+        sorted(_format_profile_edit(name, info) for name, info in extra_data.get("modified_info", {}).items())
+    )
+
+    return details
+
+
+def _extract_gdpr_account_history(
+    user: models.User, *filters: sa.ColumnElement[bool]
+) -> list[schemas.GdprAccountHistoryEntry]:
+    actions = (
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.userId == user.id, *filters)
+        .options(
+            sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
+                models.User.id, models.User.firstName, models.User.lastName, models.User.email, models.User.roles
+            ),
+            sa_orm.joinedload(history_models.ActionHistory.authorUser)
+            .joinedload(models.User.backoffice_profile)
+            .load_only(permissions_models.BackOfficeUserProfile.id),
+        )
+        .order_by(history_models.ActionHistory.id)
+        .all()
+    )
+
+    return [
+        schemas.GdprAccountHistoryEntry(
+            author=_format_gdpr_author(action.authorUser, user),
+            comment=action.comment,
+            date=action.actionDate,
+            details=_get_account_history_details(action),
+            label=backoffice_filters.ACTION_TYPE_TO_STRING.get(action.actionType, action.actionType.name),
+        )
+        for action in actions
+    ]
+
+
+def _extract_gdpr_profile_edits(user: models.User) -> list[schemas.GdprAccountHistoryEntry]:
+    return _extract_gdpr_account_history(
+        user,
+        history_models.ActionHistory.actionType == history_models.ActionType.INFO_MODIFIED,
+        history_models.ActionHistory.authorUserId == user.id,
+    )
+
+
 def _dump_gdpr_data_container_as_json_bytes(
     container: schemas.GdprDataContainer,
 ) -> tuple[zipfile.ZipInfo, bytes]:
@@ -977,31 +1091,38 @@ def _dump_gdpr_data_container_as_json_bytes(
 
 def _dump_gdpr_data_container_as_pdf_bytes(
     container: schemas.GdprDataContainer,
-) -> tuple[zipfile.ZipInfo, bytes]:
-    html_content = render_template("extracts/beneficiary_extract.html", container=container)
-    pdf_bytes = generate_pdf_from_html(html_content=html_content)
-    file_info = zipfile.ZipInfo(
-        filename=f"{container.internal.user.email}.pdf",
-        date_time=date_utils.get_naive_utc_now().timetuple()[:6],
-    )
-    return file_info, pdf_bytes
+    scope: models.GdprUserDataExtractScope,
+) -> bytes:
+    if scope == models.GdprUserDataExtractScope.INTERNAL:
+        html_content = render_template("extracts/beneficiary_extract_internal.html", container=container)
+    else:
+        html_content = render_template("extracts/beneficiary_extract.html", container=container)
+
+    return generate_pdf_from_html(html_content=html_content)
 
 
 def _generate_archive_from_gdpr_data_container(container: schemas.GdprDataContainer) -> BytesIO:
+    pdf_file_info = zipfile.ZipInfo(
+        filename=f"{container.internal.user.email}.pdf",
+        date_time=date_utils.get_naive_utc_now().timetuple()[:6],
+    )
+    pdf_bytes = _dump_gdpr_data_container_as_pdf_bytes(container, models.GdprUserDataExtractScope.PUBLIC)
+
     buffer = BytesIO()
     with zipfile.ZipFile(buffer, "w", allowZip64=False) as zip_file:
+        zip_file.writestr(pdf_file_info, pdf_bytes)
         zip_file.writestr(*_dump_gdpr_data_container_as_json_bytes(container))
-        zip_file.writestr(*_dump_gdpr_data_container_as_pdf_bytes(container))
     buffer.seek(0)
+
     return buffer
 
 
-def _store_gdpr_archive(name: str, archive: bytes) -> None:
+def _store_gdpr_file(name: str, contents: bytes, content_type: str) -> None:
     store_public_object(
         folder=settings.GCP_GDPR_EXTRACT_FOLDER,
         object_id=name,
-        blob=archive,
-        content_type="application/zip",
+        blob=contents,
+        content_type=content_type,
         bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
     )
 
@@ -1015,7 +1136,7 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
             user=schemas.GdprUserSerializer.model_validate(user),
             marketing=_extract_gdpr_marketing_data(user),
             loginDevices=_extract_gdpr_devices_history(user),
-            emailsHistory=_extract_gdpr_email_history(user),
+            emailsHistory=_extract_gdpr_email_history(user, extract.scope),
             actionsHistory=_extract_gdpr_action_history(user),
             beneficiaryValidations=_extract_gdpr_beneficiary_validation(user),
             deposits=_extract_gdpr_deposits(user),
@@ -1027,11 +1148,19 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
             brevo=_extract_gdpr_brevo_data(user),
         ),
     )
-    archive = _generate_archive_from_gdpr_data_container(data)
-    _store_gdpr_archive(
-        name=f"{extract.id}.zip",
-        archive=archive.getvalue(),
-    )
+    if extract.scope == models.GdprUserDataExtractScope.INTERNAL:
+        data.internal.accountHistory = _extract_gdpr_account_history(user)
+        data.internal.profileEdits = _extract_gdpr_profile_edits(user)
+        document = _dump_gdpr_data_container_as_pdf_bytes(data, extract.scope)
+        _store_gdpr_file(name=f"{extract.id}.pdf", contents=document, content_type="application/pdf")
+    else:
+        archive = _generate_archive_from_gdpr_data_container(data)
+        _store_gdpr_file(
+            name=f"{extract.id}.zip",
+            contents=archive.getvalue(),
+            content_type="application/zip",
+        )
+
     add_action(history_models.ActionType.USER_EXTRACT_DATA, author=extract.authorUser, user=user)
     db.session.flush()
 
