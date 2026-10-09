@@ -285,18 +285,24 @@ def _get_offerer_addresses(
     filters_params: list[events_serializers.CinemaOfferAddress],
     venue_id: int,
 ) -> dict[tuple[int, str | None], offerers_models.OffererAddress]:
-    filters = []
+    if not filters_params:
+        return {}
 
-    for param in filters_params:
-        filters.append(
-            sa.and_(
-                offerers_models.OffererAddress.label == param.label,
-                offerers_models.OffererAddress.addressId == param.id,
-                offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
-                offerers_models.OffererAddress.venueId == venue_id,
-            )
+    filters = [
+        sa.and_(
+            offerers_models.OffererAddress.label == param.label,
+            offerers_models.OffererAddress.addressId == param.id,
+            offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
+            offerers_models.OffererAddress.venueId == venue_id,
         )
-    offerer_addresses = db.session.query(offerers_models.OffererAddress).filter(sa.or_(*filters)).all()
+        for param in filters_params
+    ]
+    if len(filters) > 1:
+        sa_filters = sa.or_(*filters)
+    else:
+        sa_filters = filters[0]
+
+    offerer_addresses = db.session.query(offerers_models.OffererAddress).filter(sa_filters).all()
 
     offerer_addresses_by_label_address_id = {}
 
