@@ -207,7 +207,7 @@ export function getFormReadOnlyFields(
   hasSelectedProduct: boolean,
   venue: GetVenueResponseModel
 ): string[] {
-  const isClosed = withVenueHelpers(venue).isClosedOrClosing
+  const isClosed = withVenueHelpers(venue).isClosed
   const isNewOfferDraft = offer === null
 
   const allFieldsExceptAccessibility: string[] = Object.keys(

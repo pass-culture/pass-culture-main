@@ -3651,7 +3651,7 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
         transactional_mails.send_venue_closure_request_email(venue)
         return False
 
-    venue.state = models.VenueState.CLOSING
+    venue.state = models.VenueState.CLOSED
     history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
 
     _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_CLOSED)

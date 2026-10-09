@@ -93,7 +93,7 @@ export function StocksCalendarTable({
   const [warningModalState, setWarningModalState] =
     useState<WarningModalState | null>(null)
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const isCaledonian = useIsCaledonian()
 

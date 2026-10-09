@@ -57,7 +57,7 @@ export const IndividualOffersContainer = ({
   offers = [],
 }: IndividualOffersContainerProps): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('individual')
 
   const [selectedOfferIds, setSelectedOfferIds] = useState<

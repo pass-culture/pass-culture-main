@@ -1334,7 +1334,7 @@ def format_user_offerer_status_badge(user_offerer: offerers_models.UserOfferer) 
 
 def format_venue_state_badge(state: offerers_models.VenueState | None) -> str:
     match state:
-        case offerers_models.VenueState.CLOSING | offerers_models.VenueState.CLOSED:
+        case offerers_models.VenueState.CLOSED:
             return format_badge("Fermé", "danger")
         case _:
             return ""

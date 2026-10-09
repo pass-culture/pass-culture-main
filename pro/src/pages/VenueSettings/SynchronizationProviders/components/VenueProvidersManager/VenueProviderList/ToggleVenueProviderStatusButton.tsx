@@ -30,7 +30,7 @@ export const ToggleVenueProviderStatusButton = ({
   const [isLoading, setIsLoading] = useState(false)
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
-  const isClosed = withVenueHelpers(venue).isClosedOrClosing
+  const isClosed = withVenueHelpers(venue).isClosed
 
   const updateVenueProviderStatus = async () => {
     setIsLoading(true)

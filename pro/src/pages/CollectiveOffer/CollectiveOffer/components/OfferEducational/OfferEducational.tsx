@@ -82,7 +82,7 @@ export const OfferEducational = ({
 
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const { mutate } = useSWRConfig()
 
   const { requete: requestId } = queryParamsFromOfferer(location)

@@ -43,7 +43,7 @@ import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrC
 
 const GeneralInformation = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(venue).isClosedOrClosing
+  const isClosed = withVenueHelpers(venue).isClosed
   const addressFieldKey = useKey()
 
   const formContext: VenueSettingsFormContext = {

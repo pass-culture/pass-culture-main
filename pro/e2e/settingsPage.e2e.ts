@@ -278,7 +278,7 @@ test.describe('Settings page', () => {
       .click()
 
     await expect(
-      page.getByRole('button', { name: 'Demande en cours' })
+      page.getByRole('button', { name: 'Fermer la structure' })
     ).toBeDisabled()
 
     await navBar.getByRole('link', { name: 'Accueil' }).click()

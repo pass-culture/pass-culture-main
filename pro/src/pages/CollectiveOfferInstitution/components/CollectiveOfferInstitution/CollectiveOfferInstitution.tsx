@@ -83,7 +83,7 @@ export const CollectiveOfferInstitutionScreen = ({
   requestId = '',
 }: CollectiveOfferInstitutionProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()

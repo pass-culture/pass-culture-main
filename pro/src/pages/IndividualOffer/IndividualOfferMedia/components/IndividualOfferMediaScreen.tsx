@@ -51,7 +51,7 @@ export const IndividualOfferMediaScreen = ({
   const isOnboarding = pathname.includes('onboarding')
   const mode = useOfferWizardMode()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const tipsVideoUploaderId = useId()
 
   const initialImageOffer = getIndividualOfferImage(offer)

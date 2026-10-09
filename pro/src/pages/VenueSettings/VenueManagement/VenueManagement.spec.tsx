@@ -62,7 +62,8 @@ describe('VenueManagement', () => {
     renderVenueManagement(
       makeGetVenueResponseModel({
         id: 1,
-        state: VenueState.CLOSING,
+        state: VenueState.CLOSED,
+        isPricingPoint: true,
       })
     )
 
