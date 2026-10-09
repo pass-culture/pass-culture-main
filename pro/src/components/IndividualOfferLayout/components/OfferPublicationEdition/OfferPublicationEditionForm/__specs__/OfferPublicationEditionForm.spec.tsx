@@ -31,11 +31,7 @@ describe('OfferPublicationEditionForm', () => {
   it('should render the form', async () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
-        // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-        // @ts-expect-error
         publicationDatetime: null,
-        // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-        // @ts-expect-error
         bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},
@@ -57,11 +53,7 @@ describe('OfferPublicationEditionForm', () => {
   it('should disable the form if the pause toggle is on', async () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
-        // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-        // @ts-expect-error
         publicationDatetime: null,
-        // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-        // @ts-expect-error
         bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},
@@ -91,8 +83,6 @@ describe('OfferPublicationEditionForm', () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
         publicationDatetime: publicationDateFomatted,
-        // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-        // @ts-expect-error
         bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},
