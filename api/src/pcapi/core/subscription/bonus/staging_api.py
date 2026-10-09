@@ -177,7 +177,7 @@ def _inject_quotient_familial_mock_config(
 
     if mock_config.householders:
         api_particulier_response.data.allocataires = [
-            _build_api_person_response(householder) for householder in mock_config.householders
+            _build_api_householder_response(householder) for householder in mock_config.householders
         ]
 
 
@@ -195,6 +195,18 @@ def _build_api_quotient_familial_response(
 
 
 def _build_api_person_response(person: bonus_schemas.BonusCreditPerson) -> api_particulier.ApiParticulierPerson:
+    return api_particulier.ApiParticulierPerson(
+        nom_naissance=person.last_name,
+        nom_usage=person.common_name,
+        prenoms=" ".join(person.first_names),
+        date_naissance=person.birth_date,
+        sexe=person.gender,
+    )
+
+
+def _build_api_householder_response(
+    person: bonus_schemas.BonusCreditHouseholder,
+) -> api_particulier.ApiParticulierPerson:
     return api_particulier.ApiParticulierPerson(
         nom_naissance=person.last_name,
         nom_usage=person.common_name,

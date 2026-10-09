@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from pydantic import field_validator
 
 from pcapi import settings
+from pcapi.core.subscription.bonus import common_types
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
@@ -77,7 +78,7 @@ class ApiParticulierPerson(BaseModel):
     nom_naissance: str | None = None
     nom_usage: str | None = None
     prenoms: str | None = None
-    date_naissance: datetime.date | None = None
+    date_naissance: common_types.ApiParticulierDate = None
     sexe: users_models.GenderEnum | None = None
 
     @field_validator("sexe", mode="before")
