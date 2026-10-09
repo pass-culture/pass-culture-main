@@ -7,6 +7,8 @@ import {
   type SettlementListResponseModel,
   type SettlementResponseModel,
 } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { SettlementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
   TABLET_MEDIA_QUERY,
@@ -117,7 +119,17 @@ export const SettlementTable = ({
   const [rowInvoicesToDisplay, setRowInvoicesToDisplay] =
     useState<ExtendedSettlementResponseModel | null>(null)
 
+  const { logEvent } = useAnalytics()
+
   function toggleRowToDisplay(row: ExtendedSettlementResponseModel) {
+    // do not send a log when we close the currently displayed row
+    if (rowInvoicesToDisplay?.id !== row.id) {
+      logEvent(SettlementEvents.CLICKED_SETTLEMENT_ACCORDION, {
+        settlementId: row.id,
+        invoicesCount: row.invoicesCount,
+      })
+    }
+
     setRowInvoicesToDisplay((currentDisplayedRow) =>
       currentDisplayedRow?.id === row.id ? null : row
     )
@@ -232,6 +244,12 @@ export const SettlementTable = ({
                 to="/administration/remboursements/informations-bancaires"
                 label="Remplacer le compte"
                 size={ButtonSize.SMALL}
+                onClick={() =>
+                  logEvent(
+                    SettlementEvents.CLICKED_EDIT_BANK_ACCOUNT_AFTER_REJECT,
+                    { settlementId: settlement.id }
+                  )
+                }
               />
             )
           }
