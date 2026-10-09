@@ -1392,6 +1392,11 @@ class SingleSignOn(PcObject, Model):
     )
 
 
+class GdprUserDataExtractScope(enum.Enum):
+    INTERNAL = "internal"
+    PUBLIC = "public"
+
+
 class GdprUserDataExtract(PcObject, Model):
     __tablename__ = "gdpr_user_data_extract"
 
@@ -1406,6 +1411,12 @@ class GdprUserDataExtract(PcObject, Model):
 
     authorUserId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
     authorUser: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[authorUserId])
+
+    scope: sa_orm.Mapped[GdprUserDataExtractScope] = sa_orm.mapped_column(
+        MagicEnum(GdprUserDataExtractScope, use_values=True),
+        nullable=False,
+        server_default=GdprUserDataExtractScope.PUBLIC.value,
+    )
 
     @hybrid_property
     def expirationDate(self) -> datetime:

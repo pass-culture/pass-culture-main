@@ -507,7 +507,7 @@ class GetBoUserTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
         assert len(rows) == 2
-        assert rows[0]["Type"] == "Changement d'email par l'admin"
+        assert rows[0]["Type"] == "Changement d'email (interne)"
         assert rows[0]["Auteur"] == legit_user.full_name
         assert rows[1]["Type"] == "Création du compte"
 
