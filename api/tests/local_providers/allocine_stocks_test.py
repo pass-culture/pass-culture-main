@@ -1,11 +1,13 @@
 import copy
 import decimal
+import warnings
 from datetime import UTC
 from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+import sqlalchemy.exc as sa_exc
 import time_machine
 
 import pcapi.core.offerers.factories as offerers_factories
@@ -109,7 +111,9 @@ class UpdateObjectsTest:
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
-        allocine_stocks_provider.updateObjects()
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+            allocine_stocks_provider.updateObjects()
 
         # Then
         created_offer = db.session.query(offers_models.Offer).one()
@@ -176,7 +180,9 @@ class UpdateObjectsTest:
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
-        allocine_stocks_provider.updateObjects()
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+            allocine_stocks_provider.updateObjects()
 
         # Then
         created_offer = db.session.query(offers_models.Offer).first()
@@ -217,7 +223,9 @@ class UpdateObjectsTest:
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
-        allocine_stocks_provider.updateObjects()
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+            allocine_stocks_provider.updateObjects()
 
         # Then
         existing_offer = db.session.query(offers_models.Offer).one()
@@ -249,7 +257,9 @@ class UpdateObjectsTest:
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
-        allocine_stocks_provider.updateObjects()
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+            allocine_stocks_provider.updateObjects()
 
         # Then
         created_offer = db.session.query(offers_models.Offer).one()
@@ -282,7 +292,9 @@ class UpdateObjectsTest:
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
-        allocine_stocks_provider.updateObjects()
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+            allocine_stocks_provider.updateObjects()
 
         existing_offer = db.session.query(offers_models.Offer).one()
 
@@ -310,7 +322,9 @@ class UpdateObjectsTest:
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
-        allocine_stocks_provider.updateObjects()
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+            allocine_stocks_provider.updateObjects()
 
         # Then
         created_offer = db.session.query(offers_models.Offer).order_by("name").all()
@@ -390,11 +404,13 @@ class UpdateObjectsTest:
             allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
 
             # When
-            allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
+                allocine_stocks_provider.updateObjects()
 
-            allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+                allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
+                allocine_stocks_provider.updateObjects()
 
             # Then
             created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.beginningDatetime).all()
@@ -453,11 +469,14 @@ class UpdateObjectsTest:
             )
 
             allocine_stocks_provider1 = AllocineStocks(venue_provider1)
-            allocine_stocks_provider1.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider1.updateObjects()
 
             allocine_stocks_provider2 = AllocineStocks(venue_provider2)
-            # When
-            allocine_stocks_provider2.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider2.updateObjects()
 
             # Then
             created_offer = db.session.query(offers_models.Offer).all()
@@ -495,7 +514,9 @@ class UpdateObjectsTest:
                 venue=venue, quantity=None, price=10
             )
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider.updateObjects()
 
             created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.beginningDatetime).all()
 
@@ -517,7 +538,9 @@ class UpdateObjectsTest:
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider.updateObjects()
 
             # Then
             assert len(created_stocks) == 3
@@ -555,7 +578,9 @@ class UpdateObjectsTest:
             )
             allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider.updateObjects()
 
             created_offer = db.session.query(offers_models.Offer).one()
             created_offer.isDuo = True
@@ -563,9 +588,10 @@ class UpdateObjectsTest:
             db.session.add(created_offer)
             db.session.commit()
 
-            # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider.updateObjects()
 
             # Then
             created_offer = db.session.query(offers_models.Offer).one()
@@ -604,7 +630,9 @@ class UpdateObjectsTest:
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider.updateObjects()
 
             # Then
             stock = db.session.query(offers_models.Stock).first()
@@ -657,7 +685,9 @@ class UpdateObjectsTest:
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider.updateObjects()
 
             # Then
             assert stock_with_price_to_edit.price == new_price
@@ -689,14 +719,17 @@ class UpdateObjectsTest:
             allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
 
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider.updateObjects()
 
             created_stock = db.session.query(offers_models.Stock).order_by(offers_models.Stock.id).first()
             created_stock.isSoftDeleted = True
 
-            # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider.updateObjects()
 
             # Then
             created_stock = db.session.query(offers_models.Stock).order_by(offers_models.Stock.id).first()
@@ -726,7 +759,9 @@ class UpdateObjectsTest:
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider.updateObjects()
 
             # Then
             created_offer = db.session.query(offers_models.Offer).one()
@@ -754,7 +789,9 @@ class UpdateObjectsTest:
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+                allocine_stocks_provider.updateObjects()
 
             # Then
             stock = db.session.query(offers_models.Stock).first()
@@ -778,7 +815,9 @@ class UpdateObjectsTest:
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
-        allocine_stocks_provider.updateObjects()
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=sa_exc.SAWarning)
+            allocine_stocks_provider.updateObjects()
 
         created_offer = db.session.query(offers_models.Offer).one()
 
