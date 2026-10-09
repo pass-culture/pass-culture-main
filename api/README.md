@@ -107,7 +107,7 @@ pc reset-db-test-no-docker
 
 ```bash
 source .venv/bin/activate  # avant chaque commande
-GUNICORN_PORT=5001 FLASK_SERVER=0 ./entrypoint.sh
+pc start-gunicorn-api-no-docker
 ```
 
 ### Installation et lancement sans Docker
