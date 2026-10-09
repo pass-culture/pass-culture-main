@@ -1,11 +1,11 @@
 import { Outlet } from 'react-router'
 
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 
 export const PartnerLayout = () => {
   return (
-    <BasicLayout>
+    <ContentLayout>
       <Outlet />
-    </BasicLayout>
+    </ContentLayout>
   )
 }

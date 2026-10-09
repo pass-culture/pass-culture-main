@@ -1,5 +1,6 @@
 :root {
-  --shadow-overlay: var(--size-spacing-xxs) var(--size-spacing-m) var(--size-spacing-xxl) var(--color-background-shadow-overlay);
+  --shadow-overlay: var(--size-spacing-xxs) var(--size-spacing-m)
+    var(--size-spacing-xxl) var(--color-background-shadow-overlay);
 
   // ADAGE COLORS
   // These must be replaced with brand and decorative colors
@@ -17,4 +18,6 @@
   --color-adage-blue-light: #1fc5e9;
   --color-adage-blue-dark: #0e78b7;
   --color-adage-blue-external: #626fad;
+
+  scrollbar-color: var(--color-border-default) transparent;
 }

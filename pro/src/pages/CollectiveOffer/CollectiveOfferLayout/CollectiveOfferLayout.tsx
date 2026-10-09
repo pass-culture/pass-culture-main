@@ -5,7 +5,7 @@ import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -112,7 +112,7 @@ export const CollectiveOfferLayout = ({
     (!offer && isTemplate) || isCollectiveOfferTemplate(offer)
 
   return (
-    <BasicLayout isStickyActionBarInChild>
+    <ContentLayout>
       <div className={styles['headings-wrapper']}>
         {isTemplate && <Tag label="Offre vitrine" />}
         <h1 className={styles['title']}>{getTitle()}</h1>
@@ -136,8 +136,7 @@ export const CollectiveOfferLayout = ({
                 }))}
         </>
       )}
-
       {children}
-    </BasicLayout>
+    </ContentLayout>
   )
 }

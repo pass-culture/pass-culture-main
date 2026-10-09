@@ -1,5 +1,11 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+.offer-wizard-wrapper {
+  max-width: size.$main-content-width;
+  margin: 0 auto;
+}
 
 .onboarding-offer-container {
   display: flex;
@@ -12,7 +18,6 @@
 .onboarding-offer-title-wrapper {
   align-self: center;
 }
-
 
 .title {
   @include fonts.title1;

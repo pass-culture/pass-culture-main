@@ -3,7 +3,7 @@ import cn from 'classnames'
 import type React from 'react'
 import { NavLink } from 'react-router'
 
-import { Footer } from '@/components/Footer/Footer'
+import { Footer } from '@/app/App/layouts/components/Footer/Footer'
 import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
 import logoPassCultureProFullIcon from '@/icons/logo-pass-culture-pro-full.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -17,6 +17,10 @@ interface SignUpLayoutProps {
   children?: React.ReactNode
 }
 
+/**
+ * @deprecated This layout is deprecated and should not be used in new code.
+ *             Use the FullLayout component instead.
+ */
 export const SignUpLayout = ({ children }: SignUpLayoutProps) => {
   return (
     <div className={styles.layout}>
@@ -89,7 +93,7 @@ export const SignUpLayout = ({ children }: SignUpLayoutProps) => {
                 {children}
               </div>
             </main>
-            <Footer layout="sign-up" />
+            <Footer />
           </div>
         </div>
       </div>

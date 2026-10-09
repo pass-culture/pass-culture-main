@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
@@ -19,20 +17,14 @@ interface ActionsBarProps {
 export const ActionsBar = ({
   disableNextButton = false,
 }: ActionsBarProps): JSX.Element => {
-  const { pathname } = useLocation()
-  const isOnboarding = pathname.includes('onboarding')
   const { logEvent } = useAnalytics()
 
   return (
-    <ActionsBarSticky hasSideNav={!isOnboarding}>
+    <ActionsBarSticky>
       <ActionsBarSticky.Left>
         <Button
           as="router-link"
-          to={
-            isOnboarding
-              ? '/onboarding/individuel'
-              : computeIndividualOffersUrl({})
-          }
+          to={computeIndividualOffersUrl({})}
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
           onClick={() => logEvent(Events.CLICKED_CANCEL_OFFER_CREATION)}

@@ -23,7 +23,7 @@
     100vh -
       (
         size.$top-menu-height + size.$footer-height +
-        (size.$full-layout-content-padding * 2)
+          (size.$full-layout-content-padding * 2)
       )
   );
   max-width: size.$main-content-width;
