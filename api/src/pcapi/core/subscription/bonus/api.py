@@ -590,17 +590,6 @@ def get_user_qf_bonification_status(user: users_models.User) -> bonus_schemas.QF
     if has_received_bonus:
         return bonus_schemas.QFBonificationStatus.GRANTED
 
-    has_eligible_age = False
-    if user.age == 18:
-        has_eligible_age = True
-    elif user.age == 19 and user.birth_date is not None:
-        nineteenth_birthday = user.birth_date + relativedelta(years=19)
-        has_eligible_age = (
-            settings.CREDIT_V3_DECREE_DATETIME.date()
-            <= nineteenth_birthday
-            <= settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME.date()
-        )
-
     has_eligible_age = _has_quotient_familial_eligible_age(user)
     if not has_eligible_age:
         return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
