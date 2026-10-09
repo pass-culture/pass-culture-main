@@ -55,6 +55,15 @@ def get_bookings_pro(query: GetBookingsProQueryModel) -> GetBookingsProResponseM
         raise api_errors.ResourceNotFoundError()
 
     page = query.page
+
+    if query.offerer_address_id is not None:
+        offerer_address_exists = db.session.query(
+            db.session.query(offerers_models.OffererAddress).filter_by(id=query.offerer_address_id).exists()
+        ).scalar()
+
+        if not offerer_address_exists:
+            raise api_errors.ResourceNotFoundError()
+
     per_page_limit = bookings_constants.BOOKINGS_PER_PAGE_LIMIT
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
