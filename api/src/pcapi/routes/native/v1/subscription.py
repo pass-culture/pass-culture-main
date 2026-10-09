@@ -13,6 +13,7 @@ from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.bonus import api as bonus_api
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
 from pcapi.core.subscription.bonus import statistics_api as bonus_statistics_api
@@ -20,7 +21,6 @@ from pcapi.core.subscription.bonus import tasks as bonus_tasks
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
-from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
@@ -178,7 +178,7 @@ def start_identification_session(
 @authenticated_and_active_user_required
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def create_quotient_familial_bonus_credit_fraud_check(body: serializers.QuotientFamilialBonusCreditRequest) -> None:
-    if not users_api.get_user_is_eligible_for_qf_bonification(current_user):
+    if not bonus_api.get_user_is_eligible_for_qf_bonification(current_user):
         raise api_errors.ApiErrors(
             {"code": "BONUS_NOT_ELIGIBLE", "message": "Non éligible à la bonification"},
             status_code=400,
@@ -240,7 +240,7 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.Quotient
 @authenticated_and_active_user_required
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def create_disability_bonus_credit_fraud_checks(body: serializers.DisabilityBonusCreditRequest) -> None:
-    if not users_api.get_user_is_eligible_for_disability_bonification(current_user):
+    if not bonus_api.get_user_is_eligible_for_disability_bonification(current_user):
         raise api_errors.ApiErrors(
             {"code": "BONUS_NOT_ELIGIBLE", "message": "Non éligible à la bonification"},
             status_code=400,

@@ -21,6 +21,7 @@ from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.bonus import staging_api
 from pcapi.core.subscription.bonus import statistics_api
 from pcapi.core.users import models as users_models
+from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils.redis import get_redis_client
 from pcapi.utils.transaction_manager import atomic
@@ -41,7 +42,7 @@ class _ApiParticulierResult[
     response: ResponseT | None
     status: subscription_models.FraudCheckStatus
     reason_codes: list[subscription_models.FraudReasonCode]
-    http_status_code: int
+    http_status_code: int | None
     error_code: str | None = None
 
 
@@ -56,10 +57,57 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
         return
 
     cache_name = f"{_QF_CACHE_KEY}:{quotient_familial_fraud_check.id}"
+    qf_result = _get_qf_most_relevant_result(quotient_familial_fraud_check, cache_name)
+    if not qf_result:
+        logger.error(
+            "No Quotient Familial was found",
+            extra={"beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
+        )
+        return
+
+    granted_after_attempts: int | None = None
+    with atomic():
+        if qf_result.status == subscription_models.FraudCheckStatus.KO:
+            _update_quotient_familial_fraud_check_content(quotient_familial_fraud_check, qf_result)
+            _decline_bonus(quotient_familial_fraud_check, qf_result)
+
+            transactional_mails.send_bonus_declined_email(user)
+
+        elif qf_result.status == subscription_models.FraudCheckStatus.OK:
+            given_recredit, attempts_count = _grant_bonus(quotient_familial_fraud_check, qf_result)
+
+            if given_recredit:
+                granted_after_attempts = attempts_count
+                trigger_events.track_has_received_bonus(user.id)
+                transactional_mails.send_bonus_granted_email(user)
+
+        else:
+            raise NotImplementedError(f"no handler was implemented for {qf_result.status}")
+
+        external_attributes_api.update_external_user(user)
+
+    get_redis_client().delete(cache_name)
+    statistics_api.record_bonus_attempt(
+        subscription_models.FraudCheckType.QF_BONUS_CREDIT, qf_result.reason_codes, granted_after_attempts
+    )
+
+
+def _get_qf_most_relevant_result(
+    quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck, cache_name: str
+) -> _ApiParticulierResult[api_particulier.QuotientFamilialResponse] | None:
+    if not _has_quotient_familial_eligible_age(quotient_familial_fraud_check.user):
+        return _ApiParticulierResult(
+            response=None,
+            status=subscription_models.FraudCheckStatus.KO,
+            reason_codes=[subscription_models.FraudReasonCode.NOT_ELIGIBLE],
+            http_status_code=None,
+            error_code=None,
+        )
+
     most_relevant_result: _ApiParticulierResult[api_particulier.QuotientFamilialResponse] | None = None
     unhandled_api_particulier_errors = []
     is_result_conclusive = False
-    for month in _get_months_when_user_is_17(user):
+    for month in _get_months_when_user_is_17(quotient_familial_fraud_check.user):
         try:
             qf_result = _get_and_cache_quotient_familial_result(quotient_familial_fraud_check, month, cache_name)
         except api_particulier.ParticulierApiRateLimitExceeded:
@@ -80,38 +128,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     if unhandled_api_particulier_errors and not is_result_conclusive:
         raise unhandled_api_particulier_errors[-1]
 
-    if not most_relevant_result:
-        logger.error(
-            "No Quotient Familial was found or none were requested",
-            extra={"beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
-        )
-        return
-
-    granted_after_attempts: int | None = None
-    with atomic():
-        if most_relevant_result.status == subscription_models.FraudCheckStatus.KO:
-            _update_quotient_familial_fraud_check_content(quotient_familial_fraud_check, most_relevant_result)
-            _decline_bonus(quotient_familial_fraud_check, most_relevant_result)
-
-            transactional_mails.send_bonus_declined_email(user)
-
-        elif most_relevant_result.status == subscription_models.FraudCheckStatus.OK:
-            given_recredit, attempts_count = _grant_bonus(quotient_familial_fraud_check, most_relevant_result)
-
-            if given_recredit:
-                granted_after_attempts = attempts_count
-                trigger_events.track_has_received_bonus(user.id)
-                transactional_mails.send_bonus_granted_email(user)
-
-        else:
-            raise NotImplementedError(f"no handler was implemented for {most_relevant_result.status}")
-
-        external_attributes_api.update_external_user(user)
-
-    get_redis_client().delete(cache_name)
-    statistics_api.record_bonus_attempt(
-        subscription_models.FraudCheckType.QF_BONUS_CREDIT, most_relevant_result.reason_codes, granted_after_attempts
-    )
+    return most_relevant_result
 
 
 def _get_months_when_user_is_17(user: users_models.User) -> list[datetime.date]:
@@ -120,8 +137,7 @@ def _get_months_when_user_is_17(user: users_models.User) -> list[datetime.date]:
         raise ValueError("Beneficiaries applying for the bonus are expected to have a non-null birth date")
 
     MONTHS_IN_A_YEAR = 12
-    api_particulier_cutoff_date = datetime.date.today() - relativedelta(months=23)
-    cutoff_month = api_particulier_cutoff_date.replace(day=1)
+    cutoff_month = _get_quotient_familial_retention_cutoff_month()
     seventeenth_birth_month = birth_date.replace(day=1) + relativedelta(years=17)
 
     months_when_user_is_17 = []
@@ -530,3 +546,231 @@ def _grant_bonus(
         bonus_fraud_api.delete_bonus_fraud_checks(user)
 
     return given_recredit, attempts_count
+
+
+def get_user_is_eligible_for_qf_bonification(user: users_models.User, *, is_from_backoffice: bool = False) -> bool:
+    excluded_statuses = {
+        bonus_schemas.QFBonificationStatus.GRANTED,
+        bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE,
+    }
+    if not is_from_backoffice:
+        excluded_statuses |= {
+            bonus_schemas.QFBonificationStatus.TOO_MANY_RETRIES,
+            bonus_schemas.QFBonificationStatus.STARTED,
+        }
+    return get_user_qf_bonification_status(user) not in excluded_statuses
+
+
+def get_user_is_eligible_for_disability_bonification(
+    user: users_models.User, *, is_from_backoffice: bool = False
+) -> bool:
+    excluded_statuses = {
+        bonus_schemas.DisabilityBonificationStatus.GRANTED,
+        bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE,
+    }
+    if not is_from_backoffice:
+        excluded_statuses |= {
+            bonus_schemas.DisabilityBonificationStatus.TOO_MANY_RETRIES,
+            bonus_schemas.DisabilityBonificationStatus.STARTED,
+        }
+    return get_user_disability_bonification_status(user) not in excluded_statuses
+
+
+def get_user_qf_bonification_status(user: users_models.User) -> bonus_schemas.QFBonificationStatus:
+    deposit = user.deposit
+    if not deposit:
+        return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
+
+    if deposit.type != finance_models.DepositType.GRANT_17_18:
+        return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
+
+    has_received_bonus = finance_models.RecreditType.BONUS_CREDIT in [
+        recredit.recreditType for recredit in deposit.recredits
+    ]
+    if has_received_bonus:
+        return bonus_schemas.QFBonificationStatus.GRANTED
+
+    has_eligible_age = _has_quotient_familial_eligible_age(user)
+    if not has_eligible_age:
+        return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
+
+    qf_bonus_credit_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
+        user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
+    )
+    bonus_fraud_check = qf_bonus_credit_fraud_checks[-1] if qf_bonus_credit_fraud_checks else None
+    bonus_fraud_check_status = bonus_fraud_check.status if bonus_fraud_check is not None else None
+
+    if bonus_fraud_check_status in (
+        subscription_models.FraudCheckStatus.STARTED,
+        subscription_models.FraudCheckStatus.PENDING,
+    ):
+        return bonus_schemas.QFBonificationStatus.STARTED
+
+    has_never_completely_tried = bonus_fraud_check_status in (
+        None,
+        subscription_models.FraudCheckStatus.CANCELED,
+        subscription_models.FraudCheckStatus.ERROR,
+    )
+
+    if has_never_completely_tried:
+        return bonus_schemas.QFBonificationStatus.ELIGIBLE
+
+    if bonus_fraud_check_status == subscription_models.FraudCheckStatus.KO:
+        reason_codes = (bonus_fraud_check.reasonCodes if bonus_fraud_check else None) or []
+
+        number_of_user_retries = sum(
+            1
+            for fraud_check in qf_bonus_credit_fraud_checks
+            if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
+        )
+        if number_of_user_retries >= bonus_constants.MAX_QF_BONUS_RETRIES:
+            return bonus_schemas.QFBonificationStatus.TOO_MANY_RETRIES
+
+        if subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD in reason_codes:
+            return bonus_schemas.QFBonificationStatus.NOT_IN_TAX_HOUSEHOLD
+
+        if subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH in reason_codes:
+            return bonus_schemas.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH
+
+        if subscription_models.FraudReasonCode.PERSON_NOT_FOUND in reason_codes:
+            return bonus_schemas.QFBonificationStatus.CUSTODIAN_NOT_FOUND
+
+        if subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND in reason_codes:
+            return bonus_schemas.QFBonificationStatus.APPLICATION_NOT_FOUND
+
+    return bonus_schemas.QFBonificationStatus.KO
+
+
+def _has_quotient_familial_eligible_age(user: users_models.User) -> bool:
+    if user.age == 18:
+        return True
+
+    if user.age != 19:
+        return False
+
+    if user.birth_date is None:
+        return False
+
+    nineteenth_birthday = user.birth_date + relativedelta(years=19)
+    is_19th_birthday_too_late = (
+        datetime.datetime.combine(nineteenth_birthday, datetime.datetime.min.time())
+        > settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME
+    )
+    if is_19th_birthday_too_late:
+        return False
+
+    # we need to be able to fetch at least the QF of the user when they are 17 years and 11 months old
+    eighteenth_birthday = user.birth_date + relativedelta(years=18)
+    quotient_familial_cutoff_month = _get_quotient_familial_retention_cutoff_month()
+    is_18th_birthday_late_enough = eighteenth_birthday.replace(day=1) > quotient_familial_cutoff_month
+    return is_18th_birthday_late_enough
+
+
+def _get_quotient_familial_retention_cutoff_month() -> datetime.date:
+    api_particulier_cutoff_date = datetime.date.today() - relativedelta(
+        months=bonus_constants.QUOTIENT_FAMILIAL_MONTH_RETENTION
+    )
+    return api_particulier_cutoff_date.replace(day=1)
+
+
+def get_user_disability_bonification_status(user: users_models.User) -> bonus_schemas.DisabilityBonificationStatus:
+    """
+    Get only the AEEH bonus credit status.
+    The AAH bonus credit status follows it closely: both are created and handled at the same time.
+    """
+    deposit = user.deposit
+    if not deposit:
+        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    if deposit.type != finance_models.DepositType.GRANT_17_18:
+        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    has_received_bonus = finance_models.RecreditType.BONUS_CREDIT in [
+        recredit.recreditType for recredit in deposit.recredits
+    ]
+    if has_received_bonus:
+        return bonus_schemas.DisabilityBonificationStatus.GRANTED
+
+    has_eligible_age = False
+    if user.age == 18:
+        has_eligible_age = True
+    elif user.age == 19 and user.birth_date is not None:
+        nineteenth_birthday = user.birth_date + relativedelta(years=19)
+        has_eligible_age = (
+            settings.CREDIT_V3_DECREE_DATETIME.date()
+            <= nineteenth_birthday
+            <= settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME.date()
+        )
+
+    if not has_eligible_age:
+        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    aeeh_bonus_credit_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
+        user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
+    )
+    if not aeeh_bonus_credit_fraud_checks:
+        return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
+
+    aeeh_bonus_fraud_check = aeeh_bonus_credit_fraud_checks[-1]
+    aeeh_fraud_check_status = aeeh_bonus_fraud_check.status
+    is_pending_fraud_check = aeeh_fraud_check_status in (
+        subscription_models.FraudCheckStatus.STARTED,
+        subscription_models.FraudCheckStatus.PENDING,
+    )
+    is_automatic_fraud_check = aeeh_bonus_fraud_check.reason is not None and aeeh_bonus_fraud_check.reason.startswith(
+        bonus_constants.AUTOMATIC_ORIGIN
+    )
+    if is_pending_fraud_check and not is_automatic_fraud_check:
+        return bonus_schemas.DisabilityBonificationStatus.STARTED
+
+    has_never_completely_tried = aeeh_fraud_check_status in (
+        None,
+        subscription_models.FraudCheckStatus.CANCELED,
+        subscription_models.FraudCheckStatus.ERROR,
+    )
+    if has_never_completely_tried or (is_pending_fraud_check and is_automatic_fraud_check):
+        return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
+
+    if aeeh_fraud_check_status == subscription_models.FraudCheckStatus.KO:
+        reason_codes = (aeeh_bonus_fraud_check.reasonCodes if aeeh_bonus_fraud_check else None) or []
+
+        if aeeh_bonus_fraud_check:
+            fraud_created_date_in_user_departement_tz = date_utils.utc_datetime_to_department_timezone(
+                aeeh_bonus_fraud_check.dateCreated, user.departementCode
+            ).date()
+            today_user_departement_tz = date_utils.utc_datetime_to_department_timezone(
+                date_utils.get_naive_utc_now(), user.departementCode
+            ).date()
+            # normally, fraud_created_date_in_user_departement_tz can't be > today, but you never know.
+            if fraud_created_date_in_user_departement_tz >= today_user_departement_tz:
+                return bonus_schemas.DisabilityBonificationStatus.TOO_MANY_RETRIES
+
+        if subscription_models.FraudReasonCode.PERSON_NOT_FOUND in reason_codes:
+            return bonus_schemas.DisabilityBonificationStatus.PERSON_NOT_FOUND
+
+        if subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND in reason_codes:
+            return bonus_schemas.DisabilityBonificationStatus.APPLICATION_NOT_FOUND
+
+        if subscription_models.FraudReasonCode.NOT_RECIPIENT in reason_codes:
+            return bonus_schemas.DisabilityBonificationStatus.NOT_RECIPIENT
+
+    return bonus_schemas.DisabilityBonificationStatus.KO
+
+
+def get_user_remaining_bonus_attempts(user: users_models.User) -> int:
+    qf_bonification_status = get_user_qf_bonification_status(user)
+
+    if qf_bonification_status in (
+        bonus_schemas.QFBonificationStatus.TOO_MANY_RETRIES,
+        bonus_schemas.QFBonificationStatus.GRANTED,
+    ):
+        return 0
+
+    ko_qf_bonus_credit_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        and fraud_check.status == subscription_models.FraudCheckStatus.KO
+        if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
+    ]
+    return bonus_constants.MAX_QF_BONUS_RETRIES - len(ko_qf_bonus_credit_fraud_checks)
