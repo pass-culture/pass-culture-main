@@ -5,27 +5,6 @@ import pcapi.utils.postal_code as postal_code_utils
 from pcapi.models import db
 
 
-def test_get_departement_code_for_mainland_france():
-    postal_code = postal_code_utils.PostalCode(postalCode="75012")
-    assert postal_code.get_departement_code() == "75"
-
-
-def test_get_departement_code_for_overseas_france():
-    la_reunion_postal_code = postal_code_utils.PostalCode(postalCode="97440")
-    assert la_reunion_postal_code.get_departement_code() == "974"
-
-    polynesie_francaise_postal_code = postal_code_utils.PostalCode(postalCode="98700")
-    assert polynesie_francaise_postal_code.get_departement_code() == "987"
-
-    guadeloupe_postal_code = postal_code_utils.PostalCode(postalCode="97100")
-    assert guadeloupe_postal_code.get_departement_code() == "971"
-
-
-def test_get_departement_code_for_saint_martin():
-    saint_martin_postal_code = postal_code_utils.PostalCode(postalCode="97150")
-    assert saint_martin_postal_code.get_departement_code() == "978"
-
-
 @pytest.mark.parametrize(
     "postal_code, department_code, department_name",
     [
@@ -33,9 +12,18 @@ def test_get_departement_code_for_saint_martin():
         ("20100", "2A", "Corse-du-Sud"),
         ("20200", "2B", "Haute-Corse"),
         ("20600", "2B", "Haute-Corse"),
+        ("75012", "75", "Paris"),
+        ("97055", "978", "Saint-Martin"),  # Cedex
+        ("97079", "978", "Saint-Martin"),  # Cedex
+        ("97095", "977", "Saint-Barthélemy"),  # Cedex
+        ("97133", "977", "Saint-Barthélemy"),
+        ("97150", "978", "Saint-Martin"),
+        ("97440", "974", "La Réunion"),
+        ("97100", "971", "Guadeloupe"),
+        ("98700", "987", "Polynésie française"),
     ],
 )
-def test_corsica(postal_code, department_code, department_name):
+def test_get_departement_code(postal_code, department_code, department_name):
     postal_code_object = postal_code_utils.PostalCode(postalCode=postal_code)
     assert postal_code_object.get_departement_code() == department_code
     assert postal_code_object.get_departement_name() == department_name
