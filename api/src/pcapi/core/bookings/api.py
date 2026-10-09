@@ -548,6 +548,14 @@ def cancel_booking_for_finance_incident(booking: models.Booking) -> None:
         - (Async task) Notify provider (if offer linked to a provider)
         - (Async task) Index offer on Algolia
     """
+    log_extra_data = {
+        "booking_id": booking.id,
+        "reason": str(models.BookingCancellationReasons.FINANCE_INCIDENT),
+        "booking_token": booking.token,
+        "beneficiary_user_id": booking.user.id,
+        "feature": "bookings",
+        "action": "cancel",
+    }
     try:
         _execute_cancel_booking(
             booking=booking,
@@ -557,6 +565,14 @@ def cancel_booking_for_finance_incident(booking: models.Booking) -> None:
             cancel_even_if_reimbursed=True,
         )
     except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
+        logger.warning(
+            "[Core] Booking cancellation failed",
+            extra={
+                **log_extra_data,
+                "exception_class": error.__class__.__name__,
+                "exception_message": str(error),
+            },
+        )
         booking.cancel_booking(
             reason=models.BookingCancellationReasons.FINANCE_INCIDENT,
             cancel_even_if_reimbursed=True,
@@ -567,16 +583,8 @@ def cancel_booking_for_finance_incident(booking: models.Booking) -> None:
             booking.stock.quantity = booking.stock.dnBookedQuantity + error.remainingQuantity
 
     logger.info(
-        "Booking has been cancelled",
-        extra={
-            "booking_id": booking.id,
-            "reason": str(models.BookingCancellationReasons.FINANCE_INCIDENT),
-            "booking_token": booking.token,
-            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
-            "feature": "booking",
-            "action": "cancelled",
-        },
-        technical_message_id="booking.cancelled",
+        "[Core] Booking has been cancelled",
+        extra=log_extra_data,
     )
     external_bookings_api.send_booking_notification_to_external_service(booking, BookingAction.CANCEL)
     on_commit(
@@ -607,6 +615,14 @@ def _cancel_booking(
         - (Async task) Update pro information on Brevo
         - (Async task) Index offer on Algolia
     """
+    log_extra_data = {
+        "booking_id": booking.id,
+        "reason": str(reason),
+        "booking_token": booking.token,
+        "beneficiary_user_id": booking.user.id,
+        "feature": "bookings",
+        "action": "cancel",
+    }
     try:
         if not _execute_cancel_booking(
             booking=booking,
@@ -617,19 +633,30 @@ def _cancel_booking(
             author_id=author_id,
         ):
             return False
-    except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
-        booking.cancel_booking(
-            reason=reason,
-            cancel_even_if_used=cancel_even_if_used,
-            author_id=author_id,
+    except Exception as error:
+        logger.warning(
+            "[Core] Booking cancellation failed",
+            extra={
+                **log_extra_data,
+                "exception_class": error.__class__.__name__,
+                "exception_message": str(error),
+            },
         )
-        if error.remainingQuantity is None:
-            booking.stock.quantity = None
+        if isinstance(error, external_bookings_exceptions.ExternalBookingAlreadyCancelledError):
+            booking.cancel_booking(
+                reason=reason,
+                cancel_even_if_used=cancel_even_if_used,
+                author_id=author_id,
+            )
+            if error.remainingQuantity is None:
+                booking.stock.quantity = None
+            else:
+                booking.stock.quantity = booking.stock.dnBookedQuantity + error.remainingQuantity
+        elif isinstance(error, external_bookings_exceptions.ExternalBookingException):
+            if raise_if_error:
+                raise error
         else:
-            booking.stock.quantity = booking.stock.dnBookedQuantity + error.remainingQuantity
-    except external_bookings_exceptions.ExternalBookingException as error:
-        if raise_if_error:
-            raise error
+            raise
 
     # After UPDATE query, objet is refreshed when accessed.
     # Force refresh with joinedload to avoid N+1 queries below.
@@ -648,18 +675,6 @@ def _cancel_booking(
         .one()
     )
 
-    logger.info(
-        "Booking has been cancelled",
-        extra={
-            "booking_id": booking.id,
-            "reason": str(reason),
-            "booking_token": booking.token,
-            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
-            "feature": "booking",
-            "action": "cancelled",
-        },
-        technical_message_id="booking.cancelled",
-    )
     trigger_events.track_booking_cancellation(booking)
     external_bookings_api.send_booking_notification_to_external_service(booking, BookingAction.CANCEL)
 
@@ -671,6 +686,11 @@ def _cancel_booking(
             [booking.stock.offerId],
             reason=IndexationReason.BOOKING_CANCELLATION,
         )
+    )
+
+    logger.info(
+        "[Core] Booking has been cancelled",
+        extra=log_extra_data,
     )
     return True
 
@@ -705,6 +725,8 @@ def _execute_cancel_booking(
                     "booking_id": booking.id,
                     "stock_dnBookedQuantity": stock.dnBookedQuantity,
                     "booking_quantity": booking.quantity,
+                    "feature": "bookings",
+                    "action": "cancel",
                 },
             )
             try:
@@ -726,36 +748,29 @@ def _execute_cancel_booking(
                     provider = booking.stock.offer.lastProvider
                     assert provider  # to make mypy happy
                     barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
+                    log_extra_data = {
+                        "beneficiary_user_id": booking.userId,
+                        "booking_id": booking.id,
+                        "offer_id": booking.stock.offerId,
+                        "provider_id": provider.id,
+                        "venue_id": booking.stock.offer.venueId,
+                        "feature": "external_bookings",
+                        "action": "cancel",
+                    }
                     try:
                         external_bookings_api.cancel_tickets(barcodes, provider=provider, stock=stock)
                         logger.info(
-                            "Tickets successfully cancelled on provider side",
-                            extra={
-                                "user_id": booking.userId,
-                                "booking_id": booking.id,
-                                "offer_id": booking.stock.offerId,
-                                "provider_id": provider.id,
-                                "venue_id": booking.stock.offer.venueId,
-                                "feature": "external_providers",
-                                "action": "cancellation",
-                            },
-                            technical_message_id="providers.external.cancellation",
+                            "[Core] Tickets successfully cancelled on provider side",
+                            extra=log_extra_data,
                         )
                     except Exception as exc:
                         logger.warning(
-                            "Unable to cancel tickets on provider side",
+                            "[Core] Unable to cancel tickets on provider side",
                             extra={
-                                "user_id": booking.userId,
-                                "booking_id": booking.id,
-                                "offer_id": booking.stock.offerId,
-                                "provider_id": provider.id,
-                                "venue_id": booking.stock.offer.venueId,
+                                **log_extra_data,
                                 "exception_class": exc.__class__.__name__,
                                 "exception_message": str(exc),
-                                "feature": "external_providers",
-                                "action": "cancellation",
                             },
-                            technical_message_id="providers.external.cancellation",
                         )
                         raise
             except (

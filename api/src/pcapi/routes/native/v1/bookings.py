@@ -170,8 +170,23 @@ def cancel_booking(booking_id: int) -> None:
         .options(sa_orm.joinedload(Booking.stock).joinedload(Stock.offer))
         .filter(Booking.id == booking_id, Booking.userId == current_user.id)
     )
+
+    log_extra_data = {
+        "stock_id": booking.stock.id,
+        "offer_id": booking.stock.offer.id,
+        "venue_id": booking.stock.offer.venueId,
+        "provider_id": booking.stock.offer.lastProviderId,
+        "user_id": current_user.id,
+        "feature": "bookings",
+        "action": "cancel",
+    }
+
     try:
         bookings_api.cancel_booking_by_beneficiary(booking)
+        logger.info(
+            "Booking successfully cancelled",
+            extra=log_extra_data,
+        )
     except bookings_exceptions.BookingIsAlreadyCancelled:
         # Do not raise an error, to avoid showing an error in case double-click => double call
         # Booking is cancelled so a success status is ok
@@ -180,17 +195,10 @@ def cancel_booking(booking_id: int) -> None:
         logger.warning(
             "Booking cancellation failed",
             extra={
-                "stock_id": booking.stock.id,
-                "offer_id": booking.stock.offer.id,
-                "venue_id": booking.stock.offer.venueId,
-                "provider_id": booking.stock.offer.lastProviderId,
-                "user_id": current_user.id,
+                **log_extra_data,
                 "exception_class": e.__class__.__name__,
                 "exception_message": str(e),
-                "feature": "bookings",
-                "action": "cancel",
             },
-            technical_message_id="native.bookings.cancel",
         )
         code, message = _CANCELLATION_EXCEPTION_TO_CODE_MAPPING.get(
             e.__class__,
