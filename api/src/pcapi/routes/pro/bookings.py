@@ -54,6 +54,15 @@ def get_bookings_pro(query: GetBookingsProQueryModel) -> GetBookingsProResponseM
     if not users_repository.has_access_to_venues(user, [query.venue_id]):
         raise api_errors.ResourceNotFoundError()
 
+    offerer_address_id = None
+
+    offerer_address_exists = db.session.query(
+        db.session.query(offerers_models.OffererAddress).filter_by(id=query.offerer_address_id).exists()
+    ).scalar()
+
+    if offerer_address_exists:
+        offerer_address_id = query.offerer_address_id
+
     page = query.page
     per_page_limit = bookings_constants.BOOKINGS_PER_PAGE_LIMIT
     booking_period = None
@@ -70,7 +79,7 @@ def get_bookings_pro(query: GetBookingsProQueryModel) -> GetBookingsProResponseM
         status_filter=query.booking_status_filter,
         event_date=query.event_date,
         offer_id=query.offer_id,
-        offerer_address_id=query.offerer_address_id,
+        offerer_address_id=offerer_address_id,
         page=int(page),
         per_page_limit=per_page_limit,
     )

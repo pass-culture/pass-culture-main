@@ -149,6 +149,7 @@ class GetAllBookingsTest:
 class Returns200Test:
     expected_num_queries = 1  # Fetch the session + user
     expected_num_queries += 1  # Check has_access
+    expected_num_queries += 1  # Check offerer_address exists
     # the user timezones query is duplicated for better readability
     expected_num_queries += 1  # Fetch user timezones (for the count)
     expected_num_queries += 1  # Fetch user timezones (for the query)
@@ -355,6 +356,25 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["bookingsRecap"][0]["bookingToken"] is None
+
+    def test_should_not_fail_if_offerers_id_does_not_exist(self, client: Any):
+        offerer_address_id = 12346
+        booking_date = datetime(2020, 8, 11, 10, 00, tzinfo=UTC)
+        externalbooking = ExternalBookingFactory(
+            booking__dateCreated=booking_date,
+            booking__status=bookings_models.BookingStatus.USED,
+            booking__dateUsed=datetime(2020, 8, 11, 20, 00, tzinfo=UTC),
+        )
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=externalbooking.booking.offerer)
+
+        venue_id = externalbooking.booking.venue.id
+        client = client.with_session_auth(pro_user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={venue_id}&offererAddressId={offerer_address_id}"
+            )
+            assert response.status_code == 200
 
 
 @pytest.mark.usefixtures("db_session")
