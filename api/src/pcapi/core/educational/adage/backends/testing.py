@@ -26,7 +26,7 @@ class AdageSpyClient(AdageClient):
             {"url": f"{self.base_url}/v1/partenaire-culturel", "sent_data": {"dateModificationMin": since_date_str}}
         )
         return [
-            schemas.AdageCulturalPartner.parse_obj(
+            schemas.AdageCulturalPartner.model_validate(
                 {
                     "id": "128029",
                     "venueId": None,
@@ -57,7 +57,7 @@ class AdageSpyClient(AdageClient):
                     "synchroPass": 0,
                 }
             ),
-            schemas.AdageCulturalPartner.parse_obj(
+            schemas.AdageCulturalPartner.model_validate(
                 {
                     "id": "128028",
                     "venueId": None,

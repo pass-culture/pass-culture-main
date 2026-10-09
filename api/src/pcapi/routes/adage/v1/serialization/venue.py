@@ -4,9 +4,12 @@ import typing
 import pydantic
 
 from pcapi.core.educational import schemas
-from pcapi.core.offerers.models import Venue
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.offerers.models import Venue
 
 
 logger = logging.getLogger(__name__)
@@ -62,7 +65,7 @@ class VenueModel(HttpBodyModel):
     bannerMeta: dict | None
 
     @classmethod
-    def build(cls, venue: Venue) -> typing.Self:
+    def build(cls, venue: "Venue") -> typing.Self:
         contact = venue.contact
 
         email: str | None = None
@@ -128,5 +131,5 @@ class GetAllVenuesQueryModel(HttpQueryParamsModel):
     model_config = pydantic.ConfigDict(alias_generator=None)
 
 
-class PostAdageCulturalPartnerModel(schemas.AdageCulturalPartner):
+class PostAdageCulturalPartnerModel(schemas.AdageCulturalPartner, HttpBodyModel):
     pass
