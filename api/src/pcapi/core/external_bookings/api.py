@@ -203,7 +203,7 @@ def book_event_ticket(
     headers = {"Content-Type": "application/json"}
     if signature := generate_hmac_signature(provider.hmacKey, json_payload):
         headers["PassCulture-Signature"] = signature
-    if signature := generate_ed25519_signature(private_key=settings.WEBHOOK_AUTH_PRIVATE_KEY, data=json_payload):
+    if signature := generate_ed25519_signature(private_key=settings.WEBHOOK_AUTH_KEY, data=json_payload):
         headers["PassCulture-ed25519-Signature"] = signature
 
     response = requests.post(
@@ -308,7 +308,7 @@ def cancel_event_ticket(
     headers = {"Content-Type": "application/json"}
     if signature := generate_hmac_signature(provider.hmacKey, json_payload):
         headers["PassCulture-Signature"] = signature
-    if signature := generate_ed25519_signature(private_key=settings.WEBHOOK_AUTH_PRIVATE_KEY, data=json_payload):
+    if signature := generate_ed25519_signature(private_key=settings.WEBHOOK_AUTH_KEY, data=json_payload):
         headers["PassCulture-ed25519-Signature"] = signature
 
     response = requests.post(
@@ -359,7 +359,7 @@ def send_booking_notification_to_external_service(
         external_api_notification_request = providers_tasks.ExternalApiBookingNotificationRequest.build(booking, action)
         signature = generate_hmac_signature(hmacKey, external_api_notification_request.model_dump_json())
         ed25519_signature = generate_ed25519_signature(
-            data=external_api_notification_request.model_dump_json(), private_key=settings.WEBHOOK_AUTH_PRIVATE_KEY
+            data=external_api_notification_request.model_dump_json(), private_key=settings.WEBHOOK_AUTH_KEY
         )
         payload = providers_tasks.ExternalApiBookingNotificationTaskPayload(
             data=external_api_notification_request,
