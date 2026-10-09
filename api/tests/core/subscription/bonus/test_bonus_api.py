@@ -246,6 +246,28 @@ class QuotientFamilialApplicationTest:
         assert len(mocked_get_quotient_familial.mock_calls) == 2
 
     @patch("pcapi.connectors.api_particulier.get_quotient_familial")
+    def test_get_quotient_familial_saves_request_id_on_uncaught_api_particulier_error(
+        self, mocked_get_quotient_familial
+    ):
+        user = users_factories.BeneficiaryFactory()
+        fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+                quotient_familial=None
+            ).model_dump(),
+        )
+        mocked_get_quotient_familial.side_effect = api_particulier.ParticulierApiUnavailable(
+            status_code=500, request_id="a unique id"
+        )
+
+        with pytest.raises(api_particulier.ParticulierApiUnavailable):
+            bonus_api.apply_for_quotient_familial_bonus(fraud_check)
+
+        assert fraud_check.resultContent["http_status_code"] == 500
+        assert fraud_check.resultContent["request_id"] == "a unique id"
+
+    @patch("pcapi.connectors.api_particulier.get_quotient_familial")
     def test_quotient_familial_stops_when_rate_limited(self, mocked_get_quotient_familial):
         fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
             status=subscription_models.FraudCheckStatus.STARTED,
@@ -306,6 +328,7 @@ class QuotientFamilialApplicationTest:
             mock.get(
                 api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
                 status_code=404,
+                headers={"X-Request-ID": "a unique request id"},
                 json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE,
             )
 
@@ -324,6 +347,7 @@ class QuotientFamilialApplicationTest:
             http_status_code=404,
             error_code="37003",
             next_retry_at=now,
+            request_id="a unique request id",
         )
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -360,6 +384,7 @@ class QuotientFamilialApplicationTest:
             mock.get(
                 api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
                 status_code=422,
+                headers={"X-Request-ID": "a unique request id"},
                 json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE,
             )
 
@@ -378,6 +403,7 @@ class QuotientFamilialApplicationTest:
             http_status_code=422,
             error_code="00355",
             next_retry_at=now,
+            request_id="a unique request id",
         )
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -787,7 +813,12 @@ class DisabledAdultAllowanceTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AAH_ENDPOINT, status_code=422, json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE)
+            mock.get(
+                api_particulier.AAH_ENDPOINT,
+                status_code=422,
+                headers={"X-Request-ID": "a unique request id"},
+                json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE,
+            )
 
             bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
 
@@ -795,6 +826,7 @@ class DisabledAdultAllowanceTest:
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
         assert bonus_fraud_check.source_data().http_status_code == 422
         assert bonus_fraud_check.source_data().error_code == "00355"
+        assert bonus_fraud_check.source_data().request_id == "a unique request id"
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -822,7 +854,12 @@ class DisabledAdultAllowanceTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AAH_ENDPOINT, status_code=404, json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE)
+            mock.get(
+                api_particulier.AAH_ENDPOINT,
+                status_code=404,
+                headers={"X-Request-ID": "a unique request id"},
+                json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE,
+            )
 
             with caplog.at_level(logging.INFO):
                 bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
@@ -831,6 +868,7 @@ class DisabledAdultAllowanceTest:
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
         assert bonus_fraud_check.resultContent["http_status_code"] == 404
         assert bonus_fraud_check.resultContent["error_code"] == "37003"
+        assert bonus_fraud_check.resultContent["request_id"] == "a unique request id"
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -886,6 +924,23 @@ class DisabledAdultAllowanceTest:
             if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
         ]
         assert not bonus_fraud_checks
+
+    @patch("pcapi.connectors.api_particulier.get_disabled_adult_allowance")
+    def test_saves_request_id_on_uncaught_api_particulier_error(self, mocked_get_adult_allowance):
+        user = users_factories.BeneficiaryFactory()
+        fraud_check = subscription_factories.AAHBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+        mocked_get_adult_allowance.side_effect = api_particulier.ParticulierApiUnavailable(
+            status_code=500, request_id="a unique id"
+        )
+
+        with pytest.raises(api_particulier.ParticulierApiUnavailable):
+            bonus_api.apply_for_adult_disability_bonus(fraud_check)
+
+        assert fraud_check.resultContent["http_status_code"] == 500
+        assert fraud_check.resultContent["request_id"] == "a unique id"
 
     @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=0)
     def test_sentry_error_filtered(self):
@@ -1069,7 +1124,12 @@ class DisabledChildEducationAllowanceTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AEEH_ENDPOINT, status_code=422, json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE)
+            mock.get(
+                api_particulier.AEEH_ENDPOINT,
+                status_code=422,
+                headers={"X-Request-ID": "a unique request id"},
+                json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE,
+            )
 
             with caplog.at_level(logging.INFO):
                 bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
@@ -1078,6 +1138,7 @@ class DisabledChildEducationAllowanceTest:
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
         assert bonus_fraud_check.source_data().http_status_code == 422
         assert bonus_fraud_check.source_data().error_code == "00355"
+        assert bonus_fraud_check.source_data().request_id == "a unique request id"
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -1109,7 +1170,12 @@ class DisabledChildEducationAllowanceTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AEEH_ENDPOINT, status_code=404, json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE)
+            mock.get(
+                api_particulier.AEEH_ENDPOINT,
+                status_code=404,
+                headers={"X-Request-ID": "a unique request id"},
+                json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE,
+            )
 
             with caplog.at_level(logging.INFO):
                 bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
@@ -1118,6 +1184,7 @@ class DisabledChildEducationAllowanceTest:
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
         assert bonus_fraud_check.resultContent["http_status_code"] == 404
         assert bonus_fraud_check.resultContent["error_code"] == "37003"
+        assert bonus_fraud_check.resultContent["request_id"] == "a unique request id"
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -1173,6 +1240,23 @@ class DisabledChildEducationAllowanceTest:
             if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
         ]
         assert not bonus_fraud_checks
+
+    @patch("pcapi.connectors.api_particulier.get_disabled_child_education_allowance")
+    def test_saves_request_id_on_uncaught_api_particulier_error(self, mocked_get_child_education_allowance):
+        user = users_factories.BeneficiaryFactory()
+        fraud_check = subscription_factories.AEEHBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+        mocked_get_child_education_allowance.side_effect = api_particulier.ParticulierApiUnavailable(
+            status_code=500, request_id="a unique id"
+        )
+
+        with pytest.raises(api_particulier.ParticulierApiUnavailable):
+            bonus_api.apply_for_disabled_child_education_bonus(fraud_check)
+
+        assert fraud_check.resultContent["http_status_code"] == 500
+        assert fraud_check.resultContent["request_id"] == "a unique id"
 
     @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=0)
     def test_sentry_error_filtered(self):

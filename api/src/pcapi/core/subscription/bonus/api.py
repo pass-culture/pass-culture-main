@@ -43,6 +43,7 @@ class _ApiParticulierResult[
     reason_codes: list[subscription_models.FraudReasonCode]
     http_status_code: int
     error_code: str | None = None
+    request_id: str | None = None
 
 
 def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
@@ -456,23 +457,25 @@ def _call_api_particulier[
     response: ResponseT | None = None
     reason_codes = []
     error_code: str | None = None
+    request_id: str | None = None
 
     try:
         response = fetch()
     except api_particulier.ParticulierApiApplicationNotFound as e:
         status = subscription_models.FraudCheckStatus.KO
         reason_codes = [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
-        http_status_code, error_code = e.status_code, e.error_code
+        http_status_code, error_code, request_id = e.status_code, e.error_code, e.request_id
     except api_particulier.ParticulierApiPersonNotFound as e:
         status = subscription_models.FraudCheckStatus.KO
         reason_codes = [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
-        http_status_code, error_code = e.status_code, e.error_code
+        http_status_code, error_code, request_id = e.status_code, e.error_code, e.request_id
     except api_particulier.ParticulierApiException as e:
         with atomic():
             if not fraud_check.resultContent:
                 fraud_check.resultContent = {}
             fraud_check.resultContent["http_status_code"] = e.status_code
             fraud_check.resultContent["error_code"] = e.error_code
+            fraud_check.resultContent["request_id"] = e.request_id
 
         raise
 
@@ -487,6 +490,7 @@ def _call_api_particulier[
         reason_codes=reason_codes,
         http_status_code=http_status_code,
         error_code=error_code,
+        request_id=request_id,
     )
 
 
@@ -505,6 +509,9 @@ def _decline_bonus(
 
     if result.error_code:
         fraud_check.resultContent["error_code"] = result.error_code
+
+    if result.request_id:
+        fraud_check.resultContent["request_id"] = result.request_id
 
 
 def _grant_bonus(
