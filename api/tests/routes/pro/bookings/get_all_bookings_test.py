@@ -356,6 +356,40 @@ class Returns200Test:
 
         assert response.json["bookingsRecap"][0]["bookingToken"] is None
 
+    def test_num_queries_when_filtering_by_location(self, client: Any):
+        booking_date = datetime(2020, 8, 11, 20, 00, tzinfo=UTC)
+        venue = offerers_factories.VenueFactory()
+        offerer_address = venue.offererAddress
+
+        booking = bookings_factories.BookingFactory(
+            dateCreated=booking_date,
+            stock__offer__venue=venue,
+            stock__offer__offererAddress=offerer_address,
+        )
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
+
+        venue_id = venue.id
+        offerer_address_id = offerer_address.id
+        client = client.with_session_auth(pro_user.email)
+        num_queries = self.expected_num_queries + 1  # check existence of offerer_address
+        with assert_num_queries(num_queries):
+            response = client.get(
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={venue_id}&offererAddressId={offerer_address_id}"
+            )
+
+        assert response.status_code == 200
+        assert len(response.json["bookingsRecap"]) == 1
+        assert response.json["bookingsRecap"][0]["bookingDate"] == datetime.isoformat(
+            utc_datetime_to_department_timezone(
+                booking.dateCreated, booking.venue.offererAddress.address.departmentCode
+            )
+        )
+
+        assert response.json["page"] == 1
+        assert response.json["pages"] == 1
+        assert response.json["total"] == 1
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -456,3 +490,26 @@ class Returns404Test:
 
         response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&venueId={venue_id}")
         assert response.status_code == 404
+
+    @pytest.mark.parametrize("offerer_address_id", [0, 12345])
+    def test_when_offerer_address_id_does_not_exist(self, offerer_address_id, client: Any):
+        booking_date = datetime(2020, 8, 11, 10, 00, tzinfo=UTC)
+        externalbooking = ExternalBookingFactory(
+            booking__dateCreated=booking_date,
+            booking__status=bookings_models.BookingStatus.USED,
+            booking__dateUsed=datetime(2020, 8, 11, 20, 00, tzinfo=UTC),
+        )
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=externalbooking.booking.offerer)
+
+        venue_id = externalbooking.booking.venue.id
+        client = client.with_session_auth(pro_user.email)
+        # get user_session + user
+        # check has_access
+        # check offerer_address exists
+        # rollback x2
+        with assert_num_queries(5):
+            response = client.get(
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={venue_id}&offererAddressId={offerer_address_id}"
+            )
+            assert response.status_code == 404
