@@ -1,7 +1,14 @@
 import cn from 'classnames'
-import { useState } from 'react'
+import {
+  type KeyboardEvent as ReactKeyboardEvent,
+  useCallback,
+  useId,
+  useRef,
+  useState,
+} from 'react'
 
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
+import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
 import { ASSETS_BUCKET_URL } from '@/commons/utils/config'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -18,6 +25,40 @@ export const EcoDesignDeclaration = () => {
   const [isValidatedCriteriaOpen, setIsValidatedCriteriaOpen] = useState(false)
   const [isNonValidatedCriteriaOpen, setIsNonValidatedCriteriaOpen] =
     useState(false)
+  const validatedCriteriaContainerId = useId()
+  const nonValidatedCriteriaContainerId = useId()
+  const validatedCriteriaWrapperRef = useRef<HTMLDivElement>(null)
+  const nonValidatedCriteriaWrapperRef = useRef<HTMLDivElement>(null)
+  const validatedCriteriaId = useRef<HTMLButtonElement>(null)
+  const nonValidatedCriteriaButtonRef = useRef<HTMLButtonElement>(null)
+
+  const closeValidatedCriteriaOnOutsideInteraction = useCallback(() => {
+    setIsValidatedCriteriaOpen(false)
+  }, [])
+
+  const closeNonValidatedCriteriaOnOutsideInteraction = useCallback(() => {
+    setIsNonValidatedCriteriaOpen(false)
+  }, [])
+
+  useOnClickOrFocusOutside(
+    validatedCriteriaWrapperRef,
+    closeValidatedCriteriaOnOutsideInteraction
+  )
+  useOnClickOrFocusOutside(
+    nonValidatedCriteriaWrapperRef,
+    closeNonValidatedCriteriaOnOutsideInteraction
+  )
+
+  const handleCriteriaKeyDown = (
+    event: ReactKeyboardEvent<HTMLButtonElement>,
+    setIsOpen: (isOpen: boolean) => void,
+    buttonRef: { current: HTMLButtonElement | null }
+  ) => {
+    if (event.key === 'Escape') {
+      setIsOpen(false)
+      buttonRef.current?.focus()
+    }
+  }
 
   return (
     <FullLayout>
@@ -49,61 +90,87 @@ export const EcoDesignDeclaration = () => {
           />
         </div>
 
-        <div className={styles['accordion-button']}>
-          <Button
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            onClick={() => setIsValidatedCriteriaOpen(!isValidatedCriteriaOpen)}
-            icon={isValidatedCriteriaOpen ? fullUpIcon : fullDownIcon}
-            label="Critères validés (ou non applicables) par le service numérique"
-          />
-        </div>
-        <div>
-          {isValidatedCriteriaOpen && (
-            <>
-              <p>Numérotation des fiches pratiques des critères validés :</p>
-              <ul className={styles['criteria-list']}>
-                {validatedCriteria.map((criterion) => (
-                  <li key={criterion} className={styles['list-item']}>
-                    {criterion}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+        <div ref={validatedCriteriaWrapperRef}>
+          <div className={styles['accordion-button']}>
+            <Button
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              onClick={() =>
+                setIsValidatedCriteriaOpen(!isValidatedCriteriaOpen)
+              }
+              icon={isValidatedCriteriaOpen ? fullUpIcon : fullDownIcon}
+              aria-expanded={isValidatedCriteriaOpen}
+              aria-controls={validatedCriteriaContainerId}
+              onKeyDown={(event) =>
+                handleCriteriaKeyDown(
+                  event,
+                  setIsValidatedCriteriaOpen,
+                  validatedCriteriaId
+                )
+              }
+              ref={validatedCriteriaId}
+              label="Critères validés (ou non applicables) par le service numérique"
+            />
+          </div>
+          <div id={validatedCriteriaContainerId}>
+            {isValidatedCriteriaOpen && (
+              <>
+                <p>Numérotation des fiches pratiques des critères validés :</p>
+                <ul className={styles['criteria-list']}>
+                  {validatedCriteria.map((criterion) => (
+                    <li key={criterion} className={styles['list-item']}>
+                      {criterion}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
         </div>
 
-        <div
-          className={cn(styles['accordion-button'], {
-            [styles['non-validated-button-closed']]:
-              !isNonValidatedCriteriaOpen,
-          })}
-        >
-          <Button
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            onClick={() =>
-              setIsNonValidatedCriteriaOpen(!isNonValidatedCriteriaOpen)
-            }
-            icon={isNonValidatedCriteriaOpen ? fullUpIcon : fullDownIcon}
-            label="Critères non validés (ou en cours) par le service numérique"
-          />
-        </div>
-        <div>
-          {isNonValidatedCriteriaOpen && (
-            <>
-              <p>
-                Numérotation des fiches pratiques des critères non validés :
-              </p>
-              <ul className={styles['criteria-list']}>
-                {nonValidatedCriteria.map((criterion) => (
-                  <li key={criterion} className={styles['list-item']}>
-                    {criterion}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+        <div ref={nonValidatedCriteriaWrapperRef}>
+          <div
+            className={cn(styles['accordion-button'], {
+              [styles['non-validated-button-closed']]:
+                !isNonValidatedCriteriaOpen,
+            })}
+          >
+            <Button
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              onClick={() =>
+                setIsNonValidatedCriteriaOpen(!isNonValidatedCriteriaOpen)
+              }
+              aria-expanded={isNonValidatedCriteriaOpen}
+              aria-controls={nonValidatedCriteriaContainerId}
+              icon={isNonValidatedCriteriaOpen ? fullUpIcon : fullDownIcon}
+              onKeyDown={(event) =>
+                handleCriteriaKeyDown(
+                  event,
+                  setIsNonValidatedCriteriaOpen,
+                  nonValidatedCriteriaButtonRef
+                )
+              }
+              ref={nonValidatedCriteriaButtonRef}
+              label="Critères non validés (ou en cours) par le service numérique"
+            />
+          </div>
+          <div id={nonValidatedCriteriaContainerId}>
+            {isNonValidatedCriteriaOpen && (
+              <>
+                <p>
+                  Numérotation des fiches pratiques des critères non validés :
+                </p>
+                <ul className={styles['criteria-list']}>
+                  {nonValidatedCriteria.map((criterion) => (
+                    <li key={criterion} className={styles['list-item']}>
+                      {criterion}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
         </div>
 
         <h3 className={styles['section-title']}>1. Stratégie</h3>

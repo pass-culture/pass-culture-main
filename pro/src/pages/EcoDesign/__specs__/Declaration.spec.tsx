@@ -63,7 +63,45 @@ describe('EcoDesign declaration page', () => {
     expect(screen.queryByText(nonValidatedCriteriaText)).not.toBeInTheDocument()
   })
 
-  it('should allow both accordions to be open independently', async () => {
+  it.each([
+    [validatedButtonName, validatedCriteriaText],
+    [nonValidatedButtonName, nonValidatedCriteriaText],
+  ])(
+    'should close the criteria accordion and keep focus on its button when Escape is pressed',
+    async (buttonName, criteriaText) => {
+      renderWithProviders(<EcoDesignDeclaration />)
+
+      const button = screen.getByRole('button', { name: buttonName })
+      await userEvent.click(button)
+
+      expect(button).toHaveAttribute('aria-expanded', 'true')
+
+      await userEvent.keyboard('{Escape}')
+
+      expect(screen.queryByText(criteriaText)).not.toBeInTheDocument()
+      expect(button).toHaveAttribute('aria-expanded', 'false')
+      expect(button).toHaveFocus()
+    }
+  )
+
+  it.each([
+    [validatedButtonName, validatedCriteriaText],
+    [nonValidatedButtonName, nonValidatedCriteriaText],
+  ])(
+    'should close the criteria accordion when focus moves outside it',
+    async (buttonName, criteriaText) => {
+      renderWithProviders(<EcoDesignDeclaration />)
+
+      await userEvent.click(screen.getByRole('button', { name: buttonName }))
+      await userEvent.click(
+        screen.getByRole('heading', { name: 'Déclaration RGESN' })
+      )
+
+      expect(screen.queryByText(criteriaText)).not.toBeInTheDocument()
+    }
+  )
+
+  it('should close each criteria accordion when focus moves to the other button', async () => {
     renderWithProviders(<EcoDesignDeclaration />)
 
     const validatedButton = screen.getByRole('button', {
@@ -74,14 +112,15 @@ describe('EcoDesign declaration page', () => {
     })
 
     await userEvent.click(validatedButton)
-    await userEvent.click(nonValidatedButton)
+    await userEvent.tab()
 
-    expect(screen.getByText(validatedCriteriaText)).toBeVisible()
-    expect(screen.getByText(nonValidatedCriteriaText)).toBeVisible()
-
-    await userEvent.click(validatedButton)
-
+    expect(nonValidatedButton).toHaveFocus()
     expect(screen.queryByText(validatedCriteriaText)).not.toBeInTheDocument()
-    expect(screen.getByText(nonValidatedCriteriaText)).toBeVisible()
+
+    await userEvent.click(nonValidatedButton)
+    await userEvent.tab({ shift: true })
+
+    expect(validatedButton).toHaveFocus()
+    expect(screen.queryByText(nonValidatedCriteriaText)).not.toBeInTheDocument()
   })
 })
