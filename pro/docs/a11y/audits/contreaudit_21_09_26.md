@@ -774,3 +774,28 @@ L'adresse était inaccessible par le support - nous y avons maintenant l'accès.
 Tout est bien corrigé.
 
 </details>
+
+
+<br>
+
+<details>
+
+<summary> 🟢🟢 Critère 1.3 - RAWeb - Pour chaque image porteuse d’information ayant une alternative textuelle, cette alternative est-elle pertinente (hors cas particuliers) ?</summary>
+
+**RAWeb** : [Critère 1.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-6)
+**Ticket** : [PC-43950](https://passculture.atlassian.net/browse/PC-43950)  
+**PR** : [#24710](https://github.com/pass-culture/pass-culture-main/pull/24710)
+
+**Problème** 😱  
+P05 → Création offre réservable (parcours 3) (5 étapes et confirmation)
+
+P06 → Création offre individuelle (parcours 5) (7 étapes et confirmation)
+
+Au moins un regroupement de champs ne possède pas de légende.
+
+**Correction** 💡  
+Modification de l'éditeur d'image & de la balise canvas (ajout du role image)
+Ajout d'une alternative textuelle pertinente
+
+
+</details>

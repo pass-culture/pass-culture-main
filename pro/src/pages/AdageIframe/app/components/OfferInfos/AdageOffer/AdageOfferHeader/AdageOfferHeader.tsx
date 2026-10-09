@@ -56,7 +56,9 @@ export function AdageOfferHeader({
         {offer.imageUrl ? (
           <figure>
             <img
-              alt={offer.imageAlternativeText || ''}
+              alt={
+                offer.imageAlternativeText || `Illustration de ${offer.name}`
+              }
               className={styles['offer-header-image']}
               loading="lazy"
               src={offer.imageUrl}

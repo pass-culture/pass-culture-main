@@ -74,7 +74,7 @@ describe('AdageOfferHeader', () => {
       adageUser: defaultAdageUser,
     })
 
-    expect(screen.getByRole('presentation')).toHaveAttribute('src', 'test_url')
+    expect(screen.getByRole('img')).toHaveAttribute('src', 'test_url')
   })
 
   it('should expose the image credit as the figure caption', () => {
@@ -86,7 +86,7 @@ describe('AdageOfferHeader', () => {
       },
       adageUser: defaultAdageUser,
     })
-    const image = screen.getByRole('presentation')
+    const image = screen.getByRole('img')
     const imageCredit = screen.getByText('Crédit image : Agence photo')
 
     expect(image.closest('figure')).toContainElement(imageCredit)

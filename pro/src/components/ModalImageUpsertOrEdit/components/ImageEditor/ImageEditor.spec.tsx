@@ -30,8 +30,8 @@ describe('ImageEditor', () => {
     render(<ImageEditor {...defaultProps} />)
 
     expect(
-      screen.getByLabelText("Editeur de cadrage et de zoom de l'image")
-    ).toBeInTheDocument()
+      screen.getByRole('img', { name: "Editeur de cadrage de l'image" })
+    ).toHaveProperty('tagName', 'CANVAS')
     expect(screen.getByTestId('slider')).toBeInTheDocument()
   })
 
@@ -39,10 +39,10 @@ describe('ImageEditor', () => {
     render(<ImageEditor {...defaultProps} />)
 
     expect(
-      screen.getByLabelText("Editeur de cadrage et de zoom de l'image")
+      screen.getByLabelText("Editeur de cadrage de l'image")
     ).toHaveAttribute('width', '540')
     expect(
-      screen.getByLabelText("Editeur de cadrage et de zoom de l'image")
+      screen.getByLabelText("Editeur de cadrage de l'image")
     ).toHaveAttribute('height', '540')
   })
 
@@ -93,9 +93,7 @@ describe('ImageEditor', () => {
         />
       )
 
-      const canvas = screen.getByLabelText(
-        "Editeur de cadrage et de zoom de l'image"
-      )
+      const canvas = screen.getByLabelText("Editeur de cadrage de l'image")
       const width = Number(canvas.getAttribute('width'))
       const height = Number(canvas.getAttribute('height'))
 
