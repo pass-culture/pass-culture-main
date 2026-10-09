@@ -1,3 +1,5 @@
+import pytest
+
 from pcapi.utils import settings as utils
 
 
