@@ -13,12 +13,12 @@ def filter_whitespaces(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
 
-def get_soup(html_content: str, from_encoding: str = "utf-8") -> BeautifulSoup:
-    return BeautifulSoup(html_content, features="html.parser", from_encoding=from_encoding)
+def get_soup(html_content: str) -> BeautifulSoup:
+    return BeautifulSoup(html_content, features="html.parser")
 
 
-def content_as_text(html_content: str, from_encoding: str = "utf-8") -> str:
-    soup = get_soup(html_content, from_encoding=from_encoding)
+def content_as_text(html_content: str) -> str:
+    soup = get_soup(html_content)
     return filter_whitespaces(soup.text)
 
 
