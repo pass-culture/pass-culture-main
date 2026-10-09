@@ -11,6 +11,9 @@ from sqlalchemy.orm import DeclarativeBase
 from pcapi import settings
 
 
+DATABASE_ALLOWED_SSLMODES = ["disable", "allow", "prefer", "require", "verify-ca", "verify-full"]
+
+
 def install_models() -> None:
     """Let SQLAlchemy know about our database models."""
 
@@ -50,6 +53,22 @@ def json_serializer(obj: typing.Any) -> str:
         return pydantic_v1.json.pydantic_encoder(obj)
 
 
+def check_database_ssl_settings() -> None:
+    """Raise a ValueError if the database SSL settings are inconsistent."""
+    ssl_mode = settings.DATABASE_SSLMODE
+
+    if not ssl_mode:
+        return
+
+    if ssl_mode not in DATABASE_ALLOWED_SSLMODES:
+        raise ValueError(f"Invalid DATABASE_SSLMODE: {ssl_mode}. Allowed values are: {', '.join(DATABASE_ALLOWED_SSLMODES)}")
+
+    if ssl_mode in ("verify-ca", "verify-full"):
+        for name in ("DATABASE_SSLROOTCERT", "DATABASE_SSLCERT", "DATABASE_SSLKEY"):
+            if not getattr(settings, name):
+                raise ValueError(f"DATABASE_SSLMODE is {ssl_mode} but environment variable with name `{name}` is not set.")
+
+
 def get_db_connection_args(options: list[str]) -> dict[str, str]:
     """Build psycopg connection arguments from `-c` options and SSL settings."""
     connect_args: dict[str, str] = {}
@@ -64,6 +83,9 @@ def get_db_connection_args(options: list[str]) -> dict[str, str]:
     if settings.DATABASE_SSLKEY:
         connect_args["sslkey"] = settings.DATABASE_SSLKEY
     return connect_args
+
+
+check_database_ssl_settings()
 
 
 _engine_options = {

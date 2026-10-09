@@ -33,9 +33,6 @@ def parse_phone_numbers(phone_numbers: str | None) -> list[str]:
         return []
 
 
-DATABASE_ALLOWED_SSLMODES = ["disable", "allow", "prefer", "require", "verify-ca", "verify-full"]
-
-
 def env_get_list(key: str, separator: str = ",", type_: type = str) -> list:
     """Return an environment variable as a (possibly empty) list."""
 

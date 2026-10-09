@@ -35,7 +35,7 @@ from pcapi.utils import transaction_manager
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.sentry import SCRUBBED_INFO_PLACEHOLDER
 from pcapi.utils.sentry import init_sentry_sdk
-from pcapi.utils.settings import DATABASE_ALLOWED_SSLMODES
+
 
 URL_PREFIX_VALUES = [
     "account-update-requests",
@@ -378,33 +378,3 @@ if settings.SOFTDELETE_ENABLED:
 
         # Replace the statement
         state.statement = adapted
-
-
-def check_database_ssl_settings(
-    sslmode: str | None,
-    sslrootcert: str | None,
-    sslcert: str | None,
-    sslkey: str | None,
-) -> None:
-    """Raise a ValueError if the database SSL settings are inconsistent."""
-
-    if sslmode and sslmode not in DATABASE_ALLOWED_SSLMODES:
-        raise ValueError(f"Invalid DATABASE_SSLMODE: {sslmode}. Allowed values: {', '.join(DATABASE_ALLOWED_SSLMODES)}")
-
-    if sslmode in ("verify-ca", "verify-full"):
-        missing_settings = [
-            name
-            for name, value in (
-                ("DATABASE_SSLROOTCERT", sslrootcert),
-                ("DATABASE_SSLCERT", sslcert),
-                ("DATABASE_SSLKEY", sslkey),
-            )
-            if not value
-        ]
-        if missing_settings:
-            raise ValueError(
-                f"DATABASE_SSLMODE is {sslmode} but these settings are not set: {', '.join(missing_settings)}"
-            )
-
-    if bool(sslcert) != bool(sslkey):
-        raise ValueError("DATABASE_SSLCERT and DATABASE_SSLKEY must be set together")

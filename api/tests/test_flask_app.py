@@ -7,8 +7,7 @@ from werkzeug.routing import PathConverter
 from werkzeug.routing import UnicodeConverter
 
 from pcapi.core.users import factories as users_factories
-from pcapi.flask_app import check_database_ssl_settings
-
+from pcapi.utils.settings import check_database_ssl_settings
 
 pytestmark = pytest.mark.usefixtures("db_session")
 

@@ -11,7 +11,6 @@ from pathlib import Path
 import semver
 from dotenv import load_dotenv
 
-from .flask_app import check_database_ssl_settings
 from .utils import secrets as secrets_utils
 from .utils import settings as utils
 from .utils.example_certificate import PRIVATE_KEY_EXAMPLE
@@ -82,7 +81,6 @@ DATABASE_SSLMODE = os.environ.get("DATABASE_SSLMODE", None)
 DATABASE_SSLROOTCERT = os.environ.get("DATABASE_SSLROOTCERT", None)
 DATABASE_SSLCERT = os.environ.get("DATABASE_SSLCERT", None)
 DATABASE_SSLKEY = os.environ.get("DATABASE_SSLKEY", None)
-check_database_ssl_settings(DATABASE_SSLMODE, DATABASE_SSLROOTCERT, DATABASE_SSLCERT, DATABASE_SSLKEY)
 
 # Managed databases have specific postgresql users and roles for pcapi, cron, backoffice or console.
 # Pull requests and local envs only have one user.
