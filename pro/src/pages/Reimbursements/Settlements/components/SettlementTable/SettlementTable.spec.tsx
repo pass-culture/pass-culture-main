@@ -158,6 +158,8 @@ describe('<SettlementTable />', () => {
     expect(
       screen.getByRole('link', { name: 'Remplacer le compte' })
     ).toBeVisible()
+
+    // test clic + logEvent
   })
 
   it('renders the rejected processed settlement differently', () => {
@@ -251,6 +253,7 @@ describe('<SettlementTable />', () => {
 
   it('toggles the embedded invoices table when clicking "Voir plus" on desktop', async () => {
     const user = userEvent.setup()
+    // add tracking test
     vi.spyOn(useMediaQueryModule, 'useMediaQuery').mockReturnValue(false)
 
     renderSettlementTable()
