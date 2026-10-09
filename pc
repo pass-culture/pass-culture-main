@@ -273,10 +273,9 @@ elif [[ "$CMD" == "up-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   start_backend
 
-# Commands to start API & Backoffice without docker
+# Commands to start API using gunicorn instead of the flask dev server
 elif [[ "$CMD" == "start-gunicorn-api-no-docker" ]]; then
-  cd api/ && \
-  eval $(poetry env activate) && \
+  cd "$ROOT_PATH/api" && \
   GUNICORN_PORT=5001 FLASK_SERVER=0 ./entrypoint.sh
 
 # Commands to start API & Backoffice without docker
