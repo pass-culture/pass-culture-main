@@ -1311,7 +1311,7 @@ class QFBonusCreditEligibilityTest:
         assert qf_bonification_status == bonus_schemas.QFBonificationStatus.ELIGIBLE
 
     @time_machine.travel(settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME)
-    def test_nineteen_year_old_before_retention_cutoff_is_eligible(self):
+    def test_nineteen_year_old_before_retention_cutoff_not_eligible(self):
         # user is 19 years old at the cutoff date
         birth_date = datetime.date.today() - relativedelta(years=19, months=11)
         user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
