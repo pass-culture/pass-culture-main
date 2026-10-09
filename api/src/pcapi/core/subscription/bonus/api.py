@@ -291,7 +291,7 @@ def _update_quotient_familial_fraud_check_content(
     fraud_check.resultContent["children"] = [child.model_dump(mode="json") for child in tax_household_children]
 
     tax_householders = [
-        bonus_schemas.BonusCreditPerson.from_api_particulier_person(householder)
+        bonus_schemas.BonusCreditHouseholder.from_api_particulier_person(householder)
         for householder in quotient_familial_data.allocataires
     ]
     fraud_check.resultContent["householders"] = [

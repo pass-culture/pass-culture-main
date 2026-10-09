@@ -437,11 +437,10 @@ class QuotientFamilialApplicationTest:
                 computation_month=12,
             ),
             householders=[
-                bonus_schemas.BonusCreditPerson(
+                bonus_schemas.BonusCreditHouseholder(
                     last_name=householder_data["nom_naissance"],
                     common_name=None,
                     first_names=householder_data["prenoms"].split(),
-                    birth_date=householder_data["date_naissance"],
                     gender=users_models.GenderEnum.M,
                 )
             ],
@@ -519,11 +518,10 @@ class QuotientFamilialApplicationTest:
                 computation_month=12,
             ),
             householders=[
-                bonus_schemas.BonusCreditPerson(
+                bonus_schemas.BonusCreditHouseholder(
                     last_name=householder_data["nom_naissance"],
                     common_name=None,
                     first_names=householder_data["prenoms"].split(),
-                    birth_date=householder_data["date_naissance"],
                     gender=users_models.GenderEnum.M,
                 )
             ],

@@ -71,7 +71,7 @@ class StagingQuotientFamilialTest:
                     provider="CNAF", value=123, year=2023, month=6, computation_year=2024, computation_month=12
                 ),
                 householders=[
-                    bonus_schemas.BonusCreditPerson(
+                    bonus_schemas.BonusCreditHouseholder(
                         last_name=user.lastName,
                         common_name=None,
                         first_names=[user.firstName],
