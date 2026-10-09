@@ -4,6 +4,7 @@ import decimal
 import logging
 import os
 import pathlib
+from dataclasses import asdict
 from unittest.mock import Mock
 from unittest.mock import call as mock_call
 from unittest.mock import patch
@@ -4509,7 +4510,13 @@ class CloseVenueTest:
         assert venue.state == offerers_models.VenueState.CLOSED
         assert booking.status == bookings_models.BookingStatus.CANCELLED
         assert booking.cancellationReason == bookings_models.BookingCancellationReasons.VENUE_CLOSED
-        assert len(mails_testing.outbox) == 1
+        assert sorted([m["template"] for m in mails_testing.outbox], key=lambda m: m["id_prod"]) == sorted(
+            [
+                asdict(TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value),
+                asdict(TransactionalEmail.VENUE_CLOSED_CONFIRMATION.value),
+            ],
+            key=lambda m: m["id_prod"],
+        )
 
     def test_close_offerer_with_inactive_provider(self, requests_mock):
         venue = offerers_factories.VenueFactory()
@@ -4541,7 +4548,14 @@ class CloseVenueTest:
         assert venue.state == offerers_models.VenueState.CLOSED
         assert booking.status == bookings_models.BookingStatus.CANCELLED
         assert booking.cancellationReason == bookings_models.BookingCancellationReasons.VENUE_CLOSED
-        assert len(mails_testing.outbox) == 1
+
+        assert sorted([m["template"] for m in mails_testing.outbox], key=lambda m: m["id_prod"]) == sorted(
+            [
+                asdict(TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value),
+                asdict(TransactionalEmail.VENUE_CLOSED_CONFIRMATION.value),
+            ],
+            key=lambda m: m["id_prod"],
+        )
 
     @patch("pcapi.core.mails.transactional.send_venue_closure_request_email")
     def test_pricing_point_venue(self, mock_send_venue_closure_request_email):
