@@ -3,6 +3,7 @@ import logging
 import traceback
 import typing
 
+import pydantic as pydantic_v2
 from pydantic.v1 import parse_obj_as
 
 from pcapi import settings
@@ -142,7 +143,7 @@ class AdageHttpClient(AdageClient):
         if api_response.status_code != 200:
             raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
-        return parse_obj_as(list[schemas.AdageCulturalPartner], api_response.json())
+        return pydantic_v2.TypeAdapter(list[schemas.AdageCulturalPartner]).validate_python(api_response.json())
 
     def notify_booking_cancellation_by_offerer(self, data: schemas.EducationalBookingResponse) -> None:
         url = "/v1/prereservation-annule"
@@ -158,7 +159,7 @@ class AdageHttpClient(AdageClient):
         if api_response.status_code != 200:
             raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
-        return parse_obj_as(list[schemas.AdageCulturalPartner], api_response.json())
+        return pydantic_v2.TypeAdapter(list[schemas.AdageCulturalPartner]).validate_python(api_response.json())
 
     def notify_institution_association(self, data: schemas.AdageCollectiveOffer) -> None:
         api_response = self._make_post_request(url=f"{self.base_url}/v1/offre-assoc", data=data.json())

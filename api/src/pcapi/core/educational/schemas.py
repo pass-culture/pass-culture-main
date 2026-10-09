@@ -20,34 +20,34 @@ class AdageBaseResponseModel(BaseModel):
         json_encoders = {datetime.datetime: format_into_utc_date}
 
 
-class AdageCulturalPartner(BaseModel):
+class AdageCulturalPartner(pydantic_v2.BaseModel):
     id: int
-    venueId: int | None
-    siret: str | None
-    regionId: int | None
-    academieId: str | None
-    statutId: int | None
-    labelId: int | None
-    typeId: int | None
-    communeId: str | None
+    venueId: int | None = None
+    siret: str | None = None
+    regionId: int | None = None
+    academieId: str | None = None
+    statutId: int | None = None
+    labelId: int | None = None
+    typeId: int | None = None
+    communeId: str | None = None
     libelle: str
-    adresse: str | None
-    siteWeb: str | None
-    latitude: float | None
-    longitude: float | None
-    statutLibelle: str | None
-    labelLibelle: str | None
-    typeIcone: str | None
-    typeLibelle: str | None
-    communeLibelle: str | None
-    communeDepartement: str | None
-    academieLibelle: str | None
-    regionLibelle: str | None
-    domaines: str | None
-    actif: int | None
+    adresse: str | None = None
+    siteWeb: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+    statutLibelle: str | None = None
+    labelLibelle: str | None = None
+    typeIcone: str | None = None
+    typeLibelle: str | None = None
+    communeLibelle: str | None = None
+    communeDepartement: str | None = None
+    academieLibelle: str | None = None
+    regionLibelle: str | None = None
+    domaines: str | None = None
+    actif: int | None = None
     dateModification: datetime.datetime
-    synchroPass: int | None
-    domaineIds: str | None
+    synchroPass: int | None = None
+    domaineIds: str | None = None
 
 
 class Contact(AdageBaseResponseModel):
