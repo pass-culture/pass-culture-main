@@ -1,3 +1,5 @@
+import logging
+
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.achievements import models as achievements_models
@@ -22,6 +24,9 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.transaction_manager import atomic
 
 from .serializers import bookings as serialization
+
+
+logger = logging.getLogger(__name__)
 
 
 def _get_base_booking_query() -> sa_orm.Query[booking_models.Booking]:
@@ -332,17 +337,42 @@ def cancel_booking_by_token(token: str) -> None:
     **⚠️ Warning:**
     This operation is irreversible. Once a booking is deleted, the beneficiary cannot retrieve it and will need to create a new booking. **Use this endpoint only if you are certain that the order cannot be fulfilled.**
     """
+    log_extra_data = {
+        "booking_token": token,
+        "feature": "bookings",
+        "action": "cancel",
+    }
     booking = _get_booking_by_token(token)
     if booking is None:
+        logger.warning(
+            "Booking cancellation failed: booking not found",
+            extra=log_extra_data,
+        )
         raise api_errors.ResourceNotFoundError({"global": "This countermark cannot be found"})
 
     try:
         bookings_api.cancel_booking_by_offerer(booking)
-    except exceptions.BookingIsAlreadyRefunded:
-        raise api_errors.ForbiddenError({"payment": "This booking has been reimbursed"})
-    except exceptions.BookingIsAlreadyUsed:
-        raise api_errors.ResourceGoneError({"booking": "This booking has been validated"})
-    except exceptions.BookingIsAlreadyCancelled:
-        raise api_errors.ResourceGoneError({"booking": "This booking has already been cancelled"})
-    except exceptions.CannotCancelConfirmedBooking:
-        raise api_errors.ForbiddenError({"booking": "This booking cannot be cancelled anymore"})
+        logger.info(
+            "Booking has been cancelled",
+            extra={**log_extra_data, "booking_id": booking.id, "beneficiary_user_id": booking.userId},
+        )
+    except Exception as e:
+        logger.warning(
+            "Booking cancellation failed",
+            extra={
+                **log_extra_data,
+                "booking_id": booking.id,
+                "beneficiary_user_id": booking.userId,
+                "exception_class": e.__class__.__name__,
+                "exception_message": str(e),
+            },
+        )
+        if isinstance(e, exceptions.BookingIsAlreadyRefunded):
+            raise api_errors.ForbiddenError({"payment": "This booking has been reimbursed"})
+        if isinstance(e, exceptions.BookingIsAlreadyUsed):
+            raise api_errors.ResourceGoneError({"booking": "This booking has been validated"})
+        if isinstance(e, exceptions.BookingIsAlreadyCancelled):
+            raise api_errors.ResourceGoneError({"booking": "This booking has already been cancelled"})
+        if isinstance(e, exceptions.CannotCancelConfirmedBooking):
+            raise api_errors.ForbiddenError({"booking": "This booking cannot be cancelled anymore"})
+        raise
