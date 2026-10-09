@@ -58,7 +58,7 @@ class QuotientFamilialTest:
                     api_particulier.ApiParticulierPerson(
                         nom_naissance="LEFEBVRE",
                         prenoms="ALEXIS GÉRÔME JEAN-PHILIPPE",
-                        date_naissance=date(1982, 12, 27),
+                        date_naissance=None,
                         sexe=users_models.GenderEnum.M,
                     )
                 ],

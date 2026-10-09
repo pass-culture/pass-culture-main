@@ -12,7 +12,7 @@ QUOTIENT_FAMILIAL_FIXTURE = {
                 "nom_naissance": "LEFEBVRE",
                 "nom_usage": None,
                 "prenoms": "ALEXIS GÉRÔME JEAN-PHILIPPE",
-                "date_naissance": "1982-12-27",
+                "date_naissance": "1982-00-00",
                 "sexe": "M",
             }
         ],

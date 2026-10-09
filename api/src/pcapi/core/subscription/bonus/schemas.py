@@ -10,6 +10,7 @@ import typing
 from pydantic import BaseModel as BaseModelV2
 from pydantic import StringConstraints
 
+from pcapi.core.subscription.bonus import common_types
 from pcapi.core.users import models as users_models
 
 
@@ -20,24 +21,56 @@ if typing.TYPE_CHECKING:
 CogCode = typing.Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, min_length=5, max_length=5)]
 
 
-class BonusCreditPerson(BaseModelV2):
+class _PersonWithoutBirthDate(BaseModelV2):
     last_name: str
     common_name: str | None = None
     first_names: list[str]
-    birth_date: datetime.date
     gender: users_models.GenderEnum
     birth_country_cog_code: CogCode | None = None
     birth_city_cog_code: CogCode | None = None
     birth_city: str | None = None
 
+
+class BonusCreditPerson(_PersonWithoutBirthDate):
+    birth_date: datetime.date
+
     @classmethod
-    def from_api_particulier_person(cls, child: "api_particulier.ApiParticulierPerson") -> typing.Self:
+    def from_api_particulier_person(cls, person: "api_particulier.ApiParticulierPerson") -> typing.Self:
+        if not person.nom_naissance:
+            raise TypeError("A last name was expected")
+
+        if not person.sexe:
+            raise TypeError("A gender was expected")
+
+        if not person.date_naissance:
+            raise TypeError("A birth date was expected")
+
         return cls(
-            last_name=child.nom_naissance,  # type: ignore [arg-type]
-            common_name=child.nom_usage,
-            first_names=child.prenoms.split(" ") if child.prenoms else [],
-            birth_date=child.date_naissance,  # type: ignore [arg-type]
-            gender=child.sexe,  # type: ignore [arg-type]
+            last_name=person.nom_naissance,
+            common_name=person.nom_usage,
+            first_names=person.prenoms.split(" ") if person.prenoms else [],
+            birth_date=person.date_naissance,
+            gender=person.sexe,
+        )
+
+
+class BonusCreditHouseholder(_PersonWithoutBirthDate):
+    birth_date: common_types.ApiParticulierDate = None
+
+    @classmethod
+    def from_api_particulier_person(cls, person: "api_particulier.ApiParticulierPerson") -> typing.Self:
+        if not person.nom_naissance:
+            raise TypeError("A last name was expected")
+
+        if not person.sexe:
+            raise TypeError("A gender was expected")
+
+        return cls(
+            last_name=person.nom_naissance,
+            common_name=person.nom_usage,
+            first_names=person.prenoms.split(" ") if person.prenoms else [],
+            birth_date=person.date_naissance,
+            gender=person.sexe,
         )
 
 
@@ -66,7 +99,7 @@ class QuotientFamilialContent(BaseModelV2):
 class QuotientFamilialBonusCreditContent(BaseModelV2):
     custodian: BonusCreditPerson
     quotient_familial: QuotientFamilialContent | None = None
-    householders: list[BonusCreditPerson] | None = None
+    householders: list[BonusCreditHouseholder] | None = None
     children: list[BonusCreditPerson] | None = None
     http_status_code: int | None = None
     error_code: str | None = None
