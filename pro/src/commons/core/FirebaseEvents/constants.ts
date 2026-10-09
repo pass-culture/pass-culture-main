@@ -98,6 +98,11 @@ export enum BankAccountEvents {
   CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT = 'HasClickedSaveVenueToBankAccount',
 }
 
+export enum SettlementEvents {
+  CLICKED_SETTLEMENT_ACCORDION = 'hasClickedSettlementAccordion',
+  CLICKED_EDIT_BANK_ACCOUNT_AFTER_REJECT = 'hasClickedEditBankAccountAfterReject',
+}
+
 export const OnboardingDidacticEvents = {
   HAS_CLICKED_START_COLLECTIVE_DIDACTIC_ONBOARDING:
     'hasClickedStartCollectiveDidacticOnboarding',
