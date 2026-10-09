@@ -11,7 +11,7 @@ import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 export const CollectiveVenuePage = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   return (
     <SummarySection

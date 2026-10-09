@@ -33,7 +33,7 @@ export const IndividualOfferExposureScreen = ({
 }: Readonly<IndividualOfferExposureScreenProps>) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const {
     shouldDisplayRecommendationAction,
     shouldDisplayHighlightAction,

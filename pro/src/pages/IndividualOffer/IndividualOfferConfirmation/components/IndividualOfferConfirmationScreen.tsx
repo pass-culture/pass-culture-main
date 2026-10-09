@@ -66,7 +66,7 @@ export const IndividualOfferConfirmationScreen = ({
     shouldDisplayHeadlineAction,
   } = getOfferEnhancementActionsVisibility(offer)
 
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const shouldDisplayCardsSection =
     shouldDisplayRecommendationAction ||
     shouldDisplayHighlightAction ||

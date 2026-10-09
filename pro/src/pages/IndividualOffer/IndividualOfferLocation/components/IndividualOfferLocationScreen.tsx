@@ -49,7 +49,7 @@ export const IndividualOfferLocationScreen = ({
   const { hasPublishedOfferWithSameEan, subCategories } =
     useIndividualOfferContext()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const [isUpdateWarningDialogOpen, setIsUpdateWarningDialogOpen] =
     useState(false)
 

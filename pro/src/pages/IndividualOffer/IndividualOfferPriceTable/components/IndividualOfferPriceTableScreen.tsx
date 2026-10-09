@@ -49,7 +49,7 @@ export const IndividualOfferPriceTableScreen = ({
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
 

@@ -41,7 +41,7 @@ export const AddVenueProviderButton = ({
       api.getProvidersByVenue({ path: { venue_id: venueIdParam } })
   )
   const providers = providersQuery.data
-  const isClosed = withVenueHelpers(venue).isClosedOrClosing
+  const isClosed = withVenueHelpers(venue).isClosed
   const { logEvent } = useAnalytics()
   const [isCreationMode, setIsCreationMode] = useState(false)
   const [selectedProviderId, setSelectedProviderId] = useState(

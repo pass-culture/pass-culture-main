@@ -8,19 +8,19 @@ import {
 export function withVenueHelpers(
   venue: GetVenueResponseModel
 ): GetVenueResponseModel & {
-  isClosedOrClosing: boolean
+  isClosed: boolean
   fullAddressAsString: string | null
 }
 export function withVenueHelpers(
   venue: VenueListItemLiteResponseModel
 ): VenueListItemLiteResponseModel & {
-  isClosedOrClosing: boolean
+  isClosed: boolean
   fullAddressAsString: string
 }
 export function withVenueHelpers(
   venue: GetOffererVenueResponseModel
 ): GetOffererVenueResponseModel & {
-  isClosedOrClosing: boolean
+  isClosed: boolean
 }
 export function withVenueHelpers(
   venue:
@@ -34,10 +34,8 @@ export function withVenueHelpers(
     }
   }
 
-  const isClosedOrClosing =
-    venue.state === VenueState.CLOSED ||
-    venue.state === VenueState.CLOSING ||
-    venue.managingOfferer.isClosed
+  const isClosed =
+    venue.state === VenueState.CLOSED || venue.managingOfferer.isClosed
 
   return {
     ...venue,
@@ -52,8 +50,8 @@ export function withVenueHelpers(
       return `${street}${venue.location.postalCode} ${venue.location.city}`
     },
 
-    get isClosedOrClosing() {
-      return isClosedOrClosing
+    get isClosed() {
+      return isClosed
     },
   }
 }

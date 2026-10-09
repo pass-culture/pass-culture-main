@@ -34,7 +34,7 @@ export const MediaSection = ({
   isOnCreation = false,
 }: MediaSectionProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const imageCreditId = useId()
 
   const { videoDuration, videoTitle, videoThumbnailUrl, videoUrl } =

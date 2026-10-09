@@ -151,7 +151,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     }
   }
 
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const canEditOffer = isCollectiveOfferEditable(offer)
 
   const { numberOfTickets, numberOfTeachers } = offer.collectiveStock || {}

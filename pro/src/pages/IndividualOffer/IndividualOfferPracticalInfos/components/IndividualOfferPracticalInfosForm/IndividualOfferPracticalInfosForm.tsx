@@ -44,7 +44,7 @@ export function IndividualOfferPracticalInfosForm({
   stocks,
 }: Readonly<IndividualOfferPracticalInfosFormProps>) {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const form = useFormContext<IndividualOfferPracticalInfosFormValues>()
 

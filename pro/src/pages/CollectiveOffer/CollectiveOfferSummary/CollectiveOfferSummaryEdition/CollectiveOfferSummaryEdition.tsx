@@ -28,7 +28,7 @@ export const CollectiveOfferSummaryEdition = ({
   offer,
 }: CollectiveOfferSummaryEditionProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,

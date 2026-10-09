@@ -36,8 +36,7 @@ export const getCurrentUserPermissions = (
   const hasSelectedAdminOfferer = !!selectedAdminOfferer
   const hasSelectedPartnerVenue = !!selectedPartnerVenue
   const isSelectedPartnerVenueAndOffererActive =
-    hasSelectedPartnerVenue &&
-    !withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+    hasSelectedPartnerVenue && !withVenueHelpers(selectedPartnerVenue).isClosed
   const isSelectedAdminOffererAssociated =
     hasSelectedAdminOfferer &&
     !!offererNames?.some(
