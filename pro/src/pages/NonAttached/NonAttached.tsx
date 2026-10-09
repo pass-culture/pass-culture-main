@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router'
 
-import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -17,9 +17,11 @@ const NonAttached = () => {
   const navigate = useNavigate()
 
   return (
-    <OnboardingLayout isEntryScreen>
-      <h1 className={styles['title']}>Bienvenue sur votre espace partenaire</h1>
+    <FullLayout>
       <div className={styles['wrapper']}>
+        <h1 className={styles['title']}>
+          Bienvenue sur votre espace partenaire
+        </h1>
         <Button
           onClick={() => {
             void navigate('/hub')
@@ -33,7 +35,7 @@ const NonAttached = () => {
         <NonAttachedBanner />
         <Newsletter />
       </div>
-    </OnboardingLayout>
+    </FullLayout>
   )
 }
 

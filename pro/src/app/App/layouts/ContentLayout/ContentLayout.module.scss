@@ -4,10 +4,10 @@
 $connect-as-header-height: rem.torem(52px);
 
 .layout {
+  background-color: var(--color-background-subtle);
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background-color: var(--color-background-subtle);
+  height: 100dvh;
 }
 
 .page-layout {
@@ -15,6 +15,8 @@ $connect-as-header-height: rem.torem(52px);
   height: 100%;
   overflow: hidden;
   border-top: none;
+  border-left: rem.torem(1px) solid var(--color-border-subtle);
+  border-right: rem.torem(1px) solid var(--color-border-subtle);
 
   &-connect-as {
     height: calc(100% - $connect-as-header-height);
@@ -31,27 +33,12 @@ $connect-as-header-height: rem.torem(52px);
   flex-direction: column;
   flex-grow: 1;
   width: 100%;
-  overflow-y: auto;
   background-color: var(--color-background-default);
-}
-
-.content-container {
-  width: 100%;
-  flex-grow: 1;
-  padding: size.$main-content-padding-xs size.$main-content-padding-xs 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  @media screen and (min-width: size.$tablet) {
-    padding: size.$main-content-padding size.$main-content-padding 0;
-  }
+  overflow-y: auto;
 }
 
 .content {
-  position: relative;
-  max-width: 100%;
-  border: none;
-  margin: 0;
+  background-color: var(--color-background-default);
+  flex-grow: 1;
+  padding: size.$full-layout-content-padding;
 }
-

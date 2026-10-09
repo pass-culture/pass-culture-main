@@ -2,10 +2,10 @@ import { screen } from '@testing-library/react'
 import { createRef } from 'react'
 import { Route, Routes } from 'react-router'
 
-import { LateralPanel } from '@/app/App/layouts/BasicLayout/LateralPanel/LateralPanel'
+import { LateralPanel } from '@/app/App/layouts/ContentLayout/LateralPanel/LateralPanel'
+import { Footer } from '@/app/App/layouts/components/Footer/Footer'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Footer } from '@/components/Footer/Footer'
 import { SkipLinksProvider } from '@/components/SkipLinks/SkipLinksContext'
 
 import { SkipLinks } from '../SkipLinks'

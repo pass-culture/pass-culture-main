@@ -3,7 +3,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import {
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
@@ -74,7 +74,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const isNotReady = isLoading || !informations
 
   return (
-    <BasicLayout>
+    <ContentLayout>
       <h1 className={styles['title']}>Récapitulatif de la demande</h1>
       {isNotReady ? (
         <Spinner />
@@ -168,7 +168,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
           </ActionsBarSticky>
         </>
       )}
-    </BasicLayout>
+    </ContentLayout>
   )
 }
 
