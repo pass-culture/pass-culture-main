@@ -7087,8 +7087,7 @@ export type VenueProviderResponse = {
  * VenueState
  */
 export enum VenueState {
-    CLOSED = 'CLOSED',
-    CLOSING = 'CLOSING'
+    CLOSED = 'CLOSED'
 }
 
 /**
