@@ -4,105 +4,22 @@
 @use "styles/variables/_z-index.scss" as zIndex;
 @use "styles/mixins/_outline.scss" as outline;
 
-$profil-button-size: rem.torem(34px);
-$sub-popin-full-width-breakpoint: rem.torem(673px);
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+.profile-menu-wrapper {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
-@keyframes fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-.pop-in {
-  z-index: zIndex.$profil-pop-in-z-index;
-  width: 100dvw;
-  height: 100dvh;
-  margin-top: rem.torem(1px);
-
-  &[data-state="open"] {
-    animation: fade-in 150ms ease-out;
-  }
-
-  &[data-state="closed"] {
-    animation: fade-out 150ms ease-in;
-  }
-
-  @media screen and (min-width: size.$tablet) {
-    height: auto;
-    width: rem.torem(320px);
-    margin-left: 0;
-    margin-top: 0;
-  }
-}
-
-.close-item {
-  width: rem.torem(40px);
-  height: rem.torem(40px);
-  position: absolute;
-  top: rem.torem(8px);
-  right: rem.torem(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:focus-visible {
-    @include outline.focus-outline;
-
-    border-radius: var(--size-border-radius-m);
-  }
-
-  &:hover {
-    outline: none;
-  }
-}
-
-.close-button {
-  background-color: transparent;
-  border: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.menu {
+.profile-menu-details {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: var(--size-spacing-s);
-  padding: var(--size-spacing-xxl) var(--size-spacing-l) var(--size-spacing-s)
-    var(--size-spacing-l);
-  width: 100%;
-  height: 100%;
-  background-color: var(--color-background-default);
-  z-index: 15;
-  box-shadow: var(--shadow-overlay);
-
-  @media screen and (min-width: size.$tablet) {
-    border-radius: var(--size-border-radius-m);
-    border: solid rem.torem(1px) var(--color-border-subtle);
-  }
+  gap: var(--size-spacing-m);
 
   &-email {
     max-width: 100%;
     overflow-wrap: break-word;
+    margin-bottom: var(--size-spacing-s);
   }
 
   &-title {
@@ -112,60 +29,65 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 
     color: var(--color-text-subtle);
   }
-}
 
-.dropdown-button {
-  $button-width: rem.torem(200px);
-
-  color: var(--color-text-brand-primary);
-  background-color: var(--color-background-subtle);
-  outline: none;
-  border: none;
-  border-radius: var(--size-border-radius-m);
-  padding: var(--size-spacing-s);
-  max-width: rem.torem($button-width);
-  height: $profil-button-size;
-  text-align: left;
-  display: flex;
-  flex-direction: row;
-  place-content: center flex-start;
-  align-items: center;
-  gap: var(--size-spacing-s);
-
-  &[data-state="open"] {
-    background-color: var(--color-background-brand-primary);
-    color: var(--color-text-inverted);
-  }
-
-  &:hover {
-    cursor: pointer;
-  }
-
-  &:focus-visible {
-    @include outline.focus-outline;
+  &-separator {
+    border: none;
+    border-top: rem.torem(1px) solid var(--separator-color-subtle);
+    margin-top: var(--size-spacing-s);
+    margin-bottom: var(--size-spacing-s);
   }
 }
 
-.separator {
-  height: rem.torem(1px);
-  width: 100%;
-  background-color: var(--separator-color-subtle);
-}
+.profile-menu-panel-wrapper {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 150ms ease,
+    visibility 0s linear 150ms;
+  z-index: zIndex.$dropdown-button-z-index;
+  width: min(rem.torem(320px), calc(100vw - (2 * var(--size-spacing-l))));
+  margin-top: var(--size-spacing-s);
+  border-radius: var(--size-spacing-s);
+  border: rem.torem(1px) solid var(--color-border-subtle);
+  background-color: var(--color-background-default);
+  box-shadow: var(--shadow-overlay);
+  padding: var(--size-spacing-s) var(--size-spacing-l) var(--size-spacing-l)
+    var(--size-spacing-l);
 
-.menu-item {
-  display: flex;
-  height: rem.torem(40px);
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-
-  &:focus-visible {
-    @include outline.focus-outline;
-
-    border-radius: var(--size-border-radius-s);
+  &-open {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transition:
+      opacity 150ms ease,
+      visibility 0s;
   }
 
-  &:hover {
-    outline: none;
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &-open {
+      transition: none;
+    }
+  }
+
+  @media screen and (max-width: size.$tablet) {
+    position: fixed;
+    inset: size.$top-menu-height 0 0;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    overflow-y: auto;
+  }
+
+  &-close {
+    display: flex;
+    justify-content: end;
   }
 }
