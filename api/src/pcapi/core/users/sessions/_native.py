@@ -24,6 +24,7 @@ from . import _common
 if typing.TYPE_CHECKING:
     from pcapi.routes.native.v1.serialization.common_models import DeviceInfo
     from pcapi.routes.native.v2.serialization.common_models import DeviceInfoV2
+    from pcapi.routes.native.v3.serialization.authentication import DeviceInfoV3
 
 
 @dataclass(frozen=True, slots=True)
@@ -145,7 +146,7 @@ def _delete_jwt_container() -> None:
 
 def create_user_jwt_tokens(
     user: users_models.User,
-    device_info: "DeviceInfo | DeviceInfoV2 | None" = None,
+    device_info: "DeviceInfo | DeviceInfoV2 | DeviceInfoV3 | None" = None,
     legacy: bool = False,
 ) -> TokensContainer:
     if users_api.is_login_device_a_trusted_device(device_info, user):
@@ -169,7 +170,7 @@ def create_user_jwt_tokens(
 
 def refresh_user_jwt_tokens(
     user: users_models.User,
-    device_info: "DeviceInfo | DeviceInfoV2 | None" = None,
+    device_info: "DeviceInfo | DeviceInfoV2 | DeviceInfoV3 | None" = None,
     *,
     legacy: bool = False,
 ) -> TokensContainer:
