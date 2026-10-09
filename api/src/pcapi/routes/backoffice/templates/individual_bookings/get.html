@@ -163,7 +163,7 @@
       {{ booking.stock.offer.subcategoryId | format_offer_category }}
     {% endcall %}
     {% call description_detail_vertical("Sous-catégorie") %}
-      {{ booking.stock.offer.subcategory.app_label }}
+      {{ booking.stock.offer.subcategory.pro_label }}
     {% endcall %}
     {% call description_detail_vertical("Type") %}
       {% if booking.quantity == 2 %}
