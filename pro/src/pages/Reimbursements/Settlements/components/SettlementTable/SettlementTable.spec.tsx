@@ -1,6 +1,8 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { ComponentProps } from 'react'
+import * as router from 'react-router'
+import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import {
@@ -8,12 +10,21 @@ import {
   SettlementDisplayedStatus,
   type SettlementResponseModel,
 } from '@/apiClient/v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { SettlementEvents } from '@/commons/core/FirebaseEvents/constants'
 import * as useMediaQueryModule from '@/commons/hooks/useMediaQuery'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SettlementTable } from './SettlementTable'
+
+const mockLogEvent = vi.fn()
+const mockNavigate = vi.fn()
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
+  useNavigate: () => mockNavigate,
+}))
 
 vi.mock('../SettlementRowInvoicesTable/SettlementRowInvoicesTable', () => ({
   SettlementRowInvoicesTable: ({ invoices }: { invoices: unknown[] }) => (
@@ -178,23 +189,43 @@ describe('<SettlementTable />', () => {
     expect(tooltips[1]).toHaveTextContent('pass Culture')
   })
 
-  it('renders the rejected settlement differently', () => {
+  it('renders the rejected settlement differently', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+
     renderSettlementTable({
       settlements: [
         {
           ...baseSettlement,
           status: SettlementDisplayedStatus.REJECTED_UNRESOLVED,
         },
-      ] as never,
+      ],
     })
 
     expect(screen.queryByRole('cell', { name: '3' })).not.toBeInTheDocument()
     expect(
       screen.queryByRole('button', { name: 'Voir plus' })
     ).not.toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: 'Remplacer le compte' })
-    ).toBeVisible()
+
+    const replaceButton = screen.getByRole('link', {
+      name: 'Remplacer le compte',
+    })
+    expect(replaceButton).toBeVisible()
+
+    // clic on replace button -> log event + navigate
+    await user.click(replaceButton)
+    expect(mockLogEvent).toHaveBeenCalledExactlyOnceWith(
+      SettlementEvents.CLICKED_EDIT_BANK_ACCOUNT_AFTER_REJECT,
+      { settlementId: baseSettlement.id }
+    )
+    waitFor(() =>
+      expect(mockNavigate).toHaveBeenCalledExactlyOnceWith(
+        '/administration/remboursements/informations-bancaires'
+      )
+    )
   })
 
   it('renders the rejected processed settlement differently', () => {
@@ -204,7 +235,7 @@ describe('<SettlementTable />', () => {
           ...baseSettlement,
           status: SettlementDisplayedStatus.REJECTED_PROCESSED,
         },
-      ] as never,
+      ],
     })
 
     expect(screen.queryByRole('cell', { name: '3' })).not.toBeInTheDocument()
@@ -224,7 +255,7 @@ describe('<SettlementTable />', () => {
           status: SettlementDisplayedStatus.REJECTED_SOLVED,
           resolvedBy: ['VIR1', 'VIR2'],
         },
-      ] as never,
+      ],
     })
 
     expect(screen.queryByRole('cell', { name: '3' })).not.toBeInTheDocument()
@@ -238,7 +269,7 @@ describe('<SettlementTable />', () => {
 
   it('displays a dash when the settlement has no date', () => {
     renderSettlementTable({
-      settlements: [{ ...baseSettlement, date: null }] as never,
+      settlements: [{ ...baseSettlement, date: null }],
     })
 
     expect(screen.getByText('-')).toBeVisible()
@@ -289,6 +320,9 @@ describe('<SettlementTable />', () => {
   it('toggles the embedded invoices table when clicking "Voir plus" on desktop', async () => {
     const user = userEvent.setup()
     vi.spyOn(useMediaQueryModule, 'useMediaQuery').mockReturnValue(false)
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
 
     renderSettlementTable()
 
@@ -297,12 +331,19 @@ describe('<SettlementTable />', () => {
     const seeMoreButton = screen.getByRole('button', { name: 'Voir plus' })
     await user.click(seeMoreButton)
 
+    expect(mockLogEvent).toHaveBeenCalledExactlyOnceWith(
+      SettlementEvents.CLICKED_SETTLEMENT_ACCORDION,
+      { settlementId: baseSettlement.id, invoicesCount: 3 }
+    )
+
     expect(screen.getByTestId('invoices-table')).toBeInTheDocument()
     expect(screen.getByText('Invoices count: 3')).toBeInTheDocument()
 
-    // Un second clic doit refermer la ligne affichée
+    // a second clic closes the row and does not send another log
     await user.click(seeMoreButton)
     expect(screen.queryByTestId('invoices-table')).not.toBeInTheDocument()
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
   })
 
   it('opens the invoices modal when clicking "Voir plus" on mobile/tablet viewport', async () => {
@@ -344,7 +385,7 @@ describe('<SettlementTable />', () => {
             },
           ],
         },
-      ] as never,
+      ],
     })
 
     expect(screen.queryByTestId('download-actions-bar')).not.toBeInTheDocument()
@@ -379,7 +420,7 @@ describe('<SettlementTable />', () => {
           label: 'VIR_EMPTY',
           invoices: [],
         },
-      ] as never,
+      ],
     })
 
     const checkboxes = screen.getAllByRole('checkbox')
