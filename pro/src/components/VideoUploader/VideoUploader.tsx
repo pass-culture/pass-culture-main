@@ -31,7 +31,7 @@ export const VideoUploader = ({ uploadTipsId }: VideoUploaderProps) => {
     useVideoUploaderContext()
   const { videoDuration, videoTitle, videoThumbnailUrl } = videoData ?? {}
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const editVideoRef = useRef<HTMLButtonElement>(null)
   const addVideoRef = useRef<HTMLButtonElement>(null)
   const hasVideo = !!videoThumbnailUrl

@@ -73,13 +73,6 @@ export function ManagedVenueItem({
           venue.state === VenueState.CLOSED) && (
           <Tag variant={TagVariant.ERROR} label="Structure fermée" />
         )}
-        {venue.state === VenueState.CLOSING &&
-          !selectedAdminOfferer?.isClosed && (
-            <Tag
-              variant={TagVariant.WARNING}
-              label="Demande de fermeture de structure en cours"
-            />
-          )}
       </div>
       {!venue.hasPricingPoint && (
         <>

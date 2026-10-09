@@ -38,7 +38,7 @@ export const DetailsEanSearch = ({
   disabled,
 }: DetailsEanSearchProps): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const [wasCleared, setWasCleared] = useState(false)
 
   const {

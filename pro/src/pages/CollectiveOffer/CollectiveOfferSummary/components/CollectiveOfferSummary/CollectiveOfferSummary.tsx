@@ -151,7 +151,7 @@ export const CollectiveOfferSummary = ({
 }: CollectiveOfferSummaryProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const canEditDetails = isCollectiveOfferDetailsEditable(offer) && !isClosed
   const canEditDatesAndPrice = isCollectiveStockEditable(offer) && !isClosed
   const canEditInstitution = isCollectiveInstitutionEditable(offer) && !isClosed

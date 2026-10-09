@@ -174,13 +174,6 @@ export const ReimbursementBankAccount = ({
                                 label="Structure fermée"
                               />
                             )}
-                            {state === VenueState.CLOSING &&
-                              !selectedAdminOfferer?.isClosed && (
-                                <Tag
-                                  variant={TagVariant.WARNING}
-                                  label="Demande de fermeture de structure en cours"
-                                />
-                              )}
                           </div>
                         )
                       )}

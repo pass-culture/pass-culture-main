@@ -36,7 +36,7 @@ export const GenericCinemaProviderEdit = ({
   const { mutate } = useSWRConfig()
   const cinemaProviderFormId = useId()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const isClosed = withVenueHelpers(venue).isClosedOrClosing
+  const isClosed = withVenueHelpers(venue).isClosed
 
   const editVenueProvider = async (
     payload: PostVenueProviderBody

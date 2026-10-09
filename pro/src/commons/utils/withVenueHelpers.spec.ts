@@ -6,20 +6,11 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { withVenueHelpers } from './withVenueHelpers'
 
 describe('withVenueHelpers', () => {
-  describe('isClosedOrClosing', () => {
+  describe('isClosed', () => {
     it('should be false when the venue has no state', () => {
       const venue = makeGetVenueResponseModel({ id: 1, state: null })
 
-      expect(withVenueHelpers(venue).isClosedOrClosing).toBe(false)
-    })
-
-    it('should be true when the venue is closing', () => {
-      const venue = makeGetVenueResponseModel({
-        id: 1,
-        state: VenueState.CLOSING,
-      })
-
-      expect(withVenueHelpers(venue).isClosedOrClosing).toBe(true)
+      expect(withVenueHelpers(venue).isClosed).toBe(false)
     })
 
     it('should be true when the venue is closed', () => {
@@ -28,7 +19,7 @@ describe('withVenueHelpers', () => {
         state: VenueState.CLOSED,
       })
 
-      expect(withVenueHelpers(venue).isClosedOrClosing).toBe(true)
+      expect(withVenueHelpers(venue).isClosed).toBe(true)
     })
   })
 

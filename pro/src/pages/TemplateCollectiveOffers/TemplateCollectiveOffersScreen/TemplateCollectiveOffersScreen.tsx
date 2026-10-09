@@ -53,7 +53,7 @@ export const TemplateCollectiveOffersScreen = ({
   offers,
 }: TemplateCollectiveOffersScreenProps): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('template')
   const searchButtonId = useId()
 

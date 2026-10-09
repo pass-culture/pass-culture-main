@@ -45,7 +45,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
       selectedPartnerVenue.bannerMeta
     )
 
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const handleOnImageDelete = async () => {
     try {

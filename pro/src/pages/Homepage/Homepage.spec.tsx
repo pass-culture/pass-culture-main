@@ -167,7 +167,8 @@ describe('Homepage', () => {
     it('should be displayed when venue state is closing', () => {
       renderHomepage({
         ...defaultGetVenueResponseModel,
-        state: VenueState.CLOSING,
+        state: VenueState.CLOSED,
+        isPricingPoint: true,
       })
 
       expect(
@@ -191,7 +192,8 @@ describe('Homepage', () => {
     it('should be displayed when venue state is closing and no tab is available', () => {
       renderHomepage({
         ...defaultGetVenueResponseModel,
-        state: VenueState.CLOSING,
+        state: VenueState.CLOSED,
+        isPricingPoint: true,
         allowedOnAdage: false,
         hasNonDraftOffers: false,
       })
