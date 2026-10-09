@@ -3,6 +3,7 @@
 @use "styles/mixins/_size.scss" as size;
 
 .footer {
+  background-color: var(--color-background-default);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,17 +13,19 @@
   .footer-list {
     display: flex;
     flex-flow: row wrap;
-    gap: var(--size-spacing-m);
-    justify-content: flex-start;
+    gap: var(--size-spacing-m) var(--size-spacing-l);
+    justify-content: center;
+
+    @media (min-width: size.$laptop) {
+      justify-content: flex-start;
+    }
   }
 
   .footer-list-item {
     white-space: nowrap;
     display: flex;
     align-items: center;
+    min-height: rem.torem(20px);
   }
 
-  @media (min-width: size.$laptop) {
-    min-height: size.$footer-height;
-  }
 }

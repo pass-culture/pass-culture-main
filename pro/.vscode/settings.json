@@ -26,7 +26,6 @@
   },
   "cssVariables.lookupFiles": [
     "./node_modules/@pass-culture/design-system/lib/pro/light.css",
-    "**/*.css",
-    "**/*.scss"
+    "**/*.scss",
   ]
 }

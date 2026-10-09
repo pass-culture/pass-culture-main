@@ -4,7 +4,7 @@ import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
 } from '@/apiClient/v1'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { ShareTemplateOfferLink } from '@/components/CollectiveOffer/ShareTemplateOfferLink/ShareTemplateOfferLink'
 import { Button } from '@/design-system/Button/Button'
@@ -172,7 +172,7 @@ const CollectiveOfferConfirmation = ({
       : isOfferShowcased
 
   return (
-    <BasicLayout>
+    <ContentLayout>
       <h1 className={styles['title']}>{confirmationData.title}</h1>
       <h2 className={styles['subtitle']}>{offer.name}</h2>
       <div className={styles['confirmation-wrapper']}>
@@ -195,7 +195,7 @@ const CollectiveOfferConfirmation = ({
           </div>
         </div>
       </div>
-    </BasicLayout>
+    </ContentLayout>
   )
 }
 

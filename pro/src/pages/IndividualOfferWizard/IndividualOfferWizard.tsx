@@ -2,8 +2,8 @@
 
 import { Outlet, useLocation } from 'react-router'
 
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 
@@ -13,24 +13,15 @@ const IndividualOfferWizardConsumer = () => {
   const { pathname } = useLocation()
 
   const isOnboarding = pathname.includes('onboarding')
-  const isConfirmationPage = pathname.endsWith('confirmation')
 
-  const children = (
-    <div className={styles['offer-wizard-container']}>
-      <Outlet />
-    </div>
-  )
-
-  if (isOnboarding) {
-    return (
-      <OnboardingLayout isStickyActionBarInChild>{children}</OnboardingLayout>
-    )
-  }
+  const LayoutComponent = isOnboarding ? FullLayout : ContentLayout
 
   return (
-    <BasicLayout isStickyActionBarInChild={!isConfirmationPage}>
-      {children}
-    </BasicLayout>
+    <LayoutComponent>
+      <div className={styles['offer-wizard-container']}>
+        <Outlet />
+      </div>
+    </LayoutComponent>
   )
 }
 

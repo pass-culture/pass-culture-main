@@ -77,7 +77,7 @@ export const SideNavLinks = ({
   return (
     <div className={styles['sidebar']}>
       {/* SCROLLABLE CONTENT */}
-      <ul>
+      <ul className={styles['sidebar-list']}>
         {mainItems.map((item) => (
           <RenderNavItem
             key={item.key}
@@ -89,12 +89,14 @@ export const SideNavLinks = ({
       </ul>
 
       {/* FOOTER */}
-      <div className={styles['footer']}>
-        {footerItems && (
-          <div>
-            <div aria-hidden="true">
-              <div className={styles['separator-line']} />
-            </div>
+      {footerItems && (
+        <>
+          {/* SEPARATOR */}
+          <div aria-hidden="true" className={styles['separator']}>
+            <div className={styles['separator-line']} />
+          </div>
+
+          <div className={styles['footer']}>
             <ul>
               <li className={styles['review']}>
                 <UserReviewDialog isAdminSpace={isAdminSpace} />
@@ -104,8 +106,8 @@ export const SideNavLinks = ({
               </li>
             </ul>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   )
 }

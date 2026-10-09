@@ -5,7 +5,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
@@ -117,7 +117,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   }
 
   return (
-    <BasicLayout isStickyActionBarInChild>
+    <ContentLayout>
       <h1 className={styles['title']}>Créer une offre réservable</h1>
       {isCreatingNewOffer ? (
         <div className="container">
@@ -204,7 +204,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           </div>
         </div>
       )}
-    </BasicLayout>
+    </ContentLayout>
   )
 }
 
