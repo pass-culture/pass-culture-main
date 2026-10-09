@@ -2176,6 +2176,32 @@ class CloseOffererTest:
         # no user_offerer in this test, no transactional email for EAC
         assert len(mails_testing.outbox) == 0
 
+    def test_draft_offers_from_all_managed_venues_are_deleted(self):
+        offerer = offerers_factories.OffererFactory()
+        venues = offerers_factories.VenueFactory.create_batch(2, managingOfferer=offerer)
+
+        for venue in venues:
+            offers_factories.DraftOfferFactory.create_batch(2, venue=venue)
+
+        offerers_api.close_offerer(offerer)
+
+        assert not db.session.query(offers_models.Offer).all()
+        for venue in venues:
+            db.session.refresh(venue)
+            assert not venue.offers
+
+    def test_pivots_and_venue_providers_are_deleted(self):
+        offerer = offerers_factories.OffererFactory()
+        pivot = providers_factories.CinemaProviderPivotFactory(venue__managingOfferer=offerer)
+        venue_provider = providers_factories.VenueProviderFactory(venue=pivot.venue, provider=pivot.provider)
+        sync_details = providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=pivot)
+
+        offerers_api.close_offerer(offerer)
+
+        assert not db.session.query(providers_models.CDSCinemaDetails).filter_by(id=sync_details.id).all()
+        assert not db.session.query(providers_models.VenueProvider).filter_by(venueId=venue_provider.venueId).all()
+        assert not db.session.query(providers_models.CinemaProviderPivot).filter_by(id=pivot.id).all()
+
 
 class AutoDeleteAttachmentsOnClosedOfferersTest:
     @pytest.mark.parametrize(
