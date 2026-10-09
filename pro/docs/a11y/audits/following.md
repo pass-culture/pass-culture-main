@@ -49,6 +49,43 @@ TBD
 
 <details>
 
+<summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?
+
+</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43626](https://passculture.atlassian.net/browse/PC-43626)  
+**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+
+**Problème** 😱  
+Le bouton « Profil » :
+
+- Ouvre un composant implémenté avec le rôle menu, alors qu'il s'agit d'un panneau utilisateur contenant des informations et des actions. Ce choix de pattern ARIA n'est pas adapté au comportement attendu du composant.
+
+- De plus, les éléments du menu peuvent être parcourus à l'aide des flèches directionnelles, mais ne peuvent pas être activés au clavier (Entrée ou Espace). Seule une activation à la souris est possible.
+
+- Lorsque le composant est ouvert, le bouton qui l'ouvre reçoit l'attribut aria-hidden="true", bien qu'il demeure interactif.
+
+- Le bouton n’a pas d’intitulé
+
+**Correction** 💡  
+
+- Utiliser un composant adapté à l'usage, à savoir un bouton + panel.
+
+- Supprimer l'attribut aria-hidden="true" des éléments interactifs ou susceptibles de recevoir le focus.
+
+- Veiller à ce que les rôles et attributs ARIA utilisés correspondent au comportement réel du composant.
+
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 12.8 - Dans chaque page web, l'ordre de tabulation est-il cohérent ?</summary>
 
 **RAWeb/RGAA** : [Critère 12.8](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-12-8)
