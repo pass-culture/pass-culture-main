@@ -131,6 +131,7 @@ def get_capped_offers_for_filters(
                     offerers_models.Venue.id,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
+                    offerers_models.Venue.state,
                 ),
                 sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
                     offerers_models.OffererAddress.address
@@ -237,46 +238,39 @@ def get_offers_for_homepage(*, venue_id: int, offers_limit: int) -> list[models.
     )
 
     # add loading options
-    query = (
-        query.options(
-            sa_orm.load_only(
-                models.Offer.id,
-                models.Offer.name,
-                models.Offer.subcategoryId,
-                models.Offer.validation,
-                models.Offer.publicationDatetime,
-                models.Offer.bookingAllowedDatetime,
-            )
-        )
-        .options(
-            sa_orm.selectinload(models.Offer.stocks).load_only(
-                models.Stock.id,
-                models.Stock.beginningDatetime,
-                models.Stock.bookingLimitDatetime,
-                models.Stock.quantity,
-                models.Stock.dnBookedQuantity,
-                models.Stock.isSoftDeleted,
-            ),
-            sa_orm.joinedload(models.Offer.offererAddress)
-            .load_only()
-            .joinedload(offerers_models.OffererAddress.address)
-            .load_only(geography_models.Address.departmentCode),
-        )
+    query = query.options(
+        sa_orm.load_only(
+            models.Offer.id,
+            models.Offer.name,
+            models.Offer.subcategoryId,
+            models.Offer.validation,
+            models.Offer.publicationDatetime,
+            models.Offer.bookingAllowedDatetime,
+        ),
+        sa_orm.selectinload(models.Offer.stocks).load_only(
+            models.Stock.id,
+            models.Stock.beginningDatetime,
+            models.Stock.bookingLimitDatetime,
+            models.Stock.quantity,
+            models.Stock.dnBookedQuantity,
+            models.Stock.isSoftDeleted,
+        ),
+        sa_orm.joinedload(models.Offer.offererAddress)
+        .load_only()
+        .joinedload(offerers_models.OffererAddress.address)
+        .load_only(geography_models.Address.departmentCode),
         # mediations and productMediations are needed for thumbUrl
-        .options(
-            sa_orm.joinedload(models.Offer.mediations).load_only(
-                models.Mediation.id,
-                models.Mediation.credit,
-                models.Mediation.dateCreated,
-                models.Mediation.thumbCount,
-                models.Mediation.isActive,
-            )
-        )
-        .options(
-            sa_orm.joinedload(models.Offer.product)
-            .load_only(models.Product.id, models.Product.thumbCount)
-            .joinedload(models.Product.productMediations)
-        )
+        sa_orm.joinedload(models.Offer.mediations).load_only(
+            models.Mediation.id,
+            models.Mediation.credit,
+            models.Mediation.dateCreated,
+            models.Mediation.thumbCount,
+            models.Mediation.isActive,
+        ),
+        sa_orm.joinedload(models.Offer.product)
+        .load_only(models.Product.id, models.Product.thumbCount)
+        .joinedload(models.Product.productMediations),
+        sa_orm.joinedload(models.Offer.venue).load_only(offerers_models.Venue.state),
     )
 
     # sort more precisely the offers and apply the limit
