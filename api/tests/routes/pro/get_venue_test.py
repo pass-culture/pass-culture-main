@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+import pcapi.core.highlights.factories as highlights_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
@@ -16,6 +17,7 @@ from pcapi.core.offerers.models import Weekday
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
+from pcapi.utils import db as db_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import timespan_str_to_numrange
 from pcapi.utils.image_conversion import DO_NOT_CROP
@@ -33,6 +35,7 @@ class Returns200Test:
     num_queries += 1  # venue.hasActiveIndividualOffer
     num_queries += 1  # venue.hasAtLeastOneBookableOffer
     num_queries += 1  # venue.canDisplayHighlights
+    num_queries += 1  # venue.hasHighlightRequest
     num_queries += 1  # venue.hasNonDraftOffers
     num_queries += 1  # get_offerer_is_onboarded
     num_queries += 1  # check whether the venue is a pricing point
@@ -125,7 +128,8 @@ class Returns200Test:
         educational_factories.CollectiveDmsApplicationFactory(
             venue=venue, lastChangeDate=dmsapplication.lastChangeDate - datetime.timedelta(days=10)
         )
-        offers_factories.EventStockFactory(offer__venue=venue)
+        event_stock = offers_factories.EventStockFactory(offer__venue=venue)
+        highlights_factories.HighlightRequestFactory(offer=event_stock.offer)
 
         expected_serialized_venue = {
             "activity": "BOOKSTORE",
@@ -243,6 +247,7 @@ class Returns200Test:
                 "isVenueLocation": True,
             },
             "hasOffers": True,
+            "hasHighlightRequest": True,
             "isOpenToPublic": True,
             "isCaledonian": False,
             "bankAccountStatus": "valid",
@@ -276,16 +281,25 @@ class Returns200Test:
             adageId=None,
             adageInscriptionDate=None,
         )
+        event_stock = offers_factories.EventStockFactory(offer__venue=venue)
+        highlights_factories.HighlightRequestFactory(
+            offer=event_stock.offer,
+            highlight__availability_datespan=db_utils.make_inclusive_daterange(
+                start=datetime.date.today() - datetime.timedelta(days=10),
+                end=datetime.date.today() - datetime.timedelta(days=1),
+            ),
+        )
         venue_id = venue.id
         db.session.expire_all()
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_non_free_individual_offer):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["adageInscriptionDate"] is None
         assert response.json["hasAdageId"] is False
+        assert response.json["hasHighlightRequest"] is False
         assert response.json["allowedOnAdage"] is False
 
     def should_ignore_invalid_banner_metadata(self, client):
