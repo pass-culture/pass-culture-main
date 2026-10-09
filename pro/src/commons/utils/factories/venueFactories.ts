@@ -83,6 +83,7 @@ export const makeGetVenueResponseModel = <
     externalAccessibilityId: null,
     hasActiveIndividualOffer: false,
     hasAtLeastOneBookableOffer: false,
+    hasHighlightRequest: false,
     hasAdageId: false,
     hasOffers: false,
     hasNonFreeOffers: false,

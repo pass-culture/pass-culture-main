@@ -11,6 +11,7 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
@@ -35,6 +36,7 @@ export function OfferHighlightForm({
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
+  const { syncVenue } = useSyncVenueCache()
 
   const defaultValues = {
     highlightIds: highlightRequests.map((request) => request.id),
@@ -65,16 +67,16 @@ export function OfferHighlightForm({
         availableHighlightIds.has(id)
       )
 
-      await mutate(
-        [GET_OFFER_QUERY_KEY, offerId],
-        await api.postHighlightRequestOffer({
-          path: { offer_id: offerId },
-          body: {
-            highlight_ids: highlightIdsToSubmit,
-          },
-        }),
-        { revalidate: false }
-      )
+      const updatedOffer = await api.postHighlightRequestOffer({
+        path: { offer_id: offerId },
+        body: {
+          highlight_ids: highlightIdsToSubmit,
+        },
+      })
+      await mutate([GET_OFFER_QUERY_KEY, offerId], updatedOffer, {
+        revalidate: false,
+      })
+      await syncVenue(updatedOffer.venue.id)
       logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
         offerId,
         action: 'validated',

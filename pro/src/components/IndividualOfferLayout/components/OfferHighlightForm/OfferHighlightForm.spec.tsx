@@ -12,6 +12,7 @@ import type {
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -30,6 +31,7 @@ vi.mock('swr', async (importOriginal) => ({
 vi.mock('@/apiClient/api', () => ({
   api: {
     getHighlights: vi.fn(),
+    getVenue: vi.fn(),
     postHighlightRequestOffer: vi.fn(),
   },
 }))
@@ -105,7 +107,12 @@ describe('OfferHighlightForm', () => {
   beforeEach(() => {
     getHighlightsMock.mockResolvedValue(mockedHighlights)
     postHighlightRequestOfferMock.mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      getIndividualOfferFactory({
+        venue: { ...getIndividualOfferFactory().venue, id: 2 },
+      })
+    )
+    vi.mocked(api.getVenue).mockResolvedValue(
+      makeGetVenueResponseModel({ id: 2, hasHighlightRequest: true })
     )
 
     useSWRMock.mockReturnValue({
@@ -234,6 +241,40 @@ describe('OfferHighlightForm', () => {
     })
   })
 
+  it.each([true, false])(
+    'should refresh the venue before closing when highlight requests are selected=%s',
+    async (hasHighlightRequest) => {
+      const onSuccess = vi.fn(() => {
+        expect(api.getVenue).toHaveBeenCalledWith({
+          path: { venue_id: 2 },
+        })
+      })
+      vi.mocked(api.getVenue).mockResolvedValue(
+        makeGetVenueResponseModel({ id: 2, hasHighlightRequest })
+      )
+      renderOfferHighlightForm({
+        offerId: 1,
+        onSuccess,
+        highlightRequests: hasHighlightRequest
+          ? []
+          : [{ id: 1, name: mockedHighlights[0].name }],
+      })
+
+      await userEvent.click(await screen.findByText(mockedHighlights[0].name))
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Valider la sélection' })
+      )
+
+      await waitFor(() => {
+        expect(onSuccess).toHaveBeenCalledOnce()
+      })
+      expect(postHighlightRequestOfferMock).toHaveBeenCalledWith({
+        path: { offer_id: 1 },
+        body: { highlight_ids: hasHighlightRequest ? [1] : [] },
+      })
+    }
+  )
+
   it('should call notify.success when new highlights list is submitted', async () => {
     renderOfferHighlightForm({ offerId: 1 })
 
@@ -303,6 +344,7 @@ describe('OfferHighlightForm', () => {
         'Une erreur est survenue lors de la sélection des temps forts'
       )
     })
+    expect(api.getVenue).not.toHaveBeenCalled()
   })
 
   it('should call onSuccess', async () => {

@@ -328,6 +328,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   hasOffers: true,
   hasActiveIndividualOffer: true,
   hasAtLeastOneBookableOffer: true,
+  hasHighlightRequest: false,
   isOnboarded: false,
   isOpenToPublic: true,
   isPricingPoint: false,

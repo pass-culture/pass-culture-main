@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { HomepageEvents } from 'commons/core/FirebaseEvents/constants'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { defaultOfferHomeResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
@@ -9,11 +8,12 @@ import {
   venueOffersPeriodStatsModelFactory,
 } from 'commons/utils/factories/statisticsFactories'
 import { format, subMonths } from 'date-fns'
-import { SWRConfig } from 'swr'
+import { SWRConfig, useSWRConfig } from 'swr'
 import { describe } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
+import { GET_VENUE_HEADLINE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -42,7 +42,8 @@ vi.mock('@/app/App/analytics/firebase', () => ({
 const renderStatsCard = (
   hasOffers = true,
   features: string[] = [],
-  shouldRetryOnError = false
+  shouldRetryOnError = false,
+  hasHighlightRequest = false
 ) =>
   renderWithProviders(
     <SWRConfig
@@ -60,6 +61,7 @@ const renderStatsCard = (
         venue={{
           ...defaultGetVenue,
           hasNonDraftOffers: hasOffers,
+          hasHighlightRequest,
         }}
       />
     </SWRConfig>,
@@ -129,6 +131,33 @@ describe('StatsCard', () => {
   describe('With WIP_HOME_STATS_V2 FF', () => {
     const stats = getVenueOffersStatsV2ResponseModelFactory()
 
+    beforeEach(() => {
+      vi.mocked(api.listOffersHome).mockResolvedValue([])
+    })
+
+    it('should show visibility advice with a headline offer and no highlight request even without event offers', async () => {
+      vi.spyOn(api, 'getVenueOffersStatsV2').mockResolvedValueOnce(stats)
+      vi.spyOn(api, 'listOffersHome').mockResolvedValue([])
+      vi.spyOn(api, 'getVenueHeadlineOffer').mockResolvedValue({
+        id: 1,
+        name: 'Offre à la une',
+        venueId: defaultGetVenue.id,
+      })
+
+      renderStatsCard(true, ['WIP_HOME_STATS_V2'])
+
+      expect(
+        await screen.findByRole('heading', {
+          name: 'Améliorez votre visibilité',
+        })
+      ).toBeVisible()
+      expect(
+        screen.getByRole('link', {
+          name: /Voir nos conseils des gestion et valorisation d’offres/,
+        })
+      ).toBeVisible()
+    })
+
     it('should render the card', async () => {
       vi.spyOn(api, 'getVenueOffersStatsV2').mockResolvedValueOnce(stats)
       const { container } = renderStatsCard(true, ['WIP_HOME_STATS_V2'])
@@ -178,39 +207,71 @@ describe('StatsCard', () => {
       expect(await screen.findByText('sur les 3 derniers mois')).toBeVisible()
     })
 
-    it('should show only the headline action when the venue has thing offers', async () => {
-      vi.spyOn(api, 'listOffersHome').mockResolvedValue([
-        {
-          ...defaultOfferHomeResponseModel,
-          id: 1,
-          isEvent: false,
-        },
-      ])
-      renderStatsCard(true, ['WIP_HOME_STATS_V2'])
-      await screen.findByRole('heading', { name: 'Améliorez votre visibilité' })
+    it.each([
+      { isEvent: false, hasHeadlineOffer: false, hasHighlightRequest: false },
+      { isEvent: false, hasHeadlineOffer: false, hasHighlightRequest: true },
+      { isEvent: false, hasHeadlineOffer: true, hasHighlightRequest: false },
+      { isEvent: false, hasHeadlineOffer: true, hasHighlightRequest: true },
+      { isEvent: true, hasHeadlineOffer: false, hasHighlightRequest: false },
+      { isEvent: true, hasHeadlineOffer: false, hasHighlightRequest: true },
+      { isEvent: true, hasHeadlineOffer: true, hasHighlightRequest: false },
+      { isEvent: true, hasHeadlineOffer: true, hasHighlightRequest: true },
+    ])(
+      'should display the appropriate actions for event=$isEvent, headline=$hasHeadlineOffer, highlight request=$hasHighlightRequest',
+      async ({ isEvent, hasHeadlineOffer, hasHighlightRequest }) => {
+        vi.spyOn(api, 'getVenueOffersStatsV2').mockResolvedValueOnce(stats)
+        vi.mocked(api.listOffersHome).mockResolvedValue([
+          { ...defaultOfferHomeResponseModel, isEvent },
+        ])
+        if (hasHeadlineOffer) {
+          vi.spyOn(api, 'getVenueHeadlineOffer').mockResolvedValue({
+            id: 1,
+            name: 'Offre à la une',
+            venueId: defaultGetVenue.id,
+          })
+        } else {
+          vi.spyOn(api, 'getVenueHeadlineOffer').mockRejectedValue({
+            status: 404,
+          })
+        }
 
-      const headlineLink = screen.getByRole('link', {
-        name: 'Choisir une offre',
-      })
-      expect(headlineLink).toBeVisible()
-      expect(headlineLink).toHaveAttribute('href', '/offres')
-      expect(
-        screen.queryByRole('button', { name: 'Voir les prochains temps forts' })
-      ).toBeNull()
-      expect(screen.getByTestId('visibility-actions')).not.toHaveClass(
-        'has-both-actions'
-      )
-    })
+        renderStatsCard(true, ['WIP_HOME_STATS_V2'], false, hasHighlightRequest)
+
+        await screen.findByRole('heading', {
+          name: 'Améliorez votre visibilité',
+        })
+        expect(
+          !!screen.queryByRole('link', { name: 'Choisir une offre' })
+        ).toBe(!hasHeadlineOffer)
+        expect(
+          !!screen.queryByRole('button', {
+            name: 'Voir les prochains temps forts',
+          })
+        ).toBe(isEvent && !hasHighlightRequest)
+        expect(
+          !!screen.queryByRole('link', { name: /Voir nos conseils/ })
+        ).toBe(hasHeadlineOffer && (hasHighlightRequest || !isEvent))
+        expect(
+          screen
+            .getByTestId('visibility-actions')
+            .classList.contains('has-both-actions')
+        ).toBe(!hasHeadlineOffer && isEvent && !hasHighlightRequest)
+
+        if (isEvent && !hasHighlightRequest) {
+          await userEvent.click(
+            screen.getByRole('button', {
+              name: 'Voir les prochains temps forts',
+            })
+          )
+          expect(screen.getByRole('dialog')).toHaveTextContent(
+            'Panneau temps forts'
+          )
+        }
+      }
+    )
 
     it('should not retry when the venue has no headline offer', async () => {
       vi.spyOn(api, 'getVenueOffersStatsV2').mockResolvedValueOnce(stats)
-      vi.spyOn(api, 'listOffersHome').mockResolvedValue([
-        {
-          ...defaultOfferHomeResponseModel,
-          id: 1,
-          isEvent: false,
-        },
-      ])
       vi.spyOn(api, 'getVenueHeadlineOffer').mockRejectedValue({ status: 404 })
 
       renderStatsCard(true, ['WIP_HOME_STATS_V2'], true)
@@ -218,80 +279,88 @@ describe('StatsCard', () => {
       await waitFor(() => {
         expect(api.getVenueHeadlineOffer).toHaveBeenCalledTimes(1)
       })
+      await screen.findByText(/0 consultations/)
       expect(
-        await screen.findByRole('link', { name: 'Choisir une offre' })
-      ).toBeVisible()
+        screen.queryByRole('heading', { name: 'Améliorez votre visibilité' })
+      ).not.toBeInTheDocument()
 
       expect(api.getVenueHeadlineOffer).toHaveBeenCalledTimes(1)
     })
 
-    it('should show only the highlight action when the venue has event offers', async () => {
-      vi.spyOn(api, 'listOffersHome').mockResolvedValue([
-        {
-          ...defaultOfferHomeResponseModel,
-          id: 1,
-          isEvent: true,
-        },
-      ])
-      renderStatsCard(true, ['WIP_HOME_STATS_V2'])
-      await screen.findByRole('heading', { name: 'Améliorez votre visibilité' })
+    it.each(['cache removal', '404 revalidation'])(
+      'should replace visibility advice with the headline action after headline offer %s',
+      async (removalMode) => {
+        vi.spyOn(api, 'getVenueOffersStatsV2').mockResolvedValue(stats)
+        vi.mocked(api.listOffersHome).mockResolvedValue([
+          { ...defaultOfferHomeResponseModel, isEvent: false },
+        ])
+        vi.spyOn(api, 'getVenueHeadlineOffer')
+          .mockResolvedValueOnce({
+            id: 1,
+            name: 'Offre à la une',
+            venueId: defaultGetVenue.id,
+          })
+          .mockRejectedValue({ status: 404 })
 
-      expect(
-        screen.getByRole('button', { name: 'Voir les prochains temps forts' })
-      ).toBeVisible()
-      expect(
-        screen.queryByRole('link', {
-          name: 'Choisir une offre',
+        const RemoveHeadlineOffer = () => {
+          const { mutate } = useSWRConfig()
+          const headlineKey = [
+            GET_VENUE_HEADLINE_OFFER_QUERY_KEY,
+            defaultGetVenue.id,
+          ]
+
+          return (
+            <button
+              type="button"
+              onClick={() => {
+                if (removalMode === 'cache removal') {
+                  void mutate(headlineKey, null, { revalidate: false })
+                } else {
+                  void mutate(headlineKey)
+                }
+              }}
+            >
+              Retirer l'offre à la une
+            </button>
+          )
+        }
+
+        renderWithProviders(
+          <SWRConfig
+            value={{
+              provider: () => new Map(),
+              dedupingInterval: 0,
+              shouldRetryOnError: false,
+            }}
+          >
+            <StatsCard
+              venue={{ ...defaultGetVenue, hasHighlightRequest: false }}
+            />
+            <RemoveHeadlineOffer />
+          </SWRConfig>,
+          {
+            user: sharedCurrentUserFactory(),
+            features: ['WIP_HOME_STATS_V2'],
+          }
+        )
+
+        expect(
+          await screen.findByRole('link', { name: /Voir nos conseils/ })
+        ).toBeVisible()
+
+        await userEvent.click(
+          screen.getByRole('button', { name: "Retirer l'offre à la une" })
+        )
+
+        await waitFor(() => {
+          expect(
+            screen.queryByRole('link', { name: /Voir nos conseils/ })
+          ).not.toBeInTheDocument()
         })
-      ).toBeNull()
-      expect(screen.getByTestId('visibility-actions')).not.toHaveClass(
-        'has-both-actions'
-      )
-    })
-
-    it('should show both actions and open the highlight panel', async () => {
-      const user = userEvent.setup()
-      vi.spyOn(api, 'listOffersHome').mockResolvedValue([
-        {
-          ...defaultOfferHomeResponseModel,
-          id: 1,
-          isEvent: true,
-        },
-        {
-          ...defaultOfferHomeResponseModel,
-          id: 2,
-          isEvent: false,
-        },
-      ])
-      renderStatsCard(true, ['WIP_HOME_STATS_V2'])
-      await screen.findByRole('heading', { name: 'Améliorez votre visibilité' })
-
-      expect(screen.getByTestId('visibility-actions')).toHaveClass(
-        'has-both-actions'
-      )
-      expect(
-        screen.getByRole('link', {
-          name: 'Choisir une offre',
-        })
-      ).toBeVisible()
-
-      await user.click(
-        screen.getByRole('button', { name: 'Voir les prochains temps forts' })
-      )
-
-      expect(screen.getByRole('dialog')).toHaveTextContent(
-        'Panneau temps forts'
-      )
-
-      await userEvent.click(
-        screen.getByRole('link', {
-          name: 'Choisir une offre',
-        })
-      )
-
-      expect(logEventMock).toHaveBeenCalledWith(
-        HomepageEvents.CLICKED_HEADLINE_OFFER
-      )
-    })
+        expect(
+          screen.getByRole('link', { name: 'Choisir une offre' })
+        ).toBeVisible()
+      }
+    )
   })
 })

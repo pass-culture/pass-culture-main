@@ -3461,6 +3461,10 @@ export type GetVenueResponseModel = {
      */
     hasAtLeastOneBookableOffer: boolean;
     /**
+     * Hashighlightrequest
+     */
+    hasHighlightRequest: boolean;
+    /**
      * Hasnondraftoffers
      */
     hasNonDraftOffers: boolean;
