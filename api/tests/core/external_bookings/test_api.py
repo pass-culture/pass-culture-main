@@ -131,7 +131,7 @@ class BookEventTicketTest:
         with pytest.raises(providers_exceptions.InactiveProvider):
             book_event_ticket(booking, stock, user)
 
-    @pytest.mark.settings(WEBHOOK_AUTH_PRIVATE_KEY=PRIVATE_ED25519_KEY)
+    @pytest.mark.settings(WEBHOOK_AUTH_KEY=PRIVATE_ED25519_KEY)
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_book_an_event_ticket(self, requests_post):
         booking_creation_date = datetime.datetime(2024, 5, 12)
@@ -269,7 +269,7 @@ class BookEventTicketTest:
         with pytest.raises(external_bookings_exceptions.ExternalBookingException):
             book_event_ticket(booking, booking.stock, booking.user)
 
-    @pytest.mark.settings(WEBHOOK_AUTH_PRIVATE_KEY=PRIVATE_ED25519_KEY)
+    @pytest.mark.settings(WEBHOOK_AUTH_KEY=PRIVATE_ED25519_KEY)
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_book_an_event_ticket_using_venue_external_url(self, requests_post):
         booking_creation_date = datetime.datetime(2024, 5, 12)
@@ -511,7 +511,7 @@ class CancelEventTicketTest:
                 venue_provider=None,
             )
 
-    @pytest.mark.settings(WEBHOOK_AUTH_PRIVATE_KEY=PRIVATE_ED25519_KEY)
+    @pytest.mark.settings(WEBHOOK_AUTH_KEY=PRIVATE_ED25519_KEY)
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_cancel_an_event_ticket(self, requests_post):
         booking_creation_date = datetime.datetime(2024, 5, 12)
@@ -562,7 +562,7 @@ class CancelEventTicketTest:
             metric_name_suffix="external_booking_cancel",
         )
 
-    @pytest.mark.settings(WEBHOOK_AUTH_PRIVATE_KEY=PRIVATE_ED25519_KEY)
+    @pytest.mark.settings(WEBHOOK_AUTH_KEY=PRIVATE_ED25519_KEY)
     @pytest.mark.parametrize("return_value", [{"remainingQuantity": 10}, {}])
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_cancel_an_event_ticket_using_venue_cancel_url(self, requests_post, return_value):
