@@ -261,10 +261,9 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
     # case 5: deposit for current year, 2 periods, second period starts on september 5th
     # this allows us to test the second period without waiting until january 1st
     institution = next(institutions_iter)
-    PARIS_TZ = pytz.timezone(date_utils.METROPOLE_TIMEZONE)
     first_civil_year = educational_factories.get_current_educational_first_civil_year()
-    passed_period_end = PARIS_TZ.localize(datetime.datetime(first_civil_year, 9, 4, 23, 59, 59))
-    passed_period_next_start = PARIS_TZ.localize(datetime.datetime(first_civil_year, 9, 5))
+    passed_period_end = date_utils.PARIS_TZ.localize(datetime.datetime(first_civil_year, 9, 4, 23, 59, 59))
+    passed_period_next_start = date_utils.PARIS_TZ.localize(datetime.datetime(first_civil_year, 9, 5))
     deposits.extend(
         [
             educational_factories.EducationalDepositFactory.create(

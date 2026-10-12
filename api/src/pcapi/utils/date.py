@@ -51,6 +51,7 @@ CUSTOM_TIMEZONES = {
     # very few events, there...
 }
 METROPOLE_TIMEZONE = "Europe/Paris"
+PARIS_TZ = pytz.timezone(METROPOLE_TIMEZONE)
 FRENCH_DATE_FORMAT = "%d/%m/%Y"
 
 
