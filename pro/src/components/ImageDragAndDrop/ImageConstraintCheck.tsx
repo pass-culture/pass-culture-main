@@ -27,7 +27,7 @@ export const ImageConstraintCheck = ({
   )
 
   return (
-    <div
+    <li
       className={cn({
         [styles['image-drag-and-drop-description-error']]: hasError,
         [styles['image-drag-and-drop-description-validate']]: !hasError,
@@ -48,6 +48,6 @@ export const ImageConstraintCheck = ({
       >
         {imageConstraint}
       </p>
-    </div>
+    </li>
   )
 }

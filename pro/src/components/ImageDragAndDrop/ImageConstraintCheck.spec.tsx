@@ -18,6 +18,7 @@ describe('ImageConstraintCheck', () => {
     // Check that the label and constraint are rendered properly
     expect(screen.getByText('Format :')).toBeInTheDocument()
     expect(screen.getByText('JPG, PNG')).toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('should render in error state when hasError is true', () => {
@@ -36,10 +37,14 @@ describe('ImageConstraintCheck', () => {
     expect(screen.getByText('10MB')).toBeInTheDocument()
 
     // Ensure the error message is wrapped in a container with the error class
-    const errorContainer = screen.getByText('Size :').closest('div')
+    const errorContainer = screen.getByText('Size :').closest('li')
     expect(errorContainer).toHaveClass(
       styles['image-drag-and-drop-description-error']
     )
+    expect(
+      screen.getByRole('img', { name: 'Critère non respecté' })
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('should not render error message when hasError is false', () => {
@@ -63,6 +68,7 @@ describe('ImageConstraintCheck', () => {
       'Les dimensions sont incorrectes'
     )
     expect(visuallyHiddenMessage).not.toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('should render in valid state with hasInput is true and hasError is false', () => {
@@ -75,7 +81,7 @@ describe('ImageConstraintCheck', () => {
       />
     )
 
-    const validateContainer = screen.getByText('Format :').closest('div')
+    const validateContainer = screen.getByText('Format :').closest('li')
     expect(validateContainer).toHaveClass(
       styles['image-drag-and-drop-description-validate']
     )
@@ -97,8 +103,6 @@ describe('ImageConstraintCheck', () => {
     )
 
     expect(screen.queryByText('Valide :')).not.toBeInTheDocument()
-    expect(
-      screen.queryByText("Le format n'est pas valide")
-    ).not.toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })

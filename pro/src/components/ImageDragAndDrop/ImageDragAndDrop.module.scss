@@ -77,6 +77,11 @@
     color: var(--color-text-subtle);
     text-align: center;
 
+    &-or {
+      display: inline;
+      margin: 0;
+    }
+
     &-highlight {
       @include fonts.button;
 
@@ -93,6 +98,15 @@
     display: flex;
     flex-direction: column;
     gap: var(--size-spacing-xs);
+
+    &-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--size-spacing-xs);
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
 
     &-error,
     &-validate {
