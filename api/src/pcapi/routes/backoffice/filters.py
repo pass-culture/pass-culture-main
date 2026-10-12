@@ -59,7 +59,6 @@ from pcapi.utils.date import METROPOLE_TIMEZONE
 
 logger = logging.getLogger(__name__)
 
-PARIS_TZ = pytz.timezone(METROPOLE_TIMEZONE)
 
 ACTION_TYPE_TO_STRING = {
     history_models.ActionType.COMMENT: "Commentaire interne",
@@ -303,7 +302,7 @@ def format_date(
         return ""
 
     if isinstance(data, datetime.datetime):
-        tz = pytz.timezone(address.timezone) if address else PARIS_TZ
+        tz = pytz.timezone(address.timezone) if address else date_utils.PARIS_TZ
         try:
             hours_offset = int(data.astimezone(tz).utcoffset().total_seconds() / 3600)  # type: ignore[union-attr]
         except AttributeError:
