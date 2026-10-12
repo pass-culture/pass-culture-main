@@ -23,6 +23,37 @@ Texte
 
 <summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
 
+**RAWeb/RGAA** : [Critère X.X](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-X-X)
+**Ticket** : [PC-XXXXX](https://passculture.atlassian.net/browse/PC-XXXXX)  
+**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+
+**Problème** 😱  
+P11 → Contenus téléchargables
+
+Les boutons « Critères validés (ou non applicables) par le service numérique » et « Critères non validés (ou en cours) par le service numérique » du bloc « Télécharger la déclaration RGESN de l'espace partenaire » permettent d'afficher ou masquer du contenu, mais n'indiquent pas leur état d'ouverture ou de fermeture aux technologies d'assistance.
+
+
+**Correction** 💡  
+
+Implémenter le composant en respectant le motif de conception ARIA Disclosure :
+
+- utiliser un bouton pour contrôler l'affichage du contenu ;
+
+- ajouter l'attribut aria-expanded avec la valeur true lorsque le contenu est affiché et false lorsqu'il est masqué ;
+
+- associer le bouton au contenu contrôlé à l'aide de l'attribut aria-controls.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
 **RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
 **Ticket** : [PC-43625](https://passculture.atlassian.net/browse/PC-43625)  
 **PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
