@@ -166,6 +166,7 @@ export const IndividualOfferPriceTableScreen = ({
             </FormLayout>
           )}
           <ActionBar
+            isEmbedded
             onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE}
             isDisabled={

@@ -12,6 +12,7 @@ import { ActionBarRight } from './ActionBarRight'
 
 export interface ActionBarProps {
   dirtyForm?: boolean
+  isEmbedded?: boolean
   isDisabled?: boolean
   onClickNext?: () => void
   onClickPrevious?: () => void
@@ -21,6 +22,7 @@ export interface ActionBarProps {
 
 export const ActionBar = ({
   dirtyForm,
+  isEmbedded = false,
   onClickNext,
   onClickPrevious,
   isDisabled = false,
@@ -32,7 +34,7 @@ export const ActionBar = ({
   const mode = useOfferWizardMode()
 
   return (
-    <ActionsBarSticky hasSideNav={!isOnboarding}>
+    <ActionsBarSticky hasSideNav={!isOnboarding} isEmbedded={isEmbedded}>
       <ActionsBarSticky.Left>
         <ActionBarLeft
           isDisabled={isDisabled}

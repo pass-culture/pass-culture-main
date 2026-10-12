@@ -246,6 +246,7 @@ export const IndividualOfferMediaScreen = ({
             </FormLayout.Section>
           </FormLayout>
           <ActionBar
+            isEmbedded
             onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA}
             isDisabled={

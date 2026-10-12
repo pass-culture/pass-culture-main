@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
@@ -45,7 +45,9 @@ describe('screens | OfferEducational: edition', () => {
 
     await screen.findByLabelText(/Titre de l’offre/)
 
-    expect(await axe(container)).toHaveNoViolations()
+    await act(async () => {
+      expect(await axe(container)).toHaveNoViolations()
+    })
   })
 
   it('should disable all fields when mode is READONLY', async () => {

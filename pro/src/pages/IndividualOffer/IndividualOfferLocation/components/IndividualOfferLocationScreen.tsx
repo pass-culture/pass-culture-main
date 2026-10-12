@@ -168,6 +168,7 @@ export const IndividualOfferLocationScreen = ({
           </FormLayout>
 
           <ActionBar
+            isEmbedded
             onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION}
             isDisabled={

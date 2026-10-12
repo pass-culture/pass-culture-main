@@ -184,6 +184,7 @@ export const IndividualOfferPracticalInfosScreen = ({
             stocks={stocks}
           />
           <ActionBar
+            isEmbedded
             onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS}
             isDisabled={
