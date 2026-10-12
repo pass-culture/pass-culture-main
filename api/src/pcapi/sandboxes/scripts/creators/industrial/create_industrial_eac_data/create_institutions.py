@@ -1,7 +1,5 @@
 import datetime
 
-import pytz
-
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models

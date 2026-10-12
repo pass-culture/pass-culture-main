@@ -16,7 +16,6 @@ from pcapi.core.subscription.bonus.api import apply_for_quotient_familial_bonus
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
-from pcapi.utils import rate_limit as rate_limit_utils
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -200,28 +199,11 @@ def recover_started_bonus_credit_applications(
 ) -> list[subscription_models.BeneficiaryFraudCheck]:
     """
     Recovers the `page_size` first started QF/AAH/AEEH fraud checks.
-    This function only recovers the first page, and is meant to be called as often as needed by recovery workers,
-    but no more than once per minute for rate limit reasons.
+    This function only recovers the first page, and is meant to be called as often as needed by recovery workers.
     """
     if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
         logger.warning("Trying to call recover_started_bonus_credit_applications with disabled FF")
         return []
-
-    is_currently_rate_limited = rate_limit_utils.get_rate_limit_lock_ttl(api_particulier.RATE_LIMIT_LOCK_KEY)
-    if is_currently_rate_limited:
-        logger.warning("API Particulier rate limit reached, returning early to respect Retry-After")
-        return []
-
-    remaining_bandwidth = rate_limit_utils.get_current_rate_limit_window_remaining_usage(
-        key=api_particulier.RATE_LIMIT_KEY,
-        time_window_size=api_particulier.RATE_LIMIT_TIME_WINDOW_SIZE,
-        max_per_time_window=settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD,
-    )
-    if not remaining_bandwidth:
-        logger.warning("API Particulier client-side rate limit reached, returning early")
-        return []
-
-    page_size = min(page_size, remaining_bandwidth)
 
     started_bonus_fraud_check_stmt = sa.select(subscription_models.BeneficiaryFraudCheck).filter(
         subscription_models.BeneficiaryFraudCheck.type.in_(

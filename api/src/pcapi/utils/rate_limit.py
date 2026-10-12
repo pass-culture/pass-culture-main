@@ -30,17 +30,6 @@ def rate_limit(key: str, time_window_size: int, max_per_time_window: int) -> typ
     yield
 
 
-def get_current_rate_limit_window_remaining_usage(key: str, time_window_size: int, max_per_time_window: int) -> int:
-    current_usage = get_current_rate_limit_usage(key, time_window_size, max_per_time_window)
-    return max(max_per_time_window - current_usage, 0)
-
-
-def get_current_rate_limit_usage(key: str, time_window_size: int, max_per_time_window: int) -> int:
-    rate_limit_key = _get_rate_limit_key(key, time_window_size, max_per_time_window)
-    current_usage = get_redis_client().get(rate_limit_key)
-    return int(current_usage) if current_usage else 0
-
-
 def _get_rate_limit_key(key: str, time_window_size: int, max_per_time_window: int) -> str:
     if max_per_time_window <= 0:
         raise ValueError("max_per_time_window parameter must be above 0")
