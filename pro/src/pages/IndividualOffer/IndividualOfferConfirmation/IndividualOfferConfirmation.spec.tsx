@@ -5,7 +5,7 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
 } from '@/apiClient/v1'
 import {
@@ -91,7 +91,7 @@ const waitForRecommendationCardFetch = async () => {
 
 describe('IndividualOfferConfirmation', () => {
   let contextOverride: Partial<IndividualOfferContextValues>
-  let offer: GetIndividualOfferResponseModel
+  let offer: GetIndividualOfferResponseModelV2
   const venueId = 45
   const offererId = 51
 
@@ -110,7 +110,7 @@ describe('IndividualOfferConfirmation', () => {
       offer: offer,
     }
     vi.spyOn(api, 'getOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      {} as GetIndividualOfferResponseModelV2
     )
     vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
       proAdvice: null,

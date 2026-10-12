@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   StocksOrderedBy,
 } from '@/apiClient/v1'
 import { GET_NEXT_STOCK_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -24,7 +24,7 @@ import type { EventPublicationEditionFormValues } from './types'
 import { validationSchema } from './validationSchema'
 
 export type OfferPublicationEditionFormProps = {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
   onSubmit: (values: EventPublicationEditionFormValues) => void
 }
 

@@ -10,15 +10,15 @@ import {
 
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type { VideoData } from '@/apiClient/v1'
+import type { VideoDataV2 } from '@/apiClient/v1'
 import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
   setVideoUrl: Dispatch<SetStateAction<string | null | undefined>>
-  setVideoDescription: Dispatch<SetStateAction<string>>
-  videoDescription: string
-  videoData?: VideoData
-  handleVideoOnSubmit: () => Promise<VideoData>
+  setVideoDescription: Dispatch<SetStateAction<string | null | undefined>>
+  videoDescription?: string | null
+  videoData?: VideoDataV2
+  handleVideoOnSubmit: () => Promise<VideoDataV2>
   onVideoUpload: (p: onVideoUploadProps) => Promise<void>
   onVideoDelete: () => void
   videoUrl?: string | null
@@ -46,7 +46,7 @@ export const useVideoUploaderContext = () => {
 type VideoUploaderContextProviderProps = {
   children: React.ReactNode
   offerId: number
-  initialVideoData?: VideoData
+  initialVideoData?: VideoDataV2
 }
 
 type onVideoUploadProps = {
@@ -115,8 +115,6 @@ export function VideoUploaderContextProvider({
       videoData,
       videoDescription,
       handleVideoOnSubmit,
-      setVideoUrl,
-      setVideoDescription,
       onVideoUpload,
       onVideoDelete,
       offerId,
@@ -124,8 +122,6 @@ export function VideoUploaderContextProvider({
   )
 
   return (
-    // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-    // @ts-expect-error
     <VideoUploaderContext.Provider value={contextValue}>
       {children}
     </VideoUploaderContext.Provider>
