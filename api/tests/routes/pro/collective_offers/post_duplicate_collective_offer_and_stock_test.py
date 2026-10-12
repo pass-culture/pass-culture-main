@@ -83,7 +83,11 @@ class Returns200Test:
             additionalDetails="My details",
         )
         offer_id = offer.id
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, numberOfTeachers=5)
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer,
+            numberOfTeachers=5,
+            priceDetail="Legacy price detail",
+        )
         educational_factories.CollectiveAdditionalFeeFactory(collectiveStock=offer.collectiveStock)
 
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
@@ -93,6 +97,7 @@ class Returns200Test:
         assert duplicate.additionalDetails == "My details"
         assert duplicate.collectiveStock.numberOfTeachers == 5
         assert duplicate.collectiveStock.servicePrice == 100
+        assert duplicate.collectiveStock.priceDetail is None
         [duplicate_fee] = duplicate.collectiveStock.collectiveAdditionalFees
         [original_fee] = offer.collectiveStock.collectiveAdditionalFees
         assert duplicate_fee.type == original_fee.type
@@ -144,7 +149,7 @@ class Returns200Test:
                 "bookingLimitDatetime": format_into_utc_date(offer.collectiveStock.bookingLimitDatetime),
                 "price": 100.0,
                 "numberOfTickets": 25,
-                "priceDetail": offer.collectiveStock.priceDetail,
+                "priceDetail": None,
                 "numberOfTeachers": offer.collectiveStock.numberOfTeachers,
                 "servicePrice": offer.collectiveStock.servicePrice,
                 "collectiveAdditionalFees": [

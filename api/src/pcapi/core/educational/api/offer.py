@@ -887,7 +887,6 @@ def duplicate_offer_and_stock(original_offer: models.CollectiveOffer) -> models.
             bookingLimitDatetime=original_offer.collectiveStock.bookingLimitDatetime,
             numberOfTickets=original_offer.collectiveStock.numberOfTickets,
             numberOfTeachers=original_offer.collectiveStock.numberOfTeachers,
-            priceDetail=original_offer.collectiveStock.priceDetail,
         )
 
         for additional_fee in original_offer.collectiveStock.collectiveAdditionalFees:
