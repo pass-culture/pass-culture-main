@@ -46,9 +46,33 @@ describe('App', () => {
   it('should give access to profile page', async () => {
     renderHeaderDropdown()
 
+    expect(screen.getByTestId('header-dropdown-menu-div')).toHaveAttribute(
+      'aria-hidden',
+      'true'
+    )
+
     await userEvent.click(screen.getByTestId('profile-button'))
     const profileLink = screen.getByRole('link', { name: /voir mon profil/i })
 
     expect(profileLink).toHaveAttribute('href', '/profil')
+    expect(screen.getByTestId('header-dropdown-menu-div')).toHaveAttribute(
+      'aria-hidden',
+      'false'
+    )
+
+    await userEvent.keyboard('{Escape}')
+
+    expect(screen.getByTestId('header-dropdown-menu-div')).toHaveAttribute(
+      'aria-hidden',
+      'true'
+    )
+
+    await userEvent.click(screen.getByTestId('profile-button'))
+    await userEvent.click(document.body)
+
+    expect(screen.getByTestId('header-dropdown-menu-div')).toHaveAttribute(
+      'aria-hidden',
+      'true'
+    )
   })
 })
