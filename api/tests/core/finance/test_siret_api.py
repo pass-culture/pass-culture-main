@@ -1,7 +1,9 @@
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.criteria.api as criteria_api
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
@@ -145,3 +147,24 @@ class DeleteSiretTest:
             str(err.value)
             == "Le nouveau point de valorisation doit être un partenaire culturel avec SIRET sur la même entité juridique"
         )
+
+
+class MoveSiretTest:
+    @pytest.mark.usefixtures("clean_database")
+    def move_siret_on_closed_pricing_point(self):
+        SIRET = "12345678900001"
+        user = users_factories.ProFactory()
+        closure_request_tag = criteria_api.get_closure_request_tag()
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+        venue1 = offerers_factories.VenueFactory(
+            managingOfferer=offerer, siret=SIRET, state=offerers_models.VenueState.CLOSED
+        )
+        criteria_api.link_criterion_to_venue(closure_request_tag, venue1)
+        venue2 = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
+
+        siret_api.move_siret(venue1, venue2, siret=SIRET, comment="Why not ?", author_user=user)
+
+        db.session.refresh(venue1)
+        assert venue1.siret is None
+        assert venue1.state == offerers_models.VenueState.CLOSED
+        assert venue1.criteria == []

@@ -3649,7 +3649,7 @@ def get_user_pending_and_validated_offerers(
 def close_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
     closure_request_tag = criteria_api.get_closure_request_tag()
     if venue.is_closed:
-        if closure_request_tag in venue.criteria:
+        if closure_request_tag in venue.criteria and not venue.is_pricing_point:
             criteria_api.unlink_criterion_from_venue(criterion=closure_request_tag, venue=venue)
         return
 
