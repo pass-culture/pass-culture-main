@@ -10,6 +10,8 @@
           content="noindex,nofollow" />
     <meta name="csrf-token"
           content="{{ csrf_token.current_token }}">
+    <meta name="htmx-config"
+          content='{"allowEval": false}'>
     <title>
       {% if page_title %}
         {{ page_title }} - Backoffice
