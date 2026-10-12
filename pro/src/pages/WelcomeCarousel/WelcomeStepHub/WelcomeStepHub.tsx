@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -24,6 +24,7 @@ export const WelcomeStepHub = (): JSX.Element => {
   const [selectedValue, setSelectedValue] = useState('')
   const [error, setError] = useState('')
   const [showErrorContainer, setShowErrorContainer] = useState(false)
+  const radioButtonGroupRef = useRef<HTMLDivElement>(null)
   return (
     <>
       {showErrorContainer && (
@@ -75,7 +76,7 @@ export const WelcomeStepHub = (): JSX.Element => {
           <p className={commonStyles.subtitle}>
             Commençons par identifier votre profil
           </p>
-          <div className={commonStyles[`container`]}>
+          <div className={commonStyles[`container`]} ref={radioButtonGroupRef}>
             <RadioButtonGroup
               name="group"
               label="Vous êtes :"
@@ -150,6 +151,9 @@ export const WelcomeStepHub = (): JSX.Element => {
                     break
                   default:
                     setError('Veuillez sélectionner un profil pour continuer')
+                    radioButtonGroupRef.current
+                      ?.querySelector<HTMLInputElement>('input[type="radio"]')
+                      ?.focus()
                     break
                 }
               }}

@@ -12,9 +12,10 @@ import {
   tryRestoreOpenToPublicFromStorage,
 } from 'pages/Simulator/storage'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
+import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
 
 import titleStyles from './SimulatorOpenToPublic.module.scss'
@@ -31,13 +32,14 @@ export const SimulatorOpenToPublic = (): JSX.Element => {
     isOpenToPublic: openToPublic ?? null,
   }
 
+  const methods = useForm({
+    defaultValues,
+    resolver: yupResolver<OpenToPublicFormValues, unknown, unknown>(
+      openToPublicValidationSchema
+    ),
+  })
   const { clearErrors, watch, setValue, handleSubmit, reset, formState } =
-    useForm({
-      defaultValues,
-      resolver: yupResolver<OpenToPublicFormValues, unknown, unknown>(
-        openToPublicValidationSchema
-      ),
-    })
+    methods
 
   useEffect(() => {
     try {
@@ -66,36 +68,39 @@ export const SimulatorOpenToPublic = (): JSX.Element => {
         informations d'adresse demandées.
       </p>
       <FormLayout>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormLayout.Section>
-            <FormLayout.Row className={styles['row-field-public']}>
-              <OpenToPublicToggle
-                error={formState.errors.isOpenToPublic?.message}
-                onChange={(e) => {
-                  clearErrors('isOpenToPublic')
-                  setValue('isOpenToPublic', e.target.value)
-                }}
-                isOpenToPublic={watch('isOpenToPublic')}
-                overrideDescription="Sélectionnez une des options."
-              />
-            </FormLayout.Row>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ScrollToFirstHookFormErrorAfterSubmit />
+            <FormLayout.Section>
+              <FormLayout.Row className={styles['row-field-public']}>
+                <OpenToPublicToggle
+                  error={formState.errors.isOpenToPublic?.message}
+                  onChange={(e) => {
+                    clearErrors('isOpenToPublic')
+                    setValue('isOpenToPublic', e.target.value)
+                  }}
+                  isOpenToPublic={watch('isOpenToPublic')}
+                  overrideDescription="Sélectionnez une des options."
+                />
+              </FormLayout.Row>
 
-            <div className={commonStyles['action-bar']}>
-              <Button
-                as="router-link"
-                to="/inscription/preparation/siret"
-                variant={ButtonVariant.SECONDARY}
-                label="Retour"
-              />
-              <BubbleStepper
-                page={2}
-                total={4}
-                className={commonStyles['action-bar-stepper']}
-              />
-              <Button type="submit" label="Continuer" />
-            </div>
-          </FormLayout.Section>
-        </form>
+              <div className={commonStyles['action-bar']}>
+                <Button
+                  as="router-link"
+                  to="/inscription/preparation/siret"
+                  variant={ButtonVariant.SECONDARY}
+                  label="Retour"
+                />
+                <BubbleStepper
+                  page={2}
+                  total={4}
+                  className={commonStyles['action-bar-stepper']}
+                />
+                <Button type="submit" label="Continuer" />
+              </div>
+            </FormLayout.Section>
+          </form>
+        </FormProvider>
       </FormLayout>
     </div>
   )
