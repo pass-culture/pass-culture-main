@@ -6861,6 +6861,18 @@
                         "default": null,
                         "title": "Isevent"
                     },
+                    "isQpi": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Isqpi"
+                    },
                     "isRecoShuffled": {
                         "anyOf": [
                             {

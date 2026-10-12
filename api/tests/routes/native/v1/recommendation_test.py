@@ -236,6 +236,84 @@ class PlaylistTest:
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
+    @pytest.mark.parametrize("is_qpi", [True, False])
+    def test_forward_is_qpi_to_recommendation_api(self, requests_mock, client, db_session, is_qpi):
+        user = users_factories.UserFactory(id=3)
+        mocked = requests_mock.post("https://example.com/recommendation/playlist_recommendation/3")
+
+        client = client.with_token(user)
+
+        # User authentication
+        with testing.assert_num_queries(1):
+            response = client.post("/native/v1/recommendation/playlist", json={"isQpi": is_qpi})
+            assert response.status_code == 200
+        body = json.loads(mocked.last_request.body)
+        assert body["is_qpi"] is is_qpi
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    @pytest.mark.parametrize("payload", [{"isEvent": True}, {"isEvent": True, "isQpi": None}])
+    def test_is_qpi_not_forwarded_when_absent_or_null(self, requests_mock, client, db_session, payload):
+        user = users_factories.UserFactory(id=3)
+        mocked = requests_mock.post("https://example.com/recommendation/playlist_recommendation/3")
+
+        client = client.with_token(user)
+
+        # User authentication
+        with testing.assert_num_queries(1):
+            response = client.post("/native/v1/recommendation/playlist", json=payload)
+            assert response.status_code == 200
+        body = json.loads(mocked.last_request.body)
+        assert body == {
+            "start_date": None,
+            "end_date": None,
+            "is_event": True,
+            "categories": None,
+            "price_min": None,
+            "price_max": None,
+            "subcategories": None,
+            "is_duo": None,
+            "is_reco_shuffled": None,
+            "offer_type_list": None,
+        }
+        assert response.json == {
+            "playlistRecommendedOffers": [],
+            "params": {
+                "abTest": None,
+                "callId": None,
+                "filtered": None,
+                "geoLocated": None,
+                "modelEndpoint": None,
+                "modelName": None,
+                "modelOrigin": None,
+                "modelVersion": None,
+                "recoOrigin": None,
+                "uniqueCallId": None,
+            },
+            "fromCache": None,
+        }
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    @pytest.mark.parametrize("invalid_value", ["not a boolean", 2, []])
+    def test_is_qpi_invalid_value(self, requests_mock, client, db_session, invalid_value):
+        user = users_factories.UserFactory(id=3)
+        mocked = requests_mock.post("https://example.com/recommendation/playlist_recommendation/3")
+
+        response = client.with_token(user).post("/native/v1/recommendation/playlist", json={"isQpi": invalid_value})
+
+        assert response.status_code == 400
+        assert "isQpi" in response.json
+        assert not mocked.called
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
     def test_timeout_error(self, requests_mock, client, db_session):
         user = users_factories.UserFactory(id=3)
         requests_mock.post(
