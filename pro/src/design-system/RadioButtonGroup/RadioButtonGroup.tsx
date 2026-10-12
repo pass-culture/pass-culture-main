@@ -133,6 +133,7 @@ export const RadioButtonGroup = ({
               name={name}
               variant={variant}
               sizing={sizing}
+              aria-invalid={!!error || undefined}
               disabled={disabled}
               hasError={!!error}
               onChange={onChange}

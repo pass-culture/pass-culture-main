@@ -21,6 +21,35 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43625](https://passculture.atlassian.net/browse/PC-43625)  
+**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+
+**Problème** 😱  
+
+- Les indicateurs de progression (4 étapes) sont implémentés via des éléments <div> sans restitution sémantique. Ils ne sont pas correctement exposés aux technologies d’assistance, ce qui empêche l’utilisateur de connaître sa position dans le parcours.
+
+- RadioButtonGroup (choix du profil d’inscription) : l'état aria-invalid n’est pas transmis à l’input
+
+**Correction** 💡  
+
+- S’assurer que les composants dynamiques de l’interface (par exemple indicateur de progression des étapes) restituent correctement l’information aux technologies d’assistance. À défaut d’une sémantique native adaptée, fournir une alternative textuelle permettant d’indiquer la progression et l’étape courante (ex. « Étape 1 sur 4 ») ou utiliser des attributs ARIA appropriés (aria-current, rôle de type progressbar ou équivalent selon le contexte).
+
+- Permettre une navigation cohérente dans le parcours via des contrôles adaptés (boutons ou liens d’étapes) afin de pouvoir revenir aux étapes précédentes de manière accessible
+
+- RadioButtonGroup (choix du profil d’inscription par exemple, mais contrôler les autres occurences) : transmettre l'état aria-invalid aux input
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 11.6 - Dans chaque formulaire, chaque regroupement de champs de même nature a-t-il une légende ?</summary>
 
 **RAWeb/RGAA** : [Critère 11.6](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-6)
