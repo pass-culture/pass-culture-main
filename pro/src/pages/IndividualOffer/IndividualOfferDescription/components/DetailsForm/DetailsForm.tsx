@@ -282,6 +282,7 @@ export const DetailsForm = ({
         </FormLayout>
         <ActionBar
           dirtyForm={form.formState.isDirty || isNewDraftOffer}
+          isEmbedded
           isDisabled={
             form.formState.isSubmitting ||
             Boolean(offer && isOfferDisabled(offer)) ||

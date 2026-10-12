@@ -250,6 +250,7 @@ export const IndividualOfferSummaryScreen = ({
         </SummaryLayout>
 
         <ActionBar
+          isEmbedded
           onClickPrevious={handlePreviousStep}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY}
           publicationMode={methods.watch('publicationMode')}

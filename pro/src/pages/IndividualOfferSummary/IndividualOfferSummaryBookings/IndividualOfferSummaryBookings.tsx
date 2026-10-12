@@ -19,6 +19,7 @@ const IndividualOfferSummaryBookings = (): JSX.Element | null => {
     <IndividualOfferLayout offer={offer}>
       <IndividualOfferSummaryBookingsScreen offer={offer} />
       <ActionBar
+        isEmbedded
         step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY}
         isDisabled={false}
       />

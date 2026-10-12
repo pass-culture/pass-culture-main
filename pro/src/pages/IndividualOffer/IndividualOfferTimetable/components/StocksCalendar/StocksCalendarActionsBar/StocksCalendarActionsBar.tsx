@@ -94,6 +94,7 @@ export function StocksCalendarActionsBar({
         </ActionsBarSticky>
       ) : (
         <ActionBar
+          isEmbedded
           onClickPrevious={handlePreviousStep}
           onClickNext={() => {
             void handleNextStep()
