@@ -4,20 +4,12 @@ from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.models import db
 
-
-@pytest.fixture(name="eac_client")
-def eac_client_fixture(client):
-    return client.with_eac_token()
+from tests.conftest import TestClient
 
 
-@pytest.fixture(name="current_year")
-def current_year_fixture():
-    return factories.EducationalCurrentYearFactory()
-
-
-@pytest.fixture(name="booking")
-def booking_fixture(current_year):
-    return factories.CollectiveBookingFactory(educationalYear=current_year)
+NOT_ALLOWED_STATUS = [
+    status for status in models.CollectiveBookingStatus if status != models.CollectiveBookingStatus.PENDING
+]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -26,24 +18,45 @@ class PostMergeInstitutionPrebookingTest:
     to another.
     """
 
-    def test_merge_institution_prebooking(self, eac_client, booking) -> None:
+    @pytest.mark.parametrize("status", NOT_ALLOWED_STATUS)
+    def test_merge_institution_prebooking(self, client: TestClient, status: models.CollectiveBookingStatus):
+        current_year = factories.EducationalCurrentYearFactory()
+        source_institution = factories.EducationalInstitutionFactory()
+        booking = factories.CollectiveBookingFactory(
+            educationalYear=current_year,
+            educationalInstitution=source_institution,
+            collectiveStock__collectiveOffer__institution=source_institution,
+            status=status,
+        )
+        pending_booking = factories.PendingCollectiveBookingFactory(
+            educationalYear=current_year,
+            educationalInstitution=source_institution,
+            collectiveStock__collectiveOffer__institution=source_institution,
+        )
         destination_institution = factories.EducationalInstitutionFactory()
 
         body = {
-            "source_uai": booking.educationalInstitution.institutionId,
+            "source_uai": source_institution.institutionId,
             "destination_uai": destination_institution.institutionId,
-            "bookings_ids": [booking.id],
+            "bookings_ids": [booking.id, pending_booking.id],
         }
 
-        response = eac_client.post("/adage/v1/prebookings/move", json=body)
-        assert response.status_code == 204
+        response = client.with_eac_token().post("/adage/v1/prebookings/move", json=body)
+        assert response.status_code == 200
+        assert response.json == {"movedBookingIds": [pending_booking.id], "notMovedBookingIds": [booking.id]}
 
         db.session.refresh(booking)
+        db.session.refresh(pending_booking)
 
-        assert booking.educationalInstitution.institutionId == destination_institution.institutionId
-        assert booking.collectiveStock.collectiveOffer.institution == destination_institution
+        assert booking.educationalInstitution.institutionId == source_institution.institutionId
+        assert booking.collectiveStock.collectiveOffer.institution == source_institution
 
-    def test_merge_institution_prebooking_institution_destination_in_adage_only(self, eac_client, booking) -> None:
+        assert pending_booking.educationalInstitution.institutionId == destination_institution.institutionId
+        assert pending_booking.collectiveStock.collectiveOffer.institution == destination_institution
+
+    def test_merge_institution_prebooking_institution_destination_in_adage_only(self, client: TestClient):
+        current_year = factories.EducationalCurrentYearFactory()
+        booking = factories.PendingCollectiveBookingFactory(educationalYear=current_year)
         destination_uai = "0470009E"
         assert booking.educationalInstitution.institutionId != destination_uai
 
@@ -53,8 +66,9 @@ class PostMergeInstitutionPrebookingTest:
             "bookings_ids": [booking.id],
         }
 
-        response = eac_client.post("/adage/v1/prebookings/move", json=body)
-        assert response.status_code == 204
+        response = client.with_eac_token().post("/adage/v1/prebookings/move", json=body)
+        assert response.status_code == 200
+        assert response.json == {"movedBookingIds": [booking.id], "notMovedBookingIds": []}
 
         # first: existing one created by the booking, second: the new
         # one created by the api call
@@ -68,7 +82,8 @@ class PostMergeInstitutionPrebookingTest:
         assert booking.educationalInstitution.institutionId == destination_uai
         assert booking.collectiveStock.collectiveOffer.institution.institutionId == destination_uai
 
-    def test_merge_institution_prebooking_institution_destination_dont_exist(self, eac_client, current_year) -> None:
+    def test_merge_institution_prebooking_institution_destination_dont_exist(self, client: TestClient):
+        factories.EducationalCurrentYearFactory()
         institution_source = factories.EducationalInstitutionFactory()
 
         body = {
@@ -77,24 +92,24 @@ class PostMergeInstitutionPrebookingTest:
             "bookings_ids": [1, 2, 3],
         }
 
-        response = eac_client.post("/adage/v1/prebookings/move", json=body)
+        response = client.with_eac_token().post("/adage/v1/prebookings/move", json=body)
 
         assert response.status_code == 404
         assert response.json == {"destination_uai": "not found"}
 
-    def test_merge_institution_prebooking_institution_source_not_found(self, eac_client) -> None:
+    def test_merge_institution_prebooking_institution_source_not_found(self, client: TestClient):
         body = {
             "source_uai": "oh no nono nonono",
             "destination_uai": "the destination",
             "bookings_ids": [1, 2, 3],
         }
 
-        response = eac_client.post("/adage/v1/prebookings/move", json=body)
+        response = client.with_eac_token().post("/adage/v1/prebookings/move", json=body)
 
         assert response.status_code == 404
         assert response.json == {"code": "Source institution not found"}
 
-    def test_merge_institution_prebooking_institution_authentification_failed(self, client) -> None:
+    def test_merge_institution_prebooking_institution_authentification_failed(self, client: TestClient):
         body = {
             "source_uai": "1",
             "destination_uai": "2",

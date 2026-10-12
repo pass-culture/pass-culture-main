@@ -375,31 +375,35 @@ def notify_reimburse_collective_booking(collective_booking: models.CollectiveBoo
 
 
 def update_collective_bookings_for_new_institution(
-    booking_ids: list[int],
-    institution_source: models.EducationalInstitution,
-    institution_destination: models.EducationalInstitution,
-) -> None:
-    offer_ids = (
-        db.session.query(models.CollectiveOffer)
-        .join(models.CollectiveStock)
-        .join(models.CollectiveBooking)
+    booking_ids: list[int], institution_source_id: int, institution_destination_id: int
+) -> tuple[list[int], list[int]]:
+    collective_bookings = (
+        db.session.query(models.CollectiveBooking)
         .filter(
             models.CollectiveBooking.id.in_(booking_ids),
-            models.CollectiveBooking.educationalInstitutionId == institution_source.id,
+            models.CollectiveBooking.educationalInstitutionId == institution_source_id,
         )
-        .with_entities(models.CollectiveOffer.id)
+        .options(
+            sa_orm.joinedload(models.CollectiveBooking.collectiveStock).joinedload(
+                models.CollectiveStock.collectiveOffer
+            )
+        )
     )
 
-    db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id.in_(offer_ids)).update(
-        {"institutionId": institution_destination.id}, synchronize_session=False
-    )
-
-    db.session.query(models.CollectiveBooking).filter(
-        models.CollectiveBooking.id.in_(booking_ids),
-        models.CollectiveBooking.educationalInstitutionId == institution_source.id,
-    ).update({"educationalInstitutionId": institution_destination.id}, synchronize_session=False)
+    moved_booking_ids = []
+    not_moved_booking_ids = []
+    for collective_booking in collective_bookings:
+        if collective_booking.status != models.CollectiveBookingStatus.PENDING:
+            # we do not move bookings that are CONFIRMED or later as the institution credit is already assigned
+            not_moved_booking_ids.append(collective_booking.id)
+        else:
+            collective_booking.educationalInstitutionId = institution_destination_id
+            collective_booking.collectiveStock.collectiveOffer.institutionId = institution_destination_id
+            moved_booking_ids.append(collective_booking.id)
 
     db.session.flush()
+
+    return moved_booking_ids, not_moved_booking_ids
 
 
 def notify_redactor_that_booking_has_been_cancelled(booking: schemas.EducationalBookingResponse) -> None:

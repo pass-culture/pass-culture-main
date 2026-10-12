@@ -93,3 +93,8 @@ class MergeInstitutionPrebookingsModel(HttpBodyModel):
     bookings_ids: list[int]
 
     model_config = pydantic.ConfigDict(alias_generator=None)
+
+
+class MergeInstitutionPrebookingsResponse(HttpBodyModel):
+    movedBookingIds: list[int]
+    notMovedBookingIds: list[int]
