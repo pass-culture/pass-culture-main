@@ -9,6 +9,7 @@ import pcapi.core.subscription.dms.api as dms_api
 import pcapi.core.users.models as users_models
 import pcapi.utils.cron as cron_decorators
 from pcapi import settings
+from pcapi.connectors import api_particulier
 from pcapi.core.mails.transactional.users.ubble import reminder_emails
 from pcapi.core.subscription.bonus import statistics_api as bonus_statistics_api
 from pcapi.core.subscription.bonus import tasks as bonus_tasks
@@ -17,6 +18,7 @@ from pcapi.core.subscription.ubble.api import recover_pending_ubble_applications
 from pcapi.core.subscription.ubble.archive_past_identification_pictures import archive_past_identification_pictures
 from pcapi.models import db
 from pcapi.utils import date as date_utils
+from pcapi.utils import rate_limit as rate_limit_utils
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.transaction_manager import atomic
 
@@ -131,7 +133,22 @@ def ubble_archive_past_identifications_automation() -> None:
 @blueprint.cli.command("recover_started_bonus_credit_applications")
 @cron_decorators.log_cron
 def recover_started_bonus_credit_applications() -> None:
-    bonus_tasks.recover_started_bonus_credit_applications(cutoff_time=date_utils.get_naive_utc_now())
+    is_currently_rate_limited = rate_limit_utils.get_rate_limit_lock_ttl(api_particulier.RATE_LIMIT_LOCK_KEY)
+    if is_currently_rate_limited:
+        logger.warning("API Particulier rate limit reached, returning early to respect Retry-After")
+        return
+
+    hour_in_paris = datetime.datetime.now(tz=date_utils.PARIS_TZ).hour
+    is_night = hour_in_paris < 8 or 21 < hour_in_paris
+    if is_night:
+        rate_limit_margin = 0.95
+    else:
+        rate_limit_margin = 0.5
+
+    bonus_tasks.recover_started_bonus_credit_applications(
+        cutoff_time=date_utils.get_naive_utc_now(),
+        page_size=int(settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD * rate_limit_margin),
+    )
 
 
 @blueprint.cli.command("log_bonus_credit_statistics")
