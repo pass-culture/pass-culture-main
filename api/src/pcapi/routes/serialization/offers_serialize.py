@@ -514,7 +514,7 @@ class VideoData(ConfiguredBaseModel):
     videoExternalId: str | None
     videoTitle: str | None
     videoThumbnailUrl: str | None
-    videoUrl: HttpUrl | None
+    videoUrl: str | None
     videoDescription: str | None
 
 
@@ -695,12 +695,8 @@ class GetProductInformations(BaseModel):
         orm_mode = True
 
 
-class VideoMetatdataQueryModel(BaseModel):
-    video_url: HttpUrl
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+class VideoMetatdataQueryModel(HttpQueryParamsModel):
+    video_url: HttpUrlStr
 
 
 class OfferVideo(ConfiguredBaseModel):

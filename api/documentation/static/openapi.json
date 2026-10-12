@@ -3738,9 +3738,6 @@
                     "videoUrl": {
                         "description": "Video URL, must be from the Youtube plateform, it should be public and should not be a short nor a user's profile. To remove video from an offer, set to `null` ",
                         "example": "https://www.youtube.com/watch?v=0R5PZxOgoz8",
-                        "format": "uri",
-                        "maxLength": 2083,
-                        "minLength": 1,
                         "nullable": true,
                         "title": "Videourl",
                         "type": "string"
