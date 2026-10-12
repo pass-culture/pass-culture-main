@@ -122,11 +122,14 @@ def get_all_bookings_per_year(
 @adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
-    on_success_status=204,
+    response_model=collective_booking.MergeInstitutionPrebookingsResponse,
+    on_success_status=200,
     on_error_statuses=[404, 422],
     tags=("merge institution",),
 )
-def merge_institution_prebookings(body: collective_booking.MergeInstitutionPrebookingsModel) -> None:
+def merge_institution_prebookings(
+    body: collective_booking.MergeInstitutionPrebookingsModel,
+) -> collective_booking.MergeInstitutionPrebookingsResponse:
     institution_source = educational_repository.find_educational_institution_by_uai_code(body.source_uai)
     if not institution_source:
         raise ApiErrors({"code": "Source institution not found"}, status_code=404)
@@ -142,8 +145,12 @@ def merge_institution_prebookings(body: collective_booking.MergeInstitutionPrebo
         except exceptions.MissingAdageInstitution:
             raise ApiErrors({"destination_uai": "not found"}, status_code=404)
 
-    educational_api_booking.update_collective_bookings_for_new_institution(
+    moved_booking_ids, not_moved_booking_ids = educational_api_booking.update_collective_bookings_for_new_institution(
         booking_ids=body.bookings_ids,
-        institution_source=institution_source,
-        institution_destination=institution_destination,
+        institution_source_id=institution_source.id,
+        institution_destination_id=institution_destination.id,
+    )
+
+    return collective_booking.MergeInstitutionPrebookingsResponse(
+        movedBookingIds=moved_booking_ids, notMovedBookingIds=not_moved_booking_ids
     )
