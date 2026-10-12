@@ -102,9 +102,22 @@ export const initializeSentry = () => {
       return breadcrumb
     },
     beforeSendSpan(span) {
-      if (span.description) {
-        span.description = removeTokenFromFrontURL(span.description)
-        span.description = removeTokenFromBackURL(span.description)
+      if (span.name) {
+        span.name = removeTokenFromFrontURL(span.name) as string
+        span.name = removeTokenFromBackURL(span.name) as string
+      }
+
+      if (span.attributes) {
+        const urlKeys = ['http.url', 'url', 'sentry.origin']
+
+        for (const key of urlKeys) {
+          if (typeof span.attributes[key] === 'string') {
+            let value = span.attributes[key] as string
+            value = removeTokenFromFrontURL(value) as string
+            value = removeTokenFromBackURL(value) as string
+            span.attributes[key] = value
+          }
+        }
       }
       return span
     },

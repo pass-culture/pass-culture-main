@@ -179,10 +179,10 @@ describe('initializeSentry', () => {
       const beforeSendSpan = getSentryOption('beforeSendSpan')
 
       const span = beforeSendSpan({
-        description: 'GET https://api.example.com/users/validate_signup/A1B2',
+        name: 'GET https://api.example.com/users/validate_signup/A1B2',
       } as Parameters<typeof beforeSendSpan>[0])
 
-      expect(span.description).toBe(
+      expect(span.name).toBe(
         'GET https://api.example.com/users/validate_signup/[TOKEN]'
       )
     })
