@@ -27,22 +27,28 @@ def _discovery_statement() -> sa.Select[tuple[Discovery]]:
     )
 
 
+def _get_work_for_offer(offer_id: int) -> tuple[Offer, Work]:
+    offer = db.session.execute(
+        sa.select(Offer)
+        .options(sa_orm.joinedload(Offer.work), sa_orm.joinedload(Offer.product).joinedload(Product.work))
+        .where(Offer.id == offer_id)
+    ).scalar_one_or_none()
+    if offer is None:
+        raise ResourceNotFoundError()
+    work = offer.work or (offer.product.work if offer.product is not None else None)
+    if work is None:
+        raise ApiErrors({"offerId": ["This offer is not linked to a work."]})
+    return offer, work
+
+
 def create_discovery(user_id: int, data: "CreateDiscoverySchema") -> Discovery:
     work_id = data.work_id
     artist_id = data.artist_id
     offer_origin_id = None
 
     if data.offer_id is not None:
-        offer = db.session.execute(
-            sa.select(Offer)
-            .options(sa_orm.joinedload(Offer.product).joinedload(Product.work))
-            .where(Offer.id == data.offer_id)
-        ).scalar_one_or_none()
-        if offer is None:
-            raise ResourceNotFoundError()
-        if offer.product is None or offer.product.work is None:
-            raise ApiErrors({"offerId": ["This offer is not linked to a work."]})
-        work_id = offer.product.work.id
+        offer, work = _get_work_for_offer(data.offer_id)
+        work_id = work.id
         offer_origin_id = offer.id
     elif work_id is not None:
         if db.session.get(Work, work_id) is None:

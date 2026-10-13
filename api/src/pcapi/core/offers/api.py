@@ -27,6 +27,7 @@ import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.cultural_outreach.api as cultural_outreach_api
+import pcapi.core.discoveries.models as discoveries_models
 import pcapi.core.favorites.models as favorites_models
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.highlights.models as highlights_models
@@ -90,6 +91,23 @@ from . import validation
 
 
 logger = logging.getLogger(__name__)
+
+WORK_MEDIA_TYPE_BY_SUBCATEGORY = {
+    subcategories.LIVRE_PAPIER.id: discoveries_models.WorkMediaType.BOOK,
+    subcategories.SEANCE_CINE.id: discoveries_models.WorkMediaType.FILM,
+    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id: discoveries_models.WorkMediaType.MUSIC,
+    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id: discoveries_models.WorkMediaType.MUSIC,
+    subcategories.SPECTACLE_REPRESENTATION.id: discoveries_models.WorkMediaType.PERFORMING_ART,
+}
+
+
+def _ensure_private_offer_work(offer: models.Offer, product: models.Product | None) -> None:
+    media_type = WORK_MEDIA_TYPE_BY_SUBCATEGORY.get(offer.subcategoryId, discoveries_models.WorkMediaType.OTHER)
+    if product is None:
+        offer.work = discoveries_models.Work(title=offer.name, media_type=media_type)
+    elif product.work is None:
+        product.work = discoveries_models.Work(title=product.name, media_type=media_type)
+
 
 AnyOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer
 type OfferIds = tuple[int, ...]
@@ -260,6 +278,10 @@ def create_offer(
     )
     db.session.add(offer)
     db.session.flush()
+
+    if is_from_private_api:
+        _ensure_private_offer_work(offer, product)
+        db.session.flush()
 
     if artist_offer_links is not None:
         validation.check_artist_offer_links(artist_offer_links, subcategory)

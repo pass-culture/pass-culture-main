@@ -27,6 +27,7 @@ import pcapi.core.chronicles.factories as chronicles_factories
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
+import pcapi.core.discoveries.models as discoveries_models
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 import pcapi.core.favorites.factories as favorite_factories
@@ -1415,6 +1416,7 @@ class CreateOfferTest:
         assert offer.venue == venue
         assert offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert not offer.product
+        assert offer.work is None
         assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.audioDisabilityCompliant
         assert offer.mentalDisabilityCompliant
@@ -1434,6 +1436,50 @@ class CreateOfferTest:
         assert offer_update_record.message == "Offer has been created"
 
         assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {venue.bookingEmail}
+
+    def test_create_private_offer_without_product_links_work_directly_to_offer(self):
+        venue = offerers_factories.VenueFactory()
+        body = offers_schemas.CreateOffer(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+
+        offer = api.create_offer(body, venue=venue, is_from_private_api=True)
+
+        assert offer.product is None
+        assert offer.work is not None
+        assert offer.work.offer == offer
+        assert offer.work.offer_id == offer.id
+        assert offer.work.title == offer.name
+        assert offer.work.media_type.value == "film"
+        assert db.session.query(models.Product).count() == 0
+
+    def test_create_private_offer_with_product_links_work_to_product(self):
+        venue = offerers_factories.VenueFactory()
+        product = factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, name="A shared book")
+        body = offers_schemas.CreateOffer(
+            name=product.name,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+
+        first_offer = api.create_offer(body, venue=venue, product=product, is_from_private_api=True)
+        second_offer = api.create_offer(body, venue=venue, product=product, is_from_private_api=True)
+
+        assert first_offer.product == second_offer.product == product
+        assert first_offer.work is None
+        assert second_offer.work is None
+        assert product.work.title == "A shared book"
+        assert product.work.media_type.value == "book"
+        assert product in product.work.products
+        assert db.session.query(discoveries_models.Work).count() == 1
 
     def test_create_offer_with_id_at_provider(self):
         venue = offerers_factories.VenueFactory()

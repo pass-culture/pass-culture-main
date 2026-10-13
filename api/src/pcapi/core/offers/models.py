@@ -819,6 +819,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     product: sa_orm.Mapped["Product | None"] = sa_orm.relationship(
         Product, foreign_keys=[productId], back_populates="offers"
     )
+    work: sa_orm.Mapped["Work | None"] = sa_orm.relationship("Work", back_populates="offer", uselist=False)
     quality: sa_orm.Mapped["OfferQuality | None"] = sa_orm.relationship(
         "OfferQuality", foreign_keys="OfferQuality.offerId", back_populates="offer", uselist=False
     )

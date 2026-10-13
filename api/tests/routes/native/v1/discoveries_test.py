@@ -159,6 +159,20 @@ class CreateDiscoveryTest:
         assert duplicate.json == response.json
         assert db.session.query(models.Discovery).count() == 1
 
+    def test_offer_without_product_resolves_direct_work(self, client):
+        offer = offers_factories.OfferFactory(name="A standalone offer")
+        work = models.Work(title=offer.name, media_type=models.WorkMediaType.OTHER, offer=offer)
+        db.session.add(work)
+        db.session.flush()
+        client.with_token(users_factories.UserFactory())
+
+        response = client.post("/native/v1/discoveries", json={"offerId": offer.id})
+
+        assert response.status_code == 200
+        assert response.json["workId"] == work.id
+        assert response.json["offerOriginId"] == offer.id
+        assert response.json["work"]["title"] == offer.name
+
     @pytest.mark.parametrize("target", ["work", "artist"])
     def test_same_target_can_be_discovered_by_different_users(self, client, target):
         if target == "work":

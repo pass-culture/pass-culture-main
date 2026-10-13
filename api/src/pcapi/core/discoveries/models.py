@@ -44,6 +44,7 @@ class DiscoveryEmotion(enum.Enum):
 class Work(PcObject, Model):
     __tablename__ = "work"
 
+    offer_id = db.Column(db.BigInteger, db.ForeignKey("offer.id", ondelete="SET NULL"), nullable=True, unique=True)
     title = db.Column(db.String, nullable=False)
     media_type = db.Column(MagicEnum(WorkMediaType, use_values=True), nullable=False)
     release_year = db.Column(db.BigInteger, nullable=True)
@@ -53,6 +54,7 @@ class Work(PcObject, Model):
     )
 
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship("Product", back_populates="work")
+    offer: sa_orm.Mapped["Offer | None"] = sa_orm.relationship("Offer", back_populates="work", uselist=False)
     artist_links: sa_orm.Mapped[list["WorkArtist"]] = sa_orm.relationship(
         "WorkArtist", back_populates="work", cascade="all, delete-orphan", passive_deletes=True
     )
