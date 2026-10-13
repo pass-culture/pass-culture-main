@@ -96,4 +96,14 @@ class Discovery(PcObject, Model):
             "(work_id IS NOT NULL) != (artist_id IS NOT NULL)",
             name="check_discovery_exactly_one_target",
         ),
+        db.Index(
+            "ix_unique_discovery_user_work", "user_id", "work_id", unique=True, postgresql_where=work_id.is_not(None)
+        ),
+        db.Index(
+            "ix_unique_discovery_user_artist",
+            "user_id",
+            "artist_id",
+            unique=True,
+            postgresql_where=artist_id.is_not(None),
+        ),
     )

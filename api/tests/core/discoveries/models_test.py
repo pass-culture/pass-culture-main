@@ -16,6 +16,24 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class DiscoveryTest:
+    @pytest.mark.parametrize("target", ["work", "artist"])
+    def test_database_rejects_duplicate_target_for_user(self, target):
+        user = users_factories.UserFactory()
+        if target == "work":
+            work = models.Work(title="Unique work", media_type=models.WorkMediaType.BOOK)
+            db.session.add(work)
+            discovery_target = {"work": work}
+        else:
+            discovery_target = {"artist": artist_factories.ArtistFactory()}
+        db.session.add(models.Discovery(user=user, **discovery_target))
+        db.session.flush()
+
+        with db.session.begin_nested():
+            db.session.add(models.Discovery(user=user, **discovery_target))
+            with pytest.raises(sa.exc.IntegrityError) as error:
+                db.session.flush()
+            assert error.value.orig.diag.constraint_name == f"ix_unique_discovery_user_{target}"
+
     @pytest.mark.parametrize("has_work,has_artist", [(True, False), (False, True), (False, False), (True, True)])
     def test_exactly_one_target(self, has_work, has_artist):
         user = users_factories.UserFactory()
