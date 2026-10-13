@@ -24,16 +24,21 @@
 .title {
   @include fonts.title4;
 
+  margin-top: 0;
   margin-bottom: var(--size-spacing-l);
 }
 
 .sub-title {
   @include fonts.body-accent-xs;
+
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .text {
   @include fonts.body-xs;
 
+  margin-top: 0;
   margin-bottom: var(--size-spacing-l);
   overflow-wrap: anywhere;
 

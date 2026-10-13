@@ -22,18 +22,18 @@ export const OptionsIcons = ({
     <div className={cn(className, style['options-container'])}>
       <div className={style['option']}>
         <SvgIcon src={strokePassIcon} alt="" className={style['icon']} />
-        <span className={style['text']}>Type</span>
+        <p className={style['text']}>Type</p>
       </div>
 
       {isEvent && isDuo && (
         <div className={style['option']}>
           <SvgIcon src={strokeDuoIcon} alt="" className={style['icon']} />
-          <span className={style['text']}>À deux !</span>
+          <p className={style['text']}>À deux !</p>
         </div>
       )}
       <div className={style['option']}>
         <SvgIcon src={strokePriceIcon} alt="" className={style['icon']} />
-        <span className={style['text']}>- - €</span>
+        <p className={style['text']}>- - €</p>
       </div>
     </div>
   )

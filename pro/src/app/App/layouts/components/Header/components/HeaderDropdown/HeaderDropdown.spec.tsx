@@ -43,6 +43,24 @@ const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
 }
 
 describe('App', () => {
+  it('should render profile menu text semantically in the structure signup funnel', async () => {
+    renderHeaderDropdown({
+      initialRouterEntries: ['/inscription/structure/recherche'],
+    })
+
+    await userEvent.click(screen.getByTestId('profile-button'))
+
+    expect(screen.getByText('Profil').tagName).toBe('P')
+    expect(
+      screen.queryByRole('link', { name: /voir mon profil/i })
+    ).not.toBeInTheDocument()
+
+    const logoutButton = screen.getByRole('button', { name: 'Se déconnecter' })
+    expect(logoutButton.querySelector('span')).toHaveTextContent(
+      'Se déconnecter'
+    )
+  })
+
   it('should give access to profile page', async () => {
     renderHeaderDropdown()
 
