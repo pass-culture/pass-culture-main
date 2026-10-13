@@ -320,7 +320,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         # details
         start = format_date(collectiveOfferTemplate.dateRange.lower, "%d/%m/%Y à %Hh%M")
         end = format_date(collectiveOfferTemplate.dateRange.upper, "%d/%m/%Y à %Hh%M")
-        assert descriptions["Période de validitée"] == f"{start} → {end}"
+        assert descriptions["Période de validité"] == f"{start} → {end}"
         assert descriptions["Durée"] == f"{collectiveOfferTemplate.durationMinutes} minutes"
         assert descriptions["Description"] == collectiveOfferTemplate.description
         # info
