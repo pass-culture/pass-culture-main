@@ -64,7 +64,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues import
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues_with_timezone import (
     create_industrial_venues_with_timezone,
 )
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_works import create_industrial_works
 from pcapi.sandboxes.scripts.creators.industrial.create_new_caledonia_objects import create_new_caledonia_objects
 from pcapi.sandboxes.scripts.creators.industrial.create_offer_with_thousand_stocks import (
     create_offer_with_thousand_stocks,
@@ -218,5 +217,3 @@ def save_industrial_sandbox() -> None:
 
     # Access42 audit offers
     create_accessibility_offers()
-
-    create_industrial_works()

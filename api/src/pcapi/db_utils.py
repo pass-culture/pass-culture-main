@@ -7,6 +7,7 @@ from sqlalchemy import text
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.cultural_survey.models as cultural_survey_models
+import pcapi.core.discoveries.models as discoveries_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.favorites.models as favorites_models
 import pcapi.core.finance.models as finance_models
@@ -76,6 +77,8 @@ tables_to_clean: list[type[Model]] = [
     highlights_models.HighlightRequest,
     highlights_models.Highlight,
     achievements_models.Achievement,
+    discoveries_models.Discovery,
+    discoveries_models.WorkArtist,
     artist_models.ArtistMusicPlatform,
     artist_models.Artist,
     artist_models.ArtistProductLink,
@@ -136,6 +139,7 @@ tables_to_clean: list[type[Model]] = [
     offers_models.Offer,
     offers_models.PriceCategory,
     offers_models.Product,
+    discoveries_models.Work,
     offers_models.OfferQuality,
     offers_models.ProAdvice,
     providers_models.CDSCinemaDetails,

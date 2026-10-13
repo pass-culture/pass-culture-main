@@ -5,10 +5,14 @@ import pytest
 import sqlalchemy as sa
 import time_machine
 
+from pcapi import db_utils
 from pcapi.core.artist import factories as artist_factories
+from pcapi.core.artist import models as artist_models
 from pcapi.core.discoveries import models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 
@@ -16,6 +20,42 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class DiscoveryTest:
+    def test_database_cleanup_respects_discovery_dependencies(self, mocker):
+        user = users_factories.UserFactory()
+        artist = artist_factories.ArtistFactory()
+        work = models.Work(title="A work to clean", media_type=models.WorkMediaType.BOOK)
+        product = offers_factories.ProductFactory(work=work)
+        offer = offers_factories.OfferFactory(product=product)
+        db.session.add_all(
+            [
+                models.WorkArtist(work=work, artist=artist, role="author"),
+                models.Discovery(user=user, work=work, offer_origin=offer),
+                models.Discovery(user=user, artist=artist),
+            ]
+        )
+        db.session.flush()
+        models_to_clean = {
+            models.Discovery,
+            models.WorkArtist,
+            models.Work,
+            artist_models.Artist,
+            offers_models.Offer,
+            offers_models.Product,
+            users_models.User,
+        }
+        mocker.patch.object(
+            db_utils, "tables_to_clean", [model for model in db_utils.tables_to_clean if model in models_to_clean]
+        )
+        mocker.patch.object(db_utils, "install_feature_flags")
+        mocker.patch.object(db_utils, "install_local_providers")
+        mocker.patch.object(db_utils.perm_models, "sync_db_permissions")
+        mocker.patch.object(db_utils.perm_models, "sync_db_roles")
+
+        db_utils.clean_all_database()
+
+        for model in models_to_clean:
+            assert db.session.query(model).count() == 0
+
     @pytest.mark.parametrize("target", ["work", "artist"])
     def test_database_rejects_duplicate_target_for_user(self, target):
         user = users_factories.UserFactory()
