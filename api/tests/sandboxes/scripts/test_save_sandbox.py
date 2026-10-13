@@ -5,12 +5,16 @@ import pytest
 
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi import settings
+from pcapi.core import object_storage
 from pcapi.core.artist import models as artist_models
+from pcapi.core.categories import subcategories
 from pcapi.core.discoveries import models as discoveries_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.sandboxes.scripts.creators.tiny import save_tiny_sandbox
 from pcapi.sandboxes.scripts.save_sandbox import _index_all_offers
+from pcapi.sandboxes.scripts.utils.storage_utils import read_sandbox_mediation_asset
 from pcapi.utils import date as date_utils
 
 
@@ -50,7 +54,9 @@ class IndexAllOffersTest:
 
 @pytest.mark.usefixtures("db_session")
 class CreateTinyWorksTest:
-    def test_tiny_creates_works_artists_and_discoverable_individual_offer(self, client, mocker):
+    def test_tiny_creates_works_artists_and_discoverable_individual_offer(self, client, mocker, tmp_path):
+        mocker.patch.object(settings, "OBJECT_STORAGE_PROVIDER", "local")
+        mocker.patch.object(settings, "LOCAL_STORAGE_DIR", tmp_path)
         mocker.patch("pcapi.sandboxes.scripts.creators.tiny.create_user_with_venue.offerers_api.save_venue_banner")
         mocker.patch("pcapi.sandboxes.scripts.creators.tiny.create_user_with_venue.add_image_to_offer")
 
@@ -67,6 +73,16 @@ class CreateTinyWorksTest:
             discoveries_models.WorkMediaType.BOOK,
             discoveries_models.WorkMediaType.MUSIC,
         }
+        image_subcategories = {
+            discoveries_models.WorkMediaType.PERFORMING_ART: subcategories.CONFERENCE.id,
+            discoveries_models.WorkMediaType.BOOK: subcategories.LIVRE_PAPIER.id,
+            discoveries_models.WorkMediaType.MUSIC: subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        }
+        for work in works:
+            assert work.visual_url == f"{settings.OBJECT_STORAGE_URL.rstrip('/')}/thumbs/works/{work.id}.jpg"
+            assert object_storage.get_public_object("thumbs/works", f"{work.id}.jpg") == [
+                read_sandbox_mediation_asset(image_subcategories[work.media_type])
+            ]
         artists = db.session.query(artist_models.Artist).all()
         assert {artist.name for artist in artists} == {"Camille Martin", "Alex Dubois", "Lou Bernard"}
         assert len(offer.product.work.artist_links) == 2
@@ -78,9 +94,15 @@ class CreateTinyWorksTest:
         response = client.post("/native/v1/discoveries", json={"offerId": offer.id})
         assert response.status_code == 200
         assert response.json["workId"] == offer.product.work_id
+        assert response.json["work"]["visualUrl"] == offer.product.work.visual_url
         assert response.json["work"]["mainArtist"]["name"] == "Camille Martin"
         for work in works:
             assert client.post("/native/v1/discoveries", json={"workId": work.id}).status_code == 200
         for artist in artists:
             assert client.post("/native/v1/discoveries", json={"artistId": artist.id}).status_code == 200
         assert db.session.query(discoveries_models.Discovery).count() == 6
+        listing = client.get("/native/v1/users/me/discoveries")
+        assert listing.status_code == 200
+        assert {discovery["work"]["visualUrl"] for discovery in listing.json["discoveries"] if discovery["work"]} == {
+            work.visual_url for work in works
+        }

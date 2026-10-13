@@ -20,6 +20,7 @@ from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.storage_utils import add_image_to_offer
+from pcapi.sandboxes.scripts.utils.storage_utils import add_image_to_work
 from pcapi.sandboxes.thumbs import generic_pictures
 from pcapi.utils import date as date_utils
 
@@ -55,6 +56,9 @@ def _create_tiny_works_and_artists(offer: offers_models.Offer) -> None:
         ]
     )
     db.session.flush()
+    add_image_to_work(performance, subcategories.CONFERENCE.id)
+    add_image_to_work(book, subcategories.LIVRE_PAPIER.id)
+    add_image_to_work(album, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
     for artist, artist_type in (
         (director, artist_models.ArtistType.STAGE_DIRECTOR),
         (performer, artist_models.ArtistType.PERFORMER),
