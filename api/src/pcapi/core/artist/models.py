@@ -5,15 +5,20 @@ from datetime import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.ext.mutable import MutableDict
 
 from pcapi import settings
 from pcapi.core.offers.models import Offer
 from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
 
 
 if typing.TYPE_CHECKING:
+    from pcapi.core.discoveries.models import Discovery
+    from pcapi.core.discoveries.models import WorkArtist
     from pcapi.core.offers.models import Product
 
 
@@ -114,6 +119,16 @@ class ArtistMusicPlatform(PcObject, Model):
 
 class Artist(Model):
     __tablename__ = "artist"
+    main_role: sa_orm.Mapped[str | None] = sa_orm.mapped_column(db.String, nullable=True)
+    external_ids: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
+        MutableDict.as_mutable(postgresql.JSONB), nullable=True
+    )
+    work_links: sa_orm.Mapped[list["WorkArtist"]] = sa_orm.relationship(
+        "WorkArtist", back_populates="artist", cascade="all, delete-orphan", passive_deletes=True
+    )
+    discoveries: sa_orm.Mapped[list["Discovery"]] = sa_orm.relationship(
+        "Discovery", back_populates="artist", passive_deletes="all"
+    )
     app_search_score = sa_orm.mapped_column(sa.Float, nullable=False, server_default="0.0", default=0.0)
     biography: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     # URL of the most popular product image linked to the artist, used as a fallback when image is NULL

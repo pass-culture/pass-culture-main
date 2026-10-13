@@ -54,6 +54,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.criteria.models import Criterion
+    from pcapi.core.discoveries.models import Work
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
     from pcapi.core.favorites.models import FavoriteOffer
@@ -185,6 +186,11 @@ class ProductIdentifierType(enum.Enum):
 class Product(PcObject, Model, HasThumbMixin):
     __tablename__ = "product"
     thumb_path_component = "products"
+
+    work_id: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        db.BigInteger, db.ForeignKey("work.id"), nullable=True, index=True
+    )
+    work: sa_orm.Mapped["Work | None"] = sa_orm.relationship("Work", back_populates="products")
 
     dateModifiedAtLastProvider: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
         sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now

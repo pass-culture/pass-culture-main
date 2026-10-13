@@ -47,6 +47,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.achievements.models import Achievement
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
+    from pcapi.core.discoveries.models import Discovery
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.favorites.models import FavoriteOffer
     from pcapi.core.finance.models import BookingFinanceIncident
@@ -216,6 +217,9 @@ class User(PcObject, Model, DeactivableMixin):
     )
     dateOfBirth: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)  # declared at signup
     departementCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(3), nullable=True)
+    discoveries: sa_orm.Mapped[list[Discovery]] = sa_orm.relationship(
+        "Discovery", back_populates="user", cascade="all, delete-orphan", passive_deletes=True
+    )
     email: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(120), nullable=False, unique=True)
     externalIds: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
         postgresql.json.JSONB, nullable=True, default={}, server_default="{}"
