@@ -1,8 +1,11 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useState } from 'react'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
+import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
+import { ApiError } from '@/apiClient/compat'
 import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -29,12 +32,12 @@ const TestComponent = () => {
     videoUrl,
     videoData,
     handleVideoOnSubmit,
-    setVideoUrl,
     videoDescription,
     setVideoDescription,
     onVideoUpload,
     onVideoDelete,
   } = useVideoUploaderContext()
+  const [draftVideoUrl, setDraftVideoUrl] = useState(videoUrl)
 
   return (
     <>
@@ -43,10 +46,11 @@ const TestComponent = () => {
         {LABELS.display.input}
         <input
           type="text"
-          value={videoUrl ?? ''}
-          onChange={(e) => setVideoUrl(e.target.value)}
+          value={draftVideoUrl}
+          onChange={(e) => setDraftVideoUrl(e.target.value)}
         />
       </label>
+      <p>Video url: {videoUrl}</p>
       <label>
         {LABELS.display.description}
         <input
@@ -66,7 +70,11 @@ const TestComponent = () => {
       <button
         type="button"
         onClick={async () =>
-          await onVideoUpload({ onSuccess: vi.fn(), onError: vi.fn() })
+          await onVideoUpload({
+            videoUrl: draftVideoUrl,
+            onSuccess: vi.fn(),
+            onError: vi.fn(),
+          })
         }
       >
         {LABELS.controls.upload}
@@ -122,6 +130,9 @@ describe('VideoUploaderContext', () => {
     expect(screen.getByLabelText(LABELS.display.input)).toHaveValue(
       'http://youtube.url'
     )
+    expect(
+      screen.getByText('Video url: http://youtube.url')
+    ).toBeInTheDocument()
   })
 
   it('should clear values on click on delele', async () => {
@@ -143,7 +154,9 @@ describe('VideoUploaderContext', () => {
       screen.queryByText('http://youtube.image.com')
     ).not.toBeInTheDocument()
     expect(screen.queryByText('Ma super vidéo')).not.toBeInTheDocument()
-    expect(screen.getByLabelText(LABELS.display.input)).toHaveValue('')
+    expect(
+      screen.queryByText('Video url: http://youtube.url')
+    ).not.toBeInTheDocument()
   })
 
   it('should upload new data on click on update', async () => {
@@ -166,15 +179,21 @@ describe('VideoUploaderContext', () => {
     )
     await userEvent.click(screen.getByText(LABELS.controls.upload))
 
+    expect(api.getOfferVideoMetadata).toHaveBeenCalledWith({
+      query: { videoUrl: 'http://youtube.url' },
+    })
     expect(screen.getByText('3 min')).toBeInTheDocument()
     expect(screen.getByText('http://youtube.image.com')).toBeInTheDocument()
     expect(screen.getByText('Ma super vidéo')).toBeInTheDocument()
-    expect(screen.getByLabelText(LABELS.display.input)).toHaveValue(
-      'http://youtube.url'
-    )
+    expect(
+      screen.getByText('Video url: http://youtube.url')
+    ).toBeInTheDocument()
   })
 
-  it('should update offer on click on submit', async () => {
+  it('should update offer on click on submit with the previewed url', async () => {
+    vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
+      videoUrl: 'http://youtube.url',
+    })
     vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({})
 
     const offer = getIndividualOfferFactory({
@@ -187,8 +206,45 @@ describe('VideoUploaderContext', () => {
       screen.getByLabelText(LABELS.display.input),
       'http://youtube.url'
     )
+    await userEvent.click(screen.getByText(LABELS.controls.upload))
     await userEvent.click(screen.getByText(LABELS.controls.submit))
 
+    expect(api.updateOfferVideo).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: {
+        videoUrl: 'http://youtube.url',
+      },
+    })
+  })
+
+  it('should not submit an url which preview has failed', async () => {
+    vi.spyOn(api, 'getOfferVideoMetadata').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        { status: 400, body: { videoUrl: 'api error' } } as ApiResult,
+        ''
+      )
+    )
+    vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({})
+
+    const offer = getIndividualOfferFactory({
+      videoData: { videoUrl: 'http://youtube.url' },
+    })
+
+    renderVideoUploaderContext(offer)
+
+    const input = screen.getByLabelText(LABELS.display.input)
+    await userEvent.clear(input)
+    await userEvent.type(input, 'http://invalid.youtube.url')
+    await userEvent.click(screen.getByText(LABELS.controls.upload))
+    await userEvent.click(screen.getByText(LABELS.controls.submit))
+
+    expect(api.getOfferVideoMetadata).toHaveBeenCalledWith({
+      query: { videoUrl: 'http://invalid.youtube.url' },
+    })
+    expect(
+      screen.getByText('Video url: http://youtube.url')
+    ).toBeInTheDocument()
     expect(api.updateOfferVideo).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: {

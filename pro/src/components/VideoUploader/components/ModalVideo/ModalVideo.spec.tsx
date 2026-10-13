@@ -258,4 +258,44 @@ describe('ModalVideo', () => {
 
     expect(api.getOfferVideoMetadata).toHaveBeenCalled()
   })
+
+  it('should discard the url when cancelling', async () => {
+    vi.spyOn(api, 'getOfferVideoMetadata').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        { status: 400, body: { videoUrl: 'api error' } } as ApiResult,
+        ''
+      )
+    )
+    const initialVideoUrl = 'https://www.youtube.com/watch?v=25ztioI37oc'
+    const offer = getIndividualOfferFactory({
+      videoData: { videoUrl: initialVideoUrl },
+    })
+
+    renderWithProviders(
+      <VideoUploaderContextProvider
+        offerId={offer.id}
+        initialVideoData={offer.videoData}
+      >
+        <ModalVideo
+          isOpen={true}
+          onClose={() => {}}
+          addVideoRef={{ current: null }}
+          editVideoRef={{ current: null }}
+        />
+      </VideoUploaderContextProvider>
+    )
+
+    const input = screen.getByLabelText('Lien URL Youtube')
+    await userEvent.clear(input)
+    await userEvent.type(input, 'https://www.youtube.com/watch?v=bX2Oz6l1Z0s')
+    await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
+
+    expect(screen.getByText('api error')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    expect(input).toHaveValue(initialVideoUrl)
+    expect(screen.queryByText('api error')).not.toBeInTheDocument()
+  })
 })

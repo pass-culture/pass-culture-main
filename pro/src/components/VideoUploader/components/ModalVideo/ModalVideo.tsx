@@ -31,25 +31,33 @@ export const ModalVideo = ({
     videoUrl,
     videoData,
     onVideoUpload,
-    setVideoUrl,
     offerId,
     videoDescription,
     setVideoDescription,
   } = useVideoUploaderContext()
+  const [draftVideoUrl, setDraftVideoUrl] = useState(videoUrl)
   const [isInformative, setIsInformative] = useState(Boolean(videoDescription))
   const { logEvent } = useAnalytics()
+
+  const handleClose = () => {
+    setDraftVideoUrl(videoUrl)
+    setError(undefined)
+    onClose()
+  }
 
   return (
     <DetailedModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={`Ajouter une vidéo`}
       primaryAction={
         <Button
           onClick={async () => {
-            if (videoUrl && !getUrlYoutubeError(videoUrl)) {
+            if (draftVideoUrl && !getUrlYoutubeError(draftVideoUrl)) {
               await onVideoUpload({
+                videoUrl: draftVideoUrl,
                 onSuccess: () => {
+                  setError(undefined)
                   onClose()
                 },
                 onError: setError,
@@ -63,7 +71,7 @@ export const ModalVideo = ({
         <Button
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
-          onClick={onClose}
+          onClick={handleClose}
           label="Annuler"
         />
       }
@@ -86,7 +94,7 @@ export const ModalVideo = ({
             label="Lien URL Youtube"
             description="Format : https://www.youtube.com/watch?v=0R5PZxOgoz8"
             error={error}
-            value={videoUrl ?? ''}
+            value={draftVideoUrl}
             onBlur={(event) => {
               const value = event.target.value
               setError(getUrlYoutubeError(value))
@@ -98,7 +106,7 @@ export const ModalVideo = ({
               }
             }}
             onChange={(event) => {
-              setVideoUrl(event.target.value)
+              setDraftVideoUrl(event.target.value)
             }}
           />
           <div className={styles['video-description']}>

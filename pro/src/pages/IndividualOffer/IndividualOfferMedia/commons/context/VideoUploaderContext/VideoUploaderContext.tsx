@@ -14,22 +14,21 @@ import type { VideoData } from '@/apiClient/v1'
 import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
-  setVideoUrl: Dispatch<SetStateAction<string | null | undefined>>
   setVideoDescription: Dispatch<SetStateAction<string>>
   videoDescription: string
   videoData?: VideoData
   handleVideoOnSubmit: () => Promise<VideoData>
   onVideoUpload: (p: onVideoUploadProps) => Promise<void>
   onVideoDelete: () => void
-  videoUrl?: string | null
+  videoUrl: string
   offerId?: number
 }
 
 const VideoUploaderContext = createContext<VideoUploaderContextValues>({
-  setVideoUrl: noop,
   setVideoDescription: noop,
   videoData: undefined,
   videoDescription: '',
+  videoUrl: '',
   // biome-ignore lint/suspicious/useAwait:  default values
   handleVideoOnSubmit: async () => {
     throw new Error('VideoUploaderContext not provided')
@@ -50,6 +49,7 @@ type VideoUploaderContextProviderProps = {
 }
 
 type onVideoUploadProps = {
+  videoUrl: string
   onSuccess: () => void
   onError: Dispatch<SetStateAction<string | undefined>>
 }
@@ -59,19 +59,20 @@ export function VideoUploaderContextProvider({
   initialVideoData,
   offerId,
 }: Readonly<VideoUploaderContextProviderProps>) {
-  const [videoUrl, setVideoUrl] = useState(initialVideoData?.videoUrl)
+  const [videoUrl, setVideoUrl] = useState(initialVideoData?.videoUrl ?? '')
   const [videoDescription, setVideoDescription] = useState(
     initialVideoData?.videoDescription
   )
   const [videoData, setVideoData] = useState(initialVideoData)
 
   const onVideoUpload = useCallback(
-    async ({ onSuccess, onError }: onVideoUploadProps) => {
+    async ({ videoUrl, onSuccess, onError }: onVideoUploadProps) => {
       if (videoUrl) {
         try {
           const response = await api.getOfferVideoMetadata({
             query: { videoUrl },
           })
+          setVideoUrl(videoUrl)
           setVideoData(response)
           onSuccess()
         } catch (error) {
@@ -80,11 +81,11 @@ export function VideoUploaderContextProvider({
         }
       }
     },
-    [videoUrl]
+    []
   )
 
   const onVideoDelete = useCallback(() => {
-    setVideoUrl(undefined)
+    setVideoUrl('')
     setVideoData(undefined)
   }, [])
 
@@ -92,7 +93,7 @@ export function VideoUploaderContextProvider({
     return await api.updateOfferVideo({
       path: { offer_id: offerId },
       body: {
-        videoUrl: videoUrl ?? '',
+        videoUrl,
         videoDescription: videoDescription,
       },
     })
@@ -104,7 +105,6 @@ export function VideoUploaderContextProvider({
       videoData,
       videoDescription,
       handleVideoOnSubmit,
-      setVideoUrl,
       setVideoDescription,
       onVideoUpload,
       onVideoDelete,
@@ -115,7 +115,6 @@ export function VideoUploaderContextProvider({
       videoData,
       videoDescription,
       handleVideoOnSubmit,
-      setVideoUrl,
       setVideoDescription,
       onVideoUpload,
       onVideoDelete,
