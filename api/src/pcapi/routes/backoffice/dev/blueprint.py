@@ -82,13 +82,22 @@ def create_ubble_fraud_check(user: users_models.User, form: forms.UbbleConfigura
 
 
 def create_qf_fraud_check_mock(user: users_models.User, form: forms.QuotientFamilialConfigurationForm) -> None:
+    if not (user.lastName and user.firstName and user.validatedBirthDate and user.gender):
+        raise ValueError("User is missing some info")
+
     mock_type = form.mock_type.data
     result_content = None
-    user_qf_person = bonus_schemas.BonusCreditPerson(
-        last_name=user.lastName,  # type: ignore [arg-type]
+    user_qf_child = bonus_schemas.BonusCreditPerson(
+        last_name=user.lastName,
         first_names=[user.firstName] if user.firstName else [],
-        birth_date=user.validatedBirthDate,  # type: ignore [arg-type]
-        gender=user.gender,  # type: ignore [arg-type]
+        birth_date=user.validatedBirthDate,
+        gender=user.gender,
+    )
+    user_qf_householder = bonus_schemas.BonusCreditHouseholder(
+        last_name=user.lastName,
+        first_names=[user.firstName] if user.firstName else [],
+        birth_date=user.validatedBirthDate,
+        gender=user.gender,
     )
 
     if mock_type == forms.QFMockType.OK.value:
@@ -97,7 +106,7 @@ def create_qf_fraud_check_mock(user: users_models.User, form: forms.QuotientFami
             quotient_familial=subscription_factories.QuotientFamilialContentFactory(
                 value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD
             ),
-            children=[user_qf_person],
+            children=[user_qf_child],
         ).model_dump()
 
     elif mock_type == forms.QFMockType.HOUSEHOLDER_OK.value:
@@ -106,7 +115,7 @@ def create_qf_fraud_check_mock(user: users_models.User, form: forms.QuotientFami
             quotient_familial=subscription_factories.QuotientFamilialContentFactory(
                 value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD
             ),
-            householders=[user_qf_person],
+            householders=[user_qf_householder],
             children=[],
         ).model_dump()
 
@@ -124,7 +133,7 @@ def create_qf_fraud_check_mock(user: users_models.User, form: forms.QuotientFami
             quotient_familial=subscription_factories.QuotientFamilialContentFactory(
                 value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD + 1
             ),
-            children=[user_qf_person],
+            children=[user_qf_child],
         ).model_dump()
 
     elif mock_type == forms.QFMockType.APPLICATION_NOT_FOUND.value:
