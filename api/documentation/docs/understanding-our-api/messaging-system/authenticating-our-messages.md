@@ -35,7 +35,7 @@ def generate_signature(json_string: str):
 
 When you receive a request on one of your messaging URLs, you can check that the message is coming from the pass Culture servers by following this **two steps process** :
 
-1. Check that **the request has a `PassCulture-ed25519-Signature` header**
+1. Check that **the request has a `PassCulture-Signature` header**
 2. Check that **the signature of the request body is equal to the signature given in the `PassCulture-Signature` header**
 
 Here are some implementation examples:
@@ -406,7 +406,7 @@ The public keys to use for the environments. These keys are PEM encoded:
 <TabItem value="prod" label="Production">
 ```
 -----BEGIN PUBLIC KEY-----
-MCowBQYDK2VwAyEAfJnDM9Jmht/75jwO/FekUe2brIIU5GvQPx1D7+emeE4=
+MCowBQYDK2VwAyEA1XIJmKwHSf7hfvr4HZRIjSaRZYwqRJC5848EZ4MVPQc=
 -----END PUBLIC KEY-----
 ```
 </TabItem>
