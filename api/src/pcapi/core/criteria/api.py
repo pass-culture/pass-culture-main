@@ -52,7 +52,7 @@ def unlink_criterion_from_venue(criterion: criteria_models.Criterion, venue: off
 
 def get_closure_request_tag() -> criteria_models.Criterion:
     return get_or_create_criteria(
-        name=constants.CLOSURE_REQUEST_LABEL,
-        description=constants.CLOSURE_REQUEST_DESCRIPTION,
+        name=constants.SIRET_SHIFT_PENDING_LABEL,
+        description=constants.SIRET_SHIFT_PENDING_DESCRIPTION,
         category_labels=[constants.SUPPORT_CATEGORY_LABEL],
     )

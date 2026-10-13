@@ -3651,6 +3651,7 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
     if venue.is_closed:
         if closure_request_tag in venue.criteria and not venue.is_pricing_point:
             criteria_api.unlink_criterion_from_venue(criterion=closure_request_tag, venue=venue)
+            on_commit(partial(transactional_mails.send_venue_closed_email_to_author, venue.id))
         return
 
     venue.state = models.VenueState.CLOSED
@@ -3665,10 +3666,9 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
 
     if venue.is_pricing_point:
         criteria_api.link_criterion_to_venue(criterion=closure_request_tag, venue=venue)
-        transactional_mails.send_venue_closure_request_email(venue)
-        return
-
-    return
+        on_commit(partial(transactional_mails.send_venue_closure_request_email, venue.id))
+    else:
+        on_commit(partial(transactional_mails.send_venue_closed_email_to_author, venue.id))
 
 
 def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:

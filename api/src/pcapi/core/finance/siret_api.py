@@ -161,6 +161,10 @@ def move_siret(
                 },
             )
         )
+    # Although the venue might be closed, we want to call close_venue
+    # again to finalize the venue closure and perform the last actions
+    # now that the venue is not a pricing point any more.
+    # Also note that close_venue is idempotent.
     if source_venue.state == offerers_models.VenueState.CLOSED:
         offerers_api.close_venue(source_venue, author=author_user)
 

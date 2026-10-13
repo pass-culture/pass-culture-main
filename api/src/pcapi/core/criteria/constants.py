@@ -1,4 +1,4 @@
 HIGHLIGHT_CATEGORY_LABEL = "Temps de valorisations thématiques"
 SUPPORT_CATEGORY_LABEL = "Support"
-CLOSURE_REQUEST_LABEL = "Demande de fermeture"
-CLOSURE_REQUEST_DESCRIPTION = "Une fermeture a été demandée"
+SIRET_SHIFT_PENDING_LABEL = "Déplacement de SIRET attendu"
+SIRET_SHIFT_PENDING_DESCRIPTION = "Un déplacement de SIRET est attendu afin de terminer la cloture de la structure"
