@@ -107,7 +107,8 @@ class DiscoveryTest:
         assert discovery.created_at == datetime(2026, 10, 13, 12)
         assert discovery.offer_origin_id is None
         assert discovery.format_context is None
-        assert discovery.sentiment is None
+        assert discovery.comment is None
+        assert discovery.emotions is None
 
     def test_work_product_artist_and_offer_relationships(self):
         artist = artist_factories.ArtistFactory(main_role="author", external_ids={"openlibrary_id": "OL1A"})
@@ -118,7 +119,13 @@ class DiscoveryTest:
         product = offers_factories.ProductFactory(work=work)
         offer = offers_factories.OfferFactory(product=product)
         user = users_factories.UserFactory()
-        discovery = models.Discovery(user=user, work=work, offer_origin=offer, format_context="read", sentiment="liked")
+        discovery = models.Discovery(
+            user=user,
+            work=work,
+            offer_origin=offer,
+            format_context="read",
+            emotions=[models.DiscoveryEmotion.MOVED.value],
+        )
         db.session.add_all([link, discovery])
         db.session.flush()
         db.session.expire_all()

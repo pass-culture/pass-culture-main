@@ -18,6 +18,23 @@ def create_discovery(body: serializers.CreateDiscoverySchema) -> serializers.Dis
     return serializers.DiscoveryResponseSchema.build(discovery)
 
 
+@blueprint.native_route("/discoveries/<int:discovery_id>", methods=["PATCH"])
+@atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(response_model=serializers.DiscoveryResponseSchema, on_error_statuses=[400, 404], api=blueprint.api)
+def update_discovery(discovery_id: int, body: serializers.UpdateDiscoverySchema) -> serializers.DiscoveryResponseSchema:
+    discovery = discovery_service.update_discovery(current_user.id, discovery_id, body)
+    return serializers.DiscoveryResponseSchema.build(discovery)
+
+
+@blueprint.native_route("/discoveries/<int:discovery_id>", methods=["DELETE"])
+@atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(on_success_status=204, on_error_statuses=[404], api=blueprint.api)
+def delete_discovery(discovery_id: int) -> None:
+    discovery_service.delete_discovery(current_user.id, discovery_id)
+
+
 @blueprint.native_route("/users/me/discoveries", methods=["GET"])
 @atomic()
 @authenticated_and_active_user_required

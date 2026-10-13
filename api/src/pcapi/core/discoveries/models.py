@@ -5,6 +5,7 @@ from datetime import date
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.ext.mutable import MutableList
 
 from pcapi.models import Model
 from pcapi.models import db
@@ -28,6 +29,15 @@ class WorkMediaType(enum.Enum):
     VISUAL_ART = "visual_art"
     VIDEO_GAME = "video_game"
     OTHER = "other"
+
+
+class DiscoveryEmotion(enum.Enum):
+    INTRIGUED = "intrigu\u00e9"
+    AMAZED = "\u00e9merveill\u00e9"
+    MOVED = "touch\u00e9"
+    SURPRISED = "surpris"
+    SHAKEN = "bouscul\u00e9"
+    INDIFFERENT = "indiff\u00e9rent"
 
 
 # Model is the project's typed alias for db.Model; PcObject provides a BigInteger id.
@@ -79,7 +89,8 @@ class Discovery(PcObject, Model):
     # Pass the callable so the default is computed at insertion, not at import time.
     discovery_date = db.Column(db.Date, nullable=False, default=date.today, server_default=db.func.current_date())
     format_context = db.Column(db.String, nullable=True)
-    sentiment = db.Column(db.String, nullable=True)
+    comment = db.Column(db.Text, nullable=True)
+    emotions = db.Column(MutableList.as_mutable(postgresql.ARRAY(db.Text)), nullable=True)
     created_at = db.Column(
         db.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=db.func.now()
     )
@@ -95,6 +106,12 @@ class Discovery(PcObject, Model):
         db.CheckConstraint(
             "(work_id IS NOT NULL) != (artist_id IS NOT NULL)",
             name="check_discovery_exactly_one_target",
+        ),
+        db.CheckConstraint(
+            "emotions IS NULL OR (array_position(emotions, NULL) IS NULL AND emotions <@ "
+            "ARRAY['intrigu\u00e9', '\u00e9merveill\u00e9', 'touch\u00e9', 'surpris', 'bouscul\u00e9', "
+            "'indiff\u00e9rent']::text[])",
+            name="check_discovery_emotions",
         ),
         db.Index(
             "ix_unique_discovery_user_work", "user_id", "work_id", unique=True, postgresql_where=work_id.is_not(None)

@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 
 from pydantic import Field
+from pydantic import field_validator
 from pydantic import model_validator
 
 from pcapi.core.discoveries import models
@@ -16,13 +17,27 @@ class CreateDiscoverySchema(HttpBodyModel):
     offer_id: int | None = Field(default=None, gt=0, le=2**63 - 1)
     discovery_date: date | None = None
     format_context: str | None = None
-    sentiment: str | None = None
+    comment: str | None = None
+    emotions: list[models.DiscoveryEmotion] | None = None
 
     @model_validator(mode="after")
     def validate_exactly_one_target(self) -> typing.Self:
         if sum(target is not None for target in (self.work_id, self.artist_id, self.offer_id)) != 1:
             raise ValueError("Exactly one of work_id, artist_id or offer_id is required")
         return self
+
+
+class UpdateDiscoverySchema(HttpBodyModel):
+    discovery_date: date | None = None
+    comment: str | None = None
+    emotions: list[models.DiscoveryEmotion] | None = None
+
+    @field_validator("discovery_date")
+    @classmethod
+    def validate_discovery_date(cls, value: date | None) -> date:
+        if value is None:
+            raise ValueError("discovery_date cannot be null")
+        return value
 
 
 class DiscoveriesQuerySchema(HttpQueryParamsModel):
@@ -69,7 +84,8 @@ class DiscoveryResponseSchema(HttpBodyModel):
     offer_origin_id: int | None
     discovery_date: date
     format_context: str | None
-    sentiment: str | None
+    comment: str | None
+    emotions: list[models.DiscoveryEmotion] | None
     created_at: datetime
     work: WorkResponseSchema | None
     artist: ArtistResponseSchema | None
@@ -83,7 +99,8 @@ class DiscoveryResponseSchema(HttpBodyModel):
             offer_origin_id=discovery.offer_origin_id,
             discovery_date=discovery.discovery_date,
             format_context=discovery.format_context,
-            sentiment=discovery.sentiment,
+            comment=discovery.comment,
+            emotions=discovery.emotions,
             created_at=discovery.created_at,
             work=WorkResponseSchema.build(discovery.work) if discovery.work else None,
             artist=ArtistResponseSchema.model_validate(discovery.artist) if discovery.artist else None,

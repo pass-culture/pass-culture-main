@@ -17,6 +17,7 @@ from pcapi.models.api_errors import ResourceNotFoundError
 
 if typing.TYPE_CHECKING:
     from pcapi.routes.native.v1.serialization.discoveries import CreateDiscoverySchema
+    from pcapi.routes.native.v1.serialization.discoveries import UpdateDiscoverySchema
 
 
 def _discovery_statement() -> sa.Select[tuple[Discovery]]:
@@ -51,6 +52,7 @@ def create_discovery(user_id: int, data: "CreateDiscoverySchema") -> Discovery:
 
     target_column = Discovery.work_id if work_id is not None else Discovery.artist_id
     target_id = work_id if work_id is not None else artist_id
+    emotion_values = [emotion.value for emotion in data.emotions] if data.emotions is not None else None
     statement = (
         insert(Discovery)
         .values(
@@ -58,7 +60,8 @@ def create_discovery(user_id: int, data: "CreateDiscoverySchema") -> Discovery:
             work_id=work_id,
             artist_id=artist_id,
             offer_origin_id=offer_origin_id,
-            **data.model_dump(exclude_none=True, exclude={"work_id", "artist_id", "offer_id"}),
+            emotions=emotion_values,
+            **data.model_dump(exclude_none=True, exclude={"work_id", "artist_id", "offer_id", "emotions"}),
         )
         .on_conflict_do_nothing(
             index_elements=[Discovery.user_id, target_column], index_where=target_column.is_not(None)
@@ -69,6 +72,29 @@ def create_discovery(user_id: int, data: "CreateDiscoverySchema") -> Discovery:
     return db.session.execute(
         _discovery_statement().where(Discovery.user_id == user_id, target_column == target_id)
     ).scalar_one()
+
+
+def update_discovery(user_id: int, discovery_id: int, data: "UpdateDiscoverySchema") -> Discovery:
+    discovery = db.session.execute(
+        _discovery_statement().where(Discovery.id == discovery_id, Discovery.user_id == user_id)
+    ).scalar_one_or_none()
+    if discovery is None:
+        raise ResourceNotFoundError()
+    updated_values = data.model_dump(exclude_unset=True)
+    if data.emotions is not None:
+        updated_values["emotions"] = [emotion.value for emotion in data.emotions]
+    for field, value in updated_values.items():
+        setattr(discovery, field, value)
+    db.session.flush()
+    return discovery
+
+
+def delete_discovery(user_id: int, discovery_id: int) -> None:
+    deleted_id = db.session.execute(
+        sa.delete(Discovery).where(Discovery.id == discovery_id, Discovery.user_id == user_id).returning(Discovery.id)
+    ).scalar_one_or_none()
+    if deleted_id is None:
+        raise ResourceNotFoundError()
 
 
 def get_user_discoveries(user_id: int, page: int = 1, limit: int = 20) -> list[Discovery]:

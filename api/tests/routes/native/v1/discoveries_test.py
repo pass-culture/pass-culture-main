@@ -1,6 +1,7 @@
 from datetime import date
 
 import pytest
+import sqlalchemy as sa
 
 from pcapi.core.artist import factories as artist_factories
 from pcapi.core.discoveries import models
@@ -14,16 +15,97 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class CreateDiscoveryTest:
+    def test_sentiment_is_no_longer_accepted(self, client):
+        artist = artist_factories.ArtistFactory()
+        client.with_token(users_factories.UserFactory())
+
+        response = client.post("/native/v1/discoveries", json={"artistId": artist.id, "sentiment": "liked"})
+
+        assert response.status_code == 400
+        assert db.session.query(models.Discovery).count() == 0
+
+    @pytest.mark.parametrize("target", ["work", "artist", "offer"])
+    @pytest.mark.parametrize(
+        "emotion",
+        [[member.value] for member in models.DiscoveryEmotion] + [[member.value for member in models.DiscoveryEmotion]],
+    )
+    def test_comment_and_emotion_are_persisted_and_listed(self, client, target, emotion):
+        user = users_factories.UserFactory()
+        if target == "artist":
+            payload = {"artistId": artist_factories.ArtistFactory().id}
+        else:
+            work = models.Work(title="A work", media_type=models.WorkMediaType.BOOK)
+            product = offers_factories.ProductFactory(work=work)
+            if target == "offer":
+                payload = {"offerId": offers_factories.OfferFactory(product=product).id}
+            else:
+                payload = {"workId": work.id}
+        payload.update({"comment": "Une rencontre qui fait r\u00e9fl\u00e9chir.", "emotions": emotion})
+        client.with_token(user)
+
+        response = client.post("/native/v1/discoveries", json=payload)
+
+        assert response.status_code == 200
+        assert response.json["comment"] == payload["comment"]
+        assert response.json["emotions"] == emotion
+        db.session.expire_all()
+        discovery = db.session.query(models.Discovery).one()
+        assert discovery.comment == payload["comment"]
+        assert discovery.emotions == emotion
+        listing = client.get("/native/v1/users/me/discoveries")
+        assert listing.status_code == 200
+        assert listing.json["discoveries"][0]["comment"] == payload["comment"]
+        assert listing.json["discoveries"][0]["emotions"] == emotion
+
+    @pytest.mark.parametrize("emotion", ["happy", "", "intrigue", ["surpris", "happy"]])
+    def test_unknown_emotion_returns_400(self, client, emotion):
+        artist = artist_factories.ArtistFactory()
+        client.with_token(users_factories.UserFactory())
+
+        response = client.post("/native/v1/discoveries", json={"artistId": artist.id, "emotions": emotion})
+
+        assert response.status_code == 400
+        assert db.session.query(models.Discovery).count() == 0
+
+    def test_singular_emotion_key_is_rejected(self, client):
+        artist = artist_factories.ArtistFactory()
+        client.with_token(users_factories.UserFactory())
+
+        response = client.post("/native/v1/discoveries", json={"artistId": artist.id, "emotion": ["touch\u00e9"]})
+
+        assert response.status_code == 400
+        assert db.session.query(models.Discovery).count() == 0
+
+    def test_database_rejects_unknown_emotion(self):
+        user = users_factories.UserFactory()
+        artist = artist_factories.ArtistFactory()
+
+        with pytest.raises(sa.exc.IntegrityError) as error:
+            with db.session.begin_nested():
+                db.session.execute(
+                    sa.insert(models.Discovery).values(user_id=user.id, artist_id=artist.id, emotions=["happy"])
+                )
+        assert error.value.orig.diag.constraint_name == "check_discovery_emotions"
+
     def test_work_is_idempotent(self, client):
         user = users_factories.UserFactory()
         work = models.Work(title="A book", media_type=models.WorkMediaType.BOOK)
         db.session.add(work)
         db.session.flush()
         client.with_token(user)
-        payload = {"workId": work.id, "discoveryDate": "2026-10-12", "formatContext": "read", "sentiment": "liked"}
+        payload = {
+            "workId": work.id,
+            "discoveryDate": "2026-10-12",
+            "formatContext": "read",
+            "comment": "My original comment",
+            "emotions": ["surpris"],
+        }
 
         response = client.post("/native/v1/discoveries", json=payload)
-        duplicate = client.post("/native/v1/discoveries", json={"workId": work.id, "sentiment": "changed"})
+        duplicate = client.post(
+            "/native/v1/discoveries",
+            json={"workId": work.id, "comment": "Changed comment", "emotions": ["touch\u00e9"]},
+        )
 
         assert response.status_code == 200
         assert duplicate.status_code == 200
@@ -31,6 +113,12 @@ class CreateDiscoveryTest:
         assert response.json["work"]["title"] == "A book"
         assert response.json["discoveryDate"] == "2026-10-12"
         assert response.json["artist"] is None
+        assert response.json["comment"] == "My original comment"
+        assert response.json["emotions"] == ["surpris"]
+        assert "sentiment" not in response.json
+        listing = client.get("/native/v1/users/me/discoveries")
+        assert listing.status_code == 200
+        assert "sentiment" not in listing.json["discoveries"][0]
         assert db.session.query(models.Discovery).count() == 1
 
     def test_artist_is_idempotent(self, client):
@@ -45,6 +133,8 @@ class CreateDiscoveryTest:
         assert duplicate.json == response.json
         assert response.json["artist"]["name"] == artist.name
         assert response.json["work"] is None
+        assert response.json["comment"] is None
+        assert response.json["emotions"] is None
         assert db.session.query(models.Discovery).count() == 1
 
     def test_offer_resolves_work_and_main_artist(self, client):
@@ -116,6 +206,239 @@ class CreateDiscoveryTest:
 
     def test_authentication_required(self, client):
         response = client.post("/native/v1/discoveries", json={"workId": 1})
+
+        assert response.status_code == 401
+
+
+class UpdateDiscoveryTest:
+    @pytest.mark.parametrize("date_field", ["discoveryDate", "discovery_date"])
+    def test_updates_discovery_date_and_listing_order(self, client, date_field):
+        user = users_factories.UserFactory()
+        discovery = models.Discovery(
+            user=user,
+            artist=artist_factories.ArtistFactory(),
+            discovery_date=date(2026, 10, 12),
+            comment="Original",
+            emotions=[models.DiscoveryEmotion.SURPRISED.value],
+        )
+        other_discovery = models.Discovery(
+            user=user, artist=artist_factories.ArtistFactory(), discovery_date=date(2026, 10, 11)
+        )
+        db.session.add_all([discovery, other_discovery])
+        db.session.flush()
+        discovery_id = discovery.id
+        other_id = other_discovery.id
+        original_created_at = discovery.created_at
+        client.with_token(user)
+
+        response = client.patch(f"/native/v1/discoveries/{discovery_id}", json={date_field: "2026-10-10"})
+
+        assert response.status_code == 200
+        assert response.json["discoveryDate"] == "2026-10-10"
+        assert response.json["comment"] == "Original"
+        assert response.json["emotions"] == ["surpris"]
+        db.session.expire_all()
+        assert discovery.discovery_date == date(2026, 10, 10)
+        assert discovery.created_at == original_created_at
+        listing = client.get("/native/v1/users/me/discoveries")
+        assert listing.status_code == 200
+        assert [item["id"] for item in listing.json["discoveries"]] == [other_id, discovery_id]
+        assert listing.json["discoveries"][1]["discoveryDate"] == "2026-10-10"
+
+    @pytest.mark.parametrize("target", ["work", "artist"])
+    @pytest.mark.parametrize(
+        "emotion",
+        [[member.value] for member in models.DiscoveryEmotion] + [[member.value for member in models.DiscoveryEmotion]],
+    )
+    def test_updates_comment_and_emotion(self, client, target, emotion):
+        user = users_factories.UserFactory()
+        if target == "work":
+            work = models.Work(title="A work", media_type=models.WorkMediaType.BOOK)
+            discovery = models.Discovery(user=user, work=work)
+        else:
+            discovery = models.Discovery(user=user, artist=artist_factories.ArtistFactory())
+        db.session.add(discovery)
+        db.session.flush()
+        discovery_id = discovery.id
+        client.with_token(user)
+
+        response = client.patch(
+            f"/native/v1/discoveries/{discovery_id}", json={"comment": "A new comment", "emotions": emotion}
+        )
+
+        assert response.status_code == 200
+        assert response.json["id"] == discovery_id
+        assert response.json["comment"] == "A new comment"
+        assert response.json["emotions"] == emotion
+        db.session.expire_all()
+        assert discovery.comment == "A new comment"
+        assert discovery.emotions == emotion
+        listing = client.get("/native/v1/users/me/discoveries")
+        assert listing.status_code == 200
+        assert listing.json["discoveries"][0]["comment"] == "A new comment"
+        assert listing.json["discoveries"][0]["emotions"] == emotion
+        assert db.session.query(models.Discovery).count() == 1
+
+    @pytest.mark.parametrize(
+        "payload,expected_comment,expected_emotion",
+        [
+            ({"comment": "Updated"}, "Updated", ["surpris"]),
+            ({"emotions": ["touch\u00e9"]}, "Original", ["touch\u00e9"]),
+            ({"comment": None}, None, ["surpris"]),
+            ({"emotions": None}, "Original", None),
+            ({"comment": None, "emotions": None}, None, None),
+            ({}, "Original", ["surpris"]),
+        ],
+    )
+    def test_partial_updates_and_null_fields(self, client, payload, expected_comment, expected_emotion):
+        user = users_factories.UserFactory()
+        discovery = models.Discovery(
+            user=user,
+            artist=artist_factories.ArtistFactory(),
+            comment="Original",
+            emotions=[models.DiscoveryEmotion.SURPRISED.value],
+        )
+        db.session.add(discovery)
+        db.session.flush()
+        discovery_id = discovery.id
+        original_artist_id = discovery.artist_id
+        original_date = discovery.discovery_date
+        original_created_at = discovery.created_at
+        client.with_token(user)
+
+        response = client.patch(f"/native/v1/discoveries/{discovery_id}", json=payload)
+
+        assert response.status_code == 200
+        assert response.json["comment"] == expected_comment
+        assert response.json["emotions"] == expected_emotion
+        assert "sentiment" not in response.json
+        db.session.expire_all()
+        assert discovery.comment == expected_comment
+        assert discovery.emotions == expected_emotion
+        assert discovery.artist_id == original_artist_id
+        assert discovery.discovery_date == original_date
+        assert discovery.created_at == original_created_at
+
+    def test_cannot_update_another_users_discovery(self, client):
+        discovery = models.Discovery(
+            user=users_factories.UserFactory(), artist=artist_factories.ArtistFactory(), comment="Original"
+        )
+        db.session.add(discovery)
+        db.session.flush()
+        discovery_id = discovery.id
+        client.with_token(users_factories.UserFactory())
+
+        response = client.patch(f"/native/v1/discoveries/{discovery_id}", json={"comment": "Changed"})
+
+        assert response.status_code == 404
+        db.session.expire_all()
+        assert discovery.comment == "Original"
+
+    def test_unknown_discovery_returns_404(self, client):
+        client.with_token(users_factories.UserFactory())
+
+        response = client.patch("/native/v1/discoveries/999999999", json={"comment": "Changed"})
+
+        assert response.status_code == 404
+
+    @pytest.mark.parametrize(
+        "payload",
+        [
+            {"emotions": "happy"},
+            {"comment": 42},
+            {"userId": 1},
+            {"workId": 1},
+            {"sentiment": "changed"},
+            {"discoveryDate": None},
+            {"discoveryDate": "invalid"},
+            {"discoveryDate": "2026-02-30"},
+        ],
+    )
+    def test_invalid_update_returns_400_without_changing_discovery(self, client, payload):
+        user = users_factories.UserFactory()
+        discovery = models.Discovery(user=user, artist=artist_factories.ArtistFactory(), comment="Original")
+        db.session.add(discovery)
+        db.session.flush()
+        discovery_id = discovery.id
+        original_date = discovery.discovery_date
+        client.with_token(user)
+
+        response = client.patch(f"/native/v1/discoveries/{discovery_id}", json=payload)
+
+        assert response.status_code == 400
+        db.session.expire_all()
+        assert discovery.comment == "Original"
+        assert discovery.emotions is None
+        assert discovery.discovery_date == original_date
+
+    def test_authentication_required(self, client):
+        response = client.patch("/native/v1/discoveries/1", json={"comment": "Changed"})
+
+        assert response.status_code == 401
+
+
+class DeleteDiscoveryTest:
+    @pytest.mark.parametrize("target", ["work", "artist"])
+    def test_deletes_discovery_without_deleting_target_and_can_create_it_again(self, client, target):
+        user = users_factories.UserFactory()
+        if target == "work":
+            cultural_target = models.Work(title="A work", media_type=models.WorkMediaType.BOOK)
+            discovery = models.Discovery(user=user, work=cultural_target)
+        else:
+            cultural_target = artist_factories.ArtistFactory()
+            discovery = models.Discovery(user=user, artist=cultural_target)
+        db.session.add(discovery)
+        db.session.flush()
+        discovery_id = discovery.id
+        target_id = cultural_target.id
+        client.with_token(user)
+
+        response = client.delete(f"/native/v1/discoveries/{discovery_id}")
+
+        assert response.status_code == 204
+        assert response.data == b""
+        assert db.session.query(models.Discovery).count() == 0
+        assert db.session.query(type(cultural_target)).filter_by(id=target_id).count() == 1
+        listing = client.get("/native/v1/users/me/discoveries")
+        assert listing.status_code == 200
+        assert listing.json["discoveries"] == []
+        recreated = client.post("/native/v1/discoveries", json={f"{target}Id": target_id})
+        assert recreated.status_code == 200
+        assert recreated.json["id"] != discovery_id
+        assert db.session.query(models.Discovery).count() == 1
+
+    def test_cannot_delete_another_users_discovery(self, client):
+        discovery = models.Discovery(user=users_factories.UserFactory(), artist=artist_factories.ArtistFactory())
+        db.session.add(discovery)
+        db.session.flush()
+        discovery_id = discovery.id
+        client.with_token(users_factories.UserFactory())
+
+        response = client.delete(f"/native/v1/discoveries/{discovery_id}")
+
+        assert response.status_code == 404
+        assert db.session.query(models.Discovery).filter_by(id=discovery_id).count() == 1
+
+    def test_unknown_discovery_returns_404(self, client):
+        client.with_token(users_factories.UserFactory())
+
+        response = client.delete("/native/v1/discoveries/999999999")
+
+        assert response.status_code == 404
+
+    def test_second_delete_returns_404(self, client):
+        user = users_factories.UserFactory()
+        discovery = models.Discovery(user=user, artist=artist_factories.ArtistFactory())
+        db.session.add(discovery)
+        db.session.flush()
+        discovery_id = discovery.id
+        client.with_token(user)
+
+        assert client.delete(f"/native/v1/discoveries/{discovery_id}").status_code == 204
+        assert client.delete(f"/native/v1/discoveries/{discovery_id}").status_code == 404
+
+    def test_authentication_required(self, client):
+        response = client.delete("/native/v1/discoveries/1")
 
         assert response.status_code == 401
 
