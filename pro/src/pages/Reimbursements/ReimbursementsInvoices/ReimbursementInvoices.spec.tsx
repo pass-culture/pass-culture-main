@@ -18,6 +18,10 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
+import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
@@ -548,5 +552,34 @@ describe('reimbursementsWithFilters', () => {
       name: 'Lancer la recherche',
     })
     expect(searchButton).toBeDisabled()
+  })
+
+  it('should show banner and update storage on close', async () => {
+    const user = userEvent.setup()
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      localStorageManager.getItem(LOCAL_STORAGE_KEY.HIDE_FINANCE_BANNER)
+    ).toBeNull()
+    expect(
+      screen.getByText(
+        /Les remboursements s'effectuent toutes les 2 à 3 semaines/
+      )
+    ).toBeVisible()
+
+    await user.click(
+      screen.getByRole('button', { name: 'Fermer la bannière d’information' })
+    )
+
+    expect(
+      localStorageManager.getItem(LOCAL_STORAGE_KEY.HIDE_FINANCE_BANNER)
+    ).toBe('1')
+    expect(
+      screen.queryByText(
+        /Les remboursements s'effectuent toutes les 2 à 3 semaines/
+      )
+    ).not.toBeInTheDocument()
   })
 })
