@@ -130,3 +130,39 @@ peut être appelée en lançant : `flask price_finance_events` depuis le pod con
 Le décorateur `@log_cron_with_transaction` permet de logguer l'exécution des crons sous un format standard afin de profiter des outils de monitoring.
 
 Le décorateur `@cron_require_feature` permet de vérifier que la fonctionnalité est activée avant l'exécution. Il doit être place le plus proche de la signature de la fonction.
+
+## Les imports
+
+- On préfère un import absolu plutôt qu'un import relatif
+
+```python
+# yes ✅
+from pcapi.core.offers import models
+
+# please no ❌
+from . import models
+```
+
+- On préfère importer avec la syntaxe `from`
+
+```python
+# yes ✅
+from pcapi.core.offers import models as offers_models
+
+# please no ❌
+import pcapi.core.offers.models as offers_models
+```
+
+(on remarque par ailleurs que la deuxième version ne fonctionne pas bien sans alias)
+
+- Quand on importe un module depuis `pcapi.core`, on ajoute un alias
+
+```python
+# yes ✅
+from pcapi.core.offers import models as offers_models
+
+# please no ❌
+from pcapi.core.offers import models
+```
+
+(cela permet notamment de réutiliser une même ligne d'import à plusieurs endroits)
