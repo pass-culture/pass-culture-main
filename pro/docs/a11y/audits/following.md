@@ -21,6 +21,31 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 8.9 - Dans chaque page web, les balises ne doivent pas être utilisées uniquement à des fins de présentation.</summary>
+
+**RAWeb/RGAA** : [Critère 8.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-8-9)
+**Ticket** : [PC-43892](https://passculture.atlassian.net/browse/PC-43892)  
+**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+
+**Problème** 😱  
+P04 → Inscription structure (3 étapes et validation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Des éléments `<div>` et `<span>` sont utilisés pour baliser des textes dans le dropdown « Profil » et dans l’aperçu de l’offre à l’étape « Récapitulatif ».
+
+**Correction** 💡  
+- P04 : vérification du dropdown « Profil ». Le titre « Profil » et l’adresse e-mail sont déjà balisés avec des éléments `<p>`.
+- P06 : remplacement des `<div>` et `<span>` entourant les textes de l’aperçu par des éléments `<p>` : titre, description, options et détails du lieu.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
 
 **RAWeb/RGAA** : [Critère X.X](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-X-X)

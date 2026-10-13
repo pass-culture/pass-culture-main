@@ -26,6 +26,7 @@
       @include fonts.body-accent-xs;
 
       flex: 1;
+      margin-top: 0;
       margin-bottom: rem.torem(-9px);
     }
   }

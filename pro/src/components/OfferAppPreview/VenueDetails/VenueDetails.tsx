@@ -38,19 +38,19 @@ export const VenueDetails = ({
   return (
     <div className={style['venue-details']}>
       <div className={style['section']}>
-        <div className={style['title']}>Localisation</div>
-        <div className={style['sub-title']}>Intitulé</div>
-        <div className={style['text']}>{label || '- -'}</div>
-        <div className={style['sub-title']}>Adresse</div>
+        <p className={style['title']}>Localisation</p>
+        <p className={style['sub-title']}>Intitulé</p>
+        <p className={style['text']}>{label || '- -'}</p>
+        <p className={style['sub-title']}>Adresse</p>
         <address className={style['text']}>{venueAddressString}</address>
-        <div className={style['sub-title']}>Distance</div>
-        <div className={style['text']}>- - km</div>
+        <p className={style['sub-title']}>Distance</p>
+        <p className={style['text']}>- - km</p>
       </div>
 
       {withdrawalDetails && (
         <div className={style['section']}>
-          <div className={style['title']}>Modalités de retrait</div>
-          <div className={style['text']}>{withdrawalDetails}</div>
+          <p className={style['title']}>Modalités de retrait</p>
+          <p className={style['text']}>{withdrawalDetails}</p>
         </div>
       )}
     </div>

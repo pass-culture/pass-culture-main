@@ -48,9 +48,9 @@ export const OfferAppPreview = ({
 
       <div className={style['offer-data-container']}>
         {offer.name && (
-          <div className={style['offer-title']}>
+          <p className={style['offer-title']}>
             {truncateAtWord(offer.name, 90)}
-          </div>
+          </p>
         )}
 
         <OptionsIcons

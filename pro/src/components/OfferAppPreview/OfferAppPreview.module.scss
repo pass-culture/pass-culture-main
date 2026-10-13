@@ -43,11 +43,11 @@
   .offer-title {
     @include fonts.title4;
 
+    margin: 0 0 rem.torem(22px);
     max-width: rem.torem(224px);
     overflow-wrap: anywhere;
     text-align: center;
     padding: rem.torem(0) rem.torem(15px);
-    margin-bottom: rem.torem(22px);
   }
 
   .offer-options {
@@ -57,6 +57,7 @@
   .offer-description {
     @include fonts.body-xs;
 
+    margin: 0;
     padding: rem.torem(0) rem.torem(15px) rem.torem(15px);
     overflow-wrap: anywhere;
   }

@@ -290,6 +290,15 @@ describe('IndividualOfferSummaryScreen', () => {
       screen.getByText('Notifications des réservations')
     ).toBeInTheDocument()
     expect(screen.getByText('Aperçu dans l’app')).toBeInTheDocument()
+    expect(screen.getByText('Type').tagName).toBe('P')
+    expect(
+      screen.getAllByText('mon offre').some((element) => element.closest('p'))
+    ).toBe(true)
+    expect(
+      screen
+        .getAllByText('ma description')
+        .some((element) => element.closest('p'))
+    ).toBe(true)
 
     expect(screen.getByText(MOCKED_CATEGORY.A.proLabel)).toBeInTheDocument()
     expect(
