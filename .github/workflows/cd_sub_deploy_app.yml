@@ -91,7 +91,7 @@ jobs:
           persist-credentials: false
 
       - name: Install Argo Workflows CLI
-        uses: pass-culture/common-workflows/actions/setup-argo@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5 # auth token support (#80)
+        uses: pass-culture/common-workflows/actions/setup-argo@a98220c78c2bb99887b5659879078cb0eed85f9e # v1.1.0-rc0
         with:
           token: ${{ github.token }}
 
