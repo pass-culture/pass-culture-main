@@ -15,8 +15,6 @@ gh workflow run on_dispatch_pcapi_console_job.yaml \
 import argparse
 import logging
 
-import sqlalchemy as sa
-
 from pcapi.core.history.api import add_action
 from pcapi.core.history.models import ActionType
 from pcapi.core.offerers.models import Venue
@@ -27,20 +25,24 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    venues = db.session.query(Venue).filter(Venue.name != sa.func.trim(Venue.name)).all()
+    venues = db.session.query(Venue).yield_per(1_000)
 
-    logger.info("Found %s venues to fix", len(venues))
-
+    count = 0
     for venue in venues:
-        add_action(
-            action_type=ActionType.INFO_MODIFIED,
-            author=None,
-            venue=venue,
-            modified_info={"name": {"old_info": venue.name, "new_info": venue.name.strip()}},
-            comment="PC-44070",
-        )
-        venue.name = venue.name.strip()
+        name_strip = venue.name.strip()
 
+        if venue.name != name_strip:
+            count += 1
+            add_action(
+                action_type=ActionType.INFO_MODIFIED,
+                author=None,
+                venue=venue,
+                modified_info={"name": {"old_info": venue.name, "new_info": name_strip}},
+                comment="PC-44070",
+            )
+            venue.name = name_strip
+
+    logger.info("Fixed %s venues", count)
     db.session.flush()
 
 
