@@ -3237,6 +3237,13 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
     department_code = utils_regions.get_department_code_from_city_code(city_code)
     timezone = date_utils.get_department_timezone(department_code)
 
+    # TODO bdalbianco-pass (13/10/26): remove logs once PC-43242 is over
+    if (not insee_code) and ban_id:
+        logger.info(
+            "address has lost its inseecode with attribution 3",
+            extra={"location_data": location_data.get("insee_code"), "technical_note": "fix_insee_code"},
+        )
+
     with transaction():
         try:
             address = geography_models.Address(
@@ -3332,6 +3339,17 @@ def create_offerer_address_from_address_api(
         insee_code=insee_code,
         ban_id=_ban_id,
     )
+    # TODO bdalbianco-pass (13/10/26): remove logs once PC-43242 is over
+    if (not location_data["insee_code"]) and location_data["ban_id"]:
+        logger.info(
+            "address is missing inseecode 2",
+            extra={
+                "address.insee_code": address.inseeCode,
+                "inseecode": location_data["insee_code"],
+                "technical_note": "fix_insee_code",
+            },
+        )
+
     return get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
 
 
