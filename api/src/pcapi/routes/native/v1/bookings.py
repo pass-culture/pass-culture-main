@@ -6,6 +6,7 @@ from flask_login import current_user
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.metrics import booking_requests_counter
+from pcapi.core.bookings.metrics import cancel_booking_requests_counter
 from pcapi.core.bookings.models import Booking
 from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
@@ -181,12 +182,23 @@ def cancel_booking(booking_id: int) -> None:
         "action": "cancel",
     }
 
+    counter_labels = {
+        "provider_id": booking.stock.offer.lastProviderId,
+        "provider_label": booking.stock.offer.lastProvider.name if booking.stock.offer.lastProvider else None,
+        "subcategory_id": booking.stock.offer.subcategoryId,
+    }
+
     try:
         bookings_api.cancel_booking_by_beneficiary(booking)
         logger.info(
             "Booking successfully cancelled",
             extra=log_extra_data,
         )
+        cancel_booking_requests_counter.labels(
+            **counter_labels,
+            status="success",
+            error_code=None,
+        ).inc()
     except bookings_exceptions.BookingIsAlreadyCancelled:
         # Do not raise an error, to avoid showing an error in case double-click => double call
         # Booking is cancelled so a success status is ok
@@ -204,6 +216,11 @@ def cancel_booking(booking_id: int) -> None:
             e.__class__,
             ("CANCELATION_FAILED", "L'annulation de réservation a échoué."),
         )
+        cancel_booking_requests_counter.labels(
+            **counter_labels,
+            status="failure",
+            error_code=code,
+        ).inc()
         raise ApiErrors({"code": code, "message": message})
 
 

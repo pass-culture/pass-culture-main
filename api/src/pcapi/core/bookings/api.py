@@ -29,6 +29,7 @@ import pcapi.serialization.utils as serialization_utils
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.achievements import api as achievements_api
+from pcapi.core.bookings.metrics import cancel_external_bookings_execution_time_histogram
 from pcapi.core.bookings.metrics import external_bookings_execution_time_histogram
 from pcapi.core.categories.subcategories import NUMBER_SECONDS_HIDE_QR_CODE
 from pcapi.core.categories.subcategories import SEANCE_CINE
@@ -758,7 +759,15 @@ def _execute_cancel_booking(
                         "action": "cancel",
                     }
                     try:
+                        start_time = time.time()
                         external_bookings_api.cancel_tickets(barcodes, provider=provider, stock=stock)
+                        elapsedseconds = time.time() - start_time
+                        cancel_external_bookings_execution_time_histogram.labels(
+                            provider_id=stock.offer.lastProviderId,
+                            provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
+                            subcategory_id=stock.offer.subcategoryId,
+                        ).observe(elapsedseconds)
+
                         logger.info(
                             "[Core] Tickets successfully cancelled on provider side",
                             extra=log_extra_data,
