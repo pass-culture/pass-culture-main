@@ -30,7 +30,7 @@
     {% call nav_section("details", "Détails de l'offre") %}
       <div class="d-flex gap-1">
         <div class="flex-grow-1">
-          {% call description_detail_horizontal("Période de validitée") %}
+          {% call description_detail_horizontal("Période de validité") %}
             {% if collective_offer_template.dateRange and not collective_offer_template.dateRange.empty %}
               {% set start_date = collective_offer_template.dateRange.lower | format_date_time(collective_offer_template.address) %}
               {% set end_date = collective_offer_template.dateRange.upper | format_date_time(collective_offer_template.address) %}
