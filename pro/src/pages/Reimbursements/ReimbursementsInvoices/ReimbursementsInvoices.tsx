@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
@@ -12,6 +12,10 @@ import {
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
+import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { BannerReimbursementsInfo } from './BannerReimbursementsInfo'
@@ -46,6 +50,10 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const isCaledonian = selectedAdminOfferer.isCaledonian
   const snackBar = useSnackBar()
+
+  const [hideBanner, setHideBanner] = useState(
+    localStorageManager.getItem(LOCAL_STORAGE_KEY.HIDE_FINANCE_BANNER) === '1'
+  )
 
   const offererId = selectedAdminOfferer?.id
 
@@ -116,10 +124,17 @@ const ReimbursementsInvoices = (): JSX.Element => {
 
   const invoices = getInvoicesQuery.data ?? []
 
+  const onCloseBanner = () => {
+    localStorageManager.setItem(LOCAL_STORAGE_KEY.HIDE_FINANCE_BANNER, '1')
+    setHideBanner(true)
+  }
+
   return (
     <>
-      <BannerReimbursementsInfo />
+      {!hideBanner && <BannerReimbursementsInfo onClose={onCloseBanner} />}
+
       <InvoicesFilters onReset={handleResetFilters} />
+
       {getInvoicesQuery.error ? (
         <InvoicesServerError />
       ) : (

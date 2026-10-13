@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
@@ -12,8 +12,13 @@ import {
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
+import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
+import { BannerReimbursementsInfo } from '../ReimbursementsInvoices/BannerReimbursementsInfo'
 import { DEFAULT_INVOICES_FILTERS } from '../ReimbursementsInvoices/constants'
 import { SettlementsFilters } from './components/SettlementsFilters/SettlementsFilters'
 import { SettlementTable } from './components/SettlementTable/SettlementTable'
@@ -40,6 +45,10 @@ export const Settlements = (): JSX.Element => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const snackBar = useSnackBar()
   const offererId = selectedAdminOfferer?.id
+
+  const [hideBanner, setHideBanner] = useState(
+    localStorageManager.getItem(LOCAL_STORAGE_KEY.HIDE_FINANCE_BANNER) === '1'
+  )
 
   useEffect(() => {
     if (searchParams.size === 0) {
@@ -102,8 +111,15 @@ export const Settlements = (): JSX.Element => {
   const bankAccounts =
     getOffererBankAccountsAndAttachedVenuesQuery.data?.bankAccounts ?? []
 
+  const onCloseBanner = () => {
+    localStorageManager.setItem(LOCAL_STORAGE_KEY.HIDE_FINANCE_BANNER, '1')
+    setHideBanner(true)
+  }
+
   return (
     <>
+      {!hideBanner && <BannerReimbursementsInfo onClose={onCloseBanner} />}
+
       <SettlementsFilters
         bankAccounts={bankAccounts}
         onReset={handleResetFilters}

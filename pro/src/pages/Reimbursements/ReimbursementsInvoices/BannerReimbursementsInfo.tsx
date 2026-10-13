@@ -1,7 +1,13 @@
 import { Banner } from '@/design-system/Banner/Banner'
 import fullLinkIcon from '@/icons/full-link.svg'
 
-export const BannerReimbursementsInfo = (): JSX.Element => {
+type BannerReimbursementsInfoProps = {
+  onClose: () => void
+}
+
+export const BannerReimbursementsInfo = ({
+  onClose,
+}: BannerReimbursementsInfoProps): JSX.Element => {
   return (
     <div className="banner">
       <Banner
@@ -38,6 +44,8 @@ export const BannerReimbursementsInfo = (): JSX.Element => {
             </p>
           </>
         }
+        closable
+        onClose={onClose}
       />
     </div>
   )
