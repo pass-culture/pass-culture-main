@@ -1600,6 +1600,86 @@ class CancelBookingTest:
             "message": "L'annulation de réservation a échoué.",
         }
 
+    @patch("pcapi.routes.native.v1.bookings.cancel_booking_requests_counter")
+    def test_increment_cancel_booking_succeeded_counter_metric(self, mocked_counter, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.BookingFactory(user=user)
+
+        client = client.with_token(user)
+        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+
+        assert response.status_code == 204
+        mocked_counter.labels.assert_called_once_with(
+            provider_id=None,
+            provider_label=None,
+            subcategory_id=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            status="success",
+            error_code=None,
+        )
+        mocked_counter.labels.return_value.inc.assert_called_once_with()
+
+    @patch("pcapi.routes.native.v1.bookings.cancel_booking_requests_counter")
+    def test_increment_cancel_booking_failed_counter_metric(self, mocked_counter, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        already_confirmed_booking = booking_factories.BookingFactory(
+            user=user, cancellation_limit_date=date_utils.get_naive_utc_now() - timedelta(days=1)
+        )
+
+        client = client.with_token(user)
+        response = client.post(f"/native/v1/bookings/{already_confirmed_booking.id}/cancel")
+
+        assert response.status_code == 400
+        mocked_counter.labels.assert_called_once_with(
+            provider_id=None,
+            provider_label=None,
+            subcategory_id=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            status="failure",
+            error_code="CONFIRMED_BOOKING",
+        )
+        mocked_counter.labels.return_value.inc.assert_called_once_with()
+
+    def test_external_cancel_booking_execution_time_metric(self, client, requests_mock):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        external_booking_url = "https://book_my_offer.com/confirm"
+        cancel_booking_url = "https://book_my_offer.com/cancel"
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            localClass=None,
+            bookingExternalUrl=external_booking_url,
+            cancelExternalUrl=cancel_booking_url,
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__lastProvider=provider,
+            offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
+            dnBookedQuantity=10,
+            idAtProviders="",
+        )
+        booking = booking_factories.BookingFactory(user=user, stock=stock)
+        booking_factories.ExternalBookingFactory(booking=booking)
+
+        requests_mock.post(
+            cancel_booking_url,
+            json={"remainingQuantity": 50},
+            status_code=200,
+        )
+
+        client = client.with_token(user)
+        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+
+        assert response.status_code == 204
+        execution_time_metric_count_value = REGISTRY.get_sample_value(
+            "cancel_external_bookings_execution_time_count",
+            labels={
+                "provider_id": str(provider.id),
+                "provider_label": provider.name,
+                "subcategory_id": str(subcategories.CONCERT.id),
+            },
+        )
+        assert execution_time_metric_count_value == 1
+
 
 class ToggleBookingVisibilityTest:
     identifier = "pascal.ture@example.com"
