@@ -98,7 +98,7 @@ export const CollectiveOfferLayout = ({
   const location = useLocation()
   const pathname = location.pathname
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const isSummaryPage = pathname.includes('recapitulatif')
   const getTitle = () => {

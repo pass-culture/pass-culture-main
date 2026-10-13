@@ -377,7 +377,7 @@ function RecurrenceModalButton({
   addStocksBtnId: string
 }>) {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   return (
     <>

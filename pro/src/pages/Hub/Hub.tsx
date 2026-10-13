@@ -135,16 +135,6 @@ export const Hub = () => {
                     <Tag variant={TagVariant.ERROR} label="Structure fermée" />
                   </div>
                 )}
-                {venue.state === VenueState.CLOSING &&
-                  !venue.managingOfferer.isClosed && (
-                    <div className={styles['venue-item-state']}>
-                      <Tag
-                        variant={TagVariant.WARNING}
-                        label="Fermeture en cours"
-                      />
-                    </div>
-                  )}
-
                 <span
                   className={styles['venue-item-name']}
                   id={`venue-${venue.id}-name`}

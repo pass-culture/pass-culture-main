@@ -153,7 +153,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   if (!selectedPartnerVenue) {
     return null
   }
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const navItems = generateNavItems()
 

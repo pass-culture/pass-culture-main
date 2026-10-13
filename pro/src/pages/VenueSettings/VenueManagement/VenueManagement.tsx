@@ -1,7 +1,6 @@
 import { useId, useState } from 'react'
 
 import { api } from '@/apiClient/api'
-import { VenueState } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
@@ -20,12 +19,12 @@ import styles from './VenueManagement.module.scss'
 const VenueManagement = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const selectedOfferer = useAppSelector(ensureSelectedAdminOfferer)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const snackBar = useSnackBar()
   const { syncVenue } = useSyncVenueCache()
   const isLastOpenedVenue =
     selectedOfferer.managedVenues.filter(
-      (venue) => !withVenueHelpers(venue).isClosedOrClosing
+      (venue) => !withVenueHelpers(venue).isClosed
     ).length === 1
   const [isCloseVenueModalOpen, setIsCloseVenueModalOpen] = useState(false)
   const [isConfirmVenueClosedModalOpen, setIsConfirmVenueClosedModalOpen] =
@@ -53,6 +52,15 @@ const VenueManagement = () => {
     }
   }
 
+  const getCloseVenueLabel = () => {
+    if (isClosed) {
+      return selectedPartnerVenue.isPricingPoint
+        ? 'Demande en cours'
+        : 'Fermer la structure'
+    }
+    return 'Fermer la structure'
+  }
+
   return (
     <>
       <div className={styles['banner']}>
@@ -66,11 +74,7 @@ const VenueManagement = () => {
           variant={ButtonVariant.PRIMARY}
           color={ButtonColor.DANGER}
           disabled={isClosed}
-          label={
-            selectedPartnerVenue.state === VenueState.CLOSING
-              ? 'Demande en cours'
-              : 'Fermer la structure'
-          }
+          label={getCloseVenueLabel()}
           id={closeButtonId}
           onClick={() => setIsCloseVenueModalOpen(true)}
         />

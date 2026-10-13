@@ -27,7 +27,7 @@ interface ActivityFormFields {
 
 export const ActivityDetails = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(venue).isClosedOrClosing
+  const isClosed = withVenueHelpers(venue).isClosed
   const { register, watch, setValue, formState } =
     useFormContext<ActivityFormFields>()
 

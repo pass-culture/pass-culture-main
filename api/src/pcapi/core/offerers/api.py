@@ -3653,7 +3653,7 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
             criteria_api.unlink_criterion_from_venue(criterion=closure_request_tag, venue=venue)
         return
 
-    venue.state = models.VenueState.CLOSING
+    venue.state = models.VenueState.CLOSED
     history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
     _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_CLOSED)
     on_commit(

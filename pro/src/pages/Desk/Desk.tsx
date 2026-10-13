@@ -28,7 +28,7 @@ interface FormValues {
 
 export const Desk = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const [isTokenValidated, setIsTokenValidated] = useState(false)
   const [booking, setBooking] = useState<GetBookingResponse | undefined>(

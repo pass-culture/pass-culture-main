@@ -13,7 +13,7 @@ import { AddressAndOpeningHourSubSection } from './AddressAndOpeningHourSubSecti
 
 export const IndividualVenuePageScreen = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosedOrClosing
+  const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   return (
     <SummarySection

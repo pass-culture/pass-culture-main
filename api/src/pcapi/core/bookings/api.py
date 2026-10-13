@@ -1623,7 +1623,6 @@ def move_booking(booking: models.Booking, destination_venue_id: int) -> None:
         .join(offerers_models.Venue.managingOfferer)
         .filter(
             offerers_models.Venue.id == destination_venue_id,
-            offerers_models.Venue.state.is_distinct_from(offerers_models.VenueState.CLOSING),
             offerers_models.Venue.state.is_distinct_from(offerers_models.VenueState.CLOSED),
             offerers_models.Offerer.isValidated,
             offerers_models.Offerer.isActive.is_(True),
