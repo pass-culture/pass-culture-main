@@ -109,8 +109,86 @@ class WishlistVisibilityTest:
             assert len(response.json["items"]) == 1
 
     def test_other_routes_still_require_authentication(self, client):
-        assert client.get("/native/v1/wishlists/search?q=films").status_code == 401
-        assert client.get("/native/v1/wishlists/1").status_code == 401
+        assert client.get("/native/v1/users/me/wishlists").status_code == 401
+        assert client.post("/native/v1/wishlists", json={"name": "Films"}).status_code == 401
+        assert client.patch("/native/v1/wishlists/1", json={"name": "Films"}).status_code == 401
+        assert client.delete("/native/v1/wishlists/1").status_code == 401
+        assert client.post("/native/v1/wishlists/1/items", json={"workId": 1}).status_code == 401
+        assert client.delete("/native/v1/wishlists/1/items/1").status_code == 401
+        assert client.put("/native/v1/wishlists/1/items/order", json={"itemIds": []}).status_code == 401
+
+    @pytest.mark.parametrize("visibility", list(models.WishlistVisibility))
+    @pytest.mark.parametrize("with_item", [False, True])
+    def test_detail_without_authentication(self, client, visibility, with_item):
+        wishlist = models.Wishlist(user=users_factories.UserFactory(), name="Films", visibility=visibility)
+        db.session.add(wishlist)
+        if with_item:
+            db.session.add(models.WishlistItem(wishlist=wishlist, artist=artist_factories.ArtistFactory(), position=0))
+        db.session.flush()
+
+        response = client.get(f"/native/v1/wishlists/{wishlist.id}")
+
+        if visibility != models.WishlistVisibility.PUBLIC:
+            assert response.status_code == 404
+        else:
+            assert response.status_code == 200
+            assert response.json["isOwner"] is False
+            assert response.json["shareToken"] is None
+            assert isinstance(response.json["items"], list)
+            assert len(response.json["items"]) == int(with_item)
+
+    @pytest.mark.parametrize("visibility", list(models.WishlistVisibility))
+    def test_owner_can_read_own_list(self, client, visibility):
+        user = users_factories.UserFactory()
+        wishlist = models.Wishlist(user=user, name="Films", visibility=visibility)
+        db.session.add(wishlist)
+        db.session.flush()
+        client.with_token(user)
+
+        response = client.get(f"/native/v1/wishlists/{wishlist.id}")
+
+        assert response.status_code == 200
+        assert response.json["isOwner"] is True
+        assert response.json["shareToken"] == wishlist.share_token
+
+    @pytest.mark.parametrize("page,expected_count", [(1, 2), (2, 1), (3, 0)])
+    def test_anonymous_search_total_before_pagination(self, client, page, expected_count):
+        user = users_factories.UserFactory()
+        public_lists = [
+            models.Wishlist(user=user, name=f"Films {index}", visibility=models.WishlistVisibility.PUBLIC)
+            for index in range(3)
+        ]
+        db.session.add_all(
+            public_lists
+            + [
+                models.Wishlist(user=user, name="Films secrets", visibility=models.WishlistVisibility.PRIVATE),
+                models.Wishlist(user=user, name="Films par lien", visibility=models.WishlistVisibility.UNLISTED),
+                models.Wishlist(user=user, name="Livres", visibility=models.WishlistVisibility.PUBLIC),
+            ]
+        )
+        db.session.flush()
+
+        response = client.get(f"/native/v1/wishlists/search?q=FILMS&page={page}&limit=2")
+
+        assert response.status_code == 200
+        assert response.json["nbResults"] == 3
+        assert response.json["page"] == page
+        assert response.json["limit"] == 2
+        results = response.json["wishlists"]
+        assert len(results) == expected_count
+        assert [wishlist["id"] for wishlist in results] == [wishlist.id for wishlist in reversed(public_lists)][
+            (page - 1) * 2 : page * 2
+        ]
+
+    def test_anonymous_search_without_results(self, client):
+        response = client.get("/native/v1/wishlists/search?q=inexistant")
+
+        assert response.status_code == 200
+        assert response.json["nbResults"] == 0
+        assert response.json["wishlists"] == []
+
+    def test_unknown_detail_without_authentication(self, client):
+        assert client.get("/native/v1/wishlists/999999").status_code == 404
 
     def test_search_escapes_wildcards(self, client):
         client.with_token(users_factories.UserFactory())
@@ -120,10 +198,9 @@ class WishlistVisibilityTest:
 
         assert response.status_code == 200
         assert response.json["wishlists"] == []
+        assert response.json["nbResults"] == 0
 
     def test_search_query_too_short(self, client):
-        client.with_token(users_factories.UserFactory())
-
         assert client.get("/native/v1/wishlists/search?q=a").status_code == 400
 
 

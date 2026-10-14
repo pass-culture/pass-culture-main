@@ -138,3 +138,7 @@ class WishlistsResponseSchema(HttpBodyModel):
     page: int
     limit: int
     wishlists: list[WishlistSummaryResponseSchema]
+
+
+class WishlistSearchResponseSchema(WishlistsResponseSchema):
+    nb_results: int

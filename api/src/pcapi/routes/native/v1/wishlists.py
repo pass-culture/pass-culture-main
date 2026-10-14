@@ -37,11 +37,11 @@ def delete_wishlist(wishlist_id: int) -> None:
 
 @blueprint.native_route("/wishlists/<int:wishlist_id>", methods=["GET"])
 @atomic()
-@authenticated_and_active_user_required
 @spectree_serialize(response_model=serializers.WishlistResponseSchema, on_error_statuses=[404], api=blueprint.api)
 def get_wishlist(wishlist_id: int) -> serializers.WishlistResponseSchema:
-    wishlist = api.get_visible_wishlist(current_user.id, wishlist_id)
-    return serializers.WishlistResponseSchema.build_for(wishlist, current_user.id)
+    user_id = None if current_user.is_anonymous else current_user.id
+    wishlist = api.get_visible_wishlist(user_id, wishlist_id)
+    return serializers.WishlistResponseSchema.build_for(wishlist, user_id)
 
 
 @blueprint.native_route("/wishlists/shared/<string:share_token>", methods=["GET"])
@@ -55,13 +55,13 @@ def get_shared_wishlist(share_token: str) -> serializers.WishlistResponseSchema:
 
 @blueprint.native_route("/wishlists/search", methods=["GET"])
 @atomic()
-@authenticated_and_active_user_required
-@spectree_serialize(response_model=serializers.WishlistsResponseSchema, on_error_statuses=[400], api=blueprint.api)
-def search_wishlists(query: serializers.WishlistSearchQuerySchema) -> serializers.WishlistsResponseSchema:
-    wishlists = api.search_public_wishlists(query.q, query.page, query.limit)
-    return serializers.WishlistsResponseSchema(
+@spectree_serialize(response_model=serializers.WishlistSearchResponseSchema, on_error_statuses=[400], api=blueprint.api)
+def search_wishlists(query: serializers.WishlistSearchQuerySchema) -> serializers.WishlistSearchResponseSchema:
+    wishlists, nb_results = api.search_public_wishlists(query.q, query.page, query.limit)
+    return serializers.WishlistSearchResponseSchema(
         page=query.page,
         limit=query.limit,
+        nb_results=nb_results,
         wishlists=[serializers.WishlistSummaryResponseSchema.build(wishlist) for wishlist in wishlists],
     )
 

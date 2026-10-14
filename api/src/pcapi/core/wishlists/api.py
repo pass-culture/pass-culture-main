@@ -81,12 +81,12 @@ def get_user_wishlists(user_id: int, page: int, limit: int) -> list[Wishlist]:
     )
 
 
-def get_visible_wishlist(user_id: int, wishlist_id: int) -> Wishlist:
+def get_visible_wishlist(user_id: int | None, wishlist_id: int) -> Wishlist:
+    visibility_filter = Wishlist.visibility == WishlistVisibility.PUBLIC
+    if user_id is not None:
+        visibility_filter = sa.or_(visibility_filter, Wishlist.user_id == user_id)
     wishlist = db.session.execute(
-        _wishlist_statement().where(
-            Wishlist.id == wishlist_id,
-            sa.or_(Wishlist.user_id == user_id, Wishlist.visibility == WishlistVisibility.PUBLIC),
-        )
+        _wishlist_statement().where(Wishlist.id == wishlist_id, visibility_filter)
     ).scalar_one_or_none()
     if wishlist is None:
         raise ResourceNotFoundError()
@@ -104,20 +104,23 @@ def get_wishlist_by_token(share_token: str) -> Wishlist:
     return wishlist
 
 
-def search_public_wishlists(query: str, page: int, limit: int) -> list[Wishlist]:
+def search_public_wishlists(query: str, page: int, limit: int) -> tuple[list[Wishlist], int]:
     escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-    return list(
+    filters = (
+        Wishlist.visibility == WishlistVisibility.PUBLIC,
+        Wishlist.name.ilike(f"%{escaped}%", escape="\\"),
+    )
+    nb_results = db.session.execute(sa.select(sa.func.count()).select_from(Wishlist).where(*filters)).scalar_one()
+    wishlists = list(
         db.session.execute(
             _summary_statement()
-            .where(
-                Wishlist.visibility == WishlistVisibility.PUBLIC,
-                Wishlist.name.ilike(f"%{escaped}%", escape="\\"),
-            )
+            .where(*filters)
             .order_by(Wishlist.updated_at.desc(), Wishlist.id.desc())
             .offset((page - 1) * limit)
             .limit(limit)
         ).scalars()
     )
+    return wishlists, nb_results
 
 
 def add_item(user_id: int, wishlist_id: int, data: "AddWishlistItemSchema") -> Wishlist:
