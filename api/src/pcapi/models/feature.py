@@ -84,7 +84,6 @@ class FeatureToggle(enum.Enum):
         "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
     )
     ENABLE_OFFERS_AUTO_CLEANUP = "Active la suppression automatique des offres obsolètes"
-    ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_SPECIAL_EVENTS_SYNC = "Activer la synchronisation des réponses aux opérations spéciales"
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_ID_CHECK_ON_DN_APPLICATION = (

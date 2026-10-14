@@ -218,7 +218,7 @@ describe('Signup', () => {
             remove: vi.fn(),
           } as unknown as HTMLScriptElement)
           vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-          renderSignUp({ features: ['ENABLE_PRO_ACCOUNT_CREATION'] })
+          renderSignUp()
           await user.type(
             screen.getByRole('textbox', {
               name: /Adresse email */,
@@ -279,9 +279,7 @@ describe('Signup', () => {
             remove: vi.fn(),
           } as unknown as HTMLScriptElement)
           vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-          renderSignUp({
-            features: ['ENABLE_PRO_ACCOUNT_CREATION'],
-          })
+          renderSignUp()
           await user.type(
             screen.getByRole('textbox', {
               name: /Adresse email */,

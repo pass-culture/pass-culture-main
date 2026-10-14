@@ -13,7 +13,6 @@ PRO_FEATURES = (
     FeatureToggle.API_SIRENE_AVAILABLE,
     FeatureToggle.ENABLE_BEAMER,
     FeatureToggle.ENABLE_MARSEILLE,
-    FeatureToggle.ENABLE_PRO_ACCOUNT_CREATION,
     FeatureToggle.ENABLE_PRO_FEEDBACK,
     FeatureToggle.PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.WIP_CLOSE_VENUE,
