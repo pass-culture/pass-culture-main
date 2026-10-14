@@ -9,10 +9,12 @@ from flask import current_app
 
 from pcapi.core.achievements.factories import AchievementFactory
 from pcapi.core.achievements.models import AchievementEnum
+from pcapi.core.artist import factories as artist_factories
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.discoveries import models as discoveries_models
 from pcapi.core.external.attributes.api import TRACKED_PRODUCT_IDS
 from pcapi.core.external.attributes.api import get_bookings_categories_and_subcategories
 from pcapi.core.external.attributes.api import get_most_favorite_subcategories
@@ -24,6 +26,7 @@ from pcapi.core.external.attributes.models import UserAttributes
 from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.favorites.factories import FavoriteOfferFactory
+from pcapi.core.favorites.models import FavoriteOffer
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -626,6 +629,36 @@ def test_get_bookings_categories_and_subcategories_music_first():
 
 def test_get_most_favorite_subcategories_none():
     assert get_most_favorite_subcategories([]) is None
+
+
+def test_get_user_attributes_with_cultural_favorites():
+    user = UserFactory()
+    work = discoveries_models.Work(title="Work", media_type=discoveries_models.WorkMediaType.BOOK)
+    work_favorite = FavoriteOffer(user=user, work=work, dateCreated=datetime(2026, 1, 2))
+    artist_favorite = FavoriteOffer(
+        user=user, artist=artist_factories.ArtistFactory(), dateCreated=datetime(2026, 1, 1)
+    )
+    db.session.add_all([work_favorite, artist_favorite])
+    db.session.flush()
+
+    attributes = get_user_attributes(user)
+
+    assert attributes.last_favorite_creation_date == work_favorite.dateCreated
+    assert attributes.most_favorite_offer_subcategories is None
+
+
+def test_get_most_favorite_subcategories_with_origin_offer():
+    user = UserFactory()
+    work = discoveries_models.Work(title="Work", media_type=discoveries_models.WorkMediaType.BOOK)
+    offer = OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+    favorites = [
+        FavoriteOffer(user=user, work=work, offer_origin=offer),
+        FavoriteOffer(user=user, artist=artist_factories.ArtistFactory()),
+    ]
+    db.session.add_all(favorites)
+    db.session.flush()
+
+    assert get_most_favorite_subcategories(favorites) == [subcategories.LIVRE_PAPIER.id]
 
 
 def test_get_most_favorite_subcategories_one():

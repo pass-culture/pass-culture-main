@@ -28,7 +28,15 @@ def _discovery_statement() -> sa.Select[tuple[Discovery]]:
     )
 
 
-def get_work_for_offer(offer_id: int) -> tuple[Offer, Work]:
+@typing.overload
+def get_work_for_offer(offer_id: int, *, allow_missing_work: typing.Literal[False] = False) -> tuple[Offer, Work]: ...
+
+
+@typing.overload
+def get_work_for_offer(offer_id: int, *, allow_missing_work: typing.Literal[True]) -> tuple[Offer, Work | None]: ...
+
+
+def get_work_for_offer(offer_id: int, *, allow_missing_work: bool = False) -> tuple[Offer, Work | None]:
     offer = db.session.execute(
         sa.select(Offer)
         .options(sa_orm.joinedload(Offer.work), sa_orm.joinedload(Offer.product).joinedload(Product.work))
@@ -37,7 +45,7 @@ def get_work_for_offer(offer_id: int) -> tuple[Offer, Work]:
     if offer is None:
         raise ResourceNotFoundError()
     work = offer.work or (offer.product.work if offer.product is not None else None)
-    if work is None:
+    if work is None and not allow_missing_work:
         raise ApiErrors({"offerId": ["This offer is not linked to a work."]})
     return offer, work
 

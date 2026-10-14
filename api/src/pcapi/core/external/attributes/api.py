@@ -381,7 +381,8 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         db.session.query(favorites_models.FavoriteOffer)
         .filter_by(userId=user.id)
         .options(joinedload(favorites_models.FavoriteOffer.offer).load_only(offers_models.Offer.subcategoryId))
-        .order_by(favorites_models.FavoriteOffer.id.desc())
+        .options(joinedload(favorites_models.FavoriteOffer.offer_origin).load_only(offers_models.Offer.subcategoryId))
+        .order_by(favorites_models.FavoriteOffer.dateCreated.desc(), favorites_models.FavoriteOffer.id.desc())
         .all()
     )
 
@@ -549,7 +550,10 @@ def get_most_favorite_subcategories(favorites: list[favorites_models.FavoriteOff
     if not favorites:
         return None
 
-    favorites_count = Counter([favorite.offer.subcategoryId for favorite in favorites])
+    offers = [favorite.offer or favorite.offer_origin for favorite in favorites]
+    favorites_count = Counter(offer.subcategoryId for offer in offers if offer is not None)
+    if not favorites_count:
+        return None
     sorted_by_count = favorites_count.most_common()
     highest_count = sorted_by_count[0][1]
     return [key for (key, value) in sorted_by_count if value == highest_count]

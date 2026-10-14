@@ -10,8 +10,10 @@ import pytest
 import sqlalchemy as sa
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.artist import factories as artist_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.discoveries import models as discoveries_models
 from pcapi.core.external.batch import models as batch_models
 from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.favorites import factories as favorite_factories
@@ -31,6 +33,230 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 FAVORITES_URL = "/native/v1/me/favorites"
+
+
+class CulturalFavoritesTest:
+    @pytest.mark.parametrize("target", ["offer", "work", "artist"])
+    def test_database_rejects_duplicate_target(self, target):
+        user = users_factories.UserFactory()
+        targets = {
+            "offer": offers_factories.OfferFactory(),
+            "work": discoveries_models.Work(title="Work", media_type=discoveries_models.WorkMediaType.BOOK),
+            "artist": artist_factories.ArtistFactory(),
+        }
+        db.session.add(FavoriteOffer(user=user, **{target: targets[target]}))
+        db.session.flush()
+
+        with pytest.raises(sa.exc.IntegrityError), db.session.begin_nested():
+            db.session.add(FavoriteOffer(user=user, **{target: targets[target]}))
+            db.session.flush()
+
+    @pytest.mark.parametrize("case", ["none", "multiple", "origin_without_work"])
+    def test_database_rejects_invalid_target(self, case):
+        user = users_factories.UserFactory()
+        artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory()
+        favorite = FavoriteOffer(user=user)
+        if case == "multiple":
+            favorite.offer = offer
+            favorite.artist = artist
+        elif case == "origin_without_work":
+            favorite.artist = artist
+            favorite.offer_origin = offer
+
+        with pytest.raises(sa.exc.IntegrityError), db.session.begin_nested():
+            db.session.add(favorite)
+            db.session.flush()
+
+    @pytest.mark.parametrize("target", ["work", "artist", "offer_product", "offer_direct"])
+    def test_create_and_repeat(self, client, target):
+        user = users_factories.UserFactory()
+        offer = None
+        if target == "artist":
+            artist = artist_factories.ArtistFactory()
+            payload = {"artistId": artist.id}
+        else:
+            work = discoveries_models.Work(title="A work", media_type=discoveries_models.WorkMediaType.BOOK)
+            db.session.add(work)
+            db.session.flush()
+            if target == "work":
+                payload = {"workId": work.id}
+            else:
+                if target == "offer_product":
+                    product = offers_factories.ProductFactory(work=work, subcategoryId=subcategories.LIVRE_PAPIER.id)
+                    offer = offers_factories.OfferFactory(product=product)
+                else:
+                    offer = offers_factories.OfferFactory()
+                    work.offer = offer
+                offers_factories.StockFactory(offer=offer, price=12)
+                payload = {"offerId": offer.id}
+        client.with_token(user)
+
+        response = client.post(FAVORITES_URL, json=payload)
+        repeated = client.post(FAVORITES_URL, json=payload)
+
+        assert response.status_code == repeated.status_code == 200
+        assert repeated.json == response.json
+        assert response.json["createdAt"]
+        if target in ("work", "artist"):
+            assert not any(
+                event.get("event_name") == batch_models.BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES.value
+                for event in push_testing.requests
+            )
+        assert db.session.query(FavoriteOffer).filter_by(userId=user.id).count() == 1
+        favorite = db.session.query(FavoriteOffer).filter_by(userId=user.id).one()
+        if target == "artist":
+            assert response.json["artist"]["id"] == artist.id
+            assert response.json["work"] is None
+            assert response.json["offer"] is None
+        else:
+            assert response.json["work"]["id"] == work.id
+            assert response.json["artist"] is None
+            assert favorite.offerId is None
+            if offer is not None:
+                assert response.json["offer"]["id"] == offer.id
+                assert response.json["offer"]["price"] == 1200
+                assert favorite.offer_origin_id == offer.id
+            else:
+                assert response.json["offer"] is None
+        listing = client.get(FAVORITES_URL)
+        assert listing.status_code == 200
+        assert listing.json["nbFavorites"] == 1
+        assert listing.json["favorites"] == [response.json]
+
+    @pytest.mark.parametrize("work_first", [False, True])
+    def test_offers_for_same_work_share_one_favorite(self, client, work_first):
+        work = discoveries_models.Work(title="One work", media_type=discoveries_models.WorkMediaType.BOOK)
+        product = offers_factories.ProductFactory(work=work)
+        first_offer = offers_factories.OfferFactory(product=product)
+        second_offer = offers_factories.OfferFactory(product=product)
+        user = users_factories.UserFactory()
+        client.with_token(user)
+        first_payload = {"workId": work.id} if work_first else {"offerId": first_offer.id}
+        first = client.post(FAVORITES_URL, json=first_payload)
+        assert first.status_code == 200
+        from_offer = client.post(FAVORITES_URL, json={"offerId": first_offer.id})
+        assert from_offer.status_code == 200
+        repeated = client.post(FAVORITES_URL, json={"offerId": second_offer.id})
+
+        assert repeated.status_code == 200
+        assert repeated.json["id"] == first.json["id"]
+        assert repeated.json["createdAt"] == first.json["createdAt"]
+        assert repeated.json["offer"]["id"] == first_offer.id
+        assert db.session.query(FavoriteOffer).filter_by(userId=user.id).count() == 1
+
+    @pytest.mark.parametrize(
+        "payload",
+        [
+            {},
+            {"offerId": None},
+            {"workId": 1, "offerId": 1},
+            {"artistId": "artist", "workId": 1},
+            {"artistId": "artist", "offerId": 1},
+            {"workId": 0},
+            {"artistId": ""},
+        ],
+    )
+    def test_invalid_target_returns_400(self, client, payload):
+        client.with_token(users_factories.UserFactory())
+
+        assert client.post(FAVORITES_URL, json=payload).status_code == 400
+        assert db.session.query(FavoriteOffer).count() == 0
+
+    @pytest.mark.parametrize("payload", [{"workId": 999999}, {"artistId": "missing"}])
+    def test_unknown_target_returns_404(self, client, payload):
+        client.with_token(users_factories.UserFactory())
+
+        assert client.post(FAVORITES_URL, json=payload).status_code == 404
+
+    @pytest.mark.settings(MAX_FAVORITES=1)
+    def test_global_limit_allows_duplicate_but_not_new_target(self, client):
+        user = users_factories.UserFactory()
+        artist = artist_factories.ArtistFactory()
+        work = discoveries_models.Work(title="Work", media_type=discoveries_models.WorkMediaType.BOOK)
+        db.session.add(FavoriteOffer(user=user, work=work))
+        db.session.flush()
+        client.with_token(user)
+
+        assert client.post(FAVORITES_URL, json={"workId": work.id}).status_code == 200
+        response = client.post(FAVORITES_URL, json={"artistId": artist.id})
+
+        assert response.status_code == 400
+        assert response.json == {"code": "MAX_FAVORITES_REACHED"}
+        assert db.session.query(FavoriteOffer).filter_by(userId=user.id).count() == 1
+
+    @pytest.mark.settings(MAX_FAVORITES=0)
+    def test_no_limit_and_user_isolation(self, client):
+        artist = artist_factories.ArtistFactory()
+        first_user = users_factories.UserFactory()
+        second_user = users_factories.UserFactory()
+        first = client.with_token(first_user).post(FAVORITES_URL, json={"artistId": artist.id})
+        second = client.with_token(second_user).post(FAVORITES_URL, json={"artistId": artist.id})
+
+        assert first.status_code == second.status_code == 200
+        assert first.json["id"] != second.json["id"]
+        assert client.delete(f"{FAVORITES_URL}/{first.json['id']}").status_code == 404
+        assert client.delete(f"{FAVORITES_URL}/{second.json['id']}").status_code == 204
+
+    def test_mixed_list_is_sorted_by_creation_date(self, client):
+        user = users_factories.UserFactory()
+        offer_favorite = favorite_factories.FavoriteOfferFactory(user=user, dateCreated=datetime(2026, 1, 3))
+        work = discoveries_models.Work(title="Work", media_type=discoveries_models.WorkMediaType.BOOK)
+        work_favorite = FavoriteOffer(user=user, work=work, dateCreated=datetime(2026, 1, 1))
+        artist_favorite = FavoriteOffer(
+            user=user, artist=artist_factories.ArtistFactory(), dateCreated=datetime(2026, 1, 2)
+        )
+        db.session.add_all([work_favorite, artist_favorite])
+        db.session.flush()
+
+        response = client.with_token(user).get(FAVORITES_URL)
+
+        assert response.status_code == 200
+        assert response.json["nbFavorites"] == 3
+        assert response.json["page"] == 1
+        assert [favorite["id"] for favorite in response.json["favorites"]] == [
+            offer_favorite.id,
+            artist_favorite.id,
+            work_favorite.id,
+        ]
+
+    def test_historical_offer_favorite_is_not_converted(self, client):
+        user = users_factories.UserFactory()
+        work = discoveries_models.Work(title="Work", media_type=discoveries_models.WorkMediaType.BOOK)
+        offer = offers_factories.OfferFactory(product=offers_factories.ProductFactory(work=work))
+        historical = favorite_factories.FavoriteOfferFactory(user=user, offer=offer)
+
+        response = client.with_token(user).post(FAVORITES_URL, json={"offerId": offer.id})
+
+        assert response.status_code == 200
+        assert response.json["id"] == historical.id
+        assert response.json["offer"]["id"] == offer.id
+        assert response.json["work"] is None
+        assert response.json["artist"] is None
+
+    @pytest.mark.parametrize("action", ["unpublish", "delete"])
+    def test_work_remains_when_origin_offer_is_unavailable(self, client, action):
+        user = users_factories.UserFactory()
+        work = discoveries_models.Work(title="Work", media_type=discoveries_models.WorkMediaType.BOOK)
+        offer = offers_factories.OfferFactory()
+        favorite = FavoriteOffer(user=user, work=work, offer_origin=offer)
+        db.session.add(favorite)
+        db.session.flush()
+        favorite_id, work_id = favorite.id, work.id
+        if action == "delete":
+            db.session.execute(sa.delete(offers_models.Offer).where(offers_models.Offer.id == offer.id))
+        else:
+            offer.publicationDatetime = None
+        db.session.flush()
+        db.session.expire_all()
+
+        response = client.with_token(user).get(FAVORITES_URL)
+
+        assert response.status_code == 200
+        assert response.json["nbFavorites"] == 1
+        assert response.json["favorites"][0]["id"] == favorite_id
+        assert response.json["favorites"][0]["work"]["id"] == work_id
+        assert response.json["favorites"][0]["offer"] is None
 
 
 class GetTest:
@@ -457,6 +683,10 @@ class CreateFavoriteTest:
 
         response = client.post(FAVORITES_URL, json={"offerId": offer.id})
 
+        assert response.status_code == 200, response.data
+        other_offer = offers_factories.EventOfferFactory()
+        response = client.post(FAVORITES_URL, json={"offerId": other_offer.id})
+
         assert response.status_code == 400, response.data
         assert response.json == {"code": "MAX_FAVORITES_REACHED"}
         assert db.session.query(FavoriteOffer).count() == 1
@@ -538,9 +768,9 @@ class CreateFavoriteTest:
                 return mock.DEFAULT
 
             with (
-                mock.patch("pcapi.routes.native.v1.favorites.update_external_user") as update_external_user_mock,
+                mock.patch("pcapi.core.favorites.api.update_external_user") as update_external_user_mock,
                 mock.patch(
-                    "pcapi.routes.native.v1.favorites.track_offer_added_to_favorites_event",
+                    "pcapi.core.favorites.api.track_offer_added_to_favorites_event",
                 ) as track_offer_added_to_favorites_event_mock,
                 mock.patch(
                     "pcapi.routes.native.v1.favorites.get_favorites_for", wraps=get_favorites_for

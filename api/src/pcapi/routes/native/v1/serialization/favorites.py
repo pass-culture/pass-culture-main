@@ -1,11 +1,16 @@
 import typing
 from datetime import datetime
 
+from pydantic import Field
+from pydantic import model_validator
+
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.favorites.models import FavoriteOfferData
 from pcapi.core.finance.utils import to_cents
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.users.models import ExpenseDomain
+from pcapi.routes.native.v1.serialization.discoveries import ArtistResponseSchema
+from pcapi.routes.native.v1.serialization.discoveries import WorkResponseSchema
 from pcapi.routes.serialization import HttpBodyModel
 
 
@@ -39,7 +44,9 @@ class FavoriteOfferResponse(HttpBodyModel):
 
     @classmethod
     def build(cls, favorite_data: FavoriteOfferData) -> typing.Self:
-        offer = favorite_data.favorite.offer
+        offer = favorite_data.favorite.offer or favorite_data.favorite.offer_origin
+        if offer is None:
+            raise ValueError("Favorite has no offer")
         address = offer.venue.offererAddress.address
         venue_name = offer.venue.managingOfferer.name if offer.isDigital else offer.venue.publicName
 
@@ -49,7 +56,7 @@ class FavoriteOfferResponse(HttpBodyModel):
                 venue_name = offer.offererAddress.label
 
         return cls(
-            id=favorite_data.favorite.offer.id,
+            id=offer.id,
             booking_allowed_datetime=offer.bookingAllowedDatetime,
             coordinates=FavoriteCoordinates(latitude=float(address.latitude), longitude=float(address.longitude)),
             date=favorite_data.date,
@@ -70,7 +77,22 @@ class FavoriteOfferResponse(HttpBodyModel):
 
 class FavoriteResponse(HttpBodyModel):
     id: int
-    offer: FavoriteOfferResponse
+    created_at: datetime
+    offer: FavoriteOfferResponse | None
+    work: WorkResponseSchema | None
+    artist: ArtistResponseSchema | None
+
+    @classmethod
+    def build(cls, favorite_data: FavoriteOfferData) -> typing.Self:
+        favorite = favorite_data.favorite
+        offer = favorite.offer or favorite.offer_origin
+        return cls(
+            id=favorite.id,
+            created_at=favorite.dateCreated,
+            offer=FavoriteOfferResponse.build(favorite_data) if offer is not None and offer.isPublished else None,
+            work=WorkResponseSchema.build(favorite.work) if favorite.work is not None else None,
+            artist=ArtistResponseSchema.model_validate(favorite.artist) if favorite.artist is not None else None,
+        )
 
 
 class PaginatedFavoritesResponse(HttpBodyModel):
@@ -80,4 +102,12 @@ class PaginatedFavoritesResponse(HttpBodyModel):
 
 
 class FavoriteRequest(HttpBodyModel):
-    offer_id: int
+    offer_id: int | None = None
+    work_id: int | None = Field(default=None, gt=0, le=2**63 - 1)
+    artist_id: str | None = Field(default=None, min_length=1)
+
+    @model_validator(mode="after")
+    def validate_exactly_one_target(self) -> typing.Self:
+        if sum(target is not None for target in (self.offer_id, self.work_id, self.artist_id)) != 1:
+            raise ValueError("Exactly one of offer_id, work_id or artist_id is required")
+        return self
