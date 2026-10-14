@@ -115,6 +115,10 @@ class AllocineStocks(LocalProvider):
         offer.withdrawalDetails = self.venue.withdrawalDetails
         offer.subcategoryId = subcategories.SEANCE_CINE.id
         offer.publicationDatetime = offer.publicationDatetime or datetime.now(UTC)
+        offer.audioDisabilityCompliant = self.venue.audioDisabilityCompliant
+        offer.mentalDisabilityCompliant = self.venue.mentalDisabilityCompliant
+        offer.motorDisabilityCompliant = self.venue.motorDisabilityCompliant
+        offer.visualDisabilityCompliant = self.venue.visualDisabilityCompliant
         self.update_from_movie_information(offer)
 
         if offer.id is None:  # Newly created offer
