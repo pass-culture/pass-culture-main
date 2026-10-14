@@ -8885,6 +8885,38 @@ export type getFinanceHasSettlementResponses = {
 
 export type getFinanceHasSettlementResponse = getFinanceHasSettlementResponses[keyof getFinanceHasSettlementResponses];
 
+export type getFinanceReimbursementsCsvData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Invoicesreferences
+         */
+        invoicesReferences: Array<string>;
+    };
+    url: '/finance/reimbursements/csv';
+};
+
+export type getFinanceReimbursementsCsvErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getFinanceReimbursementsCsvError = getFinanceReimbursementsCsvErrors[keyof getFinanceReimbursementsCsvErrors];
+
+export type getFinanceReimbursementsCsvResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type getFinanceRejectedBankAccountsData = {
     body?: never;
     path?: never;
@@ -11261,38 +11293,6 @@ export type postV2OffersResponses = {
 };
 
 export type postV2OffersResponse = postV2OffersResponses[keyof postV2OffersResponses];
-
-export type getV2ReimbursementsCsvData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Invoicesreferences
-         */
-        invoicesReferences: Array<string>;
-    };
-    url: '/v2/reimbursements/csv';
-};
-
-export type getV2ReimbursementsCsvErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getV2ReimbursementsCsvError = getV2ReimbursementsCsvErrors[keyof getV2ReimbursementsCsvErrors];
-
-export type getV2ReimbursementsCsvResponses = {
-    /**
-     * OK
-     */
-    200: unknown;
-};
 
 export type deleteVenueProvidersByVenueProviderIdData = {
     body?: never;

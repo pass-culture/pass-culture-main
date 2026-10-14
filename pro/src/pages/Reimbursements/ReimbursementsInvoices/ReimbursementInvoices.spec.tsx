@@ -258,7 +258,7 @@ describe('reimbursementsWithFilters', () => {
         status: InvoiceStatus.PAID,
       },
     ])
-    vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
+    vi.spyOn(api, 'getReimbursementsCsv').mockResolvedValueOnce('data')
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
 
     fetchMock.mockResponseOnce((request) => {
@@ -284,7 +284,7 @@ describe('reimbursementsWithFilters', () => {
 
     await user.click(screen.getByRole('button', { name: 'Télécharger' }))
     await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
-    expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith({
+    expect(api.getReimbursementsCsv).toHaveBeenCalledWith({
       parseAs: 'blob',
       query: {
         invoicesReferences: ['J123456789'],
@@ -376,7 +376,7 @@ describe('reimbursementsWithFilters', () => {
     const user = userEvent.setup()
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
+    vi.spyOn(api, 'getReimbursementsCsv').mockResolvedValueOnce('data')
 
     renderReimbursementsInvoices()
 
@@ -388,8 +388,8 @@ describe('reimbursementsWithFilters', () => {
 
     await user.click(screen.getByText(DOWNLOAD_REIMBURSEMENTS_LABEL))
 
-    expect(api.getReimbursementsCsvV2).toHaveBeenCalledTimes(1)
-    expect(api.getReimbursementsCsvV2).toHaveBeenNthCalledWith(1, {
+    expect(api.getReimbursementsCsv).toHaveBeenCalledTimes(1)
+    expect(api.getReimbursementsCsv).toHaveBeenNthCalledWith(1, {
       parseAs: 'blob',
       query: {
         invoicesReferences: ['J123456789', 'J666666666', 'J987654321'],

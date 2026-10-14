@@ -719,3 +719,16 @@ def has_settlement(offerer_id: int) -> bool:
         )
         .exists()
     ).scalar()
+
+
+def get_offerer_ids_from_invoice_references(references: typing.Iterable[str]) -> set[int]:
+    query = (
+        db.session.query(offerers_models.Offerer)
+        .select_from(models.Invoice)
+        .join(models.Invoice.bankAccount)
+        .join(models.BankAccount.offerer)
+        .filter(models.Invoice.reference.in_(references))
+        .options(sa_orm.load_only(offerers_models.Offerer.id))
+    )
+
+    return {offerer.id for offerer in query}

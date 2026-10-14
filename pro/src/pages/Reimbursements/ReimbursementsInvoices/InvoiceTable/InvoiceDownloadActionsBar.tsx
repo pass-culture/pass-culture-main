@@ -38,7 +38,7 @@ export const InvoiceDownloadActionsBar = ({
         buttonType: 'multiple',
       })
       downloadFile(
-        (await api.getReimbursementsCsvV2({
+        (await api.getReimbursementsCsv({
           query: {
             invoicesReferences: references,
           },

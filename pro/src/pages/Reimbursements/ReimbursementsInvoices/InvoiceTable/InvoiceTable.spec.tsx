@@ -136,8 +136,8 @@ describe('InvoiceTable', () => {
       .spyOn(apiModule.api, 'getCombinedInvoices')
       .mockResolvedValueOnce(new Blob(['dummy-pdf']))
 
-    const getReimbursementsCsvV2Mock = vi
-      .spyOn(apiModule.api, 'getReimbursementsCsvV2')
+    const getReimbursementsCsvMock = vi
+      .spyOn(apiModule.api, 'getReimbursementsCsv')
       .mockResolvedValueOnce(new Blob(['dummy-csv']))
 
     renderReimbursementsInvoicesTable(invoices)
@@ -152,7 +152,7 @@ describe('InvoiceTable', () => {
         invoiceReferences: ['INV-001', 'INV-002'],
       },
     })
-    expect(getReimbursementsCsvV2Mock).toHaveBeenCalledWith({
+    expect(getReimbursementsCsvMock).toHaveBeenCalledWith({
       parseAs: 'blob',
       query: {
         invoicesReferences: ['INV-001', 'INV-002'],
