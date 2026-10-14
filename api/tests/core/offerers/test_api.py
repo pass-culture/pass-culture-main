@@ -4462,6 +4462,21 @@ class CloseVenueTest:
     No need to test every details twice.
     """
 
+    def create_synced_offers_with_bookings(self, venue):
+        """Helper function - not a test"""
+        boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)
+        now = datetime.datetime.now(datetime.UTC)
+
+        bookings_factories.BookingFactory.create_batch(
+            2, stock__offer__venue=venue, stock__offer__publicationDatetime=now
+        )
+        bookings_factories.BookingFactory.create_batch(
+            3,
+            stock__offer__venue=venue,
+            stock__offer__publicationDatetime=now,
+            stock__offer__lastProviderId=boost_pivot.providerId,
+        )
+
     @patch("pcapi.core.mails.transactional.send_venue_closed_email_to_author")
     @patch("pcapi.core.mails.transactional.send_venue_closure_request_email")
     def test_open_venue_becomes_closed(
@@ -4663,6 +4678,56 @@ class CloseVenueTest:
         mail = mails_testing.outbox[0]
         assert mail["template"] == asdict(TransactionalEmail.VENUE_CLOSED_CONFIRMATION.value)
         assert mail["To"] == author.email
+
+    def test_bookings_have_been_deleted(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.BaseUserFactory()
+        self.create_synced_offers_with_bookings(venue)
+
+        offerers_api.close_venue(venue, author=author)
+
+        db.session.refresh(venue)
+        assert all(booking.isCancelled for booking in venue.bookings)
+        assert all(booking.isCancelled for booking in venue.collectiveBookings)
+
+    def test_venue_state_is_closed(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.BaseUserFactory()
+        self.create_synced_offers_with_bookings(venue)
+
+        offerers_api.close_venue(venue, author=author)
+
+        db.session.refresh(venue)
+        assert venue.state == offerers_models.VenueState.CLOSED
+
+    def test_pivots_have_been_deleted(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.BaseUserFactory()
+        self.create_synced_offers_with_bookings(venue)
+        providers_factories.AllocinePivotFactory(venue=venue)
+        providers_factories.VenueProviderFactory(venue=venue)
+
+        offerers_api.close_venue(venue, author=author)
+
+        db.session.refresh(venue)
+        assert not venue.cinemaProviderPivot
+        assert not venue.allocinePivot
+        assert not venue.venueProviders
+
+        assert venue.state == offerers_models.VenueState.CLOSED
+
+    def test_draft_offers_should_be_deleted(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.BaseUserFactory()
+
+        # non draft offer should not be deleted
+        regular_offer_id = offers_factories.OfferFactory(venue=venue).id
+        draft_offer_id = offers_factories.DraftOfferFactory(venue=venue).id
+
+        offerers_api.close_venue(venue, author=author)
+
+        assert db.session.query(offers_models.Offer).filter(offers_models.Offer.id == regular_offer_id).one()
+        assert not db.session.query(offers_models.Offer).filter(offers_models.Offer.id == draft_offer_id).one_or_none()
 
 
 class ReopenVenueTest:

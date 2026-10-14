@@ -5,15 +5,9 @@ import pytest
 import time_machine
 
 from pcapi.connectors.entreprise.models import SirenInfo
-from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import tasks as offerers_tasks
-from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers import models as offers_models
-from pcapi.core.providers import factories as providers_factories
-from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 
@@ -179,73 +173,3 @@ class CheckOffererSirenTaskTest:
         )
 
         assert caplog.records[0].message == "Invalid SIREN format in the database"
-
-
-class FinalizeClosingVenueTaskTest:
-    def test_bookings_have_been_deleted(self):
-        venue = offerers_factories.VenueFactory()
-        author = users_factories.BaseUserFactory()
-        self.create_synced_offers_with_bookings(venue)
-
-        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
-
-        db.session.refresh(venue)
-        assert all(booking.isCancelled for booking in venue.bookings)
-        assert all(booking.isCancelled for booking in venue.collectiveBookings)
-
-    def test_venue_state_is_closed(self):
-        venue = offerers_factories.VenueFactory()
-        author = users_factories.BaseUserFactory()
-        self.create_synced_offers_with_bookings(venue)
-
-        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
-
-        db.session.refresh(venue)
-        assert venue.state == offerers_models.VenueState.CLOSED
-
-    def test_pivots_have_been_deleted(self):
-        venue = offerers_factories.VenueFactory()
-        author = users_factories.BaseUserFactory()
-        self.create_synced_offers_with_bookings(venue)
-        providers_factories.AllocinePivotFactory(venue=venue)
-        providers_factories.VenueProviderFactory(venue=venue)
-
-        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
-
-        db.session.refresh(venue)
-        assert not venue.cinemaProviderPivot
-        assert not venue.allocinePivot
-        assert not venue.venueProviders
-
-        assert venue.state == offerers_models.VenueState.CLOSED
-
-    def test_draft_offers_should_be_deleted(self):
-        venue = offerers_factories.VenueFactory()
-        author = users_factories.BaseUserFactory()
-
-        # non draft offer should not be deleted
-        regular_offer_id = offers_factories.OfferFactory(venue=venue).id
-        draft_offer_id = offers_factories.DraftOfferFactory(venue=venue).id
-
-        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
-
-        assert db.session.query(offers_models.Offer).filter(offers_models.Offer.id == regular_offer_id).one()
-        assert not db.session.query(offers_models.Offer).filter(offers_models.Offer.id == draft_offer_id).one_or_none()
-
-    def create_synced_offers_with_bookings(self, venue):
-        boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)
-        now = datetime.datetime.now(datetime.UTC)
-
-        bookings_factories.BookingFactory.create_batch(
-            2, stock__offer__venue=venue, stock__offer__publicationDatetime=now
-        )
-        bookings_factories.BookingFactory.create_batch(
-            3,
-            stock__offer__venue=venue,
-            stock__offer__publicationDatetime=now,
-            stock__offer__lastProviderId=boost_pivot.providerId,
-        )

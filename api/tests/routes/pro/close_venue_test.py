@@ -36,8 +36,7 @@ def test_close_venue_returns_404_when_user_has_no_access(mock_close_venue, clien
 
 @pytest.mark.features(WIP_CLOSE_VENUE=True)
 @patch("pcapi.core.search.async_index_venue_ids")
-@patch("pcapi.core.offerers.tasks.deactivate_venue_offers_task.delay")
-def test_close_venue_closes_venue(mock_deactivate_venue_offers, mock_index_venue, client):
+def test_close_venue_closes_venue(mock_index_venue, client):
     user_offerer = offerers_factories.UserOffererFactory()
     venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     client = client.with_session_auth(email=user_offerer.user.email)

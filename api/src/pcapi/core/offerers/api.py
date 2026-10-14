@@ -3665,6 +3665,7 @@ def get_user_pending_and_validated_offerers(
 
 
 def close_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
+    logger.info("close_venue called on venue %s by user %s", venue.id, author.id)
     closure_request_tag = criteria_api.get_closure_request_tag()
     if venue.is_closed:
         if closure_request_tag in venue.criteria and not venue.is_pricing_point:
@@ -3675,12 +3676,15 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
     venue.state = models.VenueState.CLOSED
     history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
     _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_CLOSED)
-    on_commit(
-        functools.partial(
-            tasks.deactivate_venue_offers_task.delay,
-            tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id).model_dump(),
-        )
+    cancel_individual_bookings_on_venue_closure(venue.id, author.id)
+    cancel_collective_bookings_on_venue_closure(venue.id, author.id)
+    offers_api.batch_delete_draft_offers(
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.venueId == venue.id)
+        .filter(offers_models.Offer.validation == offers_models.OfferValidationStatus.DRAFT)
     )
+    delete_venue_pivots_and_providers(venue.id, author.id)
+    db.session.flush()
 
     if venue.is_pricing_point:
         criteria_api.link_criterion_to_venue(criterion=closure_request_tag, venue=venue)

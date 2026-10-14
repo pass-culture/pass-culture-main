@@ -11,11 +11,8 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers import api as offers_api
-from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.utils import siren as siren_utils
-from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
@@ -90,37 +87,3 @@ def match_acceslibre_task(payload: MatchAcceslibrePayload) -> None:
     venue = db.session.query(offerers_models.Venue).filter_by(id=payload.venue_id).one_or_none()
     if venue:
         offerers_api.match_acceslibre(venue)
-
-
-class DeactivateVenueOffersPayload(BaseModelV2):
-    venue_id: int
-    author_id: int
-
-
-@celery_async_task(name="tasks.offerers.default.deactivate_venue_offers_task", model=DeactivateVenueOffersPayload)
-def deactivate_venue_offers_task(payload: DeactivateVenueOffersPayload) -> None:
-    with atomic():
-        venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == payload.venue_id).one()
-
-        offerers_api.cancel_individual_bookings_on_venue_closure(venue.id, payload.author_id)
-        offerers_api.cancel_collective_bookings_on_venue_closure(venue.id, payload.author_id)
-
-        logger.info("closing venue: bookings cancelled", extra={"venue_id": venue.id})
-
-        offers_api.batch_delete_draft_offers(
-            db.session.query(offers_models.Offer)
-            .filter(offers_models.Offer.venueId == payload.venue_id)
-            .filter(offers_models.Offer.validation == offers_models.OfferValidationStatus.DRAFT)
-        )
-
-        logger.info("closing venue: draft offers deleted", extra={"venue_id": venue.id})
-
-        offerers_api.delete_venue_pivots_and_providers(venue.id, payload.author_id)
-        db.session.flush()
-
-        logger.info("closing venue: pivots deleted", extra={"venue_id": venue.id})
-
-        venue.state = offerers_models.VenueState.CLOSED
-        db.session.flush()
-
-        logger.info("closing venue: closed", extra={"venue_id": venue.id})
