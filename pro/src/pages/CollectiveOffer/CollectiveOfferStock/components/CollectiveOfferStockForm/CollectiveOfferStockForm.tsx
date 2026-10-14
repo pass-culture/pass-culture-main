@@ -4,6 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
+  CollectiveAdditionalFeeType,
   CollectiveOfferAllowedAction,
   type CollectiveStockCreationBodyModel,
   type CollectiveStockResponseModel,
@@ -87,15 +88,22 @@ export const CollectiveOfferStockForm = ({
     departementCode
   )
 
+  const shouldInitializeAdditionalFees =
+    mode === Mode.CREATION && !initialStock.id
+
   const form = useForm<CollectiveOfferStockFormValues>({
     defaultValues: {
       numberOfTickets,
       numberOfTeachers,
       servicePrice: servicePrice ?? undefined,
-      hasAdditionalFees: Boolean(
-        collectiveAdditionalFees && collectiveAdditionalFees.length > 0
-      ),
-      collectiveAdditionalFees: collectiveAdditionalFees || [],
+      hasAdditionalFees:
+        shouldInitializeAdditionalFees ||
+        Boolean(collectiveAdditionalFees?.length),
+      collectiveAdditionalFees: collectiveAdditionalFees?.length
+        ? collectiveAdditionalFees
+        : shouldInitializeAdditionalFees
+          ? [{ type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 }]
+          : [],
       ...initialDatesValues,
     },
     resolver: yupResolver(
@@ -312,10 +320,10 @@ export const CollectiveOfferStockForm = ({
               />
             </FormLayout.Row>
           </FormLayout.Section>
-          <FormLayout.Section title="Prix de votre offre">
+          <FormLayout.Section title="Prix de l'offre">
             <FormLayout.SubSection
               title="Tarif de la prestation"
-              description="Le tarif de la prestation doit être indiqué hors frais annexes et toutes charges comprises."
+              description="Indiquez le tarif toutes charges comprises (hors frais annexes)."
             >
               <FormLayout.Row inline>
                 <TextInput
@@ -330,6 +338,7 @@ export const CollectiveOfferStockForm = ({
                   disabled={!canEditDiscount}
                   error={form.formState.errors.servicePrice?.message}
                   label="Tarif de la prestation (en €)"
+                  description="(Total de la prestation x le nombre de participants)"
                   min={0}
                   required
                   step={0.01}
