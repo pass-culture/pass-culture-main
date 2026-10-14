@@ -5,9 +5,9 @@
   <tr id="artist-row-{{ artist.id }}">
     <td>{{ links.build_artist_details_link(artist, text_attr="id") }}</td>
     <td class="px-2 py-3">
-      {% if artist.image %}
+      {% if artist.thumbUrl %}
         <div class="rounded pc-offer-table-image pc-offer-table-image-container"
-             style="background-image: url('{{ artist.image }}')"></div>
+             style="background-image: url('{{ artist.thumbUrl }}')"></div>
       {% else %}
         <div class="rounded pc-offer-table-no-image pc-offer-table-image-container">
           <i class="bi bi-person-bounding-box fs-4"></i>
