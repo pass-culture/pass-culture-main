@@ -180,6 +180,23 @@ class WishlistVisibilityTest:
             (page - 1) * 2 : page * 2
         ]
 
+    @pytest.mark.parametrize(
+        "query,name",
+        [("japon", "Découverte du Japon"), ("films", "10 films à voir absolument")],
+    )
+    def test_anonymous_search_matches_inside_name(self, client, query, name):
+        wishlist = models.Wishlist(
+            user=users_factories.UserFactory(), name=name, visibility=models.WishlistVisibility.PUBLIC
+        )
+        db.session.add(wishlist)
+        db.session.flush()
+
+        response = client.get(f"/native/v1/wishlists/search?q={query}")
+
+        assert response.status_code == 200
+        assert response.json["nbResults"] == 1
+        assert [result["id"] for result in response.json["wishlists"]] == [wishlist.id]
+
     def test_anonymous_search_without_results(self, client):
         response = client.get("/native/v1/wishlists/search?q=inexistant")
 
