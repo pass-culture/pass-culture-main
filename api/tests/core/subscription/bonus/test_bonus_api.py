@@ -2,7 +2,6 @@ import copy
 import datetime
 import decimal
 import logging
-from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -163,7 +162,7 @@ class QuotientFamilialApplicationTest:
         out_mail = mails_testing.outbox[0]
         assert out_mail["template"] == TransactionalEmail.BONUS_GRANTED.value.__dict__
 
-    def test_minimum_quotient_familial_retained(self):
+    def test_first_eligible_quotient_familial_retained(self):
         eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
         with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
         with_18_child_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
@@ -198,28 +197,35 @@ class QuotientFamilialApplicationTest:
         ]
         assert user.recreditAmountToShow == decimal.Decimal(50)
 
-    @patch("pcapi.connectors.api_particulier.get_quotient_familial")
-    def test_get_quotient_familial_calls(self, mocked_get_quotient_familial):
-        custodian = subscription_factories.BonusCreditPersonFactory()
-        fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
+    def test_get_quotient_familial_calls(self):
+        eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
+        high_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        high_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
+        high_quotient_familial["data"]["quotient_familial"]["valeur"] = 9_999_999
+        user = _build_user_from_fixture(high_quotient_familial)
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
-            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
-                custodian=custodian
-            ).model_dump(),
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
         )
-        birth_date = fraud_check.user.validatedBirthDate
-        mocked_get_quotient_familial.return_value = bonus_fixtures.QF_DESERIALIZED_RESPONSE
+        birth_date = user.validatedBirthDate
 
-        bonus_api.apply_for_quotient_familial_bonus(fraud_check)
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=high_quotient_familial)
 
-        assert len(mocked_get_quotient_familial.mock_calls) == 12
-        mocked_get_quotient_familial.assert_has_calls(
-            [
-                call(custodian, birth_date.replace(day=1) + relativedelta(years=17) + relativedelta(months=offset))
+            bonus_api.apply_for_quotient_familial_bonus(fraud_check)
+
+            assert mock.call_count == 12
+
+            months_requested = {
+                datetime.date(int(request.qs["annee"][0]), int(request.qs["mois"][0]), 1)
+                for request in mock.request_history
+            }
+            assert months_requested == {
+                birth_date.replace(day=1) + relativedelta(years=17) + relativedelta(months=offset)
                 for offset in range(12)
-            ],
-            any_order=True,
-        )
+            }
 
     @patch("pcapi.connectors.api_particulier.get_quotient_familial")
     def test_get_quotient_familial_calls_no_more_than_needed(self, mocked_get_quotient_familial):
@@ -289,17 +295,22 @@ class QuotientFamilialApplicationTest:
     @patch("pcapi.connectors.api_particulier.get_quotient_familial")
     @patch("pcapi.core.subscription.bonus.api._get_result_relevance")
     def test_get_quotient_familial_caches_calls(self, mocked_get_result_relevance, mocked_get_quotient_familial):
-        custodian = subscription_factories.BonusCreditPersonFactory()
+        eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
+        high_deserialized_qf = copy.deepcopy(bonus_fixtures.QF_DESERIALIZED_RESPONSE)
+        high_deserialized_qf.data.quotient_familial.valeur = 9_999_999
+        child = high_deserialized_qf.data.enfants[0]
+        child.date_naissance = eighteen_years_ago
+        user = users_factories.BeneficiaryFactory(
+            lastName=child.nom_naissance, firstName=child.prenoms, validatedBirthDate=child.date_naissance
+        )
         fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
+            user=user,
             status=subscription_models.FraudCheckStatus.STARTED,
-            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
-                custodian=custodian
-            ).model_dump(),
         )
         mocked_get_quotient_familial.side_effect = [
-            bonus_fixtures.QF_DESERIALIZED_RESPONSE,
-            bonus_fixtures.QF_DESERIALIZED_RESPONSE,
-            bonus_fixtures.QF_DESERIALIZED_RESPONSE,
+            high_deserialized_qf,
+            high_deserialized_qf,
+            high_deserialized_qf,
         ] + [api_particulier.ParticulierApiUnavailable(status_code=500)] * 21
         mocked_get_result_relevance.return_value = (1, 1)
 
@@ -448,6 +459,8 @@ class QuotientFamilialApplicationTest:
             mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
 
             bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+
+            assert mock.call_count == 1
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]

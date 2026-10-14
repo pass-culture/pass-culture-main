@@ -265,7 +265,7 @@ def _get_result_relevance(result: _ApiParticulierResult[typing.Any]) -> tuple[in
         reason_relevance = -1
     else:
         reason_relevance = max(
-            RELEVANT_REASON_CODES.index(reason_code) if reason_code in RELEVANT_STATUSES else -1
+            RELEVANT_REASON_CODES.index(reason_code) if reason_code in RELEVANT_REASON_CODES else -1
             for reason_code in result.reason_codes
         )
 
@@ -279,6 +279,9 @@ def _is_result_conclusive(result: _ApiParticulierResult[typing.Any]) -> bool:
     CONCLUSIVE_KO_REASONS = [
         subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND,
         subscription_models.FraudReasonCode.PERSON_NOT_FOUND,
+        # Even if we request last year QF, API Particulier returns the current month household children.
+        # This means that the returned children never change across all the requests for a given user.
+        subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD,
     ]
     return any(ko_reason in result.reason_codes for ko_reason in CONCLUSIVE_KO_REASONS)
 

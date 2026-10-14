@@ -35,16 +35,10 @@ class QuotientFamilialBonusTaskTest:
             ).model_dump(),
         )
         fraud_check_id = fraud_check.id
-        birth_date = fraud_check.user.validatedBirthDate
         mocked_get_quotient_familial.return_value = bonus_fixtures.QF_DESERIALIZED_RESPONSE
 
         payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check_id)
         tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
-
-        assert len(mocked_get_quotient_familial.mock_calls) == 12
-        mocked_get_quotient_familial.assert_called_with(
-            custodian, birth_date.replace(day=1) + relativedelta(years=17) + relativedelta(months=11)
-        )
 
         fraud_check = (
             db.session.query(subscription_models.BeneficiaryFraudCheck)
