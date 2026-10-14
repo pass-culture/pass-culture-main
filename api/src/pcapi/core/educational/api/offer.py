@@ -72,14 +72,14 @@ def get_or_create_offerer_address_from_collective_offer_location(
     if location_body.location.isVenueLocation:
         address_body = offerers_schemas.LocationOnlyOnVenueModel()
     else:
-        address_body = offerers_schemas.LocationModel(**location_body.location.dict())
+        address_body = offerers_schemas.LocationModel(**location_body.location.model_dump())
         # TODO bdalbianco-pass (13/10/26): remove logs once PC-43242 is over
         if (not address_body.inseeCode) and address_body.banId:
             logger.info(
                 "address may have lost its inseecode in dict translation 1",
                 extra={
-                    "original_body": location_body.location,
-                    "new_body": address_body,
+                    "original_body": location_body.location.model_dump_json(),
+                    "new_body": address_body.json(),
                     "technical_note": "fix_insee_code",
                 },
             )
