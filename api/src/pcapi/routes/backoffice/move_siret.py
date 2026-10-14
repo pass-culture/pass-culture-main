@@ -158,8 +158,8 @@ def apply_move_siret() -> response_utils.BackofficeResponse:
             target_venue,
             form.siret.data,
             form.comment.data,
+            author_user=current_user,
             override_revenue_check=bool(form.override_revenue_check.data),
-            author_user_id=current_user.id,
         )
     except siret_api.CheckError as exc:
         mark_transaction_as_invalid()

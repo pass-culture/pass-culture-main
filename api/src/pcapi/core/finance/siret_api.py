@@ -9,6 +9,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
@@ -67,8 +68,8 @@ def move_siret(
     siret: str,
     comment: str,
     *,
+    author_user: users_models.User,
     override_revenue_check: bool = False,
-    author_user_id: int | None = None,
 ) -> None:
     check_can_move_siret(
         source=source_venue,
@@ -135,7 +136,7 @@ def move_siret(
         db.session.add(
             history_models.ActionHistory(
                 actionType=history_models.ActionType.INFO_MODIFIED,
-                authorUserId=author_user_id,
+                authorUserId=author_user.id,
                 offererId=source_venue.managingOffererId,
                 venueId=source_venue.id,
                 comment=comment,
@@ -149,7 +150,7 @@ def move_siret(
         db.session.add(
             history_models.ActionHistory(
                 actionType=history_models.ActionType.INFO_MODIFIED,
-                authorUserId=author_user_id,
+                authorUserId=author_user.id,
                 offererId=target_venue.managingOffererId,
                 venueId=target_venue.id,
                 comment=comment,
@@ -160,6 +161,12 @@ def move_siret(
                 },
             )
         )
+    # Although the venue might be closed, we want to call close_venue
+    # again to finalize the venue closure and perform the last actions
+    # now that the venue is not a pricing point any more.
+    # Also note that close_venue is idempotent.
+    if source_venue.state == offerers_models.VenueState.CLOSED:
+        offerers_api.close_venue(source_venue, author=author_user)
 
 
 def _delete_ongoing_pricings(venue: offerers_models.Venue) -> None:
