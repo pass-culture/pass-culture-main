@@ -34,13 +34,13 @@ class Log:
     extra: dict
 
 
-def get_backend(project_id: str = settings.GCP_PROJECT) -> "BaseBackend":
+def get_backend(resource_name: str = settings.GCP_LOGVIEW_RESOURCE_NAME) -> "BaseBackend":
     backend_class = import_string(settings.GCP_LOGS_BACKEND)
-    return backend_class(project_id=project_id)
+    return backend_class(resource_name=resource_name)
 
 
 class BaseBackend:
-    def __init__(self, project_id: str = settings.GCP_PROJECT):
+    def __init__(self, resource_name: str = settings.GCP_LOGVIEW_RESOURCE_NAME):
         raise NotImplementedError()
 
     def get_logs(self, filters: str, limit: int = 50) -> typing.Generator[Log]:
@@ -48,8 +48,8 @@ class BaseBackend:
 
 
 class TestingBackend(BaseBackend):
-    def __init__(self, project_id: str = settings.GCP_PROJECT):
-        self.project_id = project_id
+    def __init__(self, resource_name: str = settings.GCP_LOGVIEW_RESOURCE_NAME):
+        self.resource_name = resource_name
 
     def get_logs(self, filters: str, limit: int = 50) -> typing.Generator[Log]:
         chunk_start = time.time()
@@ -76,8 +76,8 @@ class TestingBackend(BaseBackend):
 
 
 class GoogleLogsBackend(BaseBackend):
-    def __init__(self, project_id: str = settings.GCP_PROJECT):
-        self.project_id = project_id
+    def __init__(self, resource_name: str = settings.GCP_LOGVIEW_RESOURCE_NAME):
+        self.resource_name = resource_name
 
     @property
     def client(self) -> LoggingServiceV2Client:
@@ -88,7 +88,7 @@ class GoogleLogsBackend(BaseBackend):
     def _list_log_entries(self, filters: str, page_size: int = 50) -> ListLogEntriesPager:
         return self.client.list_log_entries(
             ListLogEntriesRequest(
-                resource_names=[f"projects/{self.project_id}"],
+                resource_names=[self.resource_name],
                 filter=filters,
                 order_by="timestamp desc",
                 page_size=page_size,
