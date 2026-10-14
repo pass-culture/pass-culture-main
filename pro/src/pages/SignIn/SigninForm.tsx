@@ -2,7 +2,6 @@ import { Form, useFormContext } from 'react-hook-form'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from '@/design-system/Button/Button'
@@ -21,12 +20,6 @@ type SigninFormProps = {
 
 export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
-
-  const accountCreationUrl = isAccountCreationAvailable
-    ? '/inscription'
-    : '/erreur/indisponible'
-
   const { formState, register, watch } = useFormContext<SigninFormValues>()
   const { errors } = formState
 
@@ -85,7 +78,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
           </p>
           <Button
             as="router-link"
-            to={accountCreationUrl}
+            to="/inscription"
             icon={iconFullNext}
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}

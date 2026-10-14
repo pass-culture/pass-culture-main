@@ -60,7 +60,6 @@ const renderSignIn = (options?: RenderWithProvidersOptions) => {
     </>,
     {
       initialRouterEntries: ['/connexion'],
-      features: ['API_SIRENE_AVAILABLE'],
       ...options,
     }
   )

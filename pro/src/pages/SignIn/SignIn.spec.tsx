@@ -80,7 +80,6 @@ const renderSignIn = (options?: RenderWithProvidersOptions) => {
     </>,
     {
       initialRouterEntries: ['/connexion'],
-      features: ['API_SIRENE_AVAILABLE'],
       ...options,
     }
   )
@@ -175,22 +174,12 @@ describe('SignIn', () => {
   })
 
   describe("when user clicks on 'Créer un compte'", () => {
-    it('should redirect to the creation page when the API sirene is available', () => {
+    it('should redirect to the creation page', () => {
       renderSignIn()
 
       expect(screen.getByRole('link', { name: 'S’inscrire' })).toHaveAttribute(
         'href',
         '/inscription'
-      )
-    })
-
-    it('should redirect to the unavailable error page when the API sirene feature is disabled', () => {
-      renderSignIn({ features: [] })
-
-      // then
-      expect(screen.getByRole('link', { name: 'S’inscrire' })).toHaveAttribute(
-        'href',
-        '/erreur/indisponible'
       )
     })
 
@@ -241,7 +230,7 @@ describe('SignIn', () => {
     expect(initializeUserSpy).toHaveBeenCalledExactlyOnceWith({ user: {} })
   })
 
-  it('should navigate to user default path on successful login with API_SIRENE_AVAILABLE', async () => {
+  it('should navigate to user default path on successful login', async () => {
     const mockNavigate = vi.fn()
     vi.mocked(router.useNavigate).mockReturnValue(mockNavigate)
     const mockThunk: any = () => {
@@ -253,7 +242,7 @@ describe('SignIn', () => {
       mockThunk
     )
 
-    renderSignIn({ features: ['API_SIRENE_AVAILABLE'] })
+    renderSignIn()
 
     await userEvent.type(
       screen.getByRole('textbox', { name: 'Adresse email' }),
