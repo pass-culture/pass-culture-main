@@ -10,7 +10,6 @@ from . import blueprint
 
 
 PRO_FEATURES = (
-    FeatureToggle.API_SIRENE_AVAILABLE,
     FeatureToggle.ENABLE_BEAMER,
     FeatureToggle.ENABLE_MARSEILLE,
     FeatureToggle.ENABLE_PRO_FEEDBACK,
