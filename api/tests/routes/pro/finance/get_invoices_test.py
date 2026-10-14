@@ -2,21 +2,27 @@ import datetime
 
 import pytest
 
-import pcapi.core.finance.factories as finance_factories
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
+
+from tests.conftest import TestClient
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
+
+URL = "/finance/invoices"
+
+HAS_INVOICE_URL = "/finance/has-invoice"
 
 
 class GetInvoicesTest:
     @pytest.mark.parametrize(
         "offerer_factory", [offerers_factories.OffererFactory, offerers_factories.ClosedOffererFactory]
     )
-    def test_get_invoices(self, client, offerer_factory):
+    def test_get_invoices(self, client: TestClient, offerer_factory):
         offerer = offerer_factory()
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -38,7 +44,7 @@ class GetInvoicesTest:
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices")
+            response = client.get(URL)
             assert response.status_code == 200
 
         invoices = response.json
@@ -52,7 +58,7 @@ class GetInvoicesTest:
         }
         assert invoices[1]["reference"] == invoice1.reference
 
-    def test_get_invoices_only_return_visible_invoices(self, client):
+    def test_get_invoices_only_return_visible_invoices(self, client: TestClient):
         offerer1 = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
         bank_account1 = finance_factories.BankAccountFactory(offerer=offerer1)
@@ -76,7 +82,7 @@ class GetInvoicesTest:
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices")
+            response = client.get(URL)
             assert response.status_code == 200
 
         invoices = response.json
@@ -96,7 +102,7 @@ class GetInvoicesTest:
             "status": "paid",
         }
 
-    def test_get_invoices_specify_bank_account(self, client):
+    def test_get_invoices_specify_bank_account(self, client: TestClient):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
 
@@ -111,14 +117,14 @@ class GetInvoicesTest:
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices", params=params)
+            response = client.get(URL, params=params)
             assert response.status_code == 200
 
         invoices = response.json
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice1.reference
 
-    def test_get_invoices_specify_dates(self, client):
+    def test_get_invoices_specify_dates(self, client: TestClient):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -149,7 +155,7 @@ class GetInvoicesTest:
         queries += 1  # select invoice
         params = {"periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"}
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices", params=params)
+            response = client.get(URL, params=params)
             assert response.status_code == 200
 
         invoices = response.json
@@ -160,7 +166,7 @@ class GetInvoicesTest:
             invoice_upper_bound.reference,
         }
 
-    def test_get_invoices_positive_amount(self, client):
+    def test_get_invoices_positive_amount(self, client: TestClient):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -181,14 +187,14 @@ class GetInvoicesTest:
         queries += 1  # select invoice
         params = {"amountPositiveOnly": True}
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices", params=params)
+            response = client.get(URL, params=params)
             assert response.status_code == 200
 
         invoices = response.json
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice_positive.reference
 
-    def test_get_invoices_negative_amount(self, client):
+    def test_get_invoices_negative_amount(self, client: TestClient):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -209,14 +215,14 @@ class GetInvoicesTest:
         queries += 1  # select invoice
         params = {"amountNegativeOnly": True}
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices", params=params)
+            response = client.get(URL, params=params)
             assert response.status_code == 200
 
         invoices = response.json
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice_negative.reference
 
-    def test_get_invoices_unauthorized_bank_account(self, client):
+    def test_get_invoices_unauthorized_bank_account(self, client: TestClient):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -227,13 +233,13 @@ class GetInvoicesTest:
         queries += 1  # select invoice
         params = {"bankAccountId": other_bank_account.id}
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices", params=params)
+            response = client.get(URL, params=params)
             assert response.status_code == 200
 
         invoices = response.json
         assert invoices == []
 
-    def test_filter_both_on_bank_account_and_offerer_should_consider_bank_account(self, client):
+    def test_filter_both_on_bank_account_and_offerer_should_consider_bank_account(self, client: TestClient):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
 
@@ -248,14 +254,14 @@ class GetInvoicesTest:
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices", params=params)
+            response = client.get(URL, params=params)
             assert response.status_code == 200
 
         invoices = response.json
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice1.reference
 
-    def test_has_invoices_returns_true_if_offerer_has_invoices(self, client):
+    def test_has_invoices_returns_true_if_offerer_has_invoices(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
         bank_account = finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
         offerer_id = user_offerer.offerer.id
@@ -266,12 +272,12 @@ class GetInvoicesTest:
         queries += 1  # check user_offerer exists
         queries += 1  # check offerer has invoice
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/has-invoice", params={"offererId": offerer_id})
+            response = client.get(HAS_INVOICE_URL, params={"offererId": offerer_id})
             assert response.status_code == 200
 
         assert response.json == {"hasInvoice": True}
 
-    def test_has_invoices_returns_false_if_offerer_has_no_invoices(self, client):
+    def test_has_invoices_returns_false_if_offerer_has_no_invoices(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
         finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
 
@@ -281,12 +287,12 @@ class GetInvoicesTest:
         queries += 1  # check user_offerer exists
         queries += 1  # check offerer has invoice
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/has-invoice", params=params)
+            response = client.get(HAS_INVOICE_URL, params=params)
             assert response.status_code == 200
 
         assert response.json == {"hasInvoice": False}
 
-    def test_has_invoices_when_user_has_no_access_to_offerer(self, client):
+    def test_has_invoices_when_user_has_no_access_to_offerer(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
         user_offerer_2 = offerers_factories.UserOffererFactory()
         finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
@@ -298,6 +304,6 @@ class GetInvoicesTest:
         queries += 1  # rollback
         queries += 1  # rollback
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/has-invoice", params=params)
+            response = client.get(HAS_INVOICE_URL, params=params)
             assert response.status_code == 404
             assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

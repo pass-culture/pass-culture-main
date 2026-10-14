@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { getV2FinanceInvoicesData } from '@/apiClient/v1'
+import type { getFinanceInvoicesData } from '@/apiClient/v1'
 import {
   GET_HAS_INVOICE_QUERY_KEY,
   GET_INVOICES_QUERY_KEY,
@@ -26,7 +26,7 @@ import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 
 function extractFilters(
   urlParams: URLSearchParams
-): getV2FinanceInvoicesData['query'] {
+): getFinanceInvoicesData['query'] {
   const amountPositiveOnly = urlParams.get('amountPositiveOnly')
   const amountNegativeOnly = urlParams.get('amountNegativeOnly')
   return {
@@ -76,7 +76,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
       ? [GET_INVOICES_QUERY_KEY, offererId, searchParams]
       : null,
     async () => {
-      const invoices = await api.getInvoicesV2({
+      const invoices = await api.getInvoices({
         query: {
           offererId: offererId,
           ...extractFilters(searchParams),

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import type { InvoiceResponseModel } from '@/apiClient/v1'
 
 import type { ExtendedSettlementResponseModel } from '../SettlementTable/SettlementTable'
 import { SettlementRowInvoicesModal } from './SettlementRowInvoicesModal'
@@ -14,7 +14,7 @@ vi.mock(
       invoice,
       portalContainer,
     }: {
-      invoice: InvoiceResponseV2Model
+      invoice: InvoiceResponseModel
       portalContainer?: HTMLElement | null
     }) => (
       <button type="button" data-portal-container={portalContainer?.tagName}>
@@ -35,12 +35,12 @@ const BASE_SETTLEMENT_ROW: ExtendedSettlementResponseModel = {
       reference: 'INV-101',
       date: '2024-06-01T00:00:00Z',
       amount: 200.0,
-    } as InvoiceResponseV2Model,
+    } as InvoiceResponseModel,
     {
       reference: 'INV-102',
       date: '2024-06-02T00:00:00Z',
       amount: 50.0,
-    } as InvoiceResponseV2Model,
+    } as InvoiceResponseModel,
   ],
 } as unknown as ExtendedSettlementResponseModel
 

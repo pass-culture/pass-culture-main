@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import * as apiModule from '@/apiClient/api'
-import { type InvoiceResponseV2Model, InvoiceStatus } from '@/apiClient/v1'
+import { type InvoiceResponseModel, InvoiceStatus } from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -47,7 +47,7 @@ beforeEach(() => {
   })
 })
 
-const invoices: InvoiceResponseV2Model[] = [
+const invoices: InvoiceResponseModel[] = [
   {
     reference: 'INV-001',
     date: '2024-06-01',
@@ -65,7 +65,7 @@ const invoices: InvoiceResponseV2Model[] = [
 ]
 
 const renderReimbursementsInvoicesTable = (
-  invoices: InvoiceResponseV2Model[]
+  invoices: InvoiceResponseModel[]
 ) => {
   return renderWithProviders(
     <InvoiceTable
