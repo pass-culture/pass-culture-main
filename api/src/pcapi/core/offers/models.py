@@ -1311,9 +1311,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
         now_utc = datetime.datetime.now(datetime.UTC)
 
-        # The if self.venue else False is a workaround for the case where the offer is not linked to a venue (which should not happen in practice)
-        # But it does happen in one of the syncs with Allociné
-        if not self.publicationDatetime or (self.venue.is_closed if self.venue else False):
+        if not self.publicationDatetime or self.venue.is_closed:
             return OfferStatus.INACTIVE
 
         if now_utc < self.publicationDatetime:

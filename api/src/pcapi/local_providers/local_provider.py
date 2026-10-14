@@ -122,6 +122,7 @@ class LocalProvider(Iterator):
         pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
 
         db.session.add(pc_object)
+        db.session.flush()  # flush to get the actual values of the object (like offer.venue) before validation
         errors = entity_validator.validate(pc_object)
         if errors and len(errors.errors) > 0:
             self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "ApiErrors")
