@@ -1331,6 +1331,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @status.inplace.expression
     @classmethod
     def _status(cls) -> Case:
+        VenueAlias = sa_orm.aliased(offerers_models.Venue)
         cases = [
             (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
             (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
@@ -1338,8 +1339,8 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             # A correlated subquery is more portable, but often performs more poorly at the SQL level.
             (
                 sa.exists().where(
-                    offerers_models.Venue.id == cls.venueId,
-                    offerers_models.Venue.state == offerers_models.VenueState.CLOSED,
+                    VenueAlias.id == cls.venueId,
+                    VenueAlias.state == offerers_models.VenueState.CLOSED,
                 ),
                 OfferStatus.INACTIVE.name,
             ),

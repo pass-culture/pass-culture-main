@@ -145,6 +145,8 @@ class ListOffersTest(GetEndpointHelper):
     expected_num_queries_with_results = expected_num_queries_with_no_result + 2
     # - fetch providers (selectinload: 1 query)
     expected_num_queries_with_provider = expected_num_queries_with_results + 1
+    # - fetch offerer & venue dropdown (2 queries)
+    expected_num_queries_with_offerer = expected_num_queries_with_results + 2
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
@@ -875,11 +877,19 @@ class ListOffersTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(isActive=False)
 
         query_args = {
-            "search-0-search_field": "STATUS",
-            "search-0-operator": "IN",
-            "search-0-status": "INACTIVE",
+            "order": ["asc"],
+            "search-1-search_field": ["OFFERER"],
+            "search-1-operator": ["IN"],
+            "search-1-boolean": ["true"],
+            "search-1-offerer": [str(offer.venue.managingOffererId)],
+            "search-1-venue": [str(offer.venueId)],
+            "search-2-search_field": ["STATUS"],
+            "search-2-operator": ["IN"],
+            "search-2-boolean": ["true"],
+            "search-2-status": ["INACTIVE"],
+            "limit": ["100"],
         }
-        with assert_num_queries(self.expected_num_queries_with_results):
+        with assert_num_queries(self.expected_num_queries_with_offerer):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
