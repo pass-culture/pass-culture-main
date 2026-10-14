@@ -36,17 +36,13 @@ describe('src | components | pages | Signup', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderSignup({
       initialRouterEntries: ['/inscription/compte/creation'],
-      features: ['ENABLE_PRO_ACCOUNT_CREATION'],
     })
 
     expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render logo and sign-up form', () => {
-    renderSignup({
-      initialRouterEntries: ['/inscription/compte/creation'],
-      features: ['ENABLE_PRO_ACCOUNT_CREATION'],
-    })
+    renderSignup({ initialRouterEntries: ['/inscription/compte/creation'] })
 
     expect(
       screen.getByRole('heading', { name: /Créez votre compte/ })
@@ -74,23 +70,12 @@ describe('src | components | pages | Signup', () => {
   })
 
   it('should render logo and confirmation page', () => {
-    renderSignup({
-      initialRouterEntries: ['/inscription/compte/confirmation'],
-      features: ['ENABLE_PRO_ACCOUNT_CREATION'],
-    })
+    renderSignup({ initialRouterEntries: ['/inscription/compte/confirmation'] })
 
     expect(screen.getByText(/Validez votre adresse email/)).toBeInTheDocument()
 
     expect(
       screen.getByText('Cliquez sur le lien envoyé par email')
-    ).toBeInTheDocument()
-  })
-
-  it('should render maintenance page when signup is unavailable', () => {
-    renderSignup({ initialRouterEntries: ['/inscription/compte/creation'] })
-
-    expect(
-      screen.getByRole('heading', { name: /Inscription indisponible/ })
     ).toBeInTheDocument()
   })
 })
