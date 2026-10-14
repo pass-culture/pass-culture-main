@@ -27,20 +27,18 @@ export const ModalVideo = ({
   addVideoRef,
 }: ModalVideoProps): JSX.Element | null => {
   const [error, setError] = useState<string>()
-  const {
-    videoUrl,
-    videoData,
-    onVideoUpload,
-    offerId,
-    videoDescription,
-    setVideoDescription,
-  } = useVideoUploaderContext()
+  const { videoUrl, videoData, onVideoUpload, offerId, videoDescription } =
+    useVideoUploaderContext()
   const [draftVideoUrl, setDraftVideoUrl] = useState(videoUrl)
+  const [draftVideoDescription, setDraftVideoDescription] =
+    useState(videoDescription)
   const [isInformative, setIsInformative] = useState(Boolean(videoDescription))
   const { logEvent } = useAnalytics()
 
   const handleClose = () => {
     setDraftVideoUrl(videoUrl)
+    setDraftVideoDescription(videoDescription)
+    setIsInformative(Boolean(videoDescription))
     setError(undefined)
     onClose()
   }
@@ -56,6 +54,7 @@ export const ModalVideo = ({
             if (draftVideoUrl && !getUrlYoutubeError(draftVideoUrl)) {
               await onVideoUpload({
                 videoUrl: draftVideoUrl,
+                videoDescription: draftVideoDescription,
                 onSuccess: () => {
                   setError(undefined)
                   onClose()
@@ -118,7 +117,7 @@ export const ModalVideo = ({
               onChange={(e) => {
                 setIsInformative(e.target.checked)
                 if (!e.target.checked) {
-                  setVideoDescription('')
+                  setDraftVideoDescription('')
                 }
               }}
               collapsed={
@@ -126,9 +125,9 @@ export const ModalVideo = ({
                   label="Description textuelle pour les malvoyants"
                   name="alternativeText"
                   maxCharactersCount={150}
-                  value={videoDescription ?? ''}
+                  value={draftVideoDescription}
                   required
-                  onChange={(e) => setVideoDescription(e.target.value)}
+                  onChange={(e) => setDraftVideoDescription(e.target.value)}
                 />
               }
             />

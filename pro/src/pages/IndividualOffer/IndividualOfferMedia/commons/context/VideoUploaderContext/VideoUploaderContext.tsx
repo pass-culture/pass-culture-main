@@ -14,7 +14,6 @@ import type { VideoData } from '@/apiClient/v1'
 import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
-  setVideoDescription: Dispatch<SetStateAction<string>>
   videoDescription: string
   videoData?: VideoData
   handleVideoOnSubmit: () => Promise<VideoData>
@@ -25,7 +24,6 @@ type VideoUploaderContextValues = {
 }
 
 const VideoUploaderContext = createContext<VideoUploaderContextValues>({
-  setVideoDescription: noop,
   videoData: undefined,
   videoDescription: '',
   videoUrl: '',
@@ -50,6 +48,7 @@ type VideoUploaderContextProviderProps = {
 
 type onVideoUploadProps = {
   videoUrl: string
+  videoDescription: string
   onSuccess: () => void
   onError: Dispatch<SetStateAction<string | undefined>>
 }
@@ -61,18 +60,24 @@ export function VideoUploaderContextProvider({
 }: Readonly<VideoUploaderContextProviderProps>) {
   const [videoUrl, setVideoUrl] = useState(initialVideoData?.videoUrl ?? '')
   const [videoDescription, setVideoDescription] = useState(
-    initialVideoData?.videoDescription
+    initialVideoData?.videoDescription ?? ''
   )
   const [videoData, setVideoData] = useState(initialVideoData)
 
   const onVideoUpload = useCallback(
-    async ({ videoUrl, onSuccess, onError }: onVideoUploadProps) => {
+    async ({
+      videoUrl,
+      videoDescription,
+      onSuccess,
+      onError,
+    }: onVideoUploadProps) => {
       if (videoUrl) {
         try {
           const response = await api.getOfferVideoMetadata({
             query: { videoUrl },
           })
           setVideoUrl(videoUrl)
+          setVideoDescription(videoDescription)
           setVideoData(response)
           onSuccess()
         } catch (error) {
@@ -86,6 +91,7 @@ export function VideoUploaderContextProvider({
 
   const onVideoDelete = useCallback(() => {
     setVideoUrl('')
+    setVideoDescription('')
     setVideoData(undefined)
   }, [])
 
@@ -94,7 +100,7 @@ export function VideoUploaderContextProvider({
       path: { offer_id: offerId },
       body: {
         videoUrl,
-        videoDescription: videoDescription,
+        videoDescription: videoDescription || undefined,
       },
     })
   }, [videoUrl, offerId, videoDescription])
@@ -105,7 +111,6 @@ export function VideoUploaderContextProvider({
       videoData,
       videoDescription,
       handleVideoOnSubmit,
-      setVideoDescription,
       onVideoUpload,
       onVideoDelete,
       offerId,
@@ -115,7 +120,6 @@ export function VideoUploaderContextProvider({
       videoData,
       videoDescription,
       handleVideoOnSubmit,
-      setVideoDescription,
       onVideoUpload,
       onVideoDelete,
       offerId,
@@ -123,8 +127,6 @@ export function VideoUploaderContextProvider({
   )
 
   return (
-    // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-    // @ts-expect-error
     <VideoUploaderContext.Provider value={contextValue}>
       {children}
     </VideoUploaderContext.Provider>

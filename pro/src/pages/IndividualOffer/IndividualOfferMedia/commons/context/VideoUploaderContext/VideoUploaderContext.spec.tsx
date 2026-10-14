@@ -33,11 +33,12 @@ const TestComponent = () => {
     videoData,
     handleVideoOnSubmit,
     videoDescription,
-    setVideoDescription,
     onVideoUpload,
     onVideoDelete,
   } = useVideoUploaderContext()
   const [draftVideoUrl, setDraftVideoUrl] = useState(videoUrl)
+  const [draftVideoDescription, setDraftVideoDescription] =
+    useState(videoDescription)
 
   return (
     <>
@@ -55,10 +56,11 @@ const TestComponent = () => {
         {LABELS.display.description}
         <input
           type="text"
-          value={videoDescription ?? ''}
-          onChange={(e) => setVideoDescription(e.target.value)}
+          value={draftVideoDescription}
+          onChange={(e) => setDraftVideoDescription(e.target.value)}
         />
       </label>
+      <p>Video description: {videoDescription}</p>
       <div>
         <p>{videoData?.videoDuration} min</p>
         <p>{videoData?.videoThumbnailUrl}</p>
@@ -72,6 +74,7 @@ const TestComponent = () => {
         onClick={async () =>
           await onVideoUpload({
             videoUrl: draftVideoUrl,
+            videoDescription: draftVideoDescription,
             onSuccess: vi.fn(),
             onError: vi.fn(),
           })
@@ -142,6 +145,7 @@ describe('VideoUploaderContext', () => {
         videoThumbnailUrl: 'http://youtube.image.com',
         videoTitle: 'Ma super vidéo',
         videoUrl: 'http://youtube.url',
+        videoDescription: 'Description initiale',
       },
     })
 
@@ -156,6 +160,9 @@ describe('VideoUploaderContext', () => {
     expect(screen.queryByText('Ma super vidéo')).not.toBeInTheDocument()
     expect(
       screen.queryByText('Video url: http://youtube.url')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Video description: Description initiale')
     ).not.toBeInTheDocument()
   })
 
@@ -217,7 +224,7 @@ describe('VideoUploaderContext', () => {
     })
   })
 
-  it('should not submit an url which preview has failed', async () => {
+  it('should not submit an url nor a description which preview has failed', async () => {
     vi.spyOn(api, 'getOfferVideoMetadata').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
@@ -228,7 +235,10 @@ describe('VideoUploaderContext', () => {
     vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({})
 
     const offer = getIndividualOfferFactory({
-      videoData: { videoUrl: 'http://youtube.url' },
+      videoData: {
+        videoUrl: 'http://youtube.url',
+        videoDescription: 'Description initiale',
+      },
     })
 
     renderVideoUploaderContext(offer)
@@ -236,6 +246,9 @@ describe('VideoUploaderContext', () => {
     const input = screen.getByLabelText(LABELS.display.input)
     await userEvent.clear(input)
     await userEvent.type(input, 'http://invalid.youtube.url')
+    const description = screen.getByLabelText(LABELS.display.description)
+    await userEvent.clear(description)
+    await userEvent.type(description, 'Nouvelle description')
     await userEvent.click(screen.getByText(LABELS.controls.upload))
     await userEvent.click(screen.getByText(LABELS.controls.submit))
 
@@ -245,15 +258,22 @@ describe('VideoUploaderContext', () => {
     expect(
       screen.getByText('Video url: http://youtube.url')
     ).toBeInTheDocument()
+    expect(
+      screen.getByText('Video description: Description initiale')
+    ).toBeInTheDocument()
     expect(api.updateOfferVideo).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: {
         videoUrl: 'http://youtube.url',
+        videoDescription: 'Description initiale',
       },
     })
   })
 
-  it('should submit the updated video description', async () => {
+  it('should submit the updated video description once previewed', async () => {
+    vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
+      videoUrl: 'http://youtube.url',
+    })
     vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({})
 
     const offer = getIndividualOfferFactory({
@@ -270,8 +290,17 @@ describe('VideoUploaderContext', () => {
 
     await userEvent.clear(description)
     await userEvent.type(description, 'Nouvelle description')
+
+    expect(
+      screen.getByText('Video description: Description initiale')
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText(LABELS.controls.upload))
     await userEvent.click(screen.getByText(LABELS.controls.submit))
 
+    expect(
+      screen.getByText('Video description: Nouvelle description')
+    ).toBeInTheDocument()
     expect(api.updateOfferVideo).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: {

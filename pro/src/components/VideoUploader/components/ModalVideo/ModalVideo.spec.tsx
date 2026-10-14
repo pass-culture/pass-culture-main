@@ -259,7 +259,7 @@ describe('ModalVideo', () => {
     expect(api.getOfferVideoMetadata).toHaveBeenCalled()
   })
 
-  it('should discard the url when cancelling', async () => {
+  it('should discard the url and the description when cancelling', async () => {
     vi.spyOn(api, 'getOfferVideoMetadata').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
@@ -268,8 +268,12 @@ describe('ModalVideo', () => {
       )
     )
     const initialVideoUrl = 'https://www.youtube.com/watch?v=25ztioI37oc'
+    const initialVideoDescription = 'Description existante'
     const offer = getIndividualOfferFactory({
-      videoData: { videoUrl: initialVideoUrl },
+      videoData: {
+        videoUrl: initialVideoUrl,
+        videoDescription: initialVideoDescription,
+      },
     })
 
     renderWithProviders(
@@ -286,16 +290,36 @@ describe('ModalVideo', () => {
       </VideoUploaderContextProvider>
     )
 
-    const input = screen.getByLabelText('Lien URL Youtube')
-    await userEvent.clear(input)
-    await userEvent.type(input, 'https://www.youtube.com/watch?v=bX2Oz6l1Z0s')
+    const urlInput = screen.getByLabelText('Lien URL Youtube')
+    const checkbox = screen.getByRole('checkbox', {
+      name: /^Ajouter une description textuelle détaillée/,
+    })
+    const getDescriptionInput = () =>
+      screen.getByRole('textbox', {
+        name: /^Description textuelle pour les malvoyants/,
+      })
+
+    await userEvent.clear(urlInput)
+    await userEvent.type(
+      urlInput,
+      'https://www.youtube.com/watch?v=bX2Oz6l1Z0s'
+    )
+    await userEvent.clear(getDescriptionInput())
+    await userEvent.type(getDescriptionInput(), 'Nouvelle description')
     await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
 
     expect(screen.getByText('api error')).toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
-    expect(input).toHaveValue(initialVideoUrl)
+    expect(urlInput).toHaveValue(initialVideoUrl)
+    expect(getDescriptionInput()).toHaveValue(initialVideoDescription)
     expect(screen.queryByText('api error')).not.toBeInTheDocument()
+
+    await userEvent.click(checkbox)
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    expect(checkbox).toBeChecked()
+    expect(getDescriptionInput()).toHaveValue(initialVideoDescription)
   })
 })
