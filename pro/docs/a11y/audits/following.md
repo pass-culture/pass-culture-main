@@ -508,3 +508,27 @@ Ajout de la possibilité d'ajouter une description à l'upload d'une vidéo
 TBD
 
 </details>
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.1 - RGAA - Adapter le graphique des stats</summary>
+
+**RAWeb** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43618](https://passculture.atlassian.net/browse/PC-43618)  
+**PR** : [#24723](https://github.com/pass-culture/pass-culture-main/pull/24723)
+
+**Problème** 😱  
+
+Le graphique « Nombre de vues cumulées de toutes vos offres sur les 6 derniers mois » est rendu à l’aide d’un élément <canvas>.
+
+Les utilisateurs ne pouvant pas exploiter la représentation graphique ne disposent donc pas d’un moyen simple d’accéder aux données représentées.
+
+
+**Correction** 💡  
+Ajout d'un bouton pour voir le graph au format tableau.
+
+**Retours audit** 🔥  
+TBD
+
+</details>

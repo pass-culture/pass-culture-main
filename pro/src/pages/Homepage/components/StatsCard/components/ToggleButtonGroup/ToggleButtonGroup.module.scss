@@ -1,0 +1,41 @@
+@use "styles/mixins/rem" as rem;
+@use "styles/mixins/outline" as outline;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.btn-group {
+  display: inline-flex;
+  justify-content: center;
+  gap: rem.torem(8px);
+
+  &-btn {
+    @include fonts.body-accent-xs;
+
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    outline: none;
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    padding: rem.torem(8px);
+    gap: rem.torem(8px);
+    color: var(--color-text-default);
+
+    &-icon {
+      flex-shrink: 0;
+      width: rem.torem(22px);
+    }
+
+    &:focus-visible {
+      @include outline.focus-outline;
+    }
+
+    &[aria-selected="true"] {
+      border-radius: 8px;
+      background: var(--color-background-brand-primary-selected);
+      color: var(--color-text-brand-primary);
+    }
+  }
+}

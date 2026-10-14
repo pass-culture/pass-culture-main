@@ -1,3 +1,5 @@
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event/dist/cjs/index.js'
 import { venueOffersPeriodStatsModelFactory } from 'commons/utils/factories/statisticsFactories'
 import {
   CumulatedViews,
@@ -21,5 +23,14 @@ describe('CumulatedViews', () => {
     const { container } = renderCumulatedViews({ periodStats })
 
     expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('should render table', async () => {
+    renderCumulatedViews({ periodStats })
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Tableau' }))
+    await waitFor(() => {
+      expect(screen.getByText('octobre')).toBeInTheDocument()
+    })
   })
 })
