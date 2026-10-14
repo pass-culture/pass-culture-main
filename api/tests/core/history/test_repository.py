@@ -11,7 +11,7 @@ import pcapi.core.users.factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_get_closing_user_when_the_venue_is_closed():
+def test_get_closing_action_when_the_venue_is_closed():
     venue = offerers_factories.VenueFactory()
     closing_user = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=closing_user, offerer=venue.managingOfferer)
@@ -27,9 +27,9 @@ def test_get_closing_user_when_the_venue_is_closed():
         venue=venue,
     )
 
-    fetched_user = history_repository.get_latest_venue_closure_user(venue.id)
+    fetched_action = history_repository.get_latest_venue_closure_event(venue.id)
 
-    assert fetched_user.id == closing_user.id
+    assert fetched_action.authorUser.id == closing_user.id
 
 
 def test_get_closing_user_when_the_venue_has_not_been_closed():
@@ -37,9 +37,9 @@ def test_get_closing_user_when_the_venue_has_not_been_closed():
     user = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
-    fetched_user = history_repository.get_latest_venue_closure_user(venue.id)
+    fetched_action = history_repository.get_latest_venue_closure_event(venue.id)
 
-    assert not fetched_user
+    assert not fetched_action
 
 
 def test_get_latest_closing_user_when_the_venue_is_closed_several_times():
@@ -53,7 +53,7 @@ def test_get_latest_closing_user_when_the_venue_is_closed_several_times():
             venue=venue,
         )
 
-    fetched_user = history_repository.get_latest_venue_closure_user(venue.id)
+    fetched_action = history_repository.get_latest_venue_closure_event(venue.id)
 
     # Should return the last user from the list
-    assert fetched_user.id == closing_users[-1].id
+    assert fetched_action.authorUser.id == closing_users[-1].id
