@@ -1,7 +1,8 @@
-import { useId } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { ProUserCreationBodyV2Model } from '@/apiClient/v1'
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { AlreadyHasAccount } from '@/components/AlreadyHasAccount/AlreadyHasAccount'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -22,6 +23,11 @@ export const SignupForm = (): JSX.Element => {
     'WIP_PRE_SIGNUP_SIMULATION'
   )
   const formId = useId()
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
 
   const {
     formState: { isSubmitting, errors },
@@ -35,7 +41,9 @@ export const SignupForm = (): JSX.Element => {
       {isSignupSimulationEnabled && (
         <>
           <SignupStepper />
-          <h1 className={titleStyles['title']}>Créez votre compte</h1>
+          <h1 className={titleStyles['title']} ref={titleRef} tabIndex={-1}>
+            Créez votre compte
+          </h1>
           <p className={styles['subheading-description']}>
             Ces informations vous permettront de vous connecter à pass Culture
             Pro.

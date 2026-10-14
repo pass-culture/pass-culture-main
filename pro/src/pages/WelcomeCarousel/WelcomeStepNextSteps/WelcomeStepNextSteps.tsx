@@ -1,6 +1,8 @@
 import cn from 'classnames'
+import { useEffect, useRef } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
 import { WEBINAR_INDIVIDUAL } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -23,10 +25,17 @@ const WelcomeStepNextSteps = (): JSX.Element => {
   const isPreSignupSimulatorFeatureActive = useActiveFeature(
     'WIP_PRE_SIGNUP_SIMULATION'
   )
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
   return (
     <>
       <div className={commonStyles['title-wrapper']}>
-        <h1 className={styles['title']}>Comment fonctionne l’inscription ?</h1>
+        <h1 className={styles['title']} ref={titleRef} tabIndex={-1}>
+          Comment fonctionne l’inscription ?
+        </h1>
       </div>
       <p className={commonStyles.subtitle}>
         3 étapes simples avant d’être visible sur le pass Culture

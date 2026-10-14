@@ -11,10 +11,11 @@ import {
   saveOpenToPublicToStorage,
   tryRestoreOpenToPublicFromStorage,
 } from 'pages/Simulator/storage'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
 
@@ -31,6 +32,12 @@ export const SimulatorOpenToPublic = (): JSX.Element => {
   const defaultValues: OpenToPublicFormValues = {
     isOpenToPublic: openToPublic ?? null,
   }
+
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
 
   const methods = useForm({
     defaultValues,
@@ -62,7 +69,9 @@ export const SimulatorOpenToPublic = (): JSX.Element => {
 
   return (
     <div className={commonStyles['content']}>
-      <h1 className={titleStyles['title']}>Accueil du public</h1>
+      <h1 className={titleStyles['title']} ref={titleRef} tabIndex={-1}>
+        Accueil du public
+      </h1>
       <p className={commonStyles['subtitle']}>
         Votre réponse adapte la suite de votre inscription, notamment les
         informations d'adresse demandées.

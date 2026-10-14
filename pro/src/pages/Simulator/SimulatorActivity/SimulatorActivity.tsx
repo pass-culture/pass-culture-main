@@ -6,7 +6,7 @@ import {
   saveActivityToStorage,
   tryRestoreActivityFromStorage,
 } from 'pages/Simulator/storage'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -16,6 +16,7 @@ import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
 } from '@/apiClient/v1'
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
 import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
 import { toSelectOptions } from '@/commons/mappings/helpers'
@@ -33,6 +34,11 @@ export interface SimulatorActivity {
 export const SimulatorActivity = (): JSX.Element => {
   const { activity, setActivity, openToPublic } = useSimulatorContext()
   const navigate = useNavigate()
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
 
   const mainActivityOptions =
     openToPublic === 'true'
@@ -70,7 +76,7 @@ export const SimulatorActivity = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['content']}>
-        <h1 className={styles['title']}>
+        <h1 className={styles['title']} ref={titleRef} tabIndex={-1}>
           Quelle est votre activité principale ?
         </h1>
       </div>

@@ -1,8 +1,9 @@
 import cn from 'classnames'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
 import { AlreadyHasAccount } from '@/components/AlreadyHasAccount/AlreadyHasAccount'
 import { Button } from '@/design-system/Button/Button'
@@ -25,6 +26,11 @@ export const WelcomeStepHub = (): JSX.Element => {
   const [error, setError] = useState('')
   const [showErrorContainer, setShowErrorContainer] = useState(false)
   const radioButtonGroupRef = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
   return (
     <>
       {showErrorContainer && (
@@ -33,7 +39,7 @@ export const WelcomeStepHub = (): JSX.Element => {
             className={cn(commonStyles[`container`], styles['icon-container'])}
           >
             <Icon iconClassName={styles.icon} icon={strokeLocationIcon} />
-            <h1 className={styles['title']}>
+            <h1 className={styles['title']} ref={titleRef} tabIndex={-1}>
               Mince, vous êtes au mauvais endroit !
             </h1>
             <p className={commonStyles.subtitle}>
@@ -71,7 +77,9 @@ export const WelcomeStepHub = (): JSX.Element => {
       {!showErrorContainer && (
         <>
           <div className={commonStyles['title-wrapper']}>
-            <h1 className={styles['title']}>Bienvenue sur pass Culture Pro</h1>
+            <h1 className={styles['title']} ref={titleRef} tabIndex={-1}>
+              Bienvenue sur pass Culture Pro
+            </h1>
           </div>
           <p className={commonStyles.subtitle}>
             Commençons par identifier votre profil

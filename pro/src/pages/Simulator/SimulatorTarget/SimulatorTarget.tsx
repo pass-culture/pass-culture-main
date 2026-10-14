@@ -1,8 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -32,6 +33,11 @@ const defaultFormValues = {
 export const SimulatorTarget = (): JSX.Element => {
   const navigate = useNavigate()
   const { targetAudiences, setTargetAudiences } = useSimulatorContext()
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
 
   const methods = useForm({
     defaultValues: targetAudiences
@@ -67,7 +73,7 @@ export const SimulatorTarget = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['content']}>
-        <h1 className={styles['title']}>
+        <h1 className={styles['title']} ref={titleRef} tabIndex={-1}>
           Quels publics souhaitez-vous cibler ?
         </h1>
         <p className={commonStyles['subtitle']}>

@@ -1,10 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate, useSearchParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
@@ -53,6 +54,11 @@ export const SignIn = (): JSX.Element => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [hasApiError, setHasApiError] = useState(false)
   const dispatch = useAppDispatch()
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
 
   useInitReCaptcha()
 
@@ -146,7 +152,9 @@ export const SignIn = (): JSX.Element => {
 
   return (
     <LayoutComponent>
-      <h1 className={styles['title']}>Connectez-vous</h1>
+      <h1 className={styles['title']} ref={titleRef}>
+        Connectez-vous
+      </h1>
       {!isSignupSimulationEnabled && (
         <MandatoryInfo areAllFieldsMandatory={true} />
       )}

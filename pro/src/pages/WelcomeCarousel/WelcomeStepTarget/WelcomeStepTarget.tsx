@@ -1,5 +1,7 @@
 import cn from 'classnames'
+import { useEffect, useRef } from 'react'
 
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -9,10 +11,16 @@ import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import styles from './WelcomeStepTarget.module.scss'
 
 const WelcomeStepTarget = (): JSX.Element => {
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
+
   return (
     <>
       <div className={commonStyles['title-wrapper']}>
-        <h1 className={styles['title']}>
+        <h1 className={styles['title']} ref={titleRef} tabIndex={-1}>
           Deux manières de vous faire connaître
         </h1>
       </div>
