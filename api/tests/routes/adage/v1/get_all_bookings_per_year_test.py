@@ -1,17 +1,7 @@
 import pytest
 
-from pcapi.core.educational.factories import CancelledCollectiveBookingFactory
-from pcapi.core.educational.factories import CollectiveBookingFactory
-from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
-from pcapi.core.educational.factories import EducationalInstitutionFactory
-from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.educational.factories import PendingCollectiveBookingFactory
-from pcapi.core.educational.factories import PendingReimbursementCollectiveBookingFactory
-from pcapi.core.educational.factories import ReimbursedCollectiveBookingFactory
-from pcapi.core.educational.factories import UsedCollectiveBookingFactory
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
-from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational import factories
+from pcapi.core.educational import models
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
@@ -21,7 +11,7 @@ from tests.conftest import TestClient
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def expected_serialized_booking(booking: CollectiveBooking) -> dict:
+def expected_serialized_booking(booking: models.CollectiveBooking) -> dict:
     formats = booking.collectiveStock.collectiveOffer.formats
     formats = [format.value for format in formats] if formats else None
     return {
@@ -56,32 +46,32 @@ def expected_serialized_booking(booking: CollectiveBooking) -> dict:
 
 class Returns200Test:
     def test_get_all_collective_bookings_per_year(self, client: TestClient):
-        educationalYear = EducationalYearFactory(adageId="1")
-        EducationalYearFactory(adageId="2")
+        educationalYear = factories.EducationalYearFactory(adageId="1")
+        factories.EducationalYearFactory(adageId="2")
 
-        educationalInstitution = EducationalInstitutionFactory()
-        other_educational_institution = EducationalInstitutionFactory(institutionId="institutionId")
-        EducationalYearFactory(adageId="adageId")
-        booking1 = CollectiveBookingFactory(
+        educationalInstitution = factories.EducationalInstitutionFactory()
+        other_educational_institution = factories.EducationalInstitutionFactory(institutionId="institutionId")
+        factories.EducationalYearFactory(adageId="adageId")
+        booking1 = factories.CollectiveBookingFactory(
             educationalYear=educationalYear,
             educationalInstitution=educationalInstitution,
-            status=CollectiveBookingStatus.CONFIRMED,
+            status=models.CollectiveBookingStatus.CONFIRMED,
         )
-        booking2 = CollectiveBookingFactory(
+        booking2 = factories.CollectiveBookingFactory(
             educationalYear=educationalYear,
             educationalInstitution=other_educational_institution,
-            status=CollectiveBookingStatus.PENDING,
+            status=models.CollectiveBookingStatus.PENDING,
         )
-        booking3 = CollectiveBookingFactory(
+        booking3 = factories.CollectiveBookingFactory(
             educationalYear=educationalYear,
             educationalInstitution=other_educational_institution,
-            status=CollectiveBookingStatus.PENDING,
+            status=models.CollectiveBookingStatus.PENDING,
         )
-        booking4 = CollectiveBookingFactory(
+        booking4 = factories.CollectiveBookingFactory(
             educationalYear=educationalYear,
             educationalInstitution=other_educational_institution,
-            status=CollectiveBookingStatus.CANCELLED,
-            cancellationReason=CollectiveBookingCancellationReasons.OFFERER,
+            status=models.CollectiveBookingStatus.CANCELLED,
+            cancellationReason=models.CollectiveBookingCancellationReasons.OFFERER,
         )
 
         client = client.with_eac_token()
@@ -112,14 +102,14 @@ class Returns200Test:
         }
 
     def test_get_all_collective_bookings_pagination(self, client: TestClient):
-        educationalYear = EducationalYearFactory()
-        other_educational_year = EducationalYearFactory(adageId="adageId")
-        first_bookings = CollectiveBookingFactory.create_batch(
+        educationalYear = factories.EducationalYearFactory()
+        other_educational_year = factories.EducationalYearFactory(adageId="adageId")
+        first_bookings = factories.CollectiveBookingFactory.create_batch(
             2,
             educationalYear=educationalYear,
         )
-        CollectiveBookingFactory(educationalYear=other_educational_year)
-        last_bookings = CollectiveBookingFactory.create_batch(
+        factories.CollectiveBookingFactory(educationalYear=other_educational_year)
+        last_bookings = factories.CollectiveBookingFactory.create_batch(
             8,
             educationalYear=educationalYear,
         )
@@ -150,24 +140,26 @@ class Returns200Test:
         }
 
     def test_booking_status(self, client: TestClient):
-        educational_year = EducationalYearFactory()
+        educational_year = factories.EducationalYearFactory()
 
-        pending_booking = PendingCollectiveBookingFactory(educationalYear=educational_year)
-        confirmed_booking = ConfirmedCollectiveBookingFactory(educationalYear=educational_year)
-        used_booking = UsedCollectiveBookingFactory(educationalYear=educational_year)
-        pending_reimbursement_booking = PendingReimbursementCollectiveBookingFactory(educationalYear=educational_year)
-        reimbursed_booking = ReimbursedCollectiveBookingFactory(educationalYear=educational_year)
-        cancelled_bo_booking = CancelledCollectiveBookingFactory(
-            educationalYear=educational_year,
-            cancellationReason=CollectiveBookingCancellationReasons.BACKOFFICE,
+        pending_booking = factories.PendingCollectiveBookingFactory(educationalYear=educational_year)
+        confirmed_booking = factories.ConfirmedCollectiveBookingFactory(educationalYear=educational_year)
+        used_booking = factories.UsedCollectiveBookingFactory(educationalYear=educational_year)
+        pending_reimbursement_booking = factories.PendingReimbursementCollectiveBookingFactory(
+            educationalYear=educational_year
         )
-        refused_institute_booking = CancelledCollectiveBookingFactory(
+        reimbursed_booking = factories.ReimbursedCollectiveBookingFactory(educationalYear=educational_year)
+        cancelled_bo_booking = factories.CancelledCollectiveBookingFactory(
             educationalYear=educational_year,
-            cancellationReason=CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
+            cancellationReason=models.CollectiveBookingCancellationReasons.BACKOFFICE,
         )
-        refused_headmaster_booking = CancelledCollectiveBookingFactory(
+        refused_institute_booking = factories.CancelledCollectiveBookingFactory(
             educationalYear=educational_year,
-            cancellationReason=CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
+            cancellationReason=models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
+        )
+        refused_headmaster_booking = factories.CancelledCollectiveBookingFactory(
+            educationalYear=educational_year,
+            cancellationReason=models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
         )
 
         adage_id = educational_year.adageId
