@@ -1,7 +1,10 @@
 import pytest
 
+import pcapi.core.artist.factories as artist_factories
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.discoveries.models as discoveries_models
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offerers import models as offerers_models
@@ -23,6 +26,58 @@ class Returns204Test:
         assert response.status_code == 204
         booking = db.session.query(Booking).one()
         assert booking.status is BookingStatus.USED
+
+    def test_validation_creates_discoveries_for_work_and_offer_artists_idempotently(self, client):
+        user = users_factories.BeneficiaryFactory()
+        offer = offers_factories.OfferFactory()
+        work = discoveries_models.Work(title="A film", media_type=discoveries_models.WorkMediaType.FILM, offer=offer)
+        artists = artist_factories.ArtistFactory.create_batch(2)
+        db.session.add_all([work, *artists])
+        db.session.flush()
+        for artist in artists:
+            artist_factories.ArtistOfferLinkFactory(offer_id=offer.id, artist_id=artist.id)
+        first_booking = bookings_factories.BookingFactory(stock__offer=offer, user=user, token="DISC01")
+        second_booking = bookings_factories.BookingFactory(stock__offer=offer, user=user, token="DISC02")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offer.venue.managingOfferer)
+
+        response = client.with_session_auth(pro_user.email).patch(f"/bookings/use/token/{first_booking.token}")
+
+        assert response.status_code == 204
+        discoveries = db.session.query(discoveries_models.Discovery).filter_by(user_id=user.id).all()
+        assert len(discoveries) == 3
+        assert {discovery.work_id for discovery in discoveries if discovery.work_id is not None} == {work.id}
+        assert {discovery.artist_id for discovery in discoveries if discovery.artist_id is not None} == {
+            artist.id for artist in artists
+        }
+        assert all(discovery.offer_origin_id == offer.id for discovery in discoveries)
+
+        response = client.with_session_auth(pro_user.email).patch(f"/bookings/use/token/{second_booking.token}")
+
+        assert response.status_code == 204
+        assert db.session.query(discoveries_models.Discovery).filter_by(user_id=user.id).count() == 3
+
+    def test_validation_without_work_creates_artist_discoveries_only(self, client):
+        user = users_factories.BeneficiaryFactory()
+        offer = offers_factories.OfferFactory()
+        assert offer.work is None
+        assert offer.product is None or offer.product.work is None
+        artists = artist_factories.ArtistFactory.create_batch(2)
+        db.session.add_all(artists)
+        db.session.flush()
+        for artist in artists:
+            artist_factories.ArtistOfferLinkFactory(offer_id=offer.id, artist_id=artist.id)
+        booking = bookings_factories.BookingFactory(stock__offer=offer, user=user, token="DISC03")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offer.venue.managingOfferer)
+
+        response = client.with_session_auth(pro_user.email).patch(f"/bookings/use/token/{booking.token}")
+
+        assert response.status_code == 204
+        discoveries = db.session.query(discoveries_models.Discovery).filter_by(user_id=user.id).all()
+        assert len(discoveries) == 2
+        assert all(discovery.work_id is None for discovery in discoveries)
+        assert {discovery.artist_id for discovery in discoveries} == {artist.id for artist in artists}
 
     def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, client):
         booking = bookings_factories.BookingFactory(token="ABCDEF")

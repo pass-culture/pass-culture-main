@@ -5,6 +5,7 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects.postgresql import insert
 
 from pcapi.core.artist.models import Artist
+from pcapi.core.bookings.models import Booking
 from pcapi.core.discoveries.models import Discovery
 from pcapi.core.discoveries.models import Work
 from pcapi.core.discoveries.models import WorkArtist
@@ -78,6 +79,50 @@ def create_discovery(user_id: int, data: "CreateDiscoverySchema") -> Discovery:
     return db.session.execute(
         _discovery_statement().where(Discovery.user_id == user_id, target_column == target_id)
     ).scalar_one()
+
+
+def create_discoveries_for_booking(booking: Booking) -> None:
+    offer = db.session.execute(
+        sa.select(Offer)
+        .options(
+            sa_orm.joinedload(Offer.work).selectinload(Work.artist_links),
+            sa_orm.joinedload(Offer.product).options(
+                sa_orm.joinedload(Product.work).selectinload(Work.artist_links),
+                sa_orm.selectinload(Product.artistLinks),
+            ),
+            sa_orm.selectinload(Offer.artistOfferLinks),
+        )
+        .where(Offer.id == booking.stock.offerId)
+    ).scalar_one_or_none()
+    if offer is None:
+        return
+
+    work = offer.work or (offer.product.work if offer.product is not None else None)
+    artist_ids = {link.artist_id for link in offer.artistOfferLinks if link.artist_id is not None}
+    if offer.product is not None:
+        artist_ids.update(link.artist_id for link in offer.product.artistLinks)
+    if work is not None:
+        artist_ids.update(link.artist_id for link in work.artist_links)
+
+    targets: list[tuple[int | None, str | None]] = []
+    if work is not None:
+        targets.append((work.id, None))
+    targets.extend((None, artist_id) for artist_id in sorted(artist_ids))
+
+    for work_id, artist_id in targets:
+        target_column = Discovery.work_id if work_id is not None else Discovery.artist_id
+        db.session.execute(
+            insert(Discovery)
+            .values(
+                user_id=booking.userId,
+                work_id=work_id,
+                artist_id=artist_id,
+                offer_origin_id=offer.id,
+            )
+            .on_conflict_do_nothing(
+                index_elements=[Discovery.user_id, target_column], index_where=target_column.is_not(None)
+            )
+        )
 
 
 def update_discovery(user_id: int, discovery_id: int, data: "UpdateDiscoverySchema") -> Discovery:

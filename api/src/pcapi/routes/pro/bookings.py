@@ -18,6 +18,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.bookings import validation as bookings_validation
 from pcapi.core.bookings.models import BookingExportType
+from pcapi.core.discoveries import discovery_service
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import repository as users_repository
@@ -340,6 +341,7 @@ def patch_booking_use_by_token(token: str) -> None:
     check_user_can_validate_bookings_v2(current_user, booking.offererId)
     rest_utils.check_venue_is_opened(booking.venue)
     bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.OFFERER)
+    discovery_service.create_discoveries_for_booking(booking)
 
 
 @pro_blueprint.route("/bookings/keep/token/<token>", methods=["PATCH"])
