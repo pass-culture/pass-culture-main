@@ -1,7 +1,6 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { ComponentProps } from 'react'
-import * as router from 'react-router'
 import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
@@ -20,11 +19,6 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SettlementTable } from './SettlementTable'
 
 const mockLogEvent = vi.fn()
-const mockNavigate = vi.fn()
-vi.mock('react-router', async () => ({
-  ...(await vi.importActual('react-router')),
-  useNavigate: () => mockNavigate,
-}))
 
 vi.mock('../SettlementRowInvoicesTable/SettlementRowInvoicesTable', () => ({
   SettlementRowInvoicesTable: ({ invoices }: { invoices: unknown[] }) => (
@@ -194,7 +188,6 @@ describe('<SettlementTable />', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
 
     renderSettlementTable({
       settlements: [
@@ -214,17 +207,15 @@ describe('<SettlementTable />', () => {
       name: 'Remplacer le compte',
     })
     expect(replaceButton).toBeVisible()
+    expect(replaceButton).toHaveAttribute(
+      'href',
+      '/administration/remboursements/informations-bancaires'
+    )
 
-    // clic on replace button -> log event + navigate
     await user.click(replaceButton)
     expect(mockLogEvent).toHaveBeenCalledExactlyOnceWith(
       SettlementEvents.CLICKED_EDIT_BANK_ACCOUNT_AFTER_REJECT,
       { settlementId: baseSettlement.id }
-    )
-    waitFor(() =>
-      expect(mockNavigate).toHaveBeenCalledExactlyOnceWith(
-        '/administration/remboursements/informations-bancaires'
-      )
     )
   })
 

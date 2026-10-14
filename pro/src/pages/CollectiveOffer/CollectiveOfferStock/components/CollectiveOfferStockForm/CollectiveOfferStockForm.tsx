@@ -91,6 +91,10 @@ export const CollectiveOfferStockForm = ({
   const shouldInitializeAdditionalFees =
     mode === Mode.CREATION && !initialStock.id
 
+  const initialAdditionalFees = shouldInitializeAdditionalFees
+    ? [{ type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 }]
+    : []
+
   const form = useForm<CollectiveOfferStockFormValues>({
     defaultValues: {
       numberOfTickets,
@@ -101,9 +105,7 @@ export const CollectiveOfferStockForm = ({
         Boolean(collectiveAdditionalFees?.length),
       collectiveAdditionalFees: collectiveAdditionalFees?.length
         ? collectiveAdditionalFees
-        : shouldInitializeAdditionalFees
-          ? [{ type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 }]
-          : [],
+        : initialAdditionalFees,
       ...initialDatesValues,
     },
     resolver: yupResolver(
