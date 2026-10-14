@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { format } from 'date-fns'
 
-import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import type { InvoiceResponseModel } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import {
@@ -15,11 +15,11 @@ import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { InvoiceActions } from '@/pages/Reimbursements/ReimbursementsInvoices/InvoiceTable/InvoiceActions'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
-import type { ExtendedInvoiceResponseV2Model } from '../../types'
+import type { ExtendedInvoiceResponseModel } from '../../types'
 import styles from './SettlementRowInvoicesTable.module.scss'
 
 type SettlementRowInvoicesTableProps = {
-  invoices: InvoiceResponseV2Model[]
+  invoices: InvoiceResponseModel[]
 }
 
 const columns = [
@@ -27,21 +27,21 @@ const columns = [
     id: 'reference',
     label: 'Référence',
     header: <p className={styles['cell-reference-header']}>Référence</p>,
-    render: (invoice: ExtendedInvoiceResponseV2Model) => (
+    render: (invoice: ExtendedInvoiceResponseModel) => (
       <p className={styles['cell-reference']}>{invoice.reference}</p>
     ),
   },
   {
     id: 'date',
     label: "Date d'émission",
-    render: (invoice: ExtendedInvoiceResponseV2Model) => (
+    render: (invoice: ExtendedInvoiceResponseModel) => (
       <p>{format(new Date(invoice.date), FORMAT_DD_MM_YYYY)}</p>
     ),
   },
   {
     id: 'amount',
     label: 'Montant',
-    render: (invoice: ExtendedInvoiceResponseV2Model) => (
+    render: (invoice: ExtendedInvoiceResponseModel) => (
       <p
         className={cn({
           [styles['negative-amount']]: invoice.amount < 0,
@@ -59,7 +59,7 @@ const columns = [
   {
     id: 'actions',
     label: 'Actions',
-    render: (invoice: ExtendedInvoiceResponseV2Model) => (
+    render: (invoice: ExtendedInvoiceResponseModel) => (
       <div className={styles['cell-actions']}>
         <InvoiceActions invoice={invoice} />
       </div>

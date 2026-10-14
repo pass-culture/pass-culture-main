@@ -52,11 +52,11 @@ def has_settlement(query: finance_serialize.HasSettlementQueryModel) -> finance_
     return finance_serialize.HasSettlementResponseModel(has_settlement=offerer_has_settlement)
 
 
-@pro_blueprint.route("/v2/finance/invoices", methods=["GET"])
+@pro_blueprint.route("/finance/invoices", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=finance_serialize.InvoiceListV2ResponseModel, api=blueprint.pro_schema)
-def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance_serialize.InvoiceListV2ResponseModel:
+@spectree_serialize(response_model=finance_serialize.InvoiceListResponseModel, api=blueprint.pro_schema)
+def get_invoices(query: finance_serialize.InvoiceListQueryModel) -> finance_serialize.InvoiceListResponseModel:
     invoices = repository.get_paid_invoices_query(
         current_user,
         bank_account_id=query.bank_account_id,
@@ -68,12 +68,12 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
         amount_greater_than_equal=0 if query.amount_negative_only else None,
     )
 
-    return finance_serialize.InvoiceListV2ResponseModel(
-        [finance_serialize.InvoiceResponseV2Model.build(invoice) for invoice in invoices]
+    return finance_serialize.InvoiceListResponseModel(
+        [finance_serialize.InvoiceResponseModel.build(invoice) for invoice in invoices]
     )
 
 
-@pro_blueprint.route("/v2/finance/has-invoice", methods=["GET"])
+@pro_blueprint.route("/finance/has-invoice", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(response_model=finance_serialize.HasInvoiceResponseModel, api=blueprint.pro_schema)

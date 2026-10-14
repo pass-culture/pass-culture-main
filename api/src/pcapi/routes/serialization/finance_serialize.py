@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 # Query models
-class InvoiceListV2QueryModel(HttpQueryParamsModel):
+class InvoiceListQueryModel(HttpQueryParamsModel):
     period_beginning_date: datetime.date | None = None
     period_ending_date: datetime.date | None = None
     bank_account_id: int | None = None
@@ -60,9 +60,7 @@ class GetRejectedBankAccountsQueryModel(HttpQueryParamsModel):
 
 
 # Response Models
-
-
-class InvoiceResponseV2Model(HttpBodyModel):
+class InvoiceResponseModel(HttpBodyModel):
     reference: str
     date: datetime.date
     amount: float
@@ -80,8 +78,8 @@ class InvoiceResponseV2Model(HttpBodyModel):
         )
 
 
-class InvoiceListV2ResponseModel(RootModel):
-    root: list[InvoiceResponseV2Model]
+class InvoiceListResponseModel(RootModel):
+    root: list[InvoiceResponseModel]
 
 
 class SettlementDisplayedStatus(enum.Enum):
@@ -166,7 +164,7 @@ class SettlementResponseModel(HttpBodyModel):
     amount: float
     bank_account: str
     status: SettlementDisplayedStatus
-    invoices: list[InvoiceResponseV2Model]
+    invoices: list[InvoiceResponseModel]
     resolved_by: list[str]
 
     @classmethod
@@ -212,7 +210,7 @@ class SettlementResponseModel(HttpBodyModel):
             amount=float(-cents_to_full_unit(settlement.amount)),
             bank_account=bank_account,
             status=status,
-            invoices=[InvoiceResponseV2Model.build(invoice) for invoice in invoices],
+            invoices=[InvoiceResponseModel.build(invoice) for invoice in invoices],
             resolved_by=resolved_by,
         )
 

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { api } from '@/apiClient/api'
-import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import type { InvoiceResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -29,7 +29,7 @@ import {
 } from '../constants'
 
 type InvoiceActionsProps = {
-  invoice: InvoiceResponseV2Model
+  invoice: InvoiceResponseModel
   portalContainer?: HTMLElement | null
 }
 

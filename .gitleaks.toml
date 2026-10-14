@@ -8,11 +8,6 @@ description = "ignore lines containing gitleaks:ignore"
 regexTarget = "line"
 regexes = ['''gitleaks:ignore''']
 
-[[allowlists]]
-description = "False positive regarding the method name ‘getInvoicesV2’"
-regexTarget = "line"
-regexes = ['''getInvoicesV2''']
-
 [[rules]]
 id = "discord-bot-token"
 description = "Detected a Discord Bot token, potentially compromising a Discord Bot."

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import type { InvoiceResponseModel } from '@/apiClient/v1'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -11,27 +11,27 @@ import { SettlementRowInvoicesTable } from './SettlementRowInvoicesTable'
 vi.mock(
   '@/pages/Reimbursements/ReimbursementsInvoices/InvoiceTable/InvoiceActions',
   () => ({
-    InvoiceActions: ({ invoice }: { invoice: InvoiceResponseV2Model }) => (
+    InvoiceActions: ({ invoice }: { invoice: InvoiceResponseModel }) => (
       <div data-testid="invoice-actions">{invoice.reference}</div>
     ),
   })
 )
 
-const BASE_INVOICES: InvoiceResponseV2Model[] = [
+const BASE_INVOICES: InvoiceResponseModel[] = [
   {
     reference: 'INV-001',
     date: '2024-05-15T00:00:00Z',
     amount: 150.5,
-  } as InvoiceResponseV2Model,
+  } as InvoiceResponseModel,
   {
     reference: 'INV-002',
     date: '2024-05-20T00:00:00Z',
     amount: -45.0,
-  } as InvoiceResponseV2Model,
+  } as InvoiceResponseModel,
 ]
 
 const renderTable = (
-  invoices: InvoiceResponseV2Model[],
+  invoices: InvoiceResponseModel[],
   isCaledonian = false
 ) => {
   return renderWithProviders(

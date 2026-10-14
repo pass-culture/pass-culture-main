@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { format } from 'date-fns'
 import { useState } from 'react'
 
-import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import type { InvoiceResponseModel } from '@/apiClient/v1'
 import {
   convertEuroToPacificFranc,
   formatPacificFranc,
@@ -64,7 +64,7 @@ function getEmptyStateMessage(hasBankAccount: boolean) {
   }
 }
 
-const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
+const columns: Column<ExtendedInvoiceResponseModel>[] = [
   {
     id: 'reference',
     label: 'Référence',
@@ -96,7 +96,7 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
     label: 'Montant',
     sortable: true,
     ordererField: 'amount',
-    render: (invoice: ExtendedInvoiceResponseV2Model) => (
+    render: (invoice: ExtendedInvoiceResponseModel) => (
       <div
         className={cn({
           [styles['negative-amount']]: invoice.amount < 0,
@@ -114,7 +114,7 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
   {
     id: 'actions',
     label: 'Actions',
-    render: (invoice: ExtendedInvoiceResponseV2Model) => (
+    render: (invoice: ExtendedInvoiceResponseModel) => (
       <div className={styles['cell-actions']}>
         <InvoiceActions invoice={invoice} />
       </div>
@@ -124,7 +124,7 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
 ]
 
 type InvoiceTableProps = {
-  data: InvoiceResponseV2Model[]
+  data: InvoiceResponseModel[]
   hasInvoice: boolean
   hasBankAccount: boolean
   isLoading: boolean
@@ -132,7 +132,7 @@ type InvoiceTableProps = {
   onFilterReset: () => void
 }
 
-type ExtendedInvoiceResponseV2Model = InvoiceResponseV2Model & {
+type ExtendedInvoiceResponseModel = InvoiceResponseModel & {
   id: string
   isCaledonian?: boolean
 }
@@ -147,10 +147,10 @@ export const InvoiceTable = ({
 }: InvoiceTableProps) => {
   const [checkedInvoices, setCheckedInvoices] = useState<string[]>([])
 
-  const getInvoiceDateLabel = (invoice: ExtendedInvoiceResponseV2Model) =>
+  const getInvoiceDateLabel = (invoice: ExtendedInvoiceResponseModel) =>
     format(new Date(invoice.date), FORMAT_DD_MM_YYYY)
 
-  const invoices: ExtendedInvoiceResponseV2Model[] = hasInvoice
+  const invoices: ExtendedInvoiceResponseModel[] = hasInvoice
     ? data.map((invoice) => ({
         ...invoice,
         id: invoice.reference,

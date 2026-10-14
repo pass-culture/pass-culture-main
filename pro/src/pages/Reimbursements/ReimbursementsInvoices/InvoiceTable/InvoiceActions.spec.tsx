@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import { type InvoiceResponseV2Model, InvoiceStatus } from '@/apiClient/v1'
+import { type InvoiceResponseModel, InvoiceStatus } from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -34,7 +34,7 @@ vi.mock('@/apiClient/api', () => ({
 const snackBarError = vi.fn()
 const mockLogEvent = vi.fn()
 
-const mockInvoice: InvoiceResponseV2Model = {
+const mockInvoice: InvoiceResponseModel = {
   reference: 'INV-001',
   date: '2024-06-01',
   amount: 150,

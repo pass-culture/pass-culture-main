@@ -3723,9 +3723,9 @@ export type InviteMemberQueryModel = {
 };
 
 /**
- * InvoiceListV2QueryModel
+ * InvoiceListQueryModel
  */
-export type InvoiceListV2QueryModel = {
+export type InvoiceListQueryModel = {
     /**
      * Amountnegativeonly
      */
@@ -3753,14 +3753,14 @@ export type InvoiceListV2QueryModel = {
 };
 
 /**
- * InvoiceListV2ResponseModel
+ * InvoiceListResponseModel
  */
-export type InvoiceListV2ResponseModel = Array<InvoiceResponseV2Model>;
+export type InvoiceListResponseModel = Array<InvoiceResponseModel>;
 
 /**
- * InvoiceResponseV2Model
+ * InvoiceResponseModel
  */
-export type InvoiceResponseV2Model = {
+export type InvoiceResponseModel = {
     /**
      * Amount
      */
@@ -6008,7 +6008,7 @@ export type SettlementResponseModel = {
     /**
      * Invoices
      */
-    invoices: Array<InvoiceResponseV2Model>;
+    invoices: Array<InvoiceResponseModel>;
     /**
      * Label
      */
@@ -8851,6 +8851,40 @@ export type getFinanceCombinedInvoicesResponses = {
     200: unknown;
 };
 
+export type getFinanceHasInvoiceData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Offererid
+         */
+        offererId: number;
+    };
+    url: '/finance/has-invoice';
+};
+
+export type getFinanceHasInvoiceErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getFinanceHasInvoiceError = getFinanceHasInvoiceErrors[keyof getFinanceHasInvoiceErrors];
+
+export type getFinanceHasInvoiceResponses = {
+    /**
+     * OK
+     */
+    200: HasInvoiceResponseModel;
+};
+
+export type getFinanceHasInvoiceResponse = getFinanceHasInvoiceResponses[keyof getFinanceHasInvoiceResponses];
+
 export type getFinanceHasSettlementData = {
     body?: never;
     path?: never;
@@ -8884,6 +8918,60 @@ export type getFinanceHasSettlementResponses = {
 };
 
 export type getFinanceHasSettlementResponse = getFinanceHasSettlementResponses[keyof getFinanceHasSettlementResponses];
+
+export type getFinanceInvoicesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Periodbeginningdate
+         */
+        periodBeginningDate?: string | null;
+        /**
+         * Periodendingdate
+         */
+        periodEndingDate?: string | null;
+        /**
+         * Bankaccountid
+         */
+        bankAccountId?: number | null;
+        /**
+         * Offererid
+         */
+        offererId?: number | null;
+        /**
+         * Amountpositiveonly
+         */
+        amountPositiveOnly?: boolean | null;
+        /**
+         * Amountnegativeonly
+         */
+        amountNegativeOnly?: boolean | null;
+    };
+    url: '/finance/invoices';
+};
+
+export type getFinanceInvoicesErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getFinanceInvoicesError = getFinanceInvoicesErrors[keyof getFinanceInvoicesErrors];
+
+export type getFinanceInvoicesResponses = {
+    /**
+     * OK
+     */
+    200: InvoiceListResponseModel;
+};
+
+export type getFinanceInvoicesResponse = getFinanceInvoicesResponses[keyof getFinanceInvoicesResponses];
 
 export type getFinanceReimbursementsCsvData = {
     body?: never;
@@ -11176,94 +11264,6 @@ export type patchUsersValidateSignupByTokenResponses = {
 };
 
 export type patchUsersValidateSignupByTokenResponse = patchUsersValidateSignupByTokenResponses[keyof patchUsersValidateSignupByTokenResponses];
-
-export type getV2FinanceHasInvoiceData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Offererid
-         */
-        offererId: number;
-    };
-    url: '/v2/finance/has-invoice';
-};
-
-export type getV2FinanceHasInvoiceErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getV2FinanceHasInvoiceError = getV2FinanceHasInvoiceErrors[keyof getV2FinanceHasInvoiceErrors];
-
-export type getV2FinanceHasInvoiceResponses = {
-    /**
-     * OK
-     */
-    200: HasInvoiceResponseModel;
-};
-
-export type getV2FinanceHasInvoiceResponse = getV2FinanceHasInvoiceResponses[keyof getV2FinanceHasInvoiceResponses];
-
-export type getV2FinanceInvoicesData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Periodbeginningdate
-         */
-        periodBeginningDate?: string | null;
-        /**
-         * Periodendingdate
-         */
-        periodEndingDate?: string | null;
-        /**
-         * Bankaccountid
-         */
-        bankAccountId?: number | null;
-        /**
-         * Offererid
-         */
-        offererId?: number | null;
-        /**
-         * Amountpositiveonly
-         */
-        amountPositiveOnly?: boolean | null;
-        /**
-         * Amountnegativeonly
-         */
-        amountNegativeOnly?: boolean | null;
-    };
-    url: '/v2/finance/invoices';
-};
-
-export type getV2FinanceInvoicesErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getV2FinanceInvoicesError = getV2FinanceInvoicesErrors[keyof getV2FinanceInvoicesErrors];
-
-export type getV2FinanceInvoicesResponses = {
-    /**
-     * OK
-     */
-    200: InvoiceListV2ResponseModel;
-};
-
-export type getV2FinanceInvoicesResponse = getV2FinanceInvoicesResponses[keyof getV2FinanceInvoicesResponses];
 
 export type postV2OffersData = {
     body: PostOfferBodyModel;

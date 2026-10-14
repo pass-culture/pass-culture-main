@@ -1,6 +1,6 @@
-import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import type { InvoiceResponseModel } from '@/apiClient/v1'
 
-export type ExtendedInvoiceResponseV2Model = InvoiceResponseV2Model & {
+export type ExtendedInvoiceResponseModel = InvoiceResponseModel & {
   id: string
   isCaledonian?: boolean
 }
