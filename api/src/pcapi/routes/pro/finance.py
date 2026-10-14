@@ -8,8 +8,10 @@ from pcapi.core.finance import repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.pro.blueprint import pro_blueprint
 from pcapi.routes.serialization import finance_serialize
+from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import pdf
 from pcapi.utils import rest
@@ -184,3 +186,30 @@ def get_rejected_bank_accounts(
             for settlement, venues in settlements_and_venues
         ]
     )
+
+
+@pro_blueprint.route("/finance/reimbursements/csv", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(
+    json_format=False,
+    response_headers={
+        "Content-Type": "text/csv; charset=utf-8;",
+        "Content-Disposition": "attachment; filename=remboursements_pass_culture.csv",
+    },
+    api=blueprint.pro_schema,
+    query_params_as_list=["invoicesReferences"],
+)
+def get_reimbursements_csv(query: reimbursement_csv_serialize.ReimbursementCsvByInvoicesModel) -> bytes:
+    offerers_ids = repository.get_offerer_ids_from_invoice_references(references=query.invoicesReferences)
+
+    if not offerers_ids:
+        raise resource_not_found_error()
+
+    for offerer_id in offerers_ids:
+        rest.check_user_has_access_to_offerer(current_user, offerer_id=offerer_id)
+
+    reimbursement_details = reimbursement_csv_serialize.find_reimbursement_details_by_invoices(query.invoicesReferences)
+    reimbursement_details_csv = reimbursement_csv_serialize.generate_reimbursement_details_csv(reimbursement_details)
+
+    return reimbursement_details_csv.encode("utf-8-sig")

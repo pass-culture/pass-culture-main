@@ -3,24 +3,28 @@ from io import StringIO
 
 import pytest
 
-import pcapi.core.finance.factories as finance_factories
-import pcapi.core.finance.models as finance_models
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
+from tests.conftest import TestClient
+
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
+URL = "/finance/reimbursements/csv"
 
-def test_without_invoices_references(client):
+
+def test_without_invoices_references(client: TestClient):
     user_offerer = offerers_factories.UserOffererFactory()
     pro = user_offerer.user
 
@@ -28,13 +32,13 @@ def test_without_invoices_references(client):
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # rollback
     with testing.assert_num_queries(num_queries):
-        response = client.get("/v2/reimbursements/csv")
+        response = client.get(URL)
         assert response.status_code == 400
 
     assert response.json["invoicesReferences"] == ["Ce champ est obligatoire"]
 
 
-def test_with_pricings(client):
+def test_with_pricings(client: TestClient):
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
@@ -71,7 +75,7 @@ def test_with_pricings(client):
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     with testing.assert_num_queries(queries):
-        response = client.get(f"/v2/reimbursements/csv?{invoices_references_str}")
+        response = client.get(f"{URL}?{invoices_references_str}")
         assert response.status_code == 200
 
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
@@ -115,7 +119,7 @@ def test_with_pricings(client):
     assert row["Montant remboursé"] == f"{-pricing.amount / 100:.2f}".replace(".", ",")
 
 
-def test_with_pricings_collective_use_case(client):
+def test_with_pricings_collective_use_case(client: TestClient):
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
@@ -154,7 +158,7 @@ def test_with_pricings_collective_use_case(client):
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     with testing.assert_num_queries(queries):
-        response = client.get(f"/v2/reimbursements/csv?{invoices_references_str}")
+        response = client.get(f"{URL}?{invoices_references_str}")
         assert response.status_code == 200
 
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
@@ -214,7 +218,7 @@ def test_with_pricings_collective_use_case(client):
     assert row["Montant remboursé"] == f"{-pricing.amount / 100:.2f}".replace(".", ",")
 
 
-def test_return_only_searched_invoice(client):
+def test_return_only_searched_invoice(client: TestClient):
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
@@ -250,7 +254,7 @@ def test_return_only_searched_invoice(client):
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     with testing.assert_num_queries(queries):
-        response = client.get(f"/v2/reimbursements/csv?invoicesReferences={invoice_reference}")
+        response = client.get(f"{URL}?invoicesReferences={invoice_reference}")
         assert response.status_code == 200
 
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
@@ -261,19 +265,19 @@ def test_return_only_searched_invoice(client):
     assert len(rows) == 1
 
 
-def test_too_many_invoices_searched_returns_an_error(client):
+def test_too_many_invoices_searched_returns_an_error(client: TestClient):
     pro = users_factories.ProFactory()
 
     client = client.with_session_auth(pro.email)
     references = "invoicesReferences=" + "&invoicesReferences=".join([str(x) for x in range(80)])
 
-    response = client.get(f"/v2/reimbursements/csv?{references}")
+    response = client.get(f"{URL}?{references}")
 
     assert response.status_code == 400
     assert response.json == {"invoicesReferences": ["Cette liste doit avoir une taille maximum de 75"]}
 
 
-def test_booking_with_empty_use_date_should_be_ok(client):
+def test_booking_with_empty_use_date_should_be_ok(client: TestClient):
     """A booking can be reimbursed and then cancelled by a finance event
 
     In this case, the booking won't have a use date anymore. Check that
@@ -302,7 +306,7 @@ def test_booking_with_empty_use_date_should_be_ok(client):
     offerers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
 
     client = client.with_session_auth(pro.email)
-    response = client.get(f"/v2/reimbursements/csv?invoicesReferences={invoice.reference}")
+    response = client.get(f"{URL}?invoicesReferences={invoice.reference}")
     assert response.status_code == 200
 
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"

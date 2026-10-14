@@ -27,7 +27,7 @@ vi.mock('@/commons/utils/downloadFile', () => ({
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getReimbursementsCsvV2: vi.fn(),
+    getReimbursementsCsv: vi.fn(),
   },
 }))
 
@@ -163,7 +163,7 @@ describe('<InvoiceActions />', () => {
   it('should display error message when CSV download fails', async () => {
     const user = userEvent.setup()
 
-    vi.mocked(api.getReimbursementsCsvV2).mockRejectedValueOnce(
+    vi.mocked(api.getReimbursementsCsv).mockRejectedValueOnce(
       new Error('Network error')
     )
 
@@ -186,7 +186,7 @@ describe('<InvoiceActions />', () => {
   it('should successfully download the CSV details for this invoice only', async () => {
     const user = userEvent.setup()
 
-    vi.mocked(api.getReimbursementsCsvV2).mockResolvedValueOnce(
+    vi.mocked(api.getReimbursementsCsv).mockResolvedValueOnce(
       'csv-blob' as never
     )
 
@@ -201,7 +201,7 @@ describe('<InvoiceActions />', () => {
     await user.click(csvMenuItem)
 
     await waitFor(() => {
-      expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith({
+      expect(api.getReimbursementsCsv).toHaveBeenCalledWith({
         query: { invoicesReferences: [mockInvoice.reference] },
         parseAs: 'blob',
       })

@@ -67,7 +67,7 @@ export function InvoiceActions({
         buttonType: 'unique',
       })
       downloadFile(
-        (await api.getReimbursementsCsvV2({
+        (await api.getReimbursementsCsv({
           query: {
             invoicesReferences: [reference],
           },

@@ -27,7 +27,7 @@ vi.mock('@/commons/utils/downloadFile', () => ({
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getReimbursementsCsvV2: vi.fn(),
+    getReimbursementsCsv: vi.fn(),
     getCombinedInvoices: vi.fn(),
   },
 }))
@@ -208,7 +208,7 @@ describe('<InvoiceDownloadActionsBar />', () => {
 
     it('should download the CSV details and log the event on success', async () => {
       const user = userEvent.setup()
-      vi.mocked(api.getReimbursementsCsvV2).mockResolvedValueOnce(
+      vi.mocked(api.getReimbursementsCsv).mockResolvedValueOnce(
         'csv-blob' as never
       )
 
@@ -223,7 +223,7 @@ describe('<InvoiceDownloadActionsBar />', () => {
         screen.getByRole('button', { name: DOWNLOAD_REIMBURSEMENTS_LABEL })
       )
 
-      expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith({
+      expect(api.getReimbursementsCsv).toHaveBeenCalledWith({
         query: { invoicesReferences: ['INV-1', 'INV-2'] },
         parseAs: 'blob',
       })
@@ -244,7 +244,7 @@ describe('<InvoiceDownloadActionsBar />', () => {
 
     it('should show a generic error when downloading the CSV details fails', async () => {
       const user = userEvent.setup()
-      vi.mocked(api.getReimbursementsCsvV2).mockRejectedValueOnce(
+      vi.mocked(api.getReimbursementsCsv).mockRejectedValueOnce(
         new Error('boom')
       )
 
@@ -284,7 +284,7 @@ describe('<InvoiceDownloadActionsBar />', () => {
       expect(snackBarError).toHaveBeenCalledWith(
         `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`
       )
-      expect(api.getReimbursementsCsvV2).not.toHaveBeenCalled()
+      expect(api.getReimbursementsCsv).not.toHaveBeenCalled()
     })
   })
 })
