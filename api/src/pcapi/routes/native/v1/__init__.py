@@ -24,3 +24,4 @@ def install_routes(app: Flask) -> None:
     from . import settings
     from . import subscription
     from . import universal_links
+    from . import wishlists

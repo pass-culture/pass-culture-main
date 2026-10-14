@@ -38,6 +38,7 @@ def install_models() -> None:
     import pcapi.core.reminders.models
     import pcapi.core.subscription.models
     import pcapi.core.users.models
+    import pcapi.core.wishlists.models
     import pcapi.models.beneficiary_import
     import pcapi.models.beneficiary_import_status
     import pcapi.models.feature

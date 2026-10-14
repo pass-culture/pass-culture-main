@@ -28,7 +28,7 @@ def _discovery_statement() -> sa.Select[tuple[Discovery]]:
     )
 
 
-def _get_work_for_offer(offer_id: int) -> tuple[Offer, Work]:
+def get_work_for_offer(offer_id: int) -> tuple[Offer, Work]:
     offer = db.session.execute(
         sa.select(Offer)
         .options(sa_orm.joinedload(Offer.work), sa_orm.joinedload(Offer.product).joinedload(Product.work))
@@ -48,7 +48,7 @@ def create_discovery(user_id: int, data: "CreateDiscoverySchema") -> Discovery:
     offer_origin_id = None
 
     if data.offer_id is not None:
-        offer, work = _get_work_for_offer(data.offer_id)
+        offer, work = get_work_for_offer(data.offer_id)
         work_id = work.id
         offer_origin_id = offer.id
     elif work_id is not None:
