@@ -4,7 +4,7 @@
 
 .cumulated-views {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: var(--size-spacing-l);
   min-width: 0;
 }
@@ -19,8 +19,4 @@
   InvalidStateError: CanvasRenderingContext2D.setTransform: Canvas exceeds max size. */
   max-height: rem.torem(2000px);
   margin-top: var(--size-spacing-l);
-}
-
-.visually-hidden {
-  @include a11y.visually-hidden;
 }

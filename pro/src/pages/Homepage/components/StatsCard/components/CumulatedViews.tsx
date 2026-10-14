@@ -8,13 +8,22 @@ import {
   TimeSeriesScale,
   Tooltip,
 } from 'chart.js'
-import { useId, useMemo, useRef } from 'react'
+import { useId, useMemo, useRef, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
 import 'chartjs-adapter-date-fns'
 
-import { getDateTimeToFrenchText } from '@/commons/utils/date'
+import { noop } from 'commons/utils/noop'
+import { ToggleButtonGroup } from 'pages/Homepage/components/StatsCard/components/ToggleButtonGroup/ToggleButtonGroup'
+import { Table, TableVariant } from 'ui-kit/Table/Table'
 
-import type { VenueOffersPeriodStatsModel } from 'apiClient/v1'
+import { getDateTimeToFrenchText } from '@/commons/utils/date'
+import strokeSignalIcon from '@/icons/stroke-signal.svg'
+import strokeTableIcon from '@/icons/stroke-table.svg'
+
+import type {
+  VenueMonthlyViewModel,
+  VenueOffersPeriodStatsModel,
+} from 'apiClient/v1'
 import { buildDatasets, buildV2GraphOptions, computeGraphSteps } from '../utils'
 import styles from './CumulatedViews.module.scss'
 
@@ -35,6 +44,9 @@ Chart.register(
 
 export const CumulatedViews = ({ periodStats }: CumulatedViewsProps) => {
   const chartRef = useRef<ChartJS<'bar', XYPoint[], unknown> | null>(null)
+  const [selectedTab, setSelectedTab] = useState<'chart' | 'table'>('chart')
+
+  const chartContainerId = useId()
 
   const { recentViews, minViews, maxViews, firstMonth } = useMemo(() => {
     const filtered: { date: Date; views: number; rawDate: string }[] = []
@@ -76,7 +88,6 @@ export const CumulatedViews = ({ periodStats }: CumulatedViewsProps) => {
 
   const data = useMemo(() => buildDatasets(recentViews, true), [recentViews])
 
-  const chartId = useId()
   const stepSize = useMemo(
     () => computeGraphSteps(maxViews, minViews),
     [minViews, maxViews]
@@ -86,43 +97,84 @@ export const CumulatedViews = ({ periodStats }: CumulatedViewsProps) => {
     [stepSize, firstMonth, periodStats]
   )
 
+  const columns = [
+    {
+      id: 'month',
+      label: 'Mois',
+      render: (model: VenueMonthlyViewModel) => (
+        <span>
+          {getDateTimeToFrenchText(new Date(model.month), {
+            month: 'long',
+          })}
+        </span>
+      ),
+    },
+    {
+      id: 'views',
+      label: 'Nombre de consultations',
+      render: (model: VenueMonthlyViewModel) => <span>{model.views}</span>,
+    },
+  ]
+  const left = {
+    id: useId(),
+    label: 'Graphique',
+    icon: strokeSignalIcon,
+    handleClick: () => setSelectedTab('chart'),
+  }
+  const right = {
+    id: useId(),
+    label: 'Tableau',
+    handleClick: () => setSelectedTab('table'),
+    icon: strokeTableIcon,
+  }
   return (
     <div className={styles['cumulated-views']}>
-      <div className={styles['chart']}>
-        {/* The visually-hidden table below is the accessible equivalent of this chart,
-              so the chart itself is hidden from assistive technologies to avoid
-              announcing the same data twice. */}
-        <Bar
-          ref={chartRef}
-          data={data}
-          options={graphOptions}
-          role="img"
-          aria-hidden={true}
-        />
-        {/* We wrap in a div, because the .visually-hidden class doesn't work on Chrome on <table> element */}{' '}
-        <div className={styles['visually-hidden']}>
-          <table id={`chart-description-${chartId}`}>
-            <caption id={`chart-title-${chartId}`}>
-              Nombre de vues cumulées de toutes vos offres sur les 6 derniers
-              mois
-            </caption>
-
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Nombre de vues cumulées</th>
-              </tr>
-            </thead>
-            <tbody>
-              {periodStats?.viewsByMonth.map((dailyView) => (
-                <tr key={dailyView.month}>
-                  <td>{dailyView.month}</td>
-                  <td>{dailyView.views}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <ToggleButtonGroup
+        left={left}
+        right={right}
+        selected="left"
+        controls={chartContainerId}
+      />
+      <div className={styles['chart']} id={chartContainerId}>
+        {selectedTab === 'chart' && (
+          <Bar
+            ref={chartRef}
+            data={data}
+            options={graphOptions}
+            role="tabpanel"
+            aria-labelledby={left.id}
+            aria-hidden={true}
+          />
+        )}
+        {selectedTab === 'table' && (
+          <div role="tabpanel" aria-labelledby={right.id}>
+            <Table
+              title={`Nombre de vues cumulées de toutes vos offres sur les ${periodStats?.viewsByMonth.length ?? 0} derniers mois`}
+              columns={columns}
+              data={(
+                periodStats?.viewsByMonth.map((i) => ({ ...i, id: i.month })) ??
+                []
+              ).reverse()}
+              isLoading={false}
+              variant={TableVariant.COLLAPSE}
+              noResult={{
+                message: '',
+                subtitle: undefined,
+                resetMessage: undefined,
+                onFilterReset: noop,
+              }}
+              noData={{
+                hasNoData: false,
+                message: {
+                  icon: '',
+                  title: '',
+                  subtitle: undefined,
+                  cta: undefined,
+                },
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   )
