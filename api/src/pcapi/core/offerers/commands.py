@@ -12,13 +12,10 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.core.offerers import update_offerer_stats as offerers_stats
-from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.blueprint import Blueprint
-from pcapi.utils.transaction_manager import atomic
-from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -201,18 +198,3 @@ def clean_offerer_invitations(apply: bool = False) -> None:
     else:
         db.session.rollback()
         logger.info("clean_offerer_invitations was a dry-run -- rollback")
-
-
-@blueprint.cli.command("finalize_closing_venue")
-@click.option("--venue-id", type=int, required=True, help="venue id")
-@click.option("--author-id", type=int, required=True, help="author (user) id")
-@click.option("--apply", is_flag=True)
-def finalize_closing_venue_command(venue_id: int, author_id: int, apply: bool = False) -> None:
-    venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_id).one()
-    author = db.session.query(users_models.User).filter(users_models.User.id == author_id).one()
-    with atomic():
-        payload = offerers_tasks.DeactivateVenueOffersPayload(venue_id=venue.id, author_id=author.id)
-        offerers_tasks.deactivate_venue_offers_task(payload.model_dump())
-
-        if not apply:
-            mark_transaction_as_invalid()
