@@ -90,8 +90,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Argo Workflows CLI 
-        uses: pass-culture/common-workflows/actions/setup-argo@66d0c45fd010bce5b0e7873e862eb54a2d564f39 # v1.0.0
+      - name: Install Argo Workflows CLI
+        uses: pass-culture/common-workflows/actions/setup-argo@a0f32ad10278941536ca6c5a17828a48196a2f2d # v1.1.0
+        with:
+          token: ${{ github.token }}
 
       - name: Install passdirector
         uses: pass-culture/common-workflows/actions/setup-passdirector@b470d76b19d7f3ebcda367f5e17484228021d388 # v1.0.0
