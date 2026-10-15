@@ -5009,29 +5009,6 @@ class ReplacePriceCategoriesTest:
 
 @pytest.mark.usefixtures("db_session")
 class MoveEventOfferTest:
-    def test_move_event_offer_deletes_pro_advice(self):
-        offerer = offerers_factories.OffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offerers_factories.VenuePricingPointLinkFactory(
-            venue=venue,
-            pricingPoint=venue,
-            timespan=[date_utils.get_naive_utc_now() - timedelta(days=1), None],
-        )
-        offer = factories.EventOfferFactory(venue=venue)
-        factories.ProAdviceFactory(offer=offer, venue=venue)
-
-        new_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offerers_factories.VenuePricingPointLinkFactory(
-            venue=new_venue,
-            pricingPoint=new_venue,
-            timespan=[date_utils.get_naive_utc_now() - timedelta(days=1), None],
-        )
-        api.move_event_offer(offer, new_venue)
-
-        db.session.refresh(offer)
-        assert offer.venue == new_venue
-        assert offer.proAdvice is None
-
     def test_move_event_offer_ends_active_headline_offer(self):
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -5344,17 +5321,6 @@ class FetchInconsistentProductsTest:
 
         assert api.fetch_inconsistent_products() == {product.id}
 
-    def test_pro_advices_count(self) -> None:
-        product_1 = factories.ProductFactory()
-        product_2 = factories.ProductFactory()
-        factories.ProAdviceFactory(offer__product=product_1)
-        factories.ProAdviceFactory(offer__product=product_2)
-
-        product_1.proAdvicesCount = 0
-        product_2.proAdvicesCount = 1
-
-        assert api.fetch_inconsistent_products() == {product_1.id}
-
     def test_ids_are_unique(self) -> None:
         product = factories.ProductFactory()
         chronicles_factories.ChronicleFactory.create(products=[product], isSocialMediaDiffusible=True)
@@ -5380,8 +5346,6 @@ class UpdateProductCountsTest:
         )
         reactions_factories.ReactionFactory(product=product_1, reactionType=reactions_models.ReactionTypeEnum.DISLIKE)
         chronicles_factories.ChronicleFactory.create(products=[product_1], isSocialMediaDiffusible=True)
-        factories.ProAdviceFactory(offer__product=product_1)
-        factories.ProAdviceFactory(offer__product=product_2)
 
         product_1.likesCount = 0
         product_2.likesCount = 0
@@ -5391,5 +5355,3 @@ class UpdateProductCountsTest:
         assert product_1.likesCount == 2
         assert product_2.likesCount == 2
         assert product_1.chroniclesCount == 1
-        assert product_1.proAdvicesCount == 1
-        assert product_2.proAdvicesCount == 1

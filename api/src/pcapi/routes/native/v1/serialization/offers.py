@@ -488,6 +488,7 @@ class OffersStocksRequest(HttpBodyModel):
     offer_ids: list[int]
 
 
+# TODO: DELETE when native advices deleted
 class OfferProAdviceQuery(HttpQueryParamsModel):
     max_content_length: int | None = None
     page: int = Field(default=1, ge=1, le=20)
@@ -503,6 +504,7 @@ class OfferProAdviceQuery(HttpQueryParamsModel):
         return self
 
 
+# TODO: DELETE when native advices deleted
 class OfferProAdvice(HttpBodyModel):
     author: str | None = None
     content: str
@@ -531,6 +533,7 @@ class OfferProAdvice(HttpBodyModel):
         )
 
 
+# TODO: DELETE when native advices deleted
 class OfferProAdvices(HttpBodyModel):
     pro_advices: list[OfferProAdvice]
     nb_results: int

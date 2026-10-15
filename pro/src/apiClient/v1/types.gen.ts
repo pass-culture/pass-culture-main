@@ -1823,8 +1823,7 @@ export type ExposureEventResponseModel = {
  */
 export enum ExposureEventType {
     HIGHLIGHT = 'HIGHLIGHT',
-    HEADLINE = 'HEADLINE',
-    PRO_ADVICE = 'PRO_ADVICE'
+    HEADLINE = 'HEADLINE'
 }
 
 /**
@@ -3145,13 +3144,6 @@ export type GetOfferersNamesResponseModel = {
 };
 
 /**
- * GetProAdviceResponseModel
- */
-export type GetProAdviceResponseModel = {
-    proAdvice: ProAdviceModel | null;
-};
-
-/**
  * GetProductInformations
  */
 export type GetProductInformations = {
@@ -3942,10 +3934,6 @@ export type ListOffersOfferResponseModel = {
      * Bookingscount
      */
     bookingsCount?: number;
-    /**
-     * Hasproadvice
-     */
-    hasProAdvice: boolean;
     /**
      * Highlightrequests
      */
@@ -5373,13 +5361,6 @@ export type PatchOfferPublishBodyModel = {
 };
 
 /**
- * PatchProAdviceResponseModel
- */
-export type PatchProAdviceResponseModel = {
-    proAdvice: ProAdviceModel | null;
-};
-
-/**
  * PhoneValidationStatusType
  */
 export enum PhoneValidationStatusType {
@@ -5636,13 +5617,6 @@ export type PostOffererResponseModel = {
 };
 
 /**
- * PostProAdviceResponseModel
- */
-export type PostProAdviceResponseModel = {
-    proAdvice: ProAdviceModel | null;
-};
-
-/**
  * PostVenueProviderBody
  */
 export type PostVenueProviderBody = {
@@ -5702,38 +5676,6 @@ export type PriceCategoryResponseModel = {
      * Price
      */
     price: number;
-};
-
-/**
- * ProAdviceBodyModel
- */
-export type ProAdviceBodyModel = {
-    /**
-     * Author
-     */
-    author?: string | null;
-    /**
-     * Content
-     */
-    content: string;
-};
-
-/**
- * ProAdviceModel
- */
-export type ProAdviceModel = {
-    /**
-     * Author
-     */
-    author: string | null;
-    /**
-     * Content
-     */
-    content: string;
-    /**
-     * Updatedat
-     */
-    updatedAt: string;
 };
 
 /**
@@ -10040,130 +9982,6 @@ export type putOffersByOfferIdPriceCategoriesResponses = {
 };
 
 export type putOffersByOfferIdPriceCategoriesResponse = putOffersByOfferIdPriceCategoriesResponses[keyof putOffersByOfferIdPriceCategoriesResponses];
-
-export type deleteOffersByOfferIdProAdviceData = {
-    body?: never;
-    path: {
-        offer_id: number;
-    };
-    query?: never;
-    url: '/offers/{offer_id}/pro_advice';
-};
-
-export type deleteOffersByOfferIdProAdviceErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type deleteOffersByOfferIdProAdviceError = deleteOffersByOfferIdProAdviceErrors[keyof deleteOffersByOfferIdProAdviceErrors];
-
-export type deleteOffersByOfferIdProAdviceResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type deleteOffersByOfferIdProAdviceResponse = deleteOffersByOfferIdProAdviceResponses[keyof deleteOffersByOfferIdProAdviceResponses];
-
-export type getOffersByOfferIdProAdviceData = {
-    body?: never;
-    path: {
-        offer_id: number;
-    };
-    query?: never;
-    url: '/offers/{offer_id}/pro_advice';
-};
-
-export type getOffersByOfferIdProAdviceErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getOffersByOfferIdProAdviceError = getOffersByOfferIdProAdviceErrors[keyof getOffersByOfferIdProAdviceErrors];
-
-export type getOffersByOfferIdProAdviceResponses = {
-    /**
-     * OK
-     */
-    200: GetProAdviceResponseModel;
-};
-
-export type getOffersByOfferIdProAdviceResponse = getOffersByOfferIdProAdviceResponses[keyof getOffersByOfferIdProAdviceResponses];
-
-export type patchOffersByOfferIdProAdviceData = {
-    body: ProAdviceBodyModel;
-    path: {
-        offer_id: number;
-    };
-    query?: never;
-    url: '/offers/{offer_id}/pro_advice';
-};
-
-export type patchOffersByOfferIdProAdviceErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type patchOffersByOfferIdProAdviceError = patchOffersByOfferIdProAdviceErrors[keyof patchOffersByOfferIdProAdviceErrors];
-
-export type patchOffersByOfferIdProAdviceResponses = {
-    /**
-     * OK
-     */
-    200: PatchProAdviceResponseModel;
-};
-
-export type patchOffersByOfferIdProAdviceResponse = patchOffersByOfferIdProAdviceResponses[keyof patchOffersByOfferIdProAdviceResponses];
-
-export type postOffersByOfferIdProAdviceData = {
-    body: ProAdviceBodyModel;
-    path: {
-        offer_id: number;
-    };
-    query?: never;
-    url: '/offers/{offer_id}/pro_advice';
-};
-
-export type postOffersByOfferIdProAdviceErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type postOffersByOfferIdProAdviceError = postOffersByOfferIdProAdviceErrors[keyof postOffersByOfferIdProAdviceErrors];
-
-export type postOffersByOfferIdProAdviceResponses = {
-    /**
-     * Created
-     */
-    201: PostProAdviceResponseModel;
-};
-
-export type postOffersByOfferIdProAdviceResponse = postOffersByOfferIdProAdviceResponses[keyof postOffersByOfferIdProAdviceResponses];
 
 export type getOffersByOfferIdStocksStatsData = {
     body?: never;

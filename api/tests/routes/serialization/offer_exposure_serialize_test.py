@@ -131,24 +131,6 @@ class BuildOfferExposureTest:
 
         assert response.events == []
 
-    def test_pro_advice_event(self):
-        offer = offers_factories.OfferFactory()
-        offers_factories.ProAdviceFactory(
-            offer=offer,
-            updatedAt=datetime.datetime(2026, 4, 1),
-        )
-
-        response = GetOfferExposureResponseModel.build(offer, CUMULATIVE_VIEWS)
-
-        assert len(response.events) == 1
-        event = response.events[0]
-        assert event.type == ExposureEventType.PRO_ADVICE
-        assert event.name is None
-        assert event.start_date == datetime.datetime(2026, 4, 1)
-        assert event.end_date is None
-        # ongoing -> views_at(now=2026-06-01) - views_at(start - 1 day = 2026-03-31) = 105 - 45
-        assert event.views_on_period == 60
-
     def test_returns_three_most_recent_events_sorted_by_start_date(self):
         offer = offers_factories.OfferFactory()
         offers_factories.HeadlineOfferFactory(
@@ -165,13 +147,12 @@ class BuildOfferExposureTest:
         )
         criterion = criteria_factories.CriterionFactory(highlight=highlight)
         criteria_factories.OfferCriterionFactory(offerId=offer.id, criterionId=criterion.id)
-        offers_factories.ProAdviceFactory(offer=offer, updatedAt=datetime.datetime(2026, 4, 1))
 
         response = GetOfferExposureResponseModel.build(offer, CUMULATIVE_VIEWS)
 
         assert len(response.events) == 3
         assert [event.type for event in response.events] == [
-            ExposureEventType.PRO_ADVICE,
             ExposureEventType.HIGHLIGHT,
+            ExposureEventType.HEADLINE,
             ExposureEventType.HEADLINE,
         ]

@@ -149,15 +149,6 @@
                  target="_blank">{{ offer.metaData.videoUrl }}</a>
             {% endcall %}
           {% endif %}
-          {% if offer.proAdvice %}
-            {% call description_detail_horizontal("Recommandation") %}
-              {{ offer.proAdvice.content | nl2br }}
-              {% if offer.proAdvice.author %}
-                <br>
-                <small class="text-muted">— {{ offer.proAdvice.author }}</small>
-              {% endif %}
-            {% endcall %}
-          {% endif %}
           {% set artist_links = offer.artistOfferLinks | sort(attribute="artist_name") %}
           {% if artist_links %}
             {% call description_detail_horizontal("Artiste" + (artist_links | length | pluralize) + " associé" + (artist_links | length | pluralize)) %}

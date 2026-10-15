@@ -231,7 +231,6 @@ class AlgoliaSerializationMixin:
             offer.product.chroniclesCount if offer.product and offer.product.chroniclesCount else offer.chroniclesCount
         )
         likes_count = offer.product.likesCount if offer.product and offer.product.likesCount else offer.likesCount
-        pro_advices_count = offer.product.proAdvicesCount if offer.product else (1 if offer.hasProAdvice else 0)
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
         object_to_index: dict[str, typing.Any] = {
@@ -252,7 +251,6 @@ class AlgoliaSerializationMixin:
                 "gtlCodeLevel3": gtl_code_3,
                 "gtlCodeLevel4": gtl_code_4,
                 "hasImage": offer.thumbUrl is not None,
-                "proAdvicesCount": pro_advices_count or None,
                 "indexedAt": date_utils.get_naive_utc_now().isoformat(),
                 "hasUrl": offer.hasUrl,
                 "isDuo": offer.isDuo,

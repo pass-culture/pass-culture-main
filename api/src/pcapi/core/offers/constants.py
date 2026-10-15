@@ -33,4 +33,3 @@ MAX_EXPOSURE_EVENTS: typing.Final = 3
 class ExposureEventType(str, enum.Enum):
     HIGHLIGHT = "HIGHLIGHT"
     HEADLINE = "HEADLINE"
-    PRO_ADVICE = "PRO_ADVICE"
