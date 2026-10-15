@@ -1,0 +1,29 @@
+{
+  "name": "mise",
+  // "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "build": {
+    "dockerfile": "../Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers-extra/features/mise:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "hverlin.mise-vscode"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "mise.binPath": "/usr/local/bin/mise",
+        "mise.customBinaryExtensions": [],
+        "mise.customFolderExtensions": [],
+        "mise.miseEnv": "dev"
+      }
+    }
+  },
+  "postCreateCommand": "mise --env dev install",
+  "mounts": [],
+  "containerEnv": {},
+  "remoteEnv": {}
+}
