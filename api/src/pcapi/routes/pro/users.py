@@ -210,7 +210,8 @@ def get_user_email_pending_validation() -> users_serializers.UserEmailValidation
 @login_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_schema)
 def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> None:
-    user = current_user._get_current_object()
+    user: users_models.User = current_user._get_current_object()
+
     if not user.has_pro_role:
         raise ApiErrors(
             {
@@ -219,11 +220,13 @@ def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> Non
                 ]
             }
         )
+
     new_password = body.new_password
     new_confirmation_password = body.new_confirmation_password
     old_password = body.old_password
     check_password_validity(new_password, new_confirmation_password, old_password, user)
-    update_user_password(user, new_password)
+    update_user_password(user=user, new_password=new_password, keep_current_session=True)
+
     transactional_mails.send_reset_password_email_to_connected_pro(user)
 
 

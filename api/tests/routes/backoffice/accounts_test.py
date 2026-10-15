@@ -6170,10 +6170,11 @@ class InvalidatePublicAccountPasswordTest(PostEndpointHelper):
 
     # session
     # targeted user by id
-    # DELETE user sessions
+    # DELETE user native sessions
+    # DELETE user pro sessions
     # UPDATE user
     # INSERT actionhistory
-    expected_queries = 5
+    expected_queries = 6
 
     def test_invalidate_public_account_password(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory()
@@ -6941,7 +6942,7 @@ class BatchInvalidatePublicAccountPasswordTest(PostEndpointHelper):
 
         expected_num_queries = 1  # session + current user
         expected_num_queries += 1  # select users
-        expected_num_queries += len(users) * 2  # for each user: delete native sessions + update password
+        expected_num_queries += len(users) * 3  # for each user: delete native sessions + pro sessions + update password
         expected_num_queries += len(users)  # for each user: insert action history
         expected_num_queries += 1  # select users to render the updated rows
         expected_num_queries += 3  # + selectinloaded: fraud checks, deposits, actions history
