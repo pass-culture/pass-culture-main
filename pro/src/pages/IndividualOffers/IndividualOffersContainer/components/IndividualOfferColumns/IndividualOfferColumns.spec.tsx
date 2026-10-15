@@ -84,6 +84,7 @@ const renderTableWithOffer = (
   return renderWithProviders(
     <HeadlineOfferContextProvider>
       <Table
+        a11y-summary="Chaque ligne correspond à une offre individuelle. Les colonnes présentent son nom, sa localisation, ses stocks, sa publication et ses réservations."
         columns={columns}
         data={[offer]}
         isLoading={false}

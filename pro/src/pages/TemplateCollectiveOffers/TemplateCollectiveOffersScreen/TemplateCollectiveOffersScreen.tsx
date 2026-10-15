@@ -185,6 +185,7 @@ export const TemplateCollectiveOffersScreen = ({
       >
         <Table
           title="Offres vitrines"
+          a11y-summary="Chaque ligne correspond à une offre vitrine. Les colonnes présentent son nom, ses dates, sa localisation et son statut."
           columns={columns}
           data={currentPageItems}
           allData={sortedOffers}

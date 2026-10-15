@@ -190,6 +190,7 @@ export const IndividualOffersContainer = ({
       >
         <Table
           title="Offres individuelles"
+          a11y-summary="Chaque ligne correspond à une offre individuelle. Les colonnes présentent son nom, sa localisation, ses stocks, sa publication et ses réservations."
           columns={columns}
           data={currentPageOffersSubset}
           allData={offers}

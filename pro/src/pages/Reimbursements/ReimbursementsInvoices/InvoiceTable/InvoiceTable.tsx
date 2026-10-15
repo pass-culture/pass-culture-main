@@ -164,6 +164,7 @@ export const InvoiceTable = ({
     <div className={styles['invoices-table']}>
       <Table
         title="Justificatif de remboursement ou de note de débit"
+        a11y-summary="Chaque ligne correspond à un justificatif. Les colonnes présentent sa référence, son type, sa date d’émission, son montant et les actions de téléchargement."
         columns={columns}
         data={invoices}
         selectable={true}

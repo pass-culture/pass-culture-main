@@ -55,6 +55,7 @@ function renderTable(
 ) {
   return render(
     <Table<RowType>
+      a11y-summary="Chaque ligne présente un nom et une valeur."
       columns={columns}
       data={data}
       isLoading={false}
@@ -77,6 +78,16 @@ function renderTable(
 }
 
 describe('<Table />', () => {
+  it('includes a11y-summary in the accessible table caption', () => {
+    renderTable({ title: 'Données de test' })
+
+    expect(
+      screen.getByRole('table', {
+        name: 'Données de test. Chaque ligne présente un nom et une valeur.',
+      })
+    ).toBeInTheDocument()
+  })
+
   it('renders loading skeletons when isLoading is true', () => {
     renderTable({ data: [], isLoading: true })
     expect(
