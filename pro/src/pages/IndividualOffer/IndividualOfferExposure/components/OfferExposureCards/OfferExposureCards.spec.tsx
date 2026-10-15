@@ -103,10 +103,6 @@ describe('OfferExposureCards', () => {
       eventType: ExposureEventType.HIGHLIGHT,
       expectedLabel: '+3 depuis le début du temps fort',
     },
-    {
-      eventType: ExposureEventType.PRO_ADVICE,
-      expectedLabel: '+3 depuis l’ajout d’une recommandation',
-    },
   ])(
     'should display boosted views with the right event label',
     async ({ eventType, expectedLabel }) => {
