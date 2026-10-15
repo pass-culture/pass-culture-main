@@ -206,6 +206,7 @@ export const CollectiveOffersScreen = ({
       >
         <Table
           title="Offres collectives"
+          a11ySummary="Chaque ligne correspond à une offre collective. Les colonnes présentent son nom, ses dates, son prix et le nombre de participants, son établissement, sa localisation et son statut. Une ligne complémentaire peut présenter la date d’expiration."
           columns={columns}
           data={currentPageItems}
           allData={sortedOffers}

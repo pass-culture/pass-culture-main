@@ -387,6 +387,11 @@ export function StocksCalendarTable({
       <Table
         columns={columns}
         title="Horaires, tarifs et stocks"
+        a11ySummary={
+          mode === OFFER_WIZARD_MODE.CREATION
+            ? 'Chaque ligne correspond à un stock pour une date, un horaire et un tarif. Les colonnes indiquent aussi la date limite de réservation et le nombre de places.'
+            : 'Chaque ligne correspond à un stock pour une date, un horaire et un tarif. Les colonnes indiquent aussi la date limite de réservation, le nombre de places restantes et le nombre de réservations.'
+        }
         selectable={mode === OFFER_WIZARD_MODE.CREATION}
         selectedIds={checkedStocks}
         onSelectionChange={(stocks) =>

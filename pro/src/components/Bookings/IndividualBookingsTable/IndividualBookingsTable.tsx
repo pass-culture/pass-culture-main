@@ -73,6 +73,7 @@ export const IndividualBookingsTable = ({
     >
       <Table
         title="Réservations individuelles"
+        a11ySummary="Chaque ligne correspond à une réservation. Le bouton « Détails » de la dernière colonne affiche, sous la ligne, le prix et l’historique de la réservation."
         columns={columns}
         data={currentPageItems}
         isLoading={isLoading}
