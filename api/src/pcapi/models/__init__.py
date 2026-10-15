@@ -11,6 +11,9 @@ from sqlalchemy.orm import DeclarativeBase
 from pcapi import settings
 
 
+DATABASE_ALLOWED_SSLMODES = ["disable", "allow", "prefer", "require", "verify-ca", "verify-full"]
+
+
 def install_models() -> None:
     """Let SQLAlchemy know about our database models."""
 
@@ -50,22 +53,67 @@ def json_serializer(obj: typing.Any) -> str:
         return pydantic_v1.json.pydantic_encoder(obj)
 
 
+def check_database_ssl_settings() -> None:
+    """Raise a ValueError if the database SSL settings are inconsistent."""
+    ssl_mode = settings.DATABASE_SSLMODE
+
+    if not ssl_mode:
+        return
+
+    if ssl_mode not in DATABASE_ALLOWED_SSLMODES:
+        raise ValueError(
+            f"Invalid DATABASE_SSLMODE: {ssl_mode}. Allowed values are: {', '.join(DATABASE_ALLOWED_SSLMODES)}"
+        )
+
+    if ssl_mode in ("verify-ca", "verify-full"):
+        if not all((settings.DATABASE_SSLROOTCERT, settings.DATABASE_SSLCERT, settings.DATABASE_SSLKEY)):
+            raise ValueError(
+                f"DATABASE_SSLROOTCERT, DATABASE_SSLCERT and DATABASE_SSLKEY are required "
+                f"when DATABASE_SSLMODE is {ssl_mode}."
+            )
+
+
+def get_db_options() -> list[str]:
+    """Build psycopg `-c` command-line options from the timeout settings."""
+    options = []
+    if settings.DATABASE_LOCK_TIMEOUT:
+        options.append(f"-c lock_timeout={settings.DATABASE_LOCK_TIMEOUT}")
+    if settings.DATABASE_STATEMENT_TIMEOUT:
+        options.append(f"-c statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
+    if settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT:
+        options.append(
+            f"-c idle_in_transaction_session_timeout={settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT}"
+        )
+    return options
+
+
+def get_db_connection_args() -> dict[str, str]:
+    """Build psycopg connection arguments from timeout and SSL settings."""
+    options = get_db_options()
+    connect_args: dict[str, str] = {}
+    if options:
+        connect_args["options"] = " ".join(options)
+    if settings.DATABASE_SSLMODE:
+        connect_args["sslmode"] = settings.DATABASE_SSLMODE
+    if settings.DATABASE_SSLROOTCERT:
+        connect_args["sslrootcert"] = settings.DATABASE_SSLROOTCERT
+    if settings.DATABASE_SSLCERT:
+        connect_args["sslcert"] = settings.DATABASE_SSLCERT
+    if settings.DATABASE_SSLKEY:
+        connect_args["sslkey"] = settings.DATABASE_SSLKEY
+    return connect_args
+
+
+check_database_ssl_settings()
+
 _engine_options = {
     "json_serializer": functools.partial(json.dumps, default=json_serializer),
     "pool_size": settings.DATABASE_POOL_SIZE,
 }
 
-_db_options = []
-if settings.DATABASE_LOCK_TIMEOUT:
-    _db_options.append("-c lock_timeout=%i" % settings.DATABASE_LOCK_TIMEOUT)
-if settings.DATABASE_STATEMENT_TIMEOUT:
-    _db_options.append("-c statement_timeout=%i" % settings.DATABASE_STATEMENT_TIMEOUT)
-if settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT:
-    _db_options.append(
-        "-c idle_in_transaction_session_timeout=%i" % settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT
-    )
-if _db_options:
-    _engine_options["connect_args"] = {"options": " ".join(_db_options)}
+_connection_args = get_db_connection_args()
+if _connection_args:
+    _engine_options["connect_args"] = _connection_args
 
 
 class Base(DeclarativeBase):
