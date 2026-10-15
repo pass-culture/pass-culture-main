@@ -104,6 +104,10 @@ class UpdateObjectsTest:
             siret="77567146400110",
             bookingEmail="toto@example.com",
             withdrawalDetails="Modalités",
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=False,
         )
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue=venue, internalId="PXXXXX", isDuo=False
@@ -155,6 +159,10 @@ class UpdateObjectsTest:
         assert created_offer.publicationDatetime == datetime(2023, 10, 15, tzinfo=UTC)
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
+        assert created_offer.audioDisabilityCompliant == True
+        assert created_offer.mentalDisabilityCompliant == False
+        assert created_offer.motorDisabilityCompliant == True
+        assert created_offer.visualDisabilityCompliant == False
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
