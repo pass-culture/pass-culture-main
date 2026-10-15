@@ -18,7 +18,6 @@ import { ModalHighlight } from '../HighlightHome/ModalHighlight/ModalHighlight'
 import cultureSurvey from './assets/culture-survey.png'
 import headlineOffer from './assets/headline-offer.png'
 import highlightOffer from './assets/highlight-offer.png'
-import offerRecommendation from './assets/offer-recommendation.png'
 import { EditoCardItem } from './components/EditoCardItem'
 import styles from './EditoCard.module.scss'
 
@@ -36,9 +35,6 @@ export const EditoCard = ({
   )
   const logCulturalSurveyClick = useFunctionOnce(() =>
     logEvent(HomepageEvents.CLICKED_CULTURAL_SURVEY)
-  )
-  const logRecommendationClick = useFunctionOnce(() =>
-    logEvent(HomepageEvents.CLICKED_RECOMMENDATION)
   )
 
   const highlightOfferCard = (
@@ -113,34 +109,12 @@ export const EditoCard = ({
     />
   )
 
-  const recommendationCard = (
-    <EditoCardItem
-      image={offerRecommendation}
-      title="Écrivez une recommandation pour conseiller votre offre"
-      subtitle="Partagez votre expertise en conseillant une ou plusieurs offres aux jeunes."
-      footer={
-        <Button
-          label="Choisir une offre"
-          variant={ButtonVariant.SECONDARY}
-          color={ButtonColor.NEUTRAL}
-          disabled={isReadOnly}
-          size={ButtonSize.SMALL}
-          fullWidth
-          to="/offres"
-          as="router-link"
-          onClick={logRecommendationClick}
-        />
-      }
-    />
-  )
-
   return (
     <Card>
       <Card.Header title="Comment valoriser vos offres auprès du public jeune ?" />
       <Card.Content>
         <div className={styles['content']}>
           {canDisplayHighlights ? highlightOfferCard : headlineOfferCard}
-          {recommendationCard}
           {culturalSurveyCard}
         </div>
       </Card.Content>

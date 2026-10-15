@@ -5,7 +5,6 @@ import {
 } from '@/apiClient/v1'
 
 type OfferEnhancementCardsVisibility = {
-  shouldDisplayRecommendationAction: boolean
   shouldDisplayHighlightAction: boolean
   shouldDisplayHeadlineAction: boolean
 }
@@ -15,7 +14,6 @@ export const getOfferEnhancementActionsVisibility = (
 ): OfferEnhancementCardsVisibility => {
   if (!offer) {
     return {
-      shouldDisplayRecommendationAction: false,
       shouldDisplayHighlightAction: false,
       shouldDisplayHeadlineAction: false,
     }
@@ -30,11 +28,6 @@ export const getOfferEnhancementActionsVisibility = (
   const isNotAProductWithoutImage = !isProduct || hasImage
 
   return {
-    shouldDisplayRecommendationAction: ![
-      OfferStatus.PENDING,
-      OfferStatus.REJECTED,
-      OfferStatus.DRAFT,
-    ].includes(offer.status),
     shouldDisplayHighlightAction:
       ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
         offer.status

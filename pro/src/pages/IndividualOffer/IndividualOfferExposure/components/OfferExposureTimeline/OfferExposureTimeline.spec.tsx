@@ -29,13 +29,6 @@ const defaultExposureEvents = [
     endDate: '2026-02-26T00:00:00Z',
     viewsOnPeriod: 10,
   },
-  {
-    type: ExposureEventType.PRO_ADVICE,
-    name: null,
-    startDate: '2025-12-23T00:00:00Z',
-    endDate: null,
-    viewsOnPeriod: null,
-  },
 ]
 
 function renderOfferExposureTimeline(
@@ -88,7 +81,6 @@ describe('OfferExposureTimeline', () => {
     expect(steps[1]).toHaveTextContent(
       '02/02 - 26/02 : Lien de votre offre au temps fort “Journées Européennes du Patrimoine”'
     )
-    expect(steps[2]).toHaveTextContent('23/12 : Ajout d’une recommandation')
   })
 
   it('should display dates in the offer department timezone', async () => {
@@ -109,7 +101,6 @@ describe('OfferExposureTimeline', () => {
     expect(steps[1]).toHaveTextContent(
       '01/02 - 25/02 : Lien de votre offre au temps fort “Journées Européennes du Patrimoine”'
     )
-    expect(steps[2]).toHaveTextContent('22/12 : Ajout d’une recommandation')
   })
 
   it('should not display the views line when there are no views', async () => {
@@ -211,7 +202,19 @@ describe('OfferExposureTimeline', () => {
 
   it('should not add a creation step when there are 3 events', async () => {
     vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
-      getOfferExposureFactory({ events: defaultExposureEvents })
+      getOfferExposureFactory({
+        events: [
+          ...defaultExposureEvents,
+
+          {
+            type: ExposureEventType.HIGHLIGHT,
+            name: 'Journées Européennes du Patrimoine',
+            startDate: '2026-02-02T00:00:00Z',
+            endDate: '2026-02-26T00:00:00Z',
+            viewsOnPeriod: 10,
+          },
+        ],
+      })
     )
 
     renderOfferExposureTimeline('2025-12-03T00:00:00Z')

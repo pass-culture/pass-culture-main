@@ -6,7 +6,6 @@ import { getOfferEnhancementActionsVisibility } from '../getOfferEnhancementActi
 describe('getOfferEnhancementActionsVisibility', () => {
   it('hide all actions when offer is null', () => {
     expect(getOfferEnhancementActionsVisibility(null)).toEqual({
-      shouldDisplayRecommendationAction: false,
       shouldDisplayHighlightAction: false,
       shouldDisplayHeadlineAction: false,
     })
@@ -20,7 +19,6 @@ describe('getOfferEnhancementActionsVisibility', () => {
 
     const result = getOfferEnhancementActionsVisibility(offer)
 
-    expect(result.shouldDisplayRecommendationAction).toBe(true)
     expect(result.shouldDisplayHighlightAction).toBe(true)
     expect(result.shouldDisplayHeadlineAction).toBe(true)
   })
@@ -33,7 +31,6 @@ describe('getOfferEnhancementActionsVisibility', () => {
 
         const result = getOfferEnhancementActionsVisibility(offer)
 
-        expect(result.shouldDisplayRecommendationAction).toBe(false)
         expect(result.shouldDisplayHighlightAction).toBe(false)
         expect(result.shouldDisplayHeadlineAction).toBe(false)
       })
@@ -49,7 +46,6 @@ describe('getOfferEnhancementActionsVisibility', () => {
     const result = getOfferEnhancementActionsVisibility(offer)
 
     expect(result.shouldDisplayHeadlineAction).toBe(false)
-    expect(result.shouldDisplayRecommendationAction).toBe(true)
     expect(result.shouldDisplayHighlightAction).toBe(true)
   })
 
@@ -65,7 +61,6 @@ describe('getOfferEnhancementActionsVisibility', () => {
     const result = getOfferEnhancementActionsVisibility(offer)
 
     expect(result.shouldDisplayHeadlineAction).toBe(false)
-    expect(result.shouldDisplayRecommendationAction).toBe(true)
     expect(result.shouldDisplayHighlightAction).toBe(true)
   })
 
@@ -78,7 +73,6 @@ describe('getOfferEnhancementActionsVisibility', () => {
     const result = getOfferEnhancementActionsVisibility(offer)
 
     expect(result.shouldDisplayHeadlineAction).toBe(true)
-    expect(result.shouldDisplayRecommendationAction).toBe(true)
     expect(result.shouldDisplayHighlightAction).toBe(false)
   })
 })
