@@ -292,12 +292,15 @@
               {% endcall %}
               {% call description("Tarif dérogatoire") %}
                 {% set pricing_point = venue.current_pricing_point %}
-                {% if pricing_point.custom_reimbursement_rules %}
-                  {{ pricing_point.custom_reimbursement_rules[0].rate | format_rate_multiply_by_100 }}
-                  ({{ pricing_point.custom_reimbursement_rules[0].timespan | format_timespan }})
-                {% elif venue.managingOfferer.custom_reimbursement_rules %}
-                  {{ venue.managingOfferer.custom_reimbursement_rules[0].rate | format_rate_multiply_by_100 }}
-                  ({{ venue.managingOfferer.custom_reimbursement_rules[0].timespan | format_timespan }})
+                {% set rules = (pricing_point.custom_reimbursement_rules or []) + (venue.managingOfferer.custom_reimbursement_rules or []) %}
+                {% if rules %}
+                  {% if rules | length == 1 %}
+                    {{ rules[0].rate | format_rate_multiply_by_100 }}
+                    ({%+ if rules[0].subcategories +%}{{ rules[0].subcategories | format_subcategories }} ; {% endif %}{{ rules[0].timespan | format_timespan }})
+                  {% else %}
+                    <a href="{{ url_for('backoffice.reimbursement_rules.list_custom_reimbursement_rules', venue=pricing_point.id) }}"
+                       class="link-primary">{{ rules | length }} barèmes actifs</a>
+                  {% endif %}
                 {% else %}
                   {{ none | placeholder_if_empty }}
                 {% endif %}
