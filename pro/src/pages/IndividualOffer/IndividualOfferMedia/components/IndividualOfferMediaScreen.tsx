@@ -63,7 +63,8 @@ export const IndividualOfferMediaScreen = ({
     handleImageOnSubmit,
   } = useIndividualOfferImageUpload(initialImageOffer)
 
-  const { handleVideoOnSubmit, videoUrl, videoData } = useVideoUploaderContext()
+  const { handleVideoOnSubmit, videoUrl, videoDescription, videoData } =
+    useVideoUploaderContext()
   const snackBar = useSnackBar()
   // Read by `afterSubmitState` so the success message is shown once the
   // destination page (or this same page) has taken over, instead of racing with the navigation.
@@ -73,8 +74,11 @@ export const IndividualOfferMediaScreen = ({
 
   const form = useForm()
 
-  const hasUpdatedVideoUrl = videoUrl !== offer.videoData.videoUrl
-  const isFormDirty = hasUpdatedVideoUrl || hasUpsertedImage
+  const hasUpdatedVideoUrl = videoUrl !== (offer.videoData.videoUrl ?? '')
+  const hasUpdatedVideoDescription =
+    videoDescription !== (offer.videoData.videoDescription ?? '')
+  const hasUpdatedVideo = hasUpdatedVideoUrl || hasUpdatedVideoDescription
+  const isFormDirty = hasUpdatedVideo || hasUpsertedImage
 
   const handlePreviousStep = async () => {
     await navigate(
@@ -147,7 +151,7 @@ export const IndividualOfferMediaScreen = ({
       }
     }
 
-    if (hasUpdatedVideoUrl) {
+    if (hasUpdatedVideo) {
       try {
         await mutate([GET_OFFER_QUERY_KEY, offer.id], handleVideoOnSubmit(), {
           revalidate: false,

@@ -242,7 +242,7 @@ class EventOfferResponse(v1_serialization.OfferResponse, PriceCategoriesResponse
     event_duration: int | None = fields.EVENT_DURATION
     has_ticket: bool = fields.EVENT_HAS_TICKET
     publication_datetime: datetime.datetime | None = fields.OFFER_PUBLICATION_DATETIME
-    video_url: pydantic_v1.HttpUrl | None = fields.VIDEO_URL
+    video_url: str | None = fields.VIDEO_URL
 
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":

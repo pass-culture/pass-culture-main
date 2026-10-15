@@ -94,3 +94,14 @@ class Returns400Test:
             response = test_client.get("/get-offer-video-data/?videoUrl=https://www.youtube.com/watch?v=b1kbLwvqugk")
         assert response.status_code == 400
         assert response.json["videoUrl"] == ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]
+
+    def test_get_offer_video_metadata_invalid_url(self, client):
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        test_client = client.with_session_auth(email=user.email)
+        response = test_client.get("/get-offer-video-data/?videoUrl=not-an-url")
+
+        assert response.status_code == 400
+        assert response.json == {"videoUrl": ["L'URL est invalide"]}

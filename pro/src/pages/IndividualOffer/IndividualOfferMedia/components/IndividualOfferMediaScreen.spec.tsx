@@ -148,7 +148,9 @@ const LABELS = {
   nextButtonCreationMode: 'Enregistrer et continuer',
   nextButtonEditionMode: 'Enregistrer les modifications',
   videoButton: 'Ajouter une URL Youtube',
+  editVideoButton: 'Modifier',
   deleteVideoButton: 'Supprimer',
+  videoDescriptionInput: /^Description textuelle pour les malvoyants/,
 }
 
 const getSubmitLabel = (mode: OFFER_WIZARD_MODE) => {
@@ -176,6 +178,29 @@ const updateVideoUrlAndSubmit = async ({
   } else {
     await userEvent.click(screen.getByText(LABELS.deleteVideoButton))
   }
+  const label = getSubmitLabel(mode)
+  await userEvent.click(screen.getByRole('button', { name: label }))
+}
+
+const updateVideoDescriptionAndSubmit = async ({
+  text,
+  mode = OFFER_WIZARD_MODE.CREATION,
+}: {
+  text: string
+  mode?: OFFER_WIZARD_MODE
+}) => {
+  await userEvent.click(
+    screen.getByRole('button', { name: LABELS.editVideoButton })
+  )
+
+  const descriptionInput = screen.getByRole('textbox', {
+    name: LABELS.videoDescriptionInput,
+  })
+
+  await userEvent.clear(descriptionInput)
+  await userEvent.type(descriptionInput, text)
+  await userEvent.click(screen.getByText('Ajouter'))
+
   const label = getSubmitLabel(mode)
   await userEvent.click(screen.getByRole('button', { name: label }))
 }
@@ -403,6 +428,37 @@ describe('IndividualOfferMediaScreen', () => {
         path: { offer_id: knownOffer.id },
         body: {
           videoUrl: '',
+        },
+      })
+    })
+
+    it('should call the update offer video api when only the video description has changed', async () => {
+      vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
+        videoDuration: 3,
+        videoThumbnailUrl: 'my image',
+        videoTitle: 'my title',
+        videoUrl: MOCK_DATA.videoUrl,
+      })
+      vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({})
+
+      const knownOffer = getIndividualOfferFactory({
+        videoData: {
+          videoUrl: MOCK_DATA.videoUrl,
+          videoDuration: 3,
+          videoThumbnailUrl: 'my image',
+          videoTitle: 'my title',
+          videoDescription: 'Description initiale',
+        },
+      })
+      await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
+
+      await updateVideoDescriptionAndSubmit({ text: 'Nouvelle description' })
+
+      expect(api.updateOfferVideo).toHaveBeenCalledWith({
+        path: { offer_id: knownOffer.id },
+        body: {
+          videoUrl: MOCK_DATA.videoUrl,
+          videoDescription: 'Nouvelle description',
         },
       })
     })

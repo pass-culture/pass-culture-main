@@ -14,22 +14,19 @@ import type { VideoData } from '@/apiClient/v1'
 import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
-  setVideoUrl: Dispatch<SetStateAction<string | null | undefined>>
-  setVideoDescription: Dispatch<SetStateAction<string>>
   videoDescription: string
   videoData?: VideoData
   handleVideoOnSubmit: () => Promise<VideoData>
   onVideoUpload: (p: onVideoUploadProps) => Promise<void>
   onVideoDelete: () => void
-  videoUrl?: string | null
+  videoUrl: string
   offerId?: number
 }
 
 const VideoUploaderContext = createContext<VideoUploaderContextValues>({
-  setVideoUrl: noop,
-  setVideoDescription: noop,
   videoData: undefined,
   videoDescription: '',
+  videoUrl: '',
   // biome-ignore lint/suspicious/useAwait:  default values
   handleVideoOnSubmit: async () => {
     throw new Error('VideoUploaderContext not provided')
@@ -50,6 +47,8 @@ type VideoUploaderContextProviderProps = {
 }
 
 type onVideoUploadProps = {
+  videoUrl: string
+  videoDescription: string
   onSuccess: () => void
   onError: Dispatch<SetStateAction<string | undefined>>
 }
@@ -59,19 +58,26 @@ export function VideoUploaderContextProvider({
   initialVideoData,
   offerId,
 }: Readonly<VideoUploaderContextProviderProps>) {
-  const [videoUrl, setVideoUrl] = useState(initialVideoData?.videoUrl)
+  const [videoUrl, setVideoUrl] = useState(initialVideoData?.videoUrl ?? '')
   const [videoDescription, setVideoDescription] = useState(
-    initialVideoData?.videoDescription
+    initialVideoData?.videoDescription ?? ''
   )
   const [videoData, setVideoData] = useState(initialVideoData)
 
   const onVideoUpload = useCallback(
-    async ({ onSuccess, onError }: onVideoUploadProps) => {
+    async ({
+      videoUrl,
+      videoDescription,
+      onSuccess,
+      onError,
+    }: onVideoUploadProps) => {
       if (videoUrl) {
         try {
           const response = await api.getOfferVideoMetadata({
             query: { videoUrl },
           })
+          setVideoUrl(videoUrl)
+          setVideoDescription(videoDescription)
           setVideoData(response)
           onSuccess()
         } catch (error) {
@@ -80,11 +86,12 @@ export function VideoUploaderContextProvider({
         }
       }
     },
-    [videoUrl]
+    []
   )
 
   const onVideoDelete = useCallback(() => {
-    setVideoUrl(undefined)
+    setVideoUrl('')
+    setVideoDescription('')
     setVideoData(undefined)
   }, [])
 
@@ -92,8 +99,8 @@ export function VideoUploaderContextProvider({
     return await api.updateOfferVideo({
       path: { offer_id: offerId },
       body: {
-        videoUrl: videoUrl ?? '',
-        videoDescription: videoDescription,
+        videoUrl,
+        videoDescription: videoDescription || undefined,
       },
     })
   }, [videoUrl, offerId, videoDescription])
@@ -104,8 +111,6 @@ export function VideoUploaderContextProvider({
       videoData,
       videoDescription,
       handleVideoOnSubmit,
-      setVideoUrl,
-      setVideoDescription,
       onVideoUpload,
       onVideoDelete,
       offerId,
@@ -115,8 +120,6 @@ export function VideoUploaderContextProvider({
       videoData,
       videoDescription,
       handleVideoOnSubmit,
-      setVideoUrl,
-      setVideoDescription,
       onVideoUpload,
       onVideoDelete,
       offerId,
@@ -124,8 +127,6 @@ export function VideoUploaderContextProvider({
   )
 
   return (
-    // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-    // @ts-expect-error
     <VideoUploaderContext.Provider value={contextValue}>
       {children}
     </VideoUploaderContext.Provider>
