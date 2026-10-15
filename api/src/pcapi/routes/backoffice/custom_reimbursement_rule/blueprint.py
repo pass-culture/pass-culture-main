@@ -100,11 +100,17 @@ def _get_custom_reimbursement_rules(
     base_query = _get_custom_reimbursement_rules_query()
 
     if form.venue.data:
-        # search on venueId for custom rules on venues, and on offer's venue id
+        # search on venueId and the parent managingOffererId for custom rules on venues, and on offer's venue id
         # for custom rules on offers
+        aliased_venue_for_offerers = sa_orm.aliased(offerers_models.Venue)
         base_query = base_query.filter(
             sa.or_(
                 finance_models.CustomReimbursementRule.venueId.in_(form.venue.data),
+                finance_models.CustomReimbursementRule.offererId.in_(
+                    db.session.query(aliased_venue_for_offerers.managingOffererId).filter(
+                        aliased_venue_for_offerers.id.in_(form.venue.data)
+                    )
+                ),
                 offerers_models.Venue.id.in_(form.venue.data),
             )
         )
