@@ -179,6 +179,27 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
             venue_rule.id,
         }
 
+    def test_list_rules_by_venue(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        offerer_rule = finance_factories.CustomReimbursementRuleFactory(offerer=offerer, rate=0.9)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_rule = finance_factories.CustomReimbursementRuleFactory(venue=venue, rate=0.8)
+        finance_factories.CustomReimbursementRuleFactory(
+            venue=offerers_factories.VenueFactory(managingOfferer=offerer), rate=0.9
+        )
+        finance_factories.CustomReimbursementRuleFactory(offerer=offerers_factories.OffererFactory(), rate=0.9)
+
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {int(row["ID règle"]) for row in rows} == {
+            offerer_rule.id,
+            venue_rule.id,
+        }
+
     def test_list_rules_more_than_max(self, authenticated_client):
         finance_factories.CustomReimbursementRuleFactory.create_batch(30)
 
