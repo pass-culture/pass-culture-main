@@ -247,7 +247,11 @@ def get_venue(venue_id: int) -> sa.engine.Row:
                 offerers_models.Offerer.name,
             )
             .contains_eager(offerers_models.Offerer.custom_reimbursement_rules.of_type(offerer_reimbursement_rule))
-            .load_only(offerer_reimbursement_rule.rate, offerer_reimbursement_rule.timespan),
+            .load_only(
+                offerer_reimbursement_rule.rate,
+                offerer_reimbursement_rule.subcategories,
+                offerer_reimbursement_rule.timespan,
+            ),
             sa_orm.joinedload(offerers_models.Venue.contact),
             sa_orm.joinedload(offerers_models.Venue.venueLabel),
             sa_orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
@@ -277,6 +281,7 @@ def get_venue(venue_id: int) -> sa.engine.Row:
             .contains_eager(offerers_models.Venue.custom_reimbursement_rules)
             .load_only(
                 finance_models.CustomReimbursementRule.rate,
+                finance_models.CustomReimbursementRule.subcategories,
                 finance_models.CustomReimbursementRule.timespan,
             ),
             sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)

@@ -630,7 +630,7 @@ class GetVenueTest(GetEndpointHelper):
     def test_get_venue_with_custom_reimbursement_rule_on_pricing_point(self, authenticated_client):
         pricing_point = offerers_factories.VenueFactory()
         finance_factories.CustomReimbursementRuleFactory(
-            venue=pricing_point, rate=0.96, timespan=(datetime(2026, 1, 1), None)
+            venue=pricing_point, subcategories=["SEANCE_CINE"], rate=0.96, timespan=(datetime(2026, 1, 1), None)
         )
         venue = offerers_factories.VenueFactory(pricing_point=pricing_point)
 
@@ -640,7 +640,7 @@ class GetVenueTest(GetEndpointHelper):
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Tarif dérogatoire : 96,00 % (01/01/2026 → ∞)" in response_text
+        assert "Tarif dérogatoire : 96,00 % (Séance de cinéma ; 01/01/2026 → ∞)" in response_text
 
     def test_get_venue_with_custom_reimbursement_rule_on_offerer(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self")
@@ -655,6 +655,24 @@ class GetVenueTest(GetEndpointHelper):
 
         response_text = html_parser.content_as_text(response.data)
         assert "Tarif dérogatoire : 90,00 % (01/01/2026 → ∞)" in response_text
+
+    def test_get_venue_with_multipe_custom_reimbursement_rules(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        finance_factories.CustomReimbursementRuleFactory(venue=venue, subcategories=["SEANCE_CINE"], rate=0.95)
+        finance_factories.CustomReimbursementRuleFactory(
+            venue=venue, subcategories=["CARTE_CINE_MULTISEANCES"], rate=0.9
+        )
+        finance_factories.CustomReimbursementRuleFactory(
+            offerer=venue.managingOfferer, subcategories=["CARTE_CINE_ILLIMITE"], rate=0.8
+        )
+
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Tarif dérogatoire : 3 barèmes actifs" in response_text
 
     class SuspendReimbursementButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
