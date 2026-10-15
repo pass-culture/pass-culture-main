@@ -1,5 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { ImageEditor, map } from './ImageEditor'
 
@@ -33,6 +35,115 @@ describe('ImageEditor', () => {
       screen.getByLabelText("Editeur de cadrage et de zoom de l'image")
     ).toBeInTheDocument()
     expect(screen.getByTestId('slider')).toBeInTheDocument()
+  })
+
+  describe('with a loaded image', () => {
+    const CANVAS_LABEL = "Editeur de cadrage et de zoom de l'image"
+
+    // jsdom never loads images: fire the load event as soon as the source is set.
+    function createLoadedImage() {
+      const image = document.createElement('img')
+      image.width = 1200
+      image.height = 800
+      Object.defineProperty(image, 'src', {
+        set: () => setTimeout(() => image.dispatchEvent(new Event('load'))),
+      })
+      return image
+    }
+
+    beforeEach(() => {
+      vi.spyOn(window, 'Image').mockImplementation(createLoadedImage)
+    })
+
+    const renderLoadedImageEditor = async (
+      props: Partial<typeof defaultProps> & { onChangeDone?: () => void } = {}
+    ) => {
+      const view = render(<ImageEditor {...defaultProps} {...props} />)
+      await waitFor(() =>
+        expect(screen.getByRole('status')).not.toBeEmptyDOMElement()
+      )
+      return view
+    }
+
+    // A 1200x800 image in a square crop area: 2/3 of its width are visible
+    const INITIAL_EDITOR_STATE =
+      'Zoom : 100 %. Zone cadrée : de 17 à 83 % de la largeur et de 0 à 100 % de la hauteur de l’image.'
+
+    it('should describe the zoom and the cropped area to assistive technologies', async () => {
+      const { container } = await renderLoadedImageEditor()
+
+      const canvas = screen.getByLabelText(CANVAS_LABEL)
+      expect(canvas).toHaveAttribute('tabindex', '0')
+      expect(canvas).toHaveAttribute('aria-roledescription', 'éditeur d’image')
+      expect(screen.getByRole('status')).toHaveTextContent(INITIAL_EDITOR_STATE)
+      expect(canvas).toHaveAccessibleDescription(
+        `${INITIAL_EDITOR_STATE} Utilisez les flèches du clavier pour déplacer l’image et les touches + et - pour zoomer.`
+      )
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
+    it('should not mention keyboard zoom when zoom is disabled', async () => {
+      await renderLoadedImageEditor({ maxScale: 1 })
+
+      expect(screen.getByLabelText(CANVAS_LABEL)).toHaveAccessibleDescription(
+        `${INITIAL_EDITOR_STATE} Utilisez les flèches du clavier pour déplacer l’image.`
+      )
+    })
+
+    it('should move the cropped area with the keyboard arrows', async () => {
+      const onChangeDone = vi.fn()
+      await renderLoadedImageEditor({ onChangeDone })
+
+      await userEvent.tab()
+      expect(screen.getByLabelText(CANVAS_LABEL)).toHaveFocus()
+
+      await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+
+      await waitFor(() =>
+        expect(screen.getByRole('status')).toHaveTextContent(
+          'Zoom : 100 %. Zone cadrée : de 10 à 77 % de la largeur et de 0 à 100 % de la hauteur de l’image.'
+        )
+      )
+      expect(onChangeDone).toHaveBeenCalled()
+    })
+
+    it('should zoom in and out with the keyboard "+" and "-" keys', async () => {
+      const onChangeDone = vi.fn()
+      await renderLoadedImageEditor({ onChangeDone })
+
+      await userEvent.tab()
+      await userEvent.keyboard('+')
+
+      expect(screen.getByText('Zoom : 110 %')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.getByRole('status')).toHaveTextContent(
+          'Zoom : 110 %. Zone cadrée : de 20 à 80 % de la largeur et de 5 à 95 % de la hauteur de l’image.'
+        )
+      )
+      expect(onChangeDone).toHaveBeenCalled()
+
+      await userEvent.keyboard('-')
+
+      expect(screen.getByText('Zoom : 100 %')).toBeInTheDocument()
+    })
+
+    it('should not zoom out below 100 % with the keyboard', async () => {
+      await renderLoadedImageEditor()
+
+      await userEvent.tab()
+      await userEvent.keyboard('-')
+
+      expect(screen.getByText('Zoom : 100 %')).toBeInTheDocument()
+    })
+
+    it('should not zoom with the keyboard when zoom is disabled', async () => {
+      await renderLoadedImageEditor({ maxScale: 1 })
+
+      await userEvent.tab()
+      await userEvent.keyboard('+')
+
+      expect(screen.getByText('Zoom : 100 %')).toBeInTheDocument()
+    })
   })
 
   it('handles window resize and adjusts canvas size', () => {
