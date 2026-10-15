@@ -294,8 +294,8 @@ importers:
         specifier: 19.3.0
         version: 19.3.0
       react-avatar-editor:
-        specifier: 15.1.0
-        version: 15.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: 16.0.0
+        version: 16.0.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-chartjs-2:
         specifier: 5.3.1
         version: 5.3.1(chart.js@4.5.1)(react@19.3.0)
@@ -3863,8 +3863,8 @@ packages:
   rc9@3.1.0:
     resolution: {integrity: sha512-ufjkNVzbRHKcCOmTahZkmVsyc3W+MSk3jY03m+a7tGHkIsdVMG9l10/3HvFbWkkKzY5VFp3pkRsIo/UYgmFL7Q==}
 
-  react-avatar-editor@15.1.0:
-    resolution: {integrity: sha512-Zto7u9l6Wd5LPPtjeFJ+7uwoT4bs01OSgkN2kxD18lWl8IiZ0GY3nWCbKPx4qIU7Au1vENsMJm19rfVWHHayaQ==}
+  react-avatar-editor@16.0.0:
+    resolution: {integrity: sha512-Vh0MhAfHkjuE23BNU8NVUDlQpG/d4V6R3mktXpHXpk/KQ4iK80qbb9pK4EO6kU7nWn3YFLoUZUawU1kJ/nJukg==}
     peerDependencies:
       react: ^0.14.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^0.14.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -7778,7 +7778,7 @@ snapshots:
       defu: 6.1.7
       destr: 2.0.5
 
-  react-avatar-editor@15.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  react-avatar-editor@16.0.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
