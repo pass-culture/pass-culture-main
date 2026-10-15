@@ -3,6 +3,9 @@ from .adage_playlists import InstitutionRuralLevelQuery
 from .adage_playlists import LocalOfferersQuery
 from .adage_playlists import NewOffererQuery
 from .adage_playlists import NewTemplateOffersPlaylistQuery
+from .closed_venues_siren import ClosedVenueSirenModel
+from .closed_venues_siren import ClosedVenueStatusEnum
+from .closed_venues_siren import ClosedVenuesSirenQuery
 from .favorites_not_booked import FavoritesNotBooked
 from .favorites_not_booked import FavoritesNotBookedModel
 from .last_30_days_booking import Last30DaysBookings
