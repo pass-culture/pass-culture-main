@@ -1,5 +1,7 @@
 import cn from 'classnames'
+import { useEffect, useRef } from 'react'
 
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -17,10 +19,15 @@ import commonStyles from '../CommonWelcomeCarousel.module.scss'
 import styles from './WelcomeStepAdvantages.module.scss'
 
 export const WelcomeStepAdvantages = (): JSX.Element => {
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
   return (
     <>
       <div className={commonStyles['title-wrapper']}>
-        <h1 className={styles['title']}>
+        <h1 className={styles['title']} ref={titleRef} tabIndex={-1}>
           Pourquoi rejoindre le pass Culture ?
         </h1>
       </div>

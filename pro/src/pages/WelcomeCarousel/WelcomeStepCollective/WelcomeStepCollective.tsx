@@ -1,6 +1,8 @@
 import cn from 'classnames'
+import { useEffect, useRef } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Button } from '@/design-system/Button/Button'
@@ -15,10 +17,17 @@ import styles from './WelcomeStepCollective.module.scss'
 
 const WelcomeStepCollective = (): JSX.Element => {
   const { logEvent } = useAnalytics()
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
   return (
     <>
       <div className={commonStyles['title-wrapper']}>
-        <h1 className={styles['title']}>Offres pour les groupes scolaires</h1>
+        <h1 className={styles['title']} ref={titleRef} tabIndex={-1}>
+          Offres pour les groupes scolaires
+        </h1>
       </div>
       <p className={commonStyles.subtitle}>Intervenez auprès des classes</p>
       <div className={cn(commonStyles[`container`], styles['container'])}>

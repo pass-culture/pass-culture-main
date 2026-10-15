@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
@@ -9,6 +10,7 @@ import {
   type ActivityOpenToPublic,
   TargetAudience,
 } from '@/apiClient/v1'
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -33,6 +35,12 @@ import styles from './SimulatorEmail.module.scss'
 export const SimulatorEmail = (): JSX.Element => {
   const navigate = useNavigate()
   const snackBar = useSnackBar()
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
+
   const {
     openToPublic,
     setOpenToPublic,
@@ -107,7 +115,7 @@ export const SimulatorEmail = (): JSX.Element => {
 
   return (
     <div className={commonStyles['content']}>
-      <h1 className={styles['title']}>
+      <h1 className={styles['title']} ref={titleRef}>
         Recevez votre liste de justificatifs par email
       </h1>
       <p className={commonStyles['subtitle']}>

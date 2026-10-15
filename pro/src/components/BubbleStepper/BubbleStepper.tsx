@@ -14,15 +14,29 @@ export const BubbleStepper = ({
   className,
 }: BubbleStepperProps): JSX.Element => {
   return (
-    <div className={cn(styles.wrapper, className)}>
-      {Array.from({ length: total }, (_, i) => i + 1).map((index) => (
-        <div
-          key={index}
-          className={cn(styles.bubble, {
-            [styles.active]: index === page,
-          })}
-        ></div>
-      ))}
-    </div>
+    <ol
+      aria-label="Progression du parcours"
+      className={cn(styles.wrapper, className)}
+    >
+      {Array.from({ length: total }, (_, i) => i + 1).map((index) => {
+        const isCurrentStep = index === page
+        const stepNotNow = index < page ? 'terminée' : 'à venir'
+        const stepState = isCurrentStep ? 'active' : stepNotNow
+
+        return (
+          <li key={index} aria-current={isCurrentStep ? 'step' : undefined}>
+            <span className={styles['visually-hidden']}>
+              Étape {index} sur {total}, {stepState}
+            </span>
+            <span
+              aria-hidden="true"
+              className={cn(styles.bubble, {
+                [styles.active]: isCurrentStep,
+              })}
+            />
+          </li>
+        )
+      })}
+    </ol>
   )
 }

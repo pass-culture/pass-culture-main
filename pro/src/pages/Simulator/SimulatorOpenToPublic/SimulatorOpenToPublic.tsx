@@ -11,10 +11,12 @@ import {
   saveOpenToPublicToStorage,
   tryRestoreOpenToPublicFromStorage,
 } from 'pages/Simulator/storage'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect, useRef } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
+import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
 
 import titleStyles from './SimulatorOpenToPublic.module.scss'
@@ -31,13 +33,20 @@ export const SimulatorOpenToPublic = (): JSX.Element => {
     isOpenToPublic: openToPublic ?? null,
   }
 
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
+
+  const methods = useForm({
+    defaultValues,
+    resolver: yupResolver<OpenToPublicFormValues, unknown, unknown>(
+      openToPublicValidationSchema
+    ),
+  })
   const { clearErrors, watch, setValue, handleSubmit, reset, formState } =
-    useForm({
-      defaultValues,
-      resolver: yupResolver<OpenToPublicFormValues, unknown, unknown>(
-        openToPublicValidationSchema
-      ),
-    })
+    methods
 
   useEffect(() => {
     try {
@@ -60,42 +69,47 @@ export const SimulatorOpenToPublic = (): JSX.Element => {
 
   return (
     <div className={commonStyles['content']}>
-      <h1 className={titleStyles['title']}>Accueil du public</h1>
+      <h1 className={titleStyles['title']} ref={titleRef} tabIndex={-1}>
+        Accueil du public
+      </h1>
       <p className={commonStyles['subtitle']}>
         Votre réponse adapte la suite de votre inscription, notamment les
         informations d'adresse demandées.
       </p>
       <FormLayout>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormLayout.Section>
-            <FormLayout.Row className={styles['row-field-public']}>
-              <OpenToPublicToggle
-                error={formState.errors.isOpenToPublic?.message}
-                onChange={(e) => {
-                  clearErrors('isOpenToPublic')
-                  setValue('isOpenToPublic', e.target.value)
-                }}
-                isOpenToPublic={watch('isOpenToPublic')}
-                overrideDescription="Sélectionnez une des options."
-              />
-            </FormLayout.Row>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ScrollToFirstHookFormErrorAfterSubmit />
+            <FormLayout.Section>
+              <FormLayout.Row className={styles['row-field-public']}>
+                <OpenToPublicToggle
+                  error={formState.errors.isOpenToPublic?.message}
+                  onChange={(e) => {
+                    clearErrors('isOpenToPublic')
+                    setValue('isOpenToPublic', e.target.value)
+                  }}
+                  isOpenToPublic={watch('isOpenToPublic')}
+                  overrideDescription="Sélectionnez une des options."
+                />
+              </FormLayout.Row>
 
-            <div className={commonStyles['action-bar']}>
-              <Button
-                as="router-link"
-                to="/inscription/preparation/siret"
-                variant={ButtonVariant.SECONDARY}
-                label="Retour"
-              />
-              <BubbleStepper
-                page={2}
-                total={4}
-                className={commonStyles['action-bar-stepper']}
-              />
-              <Button type="submit" label="Continuer" />
-            </div>
-          </FormLayout.Section>
-        </form>
+              <div className={commonStyles['action-bar']}>
+                <Button
+                  as="router-link"
+                  to="/inscription/preparation/siret"
+                  variant={ButtonVariant.SECONDARY}
+                  label="Retour"
+                />
+                <BubbleStepper
+                  page={2}
+                  total={4}
+                  className={commonStyles['action-bar-stepper']}
+                />
+                <Button type="submit" label="Continuer" />
+              </div>
+            </FormLayout.Section>
+          </form>
+        </FormProvider>
       </FormLayout>
     </div>
   )

@@ -10,9 +10,10 @@ import {
   tryRestoreSiretFromStorage,
   tryRestoreTargetAudienceFromStorage,
 } from 'pages/Simulator/storage'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -67,6 +68,11 @@ export const SimulatorResults = (): JSX.Element => {
     SignupSimulationResponseModel | undefined
   >()
   const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false)
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
 
   useEffect(() => {
     const doCall = async () => {
@@ -150,7 +156,7 @@ export const SimulatorResults = (): JSX.Element => {
   return (
     <>
       <div className={commonStyles['content']}>
-        <h1 className={styles['title']}>
+        <h1 className={styles['title']} ref={titleRef} tabIndex={-1}>
           Voici les justificatifs à préparer pour votre inscription
         </h1>
       </div>

@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event/dist/cjs/index.js'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { SimulatorContext } from 'pages/Simulator/SimulatorContext'
@@ -54,6 +54,9 @@ describe('<SimulatorOpenToPublic />', () => {
     expect(mockSetOpenToPublic).not.toHaveBeenCalled()
     expect(screen.getByRole('alert')).toHaveTextContent(
       /Veuillez sélectionner une option/
+    )
+    await waitFor(() =>
+      expect(screen.getByRole('radio', { name: /Oui/ })).toHaveFocus()
     )
 
     await userEvent.click(screen.getByRole('radio', { name: /Oui/ }))

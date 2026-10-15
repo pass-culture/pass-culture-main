@@ -6,6 +6,13 @@
   justify-content: center;
   align-items: center;
   gap: var(--size-spacing-s);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
 
 .bubble {

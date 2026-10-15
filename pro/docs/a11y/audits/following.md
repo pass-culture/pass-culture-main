@@ -69,9 +69,40 @@ Texte
 
 <summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
 
-**RAWeb/RGAA** : [Critère X.X](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-X-X)
-**Ticket** : [PC-XXXXX](https://passculture.atlassian.net/browse/PC-XXXXX)  
-**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+**RAWeb/RGAA** : [Critère 7.1s](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43907](https://passculture.atlassian.net/browse/PC-43907)  
+**PR** : [#24709](https://github.com/pass-culture/pass-culture-main/pull/24709)
+
+**Problème** 😱  
+P01 → Tuto de bienvenue
+P04 → Inscription structure
+
+- Lors de la soumission du formulaire sans avoir sélectionné de réponse à la pré-étape, le focus reste sur le bouton « Continuer » alors qu’un message d’erreur est affiché.
+
+- Les indicateurs de progression (4 étapes) sont implémentés via des éléments <div> sans restitution sémantique. Ils ne sont pas correctement exposés aux technologies d’assistance, ce qui empêche l’utilisateur de connaître sa position dans le parcours.
+
+**Correction** 💡  
+
+- Placer le focus sur l'élément en erreur lors de la soumission
+
+- Rendre le composant d'étape accessible en ajoutant « Étape 1 sur 4 », aria-current et en implémentant une liste plutôt que des divs.
+
+- Permettre une navigation cohérente dans le parcours via des contrôles adaptés (boutons ou liens d’étapes) afin de pouvoir revenir aux étapes précédentes de manière accessible avec les boutons Précédent et Suivant.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+**Ticket** : [PC-43546](https://passculture.atlassian.net/browse/PC-43546)  
+**PR** : [#24686](https://github.com/pass-culture/pass-culture-main/pull/24686)
 
 **Problème** 😱  
 P11 → Contenus téléchargables
@@ -102,7 +133,7 @@ Texte
 
 **RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
 **Ticket** : [PC-43625](https://passculture.atlassian.net/browse/PC-43625)  
-**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+**PR** : [#24696](https://github.com/pass-culture/pass-culture-main/pull/24696)
 
 **Problème** 😱  
 

@@ -14,12 +14,19 @@ const scrollToFirstError = () => {
     >('[aria-invalid="true"], [data-error="true"]')
 
     if (firstErrorElement) {
-      firstErrorElement.focus()
-      firstErrorElement.scrollIntoView({
-        behavior: scrollBehavior,
-        block: 'center',
-        inline: 'center',
-      })
+      const focusTarget =
+        firstErrorElement instanceof HTMLFieldSetElement
+          ? firstErrorElement.querySelector<HTMLInputElement>('input')
+          : firstErrorElement
+
+      focusTarget?.focus()
+      if (typeof firstErrorElement.scrollIntoView === 'function') {
+        firstErrorElement.scrollIntoView({
+          behavior: scrollBehavior,
+          block: 'center',
+          inline: 'center',
+        })
+      }
     }
   })
 }

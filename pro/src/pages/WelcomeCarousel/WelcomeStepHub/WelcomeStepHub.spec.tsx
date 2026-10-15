@@ -138,6 +138,9 @@ describe('<WelcomeStepHub />', () => {
       expect(
         screen.getByText('Veuillez sélectionner un profil pour continuer')
       ).toBeVisible()
+      expect(
+        screen.getByRole('radio', { name: /Partenaire culturel/ })
+      ).toHaveFocus()
 
       expect(mockLogEvent).not.toHaveBeenCalled()
 

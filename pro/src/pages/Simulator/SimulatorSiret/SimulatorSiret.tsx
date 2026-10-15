@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router'
 
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import {
   SiretInputForm,
@@ -17,6 +18,11 @@ import styles from './SimulatorSiret.module.scss'
 export const SimulatorSiret = (): JSX.Element => {
   const navigate = useNavigate()
   const { siret, setSiret } = useSimulatorContext()
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
 
   useEffect(() => {
     try {
@@ -50,7 +56,9 @@ export const SimulatorSiret = (): JSX.Element => {
   )
   return (
     <div className={commonStyles['content']}>
-      <h1 className={styles['title']}>Renseignez votre SIRET</h1>
+      <h1 className={styles['title']} ref={titleRef} tabIndex={-1}>
+        Renseignez votre SIRET
+      </h1>
       <p className={commonStyles['subtitle']}>
         Le SIRET est un identifiant à 14 chiffres attribué à chaque structure.
         Vous le trouverez sur vos documents administratifs (avis de situation

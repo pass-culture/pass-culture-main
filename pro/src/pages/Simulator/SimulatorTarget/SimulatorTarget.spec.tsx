@@ -81,6 +81,11 @@ describe('<SimulatorTarget />', () => {
       expect(
         screen.getByText('Veuillez sélectionner au moins une option')
       ).toBeInTheDocument()
+      expect(
+        screen.getByRole('checkbox', {
+          name: /Les jeunes via l’application pass Culture/,
+        })
+      ).toHaveFocus()
     })
 
     expect(mockNavigate).not.toHaveBeenCalled()

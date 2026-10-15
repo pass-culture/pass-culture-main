@@ -1,5 +1,7 @@
+import { useEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router'
 
+import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -14,6 +16,12 @@ export const Signup = () => {
   const isSignupSimulationEnabled = useActiveFeature(
     'WIP_PRE_SIGNUP_SIMULATION'
   )
+
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    claimNavigationFocus(titleRef.current)
+  }, [])
 
   const location = useLocation()
 
@@ -35,7 +43,9 @@ export const Signup = () => {
   // TODO: (jclery, 2026-05-04): Remove this with WIP_PRE_SIGNUP_SIMULATION once the feature is enabled
   return (
     <SignUpLayout>
-      <h1 className={styles['title']}>{mainHeading}</h1>
+      <h1 className={styles['title']} ref={titleRef}>
+        {mainHeading}
+      </h1>
       {isProAccountCreationEnabled ? <Outlet /> : <SignupUnavailable />}
     </SignUpLayout>
   )
