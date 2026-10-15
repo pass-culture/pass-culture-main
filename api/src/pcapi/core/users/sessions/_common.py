@@ -112,10 +112,14 @@ def delete_expired_sessions() -> None:
     ).delete(synchronize_session=False)
 
 
-def disconnect_user_session(user_id: int, session_uuid: UUID | None = None) -> int:
+def disconnect_user_session(user_id: int, keep_current: bool = False) -> int:
     query = db.session.query(users_models.UserSession).filter(users_models.UserSession.userId == user_id)
-    if session_uuid:
-        query = query.filter(users_models.UserSession.uuid == session_uuid)
+
+    if keep_current:
+        current_session_uuid = flask.session.get("session_uuid")
+
+        if current_session_uuid is not None:
+            query = query.filter(users_models.UserSession.uuid != current_session_uuid)
 
     return query.delete(synchronize_session=False)
 

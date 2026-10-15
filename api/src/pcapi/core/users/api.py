@@ -614,10 +614,12 @@ def change_pro_user_email(
     change_email(current_user, new_email=new_email, author=current_user)
 
 
-def update_user_password(user: models.User, new_password: str) -> None:
+def update_user_password(user: models.User, new_password: str, keep_current_session: bool = False) -> None:
     user.setPassword(new_password)
     db.session.add(user)
     sessions.disconnect_native_user_sessions(user.id)
+    sessions.disconnect_user_session(user_id=user.id, keep_current=keep_current_session)
+
     if transaction_manager.is_managed_transaction():
         db.session.flush()
     else:
@@ -627,9 +629,12 @@ def update_user_password(user: models.User, new_password: str) -> None:
 def update_password_and_external_user(user: models.User, new_password: str) -> None:
     user.setPassword(new_password)
     sessions.disconnect_native_user_sessions(user.id)
+    sessions.disconnect_user_session(user.id)
+
     if not user.isEmailValidated:
         user.isEmailValidated = True
         external_attributes_api.update_external_user(user)
+
     db.session.add(user)
     db.session.flush()
 
