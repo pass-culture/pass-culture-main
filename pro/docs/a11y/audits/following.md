@@ -21,6 +21,27 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 10.9 - Dans chaque page web, l'information ne doit pas être donnée uniquement par la forme, taille ou position.</summary>
+
+**RAWeb/RGAA** : [Critère 10.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-9)
+**Ticket** : [PC-43893](https://passculture.atlassian.net/browse/PC-43893)  
+**PR** : [#XXXX](https://github.com/pass-culture/pass-culture-main/pull/XXXX)
+
+**Problème** 😱  
+L'indication « étape en cours », positionnée hors écran, est placée en dehors de la balise <a>. Elle n'est donc pas associée au lien et risque de ne pas être restituée lors d'une navigation par les liens
+
+**Correction** 💡  
+Vu par mail, NC remontée par erreur car déjà corrigée au dernier contre-audit. Critère valide (sauf nouvelle NC).
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 8.9 - Dans chaque page web, les balises ne doivent pas être utilisées uniquement à des fins de présentation.</summary>
 
 **RAWeb/RGAA** : [Critère 8.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-8-9)
