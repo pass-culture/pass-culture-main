@@ -1738,7 +1738,6 @@ def get_offer_details(offer_id: int) -> response_utils.BackofficeResponse:
             .joinedload(offerers_models.OffererAddress.address),
             sa_orm.joinedload(offers_models.Offer.compliance),
             sa_orm.joinedload(offers_models.Offer.metaData),
-            sa_orm.joinedload(offers_models.Offer.proAdvice),
             sa_orm.joinedload(offers_models.Offer.culturalOutreach),
             sa_orm.selectinload(offers_models.Offer.artistOfferLinks)
             .joinedload(artist_models.ArtistOfferLink.artist)

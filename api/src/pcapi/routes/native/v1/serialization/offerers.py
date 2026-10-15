@@ -125,12 +125,14 @@ class VenueResponse(BaseModel):
         getter_dict = VenueResponseGetterDict
 
 
+# TODO: DELETE when native advices deleted
 class VenueProAdviceQuery(HttpQueryParamsModel):
     max_content_length: int | None = pydantic_v2.Field(default=None, gt=0)
     page: int = pydantic_v2.Field(default=1, gt=0)
     results_per_page: int = pydantic_v2.Field(default=20, gt=0)
 
 
+# TODO: DELETE when native advices deleted
 class VenueProAdvice(HttpBodyModel):
     author: str | None = None
     content: str
@@ -157,6 +159,7 @@ class VenueProAdvice(HttpBodyModel):
         )
 
 
+# TODO: DELETE when native advices deleted
 class VenueProAdvices(HttpBodyModel):
     pro_advices: list[VenueProAdvice]
     nb_results: int

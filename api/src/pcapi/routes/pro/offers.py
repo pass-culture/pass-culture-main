@@ -12,7 +12,6 @@ import pcapi.core.cultural_outreach.api as cultural_outreach_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.constants as offers_constants
 import pcapi.core.offers.repository as offers_repository
-import pcapi.core.pro_advice.api as pro_advice_api
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
@@ -139,7 +138,6 @@ def get_offer_exposure(
         "venue",
         "offerer_address",
         "headline_offer",
-        "pro_advice",
         "highlight_criteria",
     ]
     try:
@@ -955,86 +953,3 @@ def post_highlight_request_offer(
     ]
     offer = offers_repository.get_offer_by_id(offer_id, load_options)
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
-
-
-@pro_blueprint.route("/offers/<int:offer_id>/pro_advice", methods=["GET"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.GetProAdviceResponseModel,
-    api=blueprint.pro_schema,
-)
-@atomic()
-def get_offer_pro_advice(offer_id: int) -> offers_serialize.GetProAdviceResponseModel:
-    try:
-        offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
-    except exceptions.OfferNotFound:
-        raise api_errors.resource_not_found_error()
-
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-    pro_advice = offers_serialize.ProAdviceModel.model_validate(offer.proAdvice) if offer.proAdvice else None
-    return offers_serialize.GetProAdviceResponseModel(pro_advice=pro_advice)
-
-
-@pro_blueprint.route("/offers/<int:offer_id>/pro_advice", methods=["POST"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.PostProAdviceResponseModel,
-    on_success_status=201,
-    api=blueprint.pro_schema,
-)
-@atomic()
-def create_offer_pro_advice(
-    offer_id: int, body: offers_serialize.ProAdviceBodyModel
-) -> offers_serialize.PostProAdviceResponseModel:
-    try:
-        offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
-    except exceptions.OfferNotFound:
-        raise api_errors.resource_not_found_error()
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    rest.check_venue_is_opened(offer.venue)
-
-    user = current_user._get_current_object()
-    pro_advice = pro_advice_api.create_pro_advice(offer, body.content, body.author, user.id)
-    return offers_serialize.PostProAdviceResponseModel(pro_advice=offers_serialize.ProAdviceModel.from_orm(pro_advice))
-
-
-@pro_blueprint.route("/offers/<int:offer_id>/pro_advice", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.PatchProAdviceResponseModel,
-    api=blueprint.pro_schema,
-)
-@atomic()
-def update_offer_pro_advice(
-    offer_id: int, body: offers_serialize.ProAdviceBodyModel
-) -> offers_serialize.PatchProAdviceResponseModel:
-    try:
-        offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
-    except exceptions.OfferNotFound:
-        raise api_errors.resource_not_found_error()
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    rest.check_venue_is_opened(offer.venue)
-
-    user = current_user._get_current_object()
-    pro_advice = pro_advice_api.update_pro_advice(offer, body.content, body.author, user.id)
-    return offers_serialize.PatchProAdviceResponseModel(pro_advice=offers_serialize.ProAdviceModel.from_orm(pro_advice))
-
-
-@pro_blueprint.route("/offers/<int:offer_id>/pro_advice", methods=["DELETE"])
-@login_required
-@spectree_serialize(
-    api=blueprint.pro_schema,
-    on_success_status=204,
-)
-@atomic()
-def delete_offer_pro_advice(offer_id: int) -> None:
-    try:
-        offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
-    except exceptions.OfferNotFound:
-        raise api_errors.resource_not_found_error()
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    rest.check_venue_is_opened(offer.venue)
-
-    user = current_user._get_current_object()
-    pro_advice_api.delete_pro_advice(offer, user.id)

@@ -51,18 +51,6 @@ class ExposureEventResponseModel(HttpBodyModel):
             views_on_period=None,
         )
 
-    # ProAdvice.updatedAt is stored as a naive-UTC datetime
-    @classmethod
-    def build_pro_advice(cls, pro_advice: offers_models.ProAdvice) -> typing.Self:
-        return cls(
-            type=ExposureEventType.PRO_ADVICE,
-            name=None,
-            start_date=pro_advice.updatedAt,
-            # Pro advice never ends
-            end_date=None,
-            views_on_period=None,
-        )
-
 
 class GetOfferExposureResponseModel(HttpBodyModel):
     views: int | None
@@ -83,8 +71,6 @@ class GetOfferExposureResponseModel(HttpBodyModel):
             for criterion in offer.criteria
             if criterion.highlightId
         ]
-        if offer.proAdvice:
-            events.append(ExposureEventResponseModel.build_pro_advice(offer.proAdvice))
 
         # Only expose events that have already started, most recent first
         started_events = [event for event in events if event.start_date <= now]
