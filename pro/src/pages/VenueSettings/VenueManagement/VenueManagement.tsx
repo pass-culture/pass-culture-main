@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 
 import { api } from '@/apiClient/api'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -30,6 +30,7 @@ const VenueManagement = () => {
   const [isConfirmVenueClosedModalOpen, setIsConfirmVenueClosedModalOpen] =
     useState(false)
   const closeButtonId = useId()
+  const bannerRef = useRef<HTMLDivElement>(null)
 
   const onValidateModal = () => {
     setIsCloseVenueModalOpen(false)
@@ -63,7 +64,7 @@ const VenueManagement = () => {
 
   return (
     <>
-      <div className={styles['banner']}>
+      <div className={styles['banner']} ref={bannerRef} tabIndex={-1}>
         <div className={styles['banner-container']}>
           <h2 className={styles['banner-title']}>Fermeture de la structure</h2>
           <p className={styles['banner-description']}>
@@ -92,6 +93,7 @@ const VenueManagement = () => {
         isPricingPoint={selectedPartnerVenue.isPricingPoint}
         onValidate={() => setIsConfirmVenueClosedModalOpen(false)}
         isOpen={isConfirmVenueClosedModalOpen}
+        refToFocusOnClose={bannerRef}
       />
     </>
   )

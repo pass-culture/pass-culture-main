@@ -38,10 +38,14 @@ vi.mock('@/app/App/analytics/firebase', () => ({
 }))
 
 const renderOfferTemplateEditionNavigation = (
-  offer: GetCollectiveOfferTemplateResponseModel
+  offer: GetCollectiveOfferTemplateResponseModel,
+  backBtnId?: string
 ) =>
   renderWithProviders(
-    <CollectiveOfferTemplateEditionNavigation offer={offer} />,
+    <CollectiveOfferTemplateEditionNavigation
+      offer={offer}
+      backBtnId={backBtnId}
+    />,
     {
       storeOverrides: {
         user: {
@@ -208,16 +212,18 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
 
   it('should show a success notification when archiving a template offer succeeds', async () => {
     const user = userEvent.setup()
+    const backBtnId = 'back-button'
     const offer = getCollectiveOfferTemplateFactory({
       allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
     })
-    renderOfferTemplateEditionNavigation(offer)
+    renderOfferTemplateEditionNavigation(offer, backBtnId)
 
     await user.click(screen.getByRole('button', { name: 'Archiver' }))
     await user.click(screen.getByText('Archiver l’offre'))
 
     expect(mockSnackBar.success).toHaveBeenCalledWith(
-      "L'offre a bien été archivée"
+      "L'offre a bien été archivée",
+      backBtnId
     )
   })
 

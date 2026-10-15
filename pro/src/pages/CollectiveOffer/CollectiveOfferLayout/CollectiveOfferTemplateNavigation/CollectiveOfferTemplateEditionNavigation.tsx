@@ -36,10 +36,12 @@ import styles from './CollectiveOfferTemplateNavigation.module.scss'
 
 interface CollectiveOfferTemplateEditionNavigationProps {
   offer?: GetCollectiveOfferTemplateResponseModel
+  backBtnId?: string
 }
 
 export const CollectiveOfferTemplateEditionNavigation = ({
   offer,
+  backBtnId,
 }: CollectiveOfferTemplateEditionNavigationProps): JSX.Element => {
   const offerId = offer?.id ?? 0
   const { logEvent } = useAnalytics()
@@ -68,7 +70,7 @@ export const CollectiveOfferTemplateEditionNavigation = ({
 
       setIsArchiveModalOpen(false)
 
-      snackBar.success("L'offre a bien été archivée")
+      snackBar.success("L'offre a bien été archivée", backBtnId)
     } catch {
       snackBar.error("Une erreur est survenue lors de l'archivage de l'offre")
     }

@@ -49,6 +49,7 @@ interface IndividualActionsCellsProps {
   editionOfferLink: string
   editionStockLink: string
   isHeadline: boolean
+  searchBtnId?: string
 }
 
 export const IndividualActionsCells = ({
@@ -56,6 +57,7 @@ export const IndividualActionsCells = ({
   editionOfferLink,
   editionStockLink,
   isHeadline,
+  searchBtnId,
 }: IndividualActionsCellsProps) => {
   const { storedFilters } = useStoredFilterConfig('individual')
   const { headlineOffer, upsertHeadlineOffer, removeHeadlineOffer } =
@@ -111,7 +113,7 @@ export const IndividualActionsCells = ({
         },
       })
       setIsConfirmDialogDeleteDraftOpen(false)
-      snackBar.success(computeDeletionSuccessMessage(1))
+      snackBar.success(computeDeletionSuccessMessage(1), searchBtnId)
       logEvent(Events.DELETE_DRAFT_OFFER, {
         used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TRASH_ICON,
         offerId: offer.id,
@@ -295,6 +297,7 @@ export const IndividualActionsCells = ({
         title={`Voulez-vous supprimer le brouillon : "${offer.name}" ?`}
         isOpen={isConfirmDialogDeleteDraftOpen}
         onClose={closeDeleteDraftDialog}
+        refToFocusOnClose={dropdownTriggerRef}
         actionButtons={[
           <Button
             onClick={closeDeleteDraftDialog}
