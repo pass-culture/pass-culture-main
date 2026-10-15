@@ -1,5 +1,6 @@
 import datetime
 import logging
+from functools import partial
 
 import click
 import sqlalchemy as sa
@@ -16,6 +17,8 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import on_commit
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -198,3 +201,11 @@ def clean_offerer_invitations(apply: bool = False) -> None:
     else:
         db.session.rollback()
         logger.info("clean_offerer_invitations was a dry-run -- rollback")
+
+
+@blueprint.cli.command("detect_unexpected_venue_status")
+@click.option("--apply", is_flag=True)
+def detect_unexpected_venue_status(apply: bool = False) -> None:
+    with atomic(apply=apply):
+        offerers_api.detect_unexpected_venue_status(apply)
+        on_commit(partial(logger.info, "detect_unexpected_venue_status... done. apply: %b", apply))

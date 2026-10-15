@@ -39,6 +39,7 @@ import pcapi.utils.string as string_utils
 from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.connectors import virustotal
+from pcapi.connectors.big_query import queries as big_query
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
@@ -49,6 +50,7 @@ from pcapi.core.bookings import constants as bookings_constants
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.categories import subcategories
+from pcapi.core.criteria import constants as criteria_constants
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -62,6 +64,9 @@ from pcapi.core.geography import constants as geography_constants
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
 from pcapi.core.history import api as history_api
+from pcapi.core.mails import models as mails_models
+from pcapi.core.mails import send
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -3792,3 +3797,62 @@ def venue_has_ongoing_bookings(venue: models.Venue) -> bool:
         )
         .exists()
     ).scalar()
+
+
+def _mark_as_closed_and_send_warning_email(venue: offerers_models.Venue, *, apply: bool) -> None:
+    with atomic(apply=apply):
+        criteria_api.link_criterion_to_venue(
+            criterion=criteria_api.get_or_create_criteria(
+                name=criteria_constants.CLOSURE_DETECTED_LABEL,
+                description=criteria_constants.CLOSURE_DETECTED_DESCRIPTION,
+                category_labels=[criteria_constants.SUPPORT_CATEGORY_LABEL],
+            ),
+            venue=venue,
+        )
+
+        on_commit(partial(logger.info, "Adding closure tag to venue: done.", extra={"venue_id": venue.id}))
+        if not venue.bookingEmail:
+            return
+
+        on_commit(
+            partial(
+                send,
+                recipients=[venue.bookingEmail],
+                data=mails_models.TransactionalEmailData(
+                    template=TransactionalEmail.VENUE_SHOULD_BE_CLOSED.value,
+                    params={
+                        "SIRET": venue.siret,
+                        "VENUE_PUBLIC_NAME": venue.publicName,
+                    },
+                ),
+            )
+        )
+
+
+def _has_been_tagged_as_closed(venue: models.Venue) -> bool:
+    return any(criterion.name == criteria_constants.CLOSURE_DETECTED_LABEL for criterion in venue.criteria)
+
+
+def detect_unexpected_venue_status(apply: bool) -> None:
+    """Compare public venue status (SIRET API) against or db status
+
+    Add closure tag if venue should be closed and send a warning email.
+    Simply add a warning log if it should be opened.
+    """
+    rows = big_query.ClosedVenuesSirenQuery().execute()
+    venues_mapping = {row.venue_id: row for row in rows}
+    venues = db.session.query(models.Venue).filter(models.Venue.id.in_(venues_mapping.keys()))
+
+    for venue in venues:
+        venue_siret_data = venues_mapping[venue.id]
+
+        siret_data_says_closed = venue_siret_data.status == big_query.ClosedVenueStatusEnum.F
+        siret_data_says_open = venue_siret_data.status == big_query.ClosedVenueStatusEnum.A
+
+        if siret_data_says_closed and not venue.is_closed and not _has_been_tagged_as_closed(venue):
+            logger.info(
+                "Found one open venue that should have been closed... adding closure tag", extra={"venue_id": venue.id}
+            )
+            _mark_as_closed_and_send_warning_email(venue, apply=apply)
+        elif siret_data_says_open and venue.is_closed:
+            logger.warning("Venue is closed but SIRET data says its open", extra={"venue_id": venue.id})

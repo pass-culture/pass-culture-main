@@ -17,12 +17,14 @@ import pcapi.core.favorites.models as favorites_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors import api_adresse
+from pcapi.connectors.big_query import queries as big_query
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import api as criteria_api
+from pcapi.core.criteria import constants as criteria_constants
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
@@ -5222,3 +5224,104 @@ class GetVenueOffersStatisticsV2Test:
         assert stats == offerers_api.VenueOffersStatisticsV2Model(
             venue_id=12, last_3_months=period_3_months, last_6_months=period_6_months
         )
+
+
+class DetectUnexpectedVenueStatusTest:
+    QUERY_PATH = "pcapi.connectors.big_query.queries.closed_venues_siren.ClosedVenuesSirenQuery.execute"
+
+    @patch(QUERY_PATH)
+    def test_add_closure_tag_if_siret_data_says_venue_should_be_closed(self, query):
+        venue = offerers_factories.VenueFactory(state=None, criteria=[])
+        query.return_value = [
+            big_query.ClosedVenueSirenModel(venue_id=venue.id, status=big_query.ClosedVenueStatusEnum.F)
+        ]
+
+        offerers_api.detect_unexpected_venue_status(apply=True)
+
+        db.session.refresh(venue)
+        assert len(venue.criteria) == 1
+
+        criterion = venue.criteria[0]
+        assert criterion.name == criteria_constants.CLOSURE_DETECTED_LABEL
+
+        assert len(mails_testing.outbox) == 1
+        sent_email = mails_testing.outbox[0]
+        assert sent_email["template"] == asdict(TransactionalEmail.VENUE_SHOULD_BE_CLOSED.value)
+
+    @patch(QUERY_PATH)
+    def test_warning_log_if_closed_when_open_expected(self, query, caplog):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED, criteria=[])
+        query.return_value = [
+            big_query.ClosedVenueSirenModel(venue_id=venue.id, status=big_query.ClosedVenueStatusEnum.A)
+        ]
+
+        with caplog.at_level(logging.WARNING):
+            offerers_api.detect_unexpected_venue_status(apply=True)
+
+            expected = "Venue is closed but SIRET data says its open"
+            assert any(record for record in caplog.records if record.message == expected)
+
+    @patch(QUERY_PATH)
+    def test_ignore_if_venue_should_be_closed_but_has_closure_tag(self, query):
+        criterion = criteria_factories.CriterionFactory(
+            name=criteria_constants.CLOSURE_DETECTED_LABEL,
+            description=criteria_constants.CLOSURE_DETECTED_DESCRIPTION,
+        )
+        venue = offerers_factories.VenueFactory(state=None, criteria=[criterion])
+
+        query.return_value = [
+            big_query.ClosedVenueSirenModel(venue_id=venue.id, status=big_query.ClosedVenueStatusEnum.F)
+        ]
+
+        offerers_api.detect_unexpected_venue_status(apply=True)
+
+        db.session.refresh(venue)
+
+        # no new criteria, no email sent because everything is ok
+        assert len(venue.criteria) == 1
+        assert not mails_testing.outbox
+
+    @patch(QUERY_PATH)
+    def test_ignore_venue_if_closed_as_expected(self, query):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED, criteria=[])
+
+        query.return_value = [
+            big_query.ClosedVenueSirenModel(venue_id=venue.id, status=big_query.ClosedVenueStatusEnum.F)
+        ]
+
+        offerers_api.detect_unexpected_venue_status(apply=True)
+
+        db.session.refresh(venue)
+
+        # no new criteria, no email sent because everything is ok
+        assert not venue.criteria
+        assert not mails_testing.outbox
+
+    @patch(QUERY_PATH)
+    def test_ignore_venue_if_opened_as_expected(self, query):
+        venue = offerers_factories.VenueFactory(state=None, criteria=[])
+
+        query.return_value = [
+            big_query.ClosedVenueSirenModel(venue_id=venue.id, status=big_query.ClosedVenueStatusEnum.A)
+        ]
+
+        offerers_api.detect_unexpected_venue_status(apply=True)
+
+        db.session.refresh(venue)
+
+        # no new criteria, no email sent because everything is ok
+        assert not venue.criteria
+        assert not mails_testing.outbox
+
+    @patch(QUERY_PATH)
+    def test_ignore_random_venue(self, query):
+        venue = offerers_factories.VenueFactory(state=None, criteria=[])
+        query.return_value = []
+
+        offerers_api.detect_unexpected_venue_status(apply=True)
+
+        db.session.refresh(venue)
+
+        # no new criteria, no email sent because everything is ok
+        assert not venue.criteria
+        assert not mails_testing.outbox
