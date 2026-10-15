@@ -61,6 +61,8 @@ export type FullRow = {
 
 interface TableProps<T extends { id: string | number }> {
   title?: string
+  /** Résumé de la structure d’un tableau, lu par les lecteurs d’écran */
+  a11ySummary?: string
   columns: Column<T>[]
   data: T[]
   allData?: T[]
@@ -105,6 +107,7 @@ export function Table<
   },
 >({
   title = 'Tableau de données',
+  a11ySummary,
   columns,
   data,
   allData,
@@ -219,7 +222,10 @@ export function Table<
         >
           {!isTabletOrSmaller && sortedData.length > 0 && (
             <>
-              <caption className={styles['visually-hidden']}>{title}</caption>
+              <caption className={styles['visually-hidden']}>
+                {title}
+                {a11ySummary ? <span>. {a11ySummary}</span> : null}
+              </caption>
               <thead>
                 <tr
                   className={classNames(styles['table-header'], {

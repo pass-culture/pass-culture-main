@@ -157,6 +157,8 @@ const meta: Meta<typeof Table<Row>> = {
   component: Table<Row>,
   args: {
     title: 'Tableau de données',
+    a11ySummary:
+      'Chaque ligne correspond à une personne. Les colonnes présentent son nom, son âge, sa date de création, son statut et son score.',
     columns: baseColumns,
     data: sampleData,
     selectable: false,
@@ -273,6 +275,8 @@ export const StickyHeaderInScrollContainer: Story = {
 
 export const WithHiddenColumns: Story = {
   args: {
+    a11ySummary:
+      'Chaque ligne correspond à une personne. Les colonnes présentent son nom, son âge, son statut et son score.',
     columns: [
       { ...baseColumns[0], headerHidden: true }, // hide header label for "Nom"
       baseColumns[1],
@@ -285,6 +289,8 @@ export const WithHiddenColumns: Story = {
 
 export const WithHeaderColSpan: Story = {
   args: {
+    a11ySummary:
+      'Chaque ligne correspond à une personne. Les colonnes présentent son nom, son âge, sa date de création et son statut. L’en-tête du nom s’étend sur deux colonnes.',
     columns: [
       { ...baseColumns[0], headerColSpan: 2 }, // spans two header columns
       baseColumns[1],
@@ -306,6 +312,7 @@ export const WithFullRowAlwaysDisplayedDetail: Story = {
     return (
       <Table
         {...args}
+        a11ySummary="Chaque ligne correspond à une personne et présente son nom, son âge, sa date de création, son statut et son score. Une ligne complémentaire affiche le nom des personnes de plus de 30 ans."
         variant={TableVariant.COLLAPSE}
         columns={columns}
         getFullRow={(row) => {
@@ -361,6 +368,7 @@ export const WithFullRowDetail: Story = {
     return (
       <Table
         {...args}
+        a11ySummary="Chaque ligne correspond à une personne et présente son nom, son âge, sa date de création et son statut. Le bouton « Voir détails » affiche son adresse électronique, son score et son statut sous la ligne."
         columns={columns}
         getFullRow={(row) =>
           row.id === expandedId ? {content: (
