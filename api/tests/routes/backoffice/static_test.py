@@ -10,7 +10,6 @@ pytestmark = [
 
 
 class StaticTest:
-    @pytest.mark.filterwarnings("ignore::ResourceWarning")
     @pytest.mark.parametrize(
         "path",
         [
