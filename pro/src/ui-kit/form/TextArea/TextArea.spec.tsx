@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { ForwardedRef } from 'react'
+import { type ForwardedRef, useState } from 'react'
 import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -56,5 +56,33 @@ describe('TextArea', () => {
     )
 
     expect(screen.getByRole('textbox')).toHaveValue('Test template')
+  })
+
+  it('should display the controlled value when the parent updates it', async () => {
+    const ControlledTextArea = () => {
+      const [value, setValue] = useState('')
+      return (
+        <>
+          <TextArea
+            {...defaultProps}
+            maxLength={100}
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+          />
+          <button type="button" onClick={() => setValue('')}>
+            Vider
+          </button>
+        </>
+      )
+    }
+    renderWithProviders(<ControlledTextArea />)
+
+    await userEvent.type(screen.getByLabelText('Label'), 'Bonjour')
+    expect(screen.getByText('7/100')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Vider' }))
+
+    expect(screen.getByLabelText('Label')).toHaveValue('')
+    expect(screen.getByText('0/100')).toBeInTheDocument()
   })
 })

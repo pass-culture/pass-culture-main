@@ -130,13 +130,23 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
     const [textValue, setTextValue] = useState(value)
 
+    // When the parent controls the value, follow its updates (e.g. when it clears the field)
+    useEffect(() => {
+      if (value !== undefined) {
+        setTextValue(value)
+      }
+    }, [value])
+
     const fieldId = useId()
     const descriptionId = useId()
     const charactersCountId = useId()
     const errorId = useId()
 
+    // A controlled value is displayed from the state: the DOM is only updated after the render
     const countValue =
-      textAreaRef.current?.value?.length ?? textValue?.length ?? 0
+      (value === undefined ? textAreaRef.current?.value : textValue)?.length ??
+      textValue?.length ??
+      0
 
     useImperativeHandle(ref, () => textAreaRef.current as HTMLTextAreaElement)
 

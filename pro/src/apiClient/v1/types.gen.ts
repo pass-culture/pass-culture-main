@@ -5643,6 +5643,54 @@ export type PostProAdviceResponseModel = {
 };
 
 /**
+ * PostProAssistantMessageBodyModel
+ */
+export type PostProAssistantMessageBodyModel = {
+    /**
+     * Conversationid
+     */
+    conversationId?: string | null;
+    /**
+     * Currentpath
+     */
+    currentPath?: string | null;
+    /**
+     * Message
+     */
+    message: string;
+    /**
+     * Offererid
+     */
+    offererId?: number | null;
+};
+
+/**
+ * PostProAssistantMessageResponseModel
+ */
+export type PostProAssistantMessageResponseModel = {
+    /**
+     * Answer
+     */
+    answer: string;
+    /**
+     * Conversationid
+     */
+    conversationId: string;
+    /**
+     * Helparticles
+     */
+    helpArticles: Array<ProAssistantHelpArticleResponseModel>;
+    /**
+     * Links
+     */
+    links: Array<ProAssistantLinkResponseModel>;
+    /**
+     * Outofscope
+     */
+    outOfScope: boolean;
+};
+
+/**
  * PostVenueProviderBody
  */
 export type PostVenueProviderBody = {
@@ -5752,6 +5800,34 @@ export type ProAnonymizationEligibilityResponseModel = {
      * Issoleuserwithongoingactivities
      */
     isSoleUserWithOngoingActivities: boolean;
+};
+
+/**
+ * ProAssistantHelpArticleResponseModel
+ */
+export type ProAssistantHelpArticleResponseModel = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Url
+     */
+    url: string;
+};
+
+/**
+ * ProAssistantLinkResponseModel
+ */
+export type ProAssistantLinkResponseModel = {
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Path
+     */
+    path: string;
 };
 
 /**
@@ -7265,6 +7341,51 @@ export type getArtistsResponses = {
 };
 
 export type getArtistsResponse = getArtistsResponses[keyof getArtistsResponses];
+
+export type postAssistantMessagesData = {
+    body: PostProAssistantMessageBodyModel;
+    path?: never;
+    query?: never;
+    url: '/assistant/messages';
+};
+
+export type postAssistantMessagesErrors = {
+    /**
+     * Bad Request
+     */
+    400: unknown;
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Not Found
+     */
+    404: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+    /**
+     * Failed Dependency
+     */
+    424: unknown;
+    /**
+     * Too Many Requests
+     */
+    429: unknown;
+};
+
+export type postAssistantMessagesError = postAssistantMessagesErrors[keyof postAssistantMessagesErrors];
+
+export type postAssistantMessagesResponses = {
+    /**
+     * OK
+     */
+    200: PostProAssistantMessageResponseModel;
+};
+
+export type postAssistantMessagesResponse = postAssistantMessagesResponses[keyof postAssistantMessagesResponses];
 
 export type getBookingsCsvData = {
     body?: never;

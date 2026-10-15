@@ -4,6 +4,7 @@ import { SWRConfig } from 'swr'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ProAssistant } from '@/components/ProAssistant/ProAssistant'
 import { SkipLinksProvider } from '@/components/SkipLinks/SkipLinksContext'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { BackendVersionMismatch } from '@/pages/Errors/BackendVersionMismatch/BackendVersionMismatch'
@@ -64,6 +65,7 @@ export const App = (): JSX.Element | null => {
         </SkipLinksProvider>
       </SWRConfig>
       <SnackBarContainer />
+      <ProAssistant />
     </>
   )
 }

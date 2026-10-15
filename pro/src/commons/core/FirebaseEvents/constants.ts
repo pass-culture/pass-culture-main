@@ -139,3 +139,9 @@ export enum HomepageEvents {
   CLICKED_CREATE_OFFER = 'hasClickedCreateOffer',
   CHANGED_STATS_V2_PERIOD = 'hasChangedStatsV2PeriodChanged',
 }
+
+export enum ProAssistantEvents {
+  OPENED_PRO_ASSISTANT = 'hasOpenedProAssistant',
+  SENT_PRO_ASSISTANT_MESSAGE = 'hasSentProAssistantMessage',
+  CLICKED_PRO_ASSISTANT_LINK = 'hasClickedProAssistantLink',
+}
