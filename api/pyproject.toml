@@ -74,7 +74,7 @@ dependencies = [
   "schwifty==2026.7.3",
   "semver==3.1.0",
   "sentry-sdk[flask,celery]==2.70.0",
-  "shapely ==2.1.2",
+  "shapely==2.2.0",
   "slack-sdk==3.45.0",
   "spectree ==1.5.8",
   # from our private fork
