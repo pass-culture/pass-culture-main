@@ -148,6 +148,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_CLOSE_VENUE = "Active la fermeture d'une venue depuis l'espace partenaire"
     WIP_HOME_STATS_V2 = "Active la V2 des statistiques de réservations de la page d'accueil"
+    WIP_ENABLE_PRO_ASSISTANT = "Active l'assistant IA d'orientation dans le portail pro"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -204,6 +205,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
+    FeatureToggle.WIP_ENABLE_PRO_ASSISTANT,
     FeatureToggle.WIP_CLOSE_VENUE,
     FeatureToggle.WIP_HOME_STATS_V2,
     FeatureToggle.WIP_IMGPROXY_PRO,

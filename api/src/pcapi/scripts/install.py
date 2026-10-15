@@ -20,6 +20,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.core.offerers.commands",
         "pcapi.core.offers.commands",
         "pcapi.core.operations.commands",
+        "pcapi.core.pro_assistant.commands",
         "pcapi.core.products.commands",
         "pcapi.core.providers.commands",
         "pcapi.core.search.commands.indexation",

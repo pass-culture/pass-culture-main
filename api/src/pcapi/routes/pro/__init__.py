@@ -15,6 +15,7 @@ def install_routes(app: Flask) -> None:
     from . import highlights
     from . import offerers
     from . import offers
+    from . import pro_assistant
     from . import public_information
     from . import reimbursements
     from . import statistics

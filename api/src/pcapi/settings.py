@@ -649,6 +649,22 @@ WEBHOOK_AUTH_KEY = secrets_utils.get("WEBHOOK_AUTH_KEY", "")
 # HARVESTR
 HARVESTR_API_KEY = secrets_utils.get("HARVESTR_API_KEY", "")
 
+# PRO ASSISTANT (AI chatbot on the pro portal)
+PRO_ASSISTANT_BACKEND = os.environ.get("PRO_ASSISTANT_BACKEND", "pcapi.connectors.pro_assistant.TestingBackend")
+ANTHROPIC_API_KEY = secrets_utils.get("ANTHROPIC_API_KEY", "")
+# Only needed when the API key is not scoped to a workspace
+ANTHROPIC_WORKSPACE_ID = os.environ.get("ANTHROPIC_WORKSPACE_ID", "")
+PRO_ASSISTANT_MODEL = os.environ.get("PRO_ASSISTANT_MODEL", "claude-opus-5-5")
+PRO_ASSISTANT_EFFORT = os.environ.get("PRO_ASSISTANT_EFFORT", "low")
+PRO_ASSISTANT_CACHE_TTL = os.environ.get("PRO_ASSISTANT_CACHE_TTL", "5m")  # "5m" or "1h"
+PRO_ASSISTANT_TIMEOUT_IN_SECONDS = int(os.environ.get("PRO_ASSISTANT_TIMEOUT_IN_SECONDS", "45"))
+PRO_ASSISTANT_RATE_LIMIT_SHORT_WINDOW = int(os.environ.get("PRO_ASSISTANT_RATE_LIMIT_SHORT_WINDOW", "300"))  # seconds
+PRO_ASSISTANT_RATE_LIMIT_SHORT_MAX = int(os.environ.get("PRO_ASSISTANT_RATE_LIMIT_SHORT_MAX", "10"))
+PRO_ASSISTANT_RATE_LIMIT_DAILY_MAX = int(os.environ.get("PRO_ASSISTANT_RATE_LIMIT_DAILY_MAX", "50"))
+PRO_ASSISTANT_DAILY_BUDGET_IN_CENTS = int(os.environ.get("PRO_ASSISTANT_DAILY_BUDGET_IN_CENTS", "5000"))  # USD cents
+PRO_ASSISTANT_CONVERSATION_TTL = int(os.environ.get("PRO_ASSISTANT_CONVERSATION_TTL", "1800"))  # seconds
+PRO_ASSISTANT_MAX_TURNS = int(os.environ.get("PRO_ASSISTANT_MAX_TURNS", "6"))
+
 # Credit reform
 CREDIT_V3_DECREE_DATETIME = datetime.fromisoformat(os.environ.get("CREDIT_V3_DECREE_DATETIME", "2025-01-01"))
 
