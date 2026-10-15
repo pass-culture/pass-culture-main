@@ -16,10 +16,7 @@ def set_offer_as_favorite(
 
     offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue"})
 
-    if not (offer.venue.managingOfferer.isActive and offer.venue.managingOfferer.isValidated):
-        raise exceptions.InactiveOffer
-
-    if not offer.isPublished:
+    if not offer.isReleased or not offer.isPublished:
         raise exceptions.InactiveOffer
 
     fav, is_inserted = repository.create_favorite_offer(user, offer)
