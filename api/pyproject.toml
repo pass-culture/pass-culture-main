@@ -35,7 +35,7 @@ dependencies = [
   "google-api-python-client==2.201.0",
   "google-auth==2.61.0",
   "google-cloud-bigquery==3.45.2",
-  "google-cloud-iam==2.25.0",
+  "google-cloud-iam==2.26.0",
   "google-cloud-logging==3.17.0",
   "google-cloud-secret-manager>=2.30.0",
   "google-cloud-storage==3.16.0",
