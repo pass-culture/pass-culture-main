@@ -5,8 +5,6 @@ import { type Params, useNavigate, useParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
-import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -19,31 +17,11 @@ export type ResetPasswordValues = {
   newConfirmationPassword: string
 }
 
-// TODO (jclery-pass, 2026-09-30): Once WIP_PRE_SIGNUP_SIMULATION is removed,
-// just remove this temporary component and directly use the <FullLayout> inside <ResetPassword>’s render
-const ResetPasswordFullLayout = ({
-  children,
-}: {
-  children: React.ReactNode
-}) => (
-  <FullLayout verticallyCenteredContent>
-    <div
-      className={styles['resetpassword-wrapper']}
-      data-testid="reset-password-full-layout"
-    >
-      {children}
-    </div>
-  </FullLayout>
-)
-
 export const ResetPassword = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true)
   const { token } = useParams<Params>()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
 
   const invalidTokenHandler = useCallback(() => {
     snackBar.error('Le lien est invalide ou a expiré. Veuillez recommencer.')
@@ -87,23 +65,21 @@ export const ResetPassword = (): JSX.Element => {
     return <Spinner />
   }
 
-  const LayoutComponent = isSignupSimulationEnabled
-    ? ResetPasswordFullLayout
-    : SignUpLayout
-
   return (
-    <LayoutComponent>
-      <h1 className={styles['title']}>Réinitialisez votre mot de passe</h1>
-      <section>
-        <p className={styles['mandatory-info']}>
-          Veuillez définir votre nouveau mot de passe afin d’accéder à la
-          plateforme.
-        </p>
-        <FormProvider {...hookForm}>
-          <ChangePasswordForm onSubmit={submitChangePassword} />
-        </FormProvider>
-      </section>
-    </LayoutComponent>
+    <FullLayout verticallyCenteredContent>
+      <div className={styles['resetpassword-wrapper']}>
+        <h1 className={styles['title']}>Réinitialisez votre mot de passe</h1>
+        <section>
+          <p className={styles['mandatory-info']}>
+            Veuillez définir votre nouveau mot de passe afin d’accéder à la
+            plateforme.
+          </p>
+          <FormProvider {...hookForm}>
+            <ChangePasswordForm onSubmit={submitChangePassword} />
+          </FormProvider>
+        </section>
+      </div>
+    </FullLayout>
   )
 }
 

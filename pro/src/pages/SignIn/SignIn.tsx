@@ -7,19 +7,16 @@ import { api } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
 import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
-import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
-import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import styles from './Signin.module.scss'
@@ -37,16 +34,6 @@ interface SigninApiErrorResponse {
     [key: string]: string
   }
 }
-
-// TODO (jclery-pass, 2026-09-29): Once WIP_PRE_SIGNUP_SIMULATION is removed,
-// just remove this temporary component and directly use the <FullLayout> inside <SignIn>’s render
-const SigninFullLayout = ({ children }: { children: React.ReactNode }) => (
-  <FullLayout verticallyCenteredContent>
-    <div className={styles['signin-wrapper']} data-testid="signin-full-layout">
-      {children}
-    </div>
-  </FullLayout>
-)
 
 export const SignIn = (): JSX.Element => {
   const snackBar = useSnackBar()
@@ -142,26 +129,17 @@ export const SignIn = (): JSX.Element => {
     }
   }
 
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
-
-  const LayoutComponent = isSignupSimulationEnabled
-    ? SigninFullLayout
-    : SignUpLayout
-
   return (
-    <LayoutComponent>
-      <h1 className={styles['title']} ref={titleRef}>
-        Connectez-vous
-      </h1>
-      {!isSignupSimulationEnabled && (
-        <MandatoryInfo areAllFieldsMandatory={true} />
-      )}
-      <FormProvider {...hookForm}>
-        <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />
-      </FormProvider>
-    </LayoutComponent>
+    <FullLayout verticallyCenteredContent>
+      <div className={styles['signin-wrapper']}>
+        <h1 className={styles['title']} ref={titleRef}>
+          Connectez-vous
+        </h1>
+        <FormProvider {...hookForm}>
+          <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />
+        </FormProvider>
+      </div>
+    </FullLayout>
   )
 }
 

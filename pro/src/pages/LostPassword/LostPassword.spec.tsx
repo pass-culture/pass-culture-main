@@ -32,30 +32,6 @@ const renderLostPassword = (options?: RenderWithProvidersOptions) => {
 }
 
 describe('LostPassword', () => {
-  describe('FF WIP_PRE_SIGNUP_SIMULATION', () => {
-    it('should use FullLayout when FF is enabled', () => {
-      renderLostPassword({
-        features: ['WIP_PRE_SIGNUP_SIMULATION'],
-      })
-
-      expect(
-        screen.getByTestId('lost-password-full-layout')
-      ).toBeInTheDocument()
-      expect(screen.queryByTestId('sign-up-header')).not.toBeInTheDocument()
-    })
-
-    it('should use default layout when FF is disabled', () => {
-      renderLostPassword({
-        features: [],
-      })
-
-      expect(
-        screen.queryByTestId('lost-password-full-layout')
-      ).not.toBeInTheDocument()
-      expect(screen.getByTestId('sign-up-header')).toBeInTheDocument()
-    })
-  })
-
   describe('when user arrive on reset password page', () => {
     it('should render without accessibility violations', async () => {
       const { container } = renderLostPassword()

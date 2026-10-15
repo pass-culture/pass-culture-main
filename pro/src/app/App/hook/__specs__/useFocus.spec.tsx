@@ -6,7 +6,7 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ContentLayout } from '../../layouts/ContentLayout/ContentLayout'
-import { SignUpLayout } from '../../layouts/logged-out/SignUpLayout/SignUpLayout'
+import { FullLayout } from '../../layouts/FullLayout/FullLayout'
 import { useFocus } from '../useFocus'
 
 // Avoid "document.getElementById(...).scrollTo is not a function" error.
@@ -37,10 +37,10 @@ const renderUseFocusRoutes = (url = '/accueil') => {
         element={
           <>
             <FocusTopPageOrBackToNavLink />
-            <SignUpLayout>
+            <FullLayout>
               <h1>Connexion</h1>
               <Link to="/accueil">Log In</Link>
-            </SignUpLayout>
+            </FullLayout>
           </>
         }
       />
