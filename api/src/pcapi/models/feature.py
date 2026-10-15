@@ -142,6 +142,9 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK = "Active la nouvelle version du webhook de recommandation Brevo"
     WIP_IMGPROXY_PRO = "Activer l'utilisation du nouveau format de requête pour le resizing d'image sur le portail pro"
+    WIP_IMGPROXY_NATIVE = (
+        "Activer l'utilisation du nouveau format de requête pour le resizing d'image sur l'application native"
+    )
     WIP_PRE_SIGNUP_SIMULATION = (
         "Activer le parcours de simulation de documents avant inscription des partenaires culturels sur le portail pro"
     )
@@ -207,6 +210,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_CLOSE_VENUE,
     FeatureToggle.WIP_HOME_STATS_V2,
     FeatureToggle.WIP_IMGPROXY_PRO,
+    FeatureToggle.WIP_IMGPROXY_NATIVE,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     # Please keep alphabetic order
 )
