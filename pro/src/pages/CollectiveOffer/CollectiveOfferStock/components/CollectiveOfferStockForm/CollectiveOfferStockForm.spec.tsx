@@ -49,6 +49,80 @@ vi.mock(
 )
 
 describe('<CollectiveOfferStockForm />', () => {
+  it.each([undefined, []])(
+    'should initialize one additional fee row in creation when fees are %s',
+    (collectiveAdditionalFees) => {
+      renderWithProviders(
+        <CollectiveOfferStockForm
+          {...defaultProps}
+          initialStock={{ collectiveAdditionalFees }}
+        />
+      )
+
+      expect(screen.getByRole('radio', { name: 'Oui' })).toBeChecked()
+      const feeAmounts = screen.getAllByLabelText(/Prix \(en €\)/)
+      expect(feeAmounts).toHaveLength(1)
+      expect(feeAmounts[0]).toHaveValue(0)
+    }
+  )
+
+  it.each([undefined, []])(
+    'should not initialize additional fee rows in edition when fees are %s',
+    (collectiveAdditionalFees) => {
+      renderWithProviders(
+        <CollectiveOfferStockForm
+          {...defaultProps}
+          mode={Mode.EDITION}
+          initialStock={{ collectiveAdditionalFees }}
+        />
+      )
+
+      expect(screen.getByRole('radio', { name: 'Non' })).toBeChecked()
+      expect(screen.queryByLabelText(/Prix \(en €\)/)).not.toBeInTheDocument()
+    }
+  )
+
+  it.each([undefined, []])(
+    'should keep No selected when returning to a saved stock in creation with fees %s',
+    (collectiveAdditionalFees) => {
+      renderWithProviders(
+        <CollectiveOfferStockForm
+          {...defaultProps}
+          initialStock={{ id: 12, collectiveAdditionalFees }}
+        />
+      )
+
+      expect(screen.getByRole('radio', { name: 'Non' })).toBeChecked()
+      expect(screen.queryByLabelText(/Prix \(en €\)/)).not.toBeInTheDocument()
+    }
+  )
+
+  it.each([Mode.CREATION, Mode.EDITION])(
+    'should preserve existing additional fees in mode %s',
+    (mode) => {
+      renderWithProviders(
+        <CollectiveOfferStockForm
+          {...defaultProps}
+          mode={mode}
+          initialStock={{
+            collectiveAdditionalFees: [
+              {
+                type: CollectiveAdditionalFeeType.TRAVEL,
+                label: null,
+                amount: 30,
+              },
+            ],
+          }}
+        />
+      )
+
+      expect(screen.getByRole('radio', { name: 'Oui' })).toBeChecked()
+      const feeAmounts = screen.getAllByLabelText(/Prix \(en €\)/)
+      expect(feeAmounts).toHaveLength(1)
+      expect(feeAmounts[0]).toHaveValue(30)
+    }
+  )
+
   it('should render without accessibility violations', async () => {
     const { container } = renderWithProviders(
       <CollectiveOfferStockForm {...defaultProps} />
@@ -93,6 +167,7 @@ describe('<CollectiveOfferStockForm />', () => {
     }
     renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
 
+    await user.click(screen.getByRole('radio', { name: 'Non' }))
     const submitBtn = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
@@ -244,6 +319,7 @@ describe('<CollectiveOfferStockForm />', () => {
     const tomorrow = addDays(new Date(), 1).toISOString()
     const testProps: CollectiveOfferStockFormProps = {
       ...defaultProps,
+      mode: Mode.EDITION,
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
       initialStock: {
         startDatetime: tomorrow,
@@ -320,6 +396,7 @@ describe('<CollectiveOfferStockForm />', () => {
     await user.type(screen.getByLabelText(/Horaire/), eventTime)
     await user.type(screen.getByLabelText(/Date limite/), today)
 
+    await user.click(screen.getByRole('radio', { name: 'Non' }))
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
     expect(testProps.onAfterSubmit).toHaveBeenCalledExactlyOnceWith({
@@ -340,6 +417,7 @@ describe('<CollectiveOfferStockForm />', () => {
     const tomorrow = addDays(new Date(), 1).toISOString()
     const testProps: CollectiveOfferStockFormProps = {
       ...defaultProps,
+      mode: Mode.EDITION,
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
       initialStock: {
         id: 12, // this is how we know the stock exists.

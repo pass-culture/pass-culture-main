@@ -8,10 +8,14 @@ import {
   CollectiveAdditionalFeeType,
 } from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Link } from '@/design-system/Link/Link'
+import { LinkColor, LinkSize } from '@/design-system/Link/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import fullLinkIcon from '@/icons/full-link.svg'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 
@@ -132,7 +136,7 @@ export const AdditionalFeesForm = ({
   return (
     <FormLayout.Row>
       <RadioButtonGroup
-        label="Votre offre comprend-elle des frais annexes (ex : votre hébergement, déplacement, matériel, etc.) ?"
+        label="Votre offre comprend-elle des frais annexes ? *"
         name="hasAdditionalFees"
         variant="detailed"
         display="horizontal"
@@ -153,91 +157,109 @@ export const AdditionalFeesForm = ({
       />
 
       {hasAdditionalFees && (
-        <div className={styles['additional-fees-container']}>
-          {fields.map((field, index) => {
-            const { ref: typeRef } = form.register(
-              `collectiveAdditionalFees.${index}.type`
-            )
-            const { ref: labelRef } = form.register(
-              `collectiveAdditionalFees.${index}.label`
-            )
+        <>
+          <div className={styles['additional-fees-container']}>
+            {fields.map((field, index) => {
+              const { ref: typeRef } = form.register(
+                `collectiveAdditionalFees.${index}.type`
+              )
+              const { ref: labelRef } = form.register(
+                `collectiveAdditionalFees.${index}.label`
+              )
 
-            return (
-              <FormLayout.Row
-                key={field.id}
-                inline
-                className={styles['additional-fee-row']}
-              >
-                <AdditionalFeeTypeInput
-                  collectiveAdditionalFee={field}
-                  disabled={!canEditDiscount}
-                  name={`collectiveAdditionalFees.${index}.type`}
-                  className={styles['additional-fee-type-select']}
-                  onChange={handleFeeTypeChange(index)}
-                  ref={(el) => {
-                    typeInputElements.current[index] = el
-                    typeRef(el)
-                    labelRef(el)
-                  }}
-                  error={
-                    rootErrorOnTypes ||
-                    form.formState.errors.collectiveAdditionalFees?.[index]
-                      ?.type?.message ||
-                    form.formState.errors.collectiveAdditionalFees?.[index]
-                      ?.label?.message
-                  }
-                />
-                <TextInput
-                  {...form.register(
-                    `collectiveAdditionalFees.${index}.amount`,
-                    {
-                      valueAsNumber: true,
-                      onChange: () =>
-                        form.trigger([
-                          'collectiveAdditionalFees',
-                          'servicePrice',
-                        ]),
+              return (
+                <FormLayout.Row
+                  key={field.id}
+                  inline
+                  className={styles['additional-fee-row']}
+                >
+                  <AdditionalFeeTypeInput
+                    collectiveAdditionalFee={field}
+                    disabled={!canEditDiscount}
+                    name={`collectiveAdditionalFees.${index}.type`}
+                    className={styles['additional-fee-type-select']}
+                    onChange={handleFeeTypeChange(index)}
+                    ref={(el) => {
+                      typeInputElements.current[index] = el
+                      typeRef(el)
+                      labelRef(el)
+                    }}
+                    error={
+                      rootErrorOnTypes ||
+                      form.formState.errors.collectiveAdditionalFees?.[index]
+                        ?.type?.message ||
+                      form.formState.errors.collectiveAdditionalFees?.[index]
+                        ?.label?.message
                     }
-                  )}
-                  disabled={!canEditDiscount}
-                  error={
-                    rootErrorOnAmounts ||
-                    form.formState.errors.collectiveAdditionalFees?.[index]
-                      ?.amount?.message
-                  }
-                  label="Prix (en €)"
-                  min={0.01}
-                  required
-                  step={0.01}
-                  type="number"
-                />
+                  />
+                  <TextInput
+                    {...form.register(
+                      `collectiveAdditionalFees.${index}.amount`,
+                      {
+                        valueAsNumber: true,
+                        onChange: () =>
+                          form.trigger([
+                            'collectiveAdditionalFees',
+                            'servicePrice',
+                          ]),
+                      }
+                    )}
+                    disabled={!canEditDiscount}
+                    error={
+                      rootErrorOnAmounts ||
+                      form.formState.errors.collectiveAdditionalFees?.[index]
+                        ?.amount?.message
+                    }
+                    label="Prix (en €)"
+                    min={0.01}
+                    required
+                    step={0.01}
+                    type="number"
+                  />
 
-                {shouldShowRemoveFeeButton && (
-                  <div className={styles['remove-button-container']}>
-                    <Button
-                      variant={ButtonVariant.SECONDARY}
-                      color={ButtonColor.NEUTRAL}
-                      icon={fullTrashIcon}
-                      iconAlt={'Supprimer ce champ'}
-                      onClick={removeAdditionalFeesFieldEntry(index)}
-                      disabled={!canEditDiscount || fields.length === 1}
-                    />
-                  </div>
-                )}
-              </FormLayout.Row>
-            )
-          })}
-          {shouldShowAddFeeButton && (
-            <Button
-              ref={addFeeButton}
-              variant={ButtonVariant.TERTIARY}
-              icon={fullMoreIcon}
-              color={ButtonColor.NEUTRAL}
-              label={'Ajouter un type de frais annexes'}
-              onClick={addAdditionalFeesFieldEntry}
-            />
-          )}
-        </div>
+                  {shouldShowRemoveFeeButton && (
+                    <div className={styles['remove-button-container']}>
+                      <Button
+                        variant={ButtonVariant.SECONDARY}
+                        color={ButtonColor.NEUTRAL}
+                        icon={fullTrashIcon}
+                        iconAlt={'Supprimer ce champ'}
+                        onClick={removeAdditionalFeesFieldEntry(index)}
+                        disabled={!canEditDiscount || fields.length === 1}
+                      />
+                    </div>
+                  )}
+                </FormLayout.Row>
+              )
+            })}
+            {shouldShowAddFeeButton && (
+              <Button
+                ref={addFeeButton}
+                variant={ButtonVariant.TERTIARY}
+                icon={fullMoreIcon}
+                color={ButtonColor.NEUTRAL}
+                label={'Ajouter un type de frais annexes'}
+                onClick={addAdditionalFeesFieldEntry}
+              />
+            )}
+          </div>
+          <div className={styles['additional-fees-container']}>
+            <Banner
+              title="Que peut inclure les frais annexes ?"
+              description={
+                <Link
+                  label="En savoir plus sur les frais annexes"
+                  icon={fullLinkIcon}
+                  color={LinkColor.NEUTRAL}
+                  size={LinkSize.EXTRA_SMALL}
+                  to="https://aide.passculture.app/hc/fr/articles/12423605196828--Acteurs-Culturels-Que-peut-on-inclure-dans-le-tarif-d-une-offre-collective"
+                  isExternalLink
+                  shouldOpenNewTab
+                ></Link>
+              }
+            ></Banner>
+          </div>
+        </>
       )}
     </FormLayout.Row>
   )
