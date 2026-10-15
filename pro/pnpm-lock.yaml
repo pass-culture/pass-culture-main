@@ -346,8 +346,8 @@ importers:
         specifier: 10.6.1
         version: 10.6.1(storybook@10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))
       '@storybook/addon-docs':
-        specifier: 10.6.0
-        version: 10.6.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))
+        specifier: 10.6.1
+        version: 10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))
       '@storybook/react-vite':
         specifier: 10.6.1
         version: 10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))(typescript@6.0.3)(vite@8.3.3(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.1))
@@ -2209,11 +2209,11 @@ packages:
     peerDependencies:
       storybook: ^10.6.1
 
-  '@storybook/addon-docs@10.6.0':
-    resolution: {integrity: sha512-Fk3rUQWeGyCfL170OkmRp6Ruyv7MHPb/xrKa6YNk7FlGmlVLi5tKzh2T/0J13vWEy8wiu2MV3IBu8iRsaUR+Cw==}
+  '@storybook/addon-docs@10.6.1':
+    resolution: {integrity: sha512-31PXR+MCWfI5YHKKah6tWnbV1FJWA9qbTHxtvpszPLd8FBekXtPOnmyYOpFF9CfciBF9bkeJFdFanJvUCjWbjA==}
     peerDependencies:
       '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      storybook: ^10.6.0
+      storybook: ^10.6.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -2231,20 +2231,6 @@ packages:
     resolution: {integrity: sha512-Fxh9vYpX9bQqFeHRiY8h2ApeRGDzRSMLwJwNZ/AIRqnyOKHxRKL+yFe+ctEkVJmuptRE9u1Hrn8ZZNHyfDKKNg==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
-  '@storybook/react-dom-shim@10.6.0':
-    resolution: {integrity: sha512-ZE0l4xL6d00rKFeJhRDuh0t3r+/2ffhx47lIyaSWrTD5kuM3nDjKDxCIWwX4E3gLV+oNX8E1prXRMuEWJUJwJg==}
-    peerDependencies:
-      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      '@types/react-dom': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      storybook: ^10.6.0
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      '@types/react-dom':
-        optional: true
 
   '@storybook/react-dom-shim@10.6.1':
     resolution: {integrity: sha512-OkPFycR6kVE+9ZsgQWRqnUfZm/sLY6dxsNAn3lsvV7DSAQWH9QnHLkqP9E/N/Hg6cKPDtGzDZ8vPNDz2FuaDuQ==}
@@ -2556,8 +2542,8 @@ packages:
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
 
-  acorn@8.18.0:
-    resolution: {integrity: sha512-lGq+9yr1/GuAWaVYIHRjvvySG5/4VfKIvC8EWxStPdcDh/Ka7FG3twP6v4d5BkravUilhIAsG4Qj83t02LWUPQ==}
+  acorn@8.19.0:
+    resolution: {integrity: sha512-oJlA3XiRm7Cyk6qFD2Jn8ak9B7jSy0qy00ADO3+8dpT0LSjFihQYv4C02LFCSYJV3Q37xYwwRy5m+IpIiUzqWw==}
     engines: {node: '>=0.4.0'}
     hasBin: true
 
@@ -6108,11 +6094,11 @@ snapshots:
       axe-core: 4.13.0
       storybook: 10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0)
 
-  '@storybook/addon-docs@10.6.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))':
+  '@storybook/addon-docs@10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))':
     dependencies:
       '@mdx-js/react': 3.1.1(@types/react@19.3.0)(react@19.3.0)
       '@storybook/icons': 2.1.0(react@19.3.0)
-      '@storybook/react-dom-shim': 10.6.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))
+      '@storybook/react-dom-shim': 10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
       storybook: 10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0)
@@ -6134,15 +6120,6 @@ snapshots:
   '@storybook/icons@2.1.0(react@19.3.0)':
     dependencies:
       react: 19.3.0
-
-  '@storybook/react-dom-shim@10.6.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))':
-    dependencies:
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-      storybook: 10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0)
-    optionalDependencies:
-      '@types/react': 19.3.0
-      '@types/react-dom': 19.3.0(@types/react@19.3.0)
 
   '@storybook/react-dom-shim@10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))':
     dependencies:
@@ -6483,7 +6460,7 @@ snapshots:
 
   abbrev@1.1.1: {}
 
-  acorn@8.18.0: {}
+  acorn@8.19.0: {}
 
   ajv@8.20.0:
     dependencies:
@@ -8270,7 +8247,7 @@ snapshots:
   terser@5.51.2:
     dependencies:
       '@jridgewell/source-map': 0.3.11
-      acorn: 8.18.0
+      acorn: 8.19.0
       commander: 2.20.3
       source-map-support: 0.5.21
 
@@ -8347,7 +8324,7 @@ snapshots:
   unplugin@2.3.11:
     dependencies:
       '@jridgewell/remapping': 2.3.5
-      acorn: 8.18.0
+      acorn: 8.19.0
       picomatch: 4.0.7
       webpack-virtual-modules: 0.6.2
 
