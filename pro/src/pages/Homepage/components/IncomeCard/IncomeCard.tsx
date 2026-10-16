@@ -195,7 +195,7 @@ export const IncomeCard = ({
         <Card.Footer>
           <Button
             as="router-link"
-            to="/administration/gestion-financiere/revenus"
+            to="/administration/gestion-financiere/chiffre-d-affaires"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.DEFAULT}

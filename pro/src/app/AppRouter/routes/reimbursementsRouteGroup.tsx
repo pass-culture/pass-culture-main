@@ -41,7 +41,7 @@ export const reimbursementsRouteGroup: CustomRouteGroup['children'] = [
     },
   },
   {
-    path: 'revenus',
+    path: 'chiffre-d-affaires',
     lazy: () => import('@/pages/Reimbursements/Income/Income'),
     handle: {
       title: 'Chiffre d’affaires',
