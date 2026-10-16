@@ -165,6 +165,7 @@ class TransactionalEmail(Enum):
     SETTLEMENT_REJECTED = models.TemplatePro(id_prod=649, id_not_prod=81)
     REFUND_SETTLEMENT_RECEIVED = models.TemplatePro(id_prod=685, id_not_prod=89)
     VENUE_CLOSED_CONFIRMATION = models.TemplatePro(id_prod=668, id_not_prod=88)
+    VENUE_SHOULD_BE_CLOSED = models.TemplatePro(id_prod=666, id_not_prod=87)
 
     # Finance incidents
     RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS = models.TemplatePro(id_prod=77, id_not_prod=54)
