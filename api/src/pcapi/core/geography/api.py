@@ -8,8 +8,8 @@ import typing
 import py7zr
 import pyproj
 import shapefile
+from shapely import transform as shapely_transform
 from shapely.geometry import shape as shapely_shape
-from shapely.ops import transform as shapely_transform
 
 from pcapi.models import db
 
@@ -62,7 +62,7 @@ def import_iris_from_shp_file(path: pathlib.Path) -> int:
 
     for sr in sf.shapeRecords():
         geom = shapely_shape(sr.shape.__geo_interface__)
-        reprojected = shapely_transform(project, geom)
+        reprojected = shapely_transform(geom, project, interleaved=False)
         props = dict(zip(fields, sr.record))
 
         iris = models.IrisFrance(
