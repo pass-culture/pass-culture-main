@@ -1957,10 +1957,6 @@ def generate_dms_token() -> str:
     raise ValueError("Could not generate new dmsToken for Venue")
 
 
-def get_venues_educational_statuses() -> list[offerers_models.VenueEducationalStatus]:
-    return offerers_repository.get_venues_educational_statuses()
-
-
 def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) -> sa_orm.Query[models.Offerer]:
     offerers = db.session.query(models.Offerer).options(
         sa_orm.with_expression(

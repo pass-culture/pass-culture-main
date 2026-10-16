@@ -282,8 +282,14 @@ def delete_venue_banner(venue_id: int) -> None:
     api=blueprint.pro_schema,
 )
 def get_venues_educational_statuses() -> venue_collective_serialize.VenuesEducationalStatusesResponseModel:
-    statuses = offerers_api.get_venues_educational_statuses()
-    return venue_collective_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)  # type: ignore [arg-type]
+    statuses = offerers_repository.get_venues_educational_statuses()
+
+    return venue_collective_serialize.VenuesEducationalStatusesResponseModel(
+        statuses=[
+            venue_collective_serialize.VenuesEducationalStatusResponseModel.model_validate(status)
+            for status in statuses
+        ]
+    )
 
 
 @pro_blueprint.route("/venues/<int:venue_id>/locations", methods=["GET"])
