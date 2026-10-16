@@ -119,6 +119,15 @@ class OfferHasBookingLimitDatetimesPassedTest:
         ]
 
 
+@pytest.mark.parametrize("expression", [models.Offer.isSoldOut, models.Offer.hasBookingLimitDatetimesPassed])
+def test_stock_status_expressions_use_is_not_true_on_is_soft_deleted(expression):
+    # "isSoftDeleted" IS false makes PostgreSQL 18 vastly overestimate the cost of ix_stock_bookability
+    sql = str(expression.compile(dialect=db.engine.dialect))
+
+    assert 'stock."isSoftDeleted" IS NOT true' in sql
+    assert 'stock."isSoftDeleted" IS false' not in sql
+
+
 class OfferActiveMediationTest:
     def test_active_mediation(self):
         mediation1 = factories.MediationFactory()

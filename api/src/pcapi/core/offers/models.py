@@ -999,7 +999,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     def _isSoldOutExpression(cls) -> ColumnElement[bool]:
         return ~sa.exists().where(
             Stock.offerId == cls.id,
-            Stock.isSoftDeleted.is_(False),
+            # IS NOT TRUE rather than IS FALSE
+            # otherwise PostgreSQL 18 vastly overestimates the cost of ix_stock_bookability
+            Stock.isSoftDeleted.is_not(True),
             sa.or_(Stock.beginningDatetime.is_(None), Stock.beginningDatetime > sa.func.now()),
             sa.or_(Stock.remainingQuantity.is_(None), Stock.remainingQuantity > 0),
         )
@@ -1175,14 +1177,16 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @hasBookingLimitDatetimesPassed.inplace.expression
     @classmethod
     def _hasBookingLimitDatetimesPassedExpression(cls) -> ColumnElement[bool]:
+        # IS NOT TRUE rather than IS FALSE
+        # otherwise PostgreSQL 18 vastly overestimates the cost of ix_stock_bookability
         return sa.and_(
             sa.exists().where(
                 Stock.offerId == cls.id,
-                Stock.isSoftDeleted.is_(False),
+                Stock.isSoftDeleted.is_not(True),
             ),
             ~sa.exists().where(
                 Stock.offerId == cls.id,
-                Stock.isSoftDeleted.is_(False),
+                Stock.isSoftDeleted.is_not(True),
                 Stock.hasBookingLimitDatetimePassed.is_(False),
             ),
         )
