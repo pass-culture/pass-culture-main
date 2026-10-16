@@ -231,7 +231,7 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     redactor: AdageRedactor | None
 
 
-class AdageCollectiveRequest(AdageBaseResponseModel):
+class AdageCollectiveRequest(pydantic_v2.BaseModel):
     redactorEmail: str
     requestPhoneNumber: str | None
     requestedDate: datetime.date | None
@@ -243,3 +243,19 @@ class AdageCollectiveRequest(AdageBaseResponseModel):
     venueName: str
     offerName: str
     comment: str
+
+    @classmethod
+    def build(cls, request: models.CollectiveOfferRequest) -> typing.Self:
+        return cls(
+            redactorEmail=request.educationalRedactor.email,
+            requestPhoneNumber=request.phoneNumber,
+            requestedDate=request.requestedDate,
+            totalStudents=request.totalStudents,
+            totalTeachers=request.totalTeachers,
+            comment=request.comment,
+            offerContactEmail=request.collectiveOfferTemplate.contactEmail,
+            offerContactPhoneNumber=request.collectiveOfferTemplate.contactPhone,
+            offererName=request.collectiveOfferTemplate.venue.managingOfferer.name,
+            venueName=request.collectiveOfferTemplate.venue.name,
+            offerName=request.collectiveOfferTemplate.name,
+        )
