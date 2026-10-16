@@ -21,7 +21,6 @@ from pcapi.core.educational.api import adage as api_adage
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
 from pcapi.core.educational.serialization.collective_offer import serialize_collective_offer
-from pcapi.core.educational.serialization.collective_request import serialize_collective_offer_request
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import api as finance_api
@@ -947,7 +946,7 @@ def create_offer_request(
     db.session.flush()
 
     transactional_mails.send_new_request_made_by_redactor_to_pro(request)
-    on_commit(partial(_notify_collective_request, data=serialize_collective_offer_request(request)))
+    on_commit(partial(_notify_collective_request, data=schemas.AdageCollectiveRequest.build(request)))
 
     return request
 
