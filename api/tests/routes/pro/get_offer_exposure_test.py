@@ -47,7 +47,7 @@ class Returns200Test:
         offer_id = offer.id
 
         num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select offer + venue + pro_advice
+        num_queries += 1  # select offer + venue
         num_queries += 1  # select headline offers
         num_queries += 1  # select criteria + highlights
         num_queries += 1  # check user has rights on offerer

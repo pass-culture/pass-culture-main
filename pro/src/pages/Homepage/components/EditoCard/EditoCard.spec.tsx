@@ -66,17 +66,6 @@ describe('EditoCard', () => {
       ).toBeVisible()
     })
 
-    it('should display the recommendation card', () => {
-      renderWithProviders(
-        <EditoCard {...defaultProps} canDisplayHighlights={false} />
-      )
-      expect(
-        screen.getByText(
-          'Écrivez une recommandation pour conseiller votre offre'
-        )
-      ).toBeVisible()
-    })
-
     it('should not display the highlight offer card', () => {
       renderWithProviders(
         <EditoCard {...defaultProps} canDisplayHighlights={false} />
@@ -108,17 +97,6 @@ describe('EditoCard', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should display the recommendation card', () => {
-      renderWithProviders(
-        <EditoCard {...defaultProps} canDisplayHighlights={true} />
-      )
-      expect(
-        screen.getByText(
-          'Écrivez une recommandation pour conseiller votre offre'
-        )
-      ).toBeVisible()
-    })
-
     it('should display the highlights button', () => {
       renderWithProviders(
         <EditoCard {...defaultProps} canDisplayHighlights={true} />
@@ -148,16 +126,6 @@ describe('EditoCard', () => {
       )
       const links = screen.getAllByRole('link', { name: 'Choisir une offre' })
       expect(links[0]).toHaveAttribute('href', '/offres')
-    })
-  })
-
-  describe('recommendation card', () => {
-    it('should have a link to offer page', () => {
-      renderWithProviders(
-        <EditoCard {...defaultProps} canDisplayHighlights={false} />
-      )
-      const links = screen.getAllByRole('link', { name: 'Choisir une offre' })
-      expect(links[1]).toHaveAttribute('href', '/offres')
     })
   })
 
@@ -226,7 +194,7 @@ describe('EditoCard', () => {
   })
 
   describe('when isReadOnly is true', () => {
-    it('should disable the headline offer and recommendation links', () => {
+    it('should disable the headline offer', () => {
       renderWithProviders(
         <EditoCard
           {...defaultProps}
@@ -236,7 +204,7 @@ describe('EditoCard', () => {
       )
 
       const links = screen.getAllByRole('link', { name: 'Choisir une offre' })
-      expect(links).toHaveLength(2)
+      expect(links).toHaveLength(1)
       for (const link of links) {
         expect(link).toHaveAttribute('aria-disabled', 'true')
         expect(link).not.toHaveAttribute('href')
@@ -289,20 +257,6 @@ describe('EditoCard', () => {
 
       expect(mockLogEvent).toHaveBeenCalledWith(
         HomepageEvents.CLICKED_CULTURAL_SURVEY
-      )
-    })
-    it('should log CLICKED_RECOMMENDATION on recommendation "Choisir une offre" click', async () => {
-      const user = userEvent.setup()
-
-      renderWithProviders(
-        <EditoCard {...defaultProps} canDisplayHighlights={false} />
-      )
-
-      const links = screen.getAllByRole('link', { name: 'Choisir une offre' })
-      await user.click(links[1])
-
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        HomepageEvents.CLICKED_RECOMMENDATION
       )
     })
   })

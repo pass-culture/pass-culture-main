@@ -257,8 +257,6 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             return offer_location_getter_dict_helper(self._obj)
         if key == "bookingsCount":
             return sum([stock.dnBookedQuantity for stock in self._obj.stocks])
-        if key == "hasProAdvice":
-            return bool(self._obj.hasProAdvice)
         if key == "highlightRequests":
             return [
                 highlight_request.highlight
@@ -283,7 +281,6 @@ class ListOffersOfferResponseModel(BaseModel):
     bookingsCount: int | None
     productId: int | None
     highlightRequests: list[highlight_serialize.ShortHighlightResponseModel]
-    hasProAdvice: bool
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
@@ -730,24 +727,3 @@ class PostOfferBodyModel(HttpBodyModel):
         validate_extra_data_size(extra_data)
         validate_extra_data_content(extra_data)
         return extra_data
-
-
-class ProAdviceModel(HttpBodyModel):
-    content: str
-    author: str | None
-    updated_at: datetime.datetime
-
-
-class GetProAdviceResponseModel(HttpBodyModel):
-    pro_advice: ProAdviceModel | None
-
-
-class PostProAdviceResponseModel(GetProAdviceResponseModel): ...
-
-
-class PatchProAdviceResponseModel(GetProAdviceResponseModel): ...
-
-
-class ProAdviceBodyModel(HttpBodyModel):
-    content: str = pydantic_v2.Field(min_length=1, max_length=800)
-    author: str | None = pydantic_v2.Field(min_length=1, max_length=20, default=None)

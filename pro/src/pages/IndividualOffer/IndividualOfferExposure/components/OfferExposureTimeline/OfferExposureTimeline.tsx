@@ -30,8 +30,6 @@ const getEventTitle = (event: ExposureEventResponseModel): string => {
       return 'Mise à la une de votre offre'
     case ExposureEventType.HIGHLIGHT:
       return `Lien de votre offre au temps fort “${event.name}”`
-    case ExposureEventType.PRO_ADVICE:
-      return 'Ajout d’une recommandation'
     default:
       return ''
   }

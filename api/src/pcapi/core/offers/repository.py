@@ -65,7 +65,6 @@ OFFER_LOAD_OPTIONS = typing.Iterable[
         "meta_data",
         "highlight_requests",
         "artists",
-        "pro_advice",
         "cultural_outreach",
         "highlight_criteria",
     ]
@@ -165,7 +164,6 @@ def get_capped_offers_for_filters(
             )
             .joinedload(models.Product.productMediations)
         )
-        .options(sa_orm.with_expression(models.Offer.hasProAdvice, get_offer_has_pro_advice_subquery()))
         .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
         .limit(offers_limit)
@@ -593,6 +591,7 @@ def get_bookable_screenings_from_venue(
     return list(offers)
 
 
+# TODO: DELETE when native advices deleted
 def get_product_pro_advices_count(product_id: int) -> int:
     query = (
         sa.select(sa.func.count())
@@ -619,6 +618,7 @@ def _get_distance_column(latitude: float, longitude: float) -> sa.ColumnElement:
     return sa.func.round(ST_Distance(address_location, request_location).cast(sa.Integer))
 
 
+# TODO: DELETE when native advices deleted
 def get_pro_advices(
     offer_id: int,
     product_id: int | None,
@@ -1306,8 +1306,6 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                     artist_models.Artist.name,
                 )
             )
-        if "pro_advice" in load_options:
-            query = query.options(sa_orm.joinedload(models.Offer.proAdvice))
         if "highlight_criteria" in load_options:
             query = query.options(
                 sa_orm.selectinload(models.Offer.criteria).joinedload(criteria_models.Criterion.highlight)

@@ -83,12 +83,6 @@ const renderOffer = (
   )
 }
 
-const waitForRecommendationCardFetch = async () => {
-  await waitFor(() => {
-    expect(api.getOfferProAdvice).toHaveBeenCalled()
-  })
-}
-
 describe('IndividualOfferConfirmation', () => {
   let contextOverride: Partial<IndividualOfferContextValues>
   let offer: GetIndividualOfferResponseModel
@@ -112,11 +106,7 @@ describe('IndividualOfferConfirmation', () => {
     vi.spyOn(api, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
-    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
-      proAdvice: null,
-    })
     vi.mocked(getOfferEnhancementActionsVisibility).mockReturnValue({
-      shouldDisplayRecommendationAction: true,
       shouldDisplayHighlightAction: true,
       shouldDisplayHeadlineAction: true,
     })
@@ -125,15 +115,12 @@ describe('IndividualOfferConfirmation', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderOffer(contextOverride)
 
-    await waitForRecommendationCardFetch()
-
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should display a pending message when offer is pending for validation', async () => {
+  it('should display a pending message when offer is pending for validation', () => {
     offer.status = OfferStatus.PENDING
     renderOffer(contextOverride)
-    await waitForRecommendationCardFetch()
 
     expect(
       screen.getByRole('heading', { name: /Offre en cours de validation/ })
@@ -143,9 +130,8 @@ describe('IndividualOfferConfirmation', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display a success message when offer is accepted', async () => {
+  it('should display a success message when offer is accepted', () => {
     renderOffer(contextOverride)
-    await waitForRecommendationCardFetch()
 
     expect(
       screen.getByRole('heading', {
@@ -155,9 +141,8 @@ describe('IndividualOfferConfirmation', () => {
   })
 
   describe('preview section', () => {
-    it('should show the QR code block for an active offer', async () => {
+    it('should show the QR code block for an active offer', () => {
       renderOffer(contextOverride)
-      await waitForRecommendationCardFetch()
 
       expect(screen.getByTestId('qr-code')).toBeInTheDocument()
       expect(
@@ -173,10 +158,9 @@ describe('IndividualOfferConfirmation', () => {
       ).toBeInTheDocument()
     })
 
-    it('should hide the QR code block when the offer is scheduled in the future', async () => {
+    it('should hide the QR code block when the offer is scheduled in the future', () => {
       offer.publicationDate = new Date(Date.now() + 3600 * 1000).toISOString()
       renderOffer(contextOverride)
-      await waitForRecommendationCardFetch()
 
       expect(screen.queryByTestId('qr-code')).not.toBeInTheDocument()
       expect(
@@ -187,9 +171,8 @@ describe('IndividualOfferConfirmation', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should encode the offer URL with UTM params in the QR code', async () => {
+    it('should encode the offer URL with UTM params in the QR code', () => {
       renderOffer(contextOverride)
-      await waitForRecommendationCardFetch()
 
       expect(screen.getByTestId('qr-code')).toHaveAttribute(
         'data-value',
@@ -197,9 +180,8 @@ describe('IndividualOfferConfirmation', () => {
       )
     })
 
-    it('should display the preview action links', async () => {
+    it('should display the preview action links', () => {
       renderOffer(contextOverride)
-      await waitForRecommendationCardFetch()
 
       expect(
         screen.getByRole('link', { name: 'Créer une nouvelle offre' })
@@ -221,9 +203,6 @@ describe('IndividualOfferConfirmation', () => {
       ).toBeInTheDocument()
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: 'Ajouter une recommandation' })
-        ).toBeInTheDocument()
-        expect(
           screen.getByRole('button', { name: 'Relier l’offre à un temps fort' })
         ).toBeInTheDocument()
         expect(
@@ -234,7 +213,6 @@ describe('IndividualOfferConfirmation', () => {
 
     it('should not display the cards section when there is no card to display', () => {
       vi.mocked(getOfferEnhancementActionsVisibility).mockReturnValue({
-        shouldDisplayRecommendationAction: false,
         shouldDisplayHighlightAction: false,
         shouldDisplayHeadlineAction: false,
       })

@@ -51,6 +51,7 @@ def offer_chronicles(offer_id: int) -> serializers.OfferChronicles:
     )
 
 
+# TODO: DELETE when native advices deleted
 @blueprint.native_route("/offer/<int:offer_id>/advices", methods=["GET"])
 @spectree_serialize(
     on_success_status=200, on_error_statuses=[404], api=blueprint.api, response_model=serializers.OfferProAdvices

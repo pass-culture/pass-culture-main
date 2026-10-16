@@ -17,7 +17,6 @@ import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
 import { OfferHighlightCard } from '@/components/IndividualOfferLayout/components/OfferHighlightCard/OfferHighlightCard'
-import { OfferRecommendationCard } from '@/components/IndividualOfferLayout/components/OfferRecommendationCard/OfferRecommendationCard'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
@@ -60,17 +59,12 @@ export const IndividualOfferConfirmationScreen = ({
     void navigate(offerReadOnlyUrl)
   }
 
-  const {
-    shouldDisplayRecommendationAction,
-    shouldDisplayHighlightAction,
-    shouldDisplayHeadlineAction,
-  } = getOfferEnhancementActionsVisibility(offer)
+  const { shouldDisplayHighlightAction, shouldDisplayHeadlineAction } =
+    getOfferEnhancementActionsVisibility(offer)
 
   const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const shouldDisplayCardsSection =
-    shouldDisplayRecommendationAction ||
-    shouldDisplayHighlightAction ||
-    shouldDisplayHeadlineAction
+    shouldDisplayHighlightAction || shouldDisplayHeadlineAction
 
   return (
     <div className={styles['container']}>
@@ -149,14 +143,6 @@ export const IndividualOfferConfirmationScreen = ({
             Allez plus loin et optimisez votre offre :
           </h2>
           <div className={styles['enhancement-cards']}>
-            {shouldDisplayRecommendationAction && (
-              <OfferRecommendationCard
-                isReadOnly={isClosed}
-                offerId={offer.id}
-                onSubmit={goToOfferPage}
-                submitLabel="Enregistrer et accéder à l’offre"
-              />
-            )}
             {shouldDisplayHighlightAction && (
               <OfferHighlightCard
                 isReadOnly={isClosed}

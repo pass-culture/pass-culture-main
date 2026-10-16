@@ -305,7 +305,6 @@ class Returns200Test:
                 "publicationDatetime": "2022-10-21T13:19:00Z",
                 "bookingAllowedDatetime": "2022-11-21T13:19:00Z",
                 "bookingsCount": 50,
-                "hasProAdvice": False,
                 "productId": product.id,
                 "highlightRequests": [{"id": highlight_id, "name": highlight_name}],
             }
@@ -354,7 +353,6 @@ class Returns200Test:
                 "publicationDatetime": None,
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
-                "hasProAdvice": False,
                 "productId": None,
                 "highlightRequests": [],
             }
@@ -409,7 +407,6 @@ class Returns200Test:
                 "publicationDatetime": "2022-10-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
-                "hasProAdvice": False,
                 "productId": None,
                 "highlightRequests": [],
             }
@@ -546,7 +543,6 @@ class Returns200Test:
                 "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
-                "hasProAdvice": False,
                 "productId": None,
                 "highlightRequests": [],
             },
@@ -576,7 +572,6 @@ class Returns200Test:
                 "publicationDatetime": "2022-10-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
-                "hasProAdvice": False,
                 "productId": None,
                 "highlightRequests": [],
             },
@@ -636,7 +631,6 @@ class Returns200Test:
                 "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
-                "hasProAdvice": False,
                 "productId": None,
                 "highlightRequests": [],
             }
@@ -682,27 +676,10 @@ class Returns200Test:
                 "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
-                "hasProAdvice": False,
                 "productId": None,
                 "highlightRequests": [],
             }
         ]
-
-    def should_return_has_pro_advice_true_when_offer_has_pro_advice(self, client):
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-
-        offer_with_advice = offers_factories.ThingOfferFactory(venue=venue)
-        offers_factories.ProAdviceFactory(offer=offer_with_advice, venue=venue)
-
-        authenticated_client = client.with_session_auth(email=pro.email)
-        response = authenticated_client.get(f"/offers?venueId={venue.id}")
-
-        assert response.status_code == 200
-        has_pro_advice_by_offer_id = {offer["id"]: offer["hasProAdvice"] for offer in response.json}
-        assert has_pro_advice_by_offer_id[offer_with_advice.id] is True
 
     def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, client, db_session):
         pro = users_factories.ProFactory()

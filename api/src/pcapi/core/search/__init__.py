@@ -555,11 +555,6 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                 offers_models.Offer.likesCount, offers_repository.get_offer_reaction_count_subquery()
             )
         )
-        .options(
-            sa_orm.with_expression(
-                offers_models.Offer.hasProAdvice, offers_repository.get_offer_has_pro_advice_subquery()
-            )
-        )
         .options(sa_orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.id))
         .options(sa_orm.joinedload(offers_models.Offer.mediations).load_only(offers_models.Mediation.id))
         .options(sa_orm.joinedload(offers_models.Offer.quality).load_only(offers_models.OfferQuality.completionScore))
@@ -605,7 +600,6 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                 offers_models.Product.description,
                 offers_models.Product.chroniclesCount,
                 offers_models.Product.likesCount,
-                offers_models.Product.proAdvicesCount,
                 offers_models.Product.thumbCount,
             )
             .options(
