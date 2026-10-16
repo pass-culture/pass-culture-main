@@ -58,4 +58,9 @@ export const redirectedRoutes: RedirectionRouteObject[] = [
       return <Navigate to={targetUrl} replace />
     },
   },
+  {
+    path: '/administration/gestion-financiere/revenus',
+    loader: () =>
+      redirect('/administration/gestion-financiere/chiffre-d-affaires'),
+  },
 ]

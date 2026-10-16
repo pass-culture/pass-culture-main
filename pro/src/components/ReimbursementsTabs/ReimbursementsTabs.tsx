@@ -64,7 +64,7 @@ export const ReimbursementsTabs = ({
       {
         id: STEP_ID_INCOMES,
         label: 'Chiffre d’affaires',
-        url: '/administration/gestion-financiere/revenus',
+        url: '/administration/gestion-financiere/chiffre-d-affaires',
       },
     ]
 

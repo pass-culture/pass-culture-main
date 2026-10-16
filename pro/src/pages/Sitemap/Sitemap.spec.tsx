@@ -104,7 +104,7 @@ describe('Sitemap', () => {
         },
         {
           name: 'Chiffre d’affaires',
-          href: '/administration/gestion-financiere/revenus',
+          href: '/administration/gestion-financiere/chiffre-d-affaires',
         },
         {
           name: 'Individuel',

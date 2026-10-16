@@ -255,7 +255,7 @@ export const SettlementTable = ({
           }
 
           {
-            // REJECTED_PROCESSED -> link to the bank accounts tab
+            // REJECTED_PROCESSED
             settlement.status ===
               SettlementDisplayedStatus.REJECTED_PROCESSED && (
               <p className={styles['cell-rejected']}>
@@ -265,7 +265,7 @@ export const SettlementTable = ({
           }
 
           {
-            // REJECTED_SOLVED -> link to the bank accounts tab
+            // REJECTED_SOLVED
             settlement.status === SettlementDisplayedStatus.REJECTED_SOLVED && (
               <p className={styles['cell-rejected']}>
                 {getResolvedByLabel(settlement)}
