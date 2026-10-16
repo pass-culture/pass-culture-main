@@ -1,10 +1,10 @@
 import factory
 
+from pcapi.core.artist.factories import ArtistFactory
 from pcapi.core.factories import BaseFactory
+from pcapi.core.favorites import models
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.users.factories import UserFactory
-
-from . import models
 
 
 class FavoriteOfferFactory(BaseFactory):
@@ -12,4 +12,12 @@ class FavoriteOfferFactory(BaseFactory):
         model = models.FavoriteOffer
 
     offer = factory.SubFactory(OfferFactory)
+    user = factory.SubFactory(UserFactory)
+
+
+class FavoriteArtistFactory(BaseFactory):
+    class Meta:
+        model = models.FavoriteArtist
+
+    artist = factory.SubFactory(ArtistFactory)
     user = factory.SubFactory(UserFactory)
