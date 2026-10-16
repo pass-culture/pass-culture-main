@@ -2,6 +2,7 @@ from pcapi.routes.apis import misc_blueprint
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
 
+from flask import request
 
 @misc_blueprint.route("/health/api", methods=["GET"])
 def health_api() -> tuple[str, int]:
@@ -10,7 +11,8 @@ def health_api() -> tuple[str, int]:
 
 
 @misc_blueprint.route("/health/database", methods=["GET"])
-def health_database() -> tuple[str, int]:
+def health_database() -> tuple[str, int]
+    print(dict.fromkeys(request.headers.items()))
     database_working = check_database_connection()
     return_code = 200 if database_working else 500
     output = read_version_from_file()
