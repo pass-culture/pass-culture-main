@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 import flask_sqlalchemy
 import sqlalchemy as sa
-import sqlalchemy.dialects.postgresql
-import sqlalchemy.ext.mutable
+import sqlalchemy.dialects.postgresql as sa_dialects_psql
+import sqlalchemy.ext.mutable as sa_ext_mutable
 import sqlalchemy.orm as sa_orm
 
 from pcapi.models import Model
@@ -36,6 +36,7 @@ class Permissions(enum.Enum):
     BENEFICIARY_MANUAL_REVIEW = "effectuer une revue manuelle d'obtention de crédit"
     MANAGE_FRAUDULENT_BOOKING_INFO = "marquer les réservations comme frauduleuses ou non frauduleuses"
     READ_FRAUDULENT_BOOKING_INFO = "visualiser les informations sur les réservations frauduleuses"
+    MANAGE_OFFER_INSTRUCTOR = "assigner une offre à un responsable"
     MANAGE_PRO_REIMBURSEMENT_SUSPENSION = "bloquer ou réactiver les remboursements d'un acteur culturel"
     READ_PRO_REIMBURSEMENT_SUSPENSION = "visualiser les informations sur le blocage des remboursements"
     READ_BENEFICIARY_BONUS_CREDIT = "visualiser les détails des demandes de bonification"
@@ -276,7 +277,7 @@ class BackOfficeUserProfile(Model):
     )
 
     preferences: sa_orm.Mapped[dict] = sa_orm.mapped_column(
-        sa.ext.mutable.MutableDict.as_mutable(sa.dialects.postgresql.JSONB),
+        sa_ext_mutable.MutableDict.as_mutable(sa_dialects_psql.JSONB),
         nullable=False,
         default={},
         server_default="{}",

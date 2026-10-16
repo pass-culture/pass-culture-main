@@ -32,6 +32,9 @@
   {% if allowed_actions.actions.REJECT_OFFER in allowed_actions.inline_actions %}
     {{ action_bar_button("hand-thumbs-down", "Rejeter", modal_id="#reject-collective-offer-modal-" + collective_offer.id|string) }}
   {% endif %}
+  {% if allowed_actions.actions.SET_OFFER_INSTRUCTOR in allowed_actions.inline_actions %}
+    {{ action_bar_button("person-add", "Attribuer un responsable", modal_id="#set-instructor-modal-" + collective_offer.id|string) }}
+  {% endif %}
   {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.inline_actions %}
     {{ action_bar_button("exclamation-triangle", "Créer un geste commercial", modal_id="#commercial-gesture-creation-modal-" + collective_booking.id|string) }}
   {% endif %}
@@ -61,6 +64,11 @@
       {% if allowed_actions.actions.REJECT_OFFER in allowed_actions.additional_actions %}
         <li>
           {{ action_bar_additional_button("hand-thumbs-down", "Rejeter", modal_id="#reject-collective-offer-modal-" + collective_offer.id|string) }}
+        </li>
+      {% endif %}
+      {% if allowed_actions.actions.SET_OFFER_INSTRUCTOR in allowed_actions.additional_actions %}
+        <li>
+          {{ action_bar_additional_button("person-add", "Attribuer un responsable", modal_id="#set-instructor-modal-" + collective_offer.id|string) }}
         </li>
       {% endif %}
       {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.additional_actions %}
@@ -266,7 +274,7 @@
       {% if collective_offer.nationalProgram %}
         {{ collective_offer.nationalProgram.name }}
       {% else %}
-        {{ ""  | placeholder_if_empty }}
+        {{ "" | placeholder_if_empty }}
       {% endif %}
     {% endcall %}
     <hr />
@@ -330,6 +338,13 @@
         {{ collective_offer.lastValidationAuthor.full_name }}
       {% endcall %}
     {% endif %}
+    {% if has_permission("MANAGE_OFFER_INSTRUCTOR") %}
+      {% if collective_offer.instructors %}
+        {% call description_detail_vertical("Responsable") %}
+          {{ collective_offer.instructors[0].full_name }}
+        {% endcall %}
+      {% endif %}
+    {% endif %}
   </div>
 {% endblock side_column %}
 {% block extra_main_content %}
@@ -348,6 +363,9 @@
   {% endif %}
   {% if allowed_actions.actions.REJECT_OFFER in allowed_actions.allowed_actions %}
     {{ build_lazy_modal(url_for('backoffice.collective_offer.get_reject_collective_offer_form', collective_offer_id=collective_offer.id) , "reject-collective-offer-modal-" + collective_offer.id|string) }}
+  {% endif %}
+  {% if allowed_actions.actions.SET_OFFER_INSTRUCTOR in allowed_actions.allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice.collective_offer.get_set_instructor_form', collective_offer_id=collective_offer.id) , "set-instructor-modal-" + collective_offer.id|string) }}
   {% endif %}
   {% if allowed_actions.actions.CREATE_OVERPAYMENT in allowed_actions.allowed_actions %}
     {{ build_lazy_modal(url_for("backoffice.finance_incidents.get_collective_booking_overpayment_creation_form", collective_booking_id=collective_booking.id) , "overpayment-creation-modal-" + collective_booking.id|string) }}
