@@ -1779,11 +1779,11 @@ class EditOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_edit.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Attribuer un responsable Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_edit.id)  # ID
@@ -1802,6 +1802,7 @@ class EditOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == "22"  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -2419,11 +2420,11 @@ class ValidateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Attribuer un responsable Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_validate.id)  # ID
@@ -2439,6 +2440,7 @@ class ValidateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -2518,11 +2520,11 @@ class QualifyCulturalOutreachTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Attribuer un responsable Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer.id)  # ID
@@ -2538,6 +2540,7 @@ class QualifyCulturalOutreachTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -2675,11 +2678,11 @@ class DisqualifyCulturalOutreachTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Attribuer un responsable Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer.id)  # ID
@@ -2695,6 +2698,7 @@ class DisqualifyCulturalOutreachTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -2830,11 +2834,11 @@ class PendingOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Attribuer un responsable Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_validate.id)  # ID
@@ -2850,6 +2854,7 @@ class PendingOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "En attente"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -2936,11 +2941,11 @@ class RejectOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_reject.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Publier l'offre Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Publier l'offre Attribuer un responsable Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_reject.id)  # ID
@@ -2956,6 +2961,7 @@ class RejectOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Rejetée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -3110,7 +3116,9 @@ class BatchOfferRejectTest(PostEndpointHelper):
     def test_batch_reject_offers(self, legit_user, authenticated_client):
         beneficiary = users_factories.BeneficiaryFactory()
         draft_offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.DRAFT)
-        pending_offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.PENDING)
+        pending_offer = offers_factories.OfferFactory(
+            validation=offers_models.OfferValidationStatus.PENDING, instructor=users_factories.UserFactory()
+        )
         confirmed_offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
         confirmed_booking = bookings_factories.BookingFactory(
             user=beneficiary, stock__offer=confirmed_offer, status=BookingStatus.CONFIRMED
@@ -3130,6 +3138,7 @@ class BatchOfferRejectTest(PostEndpointHelper):
             assert offer.lastValidationType is OfferValidationType.MANUAL
             assert offer.validation is offers_models.OfferValidationStatus.REJECTED
             assert offer.lastValidationAuthor == legit_user
+            assert offer.instructor is None
 
         assert len(mails_testing.outbox) == 4
         emails_dict = {email_data["To"]: email_data for email_data in mails_testing.outbox}
@@ -4239,11 +4248,11 @@ class ActivateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_activate.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Attribuer un responsable Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_activate.id)  # ID
@@ -4259,6 +4268,7 @@ class ActivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -4333,11 +4343,11 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_deactivate.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Publier l'offre Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Publier l'offre Attribuer un responsable Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_deactivate.id)  # ID
@@ -4353,6 +4363,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -5062,7 +5073,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Partenaire culturel"] == "Venue Revue manuelle"
 
-    def test_collective_offer_with_top_acteur_offerer(self, authenticated_client):
+    def test_get_offer_with_top_acteur_offerer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
             venue__managingOfferer__name="Offerer",
             venue__managingOfferer__tags=[
@@ -5091,3 +5102,174 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Action de médiation"] == "Disqualifiée"
+
+
+class SetInstructorOfferTest(PostEndpointHelper):
+    endpoint = "backoffice.offer.set_instructor"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_set_instructor_offer(self, legit_user, authenticated_client):
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+
+        old_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+        offer = offers_factories.OfferFactory(
+            validation=offers_models.OfferValidationStatus.PENDING, instructor=old_instructor
+        )
+
+        new_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            form={"instructor": new_instructor.id},
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice.offer.list_offers")
+        assert response.location == expected_url
+
+        offer_list_url = url_for(
+            "backoffice.offer.list_offers",
+            q=offer.id,
+        )
+        response = authenticated_client.get(offer_list_url)
+        assert response.status_code == 200
+
+        assert offer.instructor == new_instructor
+
+    def test_set_instructor_offer_with_htmx(self, legit_user, authenticated_client):
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+
+        offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.PENDING)
+
+        new_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            form={"instructor": new_instructor.id},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(
+            response.data,
+            id=f"offer-row-{offer.id}",
+        )
+        assert cells[3] == str(offer.id)
+        assert cells[16] == new_instructor.full_name
+
+        assert offer.instructor == new_instructor
+
+    def test_remove_instructor_offer(self, legit_user, authenticated_client):
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+
+        old_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+        offer = offers_factories.OfferFactory(
+            validation=offers_models.OfferValidationStatus.PENDING, instructor=old_instructor
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            form={"instructor": ""},
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice.offer.list_offers")
+        assert response.location == expected_url
+
+        offer_list_url = url_for(
+            "backoffice.offer.list_offers",
+            q=offer.id,
+        )
+        response = authenticated_client.get(offer_list_url)
+        assert response.status_code == 200
+
+        assert offer.instructor is None
+
+    def test_cant_set_instructor_on_non_pending_offer(self, legit_user, authenticated_client):
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+
+        offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
+
+        new_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            form={"instructor": new_instructor.id},
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice.offer.list_offers")
+        assert response.location == expected_url
+
+        offer_list_url = url_for(
+            "backoffice.offer.list_offers",
+            q=offer.id,
+        )
+        response = authenticated_client.get(offer_list_url)
+
+        assert response.status_code == 200
+        assert "Seules les offres en attente peuvent avoir un responsable" in response.data.decode("utf-8")
+
+        assert offer.instructor is None
+
+
+class GetSetInstructorOfferFormTest(GetEndpointHelper):
+    endpoint = "backoffice.offer.get_set_instructor_form"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_get_set_instructor_form_test(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_url = url_for(self.endpoint, offer_id=offer.id)
+
+        with assert_num_queries(3):  # session + offer + bo users with permission
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class BatchSetInstructorOffersTest(PostEndpointHelper):
+    endpoint = "backoffice.offer.batch_set_instructor"
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_batch_set_instructor(self, legit_user, authenticated_client):
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+        old_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+        new_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+
+        no_instructor_offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.PENDING)
+        old_instructor_offer = offers_factories.OfferFactory(
+            validation=offers_models.OfferValidationStatus.PENDING, instructor=old_instructor
+        )
+        offers = [no_instructor_offer, old_instructor_offer]
+
+        parameter_ids = ", ".join(str(offer.id) for offer in offers)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "instructor": new_instructor.id,
+            },
+        )
+
+        for offer in offers:
+            db.session.refresh(offer)
+            assert offer.instructor == new_instructor
+
+            cells = html_parser.extract_plain_row(
+                response.data,
+                id=f"offer-row-{offer.id}",
+            )
+            assert cells[3] == str(offer.id)
+            assert cells[16] == new_instructor.full_name

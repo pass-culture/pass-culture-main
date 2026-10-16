@@ -695,6 +695,17 @@ class ValidationRuleOfferLink(PcObject, Model):
     )
 
 
+class OfferInstructor(PcObject, Model):
+    __tablename__ = "offer_instructor"
+
+    instructorId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
+    )
+
+
 class OfferMetaData(PcObject, Model):
     __tablename__ = "offer_meta_data"
     offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -792,6 +803,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             name="check_providable_with_provider_has_idatprovider",
         ),
         nullable=True,
+    )
+    instructor: sa_orm.Mapped["User | None"] = sa_orm.relationship(
+        "User", secondary=OfferInstructor.__table__, uselist=False
     )
     isDuo: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, server_default=sa.false(), default=False, nullable=False

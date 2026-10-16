@@ -16,6 +16,9 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import show
 from pcapi.core.cultural_outreach import models as cultural_outreach_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.permissions import models as permissions_models
+from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
@@ -756,6 +759,30 @@ class EditOfferVenueForm(FlaskForm):
         self.venue.choices = [
             (venue.id, f"{venue.publicName} ({venue.siret if venue.siret else 'Pas de SIRET'})") for venue in venues
         ]
+
+
+class SetInstructorForm(empty_forms.DynamicForm):
+    instructor = fields.PCBOUsersSelectField(
+        "Responsable",
+        permissions=[permissions_models.Permissions.MANAGE_OFFER_INSTRUCTOR],
+    )
+
+    def validate_instructor(self, instructor: fields.PCBOUsersSelectField) -> fields.PCBOUsersSelectField:
+        if instructor.data != "":
+            instructor_user = (
+                db.session.query(users_models.User)
+                .join(permissions_models.BackOfficeUserProfile)
+                .filter(users_models.User.id == int(instructor.data))
+                .one_or_none()
+            )
+            if instructor_user is None:
+                raise wtforms.validators.ValidationError("Cet utilisateur n'est pas administrateur ou n'existe plus")
+            instructor.data = instructor_user
+        return instructor
+
+
+class BatchSetInstructorForm(empty_forms.BatchForm, SetInstructorForm):
+    pass
 
 
 class EditStockForm(FlaskForm):
