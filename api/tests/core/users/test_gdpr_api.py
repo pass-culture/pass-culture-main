@@ -3,6 +3,7 @@ import datetime
 import json
 import os
 import pathlib
+import re
 import zipfile
 from decimal import Decimal
 from unittest import mock
@@ -48,6 +49,7 @@ from pcapi.core.users.api import revoke_sso_access
 from pcapi.core.users.models import SingleSignOn
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.backoffice import filters as backoffice_filters
 from pcapi.utils import date as date_utils
 
 import tests
@@ -1476,6 +1478,20 @@ class DeleteGdprExtractTest(StorageFolderManager):
         assert db.session.query(users_models.GdprUserDataExtract).count() == 0
         assert len(os.listdir(self.storage_folder)) == 0
 
+    def test_internal_extract(self):
+        # given
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateProcessed=date_utils.get_naive_utc_now(), scope=users_models.GdprUserDataExtractScope.INTERNAL
+        )
+        with open(self.storage_folder / f"{extract.id}.pdf", "wb") as fp:
+            fp.write(b"[personal data as a pdf]")
+        # when
+        gdpr_api.delete_gdpr_extract(extract.id)
+
+        # then
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
+        assert len(os.listdir(self.storage_folder)) == 0
+
     def test_extract_file_does_not_exists(self):
         # given
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
@@ -1503,10 +1519,34 @@ class CleanGdprExtractTest(StorageFolderManager):
         assert db.session.query(users_models.GdprUserDataExtract).count() == 0
         assert len(os.listdir(self.storage_folder)) == 0
 
+    def test_delete_expired_internal_extracts(self):
+        # given
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateProcessed=date_utils.get_naive_utc_now() - datetime.timedelta(days=6),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=8),
+            scope=users_models.GdprUserDataExtractScope.INTERNAL,
+        )
+        with open(self.storage_folder / f"{extract.id}.pdf", "wb") as fp:
+            fp.write(b"[personal data as a pdf]")
+        # when
+        gdpr_api.clean_gdpr_extracts()
+        # then
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
+        assert len(os.listdir(self.storage_folder)) == 0
+
     def test_delete_extracts_files_not_in_db(self):
         # given
         with open(self.storage_folder / "1.zip", "wb") as fp:
             fp.write(b"[personal data compressed with deflate]")
+        # when
+        gdpr_api.clean_gdpr_extracts()
+        # then
+        assert len(os.listdir(self.storage_folder)) == 0
+
+    def test_delete_internal_extracts_files_not_in_db(self):
+        # given
+        with open(self.storage_folder / "1.pdf", "wb") as fp:
+            fp.write(b"[personal data as a pdf]")
         # when
         gdpr_api.clean_gdpr_extracts()
         # then
@@ -1910,6 +1950,8 @@ class ExtractBeneficiaryDataTest(StorageFolderManager):
                 }
             },
             "internal": {
+                "accountHistory": None,
+                "profileEdits": None,
                 "accountUpdateRequests": [
                     {
                         "allConditionsChecked": True,
@@ -2025,12 +2067,16 @@ class ExtractBeneficiaryDataTest(StorageFolderManager):
                 ],
                 "emailsHistory": [
                     {
+                        "author": None,
                         "dateCreated": "2023-12-30T00:00:00",
+                        "label": "Confirmation de changement d'email",
                         "newEmail": "intermediary@example.com",
                         "oldEmail": "old@example.com",
                     },
                     {
+                        "author": None,
                         "dateCreated": "2024-01-01T00:00:00",
+                        "label": "Changement d'email (interne)",
                         "newEmail": "beneficiary@example.com",
                         "oldEmail": "intermediary@example.com",
                     },
@@ -2166,6 +2212,344 @@ class ExtractBeneficiaryDataTest(StorageFolderManager):
             self.TEST_FILES_PATH / "gdpr" / "rendered_minimal_beneficiary_extract.html", "r", encoding="utf-8"
         ) as f:
             pdf_generator_mock.assert_called_once_with(html_content=f.read())
+
+
+class ExtractGdprAccountHistoryTest:
+    def test_entries_have_label_author_and_comment(self):
+        user = users_factories.BeneficiaryFactory()
+        admin = users_factories.AdminFactory(firstName="Ada", lastName="Min")
+        history_factories.ActionHistoryFactory(
+            user=user,
+            authorUser=None,
+            actionType=history_models.ActionType.USER_CREATED,
+            actionDate=datetime.datetime(2024, 1, 1),
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            user=user,
+            authorUser=admin,
+            actionType=history_models.ActionType.COMMENT,
+            actionDate=datetime.datetime(2024, 2, 1),
+            comment="Second",
+        )
+        history_factories.ActionHistoryFactory(user=users_factories.BeneficiaryFactory())
+        admin_id = admin.id
+
+        # 1 select user (expired instance refreshed when reading user.id)
+        # 2 select action_history joined with its author and their backoffice profile
+        with assert_num_queries(2):
+            entries = gdpr_api._extract_gdpr_account_history(user)
+
+        assert [(entry.date, entry.label, entry.author, entry.comment, entry.details) for entry in entries] == [
+            (datetime.datetime(2024, 1, 1), "Création du compte", None, None, []),
+            (datetime.datetime(2024, 2, 1), "Commentaire interne", f"Interne (ID : {admin_id})", "Second", []),
+        ]
+
+    def test_user_author_is_named_with_their_id(self):
+        user = users_factories.BeneficiaryFactory(firstName="Jeanne", lastName="Doux")
+        history_factories.ActionHistoryFactory(user=user, authorUser=user)
+
+        (entry,) = gdpr_api._extract_gdpr_account_history(user)
+
+        assert entry.author == f"Jeanne Doux (ID : {user.id})"
+
+    def test_admin_author_is_reduced_to_their_id(self):
+        user = users_factories.BeneficiaryFactory()
+        admin = users_factories.AdminFactory(firstName="Ada", lastName="Min")
+        history_factories.ActionHistoryFactory(user=user, authorUser=admin, comment="Un commentaire")
+
+        (entry,) = gdpr_api._extract_gdpr_account_history(user)
+
+        assert entry.author == f"Interne (ID : {admin.id})"
+        assert "Ada" not in entry.model_dump_json()
+        assert "Min" not in entry.model_dump_json()
+
+    def test_suspended_former_employee_author_is_still_internal(self):
+        user = users_factories.BeneficiaryFactory()
+        former_employee = users_factories.AdminFactory(firstName="Ada", lastName="Min")
+        history_factories.ActionHistoryFactory(user=user, authorUser=former_employee)
+        users_api.suspend_account(former_employee, reason=users_constants.SuspensionReason.END_OF_CONTRACT, actor=None)
+        former_employee_id = former_employee.id
+
+        # 1 select user (expired instance refreshed when reading user.id)
+        # 2 select action_history joined with its author and their backoffice profile
+        with assert_num_queries(2):
+            (entry,) = gdpr_api._extract_gdpr_account_history(user)
+
+        assert not former_employee.has_admin_role
+        assert entry.author == f"Interne (ID : {former_employee_id})"
+
+    def test_other_author_is_a_third_party_without_name(self):
+        user = users_factories.BeneficiaryFactory()
+        third_party = users_factories.BeneficiaryFactory(firstName="Tom", lastName="Autre")
+        history_factories.ActionHistoryFactory(user=user, authorUser=third_party)
+
+        (entry,) = gdpr_api._extract_gdpr_account_history(user)
+
+        assert entry.author == f"Tiers (ID : {third_party.id})"
+
+    def test_modification_made_by_the_user_is_detailed(self):
+        user = users_factories.BeneficiaryFactory(firstName="Jeanne", lastName="Doux")
+        history_factories.ActionHistoryFactory(
+            user=user,
+            authorUser=user,
+            actionType=history_models.ActionType.INFO_MODIFIED,
+            comment=None,
+            extraData={
+                "modified_info": {
+                    "city": {"old_info": "Lyon", "new_info": "Paris"},
+                    "phoneNumber": {"new_info": "+33601020304"},
+                    "address": {"old_info": "1 rue du pass"},
+                    "notificationSubscriptions.marketing_push": {"old_info": True, "new_info": False},
+                    "unknownField": {"old_info": "a", "new_info": "b"},
+                }
+            },
+        )
+
+        (entry,) = gdpr_api._extract_gdpr_account_history(user)
+
+        assert entry.label == "Modification des informations"
+        assert entry.author == f"Jeanne Doux (ID : {user.id})"
+        assert entry.details == [
+            "Abonné aux notifications push : Oui → Non",
+            "Adresse : suppression de : 1 rue du pass",
+            "Téléphone : ajout de : +33601020304",
+            "Ville : Lyon → Paris",
+            "unknownField : a → b",
+        ]
+
+    def test_suspension_reason_is_detailed(self):
+        user = users_factories.BeneficiaryFactory()
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.FRAUD_HACK
+        )
+
+        (entry,) = gdpr_api._extract_gdpr_account_history(user)
+
+        assert entry.label == "Compte suspendu"
+        assert entry.details == [
+            f"Raison : {users_constants.SUSPENSION_REASON_CHOICES[users_constants.SuspensionReason.FRAUD_HACK]}"
+        ]
+
+    def test_unknown_action_type_falls_back_to_its_name(self):
+        user = users_factories.BeneficiaryFactory()
+        history_factories.ActionHistoryFactory(user=user, actionType=history_models.ActionType.COMMENT)
+
+        with mock.patch.dict(backoffice_filters.ACTION_TYPE_TO_STRING, clear=True):
+            (entry,) = gdpr_api._extract_gdpr_account_history(user)
+
+        assert entry.label == "COMMENT"
+
+
+class ExtractGdprProfileEditsTest:
+    def test_only_keeps_info_modified_actions_authored_by_the_user(self):
+        user = users_factories.BeneficiaryFactory(firstName="Jeanne", lastName="Doux")
+        admin = users_factories.AdminFactory()
+        history_factories.ActionHistoryFactory(
+            user=user,
+            authorUser=user,
+            actionType=history_models.ActionType.INFO_MODIFIED,
+            actionDate=datetime.datetime(2024, 1, 1),
+            comment=None,
+            extraData={"modified_info": {"city": {"old_info": "Lyon", "new_info": "Paris"}}},
+        )
+        history_factories.ActionHistoryFactory(
+            user=user,
+            authorUser=user,
+            actionType=history_models.ActionType.INFO_MODIFIED,
+            actionDate=datetime.datetime(2024, 2, 1),
+            comment=None,
+            extraData={"modified_info": {"phoneNumber": {"old_info": "+33600000000", "new_info": "+33601020304"}}},
+        )
+        history_factories.ActionHistoryFactory(
+            user=user,
+            authorUser=admin,
+            actionType=history_models.ActionType.INFO_MODIFIED,
+            comment=None,
+            extraData={"modified_info": {"lastName": {"old_info": "Dou", "new_info": "Doux"}}},
+        )
+        history_factories.ActionHistoryFactory(user=user, authorUser=user, actionType=history_models.ActionType.COMMENT)
+        history_factories.ActionHistoryFactory(
+            user=user, authorUser=None, actionType=history_models.ActionType.USER_CREATED
+        )
+
+        entries = gdpr_api._extract_gdpr_profile_edits(user)
+
+        author = f"Jeanne Doux (ID : {user.id})"
+        assert [(entry.date, entry.label, entry.author, entry.details) for entry in entries] == [
+            (datetime.datetime(2024, 1, 1), "Modification des informations", author, ["Ville : Lyon → Paris"]),
+            (
+                datetime.datetime(2024, 2, 1),
+                "Modification des informations",
+                author,
+                ["Téléphone : +33600000000 → +33601020304"],
+            ),
+        ]
+
+    def test_no_profile_edit(self):
+        user = users_factories.BeneficiaryFactory()
+        history_factories.ActionHistoryFactory(user=user)
+
+        assert gdpr_api._extract_gdpr_profile_edits(user) == []
+
+
+class ExtractGdprEmailHistoryTest:
+    def _seed_every_event_type(self, user: users_models.User) -> None:
+        for index, event_type in enumerate(users_models.EmailHistoryEventTypeEnum):
+            is_update_request = event_type == users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST
+            users_factories.EmailUpdateEntryFactory(
+                user=user,
+                eventType=event_type,
+                creationDate=datetime.datetime(2024, 1, 1 + index),
+                oldUserEmail="old",
+                oldDomainEmail="example.com",
+                newUserEmail=None if is_update_request else "new",
+                newDomainEmail=None if is_update_request else "example.com",
+            )
+
+    def test_public_scope_only_keeps_effective_changes_without_author(self):
+        user = users_factories.BeneficiaryFactory()
+        self._seed_every_event_type(user)
+
+        entries = gdpr_api._extract_gdpr_email_history(user, users_models.GdprUserDataExtractScope.PUBLIC)
+
+        assert [(entry.dateCreated.day, entry.label, entry.author) for entry in entries] == [
+            (2, "Confirmation de changement d'email", None),
+            (8, "Changement d'email (interne)", None),
+        ]
+        assert entries[0].oldEmail == "old@example.com"
+        assert entries[0].newEmail == "new@example.com"
+
+    def test_internal_scope_keeps_every_event_with_label_and_author(self):
+        user = users_factories.BeneficiaryFactory(firstName="Jeanne", lastName="Doux")
+        self._seed_every_event_type(user)
+        users_factories.EmailUpdateEntryFactory()
+
+        entries = gdpr_api._extract_gdpr_email_history(user, users_models.GdprUserDataExtractScope.INTERNAL)
+
+        author = f"Jeanne Doux (ID : {user.id})"
+        assert [(entry.label, entry.author) for entry in entries] == [
+            ("Demande de changement d'email", author),
+            ("Confirmation de changement d'email", author),
+            ("Annulation de changement d'email", author),
+            ("Saisie d'une nouvelle adresse email", author),
+            ("Validation de changement d'email", author),
+            ("Validation de changement d'email (interne)", "Interne (Inconnu)"),
+            ("Demande de changement d'email (interne)", "Interne (Inconnu)"),
+            ("Changement d'email (interne)", "Interne (Inconnu)"),
+        ]
+        assert entries[0].newEmail is None
+
+    def test_internal_scope_reduces_recorded_authors_other_than_the_user_to_their_id(self):
+        user = users_factories.BeneficiaryFactory(firstName="Jeanne", lastName="Doux")
+        admin = users_factories.AdminFactory(firstName="Ada", lastName="Min")
+        former_employee = users_factories.AdminFactory(firstName="Eve", lastName="Partie")
+        third_party = users_factories.BeneficiaryFactory(firstName="Tom", lastName="Autre")
+        users_factories.EmailUpdateEntryFactory(user=user, author=user)
+        users_factories.EmailAdminUpdateEntryFactory(user=user, author=admin)
+        users_factories.EmailAdminUpdateEntryFactory(user=user, author=former_employee)
+        users_factories.EmailUpdateEntryFactory(user=user, author=third_party)
+        users_api.suspend_account(former_employee, reason=users_constants.SuspensionReason.END_OF_CONTRACT, actor=None)
+        expected_authors = [
+            f"Jeanne Doux (ID : {user.id})",
+            f"Interne (ID : {admin.id})",
+            f"Interne (ID : {former_employee.id})",
+            f"Tiers (ID : {third_party.id})",
+        ]
+
+        # 1 select user (expired instance refreshed when reading user.id)
+        # 2 select user_email_history joined with its author and their backoffice profile
+        with assert_num_queries(2):
+            entries = gdpr_api._extract_gdpr_email_history(user, users_models.GdprUserDataExtractScope.INTERNAL)
+
+        assert [entry.author for entry in entries] == expected_authors
+
+    def test_public_scope_hides_recorded_authors(self):
+        user = users_factories.BeneficiaryFactory()
+        users_factories.EmailConfirmationEntryFactory(user=user, author=user)
+        users_factories.EmailAdminUpdateEntryFactory(user=user, author=users_factories.AdminFactory())
+
+        entries = gdpr_api._extract_gdpr_email_history(user, users_models.GdprUserDataExtractScope.PUBLIC)
+
+        assert [entry.author for entry in entries] == [None, None]
+
+
+class ExtractBeneficiaryDataForInternalUseTest(StorageFolderManager):
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
+
+    @mock.patch("pcapi.core.users.gdpr_api.generate_pdf_from_html", return_value=b"content of a pdf")
+    def test_account_history_is_rendered_under_user_data(self, pdf_generator_mock) -> None:
+        user = generate_beneficiary()
+        admin = users_factories.AdminFactory(firstName="Ada", lastName="Min")
+        history_factories.ActionHistoryFactory(
+            user=user,
+            authorUser=admin,
+            actionDate=datetime.datetime(2024, 3, 4, 5, 6, 7),
+            comment="Signalement transmis par un partenaire",
+        )
+        history_factories.ActionHistoryFactory(
+            user=user,
+            authorUser=user,
+            actionType=history_models.ActionType.INFO_MODIFIED,
+            actionDate=datetime.datetime(2024, 3, 5),
+            comment=None,
+            extraData={"modified_info": {"city": {"old_info": "Lyon", "new_info": "Paris"}}},
+        )
+        users_factories.EmailUpdateEntryFactory(user=user, newUserEmail=None, newDomainEmail=None)
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            user=user, scope=users_models.GdprUserDataExtractScope.INTERNAL
+        )
+
+        gdpr_api.extract_beneficiary_data(extract=extract)
+
+        html_content = pdf_generator_mock.call_args.kwargs["html_content"]
+        assert "<h2>Historique du compte</h2>" in html_content
+        assert ("Événement", "Demande de changement d&#39;email") in html_parser_rows(html_content)
+        assert "<h2>Modifications des informations personnelles par le jeune</h2>" in html_content
+        assert html_content.index("Historique du compte") < html_content.index(
+            "Modifications des informations personnelles par le jeune"
+        )
+        assert html_content.index("Modifications des informations personnelles par le jeune") < html_content.index(
+            "Informations marketing"
+        )
+        assert html_content.index("Données de l’utilisateur") < html_content.index("Historique du compte")
+        assert html_content.index("Historique du compte") < html_content.index("Informations marketing")
+        rows = html_parser_rows(html_content)
+        assert ("Date", "04/03/2024 05:06:07") in rows
+        assert ("Action", "Commentaire interne") in rows
+        assert ("Auteur", f"Interne (ID : {admin.id})") in rows
+        assert "Ada Min" not in html_content
+        assert ("Commentaire", "Signalement transmis par un partenaire") in rows
+        assert ("Auteur", f"{user.full_name} (ID : {user.id})") in rows
+        assert ("Détails", "Ville : Lyon → Paris") in rows
+
+    @mock.patch("pcapi.core.users.gdpr_api.generate_pdf_from_html", return_value=b"content of a pdf")
+    def test_account_history_is_absent_from_public_extract(self, pdf_generator_mock) -> None:
+        user = generate_beneficiary()
+        history_factories.ActionHistoryFactory(user=user, comment="Commentaire interne confidentiel")
+        history_factories.ActionHistoryFactory(
+            user=user,
+            authorUser=user,
+            actionType=history_models.ActionType.INFO_MODIFIED,
+            comment=None,
+            extraData={"modified_info": {"city": {"old_info": "Lyon", "new_info": "Paris"}}},
+        )
+        users_factories.EmailUpdateEntryFactory(user=user)
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(user=user)
+
+        gdpr_api.extract_beneficiary_data(extract=extract)
+
+        html_content = pdf_generator_mock.call_args.kwargs["html_content"]
+        assert "Historique du compte" not in html_content
+        assert "Commentaire interne confidentiel" not in html_content
+        assert "Modifications des informations personnelles" not in html_content
+
+
+def html_parser_rows(html_content: str) -> list[tuple[str, str]]:
+    return [
+        (label.strip(), value.strip())
+        for label, value in re.findall(r"<tr>\s*<td>(.*?)</td>\s*<td>(.*?)</td>\s*</tr>", html_content, re.DOTALL)
+    ]
 
 
 class ExtractBeneficiaryDataCommandTest(StorageFolderManager):
