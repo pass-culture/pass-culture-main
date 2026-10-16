@@ -732,7 +732,10 @@ class Returns400Test:
                 },
                 {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
             ),
-            ({"subcategoryId": "ART_PRIMITIF"}, {"subcategory": ["La sous-catégorie de cette offre est inconnue"]}),
+            (
+                {"subcategoryId": "ART_PRIMITIF", "extraData": {"author": "Victor Hugo"}},
+                {"subcategory": ["La sous-catégorie de cette offre est inconnue"]},
+            ),
         ],
     )
     def test_fail_if_json_incorrect(self, client, input_json, expected_json):
