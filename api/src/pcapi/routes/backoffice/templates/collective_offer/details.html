@@ -165,7 +165,10 @@
           {% endfor %}
         {% endcall %}
         {% call description_detail_horizontal("Prix total") %}
-          {{ collective_stock.price | format_amount }} ({{ (collective_stock.price/collective_stock.numberOfTickets) | format_amount }} par participant)
+          {{ collective_stock.price | format_amount }}
+          {% if collective_stock.numberOfTickets > 0 %}
+            ({{ (collective_stock.price/collective_stock.numberOfTickets) | format_amount }} par participant)
+          {% endif %}
         {% endcall %}
         {% call description_detail_horizontal("Informations pratiques") %}
           {{ collective_offer.additionalDetails | nl2br }}
