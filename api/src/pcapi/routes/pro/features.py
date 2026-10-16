@@ -21,6 +21,7 @@ PRO_FEATURES = (
     FeatureToggle.WIP_IMGPROXY_PRO,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_HOME_STATS_V2,
+    FeatureToggle.WIP_ENABLE_PRO_DARK_MODE,
 )
 
 
