@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
@@ -37,12 +38,58 @@ const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
         venues: baseVenues,
       },
     },
-    features: [],
+    features: options?.features ?? [],
   }
-  renderWithProviders(<HeaderDropdown />, options)
+  return renderWithProviders(<HeaderDropdown />, options)
 }
 
 describe('App', () => {
+  afterEach(() => {
+    localStorage.clear()
+  })
+
+  it('should not have accessibility violations', async () => {
+    const { container } = renderHeaderDropdown({
+      features: ['WIP_ENABLE_PRO_DARK_MODE'],
+    })
+
+    await userEvent.click(screen.getByTestId('profile-button'))
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('should not render the color theme toggle when the feature is disabled', async () => {
+    renderHeaderDropdown()
+
+    await userEvent.click(screen.getByTestId('profile-button'))
+
+    expect(
+      screen.queryByRole('group', { name: 'Thème' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render the color theme toggle when the feature is enabled', async () => {
+    renderHeaderDropdown({ features: ['WIP_ENABLE_PRO_DARK_MODE'] })
+
+    await userEvent.click(screen.getByTestId('profile-button'))
+
+    expect(screen.getByRole('group', { name: 'Thème' })).toBeInTheDocument()
+  })
+
+  it('should close the menu when pressing Escape from the color theme toggle', async () => {
+    renderHeaderDropdown({ features: ['WIP_ENABLE_PRO_DARK_MODE'] })
+
+    await userEvent.click(screen.getByTestId('profile-button'))
+    await userEvent.click(screen.getByRole('button', { name: 'Thème sombre' }))
+    await userEvent.keyboard('{Escape}')
+
+    expect(screen.getByTestId('header-dropdown-menu-div')).toHaveAttribute(
+      'aria-hidden',
+      'true'
+    )
+    expect(screen.getByTestId('profile-button')).toHaveFocus()
+  })
+
   it('should render profile menu text semantically in the structure signup funnel', async () => {
     renderHeaderDropdown({
       initialRouterEntries: ['/inscription/structure/recherche'],

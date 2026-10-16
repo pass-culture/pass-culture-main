@@ -67,4 +67,16 @@ describe('localStorageManager', () => {
     expect(localStorage.getItem('homepageSelectedOffererId')).toBeNull()
     expect(localStorage.getItem('someOtherKey')).toBeNull()
   })
+
+  it('should keep the color theme preference when calling clear', () => {
+    vi.spyOn(storageAvailableModule, 'storageAvailable').mockReturnValue(true)
+
+    localStorage.setItem(LOCAL_STORAGE_KEY.COLOR_THEME, 'dark')
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, 'venue-1')
+
+    localStorageManager.clear()
+
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.COLOR_THEME)).toBe('dark')
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
+  })
 })

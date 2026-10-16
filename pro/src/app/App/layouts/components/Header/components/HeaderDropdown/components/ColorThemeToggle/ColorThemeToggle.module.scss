@@ -1,0 +1,17 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.color-theme-toggle {
+  &-legend {
+    margin-top: var(--size-spacing-s);
+    margin-bottom: var(--size-spacing-xs);
+
+    @include fonts.body-accent-xs;
+
+    color: var(--color-text-subtle);
+  }
+
+  &-buttons {
+    display: flex;
+    gap: var(--size-spacing-xs);
+  }
+}

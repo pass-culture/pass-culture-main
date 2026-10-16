@@ -13,6 +13,7 @@ import { useFirebase } from './analytics/firebase'
 import { useOrejime } from './analytics/orejime'
 import { useSentry } from './analytics/sentry'
 import { useCheckBackendVersion } from './hook/useCheckBackendVersion'
+import { useColorTheme } from './hook/useColorTheme'
 import { useFocus } from './hook/useFocus'
 import { useLoadFeatureFlags } from './hook/useLoadFeatureFlags'
 import { useLogNavigation } from './hook/useLogNavigation'
@@ -28,6 +29,7 @@ export const App = (): JSX.Element | null => {
 
   // Main hooks
   useLoadFeatureFlags()
+  useColorTheme()
   usePageTitle()
   useFocus()
 

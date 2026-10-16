@@ -3,6 +3,7 @@ import { useLocation } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
 import { logout } from '@/commons/store/user/dispatchers/logout'
@@ -17,6 +18,7 @@ import fullCloseIcon from '@/icons/full-close.svg'
 import fullLogoutIcon from '@/icons/full-logout.svg'
 import fullProfilIcon from '@/icons/full-profil.svg'
 
+import { ColorThemeToggle } from './components/ColorThemeToggle/ColorThemeToggle'
 import styles from './HeaderDropdown.module.scss'
 
 export const HeaderDropdown = () => {
@@ -26,6 +28,7 @@ export const HeaderDropdown = () => {
   const profileMenuId = useId()
   const { logEvent } = useAnalytics()
   const currentUser = useAppSelector(selectCurrentUser)
+  const isDarkModeEnabled = useActiveFeature('WIP_ENABLE_PRO_DARK_MODE')
   const { pathname } = useLocation()
   const IN_STRUCTURE_CREATION_FUNNEL = pathname.startsWith(
     '/inscription/structure'
@@ -93,6 +96,7 @@ export const HeaderDropdown = () => {
           ></Button>
         </div>
         <div className={styles['profile-menu-details']}>
+          {isDarkModeEnabled && <ColorThemeToggle onKeyDown={handleKeyDown} />}
           <p className={styles['profile-menu-details-title']}>Profil</p>
           <p className={styles['profile-menu-details-email']}>
             {currentUser?.email}

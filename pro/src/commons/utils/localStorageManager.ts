@@ -15,7 +15,15 @@ export enum LOCAL_STORAGE_KEY {
   SIMULATOR_OPEN_TO_PUBLIC = 'PASS_CULTURE_SIMULATOR_OPEN_TO_PUBLIC',
   SIMULATOR_TARGET_CUSTOMER = 'PASS_CULTURE_SIMULATOR_TARGET_CUSTOMER',
   HIDE_FINANCE_BANNER = 'PASS_CULTURE_HIDE_FINANCE_BANNER',
+  COLOR_THEME = 'PASS_CULTURE_COLOR_THEME',
 }
+
+/**
+ * Device preferences that must survive a logout (which clears the Local Storage).
+ */
+const KEYS_PRESERVED_ON_CLEAR: ReadonlySet<string> = new Set([
+  LOCAL_STORAGE_KEY.COLOR_THEME,
+])
 
 export enum COOKIES {
   DID_SKIP_ONBOARDING = 'DID_SKIP_ONBOARDING',
@@ -54,7 +62,9 @@ export const localStorageManager = {
     }
 
     Object.keys(localStorage).forEach((key) => {
-      localStorage.removeItem(key)
+      if (!KEYS_PRESERVED_ON_CLEAR.has(key)) {
+        localStorage.removeItem(key)
+      }
     })
   },
 }
