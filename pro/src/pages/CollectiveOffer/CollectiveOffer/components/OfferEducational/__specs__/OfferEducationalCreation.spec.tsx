@@ -36,6 +36,12 @@ vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 
+// The debounced characters count would update outside act() during the slow axe check
+vi.mock('use-debounce', async () => ({
+  ...(await vi.importActual('use-debounce')),
+  useDebounce: vi.fn((value) => [value]),
+}))
+
 function renderComponent(props: OfferEducationalProps, route?: string) {
   const user = sharedCurrentUserFactory()
   return renderWithProviders(<OfferEducational {...props} />, {
