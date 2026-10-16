@@ -21,6 +21,34 @@ Texte
 
 <details>
 
+<summary> ⏳ Critère 5.1 - Chaque tableau de données complexe a-t-il un résumé ?</summary>
+
+**RAWeb/RGAA** : [Critère 5.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-1)
+**Ticket** : [PC-43891](https://passculture.atlassian.net/browse/PC-43891)  
+**PR** : [#24774](https://github.com/pass-culture/pass-culture-main/pull/24774)
+
+**Problème** 😱  
+
+P10 → Les réservations individuelles  
+P13 → Les offres réservables (collectif)
+
+Les tableaux présentent des informations complexes sans résumé permettant de comprendre leur structure. Dans le tableau des réservations individuelles, l’intitulé de la colonne contenant le bouton « Détails » doit également être restitué aux technologies d’assistance pour identifier la ligne complémentaire qui lui est associée.
+
+**Correction** 💡  
+
+- Ajouter un résumé décrivant la structure et l’organisation de chaque tableau dans son élément `<caption>`, visuellement masqué lorsque nécessaire.
+- Donner à la colonne l’intitulé accessible « Détails » et associer la cellule complémentaire affichée à l’en-tête correspondant avec `headers="details"`.
+- Ne pas rendre l’élément `<caption>` en mode mobile/tablette, où le tableau est transformé.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
 <summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
 
 **RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)

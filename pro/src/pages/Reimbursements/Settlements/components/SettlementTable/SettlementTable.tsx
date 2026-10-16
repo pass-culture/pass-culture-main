@@ -309,6 +309,7 @@ export const SettlementTable = ({
   return (
     <Table
       title="Virements"
+      a11y-summary="Chaque ligne correspond à un virement. Les colonnes présentent son numéro, sa date d’émission, son compte bancaire, son statut, son montant et son nombre de justificatifs. Le bouton « Voir plus » affiche les justificatifs dans un tableau sous la ligne."
       columns={columns}
       data={settlements.map((s) => ({
         ...s,

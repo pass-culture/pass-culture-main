@@ -75,6 +75,7 @@ export const SettlementRowInvoicesTable = ({
 
   return (
     <Table
+      a11y-summary="Chaque ligne correspond à un justificatif du virement. Les colonnes présentent sa référence, sa date d’émission, son montant et les actions de téléchargement."
       data={invoices.map((i) => ({
         ...i,
         id: i.reference,
