@@ -30,6 +30,14 @@ test.describe('Account creation', () => {
   test('I should be able to create an account', async ({ page }) => {
     const randomEmail = `jean${randomUUID()}@example.com`
 
+    await page.context().addCookies([
+      {
+        name: 'pc-pro-orejime',
+        value: '{"firebase":false,"hotjar":false,"beamer":false,"sentry":true}',
+        domain: 'localhost',
+        path: '/',
+      },
+    ])
     await page.goto('/inscription/compte/creation')
 
     await page.getByLabel(/Nom/).fill('LEMOINE')
@@ -44,7 +52,7 @@ test.describe('Account creation', () => {
         response.url().includes('/users/signup') &&
         response.request().method() === 'POST'
     )
-    await page.getByRole('button', { name: 'S’inscrire' }).click()
+    await page.getByRole('button', { name: 'Continuer' }).click()
     const signupResponse = await signupResponsePromise
     expect(signupResponse.status()).toBe(204)
 
@@ -72,7 +80,7 @@ test.describe('Account creation', () => {
     await page.goto(emailData.params.EMAIL_VALIDATION_LINK)
 
     await expect(
-      page.getByText('Dites-nous pour quelle structure vous travaillez')
+      page.getByRole('heading', { name: 'Votre numéro SIRET' })
     ).toBeVisible()
     await expectNoErrorSnackbar(page)
 

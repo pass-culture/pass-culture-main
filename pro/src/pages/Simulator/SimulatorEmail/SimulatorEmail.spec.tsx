@@ -57,8 +57,7 @@ const renderSimulatorEmail = (contextOverride = {}) => {
   return renderWithProviders(
     <SimulatorContext.Provider value={{ ...contextValue, ...contextOverride }}>
       <SimulatorEmail />
-    </SimulatorContext.Provider>,
-    { features: ['WIP_PRE_SIGNUP_SIMULATION'] }
+    </SimulatorContext.Provider>
   )
 }
 

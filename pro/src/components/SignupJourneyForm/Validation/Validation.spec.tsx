@@ -19,10 +19,7 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { noop } from '@/commons/utils/noop'
 import * as utils from '@/commons/utils/recaptcha'
-import {
-  type RenderWithProvidersOptions,
-  renderWithProviders,
-} from '@/commons/utils/renderWithProviders'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
@@ -91,10 +88,7 @@ const addressInformations: Address = {
   banId: '75118_5995_00043',
 }
 
-const renderValidationScreen = (
-  contextValue: SignupJourneyContextValues,
-  options?: RenderWithProvidersOptions
-) => {
+const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -128,7 +122,6 @@ const renderValidationScreen = (
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/confirmation'],
-      ...options,
     }
   )
 }
@@ -250,45 +243,36 @@ describe('ValidationScreen', () => {
     ).toBeInTheDocument()
   })
 
-  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
-    it('should display new heading and subtitle', () => {
-      renderValidationScreen(
-        {
-          ...contextValue,
-          activity: {
-            activity: ActivityOpenToPublic.MUSEUM,
-            socialUrls: ['url1'],
-            targetCustomer: Target.EDUCATIONAL,
-            phoneNumber: '',
-            culturalDomains: undefined,
-          },
-          offerer: {
-            name: 'nom',
-            publicName: 'nom public',
-            siret: '123123123',
-            hasVenueWithSiret: false,
-            isDiffusible: true,
-            ...addressInformations,
-          },
-        },
-        { features: ['WIP_PRE_SIGNUP_SIMULATION'] }
-      )
-
-      expect(
-        screen.getByRole('heading', {
-          level: 1,
-          name: 'Vérifiez vos informations',
-        })
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByRole('heading', { level: 2, name: 'Votre structure' })
-      ).toBeInTheDocument()
-
-      expect(
-        screen.queryByRole('heading', { level: 2, name: 'Vos informations' })
-      ).not.toBeInTheDocument()
+  it('should display new heading and subtitle', () => {
+    renderValidationScreen({
+      ...contextValue,
+      activity: {
+        activity: ActivityOpenToPublic.MUSEUM,
+        socialUrls: ['url1'],
+        targetCustomer: Target.EDUCATIONAL,
+        phoneNumber: '',
+        culturalDomains: undefined,
+      },
+      offerer: {
+        name: 'nom',
+        publicName: 'nom public',
+        siret: '123123123',
+        hasVenueWithSiret: false,
+        isDiffusible: true,
+        ...addressInformations,
+      },
     })
+
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Vérifiez vos informations',
+      })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Votre structure' })
+    ).toBeInTheDocument()
   })
 
   describe('user actions', () => {

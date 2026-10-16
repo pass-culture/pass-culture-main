@@ -32,7 +32,7 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
 
     await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
     await checkAccessibility(page)
-    await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(mySiret)
+    await page.getByLabel(/Numéro de SIRET/).fill(mySiret)
 
     const venuesSiretPromise = page.waitForResponse(
       (response) =>
@@ -101,7 +101,7 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
     await page.goto('/')
     await expect(page.getByTestId('spinner')).toHaveCount(0)
 
-    await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(mySiret)
+    await page.getByLabel(/Numéro de SIRET/).fill(mySiret)
 
     const venuesSiretPromise = page.waitForResponse(
       (response) =>
@@ -180,7 +180,7 @@ test.describe('Signup journey with known offerer...', () => {
       await expect(page.getByTestId('spinner')).toHaveCount(0)
 
       await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
-      await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(mySiret)
+      await page.getByLabel(/Numéro de SIRET/).fill(mySiret)
 
       const venuesSiretPromise = page.waitForResponse(
         (response) =>
@@ -245,7 +245,7 @@ test.describe('Signup journey with known offerer...', () => {
       await doLogin(page, userData.user.email, { retry: true })
 
       await expect(page).toHaveURL(/\/inscription\/structure\/recherche$/)
-      await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(mySiret)
+      await page.getByLabel(/Numéro de SIRET/).fill(mySiret)
 
       const venuesSiretPromise = page.waitForResponse(
         (response) =>

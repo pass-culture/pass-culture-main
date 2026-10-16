@@ -9,7 +9,6 @@ import {
   checkSiret,
   getSiretData,
 } from '@/commons/core/Venue/utils/getSiretData'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -44,9 +43,6 @@ export const SiretInputForm = ({
   onSiretChecked,
 }: SiretInputProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
 
   const snackBar = useSnackBar()
   const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
@@ -123,12 +119,10 @@ export const SiretInputForm = ({
           <FormLayout.Row mdSpaceAfter>
             <TextInput
               {...register('siret')}
-              label={`Numéro de SIRET${isSignupSimulationEnabled ? '' : ' à 14 chiffres'}`}
+              label="Numéro de SIRET"
               type="text"
               required
-              requiredIndicator={
-                isSignupSimulationEnabled ? 'explicit' : 'symbol'
-              }
+              requiredIndicator="explicit"
               error={errors.siret?.message}
               onChange={unHumanizeSiretOnChange}
             />

@@ -3,7 +3,6 @@ import { useFormContext } from 'react-hook-form'
 
 import type { ProUserCreationBodyV2Model } from '@/apiClient/v1'
 import { claimNavigationFocus } from '@/app/App/hook/useFocus'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { AlreadyHasAccount } from '@/components/AlreadyHasAccount/AlreadyHasAccount'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { LegalInfos } from '@/components/LegalInfos/LegalInfos'
@@ -18,10 +17,8 @@ import { EmailSpellCheckInput } from '@/ui-kit/form/EmailSpellCheckInput/EmailSp
 
 import styles from './SignupContainer.module.scss'
 import titleStyles from './SignupForm.module.scss'
+
 export const SignupForm = (): JSX.Element => {
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
   const formId = useId()
   const titleRef = useRef<HTMLHeadingElement>(null)
 
@@ -38,19 +35,13 @@ export const SignupForm = (): JSX.Element => {
 
   return (
     <>
-      {isSignupSimulationEnabled && (
-        <>
-          <SignupStepper />
-          <h1 className={titleStyles['title']} ref={titleRef} tabIndex={-1}>
-            Créez votre compte
-          </h1>
-          <p className={styles['subheading-description']}>
-            Ces informations vous permettront de vous connecter à pass Culture
-            Pro.
-          </p>
-        </>
-      )}
-
+      <SignupStepper />
+      <h1 className={titleStyles['title']} ref={titleRef} tabIndex={-1}>
+        Créez votre compte
+      </h1>
+      <p className={styles['subheading-description']}>
+        Ces informations vous permettront de vous connecter à pass Culture Pro.
+      </p>
       <ScrollToFirstHookFormErrorAfterSubmit />
 
       <FormLayout>
@@ -66,9 +57,7 @@ export const SignupForm = (): JSX.Element => {
               error={errors.firstName?.message}
               autoComplete="given-name"
               required
-              requiredIndicator={
-                isSignupSimulationEnabled ? 'explicit' : 'symbol'
-              }
+              requiredIndicator="explicit"
             />
           </FormLayout.Row>
           <FormLayout.Row
@@ -82,9 +71,7 @@ export const SignupForm = (): JSX.Element => {
               error={errors.lastName?.message}
               autoComplete="family-name"
               required
-              requiredIndicator={
-                isSignupSimulationEnabled ? 'explicit' : 'symbol'
-              }
+              requiredIndicator="explicit"
             />
           </FormLayout.Row>
         </div>
@@ -98,9 +85,7 @@ export const SignupForm = (): JSX.Element => {
             description="Format : email@exemple.com"
             label="Adresse email"
             required
-            requiredIndicator={
-              isSignupSimulationEnabled ? 'explicit' : 'symbol'
-            }
+            requiredIndicator="explicit"
           />
         </FormLayout.Row>
 
@@ -111,9 +96,7 @@ export const SignupForm = (): JSX.Element => {
             label="Mot de passe"
             autoComplete="new-password"
             required
-            requiredIndicator={
-              isSignupSimulationEnabled ? 'explicit' : 'symbol'
-            }
+            requiredIndicator="explicit"
             error={errors.password?.message}
             displayValidation
           />
@@ -130,31 +113,20 @@ export const SignupForm = (): JSX.Element => {
         </FormLayout.Row>
         <LegalInfos className={styles['sign-up-infos-before-signup']} />
         <div className={styles['buttons-field']}>
-          {isSignupSimulationEnabled ? (
-            <>
-              <Button
-                as="router-link"
-                to="/inscription/preparation/resultats"
-                isLoading={isSubmitting}
-                disabled={isSubmitting}
-                variant={ButtonVariant.SECONDARY}
-                label="Retour"
-              />
-              <Button
-                type="submit"
-                isLoading={isSubmitting}
-                disabled={isSubmitting}
-                label="Continuer"
-              />
-            </>
-          ) : (
-            <Button
-              type="submit"
-              isLoading={isSubmitting}
-              disabled={isSubmitting}
-              label="S’inscrire"
-            />
-          )}
+          <Button
+            as="router-link"
+            to="/inscription/preparation/resultats"
+            isLoading={isSubmitting}
+            disabled={isSubmitting}
+            variant={ButtonVariant.SECONDARY}
+            label="Retour"
+          />
+          <Button
+            type="submit"
+            isLoading={isSubmitting}
+            disabled={isSubmitting}
+            label="Continuer"
+          />
         </div>
         <AlreadyHasAccount />
       </FormLayout>

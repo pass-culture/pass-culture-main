@@ -60,12 +60,5 @@
 .subtitle {
   @include fonts.title2;
 
-  margin-bottom: var(--size-spacing-l);
-  overflow-wrap: anywhere;
-}
-
-.subtitle-2 {
-  @include fonts.title2;
-
   overflow-wrap: anywhere;
 }

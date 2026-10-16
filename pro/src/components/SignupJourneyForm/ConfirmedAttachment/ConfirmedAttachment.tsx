@@ -1,11 +1,9 @@
-import cn from 'classnames'
 import { useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
@@ -16,24 +14,16 @@ export const ConfirmedAttachment = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
 
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
-
   const logNavigation = () => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-      to: SIGNUP_JOURNEY_STEP_IDS.COMPLETED,
+      to: SIGNUP_STEP_IDS.COMPLETED,
       used: SignupJourneyAction.WaitingLinkButton,
     })
 
     void navigate(getUserDefaultPath())
   }
   return (
-    <div
-      className={cn({
-        [styles['confirmed-attachment-container']]: isSignupSimulationEnabled,
-      })}
-    >
+    <div className={styles['confirmed-attachment-container']}>
       <div>
         <h1 className={styles['title']}>Votre demande a été envoyée</h1>
         <p className={styles['subheading-description']}>

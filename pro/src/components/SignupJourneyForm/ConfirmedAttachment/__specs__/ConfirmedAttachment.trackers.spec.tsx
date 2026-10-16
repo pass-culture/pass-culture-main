@@ -11,7 +11,7 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
-import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { ConfirmedAttachment } from '../ConfirmedAttachment'
@@ -58,7 +58,7 @@ describe('ConfirmedAttachment trackers', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        to: SIGNUP_JOURNEY_STEP_IDS.COMPLETED,
+        to: SIGNUP_STEP_IDS.COMPLETED,
         used: SignupJourneyAction.WaitingLinkButton,
       }
     )

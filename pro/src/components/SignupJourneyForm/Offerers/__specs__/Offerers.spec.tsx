@@ -210,11 +210,7 @@ describe('screens:SignupJourney::Offerers', () => {
       )
     ).not.toBeInTheDocument()
 
-    expect(
-      screen.getByRole('button', {
-        name: 'Retour à la recherche de SIRET',
-      })
-    ).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Retour' })).toBeVisible()
   })
 
   it('should render component without venue creation', async () => {
@@ -332,11 +328,7 @@ describe('screens:SignupJourney::Offerers', () => {
   it('should redirect to offerer on back button click', async () => {
     await renderOfferersScreen(contextValue)
 
-    await user.click(
-      screen.getByRole('button', {
-        name: 'Retour à la recherche de SIRET',
-      })
-    )
+    await user.click(screen.getByRole('link', { name: 'Retour' }))
 
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
   })
@@ -360,22 +352,6 @@ describe('screens:SignupJourney::Offerers', () => {
     expect(
       await screen.findByText('Ajouter une nouvelle structure')
     ).toBeInTheDocument()
-  })
-
-  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
-    it('should display "Retour" button instead of ActionBar', async () => {
-      await renderOfferersScreen(contextValue, {
-        features: ['WIP_PRE_SIGNUP_SIMULATION'],
-      })
-
-      expect(screen.getByRole('link', { name: 'Retour' })).toBeVisible()
-
-      expect(
-        screen.queryByRole('button', {
-          name: 'Retour à la recherche de SIRET',
-        })
-      ).not.toBeInTheDocument()
-    })
   })
 
   describe('modal handling', () => {

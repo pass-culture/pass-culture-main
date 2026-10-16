@@ -5,4 +5,5 @@ export enum SIGNUP_STEP_IDS {
   STRUCTURE_IDENTIFICATION = 'identification',
   ACTIVITY = 'activite',
   VALIDATION = 'confirmation',
+  COMPLETED = 'completed',
 }

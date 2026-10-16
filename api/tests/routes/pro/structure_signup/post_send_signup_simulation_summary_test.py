@@ -6,7 +6,6 @@ import pytest
 
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.mails import testing as mails_testing
-from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 from tests.conftest import TestClient
 from tests.connectors import api_entreprise_test_data
@@ -25,7 +24,6 @@ VALID_PAYLOAD = {
 }
 
 
-@pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
 class Returns200Test:
     def test_standard_case(self, client: TestClient):
         response = client.post(URL, json=VALID_PAYLOAD)
@@ -41,7 +39,6 @@ class Returns200Test:
         assert mails_testing.outbox[0]["params"]["ELIGIBILITY_DOCUMENTS"] == ["WEBSITE"]
 
 
-@pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
 class Returns400Test:
     @patch(
         "pcapi.connectors.entreprise.api.get_siret_open_data", side_effect=sirene_exceptions.UnknownEntityException()
@@ -108,12 +105,3 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"targets.0": ["Input should be 'COLLECTIVE' or 'INDIVIDUAL'"]}
-
-
-class Returns404Test:
-    @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=False)
-    def test_with_ff_off(self, client: TestClient):
-        response = client.post(URL, json=VALID_PAYLOAD)
-
-        assert response.status_code == 404
-        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

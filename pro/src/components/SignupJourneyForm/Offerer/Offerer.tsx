@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -18,14 +17,12 @@ import {
 } from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 import { unhumanizeSiret } from '@/commons/utils/siren'
-import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { SignupStepper } from '@/components/SignupStepper/SignupStepper'
 import {
@@ -33,9 +30,7 @@ import {
   type SiretInputFormValues,
 } from '@/components/SiretInputForm/SiretInputForm'
 import { Button } from '@/design-system/Button/Button'
-import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
-import { ActionBar } from '../ActionBar/ActionBar'
 import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
 import styles from './Offerer.module.scss'
 
@@ -45,21 +40,13 @@ export const Offerer = (): JSX.Element => {
   const navigate = useNavigate()
   const { offerer, setOfferer, setActivity, setInitialAddress } =
     useSignupJourneyContext()
-  const isSignupSimulationEnabled = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
 
   const navigateToNextStep = useCallback(
     (hasVenueWithSiret: boolean): { to: string; path: string } => {
-      const ATTACHEMENT = isSignupSimulationEnabled
-        ? SIGNUP_STEP_IDS.STRUCTURE_ATTACHEMENT
-        : SIGNUP_JOURNEY_STEP_IDS.OFFERERS
-      const IDENTIFICATION = isSignupSimulationEnabled
-        ? SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION
-        : SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION
-
       const redirection = {
-        to: hasVenueWithSiret ? ATTACHEMENT : IDENTIFICATION,
+        to: hasVenueWithSiret
+          ? SIGNUP_STEP_IDS.STRUCTURE_ATTACHEMENT
+          : SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION,
         path: hasVenueWithSiret
           ? '/inscription/structure/rattachement'
           : '/inscription/structure/identification',
@@ -68,7 +55,7 @@ export const Offerer = (): JSX.Element => {
 
       return redirection
     },
-    [navigate, isSignupSimulationEnabled]
+    [navigate]
   )
 
   const beforeCallCheck = (formValues: SiretInputFormValues): boolean => {
@@ -170,9 +157,7 @@ export const Offerer = (): JSX.Element => {
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
         from: location.pathname,
         to,
-        used: isSignupSimulationEnabled
-          ? 'Continuer'
-          : SignupJourneyAction.ActionBar,
+        used: 'Continuer',
       })
     } catch (error) {
       snackBar.error(
@@ -184,43 +169,21 @@ export const Offerer = (): JSX.Element => {
     }
   }
 
-  const submitElement = (isSubmitting: boolean) =>
-    isSignupSimulationEnabled ? (
-      <div className={styles['next-actions']}>
-        <Button type="submit" label="Continuer" disabled={isSubmitting} />
-      </div>
-    ) : (
-      <ActionBar
-        isDisabled={isSubmitting}
-        onClickPrevious={async () => {
-          await navigate('/hub')
-        }}
-        nextStepTitle="Continuer"
-        previousStepTitle="Annuler et quitter"
-      />
-    )
+  const submitElement = (isSubmitting: boolean) => (
+    <div className={styles['next-actions']}>
+      <Button type="submit" label="Continuer" disabled={isSubmitting} />
+    </div>
+  )
 
   return (
-    <div
-      className={cn({
-        [styles['offerer-container']]: isSignupSimulationEnabled,
-      })}
-    >
-      {isSignupSimulationEnabled ? (
-        <>
-          <SignupStepper />
-          <h1 className={styles['title']}>Votre numéro SIRET</h1>
-          <p className={styles['subheading-description']}>
-            Le SIRET est un identifiant à 14 chiffres attribué à chaque
-            structure. Vous le trouverez sur vos documents administratifs (avis
-            de situation SIRENE, factures, contrats).
-          </p>
-        </>
-      ) : (
-        <h2 className={styles['subtitle']}>
-          Dites-nous pour quelle structure vous travaillez
-        </h2>
-      )}
+    <div className={styles['offerer-container']}>
+      <SignupStepper />
+      <h1 className={styles['title']}>Votre numéro SIRET</h1>
+      <p className={styles['subheading-description']}>
+        Le SIRET est un identifiant à 14 chiffres attribué à chaque structure.
+        Vous le trouverez sur vos documents administratifs (avis de situation
+        SIRENE, factures, contrats).
+      </p>
       <SiretInputForm
         submitElement={submitElement}
         initialValues={{

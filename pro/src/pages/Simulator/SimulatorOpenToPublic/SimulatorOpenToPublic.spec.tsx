@@ -26,8 +26,7 @@ const renderSimulatorOpenToPublic = () => {
   return renderWithProviders(
     <SimulatorContext.Provider value={contextValue}>
       <SimulatorOpenToPublic />
-    </SimulatorContext.Provider>,
-    { features: ['WIP_PRE_SIGNUP_SIMULATION'] }
+    </SimulatorContext.Provider>
   )
 }
 

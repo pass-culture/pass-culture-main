@@ -56,47 +56,6 @@ const renderLostPassword = (
 }
 
 describe('ResetPassword', () => {
-  describe('FF WIP_PRE_SIGNUP_SIMULATION', () => {
-    it('should use FullLayout when FF is enabled', async () => {
-      const url = '/demande-mot-de-passe/ABC'
-      const tokenCheck = Promise.resolve()
-
-      vi.spyOn(api, 'postCheckToken').mockReturnValue(tokenCheck)
-
-      renderLostPassword(url, {
-        features: ['WIP_PRE_SIGNUP_SIMULATION'],
-      })
-
-      await act(async () => {
-        await tokenCheck
-      })
-
-      expect(
-        screen.getByTestId('reset-password-full-layout')
-      ).toBeInTheDocument()
-
-      expect(screen.queryByTestId('sign-up-header')).not.toBeInTheDocument()
-    })
-
-    it('should use default layout when FF is disabled', async () => {
-      const url = '/demande-mot-de-passe/ABC'
-      const tokenCheck = Promise.resolve()
-
-      vi.spyOn(api, 'postCheckToken').mockReturnValue(tokenCheck)
-
-      renderLostPassword(url)
-
-      await act(async () => {
-        await tokenCheck
-      })
-
-      expect(
-        screen.queryByTestId('reset-password-full-layout')
-      ).not.toBeInTheDocument()
-      expect(screen.getByTestId('sign-up-header')).toBeInTheDocument()
-    })
-  })
-
   it('should render without accessibility violations', async () => {
     const url = '/demande-mot-de-passe/ABC'
     const tokenCheck = Promise.resolve()

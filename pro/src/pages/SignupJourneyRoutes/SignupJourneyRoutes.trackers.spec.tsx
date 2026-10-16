@@ -10,7 +10,7 @@ import * as logoutModule from '@/commons/store/user/dispatchers/logout'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
+import { SignupJourneyRoutes } from './SignupJourneyRoutes'
 
 const renderSignupJourneyRoutes = () => {
   return renderWithProviders(

@@ -20,8 +20,7 @@ fetchMock.enableMocks()
 
 const renderOffererAuthenticationScreen = (
   contextValue: SignupJourneyContextValues,
-  initialRoute = '/inscription/structure/recherche',
-  features: string[] = []
+  initialRoute = '/inscription/structure/recherche'
 ) => {
   return renderWithProviders(
     <>
@@ -43,7 +42,6 @@ const renderOffererAuthenticationScreen = (
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [initialRoute],
-      features,
     }
   )
 }

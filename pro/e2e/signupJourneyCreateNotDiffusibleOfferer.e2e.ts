@@ -34,7 +34,7 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
   }) => {
     await checkAccessibility(page)
     await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
-    await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(mySiret)
+    await page.getByLabel(/Numéro de SIRET/).fill(mySiret)
 
     const venuesSiretPromise = page.waitForResponse(
       (response) =>
@@ -94,7 +94,7 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
     await mockAddressSearch(page)
 
     await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
-    await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(mySiret)
+    await page.getByLabel(/Numéro de SIRET/).fill(mySiret)
 
     const venuesSiretPromise = page.waitForResponse(
       (response) =>

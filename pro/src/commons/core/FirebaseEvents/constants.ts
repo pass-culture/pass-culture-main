@@ -14,7 +14,6 @@ export enum Events {
   CLICKED_EDIT_COLLECTIVE_OFFER = 'hasClickedEditCollectiveOffer',
   CLICKED_FORGOTTEN_PASSWORD = 'hasClickedForgottenPassword',
   CLICKED_UNKNOWN_SIRET = 'hasClickedUnknownSiret',
-  CLICKED_HELP_CENTER = 'hasClickedHelpCenter',
   CLICKED_LOGOUT = 'hasClickedLogout',
   CLICKED_OFFER_FORM_NAVIGATION = 'hasClickedOfferFormNavigation',
   CLICKED_ONBOARDING_FORM_NAVIGATION = 'HasClickedOnboardingFormNavigation',

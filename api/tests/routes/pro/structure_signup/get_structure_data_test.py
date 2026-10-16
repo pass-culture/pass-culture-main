@@ -74,14 +74,12 @@ class Returns200Test:
         assert found_structure.get("name") is None
         assert found_structure.get("location") is None
 
-    @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
     @pytest.mark.parametrize("route_path", [DIFFUSIBLE_SIRET, PARTIALLY_DIFFUSIBLE_SIRET])
     @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.TestingBackend")
     def test_check_structure_by_siret(self, client, route_path):
         response = client.get(f"{GET_CHECK_STRUCTURE_URL}{route_path}")
         assert response.status_code == 204
 
-    @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
     @patch("pcapi.connectors.api_adresse.find_ban_address", side_effect=api_adresse.AdresseException())
     @pytest.mark.parametrize("route_path", [DIFFUSIBLE_SIRET, PARTIALLY_DIFFUSIBLE_SIRET])
     def test_check_structure_by_siret_with_no_address(self, _find_ban_address_mock, client, route_path):
@@ -89,7 +87,6 @@ class Returns200Test:
         assert response.status_code == 204
 
 
-@pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
 @pytest.mark.parametrize("route_url", [GET_STRUCTURE_DATA_URL, GET_CHECK_STRUCTURE_URL])
 class Returns400Test:
     def test_search_structure_by_invalid_siret(self, client, route_url):
@@ -135,16 +132,6 @@ class Returns401Test:
         assert response.status_code == 401
 
 
-class Returns404Test:
-    @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=False)
-    def test_disabled_ff(self, client):
-        with assert_num_queries(0):
-            response = client.get(f"{GET_CHECK_STRUCTURE_URL}{DIFFUSIBLE_SIRET}")
-
-        assert response.status_code == 404
-
-
-@pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
 @pytest.mark.parametrize("route_url", [GET_STRUCTURE_DATA_URL, GET_CHECK_STRUCTURE_URL])
 class Returns500Test:
     @patch("pcapi.connectors.entreprise.api.get_siret_open_data", side_effect=sirene_exceptions.ApiUnavailable())
