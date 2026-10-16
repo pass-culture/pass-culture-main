@@ -32,6 +32,8 @@ You will have two dates at your disposal :
 
   An artist whose ids are all unknown to us is silently ignored: check `categoryRelatedFields.artists` in the response to know which artists have actually been linked. The linked artists are also returned in the `artists` field of `categoryRelatedFields` in the response of [**Get Event Offer**](/rest-api#tag/Event-Offers/operation/GetEvent).
 
+- `numberOfTickets` sent to [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic) and [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic) must no longer be `0`.
+
 ## July 2026
 - The `label` field has been added to the response of the [**Get Product Categories endpoint**](/rest-api#tag/Product-Offers/operation/GetProductCategories).
 - The `familyLabel` field has been added to the response of the [**Get Show Types endpoint**](/rest-api#tag/Offer-Attributes/operation/GetShowTypes).

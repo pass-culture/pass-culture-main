@@ -398,8 +398,9 @@ class Return404Test:
 
 
 class Return400Test:
+    @pytest.mark.parametrize("number_of_tickets", [-10, 0])
     @time_machine.travel("2020-11-17 15:00:00")
-    def should_not_allow_number_of_tickets_to_be_negative_on_edition(self, client):
+    def should_not_allow_number_of_tickets_to_be_negative_on_edition(self, client, number_of_tickets):
         stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -413,7 +414,7 @@ class Return400Test:
 
         stock_edition_payload = {
             "startDatetime": "2022-01-17T22:00:00Z",
-            "numberOfTickets": -10,
+            "numberOfTickets": number_of_tickets,
         }
 
         client.with_session_auth("user@example.com")
@@ -728,7 +729,8 @@ class Return400Test:
     @pytest.mark.parametrize(
         "number_of_tickets_value,error",
         (
-            (-1, "Saisissez un nombre supérieur ou égal à 0"),
+            (-1, "Saisissez un nombre supérieur à 0"),
+            (0, "Saisissez un nombre supérieur à 0"),
             (
                 settings.EAC_NUMBER_OF_TICKETS_LIMIT + 1,
                 f"Saisissez un nombre inférieur ou égal à {settings.EAC_NUMBER_OF_TICKETS_LIMIT}",

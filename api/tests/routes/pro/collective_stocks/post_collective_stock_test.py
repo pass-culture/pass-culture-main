@@ -163,20 +163,21 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"endDatetime": ["Ce champ est obligatoire"]}
 
+    @pytest.mark.parametrize("number_of_tickets", [-1, 0])
     @time_machine.travel("2020-11-17 15:00:00")
-    def test_should_not_allow_number_of_tickets_to_be_negative_on_creation(self, client):
+    def test_should_not_allow_number_of_tickets_to_be_negative_on_creation(self, client, number_of_tickets):
         offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
             **BASE_PAYLOAD,
             "offerId": offer.id,
-            "numberOfTickets": -1,
+            "numberOfTickets": number_of_tickets,
         }
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
-        assert response.json == {"numberOfTickets": ["Saisissez un nombre supérieur ou égal à 0"]}
+        assert response.json == {"numberOfTickets": ["Saisissez un nombre supérieur à 0"]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_not_allow_price_to_be_negative_on_creation(self, client):

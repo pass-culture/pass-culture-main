@@ -45,6 +45,8 @@ MISSING_NEW_FIELD_ERROR = {
     "__root__": ["Vous devez renseigner les champs 'servicePrice', 'additionalFees', 'numberOfTeachers'"]
 }
 
+NUMBER_OF_TICKETS_TOO_LOW_ERROR = {"numberOfTickets": ["ensure this value is greater than 0"]}
+
 
 @pytest.fixture(name="venue_provider")
 def venue_provider_fixture():
@@ -716,6 +718,16 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             ({"servicePrice": None, "numberOfTeachers": 10, "additionalFees": []}, MISSING_NEW_FIELD_ERROR),
             # additionalFees None
             ({"servicePrice": 10, "numberOfTeachers": 10, "additionalFees": None}, MISSING_NEW_FIELD_ERROR),
+            # numberOfTickets too low
+            (
+                {"servicePrice": 10, "numberOfTickets": -1, "numberOfTeachers": 1, "additionalFees": []},
+                NUMBER_OF_TICKETS_TOO_LOW_ERROR,
+            ),
+            # numberOfTickets too low
+            (
+                {"servicePrice": 10, "numberOfTickets": 0, "numberOfTeachers": 1, "additionalFees": []},
+                NUMBER_OF_TICKETS_TOO_LOW_ERROR,
+            ),
             # numberOfTeachers None
             ({"servicePrice": 10, "numberOfTeachers": None, "additionalFees": []}, MISSING_NEW_FIELD_ERROR),
             # total price too high
