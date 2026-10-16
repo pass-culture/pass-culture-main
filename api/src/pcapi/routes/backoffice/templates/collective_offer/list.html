@@ -19,6 +19,7 @@
   <th scope="col">Nom de l'offre</th>
   <th scope="col">Formats</th>
   {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Règles de conformité</th>{% endif %}
+  {% if has_permission("MANAGE_OFFER_INSTRUCTOR") %}<th scope="col">Responsable</th>{% endif %}
   <th scope="col">État</th>
   <th scope="col">Statut</th>
   <th scope="col">Créateur de l'offre</th>
@@ -73,10 +74,16 @@
             data-use-dynamic-modal="true">Valider</button>
     <button disabled
             type="button"
-            class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
             data-bs-toggle="modal"
             data-bs-target="#batch-reject-modal"
             data-use-dynamic-modal="true">Rejeter</button>
+    <button disabled
+            type="button"
+            class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-bs-toggle="modal"
+            data-bs-target="#batch-set-instructor-modal"
+            data-use-dynamic-modal="true">Attribuer un responsable</button>
   </div>
 {% endblock %}
 {% block after_table %}
@@ -84,7 +91,9 @@
     {% set collective_offer = row.CollectiveOffer %}
     {{ build_dynamic_modal(url_for('backoffice.collective_offer.get_validate_collective_offer_form', collective_offer_id=collective_offer.id) , "validate-collective-offer-modal-" + collective_offer.id|string) }}
     {{ build_dynamic_modal(url_for('backoffice.collective_offer.get_reject_collective_offer_form', collective_offer_id=collective_offer.id) , "reject-collective-offer-modal-" + collective_offer.id|string) }}
+    {{ build_dynamic_modal(url_for('backoffice.collective_offer.get_set_instructor_form', collective_offer_id=collective_offer.id) , "set-instructor-modal-" + collective_offer.id|string) }}
   {% endfor %}
   {{ build_dynamic_modal(url_for("backoffice.collective_offer.get_batch_reject_collective_offers_form") , "batch-reject-modal", form="form-ids-" + table_name) }}
   {{ build_dynamic_modal(url_for("backoffice.collective_offer.get_batch_validate_collective_offers_form") , "batch-validate-modal", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for("backoffice.collective_offer.get_batch_set_instructor_form") , "batch-set-instructor-modal", form="form-ids-" + table_name) }}
 {% endblock %}
