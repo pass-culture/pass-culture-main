@@ -90,7 +90,7 @@ test.describe('Financial Management - messages, links to external help page, rei
       await navigateToAdministrationSpace(page)
       await page.getByRole('link', { name: /Informations bancaires/ }).click()
       await expect(page).toHaveURL(
-        /\/administration\/remboursements\/informations-bancaires$/
+        /\/administration\/gestion-financiere\/informations-bancaires$/
       )
       await expect(page.getByTestId('profile-button')).toBeVisible()
       await expect(page.getByTestId('spinner')).toHaveCount(0)

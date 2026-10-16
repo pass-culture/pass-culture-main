@@ -78,16 +78,16 @@ describe('Sitemap', () => {
       },
       {
         name: 'Espace administration',
-        href: '/administration/remboursements',
+        href: '/administration/gestion-financiere',
       },
-      { name: 'Justificatifs', href: '/administration/remboursements' },
+      { name: 'Justificatifs', href: '/administration/gestion-financiere' },
       {
         name: 'Informations bancaires',
-        href: '/administration/remboursements/informations-bancaires',
+        href: '/administration/gestion-financiere/informations-bancaires',
       },
       {
         name: 'Chiffre d’affaires',
-        href: '/administration/remboursements/revenus',
+        href: '/administration/gestion-financiere/revenus',
       },
       {
         name: 'Individuel',

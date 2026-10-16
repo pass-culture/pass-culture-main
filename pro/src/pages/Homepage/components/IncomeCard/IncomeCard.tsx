@@ -50,7 +50,7 @@ const BankAccountBanner = ({
           variant={BannerVariants.ERROR}
           actions={[
             {
-              href: '/administration/remboursements/informations-bancaires',
+              href: '/administration/gestion-financiere/informations-bancaires',
               label: 'Ajouter un compte bancaire',
               type: 'link',
               icon: fullNextIcon,
@@ -68,7 +68,7 @@ const BankAccountBanner = ({
           variant={BannerVariants.ERROR}
           actions={[
             {
-              href: '/administration/remboursements/informations-bancaires',
+              href: '/administration/gestion-financiere/informations-bancaires',
               label: 'Voir les corrections attendues',
               type: 'link',
               icon: fullNextIcon,
@@ -195,7 +195,7 @@ export const IncomeCard = ({
         <Card.Footer>
           <Button
             as="router-link"
-            to="/administration/remboursements/revenus"
+            to="/administration/gestion-financiere/revenus"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.DEFAULT}

@@ -12,7 +12,7 @@ import { Reimbursements } from './Reimbursements'
 
 const reimbursementsRoutes = [
   {
-    path: '/administration/remboursements',
+    path: '/administration/gestion-financiere',
     Component: Reimbursements,
     children: [
       {
@@ -29,7 +29,7 @@ const user = sharedCurrentUserFactory()
 function renderReimbursements(options?: RenderWithProvidersOptions) {
   return renderWithProviders(<Reimbursements />, {
     routes: reimbursementsRoutes,
-    initialRouterEntries: ['/administration/remboursements'],
+    initialRouterEntries: ['/administration/gestion-financiere'],
     storeOverrides: {
       user: {
         currentUser: user,

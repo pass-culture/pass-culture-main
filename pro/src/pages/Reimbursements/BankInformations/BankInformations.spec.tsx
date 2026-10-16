@@ -62,7 +62,7 @@ function renderBankInformations({
     {
       user,
       initialRouterEntries: [
-        '/administration/remboursements/informations-bancaires',
+        '/administration/gestion-financiere/informations-bancaires',
       ],
       storeOverrides: {
         user: {
@@ -417,7 +417,7 @@ describe('BankInformations page', () => {
       {
         user: sharedCurrentUserFactory(),
         initialRouterEntries: [
-          '/administration/remboursements/informations-bancaires',
+          '/administration/gestion-financiere/informations-bancaires',
         ],
         storeOverrides: {
           user: {
