@@ -127,7 +127,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
     <div>
       <PreviewHeader offer={offer} />
       <AdagePreviewLayout offer={offer} />
-      <ActionsBarSticky>
+      <ActionsBarSticky isEmbedded>
         <ActionsBarSticky.Left>
           <Button
             as="router-link"

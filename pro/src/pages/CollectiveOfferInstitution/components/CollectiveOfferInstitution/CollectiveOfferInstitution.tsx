@@ -447,7 +447,7 @@ export const CollectiveOfferInstitutionScreen = ({
                   />
                 </FormLayout.Row>
               </FormLayout.Section>
-              <ActionsBarSticky>
+              <ActionsBarSticky isEmbedded>
                 <ActionsBarSticky.Left>
                   <Button
                     as="router-link"

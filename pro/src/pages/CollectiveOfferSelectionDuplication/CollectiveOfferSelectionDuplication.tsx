@@ -189,7 +189,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                   </div>
                 )}
 
-                <ActionsBarSticky>
+                <ActionsBarSticky isEmbedded>
                   <ActionsBarSticky.Left>
                     <Button
                       as="router-link"
