@@ -11,7 +11,7 @@ from pcapi.core.subscription import factories as subscription_factories
 from tests.test_utils import run_command
 
 
-@pytest.mark.fixtures("db_session")
+@pytest.mark.usefixtures("db_session")
 class BonusCreditRecoveryCommandTest:
     @patch("pcapi.core.subscription.bonus.tasks.recover_started_bonus_credit_applications")
     def test_recovery_respects_retry_after_lock(self, mocked_recover_applications, requests_mock, app):
