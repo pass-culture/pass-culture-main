@@ -111,7 +111,7 @@ export const Sitemap = () => {
             },
             {
               title: 'Chiffre d’affaires',
-              path: '/administration/gestion-financiere/revenus',
+              path: '/administration/gestion-financiere/chiffre-d-affaires',
               children: [],
             },
           ],
