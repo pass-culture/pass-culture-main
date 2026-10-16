@@ -20,7 +20,7 @@ export const ActionsBar = ({
   const { logEvent } = useAnalytics()
 
   return (
-    <ActionsBarSticky>
+    <ActionsBarSticky isEmbedded>
       <ActionsBarSticky.Left>
         <Button
           as="router-link"

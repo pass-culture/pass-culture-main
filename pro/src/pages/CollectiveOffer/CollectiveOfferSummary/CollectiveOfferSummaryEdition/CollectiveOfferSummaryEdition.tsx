@@ -70,7 +70,7 @@ export const CollectiveOfferSummaryEdition = ({
         institutionEditLink={institutionEditLink}
       />
 
-      <ActionsBarSticky>
+      <ActionsBarSticky isEmbedded>
         <ActionsBarSticky.Left>
           <Button
             id={backBtnId}

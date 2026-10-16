@@ -369,7 +369,7 @@ export const CollectiveOfferStockForm = ({
           >
             <div></div>
           </FormLayout.Section>
-          <ActionsBarSticky>
+          <ActionsBarSticky isEmbedded>
             <ActionsBarSticky.Left>
               <Button
                 as="router-link"
