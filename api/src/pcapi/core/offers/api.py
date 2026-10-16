@@ -1439,6 +1439,8 @@ def reject_inappropriate_products(
         },
         synchronize_session=False,
     )
+    for offer in offers:
+        offer.instructor = None
 
     for product in products:
         product.gcuCompatibilityType = (
