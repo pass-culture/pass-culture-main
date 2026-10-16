@@ -183,9 +183,9 @@ def create_offer(
         Both should use the same entrypoint but this is still a work in
         progress since some rules are slightly different.
     """
+    validation.check_offer_subcategory_is_valid(body.subcategory_id)
     body.extra_data = validation.format_extra_data(body.subcategory_id, body.extra_data) or {}
 
-    validation.check_offer_subcategory_is_valid(body.subcategory_id)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
     artist_offer_links = body.artist_offer_links
     has_cultural_outreach_claim = body.has_cultural_outreach_claim

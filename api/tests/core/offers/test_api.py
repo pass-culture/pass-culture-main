@@ -1490,6 +1490,22 @@ class CreateOfferTest:
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
+    def test_cannot_create_offer_when_invalid_subcategory_with_extra_data(self):
+        venue = offerers_factories.VenueFactory()
+        body = offers_schemas.CreateOffer(
+            name="An offer he can't refuse",
+            subcategoryId="WRONG-CATEGORY",
+            extraData={"author": "Victor Hugo"},
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+        with pytest.raises(exceptions.OfferException) as error:
+            api.create_offer(body, venue=venue)
+
+        assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
+
     def test_cannot_create_offer_with_ean_in_name(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.CreateOffer(
