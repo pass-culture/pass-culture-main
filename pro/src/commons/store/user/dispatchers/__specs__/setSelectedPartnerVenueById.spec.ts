@@ -13,7 +13,7 @@ import {
 import {
   makeGetVenueManagingOffererResponseModel,
   makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
+  makeVenueListItemResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
@@ -41,24 +41,24 @@ describe('setSelectedPartnerVenueById', () => {
         managingOffererId: 200,
       }),
       venues: [
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 101,
           name: 'V1',
           managingOfferer: { id: 100, isClosed: false },
         }),
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 201,
           name: 'V2',
           managingOfferer: { id: 200, isClosed: false },
         }),
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 301,
           name: 'V3',
           managingOfferer: { id: 300, isClosed: false },
         }),
       ],
       venuesWithPendingValidation: [
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 301,
           name: 'V3',
           managingOfferer: { id: 300, isClosed: false },
@@ -201,11 +201,11 @@ describe('setSelectedPartnerVenueById', () => {
           managingOffererId: 200,
         }),
         venues: [
-          makeVenueListItemLiteResponseModel({
+          makeVenueListItemResponseModel({
             id: 101,
             managingOfferer: { id: 999, isClosed: false },
           }),
-          makeVenueListItemLiteResponseModel({
+          makeVenueListItemResponseModel({
             id: 201,
             managingOfferer: { id: 200, isClosed: false },
           }),

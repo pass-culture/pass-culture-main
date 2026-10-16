@@ -6,14 +6,14 @@ import { api } from '@/apiClient/api'
 import type {
   AggregatedRevenueModel,
   StatisticsModel,
-  VenueListItemLiteResponseModel,
+  VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useActiveFeature from '@/commons/hooks/useActiveFeature'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { statisticsFactory } from '@/commons/utils/factories/statisticsFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
+import { makeVenueListItemResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Component as Income } from './Income'
@@ -21,11 +21,11 @@ import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from './utils'
 
 const MOCK_DATA: {
   selectedOffererId: number
-  venues: VenueListItemLiteResponseModel[]
+  venues: VenueListItemResponseModel[]
 } & StatisticsModel = {
   selectedOffererId: 100,
   venues: [
-    makeVenueListItemLiteResponseModel({
+    makeVenueListItemResponseModel({
       id: 1,
       managingOfferer: {
         id: defaultGetOffererResponseModel.id,
@@ -34,7 +34,7 @@ const MOCK_DATA: {
       isPermanent: true,
       hasCreatedOffer: true,
     }),
-    makeVenueListItemLiteResponseModel({
+    makeVenueListItemResponseModel({
       id: 2,
       managingOfferer: {
         id: defaultGetOffererResponseModel.id,
@@ -67,7 +67,7 @@ const LABELS = {
 const user = sharedCurrentUserFactory()
 
 const renderIncome = (
-  venues: VenueListItemLiteResponseModel[] = MOCK_DATA.venues
+  venues: VenueListItemResponseModel[] = MOCK_DATA.venues
 ) => {
   return renderWithProviders(<Income />, {
     user,
@@ -415,12 +415,12 @@ describe('Income', () => {
 
   it('should filter venues by selected offerer and sort alphabetically by publicName', async () => {
     const venues = [
-      makeVenueListItemLiteResponseModel({
+      makeVenueListItemResponseModel({
         id: 1,
         name: 'B venue name',
         publicName: 'Boris Librairie',
       }),
-      makeVenueListItemLiteResponseModel({
+      makeVenueListItemResponseModel({
         id: 2,
         name: 'A venue name',
         publicName: 'Arristide Librairie',

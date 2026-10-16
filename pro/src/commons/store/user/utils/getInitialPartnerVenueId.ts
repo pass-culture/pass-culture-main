@@ -1,4 +1,4 @@
-import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
+import type { VenueListItemResponseModel } from '@/apiClient/v1'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
@@ -8,7 +8,7 @@ import {
  * Compute the initially Partner Space selected venue ID when possible.
  */
 export const getInitialPartnerVenueId = (
-  venues: VenueListItemLiteResponseModel[],
+  venues: VenueListItemResponseModel[],
   newOffererId?: number | undefined
 ): number | null => {
   // ---------------------------------------------------------------------------

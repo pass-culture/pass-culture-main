@@ -4,7 +4,7 @@ import {
   type GetVenueManagingOffererResponseModel,
   type GetVenueResponseModel,
   type LocationResponseModelV2,
-  type VenueListItemLiteResponseModel,
+  type VenueListItemResponseModel,
 } from '@/apiClient/v1'
 
 import type { PartialExcept } from '../types'
@@ -139,11 +139,11 @@ export const venueAddressFactory = (
   }
 }
 
-export const makeVenueListItemLiteResponseModel = <
-  T extends PartialExcept<VenueListItemLiteResponseModel, 'id'>,
+export const makeVenueListItemResponseModel = <
+  T extends PartialExcept<VenueListItemResponseModel, 'id'>,
 >(
   override: T
-): Omit<VenueListItemLiteResponseModel, keyof T> & T => {
+): Omit<VenueListItemResponseModel, keyof T> & T => {
   const offererId = override.managingOfferer?.id ?? 1
   const location: LocationResponseModelV2 = {
     id: 2,
@@ -160,7 +160,7 @@ export const makeVenueListItemLiteResponseModel = <
     street: null,
   }
 
-  const fake: VenueListItemLiteResponseModel = {
+  const fake: VenueListItemResponseModel = {
     id: override.id,
     location: location,
     managingOfferer: {

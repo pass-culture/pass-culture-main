@@ -12,7 +12,7 @@ import {
 import {
   makeGetVenueManagingOffererResponseModel,
   makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
+  makeVenueListItemResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { OptionalCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
@@ -39,7 +39,7 @@ const renderCollectiveOfferCreation = (
           managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 10 }),
         }),
         venues: [
-          makeVenueListItemLiteResponseModel({
+          makeVenueListItemResponseModel({
             id: props.offer?.venue?.id ?? 1,
           }),
         ],

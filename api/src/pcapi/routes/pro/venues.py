@@ -1,15 +1,15 @@
 from functools import partial
 
 import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
 from pydantic import ValidationError
+from sqlalchemy import orm as sa_orm
 
-import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi import settings
 from pcapi.connectors.entreprise import api as entreprise_api
+from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
@@ -17,8 +17,6 @@ from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import validation
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.venues import api as venues_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import tasks as offers_tasks
 from pcapi.models import db
@@ -49,7 +47,7 @@ def close_venue(venue_id: int) -> None:
     if not FeatureToggle.WIP_CLOSE_VENUE.is_active():
         raise ApiErrors(status_code=404)
 
-    venue = get_or_404(Venue, venue_id)
+    venue = get_or_404(models.Venue, venue_id)
     rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     offerers_api.close_venue(venue, author=current_user)
 
@@ -98,13 +96,18 @@ def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     return _build_venue_response(venue)
 
 
-@pro_blueprint.route("/lite/venues", methods=["GET"])
+@pro_blueprint.route("/venues", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=venue_serialize.GetVenueListLiteResponseModel, api=blueprint.pro_schema)
-def get_venues_lite() -> venue_serialize.GetVenueListLiteResponseModel:
-    splitted = venues_api.fetch_user_venues_splitted_based_on_user_offerer_status(current_user.id)
-    return venue_serialize.GetVenueListLiteResponseModel.build(splitted.others, splitted.with_pending_validation)
+@spectree_serialize(response_model=venue_serialize.GetVenueListResponseModel, api=blueprint.pro_schema)
+def get_venues() -> venue_serialize.GetVenueListResponseModel:
+    with_pending_validation, without_pending_validation = offerers_repository.get_venues_by_offerer_status(
+        user_id=current_user.id
+    )
+
+    return venue_serialize.GetVenueListResponseModel.build(
+        venues=without_pending_validation, with_pending_validation=with_pending_validation
+    )
 
 
 @pro_blueprint.route("/venues/<int:venue_id>", methods=["PATCH"])
@@ -112,7 +115,7 @@ def get_venues_lite() -> venue_serialize.GetVenueListLiteResponseModel:
 @atomic()
 @spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_schema)
 def edit_venue(venue_id: int, body: venue_serialize.EditVenueBodyModel) -> venue_serialize.GetVenueResponseModel:
-    venue = get_or_404(Venue, venue_id)
+    venue = get_or_404(models.Venue, venue_id)
     rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     rest_utils.check_venue_is_opened(venue)
 
@@ -203,7 +206,7 @@ def edit_venue(venue_id: int, body: venue_serialize.EditVenueBodyModel) -> venue
 def edit_venue_collective_data(
     venue_id: int, body: venue_collective_serialize.EditVenueCollectiveDataBodyModel
 ) -> venue_serialize.GetVenueResponseModel:
-    venue = get_or_404(Venue, venue_id)
+    venue = get_or_404(models.Venue, venue_id)
     rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     rest_utils.check_venue_is_opened(venue)
 
@@ -218,7 +221,7 @@ def edit_venue_collective_data(
 @atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_schema)
 def link_venue_to_pricing_point(venue_id: int, body: venue_finance_serialize.LinkVenueToPricingPointBodyModel) -> None:
-    venue = get_or_404(Venue, venue_id)
+    venue = get_or_404(models.Venue, venue_id)
     rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     rest_utils.check_venue_is_opened(venue)
 
@@ -233,7 +236,7 @@ def link_venue_to_pricing_point(venue_id: int, body: venue_finance_serialize.Lin
 @atomic()
 @spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, on_success_status=201)
 def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
-    venue = get_or_404(Venue, venue_id)
+    venue = get_or_404(models.Venue, venue_id)
     rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     rest_utils.check_venue_is_opened(venue)
 
@@ -267,7 +270,7 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
 @atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_schema)
 def delete_venue_banner(venue_id: int) -> None:
-    venue = get_or_404(Venue, venue_id)
+    venue = get_or_404(models.Venue, venue_id)
     rest_utils.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     offerers_api.delete_venue_banner(venue)
@@ -327,7 +330,7 @@ def get_venue_addresses(
     return venue_serialize.GetVenueAddressesResponseModel(venue_addresses)
 
 
-def _build_venue_response(venue: Venue) -> venue_serialize.GetVenueResponseModel:
+def _build_venue_response(venue: models.Venue) -> venue_serialize.GetVenueResponseModel:
     is_offerer_onboarded = offerers_repository.get_offerer_is_onboarded(venue.managingOffererId)
     if is_offerer_onboarded is None:
         raise resource_not_found_error()

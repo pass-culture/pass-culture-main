@@ -1,16 +1,20 @@
 import pytest
 
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+
+from tests.conftest import TestClient
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
+URL = "/venues"
 
-def test_loads_all_venues_ids_and_names(client):
+
+def test_loads_all_venues_ids_and_names(client: TestClient):
     user_offerer = offerers_factories.UserOffererFactory()
     # Reverse-ordered to test sorting behavior
     second_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, publicName="Def")
@@ -25,10 +29,9 @@ def test_loads_all_venues_ids_and_names(client):
 
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select user_offerers
-    num_queries += 1  # select related offerers
     num_queries += 1  # select related managed venues
     with testing.assert_num_queries(num_queries):
-        response = client.get("/lite/venues")
+        response = client.get(URL)
         assert response.status_code == 200
 
     assert "venues" in response.json
@@ -90,7 +93,7 @@ def test_loads_all_venues_ids_and_names(client):
     ]
 
 
-def test_only_return_non_softdeleted_venues(client):
+def test_only_return_non_softdeleted_venues(client: TestClient):
     pro_user = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -105,10 +108,9 @@ def test_only_return_non_softdeleted_venues(client):
     client = client.with_session_auth(pro_user.email)
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select user_offerers
-    num_queries += 1  # select related offerers
     num_queries += 1  # select related managed venues
     with testing.assert_num_queries(num_queries):
-        response = client.get("/lite/venues")
+        response = client.get(URL)
         assert response.status_code == 200
 
     assert "venues" in response.json
@@ -116,7 +118,7 @@ def test_only_return_non_softdeleted_venues(client):
     assert not response.json["venuesWithPendingValidation"]
 
 
-def test_closed_venues_are_returned_last(client):
+def test_closed_venues_are_returned_last(client: TestClient):
     user_offerer = offerers_factories.UserOffererFactory()
     open_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, publicName="CCC", state=None)
     closed_venue = offerers_factories.VenueFactory(
@@ -129,20 +131,20 @@ def test_closed_venues_are_returned_last(client):
     venue_with_closed_offerer = offerers_factories.VenueFactory(managingOfferer=closed_offerer, publicName="AAA")
 
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get("/lite/venues")
+    response = client.get(URL)
 
     assert response.status_code == 200
     ids = [v["id"] for v in response.json["venues"]]
     assert ids == [open_venue.id, venue_with_closed_offerer.id, closed_venue.id]
 
 
-def test_return_managing_offerer_closure_status(client):
+def test_return_managing_offerer_closure_status(client: TestClient):
     user_offerer = offerers_factories.UserOffererFactory()
     user_offerer.offerer.validationStatus = "CLOSED"
     offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get("/lite/venues")
+    response = client.get(URL)
 
     assert response.status_code == 200
     assert response.json["venues"][0]["managingOfferer"]["isClosed"] is True

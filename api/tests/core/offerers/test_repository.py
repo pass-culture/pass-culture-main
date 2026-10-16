@@ -13,6 +13,7 @@ from pcapi.core.offerers import repository
 from pcapi.core.offerers import schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
 
@@ -21,104 +22,83 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class GetAllOfferersForUserTest:
-    def should_return_all_offerers_for_an_admin(self) -> None:
-        # Given
+    def should_return_all_offerers_for_an_admin(self):
         admin = users_factories.AdminFactory()
         offerer = offerers_factories.OffererFactory()
 
-        # When
         offerers = repository.get_all_offerers_for_user(user=admin).all()
 
-        # Then
         assert len(offerers) == 1
         assert offerers[0].id == offerer.id
 
-    def should_return_pro_offerers_only(self) -> None:
-        # Given
+    def should_return_pro_offerers_only(self):
         pro = users_factories.ProFactory()
         pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro)
         other_offerer = offerers_factories.OffererFactory()
 
-        # When
         offerers = repository.get_all_offerers_for_user(user=pro).all()
 
-        # Then
         assert len(offerers) == 1
         offerers_ids = [offerer.id for offerer in offerers]
         assert pro_offerer_attachment.offerer.id in offerers_ids
         assert other_offerer.id not in offerers_ids
 
-    def should_return_non_validated_offerers(self) -> None:
-        # Given
+    def should_return_non_validated_offerers(self):
         pro = users_factories.ProFactory()
         pro_offerer_attachment = offerers_factories.UserNotValidatedOffererFactory(user=pro)
 
-        # When
         offerers = repository.get_all_offerers_for_user(user=pro).all()
 
-        # Then
         assert len(offerers) == 1
         offerers_ids = [offerer.id for offerer in offerers]
         assert pro_offerer_attachment.offerer.id in offerers_ids
 
-    def should_not_return_offerers_with_non_validated_attachment_to_given_pro(self) -> None:
+    def should_not_return_offerers_with_non_validated_attachment_to_given_pro(self):
         pro = users_factories.ProFactory()
         offerers_factories.NewUserOffererFactory(user=pro)
         assert repository.get_all_offerers_for_user(user=pro).all() == []
 
-    def should_not_return_deactivated_offerers(self) -> None:
-        # Given
+    def should_not_return_deactivated_offerers(self):
         admin = users_factories.AdminFactory()
         offerers_factories.OffererFactory(isActive=False)
 
-        # When
         offerers = repository.get_all_offerers_for_user(user=admin).all()
 
-        # Then
         assert len(offerers) == 0
 
     class WithValidatedFilterTest:
-        def should_return_all_pro_offerers_when_filter_is_none(self) -> None:
-            # Given
+        def should_return_all_pro_offerers_when_filter_is_none(self):
             pro = users_factories.ProFactory()
             pro_attachment_to_validated_offerer = offerers_factories.UserOffererFactory(user=pro)
             pro_attachment_to_unvalidated_offerer = offerers_factories.UserNotValidatedOffererFactory(user=pro)
 
-            # When
             offerers = repository.get_all_offerers_for_user(user=pro).all()
 
-            # Then
             assert len(offerers) == 2
             offerers_ids = [offerer.id for offerer in offerers]
             assert pro_attachment_to_validated_offerer.offerer.id in offerers_ids
             assert pro_attachment_to_unvalidated_offerer.offerer.id in offerers_ids
 
-        def should_return_only_validated_offerers_when_filter_is_true(self) -> None:
-            # Given
+        def should_return_only_validated_offerers_when_filter_is_true(self):
             pro = users_factories.ProFactory()
             pro_attachment_to_validated_offerer = offerers_factories.UserOffererFactory(user=pro)
             pro_attachment_to_unvalidated_offerer = offerers_factories.UserNotValidatedOffererFactory(user=pro)
 
-            # When
             offerers = repository.get_all_offerers_for_user(user=pro, validated_offerers_only=True).all()
 
-            # Then
             assert len(offerers) == 1
             offerers_ids = [offerer.id for offerer in offerers]
             assert pro_attachment_to_validated_offerer.offerer.id in offerers_ids
             assert pro_attachment_to_unvalidated_offerer.offerer.id not in offerers_ids
 
-        def should_return_all_offerers_except_rejected_ones_when_filter_is_false(self) -> None:
-            # Given
+        def should_return_all_offerers_except_rejected_ones_when_filter_is_false(self):
             pro = users_factories.ProFactory()
             pro_attachment_to_validated_offerer = offerers_factories.UserOffererFactory(user=pro)
             pro_attachment_to_unvalidated_offerer = offerers_factories.UserNotValidatedOffererFactory(user=pro)
             non_validated_offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.REJECTED)
 
-            # When
             offerers = repository.get_all_offerers_for_user(user=pro, validated_offerers_only=False).all()
 
-            # Then
             assert len(offerers) == 2
             offerers_ids = [offerer.id for offerer in offerers]
             assert pro_attachment_to_validated_offerer.offerer.id in offerers_ids
@@ -375,3 +355,85 @@ def test_sould_return_user_offerer_timezones():
 
     assert len(timezones) == 4
     assert timezones == {"Europe/Paris", "America/Guadeloupe", "Indian/Mayotte", "America/Cayenne"}
+
+
+class GetVenuesByOffererStatusTest:
+    def test_user_is_linked_to_no_venues(self):
+        user = users_factories.UserFactory()
+        with_pending, without_pending = repository.get_venues_by_offerer_status(user.id)
+
+        assert not without_pending
+        assert not with_pending
+
+    def test_user_has_both_pending_and_validated_user_offerer_links(self):
+        user = users_factories.UserFactory()
+
+        attached_user_offerer = offerers_factories.UserOffererFactory(user=user)
+        attached_venue = offerers_factories.VenueFactory(managingOfferer=attached_user_offerer.offerer)
+
+        pending_user_offerer = offerers_factories.NewUserOffererFactory(user=user)
+        pending_venue = offerers_factories.VenueFactory(managingOfferer=pending_user_offerer.offerer)
+
+        with_pending, without_pending = repository.get_venues_by_offerer_status(user.id)
+
+        assert without_pending == [attached_venue]
+        assert with_pending == [pending_venue]
+
+    def test_only_valid_or_pending_user_offerer_links_are_searched_for(self):
+        user = users_factories.UserFactory()
+
+        rejected_user_offerer = offerers_factories.RejectedUserOffererFactory(user=user)
+        offerers_factories.VenueFactory(managingOfferer=rejected_user_offerer.offerer)
+
+        deleted_user_offerer = offerers_factories.DeletedUserOffererFactory(user=user)
+        offerers_factories.VenueFactory(managingOfferer=deleted_user_offerer.offerer)
+
+        pending_user_offerer = offerers_factories.NewUserOffererFactory(user=user)
+        pending_venue = offerers_factories.VenueFactory(managingOfferer=pending_user_offerer.offerer)
+
+        with_pending, without_pending = repository.get_venues_by_offerer_status(user.id)
+
+        assert not without_pending
+        assert with_pending == [pending_venue]
+
+    def test_only_fetch_from_pending_validated_or_closed_offerers(self):
+        user = users_factories.UserFactory()
+
+        rejected_offerer = offerers_factories.RejectedOffererFactory()
+        offerers_factories.VenueFactory(managingOfferer=rejected_offerer)
+        offerers_factories.UserOffererFactory(offerer=rejected_offerer)
+
+        pending_user_offerer = offerers_factories.NewUserOffererFactory(user=user)
+        pending_venue = offerers_factories.VenueFactory(managingOfferer=pending_user_offerer.offerer)
+
+        with_pending, without_pending = repository.get_venues_by_offerer_status(user.id)
+
+        assert not without_pending
+        assert with_pending == [pending_venue]
+
+    def test_suspended_offerers_venues_are_ignored(self):
+        user = users_factories.UserFactory()
+
+        suspended_offerer = offerers_factories.OffererFactory(isActive=False)
+        offerers_factories.UserOffererFactory(user=user, offerer=suspended_offerer)
+        offerers_factories.VenueFactory(managingOfferer=suspended_offerer)
+
+        with_pending, without_pending = repository.get_venues_by_offerer_status(user.id)
+
+        assert not without_pending
+        assert not with_pending
+
+    def test_soft_deleted_venues_are_ignored(self):
+        user = users_factories.UserFactory()
+        pending_user_offerer = offerers_factories.NewUserOffererFactory(user=user)
+        venue = offerers_factories.VenueFactory(managingOfferer=pending_user_offerer.offerer)
+
+        # factories does not seem to work well with `isSoftDeleted`
+        venue.isSoftDeleted = True
+        db.session.add(venue)
+        db.session.flush()
+
+        with_pending, without_pending = repository.get_venues_by_offerer_status(user.id)
+
+        assert not without_pending
+        assert not with_pending

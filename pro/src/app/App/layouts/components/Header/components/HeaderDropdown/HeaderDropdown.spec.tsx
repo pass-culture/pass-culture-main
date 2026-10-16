@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
+import { makeVenueListItemResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -16,12 +16,12 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 const baseVenues = [
-  makeVenueListItemLiteResponseModel({
+  makeVenueListItemResponseModel({
     id: 3,
     managingOffererId: 1,
     name: 'Digital Venue A1',
   }),
-  makeVenueListItemLiteResponseModel({
+  makeVenueListItemResponseModel({
     id: 4,
     managingOffererId: 2,
     name: 'Digital Venue B1',

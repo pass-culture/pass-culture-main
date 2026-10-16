@@ -5,15 +5,15 @@ import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
-  VenueListItemLiteResponseModel,
+  VenueListItemResponseModel,
 } from '@/apiClient/v1'
 
 export interface UserSliceState {
   currentUser: SharedCurrentUserResponseModel | null
   selectedAdminOfferer: GetOffererResponseModel | null
   selectedPartnerVenue: GetVenueResponseModel | null
-  venues: VenueListItemLiteResponseModel[] | null
-  venuesWithPendingValidation: VenueListItemLiteResponseModel[] | null
+  venues: VenueListItemResponseModel[] | null
+  venuesWithPendingValidation: VenueListItemResponseModel[] | null
   offererNames: GetOffererNameResponseModel[] | null
 }
 
@@ -27,8 +27,8 @@ const initialState: UserSliceState = {
 }
 
 type UpdateVenuesPayload = {
-  venues: VenueListItemLiteResponseModel[] | null
-  venuesWithPendingValidation: VenueListItemLiteResponseModel[] | null
+  venues: VenueListItemResponseModel[] | null
+  venuesWithPendingValidation: VenueListItemResponseModel[] | null
 }
 
 const userSlice = createSlice({

@@ -5,7 +5,7 @@ import { UserRole } from '@/apiClient/v1'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
+  makeVenueListItemResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -23,7 +23,7 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     getVenue: vi.fn(),
-    getVenuesLite: vi.fn(),
+    getVenues: vi.fn(),
     getOfferer: vi.fn(),
     listFeatures: vi.fn(),
     listOfferersNames: vi.fn(),
@@ -56,9 +56,9 @@ describe('src | App', () => {
     )
     const offerersNames = [{ id: 1, name: 'Offerer A', validated: true }]
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 2,
           managingOffererId: 1,
         }),
@@ -77,7 +77,7 @@ describe('src | App', () => {
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.getProfile).toHaveBeenCalledTimes(1)
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
-    expect(api.getVenuesLite).toHaveBeenCalledTimes(1)
+    expect(api.getVenues).toHaveBeenCalledTimes(1)
     expect(api.getVenue).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
   })

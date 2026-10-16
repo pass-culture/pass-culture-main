@@ -46,7 +46,7 @@ export const initializeUser = createAsyncThunk<
 >('user/initializeUser', async ({ newOffererId, user }, { dispatch }) => {
   try {
     const offererNamesResponse = await api.listOfferersNames()
-    const venuesResponse = await api.getVenuesLite()
+    const venuesResponse = await api.getVenues()
     const offererNames = offererNamesResponse.offerersNames
     const allVenues = venuesResponse.venues.concat(
       venuesResponse.venuesWithPendingValidation
