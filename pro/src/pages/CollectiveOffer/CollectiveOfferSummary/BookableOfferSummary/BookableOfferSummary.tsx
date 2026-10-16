@@ -393,7 +393,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           />
         )}
       </div>
-      <ActionsBarSticky>
+      <ActionsBarSticky isEmbedded>
         <ActionsBarSticky.Left>
           <Button
             id={backBtnId}

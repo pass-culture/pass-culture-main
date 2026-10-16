@@ -43,7 +43,7 @@ export const CollectiveOfferSummaryCreation = ({
           stockEditLink={`/offre/${offer.id}/collectif/stocks`}
           institutionEditLink={`/offre/${offer.id}/collectif/etablissement`}
         />
-        <ActionsBarSticky>
+        <ActionsBarSticky isEmbedded>
           <ActionsBarSticky.Left>
             <Button
               as="router-link"
