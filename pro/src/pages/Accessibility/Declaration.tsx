@@ -325,8 +325,8 @@ export const Declaration = () => {
                 <Link
                   color={LinkColor.NEUTRAL}
                   isExternalLink
-                  to="https://passculture.pro/administration/remboursements/informations-bancaires"
-                  label="https://passculture.pro/administration/remboursements/informations-bancaires"
+                  to="https://passculture.pro/administration/gestion-financiere/informations-bancaires"
+                  label="https://passculture.pro/administration/gestion-financiere/informations-bancaires"
                 />
               </td>
             </tr>

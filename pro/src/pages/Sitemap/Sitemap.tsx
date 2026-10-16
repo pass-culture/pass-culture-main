@@ -80,7 +80,7 @@ export const Sitemap = () => {
     },
     {
       title: 'Espace administration',
-      path: '/administration/remboursements',
+      path: '/administration/gestion-financiere',
       children: [
         {
           title: 'Gestion financière',
@@ -88,17 +88,17 @@ export const Sitemap = () => {
           children: [
             {
               title: 'Justificatifs',
-              path: '/administration/remboursements',
+              path: '/administration/gestion-financiere/justificatifs',
               children: [],
             },
             {
               title: 'Informations bancaires',
-              path: '/administration/remboursements/informations-bancaires',
+              path: '/administration/gestion-financiere/informations-bancaires',
               children: [],
             },
             {
               title: 'Chiffre d’affaires',
-              path: '/administration/remboursements/revenus',
+              path: '/administration/gestion-financiere/chiffre-d-affaires',
               children: [],
             },
           ],

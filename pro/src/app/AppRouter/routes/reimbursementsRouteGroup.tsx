@@ -1,53 +1,50 @@
-import { Navigate } from 'react-router'
-
-import { withUserPermissions } from '@/commons/auth/withUserPermissions'
-import { Reimbursements } from '@/pages/Reimbursements/Reimbursements'
+import { Navigate, useLocation } from 'react-router'
 
 import type { CustomRouteGroup } from '../types'
-import { mustHaveSelectedAdminOfferer } from '../utils'
 
-export const reimbursementsRouteGroup: CustomRouteGroup = {
-  path: '/administration/remboursements',
-  loader: withUserPermissions(mustHaveSelectedAdminOfferer),
-  Component: Reimbursements,
-  children: [
-    {
-      index: true,
-      lazy: () =>
-        import(
-          '@/pages/Reimbursements/ReimbursementsInvoices/ReimbursementsInvoices'
-        ),
-      handle: {
-        title: 'Gestion financière - justificatifs',
-      },
+export const reimbursementsRouteGroup: CustomRouteGroup['children'] = [
+  {
+    index: true,
+    handle: {
+      title: 'Gestion financière',
     },
-    {
-      path: 'virements',
-      lazy: () => import('@/pages/Reimbursements/Settlements/Settlements'),
-      handle: {
-        title: 'Gestion financière',
-      },
-      featureName: 'WIP_ENABLE_FINANCE_SETTLEMENTS',
+    Component: () => {
+      const location = useLocation()
+      const targetUrl = `/administration/gestion-financiere/justificatifs${location.search}`
+      return <Navigate to={targetUrl} replace />
     },
-    // We keep a redirection here in case this link is still used in mail
-    {
-      path: 'justificatifs',
-      element: <Navigate to="/administration/remboursements" replace />,
+  },
+  {
+    path: 'justificatifs',
+    lazy: () =>
+      import(
+        '@/pages/Reimbursements/ReimbursementsInvoices/ReimbursementsInvoices'
+      ),
+    handle: {
+      title: 'Gestion financière - justificatifs',
     },
-    {
-      path: 'informations-bancaires',
-      lazy: () =>
-        import('@/pages/Reimbursements/BankInformations/BankInformations'),
-      handle: {
-        title: 'Informations bancaires',
-      },
+  },
+  {
+    path: 'virements',
+    lazy: () => import('@/pages/Reimbursements/Settlements/Settlements'),
+    handle: {
+      title: 'Gestion financière',
     },
-    {
-      path: 'revenus',
-      lazy: () => import('@/pages/Reimbursements/Income/Income'),
-      handle: {
-        title: 'Chiffre d’affaires',
-      },
+    featureName: 'WIP_ENABLE_FINANCE_SETTLEMENTS',
+  },
+  {
+    path: 'informations-bancaires',
+    lazy: () =>
+      import('@/pages/Reimbursements/BankInformations/BankInformations'),
+    handle: {
+      title: 'Informations bancaires',
     },
-  ],
-}
+  },
+  {
+    path: 'chiffre-d-affaires',
+    lazy: () => import('@/pages/Reimbursements/Income/Income'),
+    handle: {
+      title: 'Chiffre d’affaires',
+    },
+  },
+]

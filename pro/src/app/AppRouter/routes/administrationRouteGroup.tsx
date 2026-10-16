@@ -1,5 +1,6 @@
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { AdministrationLayout } from '@/layouts/AdministrationLayout/AdministrationLayout'
+import { Reimbursements } from '@/pages/Reimbursements/Reimbursements'
 
 import type { CustomRouteGroup } from '../types'
 import { mustHaveSelectedAdminOfferer } from '../utils'
@@ -10,7 +11,11 @@ export const administrationRouteGroup: CustomRouteGroup = {
   loader: withUserPermissions(mustHaveSelectedAdminOfferer),
   Component: AdministrationLayout,
   children: [
-    reimbursementsRouteGroup,
+    {
+      path: 'gestion-financiere',
+      Component: Reimbursements,
+      children: reimbursementsRouteGroup,
+    },
     {
       path: 'collaborateurs',
       handle: {

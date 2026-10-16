@@ -42,7 +42,7 @@ export const RedirectToBankAccountDialog = ({
     if (isOnboarding) {
       await updateSelectedPartnerVenue()
     }
-    await navigate('/administration/remboursements/informations-bancaires')
+    await navigate('/administration/gestion-financiere/informations-bancaires')
   }
 
   const cancel = async () => {

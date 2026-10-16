@@ -16,7 +16,7 @@ export const AdminSideNavLinks = () => {
       type: 'link',
       icon: strokeRepaymentIcon,
       title: 'Gestion financière',
-      to: '/administration/remboursements',
+      to: '/administration/gestion-financiere',
     },
     {
       key: 'activity_data',

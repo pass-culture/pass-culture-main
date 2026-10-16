@@ -1,6 +1,6 @@
 export const STEP_ID_INVOICES = 'justificatifs'
 export const STEP_ID_BANK_INFORMATIONS = 'informations-bancaires'
-export const STEP_ID_INCOMES = 'revenus'
+export const STEP_ID_INCOMES = 'chiffre-d-affaires'
 export const STEP_ID_SETTLEMENTS = 'virements'
 
 export const STEP_NAMES = [

@@ -57,7 +57,7 @@ describe('ReimbursementWaitingBanner', () => {
     })
     expect(link).toHaveAttribute(
       'href',
-      '/administration/remboursements/informations-bancaires'
+      '/administration/gestion-financiere/informations-bancaires'
     )
   })
 
@@ -82,7 +82,7 @@ describe('ReimbursementWaitingBanner', () => {
     })
     expect(link).toHaveAttribute(
       'href',
-      '/administration/remboursements/informations-bancaires'
+      '/administration/gestion-financiere/informations-bancaires'
     )
   })
 })
