@@ -1,43 +1,8 @@
 {% import "components/links.html" as links with context %}
-<div class="btn-group btn-group-sm"
-     data-toggle="pc-batch-confirm-btn-group"
-     data-toggle-id="table-container-download-reimbursement-details-btn-group"
-     data-pc-table-multi-select-id="table-container-download-reimbursement-details"
-     data-input-ids-name="object_ids">
-  <form method="post"
-        id="form-ids-table-container-download-reimbursement-details"
-        data-pc-form-opt-out="true"
-        action="{{ url_for('backoffice.offerer.download_reimbursement_details', offerer_id=offerer_id) }}">
-    <input type="hidden"
-           name="object_ids">
-    {{ csrf_token }}
-    <button disabled
-            type="submit"
-            class="btn btn-outline-primary"
-            data-use-confirmation-modal="false">
-      Téléchargement
-      des détails de remboursements
-    </button>
-  </form>
-  <form method="post"
-        id="form-ids-table-container-download-invoices"
-        data-pc-form-opt-out="true"
-        action="{{ url_for('backoffice.offerer.download_invoices', offerer_id=offerer_id) }}">
-    <input type="hidden"
-           name="object_ids">
-    {{ csrf_token }}
-    <button disabled
-            type="submit"
-            class="btn btn-outline-primary mx-2"
-            data-use-confirmation-modal="false">
-      Téléchargement
-      des justificatifs
-    </button>
-  </form>
-</div>
+{% set table_name = "offerer-invoices-table" %}
 <table class="table table-hover my-4"
-       data-table-multi-select-id="table-container-download-reimbursement-details"
-       data-table-multi-select-form-ids="form-ids-table-container-download-reimbursement-details form-ids-table-container-download-invoices">
+       data-table-multi-select-id="{{ table_name }}"
+       data-table-multi-select-form-ids="form-ids-download-reimbursement-details form-ids-download-invoices">
   <thead>
     <tr>
       <th scope="col">
@@ -60,8 +25,9 @@
         <td scope="col">
           <input type="checkbox"
                  class="form-check-input"
-                 name="pc-table-multi-select-check-{invoice.id}"
-                 data-id="{{ invoice.id }}" />
+                 name="pc-table-multi-select-check-{{ invoice.id }}"
+                 data-id="{{ invoice.id }}"
+                 data-value="{{ -invoice.amount * 0.01 }}" />
         </td>
         <td>{{ invoice.cashflows | map(attribute="batch.label") | join(", ") | escape }}</td>
         <td>{{ invoice.reference }}</td>
@@ -79,3 +45,44 @@
     {% endfor %}
   </tbody>
 </table>
+<div data-table-multiselect-menu-for="{{ table_name }}"
+     class="pc-batch-action d-none p-0 position-fixed start-50 translate-middle-x">
+  <div class="d-inline-block rounded bg-primary px-3 py-2">
+    <div class="d-flex">
+      <div class="counter-container text-nowrap">
+        <span class="counter">0</span> justificatif(s) sélectionné(s) :
+        <span class="value">0</span> €
+      </div>
+      <div data-toggle="pc-batch-confirm-btn-group"
+           data-toggle-id="{{ table_name }}-btn-group"
+           data-pc-table-multi-select-id="{{ table_name }}"
+           data-input-ids-name="object_ids"
+           class="d-flex">
+        <form method="post"
+              id="form-ids-download-reimbursement-details"
+              data-pc-form-opt-out="true"
+              action="{{ url_for('backoffice.offerer.download_reimbursement_details', offerer_id=offerer_id) }}">
+          <input type="hidden"
+                 name="object_ids">
+          {{ csrf_token }}
+          <button disabled
+                  type="submit"
+                  class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+                  data-use-confirmation-modal="false">Télécharger détails remboursements</button>
+        </form>
+        <form method="post"
+              id="form-ids-download-invoices"
+              data-pc-form-opt-out="true"
+              action="{{ url_for('backoffice.offerer.download_invoices', offerer_id=offerer_id) }}">
+          <input type="hidden"
+                 name="object_ids">
+          {{ csrf_token }}
+          <button disabled
+                  type="submit"
+                  class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
+                  data-use-confirmation-modal="false">Télécharger justificatifs</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
