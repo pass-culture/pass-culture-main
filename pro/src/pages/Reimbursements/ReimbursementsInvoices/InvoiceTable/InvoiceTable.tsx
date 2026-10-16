@@ -35,7 +35,7 @@ function getEmptyStateMessage(hasBankAccount: boolean) {
       cta: (
         <Button
           as="router-link"
-          to="/administration/remboursements/informations-bancaires"
+          to="/administration/gestion-financiere/informations-bancaires"
           label="Rattacher un compte bancaire"
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}

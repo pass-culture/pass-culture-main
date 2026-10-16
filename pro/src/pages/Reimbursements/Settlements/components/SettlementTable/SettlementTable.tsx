@@ -67,7 +67,7 @@ function getEmptyStateMessage(hasBankAccount: boolean) {
       cta: (
         <Button
           as="router-link"
-          to="/administration/remboursements/informations-bancaires"
+          to="/administration/gestion-financiere/informations-bancaires"
           label="Rattacher un compte bancaire"
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
@@ -85,7 +85,7 @@ function getEmptyStateMessage(hasBankAccount: boolean) {
     cta: (
       <Button
         as="router-link"
-        to="/administration/remboursements/justificatifs"
+        to="/administration/gestion-financiere/justificatifs"
         label="Voir mes justificatifs"
         variant={ButtonVariant.TERTIARY}
         color={ButtonColor.NEUTRAL}
@@ -241,7 +241,7 @@ export const SettlementTable = ({
               <Button
                 as="router-link"
                 variant={ButtonVariant.PRIMARY}
-                to="/administration/remboursements/informations-bancaires"
+                to="/administration/gestion-financiere/informations-bancaires"
                 label="Remplacer le compte"
                 size={ButtonSize.SMALL}
                 onClick={() =>

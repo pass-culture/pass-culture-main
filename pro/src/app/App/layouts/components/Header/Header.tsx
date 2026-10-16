@@ -150,7 +150,7 @@ export const Header = forwardRef(
                     to={
                       isAdminArea
                         ? '/accueil'
-                        : '/administration/remboursements'
+                        : '/administration/gestion-financiere'
                     }
                     iconPosition={IconPositionEnum.LEFT}
                     icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}

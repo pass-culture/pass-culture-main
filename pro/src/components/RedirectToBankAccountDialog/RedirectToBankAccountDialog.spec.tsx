@@ -135,7 +135,7 @@ describe('<RedirectToBankAccountDialog />', () => {
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledExactlyOnceWith(
-          '/administration/remboursements/informations-bancaires'
+          '/administration/gestion-financiere/informations-bancaires'
         )
       })
       expect(api.getVenue).toHaveBeenCalledExactlyOnceWith({
@@ -153,7 +153,7 @@ describe('<RedirectToBankAccountDialog />', () => {
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledExactlyOnceWith(
-          '/administration/remboursements/informations-bancaires'
+          '/administration/gestion-financiere/informations-bancaires'
         )
       })
       expect(api.getVenue).not.toHaveBeenCalled()

@@ -13,7 +13,7 @@ describe('Header', () => {
     renderWithProviders(<Header />)
     expect(
       screen.getByRole('link', { name: 'Espace administration' })
-    ).toHaveAttribute('href', '/administration/remboursements')
+    ).toHaveAttribute('href', '/administration/gestion-financiere')
   })
 
   it('should show "Revenir à l’Espace partenaire" button when isAdminArea is true', () => {

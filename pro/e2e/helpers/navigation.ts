@@ -3,7 +3,9 @@ import { expect, type Page } from '@playwright/test'
 export async function navigateToAdministrationSpace(page: Page) {
   await page.getByRole('link', { name: /Espace administration/ }).click()
 
-  await expect(page).toHaveURL(/\/administration\/remboursements($|\?.*)/)
+  await expect(page).toHaveURL(
+    /\/administration\/gestion-financiere(\/justificatifs)?($|\?.*)/
+  )
   await expect(
     page.getByRole('heading', { level: 1, name: 'Gestion financière' })
   ).toBeVisible()

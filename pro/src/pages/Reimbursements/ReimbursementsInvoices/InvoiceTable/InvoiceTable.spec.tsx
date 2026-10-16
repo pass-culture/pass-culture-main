@@ -283,7 +283,7 @@ describe('InvoiceTable', () => {
     expect(cta).toBeVisible()
     expect(cta).toHaveAttribute(
       'href',
-      '/administration/remboursements/informations-bancaires'
+      '/administration/gestion-financiere/informations-bancaires'
     )
   })
 })
