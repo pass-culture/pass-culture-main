@@ -147,7 +147,7 @@ export const LateralPanel = ({
             <Button
               as="router-link"
               variant={ButtonVariant.SECONDARY}
-              to="/administration/remboursements"
+              to="/administration/gestion-financiere"
               iconPosition={IconPositionEnum.LEFT}
               icon={strokeRepaymentIcon}
               label="Espace administration"

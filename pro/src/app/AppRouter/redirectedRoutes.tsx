@@ -1,4 +1,4 @@
-import { redirect } from 'react-router'
+import { Navigate, redirect, useLocation, useParams } from 'react-router'
 
 import type { RedirectionRouteObject } from './types'
 
@@ -47,5 +47,15 @@ export const redirectedRoutes: RedirectionRouteObject[] = [
       redirect(
         `/offre/individuelle/${params.offerId}/edition/informations_pratiques`
       ),
+  },
+  {
+    path: '/administration/remboursements/*',
+    Component: () => {
+      const params = useParams()
+      const location = useLocation()
+      const splat = params['*'] ?? ''
+      const targetUrl = `/administration/gestion-financiere/${splat}${location.search}${location.hash}`
+      return <Navigate to={targetUrl} replace />
+    },
   },
 ]

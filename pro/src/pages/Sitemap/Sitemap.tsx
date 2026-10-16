@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router'
 
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -23,6 +24,9 @@ export const Sitemap = () => {
   const navigate = useNavigate()
   const selectedPartnerVenue = useAppSelector(
     (state) => state.user.selectedPartnerVenue
+  )
+  const isNewSettlementsEnabled = useActiveFeature(
+    'WIP_ENABLE_FINANCE_SETTLEMENTS'
   )
 
   const sitemapLinks: SitemapLink[] = [
@@ -80,7 +84,7 @@ export const Sitemap = () => {
     },
     {
       title: 'Espace administration',
-      path: '/administration/remboursements',
+      path: '/administration/gestion-financiere',
       children: [
         {
           title: 'Gestion financière',
@@ -88,17 +92,26 @@ export const Sitemap = () => {
           children: [
             {
               title: 'Justificatifs',
-              path: '/administration/remboursements',
+              path: '/administration/gestion-financiere/justificatifs',
               children: [],
             },
+            ...(isNewSettlementsEnabled
+              ? [
+                  {
+                    title: 'Virements',
+                    path: '/administration/gestion-financiere/virements',
+                    children: [],
+                  },
+                ]
+              : []),
             {
               title: 'Informations bancaires',
-              path: '/administration/remboursements/informations-bancaires',
+              path: '/administration/gestion-financiere/informations-bancaires',
               children: [],
             },
             {
               title: 'Chiffre d’affaires',
-              path: '/administration/remboursements/revenus',
+              path: '/administration/gestion-financiere/revenus',
               children: [],
             },
           ],

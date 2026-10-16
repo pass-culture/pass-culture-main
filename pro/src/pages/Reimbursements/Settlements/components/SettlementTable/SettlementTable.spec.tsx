@@ -209,7 +209,7 @@ describe('<SettlementTable />', () => {
     expect(replaceButton).toBeVisible()
     expect(replaceButton).toHaveAttribute(
       'href',
-      '/administration/remboursements/informations-bancaires'
+      '/administration/gestion-financiere/informations-bancaires'
     )
 
     await user.click(replaceButton)
@@ -284,7 +284,7 @@ describe('<SettlementTable />', () => {
       screen.getByRole('link', { name: 'Rattacher un compte bancaire' })
     ).toHaveAttribute(
       'href',
-      '/administration/remboursements/informations-bancaires'
+      '/administration/gestion-financiere/informations-bancaires'
     )
   })
 
@@ -294,7 +294,10 @@ describe('<SettlementTable />', () => {
     expect(screen.getByText('Aucun virement pour le moment')).toBeVisible()
     expect(
       screen.getByRole('link', { name: 'Voir mes justificatifs' })
-    ).toHaveAttribute('href', '/administration/remboursements/justificatifs')
+    ).toHaveAttribute(
+      'href',
+      '/administration/gestion-financiere/justificatifs'
+    )
   })
 
   it('does not show an empty state when there is at least one settlement and a bank account', () => {

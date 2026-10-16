@@ -30,7 +30,7 @@ const renderReimbursementBankAccount = (
   renderWithProviders(
     <Routes>
       <Route
-        path="/administration/remboursements/informations-bancaires"
+        path="/administration/gestion-financiere/informations-bancaires"
         element={
           <ReimbursementBankAccount
             bankAccount={bankAccount}
@@ -44,7 +44,7 @@ const renderReimbursementBankAccount = (
     {
       storeOverrides: {},
       initialRouterEntries: [
-        '/administration/remboursements/informations-bancaires',
+        '/administration/gestion-financiere/informations-bancaires',
       ],
       ...options,
     }
