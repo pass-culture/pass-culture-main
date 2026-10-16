@@ -96,7 +96,7 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
     collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] = pydantic.Field(
         max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
     )
-    numberOfTickets: int = pydantic.Field(ge=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
+    numberOfTickets: int = pydantic.Field(gt=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
     numberOfTeachers: int = pydantic.Field(ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
 
     @pydantic.model_validator(mode="after")
@@ -119,7 +119,7 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
     collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic.Field(
         default=None, max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
     )
-    numberOfTickets: int | None = pydantic.Field(default=None, ge=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
+    numberOfTickets: int | None = pydantic.Field(default=None, gt=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
     numberOfTeachers: int | None = pydantic.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
 
     NON_NULLABLE_FIELDS: typing.ClassVar = (
