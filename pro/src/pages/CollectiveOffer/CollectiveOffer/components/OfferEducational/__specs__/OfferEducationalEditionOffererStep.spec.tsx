@@ -13,6 +13,12 @@ import {
   type OfferEducationalProps,
 } from '../OfferEducational'
 
+// The debounced characters count would update outside act() during the slow axe check
+vi.mock('use-debounce', async () => ({
+  ...(await vi.importActual('use-debounce')),
+  useDebounce: vi.fn((value) => [value]),
+}))
+
 function renderComponent(props: OfferEducationalProps) {
   const user = sharedCurrentUserFactory()
   return renderWithProviders(<OfferEducational {...props} />, {

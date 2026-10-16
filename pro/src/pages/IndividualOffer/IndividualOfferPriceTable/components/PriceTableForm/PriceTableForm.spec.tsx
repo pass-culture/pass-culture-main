@@ -41,6 +41,12 @@ vi.mock(
   })
 )
 
+// The debounced characters count would update outside act() during the slow axe check
+vi.mock('use-debounce', async () => ({
+  ...(await vi.importActual('use-debounce')),
+  useDebounce: vi.fn((value) => [value]),
+}))
+
 const defaultSelectedPartnerVenue = makeGetVenueResponseModel({ id: 1 })
 
 const renderPriceTableForm: RenderComponentFunction<
