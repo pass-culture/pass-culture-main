@@ -16,6 +16,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import show
 from pcapi.core.cultural_outreach import models as cultural_outreach_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.permissions.models import Permissions
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
@@ -756,6 +757,17 @@ class EditOfferVenueForm(FlaskForm):
         self.venue.choices = [
             (venue.id, f"{venue.publicName} ({venue.siret if venue.siret else 'Pas de SIRET'})") for venue in venues
         ]
+
+
+class SetInstructorForm(empty_forms.DynamicForm):
+    instructor = fields.PCBOUsersSelectField(
+        "Responsable",
+        permissions=[Permissions.MANAGE_OFFER_INSTRUCTOR],
+    )
+
+
+class BatchSetInstructorForm(empty_forms.BatchForm, SetInstructorForm):
+    pass
 
 
 class EditStockForm(FlaskForm):

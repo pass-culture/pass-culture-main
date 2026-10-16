@@ -15,9 +15,10 @@ from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.users import factories as user_factory
+from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
@@ -39,7 +40,7 @@ pytestmark = [
 @pytest.fixture(scope="function", name="collective_offer_templates")
 def collective_offer_templates_fixture() -> tuple:
     collective_offer_template_1 = educational_factories.CollectiveOfferTemplateFactory(
-        author=user_factory.ProFactory(),
+        author=users_factories.ProFactory(),
         formats=[EacFormat.ATELIER_DE_PRATIQUE],
     )
     collective_offer_template_2 = educational_factories.CollectiveOfferTemplateFactory(
@@ -225,7 +226,6 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
 
     def test_list_collective_offer_templates_by_format(self, authenticated_client):
         target_format = EacFormat.CONCERT
-
         target_offer = educational_factories.CollectiveOfferTemplateFactory(formats=[target_format])
         educational_factories.CollectiveOfferTemplateFactory(formats=[EacFormat.ATELIER_DE_PRATIQUE])
 
@@ -446,7 +446,7 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
 
     def test_validate_collective_offer_template(self, legit_user, authenticated_client):
         collective_offer_template_to_validate = educational_factories.CollectiveOfferTemplateFactory(
-            validation=OfferValidationStatus.PENDING
+            validation=OfferValidationStatus.PENDING, instructors=[users_factories.UserFactory()]
         )
 
         response = self.post_to_endpoint(
@@ -470,6 +470,7 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
 
         assert collective_offer_template_to_validate.isActive is True
         assert collective_offer_template_to_validate.lastValidationType == OfferValidationType.MANUAL
+        assert collective_offer_template_to_validate.instructors == []
 
     def test_validate_collective_offer_template_with_htmx(self, legit_user, authenticated_client):
         collective_offer_template_to_validate = educational_factories.CollectiveOfferTemplateFactory(
@@ -540,7 +541,7 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
 
     def test_reject_collective_offer_template(self, legit_user, authenticated_client):
         collective_offer_template_to_reject = educational_factories.CollectiveOfferTemplateFactory(
-            validation=OfferValidationStatus.PENDING
+            validation=OfferValidationStatus.PENDING, instructors=[users_factories.UserFactory()]
         )
 
         response = self.post_to_endpoint(
@@ -566,6 +567,7 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
 
         assert collective_offer_template_to_reject.isActive is False
         assert collective_offer_template_to_reject.lastValidationType == OfferValidationType.MANUAL
+        assert collective_offer_template_to_reject.instructors == []
 
     def test_reject_collective_offer_template_with_htmx(self, legit_user, authenticated_client):
         collective_offer_template_to_reject = educational_factories.CollectiveOfferTemplateFactory(
@@ -876,3 +878,243 @@ class MoveCollectiveOfferTemplateTest(PostEndpointHelper):
         )
 
         assert response.status_code == 404
+
+
+class SetInstructorCollectiveOfferTemplateTest(PostEndpointHelper):
+    endpoint = "backoffice.collective_offer_template.set_instructor"
+    endpoint_kwargs = {"collective_offer_template_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_set_instructor_collective_offer_template(self, legit_user, authenticated_client):
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+
+        old_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING, instructors=[old_instructor]
+        )
+
+        new_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_template_id=collective_offer_template.id,
+            form={"instructor": new_instructor.id},
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice.collective_offer_template.list_collective_offer_templates")
+        assert response.location == expected_url
+
+        collective_offer_template_list_url = url_for(
+            "backoffice.collective_offer_template.list_collective_offer_templates",
+            q=collective_offer_template.id,
+        )
+        response = authenticated_client.get(collective_offer_template_list_url)
+
+        assert response.status_code == 200
+        row = html_parser.extract_table_rows(response.data)
+        assert len(row) == 1
+        assert row[0]["Responsable"] == new_instructor.full_name
+
+        assert collective_offer_template.instructors == [new_instructor]
+
+    def test_set_instructor_collective_offer_template_with_htmx(self, legit_user, authenticated_client):
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING
+        )
+
+        new_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_template_id=collective_offer_template.id,
+            form={"instructor": new_instructor.id},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(
+            response.data,
+            id=f"collective-offer-template-row-{collective_offer_template.id}",
+        )
+        assert cells[2] == str(collective_offer_template.id)
+        assert cells[6] == new_instructor.full_name
+
+        assert collective_offer_template.instructors == [new_instructor]
+
+    def test_remove_instructor_collective_offer_template(self, legit_user, authenticated_client):
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+
+        old_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING, instructors=[old_instructor]
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_template_id=collective_offer_template.id,
+            form={"instructor": ""},
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice.collective_offer_template.list_collective_offer_templates")
+        assert response.location == expected_url
+
+        collective_offer_template_list_url = url_for(
+            "backoffice.collective_offer_template.list_collective_offer_templates",
+            q=collective_offer_template.id,
+        )
+        response = authenticated_client.get(collective_offer_template_list_url)
+
+        assert response.status_code == 200
+        row = html_parser.extract_table_rows(response.data)
+        assert len(row) == 1
+        assert row[0]["Responsable"] == ""
+
+        assert collective_offer_template.instructors == []
+
+    def test_cant_set_instructor_on_non_pending_offer_template(self, legit_user, authenticated_client):
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.APPROVED
+        )
+
+        new_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_template_id=collective_offer_template.id,
+            form={"instructor": new_instructor.id},
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice.collective_offer_template.list_collective_offer_templates")
+        assert response.location == expected_url
+
+        collective_offer_template_list_url = url_for(
+            "backoffice.collective_offer_template.list_collective_offer_templates",
+            q=collective_offer_template.id,
+        )
+        response = authenticated_client.get(collective_offer_template_list_url)
+
+        assert response.status_code == 200
+        assert "Seules les offres collectives vitrines en attente peuvent avoir un responsable" in response.data.decode(
+            "utf-8"
+        )
+        row = html_parser.extract_table_rows(response.data)
+        assert len(row) == 1
+        assert row[0]["Responsable"] == ""
+
+        assert collective_offer_template.instructors == []
+
+
+class GetSetInstructorCollectiveOfferTemplateFormTest(GetEndpointHelper):
+    endpoint = "backoffice.collective_offer_template.get_set_instructor_form"
+    endpoint_kwargs = {"collective_offer_template_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_get_set_instructor_form_test(self, legit_user, authenticated_client):
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory()
+
+        form_url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
+
+        with assert_num_queries(3):  # session + collective offer template + bo users with permission
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class BatchSetInstructorCollectiveOfferTemplatesTest(PostEndpointHelper):
+    endpoint = "backoffice.collective_offer_template.batch_set_instructor"
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_batch_set_instructor_offers(self, legit_user, authenticated_client):
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+        old_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+        new_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+
+        no_instructor_template = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING
+        )
+        old_instructor_template = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING, instructors=[old_instructor]
+        )
+        collective_offer_templates = [no_instructor_template, old_instructor_template]
+
+        parameter_ids = ", ".join(
+            str(collective_offer_template.id) for collective_offer_template in collective_offer_templates
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "instructor": new_instructor.id,
+            },
+            headers={"hx-request": "true"},
+        )
+
+        for collective_offer_template in collective_offer_templates:
+            db.session.refresh(collective_offer_template)
+            assert collective_offer_template.instructors == [new_instructor]
+
+            cells = html_parser.extract_plain_row(
+                response.data,
+                id=f"collective-offer-template-row-{collective_offer_template.id}",
+            )
+            assert cells[2] == str(collective_offer_template.id)
+            assert cells[6] == new_instructor.full_name
+
+    def test_batch_set_instructor_collective_offer_templates_wrong_id(self, legit_user, authenticated_client):
+        fake_offer_ids = [123, 456]
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING
+        )
+        parameter_ids = f"{str(fake_offer_ids[0])}, {str(fake_offer_ids[1])}, {collective_offer_template}"
+
+        permission = db.session.query(perm_models.Permission).filter_by(name=self.needed_permission.name).one()
+        role = perm_factories.RoleFactory(permissions=[permission])
+        new_instructor = users_factories.AdminFactory(backoffice_profile__roles=[role])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "instructor": new_instructor.id,
+            },
+        )
+
+        assert response.status_code == 200
+        assert len(response.data) == 0
+        assert collective_offer_template.instructors == []
+        collective_offer_template = (
+            db.session.query(educational_models.CollectiveOfferTemplate)
+            .filter_by(id=collective_offer_template.id)
+            .one()
+        )
+        assert collective_offer_template.instructors == []
+        non_existing_collective_offer_templates = (
+            db.session.query(educational_models.CollectiveOfferTemplate)
+            .filter(educational_models.CollectiveOfferTemplate.id.in_(fake_offer_ids))
+            .all()
+        )
+        assert len(non_existing_collective_offer_templates) == 0
+
+
+class GetBatchSetInstructorCollectiveOfferTemplatesTest(GetEndpointHelper):
+    endpoint = "backoffice.collective_offer_template.get_batch_set_instructor_form"
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_get_batch_set_instructor_form(self, legit_user, authenticated_client):
+        url = url_for(self.endpoint)
+
+        with assert_num_queries(2):  # session + bo users with permission
+            response = authenticated_client.get(url)
+            assert response.status_code == 200

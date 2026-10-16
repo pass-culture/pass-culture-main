@@ -14,6 +14,9 @@ from wtforms import validators
 
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import validation as offers_validation
+from pcapi.core.permissions import models as permissions_models
+from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils
@@ -420,6 +423,29 @@ class PCSelectField(wtforms.SelectField):
     def __init__(self, label: str | None = None, *, default_text: str = "", **kwargs: typing.Any):
         super().__init__(label, **kwargs)
         self.default_text = default_text
+
+
+class PCBOUsersSelectField(PCSelectField):
+    validators = [validators.Optional()]
+
+    def __init__(
+        self,
+        label: str | None = None,
+        permissions: list[permissions_models.Permissions] | None = None,
+        **kwargs: typing.Any,
+    ):
+        super().__init__(label, **kwargs)
+
+        bo_users = db.session.query(users_models.User).join(permissions_models.BackOfficeUserProfile)
+        if permissions:
+            permission_names = [perm.name for perm in permissions]
+            bo_users = (
+                bo_users.join(permissions_models.BackOfficeUserProfile.roles)
+                .join(permissions_models.Role.permissions)
+                .filter(permissions_models.Permission.name.in_(permission_names))
+            )
+
+        self.choices = [(bo_user.id, bo_user.full_name) for bo_user in bo_users]
 
 
 class PCLimitField(PCSelectField):
