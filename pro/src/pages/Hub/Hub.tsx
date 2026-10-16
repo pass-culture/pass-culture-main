@@ -1,7 +1,7 @@
 import { type ChangeEvent, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { type VenueListItemLiteResponseModel, VenueState } from '@/apiClient/v1'
+import { type VenueListItemResponseModel, VenueState } from '@/apiClient/v1'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -21,7 +21,7 @@ import styles from './Hub.module.scss'
 
 export const Hub = () => {
   const venuesWithNormalizedNameRef = useRef<
-    [normalizedName: string, venue: VenueListItemLiteResponseModel][]
+    [normalizedName: string, venue: VenueListItemResponseModel][]
   >([])
 
   const dispatch = useAppDispatch()

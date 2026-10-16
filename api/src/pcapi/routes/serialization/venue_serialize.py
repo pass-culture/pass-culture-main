@@ -302,24 +302,24 @@ class EditVenueBodyModel(HttpBodyModel):
     visualDisabilityCompliant: bool | None = None
 
 
-class VenueListItemLiteManagingOffererResponseModel(HttpBodyModel):
+class VenueListItemManagingOffererResponseModel(HttpBodyModel):
     id: int
     isClosed: bool
 
 
-class VenueListItemLiteResponseModel(HttpBodyModel):
+class VenueListItemResponseModel(HttpBodyModel):
     id: int
     location: address_serialize.LocationResponseModelV2
-    managingOfferer: VenueListItemLiteManagingOffererResponseModel
+    managingOfferer: VenueListItemManagingOffererResponseModel
     publicName: str
     state: offerers_models.VenueState | None
 
     @classmethod
-    def build(cls, venue: offerers_models.Venue) -> "VenueListItemLiteResponseModel":
+    def build(cls, venue: offerers_models.Venue) -> "VenueListItemResponseModel":
         return cls(
             id=venue.id,
             location=cls._build_address(venue),
-            managingOfferer=VenueListItemLiteManagingOffererResponseModel(
+            managingOfferer=VenueListItemManagingOffererResponseModel(
                 id=venue.managingOfferer.id,
                 isClosed=venue.managingOfferer.isClosed,
             ),
@@ -336,24 +336,25 @@ class VenueListItemLiteResponseModel(HttpBodyModel):
         )
 
 
-class GetVenueListLiteResponseModel(HttpBodyModel):
-    venues: list[VenueListItemLiteResponseModel]
-    venues_with_pending_validation: list[VenueListItemLiteResponseModel]
+def _sort_venue_key(venue: offerers_models.Venue) -> tuple[bool, str]:
+    return (venue.is_closed or venue.managingOfferer.isClosed, venue.publicName)
+
+
+class GetVenueListResponseModel(HttpBodyModel):
+    venues: list[VenueListItemResponseModel]
+    venues_with_pending_validation: list[VenueListItemResponseModel]
 
     @classmethod
     def build(
-        cls,
-        venues: typing.Collection[offerers_models.Venue],
-        with_pending_validation: typing.Collection[offerers_models.Venue],
-    ) -> "GetVenueListLiteResponseModel":
-        sort_key = lambda venue: (venue.is_closed or venue.managingOfferer.isClosed, venue.publicName)
-        venues = sorted(venues, key=sort_key)
-        with_pending_validation = sorted(with_pending_validation, key=sort_key)
+        cls, venues: list[offerers_models.Venue], with_pending_validation: list[offerers_models.Venue]
+    ) -> "GetVenueListResponseModel":
+        venues = sorted(venues, key=_sort_venue_key)
+        with_pending_validation = sorted(with_pending_validation, key=_sort_venue_key)
 
         return cls(
-            venues=[VenueListItemLiteResponseModel.build(venue) for venue in venues],
+            venues=[VenueListItemResponseModel.build(venue) for venue in venues],
             venues_with_pending_validation=[
-                VenueListItemLiteResponseModel.build(venue) for venue in with_pending_validation
+                VenueListItemResponseModel.build(venue) for venue in with_pending_validation
             ],
         )
 

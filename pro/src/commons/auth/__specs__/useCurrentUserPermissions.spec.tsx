@@ -13,7 +13,7 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
+  makeVenueListItemResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 
 import { useCurrentUserPermissions } from '../useCurrentUserPermissions'
@@ -38,7 +38,7 @@ describe('useCurrentUserPermissions', () => {
     id: fakeVenueId,
     isOnboarded: false,
   })
-  const fakeVenueLite = makeVenueListItemLiteResponseModel({ id: fakeVenueId })
+  const fakeVenueLite = makeVenueListItemResponseModel({ id: fakeVenueId })
 
   it('should refresh permissions when the user slice state changes changes', () => {
     const initialUserSliceState = makeUserSliceState({

@@ -4,7 +4,7 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/compat'
-import { type VenueListItemLiteResponseModel, VenueState } from '@/apiClient/v1'
+import { type VenueListItemResponseModel, VenueState } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
@@ -12,7 +12,7 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
+  makeVenueListItemResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
@@ -32,7 +32,7 @@ vi.mock('@/apiClient/api', () => ({
 const renderHub: RenderComponentFunction<
   void,
   void,
-  { venues: VenueListItemLiteResponseModel[] | null }
+  { venues: VenueListItemResponseModel[] | null }
 > = ({ venues }) => {
   return renderWithProviders(<Hub />, {
     storeOverrides: {
@@ -53,7 +53,7 @@ const renderHub: RenderComponentFunction<
 
 describe('Hub', () => {
   const venuesBase = [
-    makeVenueListItemLiteResponseModel({
+    makeVenueListItemResponseModel({
       id: 101,
       publicName: 'Théâtre du Soleil',
       managingOfferer: {
@@ -61,7 +61,7 @@ describe('Hub', () => {
         isClosed: false,
       },
     }),
-    makeVenueListItemLiteResponseModel({
+    makeVenueListItemResponseModel({
       id: 102,
       publicName: 'Café des Arts',
       managingOfferer: {
@@ -69,7 +69,7 @@ describe('Hub', () => {
         isClosed: false,
       },
     }),
-    makeVenueListItemLiteResponseModel({
+    makeVenueListItemResponseModel({
       id: 201,
       publicName: 'Cinéma Lumière',
       managingOfferer: {
@@ -81,7 +81,7 @@ describe('Hub', () => {
 
   const venuesWithMoreThanFour = [
     ...venuesBase,
-    makeVenueListItemLiteResponseModel({
+    makeVenueListItemResponseModel({
       id: 202,
       publicName: 'Musée National',
       managingOfferer: {
@@ -89,7 +89,7 @@ describe('Hub', () => {
         isClosed: false,
       },
     }),
-    makeVenueListItemLiteResponseModel({
+    makeVenueListItemResponseModel({
       id: 203,
       publicName: 'Galerie Moderne',
       managingOfferer: {
@@ -125,7 +125,7 @@ describe('Hub', () => {
   it('should display closed venues', () => {
     renderHub({
       venues: [
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 101,
           publicName: 'Venue ouverte 1',
           managingOfferer: {
@@ -134,7 +134,7 @@ describe('Hub', () => {
           },
           state: null,
         }),
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 102,
           publicName: 'Venue fermée',
           managingOfferer: {
@@ -151,7 +151,7 @@ describe('Hub', () => {
 
   it('should display venue address', () => {
     const venuesWithLocation = [
-      makeVenueListItemLiteResponseModel({
+      makeVenueListItemResponseModel({
         id: 101,
         publicName: 'Nom public de la structure avec localisation',
         managingOfferer: {

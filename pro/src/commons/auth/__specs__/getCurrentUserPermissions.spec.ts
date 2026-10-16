@@ -6,7 +6,7 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
+  makeVenueListItemResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 import { COOKIES } from '@/commons/utils/localStorageManager'
 
@@ -87,7 +87,7 @@ describe('getCurrentUserPermissions', () => {
     })
 
     describe('with venues', () => {
-      const fakeVenue = makeVenueListItemLiteResponseModel({ id: 1 })
+      const fakeVenue = makeVenueListItemResponseModel({ id: 1 })
       const fakeVenues = [fakeVenue]
 
       it('should return hasVenues as true', () => {

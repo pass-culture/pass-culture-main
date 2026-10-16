@@ -1427,3 +1427,41 @@ def get_open_to_public_venues_by_ids(
 
     stmt = stmt.order_by(offerers_models.Venue.id.asc())
     return list(db.session.scalars(stmt).unique().all())
+
+
+def get_venues_by_offerer_status(user_id: int) -> tuple[list[models.Venue], list[models.Venue]]:
+    query = (
+        db.session.query(models.UserOfferer)
+        .join(models.UserOfferer.offerer)
+        .filter(
+            models.UserOfferer.userId == user_id,
+            models.Offerer.isActive.is_(True),
+            sa.or_(
+                models.UserOfferer.isWaitingForValidation,
+                models.UserOfferer.isValidated,
+            ),
+            sa.or_(
+                models.Offerer.isWaitingForValidation,
+                models.Offerer.isValidated,
+                models.Offerer.isClosed,
+            ),
+        )
+        .options(
+            sa_orm.joinedload(models.UserOfferer.offerer)
+            .selectinload(models.Offerer.managedVenues)
+            .joinedload(models.Venue.offererAddress)
+            .joinedload(models.OffererAddress.address)
+        )
+    )
+
+    with_pending_validation: list[models.Venue] = []
+    without_pending_validation: list[models.Venue] = []
+    for user_offerer in query:
+        venues = (venue for venue in user_offerer.offerer.managedVenues if not venue.isSoftDeleted)
+
+        if user_offerer.isWaitingForValidation:
+            with_pending_validation.extend(venues)
+        else:
+            without_pending_validation.extend(venues)
+
+    return with_pending_validation, without_pending_validation

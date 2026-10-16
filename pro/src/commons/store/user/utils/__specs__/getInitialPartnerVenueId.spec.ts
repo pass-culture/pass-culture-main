@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
+import type { VenueListItemResponseModel } from '@/apiClient/v1'
 import { getInitialPartnerVenueId } from '@/commons/store/user/utils/getInitialPartnerVenueId'
-import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
+import { makeVenueListItemResponseModel } from '@/commons/utils/factories/venueFactories'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 describe('getInitialPartnerVenueId', () => {
@@ -14,11 +14,11 @@ describe('getInitialPartnerVenueId', () => {
       window.history.pushState({}, '', '/?venue=10')
 
       const venues = [
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 10,
           managingOfferer: { id: 1, isClosed: false },
         }),
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 20,
           managingOfferer: { id: 2, isClosed: false },
         }),
@@ -32,11 +32,11 @@ describe('getInitialPartnerVenueId', () => {
   describe('Priority 2: first venue of a newly associated offerer', () => {
     it('should return the venue ID when new offerer has exactly one venue', () => {
       const venues = [
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 10,
           managingOfferer: { id: 1, isClosed: false },
         }),
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 20,
           managingOfferer: { id: 2, isClosed: false },
         }),
@@ -49,15 +49,15 @@ describe('getInitialPartnerVenueId', () => {
 
     it('should return null when new offerer has multiple venues', () => {
       const venues = [
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 10,
           managingOfferer: { id: 1, isClosed: false },
         }),
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 20,
           managingOfferer: { id: 2, isClosed: false },
         }),
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 30,
           managingOfferer: { id: 2, isClosed: false },
         }),
@@ -70,7 +70,7 @@ describe('getInitialPartnerVenueId', () => {
 
     it('should return null when no venue matches the new offerer', () => {
       const venues = [
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 10,
           managingOfferer: { id: 1, isClosed: false },
         }),
@@ -85,11 +85,11 @@ describe('getInitialPartnerVenueId', () => {
       localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '10')
 
       const venues = [
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 10,
           managingOfferer: { id: 1, isClosed: false },
         }),
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 20,
           managingOfferer: { id: 2, isClosed: false },
         }),
@@ -104,15 +104,15 @@ describe('getInitialPartnerVenueId', () => {
       localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '10')
 
       const venues = [
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 10,
           managingOfferer: { id: 1, isClosed: false },
         }),
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 20,
           managingOfferer: { id: 2, isClosed: false },
         }),
-        makeVenueListItemLiteResponseModel({
+        makeVenueListItemResponseModel({
           id: 30,
           managingOfferer: { id: 2, isClosed: false },
         }),
@@ -129,8 +129,8 @@ describe('getInitialPartnerVenueId', () => {
       localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '123')
 
       const venues = [
-        makeVenueListItemLiteResponseModel({ id: 123 }),
-        makeVenueListItemLiteResponseModel({ id: 456 }),
+        makeVenueListItemResponseModel({ id: 123 }),
+        makeVenueListItemResponseModel({ id: 456 }),
       ]
 
       const result = getInitialPartnerVenueId(venues)
@@ -142,8 +142,8 @@ describe('getInitialPartnerVenueId', () => {
       localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '999')
 
       const venues = [
-        makeVenueListItemLiteResponseModel({ id: 123 }),
-        makeVenueListItemLiteResponseModel({ id: 456 }),
+        makeVenueListItemResponseModel({ id: 123 }),
+        makeVenueListItemResponseModel({ id: 456 }),
       ]
 
       const result = getInitialPartnerVenueId(venues)
@@ -154,7 +154,7 @@ describe('getInitialPartnerVenueId', () => {
     it('should ignore invalid venue ID from local storage', () => {
       localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, 'invalid')
 
-      const venues = [makeVenueListItemLiteResponseModel({ id: 123 })]
+      const venues = [makeVenueListItemResponseModel({ id: 123 })]
 
       const result = getInitialPartnerVenueId(venues)
 
@@ -164,7 +164,7 @@ describe('getInitialPartnerVenueId', () => {
 
   describe('Priority 4: single venue auto-selection', () => {
     it('should return the only venue ID when user has exactly one venue', () => {
-      const venues = [makeVenueListItemLiteResponseModel({ id: 789 })]
+      const venues = [makeVenueListItemResponseModel({ id: 789 })]
 
       const result = getInitialPartnerVenueId(venues)
 
@@ -173,8 +173,8 @@ describe('getInitialPartnerVenueId', () => {
 
     it('should return null when user has multiple venues', () => {
       const venues = [
-        makeVenueListItemLiteResponseModel({ id: 123 }),
-        makeVenueListItemLiteResponseModel({ id: 456 }),
+        makeVenueListItemResponseModel({ id: 123 }),
+        makeVenueListItemResponseModel({ id: 456 }),
       ]
 
       const result = getInitialPartnerVenueId(venues)
@@ -185,7 +185,7 @@ describe('getInitialPartnerVenueId', () => {
 
   describe('Priority 5: no venue selection', () => {
     it('should return null when user has no venues', () => {
-      const venues: VenueListItemLiteResponseModel[] = []
+      const venues: VenueListItemResponseModel[] = []
 
       const result = getInitialPartnerVenueId(venues)
 

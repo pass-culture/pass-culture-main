@@ -3301,17 +3301,17 @@ export type GetVenueDomainResponseModel = {
 };
 
 /**
- * GetVenueListLiteResponseModel
+ * GetVenueListResponseModel
  */
-export type GetVenueListLiteResponseModel = {
+export type GetVenueListResponseModel = {
     /**
      * Venues
      */
-    venues: Array<VenueListItemLiteResponseModel>;
+    venues: Array<VenueListItemResponseModel>;
     /**
      * Venueswithpendingvalidation
      */
-    venuesWithPendingValidation: Array<VenueListItemLiteResponseModel>;
+    venuesWithPendingValidation: Array<VenueListItemResponseModel>;
 };
 
 /**
@@ -6948,9 +6948,9 @@ export type VenueDailyViewModel = {
 };
 
 /**
- * VenueListItemLiteManagingOffererResponseModel
+ * VenueListItemManagingOffererResponseModel
  */
-export type VenueListItemLiteManagingOffererResponseModel = {
+export type VenueListItemManagingOffererResponseModel = {
     /**
      * Id
      */
@@ -6962,15 +6962,15 @@ export type VenueListItemLiteManagingOffererResponseModel = {
 };
 
 /**
- * VenueListItemLiteResponseModel
+ * VenueListItemResponseModel
  */
-export type VenueListItemLiteResponseModel = {
+export type VenueListItemResponseModel = {
     /**
      * Id
      */
     id: number;
     location: LocationResponseModelV2;
-    managingOfferer: VenueListItemLiteManagingOffererResponseModel;
+    managingOfferer: VenueListItemManagingOffererResponseModel;
     /**
      * Publicname
      */
@@ -9218,35 +9218,6 @@ export type getHighlightsResponses = {
 
 export type getHighlightsResponse = getHighlightsResponses[keyof getHighlightsResponses];
 
-export type getLiteVenuesData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/lite/venues';
-};
-
-export type getLiteVenuesErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getLiteVenuesError = getLiteVenuesErrors[keyof getLiteVenuesErrors];
-
-export type getLiteVenuesResponses = {
-    /**
-     * OK
-     */
-    200: GetVenueListLiteResponseModel;
-};
-
-export type getLiteVenuesResponse = getLiteVenuesResponses[keyof getLiteVenuesResponses];
-
 export type postOfferersData = {
     body: CreateOffererBodyModel;
     path?: never;
@@ -11355,6 +11326,35 @@ export type putVenueProvidersByVenueProviderIdResponses = {
 };
 
 export type putVenueProvidersByVenueProviderIdResponse = putVenueProvidersByVenueProviderIdResponses[keyof putVenueProvidersByVenueProviderIdResponses];
+
+export type getVenuesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/venues';
+};
+
+export type getVenuesErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getVenuesError = getVenuesErrors[keyof getVenuesErrors];
+
+export type getVenuesResponses = {
+    /**
+     * OK
+     */
+    200: GetVenueListResponseModel;
+};
+
+export type getVenuesResponse = getVenuesResponses[keyof getVenuesResponses];
 
 export type getVenuesEducationalStatusesData = {
     body?: never;

@@ -3,7 +3,7 @@ import { configureTestStore } from '@/commons/store/testUtils'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
+  makeVenueListItemResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 
 import { getUserDefaultPath } from '../getUserDefaultPath'
@@ -21,7 +21,7 @@ const setupStore = ({
   hasVenueSelected?: boolean
   hasVenue?: boolean
 }) => {
-  const fakeVenue = makeVenueListItemLiteResponseModel({
+  const fakeVenue = makeVenueListItemResponseModel({
     id: 101,
     managingOffererId: 100,
     name: 'Digital Venue A1',

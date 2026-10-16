@@ -1,7 +1,7 @@
 import {
   type GetOffererVenueResponseModel,
   type GetVenueResponseModel,
-  type VenueListItemLiteResponseModel,
+  type VenueListItemResponseModel,
   VenueState,
 } from '@/apiClient/v1'
 
@@ -12,8 +12,8 @@ export function withVenueHelpers(
   fullAddressAsString: string | null
 }
 export function withVenueHelpers(
-  venue: VenueListItemLiteResponseModel
-): VenueListItemLiteResponseModel & {
+  venue: VenueListItemResponseModel
+): VenueListItemResponseModel & {
   isClosed: boolean
   fullAddressAsString: string
 }
@@ -25,7 +25,7 @@ export function withVenueHelpers(
 export function withVenueHelpers(
   venue:
     | GetVenueResponseModel
-    | VenueListItemLiteResponseModel
+    | VenueListItemResponseModel
     | GetOffererVenueResponseModel
 ) {
   if (!('location' in venue)) {

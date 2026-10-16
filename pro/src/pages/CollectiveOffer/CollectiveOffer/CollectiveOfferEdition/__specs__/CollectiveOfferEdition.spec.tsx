@@ -10,7 +10,7 @@ import {
 } from '@/commons/utils/factories/userOfferersFactories'
 import {
   makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
+  makeVenueListItemResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -36,9 +36,7 @@ const renderCollectiveOfferEdition = (
         selectedPartnerVenue: makeGetVenueResponseModel({
           id: props.offer.venue.id,
         }),
-        venues: [
-          makeVenueListItemLiteResponseModel({ id: props.offer.venue.id }),
-        ],
+        venues: [makeVenueListItemResponseModel({ id: props.offer.venue.id })],
       },
     },
   })

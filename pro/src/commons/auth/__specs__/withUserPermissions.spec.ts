@@ -6,7 +6,7 @@ import { configureTestStore } from '@/commons/store/testUtils'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
+  makeVenueListItemResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 
 import type { UserPermissions } from '../types'
@@ -38,7 +38,7 @@ const setupStore = (options: {
         : null,
       venues: options.hasVenue
         ? [
-            makeVenueListItemLiteResponseModel({
+            makeVenueListItemResponseModel({
               id: 3,
               managingOffererId: 1,
               name: 'Digital Venue A1',
