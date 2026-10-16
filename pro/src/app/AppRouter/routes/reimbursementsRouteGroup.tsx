@@ -19,6 +19,7 @@ export const reimbursementsRouteGroup: CustomRouteGroup = {
         ),
       handle: {
         title: 'Gestion financière - justificatifs',
+        mainTitle: 'Gestion financière',
       },
     },
     {
@@ -26,6 +27,7 @@ export const reimbursementsRouteGroup: CustomRouteGroup = {
       lazy: () => import('@/pages/Reimbursements/Settlements/Settlements'),
       handle: {
         title: 'Gestion financière',
+        mainTitle: 'Gestion financière',
       },
       featureName: 'WIP_ENABLE_FINANCE_SETTLEMENTS',
     },
@@ -40,6 +42,7 @@ export const reimbursementsRouteGroup: CustomRouteGroup = {
         import('@/pages/Reimbursements/BankInformations/BankInformations'),
       handle: {
         title: 'Informations bancaires',
+        mainTitle: 'Gestion financière',
       },
     },
     {
@@ -47,6 +50,7 @@ export const reimbursementsRouteGroup: CustomRouteGroup = {
       lazy: () => import('@/pages/Reimbursements/Income/Income'),
       handle: {
         title: 'Chiffre d’affaires',
+        mainTitle: 'Gestion financière',
       },
     },
   ],
