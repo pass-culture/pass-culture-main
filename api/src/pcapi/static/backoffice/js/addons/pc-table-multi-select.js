@@ -83,11 +83,13 @@ addonList.push(
       this.refreshState()
       EventHandler.on(document.body, 'click', PcTableMultiSelect.CHECKBOXES_SELECTOR, this.#onCheckboxClick)
       EventHandler.on(document.body, 'click', PcTableMultiSelect.CHECKBOX_ALL_SELECTOR, this.#onCheckboxAllClick)
+      EventHandler.on(document.body,'hide.bs.tab', this.#onTabHide)
     }
 
     unbindEvents = () => {
       EventHandler.off(document.body, 'click', PcTableMultiSelect.CHECKBOXES_SELECTOR, this.#onCheckboxClick)
       EventHandler.off(document.body, 'click', PcTableMultiSelect.CHECKBOX_ALL_SELECTOR, this.#onCheckboxAllClick)
+      EventHandler.off(document.body, 'hide.bs.tab', this.#onTabHide)
     }
 
     #getTableFromTableMultiSelectId(tableMultiSelectId) {
@@ -155,6 +157,14 @@ addonList.push(
       }
 
       this.#emitChangeEvent($table)
+    }
+
+    #onTabHide = (event) => {
+      const $pane = document.querySelector(event.target.dataset.bsTarget)
+      if (!$pane) {
+        return
+      }
+      $pane.querySelectorAll(PcTableMultiSelect.TABLES_SELECTOR).forEach(($table) => this.batchSelect($table, false))
     }
 
     batchSelect = ($table, checked) => {
