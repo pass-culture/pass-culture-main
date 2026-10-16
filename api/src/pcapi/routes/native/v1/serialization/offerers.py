@@ -1,17 +1,11 @@
-import datetime
 import logging
-import textwrap
 import typing
 
-import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.offerers import schemas as offerers_schemas
-from pcapi.core.offers import models as offers_models
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.utils import phone_number as phone_number_utils
 
 
@@ -123,43 +117,3 @@ class VenueResponse(BaseModel):
     class Config:
         orm_mode = True
         getter_dict = VenueResponseGetterDict
-
-
-# TODO: DELETE when native advices deleted
-class VenueProAdviceQuery(HttpQueryParamsModel):
-    max_content_length: int | None = pydantic_v2.Field(default=None, gt=0)
-    page: int = pydantic_v2.Field(default=1, gt=0)
-    results_per_page: int = pydantic_v2.Field(default=20, gt=0)
-
-
-# TODO: DELETE when native advices deleted
-class VenueProAdvice(HttpBodyModel):
-    author: str | None = None
-    content: str
-    offer_id: int
-    offer_name: str
-    offer_category_label: str
-    offer_thumb_url: str | None = None
-    publication_datetime: datetime.datetime
-
-    @classmethod
-    def build(cls, pro_advice: offers_models.ProAdvice, max_content_length: int | None) -> "VenueProAdvice":
-        content = pro_advice.content
-        if max_content_length:
-            content = textwrap.shorten(content, width=max_content_length, placeholder="…")
-
-        return cls(
-            author=pro_advice.author,
-            content=content,
-            offer_id=pro_advice.offer.id,
-            offer_name=pro_advice.offer.name,
-            offer_category_label=pro_advice.offer.subcategory.app_label,
-            offer_thumb_url=pro_advice.offer.thumbUrl,
-            publication_datetime=pro_advice.updatedAt,
-        )
-
-
-# TODO: DELETE when native advices deleted
-class VenueProAdvices(HttpBodyModel):
-    pro_advices: list[VenueProAdvice]
-    nb_results: int
