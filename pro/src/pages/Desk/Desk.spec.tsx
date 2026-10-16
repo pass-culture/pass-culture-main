@@ -111,11 +111,14 @@ describe('Desk', () => {
   })
 
   describe('when the selected venue is closed', () => {
-    it('disables the submit button', () => {
+    it('disables the submit button and the input', () => {
       renderDesk({ state: VenueState.CLOSED })
 
       expect(
         screen.getByRole('button', { name: 'Valider la contremarque' })
+      ).toBeDisabled()
+      expect(
+        screen.getByRole('textbox', { name: 'Contremarque' })
       ).toBeDisabled()
     })
   })

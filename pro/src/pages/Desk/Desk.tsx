@@ -166,6 +166,7 @@ export const Desk = () => {
                 requiredIndicator="explicit"
                 error={errors?.token?.message}
                 id={textInputId}
+                disabled={isClosed}
               />
 
               {booking && <BookingDetails booking={booking} />}
