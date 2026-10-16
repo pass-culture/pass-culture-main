@@ -6846,8 +6846,8 @@
                     "numberOfTickets": {
                         "description": "Number of students for your collective offer",
                         "example": 10,
+                        "exclusiveMinimum": 0,
                         "maximum": 3000,
-                        "minimum": 0,
                         "nullable": true,
                         "title": "Numberoftickets",
                         "type": "integer"
@@ -7123,8 +7123,8 @@
                     "numberOfTickets": {
                         "description": "Number of students for your collective offer",
                         "example": 10,
+                        "exclusiveMinimum": 0,
                         "maximum": 3000,
-                        "minimum": 0,
                         "title": "Numberoftickets",
                         "type": "integer"
                     },

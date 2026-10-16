@@ -384,7 +384,7 @@ class _FIELDS:
     COLLECTIVE_OFFER_NB_OF_TICKETS_WITH_VALIDATION = Field(
         example=10,
         description="Number of students for your collective offer",
-        ge=0,
+        gt=0,
         le=settings.EAC_NUMBER_OF_TICKETS_LIMIT,
     )
     COLLECTIVE_OFFER_NB_OF_TEACHERS = Field(

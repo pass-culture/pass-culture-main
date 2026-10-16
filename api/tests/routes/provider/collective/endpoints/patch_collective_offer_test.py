@@ -65,6 +65,8 @@ PRICE_TOO_HIGH_ERROR = {"global": ["Le prix total est trop élevé."]}
 
 PRICE_NOT_EDITABLE_ERROR = {"global": ["Le prix total ne peut pas être édité."]}
 
+NUMBER_OF_TICKETS_TOO_LOW_ERROR = {"numberOfTickets": ["ensure this value is greater than 0"]}
+
 time_travel_str = "2021-10-01 15:00:00"
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -997,6 +999,16 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             (
                 {"servicePrice": -10},
                 {"servicePrice": ["ensure this value is greater than or equal to 0"]},
+            ),
+            # numberOfTickets too low
+            (
+                {"numberOfTickets": -1},
+                NUMBER_OF_TICKETS_TOO_LOW_ERROR,
+            ),
+            # numberOfTickets too low
+            (
+                {"numberOfTickets": 0},
+                NUMBER_OF_TICKETS_TOO_LOW_ERROR,
             ),
         ),
     )
