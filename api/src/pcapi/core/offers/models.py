@@ -793,6 +793,12 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         ),
         nullable=True,
     )
+    instructorId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True
+    )
+    instructor: sa_orm.Mapped["User | None"] = sa_orm.relationship(
+        "User", back_populates="instructedOffers", foreign_keys=[instructorId]
+    )
     isDuo: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, server_default=sa.false(), default=False, nullable=False
     )

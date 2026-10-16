@@ -462,6 +462,7 @@ class OfferDetailsActionType(enum.StrEnum):
     VALIDATE = enum.auto()
     PENDING = enum.auto()
     REJECT = enum.auto()
+    SET_INSTRUCTOR = enum.auto()
     TAG_WEIGHT = enum.auto()
     RESYNC = enum.auto()
     EDIT_VENUE = enum.auto()
@@ -768,6 +769,11 @@ def _get_offers_by_ids(
                 .load_only(geography_models.Address.departmentCode),
             ),
             sa_orm.joinedload(offers_models.Offer.author).load_only(
+                users_models.User.id,
+                users_models.User.firstName,
+                users_models.User.lastName,
+            ),
+            sa_orm.joinedload(offers_models.Offer.instructor).load_only(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
@@ -1553,6 +1559,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             offer.lastValidationDate = date_utils.get_naive_utc_now()
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
+            offer.instructorId = None
 
             is_not_a_future_offer = (
                 offer.publicationDatetime is None or offer.publicationDatetime <= datetime.datetime.now(datetime.UTC)
@@ -1601,6 +1608,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             offer.lastValidationDate = date_utils.get_naive_utc_now()
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
+            offer.instructorId = None
             offer.publicationDatetime = None
 
             # cancel_bookings_from_rejected_offer can raise handled exceptions that drop the
@@ -1655,6 +1663,132 @@ def _batch_pending_offers(offer_ids: list[int]) -> None:
     )
 
 
+@list_offers_blueprint.route("/<int:offer_id>/instructor", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR)
+def get_set_instructor_form(offer_id: int) -> response_utils.BackofficeResponse:
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
+    if not offer:
+        raise NotFound()
+
+    form = forms.SetInstructorForm(request_utils.get_query_params())
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id=f"#offer-row-{offer_id}",
+        form=form,
+        dst=url_for("backoffice.offer.set_instructor", offer_id=offer.id, origin=request.args.get("origin")),
+        div_id=f"set-instructor-modal-{offer.id}",
+        title=f"Voulez-vous attribuer un responsable à {offer.name} ?",
+        button_text="Attribuer",
+        ajax_submit=not form.redirect.data,
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/instructor", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR)
+def set_instructor(offer_id: int) -> response_utils.BackofficeResponse:
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
+    if not offer:
+        raise NotFound()
+    form = forms.SetInstructorForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash("Le formulaire n'est pas valide", "warning")
+        return request_utils.safe_redirect_back(request, code=400)
+
+    _set_instructor([offer_id], form.instructor.data[0])
+
+    if request_utils.is_request_from_htmx():
+        return _render_offer_rows([offer_id])
+    return request_utils.safe_redirect_back(request, url_for("backoffice.offer.list_offers"))
+
+
+@list_offers_blueprint.route("/batch/instructor", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR)
+def get_batch_set_instructor_form() -> response_utils.BackofficeResponse:
+    form = forms.BatchSetInstructorForm()
+    if form.object_ids.data:
+        if not form.validate():
+            mark_transaction_as_invalid()
+            flash(response_utils.build_form_error_msg(form), "warning")
+            return request_utils.safe_redirect_back(request, code=400)
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id="#offers-table",
+        form=form,
+        dst=url_for("backoffice.offer.batch_set_instructor", origin=request.args.get("origin")),
+        div_id="batch-set-instructor-modal",
+        title="Voulez-vous attribuer un responsable aux offres sélectionnées ?",
+        button_text="Attribuer",
+    )
+
+
+@list_offers_blueprint.route("/batch-instructor", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR)
+def batch_set_instructor() -> response_utils.BackofficeResponse:
+    form = forms.BatchSetInstructorForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return request_utils.safe_redirect_back(request, code=400)
+
+    _set_instructor(form.object_ids_list, form.instructor.data[0])
+
+    return _render_offer_rows(form.object_ids_list)
+
+
+def _set_instructor(
+    offer_ids: list[int],
+    instructor_data: str,
+) -> bool:
+    offers = (
+        db.session.query(offers_models.Offer)
+        .filter(
+            offers_models.Offer.id.in_(offer_ids),
+            offers_models.Offer.validation == OfferValidationStatus.PENDING,
+        )
+        .all()
+    )
+
+    if len(offer_ids) != len(offers):
+        flash(("Seules les offres en attente peuvent avoir un responsable"), "warning")
+        return False
+
+    if len(instructor_data) == 0:
+        instructor = None
+    else:
+        instructor = (
+            db.session.query(users_models.User).filter(users_models.User.id == int(instructor_data)).one_or_none()
+        )
+        if instructor is None:
+            raise NotFound()
+
+    for offer in offers:
+        offer.instructor = instructor
+
+    if instructor:
+        flash(
+            (
+                f"{instructor.full_name} est maintenant responsable de l'offre"
+                if len(offer_ids) == 1
+                else f"{instructor.full_name} est maintenant responsable de ces offres"
+            ),
+            "success",
+        )
+    else:
+        flash(
+            (
+                "Vous avez supprimé le responsable de cette offre"
+                if len(offer_ids) == 1
+                else "Vous avez supprimé le responsable de ces offres"
+            ),
+            "success",
+        )
+
+    return True
+
+
 def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> DetailsActions:
     offer_details_actions = DetailsActions(OfferDetailsActionType, threshold=threshold)
     if offer.isActive and access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
@@ -1665,6 +1799,8 @@ def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> De
         offer_details_actions.add_action(OfferDetailsActionType.VALIDATE)
         offer_details_actions.add_action(OfferDetailsActionType.PENDING)
         offer_details_actions.add_action(OfferDetailsActionType.REJECT)
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR):
+        offer_details_actions.add_action(OfferDetailsActionType.SET_INSTRUCTOR)
     if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS):
         offer_details_actions.add_action(OfferDetailsActionType.TAG_WEIGHT)
     if access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):

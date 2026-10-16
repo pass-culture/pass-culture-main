@@ -20,6 +20,9 @@
     {{ action_bar_button("hand-thumbs-up", "Valider", modal_id="#validate-collective-offer-template-modal-" + collective_offer_template.id|string) }}
     {{ action_bar_button("hand-thumbs-down", "Rejeter", modal_id="#reject-collective-offer-template-modal-" + collective_offer_template.id|string) }}
   {% endif %}
+  {% if has_permission("MANAGE_OFFER_INSTRUCTOR") %}
+    {{ action_bar_button("person-add", "Attribuer un responsable", modal_id="#set-instructor-modal-" + collective_offer_template.id|string) }}
+  {% endif %}
   {% if has_permission("MOVE_COLLECTIVE_OFFER") %}
     {{ action_bar_button("shop", "Déplacer l'offre vitrine", modal_id="#move-collective-offer-template-modal") }}
   {% endif %}
@@ -180,12 +183,20 @@
         {{ collective_offer_template.lastValidationAuthor.full_name }}
       {% endcall %}
     {% endif %}
+    {% if collective_offer_template.instructor %}
+      {% call description_detail_vertical("Responsable") %}
+        {{ collective_offer_template.instructor.full_name }}
+      {% endcall %}
+    {% endif %}
   </div>
 {% endblock side_column %}
 {% block extra_main_content %}
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     {{ build_lazy_modal(url_for('backoffice.collective_offer_template.get_validate_collective_offer_template_form', collective_offer_template_id=collective_offer_template.id) , "validate-collective-offer-template-modal-" + collective_offer_template.id|string) }}
     {{ build_lazy_modal(url_for('backoffice.collective_offer_template.get_reject_collective_offer_template_form', collective_offer_template_id=collective_offer_template.id) , "reject-collective-offer-template-modal-" + collective_offer_template.id|string) }}
+  {% endif %}
+  {% if has_permission("MANAGE_OFFER_INSTRUCTOR") %}
+    {{ build_lazy_modal(url_for('backoffice.collective_offer_template.get_set_instructor_form', collective_offer_template_id=collective_offer_template.id) , "set-instructor-modal-" + collective_offer_template.id|string) }}
   {% endif %}
   {% if has_permission("MOVE_COLLECTIVE_OFFER") %}
     {{ build_lazy_modal(url_for('backoffice.collective_offer_template.get_move_collective_offer_template_form', collective_offer_template_id=collective_offer_template.id) , "move-collective-offer-template-modal") }}

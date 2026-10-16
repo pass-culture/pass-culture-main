@@ -422,6 +422,20 @@ class BatchRejectCollectiveOfferForm(empty_forms.BatchForm, RejectCollectiveOffe
     pass
 
 
+class SetInstructorForm(FlaskForm):
+    instructor = fields.PCTomSelectField(
+        "Responsable",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice.autocomplete_bo_users",
+    )
+
+
+class BatchSetInstructorForm(empty_forms.BatchForm, SetInstructorForm):
+    pass
+
+
 class MoveCollectiveOfferForm(FlaskForm):
     venue = fields.PCTomSelectField(
         "Partenaire culturel vers lequel transférer l'offre",

@@ -1089,7 +1089,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
 
     def test_validate_collective_offer(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.CollectiveOfferFactory(
-            validation=OfferValidationStatus.PENDING
+            validation=OfferValidationStatus.PENDING, instructor=users_factories.UserFactory()
         )
 
         response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
@@ -1108,6 +1108,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_validate.isActive is True
         assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
         assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+        assert collective_offer_to_validate.instructor is None
 
     def test_validate_collective_offer_with_htmx(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.CollectiveOfferFactory(
@@ -1125,7 +1126,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
             id=f"collective-offer-row-{collective_offer_to_validate.id}",
         )
         assert cells[2] == str(collective_offer_to_validate.id)
-        assert cells[6] == "Validée"
+        assert cells[7] == "Validée"
 
     @pytest.mark.usefixtures("clean_database")
     def test_validate_collective_offer_with_institution_validated(self, legit_user, authenticated_client):
@@ -1315,7 +1316,7 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
 
     def test_reject_collective_offer(self, legit_user, authenticated_client):
         collective_offer_to_reject = educational_factories.CollectiveOfferFactory(
-            validation=OfferValidationStatus.PENDING
+            validation=OfferValidationStatus.PENDING, instructor=users_factories.UserFactory()
         )
 
         response = self.post_to_endpoint(
@@ -1341,6 +1342,7 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
         assert (
             collective_offer_to_reject.rejectionReason == educational_models.CollectiveOfferRejectionReason.WRONG_PRICE
         )
+        assert collective_offer_to_reject.instructor is None
 
     def test_reject_collective_offer_with_htmx(self, legit_user, authenticated_client):
         collective_offer_to_reject = educational_factories.CollectiveOfferFactory(
@@ -1357,7 +1359,7 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
 
         cells = html_parser.extract_plain_row(response.data, id=f"collective-offer-row-{collective_offer_to_reject.id}")
         assert cells[2] == str(collective_offer_to_reject.id)
-        assert cells[6] == "Rejetée Tarif erroné"
+        assert cells[7] == "Rejetée Tarif erroné"
 
     def test_cant_reject_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_reject = educational_factories.CollectiveOfferFactory(
@@ -1429,7 +1431,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
             assert collective_offer.validation is OfferValidationStatus.APPROVED
             cells = html_parser.extract_plain_row(response.data, id=f"collective-offer-row-{collective_offer.id}")
             assert cells[2] == str(collective_offer.id)
-            assert cells[6] == "Validée"
+            assert cells[7] == "Validée"
 
         assert len(mails_testing.outbox) == 3
 
@@ -1455,10 +1457,8 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
         assert len(response.data) == 0
 
         assert collective_offer.validation == OfferValidationStatus.PENDING
-        collective_offer_template = (
-            db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer.id).one()
-        )
-        assert collective_offer_template.validation == OfferValidationStatus.PENDING
+        collective_offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer.id).one()
+        assert collective_offer.validation == OfferValidationStatus.PENDING
         non_existing_collective_offers = (
             db.session.query(educational_models.CollectiveOffer)
             .filter(educational_models.CollectiveOffer.id.in_(fake_offer_ids))
@@ -1541,7 +1541,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
             assert collective_offer.rejectionReason == reason
             cells = html_parser.extract_plain_row(response.data, id=f"collective-offer-row-{collective_offer.id}")
             assert cells[2] == str(collective_offer.id)
-            assert "Rejetée" in cells[6]
+            assert "Rejetée" in cells[7]
 
         assert len(mails_testing.outbox) == 3
 
@@ -1567,10 +1567,8 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
         assert response.status_code == 200
         assert len(response.data) == 0
         assert collective_offer.validation == OfferValidationStatus.PENDING
-        collective_offer_template = (
-            db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer.id).one()
-        )
-        assert collective_offer_template.validation == OfferValidationStatus.PENDING
+        collective_offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer.id).one()
+        assert collective_offer.validation == OfferValidationStatus.PENDING
         non_existing_collective_offers = (
             db.session.query(educational_models.CollectiveOffer)
             .filter(educational_models.CollectiveOffer.id.in_(fake_offer_ids))
@@ -2344,3 +2342,193 @@ class MoveCollectiveOfferTest(PostEndpointHelper):
         )
 
         assert response.status_code == 404
+
+
+class SetInstructorCollectiveOfferTest(PostEndpointHelper):
+    endpoint = "backoffice.collective_offer.set_instructor"
+    endpoint_kwargs = {"collective_offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_set_instructor_collective_offer(self, legit_user, authenticated_client):
+        collective_offer = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.PENDING, instructor=users_factories.UserFactory()
+        )
+        new_instructor = users_factories.UserFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_id=collective_offer.id,
+            form={"instructor": new_instructor.id},
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice.collective_offer.list_collective_offers")
+        assert response.location == expected_url
+
+        collective_offer_list_url = url_for(
+            "backoffice.collective_offer.list_collective_offers",
+            q=collective_offer.id,
+        )
+        response = authenticated_client.get(collective_offer_list_url)
+
+        assert response.status_code == 200
+
+        assert collective_offer.instructorId == new_instructor.id
+
+    def test_set_instructor_collective_offer_with_htmx(self, legit_user, authenticated_client):
+        collective_offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
+        new_instructor = users_factories.UserFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_id=collective_offer.id,
+            form={"instructor": new_instructor.id},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(
+            response.data,
+            id=f"collective-offer-row-{collective_offer.id}",
+        )
+        assert cells[2] == str(collective_offer.id)
+        assert cells[6] == new_instructor.full_name
+
+        assert collective_offer.instructorId == new_instructor.id
+
+    def test_remove_instructor_collective_offer(self, legit_user, authenticated_client):
+        collective_offer = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.PENDING, instructor=users_factories.UserFactory()
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_id=collective_offer.id,
+            form={"instructor": ""},
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice.collective_offer.list_collective_offers")
+        assert response.location == expected_url
+
+        collective_offer_list_url = url_for(
+            "backoffice.collective_offer.list_collective_offers",
+            q=collective_offer.id,
+        )
+        response = authenticated_client.get(collective_offer_list_url)
+
+        assert response.status_code == 200
+
+        assert collective_offer.instructorId is None
+
+    def test_cant_set_instructor_on_non_pending_offer(self, legit_user, authenticated_client):
+        collective_offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.APPROVED)
+        new_instructor = users_factories.UserFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_id=collective_offer.id,
+            form={"instructor": new_instructor.id},
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice.collective_offer.list_collective_offers")
+        assert response.location == expected_url
+
+        collective_offer_list_url = url_for(
+            "backoffice.collective_offer.list_collective_offers",
+            q=collective_offer.id,
+        )
+        response = authenticated_client.get(collective_offer_list_url)
+
+        assert response.status_code == 200
+        assert "Seules les offres collectives en attente peuvent avoir un responsable" in response.data.decode("utf-8")
+
+        assert collective_offer.instructorId is None
+
+
+class GetSetInstructorCollectiveOfferFormTest(GetEndpointHelper):
+    endpoint = "backoffice.collective_offer.get_set_instructor_form"
+    endpoint_kwargs = {"collective_offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_get_set_instructor_form_test(self, legit_user, authenticated_client):
+        collective_offer = educational_factories.CollectiveOfferFactory()
+
+        form_url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
+
+        with assert_num_queries(2):  # session + collective offer
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class BatchSetInstructorCollectiveOffersTest(PostEndpointHelper):
+    endpoint = "backoffice.collective_offer.batch_set_instructor"
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_batch_set_instructor_offers(self, legit_user, authenticated_client):
+        new_instructor = users_factories.UserFactory()
+        no_instructor_offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
+        old_instructor_offer = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.PENDING, instructor=users_factories.UserFactory()
+        )
+        collective_offers = [no_instructor_offer, old_instructor_offer]
+
+        parameter_ids = ", ".join(str(collective_offer.id) for collective_offer in collective_offers)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "instructor": new_instructor.id,
+            },
+            headers={"hx-request": "true"},
+        )
+
+        for collective_offer in collective_offers:
+            db.session.refresh(collective_offer)
+            assert collective_offer.instructorId == new_instructor.id
+
+            cells = html_parser.extract_plain_row(
+                response.data,
+                id=f"collective-offer-row-{collective_offer.id}",
+            )
+            assert cells[2] == str(collective_offer.id)
+            assert cells[6] == new_instructor.full_name
+
+    def test_batch_set_instructor_collective_offers_wrong_id(self, legit_user, authenticated_client):
+        fake_offer_ids = [123, 456]
+        collective_offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
+        parameter_ids = f"{str(fake_offer_ids[0])}, {str(fake_offer_ids[1])}, {collective_offer}"
+        new_instructor = users_factories.UserFactory()
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "instructor": new_instructor.id,
+            },
+        )
+
+        assert response.status_code == 200
+        assert len(response.data) == 0
+        assert collective_offer.instructor is None
+        collective_offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer.id).one()
+        assert collective_offer.instructor is None
+        non_existing_collective_offers = (
+            db.session.query(educational_models.CollectiveOffer)
+            .filter(educational_models.CollectiveOffer.id.in_(fake_offer_ids))
+            .all()
+        )
+        assert len(non_existing_collective_offers) == 0
+
+
+class GetBatchSetInstructorCollectiveOffersTest(GetEndpointHelper):
+    endpoint = "backoffice.collective_offer.get_batch_set_instructor_form"
+    needed_permission = perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR
+
+    def test_get_batch_set_instructor_form(self, legit_user, authenticated_client):
+        url = url_for(self.endpoint)
+
+        with assert_num_queries(1):  # session
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
