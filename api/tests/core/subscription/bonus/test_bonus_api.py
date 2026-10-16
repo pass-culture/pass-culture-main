@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 import requests_mock
-import sentry_sdk
+import sentry_sdk.scope
 import time_machine
 from dateutil.relativedelta import relativedelta
 
@@ -703,7 +703,8 @@ class QuotientFamilialApplicationTest:
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=500, json={})
 
-            with sentry_sdk.Hub(client):
+            with sentry_sdk.scope.isolation_scope() as sentry_scope:
+                sentry_scope.set_client(client)
                 try:
                     bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
                 except api_particulier.ParticulierApiUnavailable as exc:
@@ -994,7 +995,8 @@ class DisabledAdultAllowanceTest:
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.AAH_ENDPOINT, status_code=500, json={})
 
-            with sentry_sdk.Hub(client):
+            with sentry_sdk.scope.isolation_scope() as sentry_scope:
+                sentry_scope.set_client(client)
                 try:
                     bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
                 except api_particulier.ParticulierApiUnavailable as exc:
@@ -1310,7 +1312,8 @@ class DisabledChildEducationAllowanceTest:
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.AEEH_ENDPOINT, status_code=500, json={})
 
-            with sentry_sdk.Hub(client):
+            with sentry_sdk.scope.isolation_scope() as sentry_scope:
+                sentry_scope.set_client(client)
                 try:
                     bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
                 except api_particulier.ParticulierApiUnavailable as exc:
