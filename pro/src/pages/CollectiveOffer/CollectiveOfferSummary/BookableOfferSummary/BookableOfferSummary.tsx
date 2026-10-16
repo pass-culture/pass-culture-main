@@ -209,7 +209,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           {offer.imageUrl ? (
             <figure className={styles['image-credit']}>
               <img
-                alt={offer.name}
+                alt={offer.imageAlternativeText || `Image de ${offer.name}`}
                 src={offer.imageUrl}
                 className={styles['image-preview']}
                 aria-describedby={offer.imageCredit ? imageCreditId : undefined}
