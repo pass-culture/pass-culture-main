@@ -230,5 +230,5 @@ class AdageHttpClient(AdageClient):
 
     def notify_redactor_when_collective_request_is_made(self, data: schemas.AdageCollectiveRequest) -> None:
         url = "/v1/offre-vitrine"
-        api_response = self._make_post_request(url=f"{self.base_url}{url}", data=data.json())
+        api_response = self._make_post_request(url=f"{self.base_url}{url}", data=data.model_dump_json())
         self._handle_notify_response(api_response, url)
