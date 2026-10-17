@@ -41,8 +41,8 @@ def playlist(
     try:
         raw_response = recommendation_api.get_playlist(
             current_user,
-            params=query.dict(),
-            body=body.dict(),
+            params=query.model_dump(),
+            body=body.model_dump(),
         )
     except recommendation_api.RecommendationApiTimeoutException:
         raise ApiErrors({"code": "RECOMMENDATION_API_TIMEOUT"}, status_code=504)
