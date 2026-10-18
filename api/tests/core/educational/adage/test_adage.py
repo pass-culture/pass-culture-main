@@ -4,9 +4,9 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.adage.backends.adage import AdageHttpClient
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import AdageInvalidEmailException
+from pcapi.core.educational.schemas import AdageCollectiveRequest
 from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
 from pcapi.core.educational.serialization.collective_offer import serialize_collective_offer
-from pcapi.core.educational.serialization.collective_request import serialize_collective_offer_request
 from pcapi.utils import requests
 
 
@@ -195,7 +195,7 @@ class AdageHttpClientTest:
     def test_redactor_when_collective_request_is_made_success_if_201(self, requests_mock):
         adage_client = AdageHttpClient()
         request = educational_factories.CollectiveOfferRequestFactory()
-        request_data = serialize_collective_offer_request(request)
+        request_data = AdageCollectiveRequest.build(request)
 
         endpoint = requests_mock.post(f"{MOCK_API_URL}/v1/offre-vitrine", status_code=201)
         adage_client.notify_redactor_when_collective_request_is_made(request_data)
