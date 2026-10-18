@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 BASE_ADAGE_PARTNER: dict[str, str | int | float | None] = {
     "id": 1,
     "venueId": 12,
-    "siret": 51234567900017,
+    "siret": "51234567900017",
     "regionId": 2,
     "academieId": "ac-versaille",
     "statutId": 2,
@@ -21,7 +21,7 @@ BASE_ADAGE_PARTNER: dict[str, str | int | float | None] = {
     "communeId": "Paris",
     "libelle": "a cultural partner",
     "adresse": "10 rue de la ville d'à coté",
-    "siteWeb": 0,
+    "siteWeb": "0",
     "latitude": 0,
     "longitude": 0,
     "statutLibelle": "Association",
@@ -51,7 +51,7 @@ class AdageLoggerClient(AdageClient):
         logger.info("Adage has been called at %s, with siren: %s", f"{self.base_url}/v1/partenaire-culturel", siren)
 
         if siren in ["123456782", "881457238", "851924100", "832321053"]:
-            return [schemas.AdageCulturalPartner.parse_obj({**BASE_ADAGE_PARTNER, "siret": "12345678200010"})]
+            return [schemas.AdageCulturalPartner.model_validate({**BASE_ADAGE_PARTNER, "siret": "12345678200010"})]
 
         raise exceptions.CulturalPartnerNotFoundException("Requested siren is not a known cultural partner for Adage")
 
@@ -63,12 +63,12 @@ class AdageLoggerClient(AdageClient):
     def get_cultural_partners(self, since_date: datetime.datetime) -> list[schemas.AdageCulturalPartner]:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/partenaire-culturel")
         return [
-            schemas.AdageCulturalPartner.parse_obj(BASE_ADAGE_PARTNER),
-            schemas.AdageCulturalPartner.parse_obj(
+            schemas.AdageCulturalPartner.model_validate(BASE_ADAGE_PARTNER),
+            schemas.AdageCulturalPartner.model_validate(
                 {
                     "id": 2,
                     "venueId": 13,
-                    "siret": 65498732000011,
+                    "siret": "65498732000011",
                     "regionId": 3,
                     "academieId": "un id d'academie",
                     "statutId": 3,
@@ -77,7 +77,7 @@ class AdageLoggerClient(AdageClient):
                     "communeId": "une comune",
                     "libelle": "un libelle",
                     "adresse": "1 impasse d'une ville lointaine",
-                    "siteWeb": 0,
+                    "siteWeb": "0",
                     "latitude": 0,
                     "longitude": 0,
                     "statutLibelle": "entreprise privée",
