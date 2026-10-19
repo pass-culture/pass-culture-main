@@ -3154,11 +3154,11 @@ export type GetProductInformations = {
     /**
      * Description
      */
-    description?: string;
+    description?: string | null;
     /**
      * Ean
      */
-    ean?: string;
+    ean?: string | null;
     /**
      * Gtlid
      */
