@@ -15,10 +15,15 @@ gh workflow run on_dispatch_pcapi_console_job.yaml \
 import argparse
 import logging
 
+from sqlalchemy import any_
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.finance.models import Deposit
+from pcapi.core.subscription.bonus.api import does_names_match
+from pcapi.core.subscription.bonus.schemas import BonusCreditHouseholder
+from pcapi.core.subscription.bonus.schemas import BonusCreditPerson
+from pcapi.core.subscription.bonus.schemas import QuotientFamilialBonusCreditContent
 from pcapi.core.subscription.models import BeneficiaryFraudCheck
 from pcapi.core.subscription.models import FraudCheckStatus
 from pcapi.core.subscription.models import FraudCheckType
@@ -42,7 +47,7 @@ def recover_qf_bonus_checks(
         .where(
             BeneficiaryFraudCheck.type == FraudCheckType.QF_BONUS_CREDIT,
             BeneficiaryFraudCheck.status == FraudCheckStatus.KO,
-            BeneficiaryFraudCheck.reasonCodes.contains([FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]),
+            any_(BeneficiaryFraudCheck.reasonCodes) == FraudReasonCode.NOT_IN_TAX_HOUSEHOLD,
         )
         .options(joinedload(BeneficiaryFraudCheck.user).selectinload(User.deposits).selectinload(Deposit.recredits))
     )
@@ -64,10 +69,10 @@ def recover_qf_bonus_checks(
 
             from_fraud_check_id = fraud_checks[-1].id
             for fraud_check in fraud_checks:
-                fraud_check.status = FraudCheckStatus.STARTED
-                logger.info("Reset fraud check %s to STARTED", fraud_check.id)
+                has_restarted_fraud_check = maybe_restart_fraud_check(fraud_check)
 
-                total_reset += 1
+                if has_restarted_fraud_check:
+                    total_reset += 1
 
             logger.info("Recovered up to fraud check %s", from_fraud_check_id)
 
@@ -82,6 +87,45 @@ def recover_qf_bonus_checks(
             break
 
     logger.info("%s QF bonus fraud checks were reset to STARTED", total_reset)
+
+
+def maybe_restart_fraud_check(fraud_check: BeneficiaryFraudCheck) -> bool:
+    if not _is_user_part_of_tax_household(fraud_check):
+        return False
+
+    fraud_check.status = FraudCheckStatus.STARTED
+    fraud_check.reasonCodes = None
+
+    logger.info("Reset fraud check %s to STARTED", fraud_check.id)
+    return True
+
+
+def _is_user_part_of_tax_household(fraud_check: BeneficiaryFraudCheck) -> bool:
+    source_data = fraud_check.source_data()
+    if not isinstance(source_data, QuotientFamilialBonusCreditContent):
+        raise TypeError(f"QuotientFamilialBonusCreditContent was expected while {type(source_data)} was given")
+
+    user = fraud_check.user
+    for child in source_data.children or []:
+        if _does_user_match_person(user, child):
+            return True
+
+    for householder in source_data.householders or []:
+        if _does_user_match_person(user, householder):
+            return True
+
+    return False
+
+
+def _does_user_match_person(user: User, person: BonusCreditPerson | BonusCreditHouseholder) -> bool:
+    has_first_name_match = does_names_match(user.firstName, " ".join(person.first_names))
+    has_last_name_match = does_names_match(user.lastName, person.last_name) or does_names_match(
+        user.lastName, person.common_name
+    )
+    has_birth_day_match = user.validatedBirthDate == person.birth_date
+    has_gender_match = user.gender == person.gender
+
+    return has_first_name_match and has_last_name_match and has_birth_day_match and has_gender_match
 
 
 if __name__ == "__main__":
