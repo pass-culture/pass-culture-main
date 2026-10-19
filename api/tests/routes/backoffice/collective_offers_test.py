@@ -9,6 +9,7 @@ from flask import url_for
 
 from pcapi import settings
 from pcapi.core.categories.models import EacFormat
+from pcapi.core.educational import constants as educational_constants
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
@@ -1641,7 +1642,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 5, "servicePrice": 1},
+            form={"numberOfTickets": 5, "numberOfTeachers": 2, "servicePrice": 1},
             collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
         )
 
@@ -1650,6 +1651,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         assert collective_booking.collectiveStock.servicePrice == 1
         assert collective_booking.collectiveStock.collectiveAdditionalFees == []
         assert collective_booking.collectiveStock.numberOfTickets == 5
+        assert collective_booking.collectiveStock.numberOfTeachers == 2
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "L'offre collective a été mise à jour"
@@ -1662,12 +1664,13 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             servicePrice=Decimal("80.00"),
             collectiveAdditionalFees=[educational_factories.CollectiveAdditionalFeeFactory(amount=Decimal("20.00"))],
             numberOfTickets=25,
+            numberOfTeachers=3,
             collectiveOffer__venue=venue,
         )
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 25, "servicePrice": 1},
+            form={"numberOfTickets": 25, "numberOfTeachers": 3, "servicePrice": 1},
             collective_offer_id=collective_stock.collectiveOffer.id,
         )
 
@@ -1678,6 +1681,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         [fee] = collective_stock.collectiveAdditionalFees
         assert fee.amount == 20
         assert collective_stock.numberOfTickets == 25
+        assert collective_stock.numberOfTeachers == 3
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "L'offre collective a été mise à jour"
@@ -1689,6 +1693,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             collectiveBooking__collectiveStock__price=Decimal("100.00"),
             collectiveBooking__collectiveStock__servicePrice=Decimal("100.00"),
             collectiveBooking__collectiveStock__numberOfTickets=25,
+            collectiveBooking__collectiveStock__numberOfTeachers=3,
             collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
@@ -1696,7 +1701,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 5, "servicePrice": 1},
+            form={"numberOfTickets": 5, "numberOfTeachers": 2, "servicePrice": 1},
             collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
         )
 
@@ -1705,6 +1710,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         assert pricing.collectiveBooking.collectiveStock.servicePrice == 100
         assert pricing.collectiveBooking.collectiveStock.collectiveAdditionalFees == []
         assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 25
+        assert pricing.collectiveBooking.collectiveStock.numberOfTeachers == 3
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "Cette offre n'est pas modifiable"
@@ -1723,7 +1729,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 5, "servicePrice": 1},
+            form={"numberOfTickets": 5, "numberOfTeachers": 2, "servicePrice": 1},
             collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
         )
 
@@ -1755,7 +1761,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 5, "servicePrice": 1},
+            form={"numberOfTickets": 5, "numberOfTeachers": 2, "servicePrice": 1},
             collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
         )
 
@@ -1781,7 +1787,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         try:
             response = self.post_to_endpoint(
                 authenticated_client,
-                form={"numberOfTickets": 5, "servicePrice": 1},
+                form={"numberOfTickets": 5, "numberOfTeachers": 2, "servicePrice": 1},
                 collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
             )
         finally:
@@ -1819,7 +1825,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         )
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 5, "servicePrice": 200},
+            form={"numberOfTickets": 5, "numberOfTeachers": 2, "servicePrice": 200},
             collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
         )
 
@@ -1865,7 +1871,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         )
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 50, "servicePrice": 1},
+            form={"numberOfTickets": 50, "numberOfTeachers": 2, "servicePrice": 1},
             collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
         )
 
@@ -1893,27 +1899,43 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         "payload,error",
         [
             (
-                {"numberOfTickets": 10},
+                {"numberOfTickets": 10, "numberOfTeachers": 2},
                 "Les données envoyées comportent des erreurs. Prix de la prestation : Information obligatoire ;",
             ),
             (
-                {"servicePrice": 10},
+                {"numberOfTeachers": 2, "servicePrice": 10},
                 "Les données envoyées comportent des erreurs. Nombre d'élèves : Information obligatoire ;",
             ),
             (
-                {"numberOfTickets": -1, "servicePrice": 10},
-                "Les données envoyées comportent des erreurs. Nombre d'élèves : Doit contenir un nombre positif ;",
+                {"numberOfTickets": 10, "servicePrice": 10},
+                "Les données envoyées comportent des erreurs. Nombre d'accompagnants : Information obligatoire ;",
             ),
             (
-                {"numberOfTickets": 10, "servicePrice": -1},
+                {"numberOfTickets": -1, "numberOfTeachers": 2, "servicePrice": 10},
+                f"Les données envoyées comportent des erreurs. Nombre d'élèves : Doit être entre 0 et {settings.EAC_NUMBER_OF_TICKETS_LIMIT} ;",
+            ),
+            (
+                {"numberOfTickets": 10, "numberOfTeachers": 2, "servicePrice": -1},
                 "Les données envoyées comportent des erreurs. Prix de la prestation : Doit contenir un nombre positif ;",
             ),
             (
-                {"numberOfTickets": settings.EAC_NUMBER_OF_TICKETS_LIMIT + 1, "servicePrice": 10},
-                f"Les données envoyées comportent des erreurs. Nombre d'élèves : Doit être inférieur à {settings.EAC_NUMBER_OF_TICKETS_LIMIT} ;",
+                {
+                    "numberOfTickets": settings.EAC_NUMBER_OF_TICKETS_LIMIT + 1,
+                    "numberOfTeachers": 2,
+                    "servicePrice": 10,
+                },
+                f"Les données envoyées comportent des erreurs. Nombre d'élèves : Doit être entre 0 et {settings.EAC_NUMBER_OF_TICKETS_LIMIT} ;",
             ),
             (
-                {"numberOfTickets": 10, "servicePrice": settings.EAC_OFFER_PRICE_LIMIT + 1},
+                {
+                    "numberOfTickets": 10,
+                    "numberOfTeachers": educational_constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS + 1,
+                    "servicePrice": 10,
+                },
+                f"Les données envoyées comportent des erreurs. Nombre d'accompagnants : Doit être entre 0 et {educational_constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS} ;",
+            ),
+            (
+                {"numberOfTickets": 10, "numberOfTeachers": 2, "servicePrice": settings.EAC_OFFER_PRICE_LIMIT + 1},
                 f"Les données envoyées comportent des erreurs. Prix de la prestation : Doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT} ;",
             ),
         ],

@@ -1233,6 +1233,7 @@ def edit_collective_offer_price(collective_offer_id: int) -> response_utils.Back
 
     service_price = form.servicePrice.data
     number_of_tickets = form.numberOfTickets.data
+    number_of_teachers = form.numberOfTeachers.data
 
     collective_booking = (
         db.session.query(educational_models.CollectiveBooking)
@@ -1272,6 +1273,7 @@ def edit_collective_offer_price(collective_offer_id: int) -> response_utils.Back
 
     collective_offer.collectiveStock.servicePrice = service_price
     collective_offer.collectiveStock.numberOfTickets = number_of_tickets
+    collective_offer.collectiveStock.numberOfTeachers = number_of_teachers
 
     # get the current sum of additional fees and compute the total price
     additional_fees_total = sum(fee.amount for fee in collective_offer.collectiveStock.collectiveAdditionalFees)
@@ -1297,6 +1299,7 @@ def get_collective_offer_price_form(collective_offer_id: int) -> response_utils.
     form = forms.EditCollectiveOfferPrice(
         servicePrice=service_price,
         numberOfTickets=collective_offer.collectiveStock.numberOfTickets,
+        numberOfTeachers=collective_offer.collectiveStock.numberOfTeachers,
     )
 
     additional_fees_total = sum(fee.amount for fee in collective_offer.collectiveStock.collectiveAdditionalFees)
