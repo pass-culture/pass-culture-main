@@ -335,7 +335,7 @@ def _create_pre_decree_deposit(
         expirationDate=granted_deposit.expiration_date,
     )
     db.session.add(deposit)
-    db.session.flush()
+    db.session.flush([deposit])
 
     # Edge-case: Validation of the registration occurred over one or two birthdays
     # Then we need to add recredit to compensate
