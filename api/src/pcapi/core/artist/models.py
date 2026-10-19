@@ -14,6 +14,7 @@ from pcapi.utils.db import MagicEnum
 
 
 if typing.TYPE_CHECKING:
+    from pcapi.core.favorites.models import FavoriteArtist
     from pcapi.core.offers.models import Product
 
 
@@ -150,7 +151,9 @@ class Artist(Model):
     pro_search_score = sa_orm.mapped_column(sa.Float, nullable=False, server_default="0.0", default=0.0)
     wikidata_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     wikipedia_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-
+    favorites: sa_orm.Mapped[list["FavoriteArtist"]] = sa_orm.relationship(
+        "FavoriteArtist", foreign_keys="FavoriteArtist.artistId", back_populates="artist"
+    )
     __table_args__ = (
         sa.Index(
             "ix_artist_trgm_unaccent_name",

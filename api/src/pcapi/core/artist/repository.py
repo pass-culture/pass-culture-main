@@ -1,6 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy import case
 from sqlalchemy import func
+from sqlalchemy import select
 
 from pcapi import settings
 from pcapi.core.artist import models
@@ -64,3 +65,9 @@ def get_artist_by_music_platform_id(platform: str, platform_id: str) -> models.A
         .where(platform_column == platform_id, sa.not_(models.Artist.is_blacklisted))
     )
     return db.session.scalars(query).first()
+
+
+def get_artist_by_id(artist_id: str) -> models.Artist | None:
+    stmt = select(models.Artist).where(models.Artist.id == artist_id)
+
+    return db.session.scalars(stmt).first()
