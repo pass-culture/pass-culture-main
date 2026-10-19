@@ -27,7 +27,7 @@ from .serialization import subcategories_v2 as subcategories_v2_serializers
 
 
 @blueprint.native_route("/offers/stocks", methods=["POST"], version="v2")
-@spectree_serialize(response_model=serializers.OffersStocksResponseV2, api=blueprint.api)
+@spectree_serialize(response_model=serializers.OffersStocksResponseV2, api=blueprint.api, deprecated=True)
 def get_offers_and_stocks(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponseV2:
     offer_ids = body.offer_ids
     query = repository.get_offers_details(offer_ids)

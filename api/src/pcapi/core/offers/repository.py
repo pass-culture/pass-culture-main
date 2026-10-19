@@ -443,7 +443,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
         .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .filter(
             models.Offer.id.in_(offer_ids),
-            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
             models.Offer.isPublished,
         )
     )

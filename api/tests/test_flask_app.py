@@ -74,6 +74,7 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "native.native_v2.get_venue_v2",  # → response.status_code = 404
     "native.native_v2.sso_oauth_state",  # → response.status_code = 200
     "native.native_v3.get_offer_v3",  # → response.status_code = 404
+    "native.native_v3.get_offers_stocks_v3",  # → response.status_code = 404
     "pro.connect_as",  # → response.status_code = 403
     "pro.validate_user",  # → response.status_code = 404 (PATCH)
     "pro.check_structure",  # → response.status_code = 204
