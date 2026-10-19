@@ -57,7 +57,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
 from pcapi.sandboxes.scripts.creators.industrial.create_venue_labels import create_venue_labels
-from pcapi.sandboxes.scripts.creators.test_cases import pro_advices_mocks
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 from pcapi.sandboxes.scripts.creators.test_cases.cinema import create_cinema_data
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
@@ -1224,7 +1223,6 @@ def create_pro_advices() -> None:
     image_as_bytes = read_sandbox_mediation_asset(headline_offer_2.subcategoryId)
     thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
     offers_factories.HeadlineOfferFactory.create(offer=headline_offer_2, without_mediation=True)
-    offers_factories.ProAdviceFactory.create(offer=headline_offer_2, **pro_advices_mocks.advices["fully-featured"])
 
     # Cas 3 :
     # - ✔︎ Offre à la une
@@ -1247,12 +1245,6 @@ def create_pro_advices() -> None:
     image_as_bytes = read_sandbox_mediation_asset(headline_offer_3.subcategoryId)
     thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
     offers_factories.HeadlineOfferFactory.create(offer=headline_offer_3, without_mediation=True)
-    offer_with_advice = offers_factories.StockFactory.create(
-        offer__venue=venue_3,
-        offer__name=f"Offre du lieu {venue_3.id} - avec avis",
-        offer__subcategoryId=subcategories.CONCERT.id,
-    ).offer
-    offers_factories.ProAdviceFactory.create(offer=offer_with_advice, **pro_advices_mocks.advices["long"])
 
     # Cas 4 :
     # - ✔︎ Offre à la une
@@ -1275,25 +1267,6 @@ def create_pro_advices() -> None:
     image_as_bytes = read_sandbox_mediation_asset(headline_offer_4.subcategoryId)
     thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
     offers_factories.HeadlineOfferFactory.create(offer=headline_offer_4, without_mediation=True)
-    offers_factories.ProAdviceFactory.create(offer=headline_offer_4, **pro_advices_mocks.advices["short"])
-    offer_with_advice_1 = offers_factories.StockFactory.create(
-        offer__venue=venue_4,
-        offer__name=f"Offre 1 du lieu {venue_4.id} - avec avis",
-        offer__subcategoryId=subcategories.ABO_PRESSE_EN_LIGNE.id,
-    ).offer
-    offers_factories.ProAdviceFactory.create(offer=offer_with_advice_1, **pro_advices_mocks.advices["standard"])
-    offer_with_advice_2 = offers_factories.StockFactory.create(
-        offer__venue=venue_4,
-        offer__name=f"Offre 2 du lieu {venue_4.id} - avec avis",
-        offer__subcategoryId=subcategories.CARTE_MUSEE.id,
-    ).offer
-    offers_factories.ProAdviceFactory.create(offer=offer_with_advice_2, **pro_advices_mocks.advices["standard2"])
-    offer_with_advice_3 = offers_factories.StockFactory.create(
-        offer__venue=venue_4,
-        offer__name=f"Offre 3 du lieu {venue_4.id} - avec avis",
-        offer__subcategoryId=subcategories.SEANCE_CINE.id,
-    ).offer
-    offers_factories.ProAdviceFactory.create(offer=offer_with_advice_3, **pro_advices_mocks.advices["long"])
 
     # Cas 5 :
     # - ✔︎ Offre à la une
@@ -1316,52 +1289,6 @@ def create_pro_advices() -> None:
     image_as_bytes = read_sandbox_mediation_asset(headline_offer_5.subcategoryId)
     thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
     offers_factories.HeadlineOfferFactory.create(offer=headline_offer_5, without_mediation=True)
-    offer_with_advice_1 = offers_factories.StockFactory.create(
-        offer__venue=venue_5,
-        offer__name=f"Offre 1 du lieu {venue_5.id} - avec avis",
-        offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-    ).offer
-    offers_factories.ProAdviceFactory.create(offer=offer_with_advice_1, **pro_advices_mocks.advices["short"])
-    offer_with_advice_2 = offers_factories.StockFactory.create(
-        offer__venue=venue_5,
-        offer__name=f"Offre 2 du lieu {venue_5.id} - avec avis",
-        offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-    ).offer
-    offers_factories.ProAdviceFactory.create(offer=offer_with_advice_2, **pro_advices_mocks.advices["standard"])
-    offer_with_advice_3 = offers_factories.StockFactory.create(
-        offer__venue=venue_5,
-        offer__name=f"Offre 3 du lieu {venue_5.id} - avec avis",
-        offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-    ).offer
-    offers_factories.ProAdviceFactory.create(offer=offer_with_advice_3, **pro_advices_mocks.advices["fully-featured"])
-
-    # Cas 6 :
-    # - ✘ Offre à la une
-    # - ✘ Avis sur l'offre à la une
-    # - ✔︎ Autres offres
-    # - ✔︎ Avis sur les autres offres
-    venue_6 = offerers_factories.VenueFactory.create(
-        name="Lieu avec headlines et advices 6",
-        description="Lieu sans offre à la une mais avec des avis sur d'autres offres.",
-        activity=offerers_models.Activity.RECORD_STORE,
-        isOpenToPublic=True,
-        isPermanent=True,
-    )
-    offer_with_advice_1 = offers_factories.StockFactory.create(
-        offer__venue=venue_6,
-        offer__name=f"Offre 1 du lieu {venue_6.id}",
-    ).offer
-    offers_factories.ProAdviceFactory.create(offer=offer_with_advice_1, **pro_advices_mocks.advices["fully-featured"])
-    offer_with_advice_2 = offers_factories.StockFactory.create(
-        offer__venue=venue_6,
-        offer__name=f"Offre 2 du lieu {venue_6.id}",
-    ).offer
-    offers_factories.ProAdviceFactory.create(offer=offer_with_advice_2, **pro_advices_mocks.advices["short"])
-    offer_with_advice_3 = offers_factories.StockFactory.create(
-        offer__venue=venue_6,
-        offer__name=f"Offre 3 du lieu {venue_6.id}",
-    ).offer
-    offers_factories.ProAdviceFactory.create(offer=offer_with_advice_3, **pro_advices_mocks.advices["standard2"])
 
 
 def create_volunteering_venue() -> None:

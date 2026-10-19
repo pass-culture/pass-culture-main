@@ -269,7 +269,7 @@ describe('getIndividualOfferColumns', () => {
     expect(columns.map((column) => column.id)).not.toContain('actions')
   })
 
-  describe('Headline and pro advice actions', () => {
+  describe('Headline actions', () => {
     const snackBarSuccess = vi.fn()
     const snackBarError = vi.fn()
 
@@ -320,137 +320,6 @@ describe('getIndividualOfferColumns', () => {
       await user.click(await screen.findByLabelText('Ne plus mettre à la une'))
 
       expect(deleteMock).toHaveBeenCalled()
-    })
-
-    it('should add a pro advice', async () => {
-      const createMock = vi.fn()
-      vi.spyOn(api, 'createOfferProAdvice').mockImplementation(createMock)
-      renderTableWithOffer(
-        { ...baseOffer, isEvent: false, id: headlineOffer.id },
-        {}
-      )
-
-      expect(await screen.findByText('My Offer')).toBeVisible()
-      const user = userEvent.setup()
-      await user.click(await screen.findByLabelText('Recommander'))
-
-      expect(
-        await screen.findByText('Ajouter votre recommandation')
-      ).toBeVisible()
-
-      await user.type(
-        await screen.findByLabelText(/Recommandation/),
-        'Recommandation 111'
-      )
-      await user.click(
-        await screen.findByRole('button', {
-          name: 'Enregistrer la recommandation',
-        })
-      )
-
-      expect(createMock).toHaveBeenCalled()
-    })
-
-    it('should display error when adding a pro advice for a rejected error', async () => {
-      renderTableWithOffer(
-        {
-          ...baseOffer,
-          isEvent: false,
-          id: headlineOffer.id,
-          status: OfferStatus.REJECTED,
-        },
-        {}
-      )
-
-      expect(await screen.findByText('My Offer')).toBeVisible()
-      const user = userEvent.setup()
-      await user.click(await screen.findByLabelText('Recommander'))
-
-      expect(snackBarError).toHaveBeenCalledWith(
-        "Offre non-conforme : aucune modification n'est possible dans ce cas. Veuillez créer une nouvelle offre."
-      )
-    })
-
-    it('should display error when adding a pro advice for a pending error', async () => {
-      renderTableWithOffer(
-        {
-          ...baseOffer,
-          isEvent: false,
-          id: headlineOffer.id,
-          status: OfferStatus.PENDING,
-        },
-        {}
-      )
-
-      expect(await screen.findByText('My Offer')).toBeVisible()
-      const user = userEvent.setup()
-      await user.click(await screen.findByLabelText('Recommander'))
-
-      expect(snackBarError).toHaveBeenCalledWith(
-        "Offre en cours de vérification : aucune modification n'est possible durant la vérification d’éligibilité."
-      )
-    })
-
-    it('should display error when adding a pro advice for a draft error', async () => {
-      renderTableWithOffer(
-        {
-          ...baseOffer,
-          isEvent: false,
-          id: headlineOffer.id,
-          status: OfferStatus.DRAFT,
-        },
-        {}
-      )
-
-      expect(await screen.findByText('My Offer')).toBeVisible()
-      const user = userEvent.setup()
-      await user.click(await screen.findByLabelText('Recommander'))
-
-      expect(snackBarError).toHaveBeenCalledWith(
-        'Votre offre doit être publiée pour faire cette action.'
-      )
-    })
-
-    it('should update a pro advice', async () => {
-      const updateMock = vi.fn()
-      vi.spyOn(api, 'updateOfferProAdvice').mockImplementation(updateMock)
-      vi.spyOn(api, 'getOfferProAdvice').mockResolvedValueOnce({
-        proAdvice: {
-          author: 'tata',
-          content: 'toto',
-          updatedAt: '',
-        },
-      })
-      renderTableWithOffer(
-        {
-          ...baseOffer,
-          isEvent: false,
-          id: headlineOffer.id,
-          hasProAdvice: true,
-        },
-        {}
-      )
-
-      expect(await screen.findByText('My Offer')).toBeVisible()
-      const user = userEvent.setup()
-      await user.click(
-        await screen.findByLabelText('Modifier la recommandation')
-      )
-
-      expect(
-        await screen.findByText('Ajouter votre recommandation')
-      ).toBeVisible()
-
-      await user.type(
-        await screen.findByLabelText(/Recommandation/),
-        'Recommandation 111'
-      )
-      await userEvent.click(
-        await screen.findByRole('button', {
-          name: 'Enregistrer la recommandation',
-        })
-      )
-      expect(updateMock).toHaveBeenCalled()
     })
   })
 })
