@@ -1,5 +1,8 @@
 import { api } from '@/apiClient/api'
-import type { BookingRecapResponseModel } from '@/apiClient/v1'
+import type {
+  BookingRecapResponseModel,
+  GetBookingsProResponseModel,
+} from '@/apiClient/v1'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 
@@ -12,11 +15,32 @@ export const getFilteredIndividualBookingsAdapter = async (
   venueId: number,
   offerId?: number
 ) => {
-  let allBookings: BookingRecapResponseModel[] = []
-  let currentPage = 0
-  let pages: number
+  const allBookingsPromises: Promise<GetBookingsProResponseModel>[] = []
+  const {
+    page = 1,
+    eventDate,
+    bookingStatusFilter,
+    bookingPeriodBeginningDate,
+    bookingPeriodEndingDate,
+    offererAddressId,
+  } = buildBookingsRecapQuery(apiFilters)
 
-  do {
+  const firstPageResponse = await api.getBookingsPro({
+    query: {
+      venueId,
+      page,
+      offerId,
+      eventDate,
+      bookingStatusFilter,
+      bookingPeriodBeginningDate,
+      bookingPeriodEndingDate,
+      offererAddressId,
+    },
+  })
+  let currentPage = firstPageResponse.page
+  const pages = firstPageResponse.pages
+
+  while (currentPage < Math.min(pages, MAX_LOADED_PAGES)) {
     currentPage += 1
     const nextPageFilters = {
       ...apiFilters,
@@ -31,25 +55,31 @@ export const getFilteredIndividualBookingsAdapter = async (
       offererAddressId,
     } = buildBookingsRecapQuery(nextPageFilters)
 
-    const bookings = await api.getBookingsPro({
-      query: {
-        venueId,
-        page,
-        offerId,
-        eventDate,
-        bookingStatusFilter,
-        bookingPeriodBeginningDate,
-        bookingPeriodEndingDate,
-        offererAddressId,
-      },
-    })
-    pages = bookings.pages
+    allBookingsPromises.push(
+      api.getBookingsPro({
+        query: {
+          venueId,
+          page,
+          offerId,
+          eventDate,
+          bookingStatusFilter,
+          bookingPeriodBeginningDate,
+          bookingPeriodEndingDate,
+          offererAddressId,
+        },
+      })
+    )
+  }
 
-    allBookings = [...allBookings, ...bookings.bookingsRecap]
-  } while (currentPage < Math.min(pages, MAX_LOADED_PAGES))
+  const promisesResult: BookingRecapResponseModel[] = (
+    await Promise.all(allBookingsPromises)
+  ).reduce((acc: BookingRecapResponseModel[], response) => {
+    acc.push(...response.bookingsRecap)
+    return acc
+  }, [])
 
   return {
-    bookings: allBookings,
+    bookings: [...firstPageResponse.bookingsRecap, ...promisesResult],
     pages,
     currentPage,
   }
