@@ -11,6 +11,7 @@ from flask_wtf import FlaskForm
 
 from pcapi import settings
 from pcapi.core.categories.models import EacFormat
+from pcapi.core.educational import constants as educational_constants
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.utils import format_collective_offer_displayed_status
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -382,10 +383,22 @@ class EditCollectiveOfferPrice(FlaskForm):
         "Nombre d'élèves",
         validators=[
             wtforms.validators.InputRequired("Information obligatoire"),
-            wtforms.validators.NumberRange(min=0, message="Doit contenir un nombre positif"),
             wtforms.validators.NumberRange(
+                min=0,  # should be 1, but kept for backward compatibility with malformed offers in database
                 max=settings.EAC_NUMBER_OF_TICKETS_LIMIT,
-                message=f"Doit être inférieur à {settings.EAC_NUMBER_OF_TICKETS_LIMIT}",
+                message=f"Doit être entre 0 et {settings.EAC_NUMBER_OF_TICKETS_LIMIT}",
+            ),
+        ],
+    )
+
+    numberOfTeachers = fields.PCIntegerField(
+        "Nombre d'accompagnants",
+        validators=[
+            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.NumberRange(
+                min=0,
+                max=educational_constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS,
+                message=f"Doit être entre 0 et {educational_constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS}",
             ),
         ],
     )
