@@ -1023,6 +1023,7 @@ class PostBookingTest:
                 "provider_id": str(provider.id),
                 "provider_label": provider.name,
                 "subcategory_id": str(subcategories.CONCERT.id),
+                "status": "success",
             },
         )
         assert execution_time_metric_count_value == 1
@@ -1676,6 +1677,7 @@ class CancelBookingTest:
                 "provider_id": str(provider.id),
                 "provider_label": provider.name,
                 "subcategory_id": str(subcategories.CONCERT.id),
+                "status": "success",
             },
         )
         assert execution_time_metric_count_value == 1

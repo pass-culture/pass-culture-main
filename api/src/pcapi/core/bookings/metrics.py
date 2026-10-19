@@ -11,7 +11,7 @@ booking_requests_counter = Counter(
 external_bookings_execution_time_histogram = Histogram(
     "external_bookings_execution_time",
     "Time needed to run external booking (cinema or event)",
-    labelnames=["provider_id", "provider_label", "subcategory_id"],
+    labelnames=["provider_id", "provider_label", "subcategory_id", "status"],
     buckets=[0.1, 0.5, 1, 2, 5, 10, 20, 30],
 )
 
@@ -24,6 +24,6 @@ cancel_booking_requests_counter = Counter(
 cancel_external_bookings_execution_time_histogram = Histogram(
     "cancel_external_bookings_execution_time",
     "Time needed to run external booking cancellation (cinema or event)",
-    labelnames=["provider_id", "provider_label", "subcategory_id"],
+    labelnames=["provider_id", "provider_label", "subcategory_id", "status"],
     buckets=[0.1, 0.5, 1, 2, 5, 10, 20, 30],
 )
