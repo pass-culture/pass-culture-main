@@ -3,6 +3,7 @@ import { useState } from 'react'
 import type { BannerMetaModel } from '@/apiClient/v1'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import type { UploadImageValues } from '@/commons/utils/imageUploadTypes'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { postImageToVenue } from '@/repository/pcapi/pcapi'
 
@@ -30,7 +31,9 @@ export const useOnVenueImageUpload = (
   }: OnImageUploadArgs) => {
     const editedVenue = await postImageToVenue(
       venueId,
-      imageFile,
+      await prepareImageForUpload(imageFile, {
+        cropWidth: cropParams?.width,
+      }),
       credit,
       alternativeText,
       cropParams

@@ -8,7 +8,9 @@ import type {
 } from '@/apiClient/v1'
 import type { OfferCollectiveImage } from '@/commons/core/Offers/types'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
+import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/components/ImageDragAndDrop/constants'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 export const useCollectiveOfferImageUpload = (
@@ -78,7 +80,10 @@ export const useCollectiveOfferImageUpload = (
 
       try {
         const params = {
-          thumb: imageToUpload.imageFile,
+          thumb: await prepareImageForUpload(imageToUpload.imageFile, {
+            cropWidth: imageToUpload.cropParams?.width,
+            minSizes: MIN_COLLECTIVE_IMAGE_DIMENSIONS,
+          }),
           credit: imageToUpload.credit ?? '',
           alternativeText: imageToUpload.alternativeText ?? '',
           croppingRectHeight: imageToUpload.cropParams?.height ?? 0,

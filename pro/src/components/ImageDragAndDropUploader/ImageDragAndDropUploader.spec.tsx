@@ -4,6 +4,7 @@ import { forwardRef, useState } from 'react'
 
 import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -18,6 +19,10 @@ const mockImageFile = Object.assign(imageFileFactory(), {
   width: 10,
   height: 10,
 })
+
+vi.mock('@/commons/utils/prepareImageForUpload', () => ({
+  prepareImageForUpload: vi.fn(async (file: File) => file),
+}))
 
 vi.mock('@/commons/hooks/useSnackBar', () => ({
   useSnackBar: () => ({
@@ -299,7 +304,9 @@ describe('ImageDragAndDropUploader', () => {
     })
   })
 
-  it('should keep the picked file when the editor is closed without importing', async () => {
+  it('should reuse the original file when editing an imported image after cancelling', async () => {
+    const onImageUpload = vi.fn()
+
     // The "Modifier" button only shows once the parent displays the imported image
     const StatefulImageUploader = () => {
       const [croppedImageUrl, setCroppedImageUrl] = useState('')
@@ -309,9 +316,10 @@ describe('ImageDragAndDropUploader', () => {
           mode={UploaderModeEnum.OFFER}
           onImageDelete={() => {}}
           initialValues={{ croppedImageUrl }}
-          onImageUpload={(values) =>
+          onImageUpload={(values) => {
+            onImageUpload(values)
             setCroppedImageUrl(values.imageCroppedDataUrl ?? '')
-          }
+          }}
         />
       )
     }
@@ -344,6 +352,15 @@ describe('ImageDragAndDropUploader', () => {
     })
 
     expect(fetchMock).not.toHaveBeenCalledWith('my img')
+
+    await userEvent.click(screen.getByText('Importer'))
+
+    await waitFor(() => {
+      expect(onImageUpload).toHaveBeenCalledTimes(2)
+    })
+    const originalFile = onImageUpload.mock.calls[0][0].imageFile
+    expect(onImageUpload.mock.calls[1][0].imageFile).toBe(originalFile)
+    expect(prepareImageForUpload).not.toHaveBeenCalled()
   })
 
   it('should display a toaster and call onImageDelete, as soon as a file is delete successfully', async () => {

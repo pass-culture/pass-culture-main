@@ -5,6 +5,7 @@ import React, { forwardRef } from 'react'
 import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import * as imageUtils from '@/commons/utils/image'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -14,6 +15,10 @@ import {
 
 const onImageUpload = vi.fn()
 const onImageDelete = vi.fn()
+
+vi.mock('@/commons/utils/prepareImageForUpload', () => ({
+  prepareImageForUpload: vi.fn(async (file: File) => file),
+}))
 
 vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
   getImageDimensions: vi.fn((file) => {
@@ -78,6 +83,7 @@ const renderModalImageCrop = (props: ModalImageUpsertOrEditTestProps = {}) => {
 
 describe('ModalImageUpsertOrEdit', () => {
   beforeEach(() => {
+    vi.mocked(prepareImageForUpload).mockImplementation(async (file) => file)
     fetchMock.mockResponse((request) => {
       if (
         request.url === 'http://example.com/image.jpg' &&
@@ -93,6 +99,35 @@ describe('ModalImageUpsertOrEdit', () => {
       return { status: 404 }
     })
   })
+
+  it.each([
+    UploaderModeEnum.OFFER,
+    UploaderModeEnum.OFFER_COLLECTIVE,
+    UploaderModeEnum.VENUE,
+  ])(
+    'should keep the original file without preparing it when importing in %s mode',
+    async (mode) => {
+      renderModalImageCrop({ mode })
+      await waitForRender()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Importer' }))
+
+      await waitFor(() => {
+        expect(onImageUpload).toHaveBeenCalledWith(
+          expect.objectContaining({
+            imageFile: defaultProps.initialValues?.draftImage,
+            imageCroppedDataUrl: 'my img',
+            cropParams: { x: 0, y: 0, width: 100, height: 100 },
+          }),
+          expect.any(String)
+        )
+      })
+      expect(prepareImageForUpload).not.toHaveBeenCalled()
+      expect(onImageUpload.mock.calls[0][0].imageFile).toBe(
+        defaultProps.initialValues?.draftImage
+      )
+    }
+  )
 
   it('should render a cancel and a save button', async () => {
     renderModalImageCrop()

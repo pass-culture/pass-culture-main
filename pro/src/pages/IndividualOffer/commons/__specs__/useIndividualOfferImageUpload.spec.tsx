@@ -1,8 +1,13 @@
 import { act, renderHook } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 
 import { useIndividualOfferImageUpload } from '../useIndividualOfferImageUpload'
+
+vi.mock('@/commons/utils/prepareImageForUpload', () => ({
+  prepareImageForUpload: vi.fn(async (file: File) => file),
+}))
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -27,6 +32,48 @@ const MOCK_DATA = {
 }
 
 describe('useIndividualOfferImageUpload', () => {
+  it('should prepare the original image only on submit and send the prepared file', async () => {
+    const original = new File(['original'], 'original.jpg', {
+      type: 'image/jpeg',
+    })
+    const prepared = new File(['small'], 'original.jpg', { type: 'image/jpeg' })
+    vi.mocked(prepareImageForUpload).mockResolvedValue(prepared)
+    vi.mocked(api.createThumbnail).mockResolvedValue({
+      id: 1,
+      url: 'thumbnail.jpg',
+      alternativeText: null,
+    })
+    const { result } = renderHook(() => useIndividualOfferImageUpload())
+
+    act(() => {
+      result.current.onImageUpload({
+        imageFile: original,
+        cropParams: { x: 0, y: 0, width: 0.5, height: 1 },
+        credit: null,
+        alternativeText: null,
+      })
+    })
+
+    expect(prepareImageForUpload).not.toHaveBeenCalled()
+    expect(api.createThumbnail).not.toHaveBeenCalled()
+
+    await act(async () => {
+      await result.current.handleImageOnSubmit(1)
+    })
+
+    expect(prepareImageForUpload).toHaveBeenCalledWith(original, {
+      cropWidth: 0.5,
+    })
+    expect(api.createThumbnail).toHaveBeenCalledWith({
+      body: expect.objectContaining({
+        thumb: prepared,
+        croppingRectWidth: 0.5,
+      }),
+    })
+    const requestBody = vi.mocked(api.createThumbnail).mock.calls[0][0].body
+    expect('thumb' in requestBody && requestBody.thumb).toBe(prepared)
+  })
+
   it('should return the initial image offer as displayed image at first', () => {
     const { result } = renderHook(() =>
       useIndividualOfferImageUpload(MOCK_DATA.initialImage)

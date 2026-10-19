@@ -5,12 +5,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { configureTestStore } from '@/commons/store/testUtils'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import { postImageToVenue } from '@/repository/pcapi/pcapi'
 
 import { buildInitialVenueImageValues } from '../utils/buildInitialVenueImageValues'
 import { useOnVenueImageUpload } from './useOnVenueImageUpload'
 
 const mockSyncVenueWithData = vi.fn()
+vi.mock('@/commons/utils/prepareImageForUpload', () => ({
+  prepareImageForUpload: vi.fn(async (file: File) => file),
+}))
 vi.mock('@/commons/hooks/useSyncVenueCache', () => ({
   useSyncVenueCache: () => ({
     syncVenueWithData: mockSyncVenueWithData,
@@ -81,6 +85,8 @@ describe('useOnVenueImageUpload', () => {
   })
 
   it('should update image values and call mutate after upload', async () => {
+    const prepared = new File(['small'], 'photo.jpg', { type: 'image/jpeg' })
+    vi.mocked(prepareImageForUpload).mockResolvedValue(prepared)
     vi.mocked(postImageToVenue).mockResolvedValue(mockEditedVenue)
     vi.mocked(buildInitialVenueImageValues)
       .mockReturnValueOnce(mockInitialValues) // initial call
@@ -101,11 +107,14 @@ describe('useOnVenueImageUpload', () => {
 
     expect(postImageToVenue).toHaveBeenCalledWith(
       venue.id,
-      uploadArgs.imageFile,
+      prepared,
       uploadArgs.credit,
       uploadArgs.alternativeText,
       uploadArgs.cropParams
     )
+    expect(prepareImageForUpload).toHaveBeenCalledWith(uploadArgs.imageFile, {
+      cropWidth: uploadArgs.cropParams.width,
+    })
 
     expect(buildInitialVenueImageValues).toHaveBeenCalledWith(
       mockEditedVenue.bannerUrl,

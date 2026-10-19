@@ -14,12 +14,17 @@ import {
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { imageUploadArgsFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import * as sendSentryCustomError from '@/commons/utils/sendSentryCustomError'
+import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/components/ImageDragAndDrop/constants'
 
 import { useCollectiveOfferImageUpload } from '../useCollectiveOfferImageUpload'
 
 vi.mock('@/commons/hooks/useSnackBar')
 vi.mock('@/commons/utils/sendSentryCustomError')
+vi.mock('@/commons/utils/prepareImageForUpload', () => ({
+  prepareImageForUpload: vi.fn(async (file: File) => file),
+}))
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -71,6 +76,49 @@ describe('useCollectiveOfferImageUpload', () => {
     const { result } = renderUseCollectiveOfferImageUploadWrapper({ offer })
     expect(result.current.imageOffer?.url).toBe(offer.imageUrl)
   })
+
+  it.each([false, true])(
+    'should prepare the original only on submit for template mode %s',
+    async (isTemplate) => {
+      const original = new File(['original'], 'original.jpg', {
+        type: 'image/jpeg',
+      })
+      const prepared = new File(['small'], 'original.jpg', {
+        type: 'image/jpeg',
+      })
+      const image = {
+        ...imageUploadArgsFactory(),
+        imageFile: original,
+        cropParams: { x: 0, y: 0, width: 0.5, height: 1 },
+      }
+      vi.mocked(prepareImageForUpload).mockResolvedValue(prepared)
+      const attachImage = isTemplate
+        ? api.attachOfferTemplateImage
+        : api.attachOfferImage
+      vi.mocked(attachImage).mockResolvedValue({ imageUrl: 'thumbnail.jpg' })
+      const { result } = renderUseCollectiveOfferImageUploadWrapper({
+        offer,
+        isTemplate,
+      })
+
+      act(() => {
+        result.current.onImageUpload(image)
+      })
+
+      expect(prepareImageForUpload).not.toHaveBeenCalled()
+      expect(attachImage).not.toHaveBeenCalled()
+
+      await act(async () => {
+        await result.current.handleImageOnSubmit(offer.id)
+      })
+
+      expect(prepareImageForUpload).toHaveBeenCalledWith(original, {
+        cropWidth: 0.5,
+        minSizes: MIN_COLLECTIVE_IMAGE_DIMENSIONS,
+      })
+      expect(vi.mocked(attachImage).mock.calls[0][0].body.thumb).toBe(prepared)
+    }
+  )
 
   it('should initialize with current image alternative text', () => {
     const offerWithAlternativeText = getCollectiveOfferFactory({
