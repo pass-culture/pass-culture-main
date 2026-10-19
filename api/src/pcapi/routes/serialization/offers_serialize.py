@@ -671,28 +671,32 @@ class GetMusicTypesResponse(BaseModel):
     __root__: list[MusicTypeResponse]
 
 
-class GetProductInformations(BaseModel):
+class GetProductInformations(HttpBodyModel):
     id: int
     name: str
-    description: str | None
+    description: str | None = None
     subcategoryId: str
     gtl_id: str
     author: str
     performer: str
     images: dict
-    ean: str | None
+    ean: str | None = None
 
     @classmethod
-    def from_orm(cls, product: offers_models.Product) -> "GetProductInformations":
-        product.gtl_id = product.extraData.get("gtl_id", "") if product.extraData else ""  # type: ignore [attr-defined]
-        product.author = product.extraData.get("author", "") if product.extraData else ""  # type: ignore [attr-defined]
-        product.performer = product.extraData.get("performer", "") if product.extraData else ""  # type: ignore [attr-defined]
-        return super().from_orm(product)
+    def build(cls, product: offers_models.Product) -> typing.Self:
+        extra_data = product.extraData or {}
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+        return cls(
+            id=product.id,
+            name=product.name,
+            description=product.description,
+            subcategoryId=product.subcategoryId,
+            gtl_id=extra_data.get("gtl_id") or "",
+            author=extra_data.get("author") or "",
+            performer=extra_data.get("performer") or "",
+            images=product.images,
+            ean=product.ean,
+        )
 
 
 class VideoMetatdataQueryModel(HttpQueryParamsModel):

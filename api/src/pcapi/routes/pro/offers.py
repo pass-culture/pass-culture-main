@@ -864,7 +864,7 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
         .one_or_none()
     )
     validation.check_product_cgu_and_offerer(product, ean, offerer)
-    return offers_serialize.GetProductInformations.from_orm(product=typing.cast(models.Product, product))
+    return offers_serialize.GetProductInformations.build(product=typing.cast(models.Product, product))
 
 
 @pro_blueprint.route("/get-offer-video-data", methods=["GET"])

@@ -127,6 +127,7 @@ export function getInitialValuesFromVenueAndProduct(
   return {
     ...initialValues,
     ...restProduct,
+    ean: product.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean,
     description: description || '',
     categoryId,
     subcategoryId,
