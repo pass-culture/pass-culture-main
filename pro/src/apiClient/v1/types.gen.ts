@@ -1054,9 +1054,9 @@ export type CookieConsentRequest = {
  */
 export type CreateOfferHighlightRequestBodyModel = {
     /**
-     * Highlight Ids
+     * Highlightids
      */
-    highlight_ids: Array<number>;
+    highlightIds: Array<number>;
 };
 
 /**

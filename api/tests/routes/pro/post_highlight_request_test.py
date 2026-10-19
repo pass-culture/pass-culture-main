@@ -23,7 +23,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with caplog.at_level(logging.INFO):
-            response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
+            response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlightIds": [highlight.id]})
 
         assert response.status_code == 201
         response_json = response.json
@@ -61,7 +61,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with caplog.at_level(logging.INFO):
             response = client.post(
-                f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id, highlight2.id]}
+                f"/offers/{offer.id}/highlight-requests", json={"highlightIds": [highlight.id, highlight2.id]}
             )
 
         assert response.status_code == 201
@@ -98,7 +98,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with caplog.at_level(logging.INFO):
-            response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
+            response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlightIds": [highlight.id]})
 
         assert response.status_code == 201
 
@@ -125,7 +125,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with caplog.at_level(logging.INFO):
             response = client.post(
-                f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight3.id, highlight4.id]}
+                f"/offers/{offer.id}/highlight-requests", json={"highlightIds": [highlight3.id, highlight4.id]}
             )
 
         assert response.status_code == 201
@@ -172,7 +172,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with caplog.at_level(logging.INFO):
-            response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": []})
+            response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlightIds": []})
 
         assert response.status_code == 201
 
@@ -214,7 +214,7 @@ class Returns400Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         response = client.post(
-            f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [unavailable_highlight.id, highlight.id]}
+            f"/offers/{offer.id}/highlight-requests", json={"highlightIds": [unavailable_highlight.id, highlight.id]}
         )
 
         assert response.status_code == 400
@@ -229,7 +229,7 @@ class Returns400Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         response = client.post(
-            f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id + 1, highlight.id]}
+            f"/offers/{offer.id}/highlight-requests", json={"highlightIds": [highlight.id + 1, highlight.id]}
         )
 
         assert response.status_code == 400
@@ -243,7 +243,7 @@ class Returns400Test:
         highlight = highlights_factories.HighlightFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
+        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlightIds": [highlight.id]})
 
         assert response.status_code == 400
         assert response.json["global"] == [
@@ -263,6 +263,6 @@ class Returns403Test:
         highlight = highlights_factories.HighlightFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
+        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlightIds": [highlight.id]})
 
         assert response.status_code == 403

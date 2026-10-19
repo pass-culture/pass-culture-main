@@ -208,7 +208,7 @@ describe('OfferHighlightForm', () => {
 
     expect(postHighlightRequestOfferMock).toHaveBeenCalledWith({
       path: { offer_id: 1 },
-      body: { highlight_ids: [1] },
+      body: { highlightIds: [1] },
     })
     expect(mockLogEvent).toBeCalledWith(
       EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
@@ -237,7 +237,7 @@ describe('OfferHighlightForm', () => {
 
     expect(postHighlightRequestOfferMock).toHaveBeenCalledWith({
       path: { offer_id: 1 },
-      body: { highlight_ids: [1] },
+      body: { highlightIds: [1] },
     })
   })
 
@@ -270,7 +270,7 @@ describe('OfferHighlightForm', () => {
       })
       expect(postHighlightRequestOfferMock).toHaveBeenCalledWith({
         path: { offer_id: 1 },
-        body: { highlight_ids: hasHighlightRequest ? [1] : [] },
+        body: { highlightIds: hasHighlightRequest ? [1] : [] },
       })
     }
   )
