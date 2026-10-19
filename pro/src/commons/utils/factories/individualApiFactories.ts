@@ -59,7 +59,6 @@ export const listOffersOfferFactory = (
     isEvent: true,
     stocks: [],
     highlightRequests: [],
-    hasProAdvice: false,
     ...customListOffersOffer,
   }
 }

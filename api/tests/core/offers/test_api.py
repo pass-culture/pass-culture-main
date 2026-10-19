@@ -5360,17 +5360,6 @@ class FetchInconsistentProductsTest:
 
         assert api.fetch_inconsistent_products() == {product.id}
 
-    def test_pro_advices_count(self) -> None:
-        product_1 = factories.ProductFactory()
-        product_2 = factories.ProductFactory()
-        factories.ProAdviceFactory(offer__product=product_1)
-        factories.ProAdviceFactory(offer__product=product_2)
-
-        product_1.proAdvicesCount = 0
-        product_2.proAdvicesCount = 1
-
-        assert api.fetch_inconsistent_products() == {product_1.id}
-
     def test_ids_are_unique(self) -> None:
         product = factories.ProductFactory()
         chronicles_factories.ChronicleFactory.create(products=[product], isSocialMediaDiffusible=True)
@@ -5396,8 +5385,6 @@ class UpdateProductCountsTest:
         )
         reactions_factories.ReactionFactory(product=product_1, reactionType=reactions_models.ReactionTypeEnum.DISLIKE)
         chronicles_factories.ChronicleFactory.create(products=[product_1], isSocialMediaDiffusible=True)
-        factories.ProAdviceFactory(offer__product=product_1)
-        factories.ProAdviceFactory(offer__product=product_2)
 
         product_1.likesCount = 0
         product_2.likesCount = 0
@@ -5407,5 +5394,3 @@ class UpdateProductCountsTest:
         assert product_1.likesCount == 2
         assert product_2.likesCount == 2
         assert product_1.chroniclesCount == 1
-        assert product_1.proAdvicesCount == 1
-        assert product_2.proAdvicesCount == 1

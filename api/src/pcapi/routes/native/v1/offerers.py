@@ -20,6 +20,7 @@ def get_venue(venue_id: int) -> serializers.VenueResponse:
     return serializers.VenueResponse.from_orm(venue)
 
 
+# TODO: Will be deleted in PR #24783 after native code deletion
 @blueprint.native_route("/venue/<int:venue_id>/advices", methods=["GET"])
 @spectree_serialize(response_model=serializers.VenueProAdvices, api=blueprint.api, on_error_statuses=[400])
 def get_venue_advices(venue_id: int, query: serializers.VenueProAdviceQuery) -> serializers.VenueProAdvices:

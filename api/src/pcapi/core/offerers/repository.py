@@ -1118,6 +1118,7 @@ def get_venue_headline_offer(venue_id: int) -> offers_models.Offer:
     )
 
 
+# TODO: Will be deleted in PR #24783 after native code deletion
 def get_venue_pro_advices_count(venue_id: int) -> int:
     return (
         db.session.scalar(
@@ -1131,6 +1132,7 @@ def get_venue_pro_advices_count(venue_id: int) -> int:
     )
 
 
+# TODO: Will be deleted in PR #24783 after native code deletion
 def get_venue_pro_advices(venue_id: int, offset: int, limit: int | None) -> list[offers_models.ProAdvice]:
     pro_advices_query = (
         sa.select(offers_models.ProAdvice)

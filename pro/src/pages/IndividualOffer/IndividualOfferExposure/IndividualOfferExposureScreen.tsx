@@ -8,7 +8,6 @@ import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
 import { OfferHighlightCard } from '@/components/IndividualOfferLayout/components/OfferHighlightCard/OfferHighlightCard'
-import { OfferRecommendationCard } from '@/components/IndividualOfferLayout/components/OfferRecommendationCard/OfferRecommendationCard'
 import { OfferAppPreview } from '@/components/OfferAppPreview/OfferAppPreview'
 import {
   ButtonColor,
@@ -34,23 +33,17 @@ export const IndividualOfferExposureScreen = ({
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
-  const {
-    shouldDisplayRecommendationAction,
-    shouldDisplayHighlightAction,
-    shouldDisplayHeadlineAction,
-  } = getOfferEnhancementActionsVisibility(offer)
+  const { shouldDisplayHighlightAction, shouldDisplayHeadlineAction } =
+    getOfferEnhancementActionsVisibility(offer)
 
   return (
     <SummaryLayout className={styles['individual-offer-exposure-screen']}>
       <SummaryContent>
         <OfferExposureCards offer={offer} />
-        {(shouldDisplayRecommendationAction || shouldDisplayHeadlineAction) && (
+        {shouldDisplayHeadlineAction && (
           <h2 className={styles['title']}>Actions de mise en avant</h2>
         )}
         <div className={styles['cards-container']}>
-          {shouldDisplayRecommendationAction && (
-            <OfferRecommendationCard isReadOnly={isClosed} offerId={offer.id} />
-          )}
           {shouldDisplayHighlightAction && (
             <OfferHighlightCard
               offerId={offer.id}

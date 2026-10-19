@@ -2514,7 +2514,6 @@ def fetch_inconsistent_products(batch_size: int = 10_000) -> set[int]:
         end = start + batch_size
         batch_result = get_query_product_ids(_chronicles_count_query(start, end))
         batch_result += get_query_product_ids(_likes_count_query(start, end))
-        batch_result += get_query_product_ids(_pro_advice_count_query(start, end))
 
         product_ids.update(batch_result)
         start += batch_size
@@ -2525,7 +2524,6 @@ def fetch_inconsistent_products(batch_size: int = 10_000) -> set[int]:
 def update_product_counts(batch_size: int) -> None:
     _update_product_count("chroniclesCount", _chronicles_count_query, batch_size)
     _update_product_count("likesCount", _likes_count_query, batch_size)
-    _update_product_count("proAdvicesCount", _pro_advice_count_query, batch_size)
 
 
 def _update_product_count(
@@ -2592,23 +2590,6 @@ def _likes_count_query(start: int, end: int) -> sa.sql.expression.Select:
         )
         .group_by(models.Product.id)
         .having(models.Product.likesCount != count)
-    )
-
-
-def _pro_advice_count_query(start: int, end: int) -> sa.sql.expression.Select:
-    product_id = models.Product.id.label("product_id")
-    count = sa.func.count(models.ProAdvice.id).label("count")
-    return (
-        sa.select(product_id, count)
-        .select_from(models.ProAdvice)
-        .join(models.Offer, models.ProAdvice.offerId == models.Offer.id)
-        .join(models.Product, models.Offer.productId == models.Product.id)
-        .where(
-            models.Offer.productId >= start,
-            models.Offer.productId < end,
-        )
-        .group_by(models.Product.id)
-        .having(models.Product.proAdvicesCount != count)
     )
 
 

@@ -237,6 +237,7 @@ class Product(PcObject, Model, HasThumbMixin):
         nullable=False,
         server_default=sa.text("0"),
     )
+    # TODO: Will be deleted in PR #24783 after native code deletion
     proAdvicesCount: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.Integer,
         sa.CheckConstraint('"proAdvicesCount" >= 0', name="check_pro_advices_count_is_positive"),
@@ -817,6 +818,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     quality: sa_orm.Mapped["OfferQuality | None"] = sa_orm.relationship(
         "OfferQuality", foreign_keys="OfferQuality.offerId", back_populates="offer", uselist=False
     )
+    # TODO: Will be deleted in PR #24783 after native code deletion
     proAdvice: sa_orm.Mapped["ProAdvice | None"] = sa_orm.relationship(
         "ProAdvice",
         foreign_keys="ProAdvice.offerId",
@@ -888,6 +890,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     hasPendingBookings: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     chroniclesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
+    # TODO: Will be deleted in PR #24783 after native code deletion
     hasProAdvice: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     __table_args__ = (
         sa.Index(
@@ -1820,6 +1823,7 @@ class OfferQuality(PcObject, Model):
     )
 
 
+# TODO: Will be deleted in PR #24783 after native code deletion
 class ProAdvice(PcObject, Model):
     __tablename__ = "pro_advice"
 

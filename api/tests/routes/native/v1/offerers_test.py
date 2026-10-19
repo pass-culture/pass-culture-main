@@ -238,6 +238,7 @@ class VenuesTest:
             assert response.status_code == 200
 
 
+# TODO: Will be deleted in PR #24783 after native code deletion
 class VenueProAdvicesTest:
     def test_returns_venue_pro_advices(self, client):
         offer = offers_factories.OfferFactory()

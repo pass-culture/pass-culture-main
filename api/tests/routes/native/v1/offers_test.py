@@ -567,6 +567,7 @@ class OfferChroniclesTest:
         assert chronicles[1]["id"] == 7777
 
 
+# TODO: Will be deleted in PR #24783 after native code deletion
 class GetProAdvicesTest:
     expected_num_queries = 1  # product
     expected_num_queries += 1  # pro_advices

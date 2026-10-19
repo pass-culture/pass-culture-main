@@ -37,8 +37,6 @@ const getEventLabel = (eventType?: ExposureEventType): string => {
       return 'la mise à la une'
     case ExposureEventType.HIGHLIGHT:
       return `le début du temps fort`
-    case ExposureEventType.PRO_ADVICE:
-      return 'l’ajout d’une recommandation'
     // This should not happen
     default:
       return 'un événement de mise en avant'

@@ -114,7 +114,6 @@ export const OnboardingDidacticEvents = {
 export enum EngagementEvents {
   HAS_REQUESTED_HIGHLIGHTS = 'hasRequestedHighlights',
   CLICKED_CONFIRMED_ADD_HEADLINE_OFFER = 'hasClickedConfirmedAddHeadlineOffer',
-  HAS_MADE_RECOMMENDATION = 'hasMadeRecommendation',
 }
 
 export enum WelcomeCarouselEvents {
@@ -132,7 +131,6 @@ export enum HomepageEvents {
   CLICKED_CULTURAL_SURVEY = 'hasClickedCulturalSurvey',
   CLICKED_WEBINAR = 'hasClickedWebinar',
   CLICKED_NEWSLETTER = 'hasClickedNewsletter',
-  CLICKED_RECOMMENDATION = 'hasClickedRecommendation',
   CLICKED_SEE_ALL_OFFERS = 'hasClickedSeeAllOffers',
   CLICKED_TOP_OFFER = 'hasClickedTopOffer',
   CLICKED_CREATE_OFFER = 'hasClickedCreateOffer',
