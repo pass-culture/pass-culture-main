@@ -16,6 +16,7 @@
   border: none;
   justify-content: space-between;
   cursor: pointer;
+  color: var(--color-text-default);
 
   &:hover {
     background-color: var(--color-background-subtle);

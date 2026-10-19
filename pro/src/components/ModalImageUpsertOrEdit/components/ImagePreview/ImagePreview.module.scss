@@ -9,6 +9,8 @@
 
   &-title {
     @include fonts.body-xs;
+
+    color: var(--color-text-default);
   }
 
   &-container {
@@ -37,6 +39,7 @@
   &-figcaption {
     @include fonts.body-accent-xs;
 
+    color: var(--color-text-default);
     margin-top: rem.torem(6px);
   }
 }

@@ -15,3 +15,15 @@
     @include forms.input-theme-error;
   }
 }
+
+[data-theme="dark"] {
+  .timepicker {
+    color-scheme: dark;
+  }
+}
+
+[data-theme="light"] {
+  .timepicker {
+    color-scheme: light;
+  }
+}

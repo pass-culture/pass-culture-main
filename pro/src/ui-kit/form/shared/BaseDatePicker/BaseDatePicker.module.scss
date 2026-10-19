@@ -19,6 +19,18 @@
   }
 }
 
+[data-theme="dark"] {
+  .date-picker {
+    color-scheme: dark;
+  }
+}
+
+[data-theme="light"] {
+  .date-picker {
+    color-scheme: light;
+  }
+}
+
 .visually-hidden {
   @include a11y.visually-hidden;
 }

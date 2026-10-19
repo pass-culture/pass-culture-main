@@ -1,4 +1,9 @@
 :root {
+  // TODO (jclery-pass, 2026-10-19): Temporary solution. The value should be corrected in the @design-system repository.
+  &[data-theme="dark"] {
+    --color-background-shadow-overlay: rgb(143 143 143 / 16%);
+  }
+
   --shadow-overlay: var(--size-spacing-xxs) var(--size-spacing-m)
     var(--size-spacing-xxl) var(--color-background-shadow-overlay);
 

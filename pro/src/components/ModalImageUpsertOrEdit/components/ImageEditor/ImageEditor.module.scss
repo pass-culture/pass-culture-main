@@ -11,6 +11,7 @@
   &-label {
     @include fonts.body;
 
+    color: var(--color-text-default);
     padding-top: var(--size-spacing-xl);
   }
 
