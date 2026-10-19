@@ -11,6 +11,8 @@ import pcapi.core.users.factories as users_factories
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
+from pcapi.core.criteria import constants as criteria_constants
+from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offerers.models import Weekday
@@ -27,6 +29,7 @@ from pcapi.utils.image_conversion import DO_NOT_CROP
 class Returns200Test:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venue, venue_bank_account_link, bank_acount, offerer
+    num_queries += 1  # selectinload for criteria
     num_queries += 1  # select venue_pricing_point_link
     num_queries += 1  # check user has rignts on venue
     num_queries += 1  # select google_places_info
@@ -122,6 +125,13 @@ class Returns200Test:
             timespan=[now - datetime.timedelta(days=7), None],
         )
 
+        criteria = [
+            criteria_factories.CriterionFactory(name=name)
+            for name in [criteria_constants.CLOSURE_DETECTED_LABEL, criteria_constants.SIRET_SHIFT_PENDING_LABEL]
+        ]
+        venue.criteria = criteria
+        db.session.flush()
+
         venue_id = venue.id
         dmsapplication = educational_factories.CollectiveDmsApplicationFactory(venue=venue)
         # older dms application, will not be in the result
@@ -142,6 +152,7 @@ class Returns200Test:
                 "socialMedias": venue.contact.social_medias,
             },
             "comment": venue.comment,
+            "criteria": ["CLOSURE_DETECTED"],
             "pricingPoint": {
                 "id": venue_currently_used_for_pricing.id,
                 "venueName": venue_currently_used_for_pricing.publicName,
@@ -802,6 +813,7 @@ class Returns404Test:
         auth_request = client.with_session_auth(email=pro.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
+        num_queries += 1  # selectinload criteria
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # rollback

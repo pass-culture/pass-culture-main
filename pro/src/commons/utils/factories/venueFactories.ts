@@ -77,6 +77,7 @@ export const makeGetVenueResponseModel = <
     collectiveWebsite: null,
     comment: null,
     contact: null,
+    criteria: [],
     dateCreated: new Date().toISOString(),
     description: 'description',
     externalAccessibilityData: null,

@@ -89,6 +89,7 @@ def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
             .load_only(aliased_venue.id, aliased_venue.name, aliased_venue.publicName),
         )
         .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
+        .options(sa_orm.selectinload(models.Venue.criteria))
     ).one_or_none()
     if not venue:
         raise resource_not_found_error()

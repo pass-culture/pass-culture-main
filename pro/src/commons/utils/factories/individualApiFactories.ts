@@ -390,6 +390,7 @@ export const defaultGetVenueResponseModel: GetVenueResponseModel = {
       instagram: 'https://instagram.com/@venue',
     },
   },
+  criteria: [],
   description: 'desc',
   externalAccessibilityData: null,
   externalAccessibilityId: null,
