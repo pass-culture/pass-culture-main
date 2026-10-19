@@ -509,6 +509,7 @@ def add_criteria_to_offers(product_id: int) -> response_utils.BackofficeResponse
     form = forms.OfferCriteriaForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
+        return redirect(url_for(".get_product_details", product_id=product_id), 303)
 
     identifier_type = product.identifierType
     if identifier_type == offers_models.ProductIdentifierType.EAN:
