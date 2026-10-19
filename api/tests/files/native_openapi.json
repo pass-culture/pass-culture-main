@@ -5362,6 +5362,151 @@
                 "title": "OfferExtraDataResponseV2",
                 "type": "object"
             },
+            "OfferForStocksResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "address": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferAddressResponse"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "bookingAllowedDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bookingalloweddatetime"
+                    },
+                    "expenseDomains": {
+                        "items": {
+                            "$ref": "#/components/schemas/ExpenseDomain"
+                        },
+                        "title": "Expensedomains",
+                        "type": "array"
+                    },
+                    "externalTicketOfficeUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Externalticketofficeurl"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "images": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/OfferImageResponse"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Images"
+                    },
+                    "isDuo": {
+                        "title": "Isduo",
+                        "type": "boolean"
+                    },
+                    "isExpired": {
+                        "title": "Isexpired",
+                        "type": "boolean"
+                    },
+                    "isExternalBookingsDisabled": {
+                        "title": "Isexternalbookingsdisabled",
+                        "type": "boolean"
+                    },
+                    "isReleased": {
+                        "title": "Isreleased",
+                        "type": "boolean"
+                    },
+                    "isSoldOut": {
+                        "title": "Issoldout",
+                        "type": "boolean"
+                    },
+                    "last30DaysBookings": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Last30Daysbookings"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "publicationDate": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Publicationdate"
+                    },
+                    "stocks": {
+                        "items": {
+                            "$ref": "#/components/schemas/StockResponse"
+                        },
+                        "title": "Stocks",
+                        "type": "array"
+                    },
+                    "subcategoryId": {
+                        "title": "Subcategoryid",
+                        "type": "string"
+                    },
+                    "venue": {
+                        "$ref": "#/components/schemas/OfferVenueResponse"
+                    }
+                },
+                "required": [
+                    "id",
+                    "bookingAllowedDatetime",
+                    "expenseDomains",
+                    "isDuo",
+                    "isExpired",
+                    "isExternalBookingsDisabled",
+                    "isReleased",
+                    "isSoldOut",
+                    "name",
+                    "publicationDate",
+                    "stocks",
+                    "subcategoryId",
+                    "venue"
+                ],
+                "title": "OfferForStocksResponse",
+                "type": "object"
+            },
             "OfferImageResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -6420,30 +6565,18 @@
                 "additionalProperties": false,
                 "properties": {
                     "latitude": {
-                        "anyOf": [
-                            {
-                                "type": "number"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Latitude"
+                        "title": "Latitude",
+                        "type": "number"
                     },
                     "longitude": {
-                        "anyOf": [
-                            {
-                                "type": "number"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Longitude"
+                        "title": "Longitude",
+                        "type": "number"
                     }
                 },
+                "required": [
+                    "latitude",
+                    "longitude"
+                ],
                 "title": "OfferVenueCoordinates",
                 "type": "object"
             },
@@ -6752,6 +6885,23 @@
                     "offerIds"
                 ],
                 "title": "OffersStocksRequest",
+                "type": "object"
+            },
+            "OffersStocksResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "offers": {
+                        "items": {
+                            "$ref": "#/components/schemas/OfferForStocksResponse"
+                        },
+                        "title": "Offers",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "offers"
+                ],
+                "title": "OffersStocksResponse",
                 "type": "object"
             },
             "OffersStocksResponseV2": {
@@ -7741,6 +7891,108 @@
                 "title": "Screening",
                 "type": "object"
             },
+            "ScreeningAccessibilityFeatures": {
+                "additionalProperties": false,
+                "properties": {
+                    "audio": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Audio",
+                        "type": "array"
+                    },
+                    "mental": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Mental",
+                        "type": "array"
+                    },
+                    "motor": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Motor",
+                        "type": "array"
+                    },
+                    "visual": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Visual",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "audio",
+                    "mental",
+                    "motor",
+                    "visual"
+                ],
+                "title": "ScreeningAccessibilityFeatures",
+                "type": "object"
+            },
+            "ScreeningFeatures": {
+                "additionalProperties": false,
+                "properties": {
+                    "accessibility": {
+                        "$ref": "#/components/schemas/ScreeningAccessibilityFeatures"
+                    },
+                    "audio": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Audio"
+                    },
+                    "language": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Language"
+                    },
+                    "specialEventType": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Specialeventtype"
+                    },
+                    "video": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Video"
+                    }
+                },
+                "required": [
+                    "accessibility",
+                    "audio",
+                    "language",
+                    "specialEventType",
+                    "video"
+                ],
+                "title": "ScreeningFeatures",
+                "type": "object"
+            },
             "SearchGroupResponseModelv2": {
                 "additionalProperties": false,
                 "properties": {
@@ -8186,6 +8438,130 @@
                     "params"
                 ],
                 "title": "SimilarOffersResponse",
+                "type": "object"
+            },
+            "StockResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "activationCode": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferStockActivationCodeResponse"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "beginningDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Beginningdatetime"
+                    },
+                    "bookingLimitDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bookinglimitdatetime"
+                    },
+                    "cancellationLimitDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Cancellationlimitdatetime"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "isBookable": {
+                        "title": "Isbookable",
+                        "type": "boolean"
+                    },
+                    "isExpired": {
+                        "title": "Isexpired",
+                        "type": "boolean"
+                    },
+                    "isForbiddenToUnderage": {
+                        "title": "Isforbiddentounderage",
+                        "type": "boolean"
+                    },
+                    "isSoldOut": {
+                        "title": "Issoldout",
+                        "type": "boolean"
+                    },
+                    "price": {
+                        "title": "Price",
+                        "type": "integer"
+                    },
+                    "priceCategoryLabel": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Pricecategorylabel"
+                    },
+                    "remainingQuantity": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Remainingquantity"
+                    },
+                    "screeningFeatures": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ScreeningFeatures"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    }
+                },
+                "required": [
+                    "id",
+                    "isBookable",
+                    "isExpired",
+                    "isForbiddenToUnderage",
+                    "isSoldOut",
+                    "price"
+                ],
+                "title": "StockResponse",
                 "type": "object"
             },
             "SubcategoriesResponseModelv2": {
@@ -14044,6 +14420,7 @@
         },
         "/native/v2/offers/stocks": {
             "post": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "post__native_v2_offers_stocks",
                 "parameters": [],
@@ -14590,6 +14967,50 @@
                     }
                 },
                 "summary": "get_offer_v3 <GET>",
+                "tags": []
+            }
+        },
+        "/native/v3/offers/stocks": {
+            "post": {
+                "description": "",
+                "operationId": "post__native_v3_offers_stocks",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OffersStocksRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OffersStocksResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "get_offers_and_stocks <POST>",
                 "tags": []
             }
         },

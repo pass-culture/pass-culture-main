@@ -1,6 +1,7 @@
 import datetime
 import logging
 import textwrap
+import typing
 from collections.abc import Callable
 from typing import Any
 
@@ -19,6 +20,7 @@ from pcapi.core.chronicles.api import get_offer_published_chronicles
 from pcapi.core.finance.utils import to_cents
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import models
 from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
@@ -98,10 +100,8 @@ class OfferStockResponse(HttpBodyModel):
 
 
 class OfferVenueCoordinates(HttpBodyModel):
-    latitude: float | None = None
-    longitude: float | None = None
-
-    _to_float = pydantic_v2.field_validator("latitude", "longitude", mode="before")(float)
+    latitude: float
+    longitude: float
 
 
 class OfferVenueResponse(HttpBodyModel):
@@ -126,8 +126,8 @@ class OfferVenueResponse(HttpBodyModel):
             banner_url=venue.bannerUrl,
             city=venue.offererAddress.address.city,
             coordinates=OfferVenueCoordinates(
-                latitude=venue.offererAddress.address.latitude,  # type: ignore [arg-type]
-                longitude=venue.offererAddress.address.longitude,  # type: ignore [arg-type]
+                latitude=float(venue.offererAddress.address.latitude),
+                longitude=float(venue.offererAddress.address.longitude),
             ),
             is_permanent=venue.isPermanent,
             is_open_to_public=venue.isOpenToPublic,
@@ -439,6 +439,139 @@ class OfferResponse(HttpBodyModel):
         )
 
 
+class ScreeningAccessibilityFeatures(HttpBodyModel):
+    audio: list[str]
+    mental: list[str]
+    motor: list[str]
+    visual: list[str]
+
+    @classmethod
+    def build(cls, features: set[str]) -> typing.Self:
+        return cls(
+            audio=[f for f in offers_constants.AudioAccessbilityFeatures if f in features],
+            mental=[f for f in offers_constants.MentalAccessbilityFeatures if f in features],
+            motor=[f for f in offers_constants.MotorAccessbilityFeatures if f in features],
+            visual=[f for f in offers_constants.VisualAccessbilityFeatures if f in features],
+        )
+
+
+class ScreeningFeatures(HttpBodyModel):
+    accessibility: ScreeningAccessibilityFeatures
+    audio: str | None
+    language: str | None
+    special_event_type: str | None
+    video: str | None
+
+    @classmethod
+    def build(cls, features: set[str]) -> typing.Self:
+        return cls(
+            accessibility=ScreeningAccessibilityFeatures.build(features),
+            audio=next((f for f in offers_constants.AudioFeatures if f in features), None),
+            language=next((f for f in offers_constants.LanguageFeatures if f in features), None),
+            special_event_type=next((f for f in offers_constants.SpecialEventFeatures if f in features), None),
+            video=next((f for f in offers_constants.VideoFeatures if f in features), None),
+        )
+
+
+class StockResponse(HttpBodyModel):
+    id: int
+    activation_code: OfferStockActivationCodeResponse | None = None
+    beginning_datetime: datetime.datetime | None = None
+    booking_limit_datetime: datetime.datetime | None = None
+    cancellation_limit_datetime: datetime.datetime | None = None
+    is_bookable: bool
+    is_expired: bool
+    is_forbidden_to_underage: bool
+    is_sold_out: bool
+    price: int
+    price_category_label: str | None = None
+    remaining_quantity: int | None = None
+    screening_features: ScreeningFeatures | None = None
+
+    @classmethod
+    def build(cls, stock: models.Stock) -> typing.Self:
+        return cls(
+            id=stock.id,
+            beginning_datetime=stock.beginningDatetime,
+            booking_limit_datetime=stock.bookingLimitDatetime,
+            cancellation_limit_datetime=compute_booking_cancellation_limit_date(
+                stock.beginningDatetime, date_utils.get_naive_utc_now()
+            ),
+            is_bookable=stock.isBookable,
+            is_expired=stock.isExpired,
+            is_forbidden_to_underage=stock.is_forbidden_to_underage,
+            is_sold_out=stock.isSoldOut,
+            price=to_cents(stock.price),
+            price_category_label=stock.priceCategory.label if stock.priceCategory else None,
+            remaining_quantity=stock.remainingQuantity if stock.remainingQuantity != "unlimited" else None,
+            screening_features=ScreeningFeatures.build(set(stock.features)),
+        )
+
+
+class OfferForStocksResponse(HttpBodyModel):
+    id: int
+    address: OfferAddressResponse | None = None
+    booking_allowed_datetime: datetime.datetime | None
+    expense_domains: list[ExpenseDomain]
+    external_ticket_office_url: str | None = None
+    is_duo: bool
+    is_expired: bool
+    is_external_bookings_disabled: bool
+    is_released: bool
+    is_sold_out: bool
+    images: dict[str, OfferImageResponse] | None = None
+    last_30_days_bookings: int | None = None
+    name: str
+    publication_date: datetime.datetime | None
+    stocks: list[StockResponse]
+    subcategory_id: str
+    venue: OfferVenueResponse
+
+    @classmethod
+    def build(cls, offer: models.Offer) -> typing.Self:
+        is_external_bookings_disabled = False
+        if offer.lastProvider and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF:
+            is_external_bookings_disabled = provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[
+                offer.lastProvider.localClass
+            ].is_active()
+
+        offerer_address = offer.offererAddress or offer.venue.offererAddress
+        address = offerer_address.address
+        address_response = OfferAddressResponse(
+            city=address.city,
+            coordinates=OfferVenueCoordinates(latitude=float(address.latitude), longitude=float(address.longitude)),
+            label=offerer_address.label,
+            postal_code=address.postalCode,
+            street=address.street,
+            timezone=address.timezone,
+        )
+
+        return cls(
+            id=offer.id,
+            address=address_response,
+            booking_allowed_datetime=offer.bookingAllowedDatetime,
+            expense_domains=get_expense_domains(offer),
+            external_ticket_office_url=offer.externalTicketOfficeUrl,
+            images={
+                image_type: OfferImageResponse(credit=image.credit, url=image.url)
+                for image_type, image in offer.images.items()
+            }
+            if offer.images
+            else None,
+            is_duo=offer.isDuo,
+            is_expired=offer.hasBookingLimitDatetimesPassed,
+            is_external_bookings_disabled=is_external_bookings_disabled,
+            is_released=offer.isReleased,
+            is_sold_out=offer.isSoldOut,
+            last_30_days_bookings=offer.product.last_30_days_booking if offer.product else None,
+            name=offer.name,
+            publication_date=offer.bookingAllowedDatetime,
+            stocks=[StockResponse.build(stock) for stock in offer.activeStocks],
+            subcategory_id=offer.subcategoryId,
+            venue=OfferVenueResponse.build(offer.venue),
+        )
+
+
 def _serialize_offer_artists(offer: models.Offer) -> list[OfferArtist]:
     if offer.product:
         return [
@@ -474,3 +607,15 @@ def _serialize_offer_artists(offer: models.Offer) -> list[OfferArtist]:
             )
 
     return artists
+
+
+class OffersStocksRequest(HttpBodyModel):
+    offer_ids: list[int]
+
+
+class OffersStocksResponse(HttpBodyModel):
+    offers: list[OfferForStocksResponse]
+
+    @classmethod
+    def build(cls, offers: list[models.Offer]) -> typing.Self:
+        return cls(offers=[OfferForStocksResponse.build(offer) for offer in offers])

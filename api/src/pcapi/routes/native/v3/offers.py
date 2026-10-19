@@ -15,3 +15,9 @@ def get_offer_v3(offer_id: int) -> serializers.OfferResponse:
     offer = first_or_404(query)
 
     return serializers.OfferResponse.build(offer)
+
+
+@blueprint.native_route("/offers/stocks", version="v3", methods=["POST"])
+@spectree_serialize(response_model=serializers.OffersStocksResponse, api=blueprint.api)
+def get_offers_and_stocks(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponse:
+    return serializers.OffersStocksResponse.build(repository.get_offers_details(body.offer_ids).all())

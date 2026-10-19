@@ -971,3 +971,200 @@ class OffersV3Test:
             assert caplog.records[0].extra == {"offer_id": offer_id}
 
         assert response.json["video"] is None
+
+
+class OffersStocksV3Test:
+    def test_return_empty_on_empty_request(self, client):
+        # 1. select offer
+        with assert_num_queries(1):
+            response = client.post("/native/v3/offers/stocks", json={"offer_ids": []})
+            assert response.status_code == 200
+
+        assert response.json == {"offers": []}
+
+    def test_return_empty_on_not_found(self, client):
+        # 1. select offer
+        with assert_num_queries(1):
+            response = client.post("/native/v3/offers/stocks", json={"offer_ids": [123456789]})
+            assert response.status_code == 200
+
+        assert response.json == {"offers": []}
+
+    @time_machine.travel("2020-01-01", tick=False)
+    def test_return_offers_stocks(self, client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, name="l'offre du siècle")
+        offers_factories.MediationFactory(offer=offer)
+
+        bookable_stock = offers_factories.EventStockFactory(
+            offer=offer, priceCategory__label="bookable", features=["VF", "ICE"]
+        )
+        another_bookable_stock = offers_factories.EventStockFactory(offer=offer, features=["VO", "3D"])
+        expired_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1),
+            features=["VF", "3D"],
+            priceCategory__label="expired",
+        )
+        exhausted_stock = offers_factories.EventStockFactory(
+            offer=offer, features=["VO"], quantity=0, priceCategory__label="exhausted"
+        )
+
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select price categories
+        with assert_num_queries(nb_queries):
+            response = client.post("/native/v3/offers/stocks", json={"offer_ids": [offer.id]})
+
+        # For the test to be deterministic
+        response_offer = response.json["offers"][0]
+        response_offer["stocks"].sort(key=lambda stock: stock["id"])
+
+        assert response.status_code == 200
+
+        assert response_offer["id"] == offer.id
+        assert response_offer["stocks"] == sorted(
+            [
+                {
+                    "id": bookable_stock.id,
+                    "activationCode": None,
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "isBookable": True,
+                    "isExpired": False,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": False,
+                    "price": 1010,
+                    "priceCategoryLabel": "bookable",
+                    "remainingQuantity": 1000,
+                    "screeningFeatures": {
+                        "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                        "audio": None,
+                        "language": "VF",
+                        "specialEventType": None,
+                        "video": "ICE",
+                    },
+                },
+                {
+                    "id": another_bookable_stock.id,
+                    "activationCode": None,
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "isBookable": True,
+                    "isExpired": False,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": False,
+                    "price": 1010,
+                    "priceCategoryLabel": "Tarif unique",
+                    "remainingQuantity": 1000,
+                    "screeningFeatures": {
+                        "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                        "audio": None,
+                        "language": "VO",
+                        "specialEventType": None,
+                        "video": "3D",
+                    },
+                },
+                {
+                    "id": expired_stock.id,
+                    "activationCode": None,
+                    "beginningDatetime": "2019-12-31T00:00:00Z",
+                    "bookingLimitDatetime": "2019-12-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-01T00:00:00Z",
+                    "isBookable": False,
+                    "isExpired": True,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": True,
+                    "price": 1010,
+                    "priceCategoryLabel": "expired",
+                    "remainingQuantity": 1000,
+                    "screeningFeatures": {
+                        "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                        "audio": None,
+                        "language": "VF",
+                        "specialEventType": None,
+                        "video": "3D",
+                    },
+                },
+                {
+                    "id": exhausted_stock.id,
+                    "activationCode": None,
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "isBookable": False,
+                    "isExpired": False,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": True,
+                    "price": 1010,
+                    "priceCategoryLabel": "exhausted",
+                    "remainingQuantity": 0,
+                    "screeningFeatures": {
+                        "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                        "audio": None,
+                        "language": "VO",
+                        "specialEventType": None,
+                        "video": None,
+                    },
+                },
+            ],
+            key=lambda stock: stock["id"],
+        )
+        assert response_offer["externalTicketOfficeUrl"] is None
+        assert response_offer["expenseDomains"] == ["all"]
+        assert response_offer["images"] == {"recto": {"url": offer.image.url, "credit": None}}
+        assert response_offer["isExpired"] is False
+        assert response_offer["isSoldOut"] is False
+        assert response_offer["isDuo"] is False
+        assert response_offer["isReleased"] is True
+        assert response_offer["name"] == "l'offre du siècle"
+        assert response_offer["subcategoryId"] == subcategories.SEANCE_CINE.id
+        assert response_offer["venue"] == {
+            "id": offer.venue.id,
+            "address": offer.venue.offererAddress.address.street,
+            "city": offer.venue.offererAddress.address.city,
+            "coordinates": {
+                "latitude": float(offer.venue.offererAddress.address.latitude),
+                "longitude": float(offer.venue.offererAddress.address.longitude),
+            },
+            "name": offer.venue.name,
+            "offerer": {"name": offer.venue.managingOfferer.name},
+            "postalCode": offer.venue.offererAddress.address.postalCode,
+            "publicName": offer.venue.publicName,
+            "isPermanent": False,
+            "isOpenToPublic": False,
+            "timezone": offer.venue.offererAddress.address.timezone,
+            "bannerUrl": offer.venue.bannerUrl,
+        }
+        assert response_offer["publicationDate"] is None
+        assert response_offer["bookingAllowedDatetime"] is None
+
+    def test_return_screening_features(self, client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, name="séance de ciné")
+        stock = offers_factories.EventStockFactory(
+            offer=offer, features=["VF", "IMAX", "CCAP", "PREVIEW_SCREENING", "DOLBY_ATMOS"]
+        )
+
+        payload = {"offer_ids": [offer.id]}
+
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        with assert_num_queries(nb_queries, expire_session=False):
+            response = client.post("/native/v3/offers/stocks", json=payload)
+            assert response.status_code == 200
+
+        response_offer = response.json["offers"][0]
+        print(response_offer)
+        response_stock = response.json["offers"][0]["stocks"][0]
+        assert response_offer["id"] == offer.id
+        assert response_stock["id"] == stock.id
+        assert response_stock["screeningFeatures"] == {
+            "accessibility": {"audio": ["CCAP"], "mental": [], "motor": [], "visual": []},
+            "audio": "DOLBY_ATMOS",
+            "language": "VF",
+            "specialEventType": "PREVIEW_SCREENING",
+            "video": "IMAX",
+        }
