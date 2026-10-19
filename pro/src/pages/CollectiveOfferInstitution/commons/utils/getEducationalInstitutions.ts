@@ -1,25 +1,36 @@
 import { api } from '@/apiClient/api'
-import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
+import type {
+  EducationalInstitutionResponseModel,
+  EducationalInstitutionsResponseModel,
+} from '@/apiClient/v1'
 
 export const getEducationalInstitutions = async (): Promise<
   EducationalInstitutionResponseModel[]
 > => {
-  let allInstitutions: EducationalInstitutionResponseModel[] = []
-  let currentPage = 0
-  let totalPages = 1
+  const allInstitutionsPromises: Promise<EducationalInstitutionsResponseModel>[] =
+    []
 
-  do {
+  const fistPageResponse = await api.getEducationalInstitutions({
+    query: { page: 1 },
+  })
+  let currentPage = fistPageResponse.page
+  const totalPages = fistPageResponse.pages
+
+  while (currentPage < totalPages) {
     currentPage += 1
-    const institutions = await api.getEducationalInstitutions({
-      query: { page: currentPage },
-    })
-    currentPage = institutions.page
-    totalPages = institutions.pages
-    allInstitutions = [
-      ...allInstitutions,
-      ...institutions.educationalInstitutions,
-    ]
-  } while (currentPage < totalPages)
+    allInstitutionsPromises.push(
+      api.getEducationalInstitutions({
+        query: { page: currentPage },
+      })
+    )
+  }
 
-  return allInstitutions
+  const promisesResult: EducationalInstitutionResponseModel[] = (
+    await Promise.all(allInstitutionsPromises)
+  ).reduce((acc: EducationalInstitutionResponseModel[], response) => {
+    acc.push(...response.educationalInstitutions)
+    return acc
+  }, [])
+
+  return [...fistPageResponse.educationalInstitutions, ...promisesResult]
 }
