@@ -122,10 +122,10 @@
               {% endif %}
             {% endcall %}
             {% call description_detail_horizontal("Nombre d'élèves") %}
-              {{ collective_stock.numberOfTickets }} personnes
+              {{ collective_stock.numberOfTickets }} personne{{ collective_stock.numberOfTickets | pluralize }}
             {% endcall %}
             {% call description_detail_horizontal("Accompagnants") %}
-              {{ collective_stock.numberOfTeachers }} personnes
+              {{ collective_stock.numberOfTeachers }} personne{{ collective_stock.numberOfTeachers | pluralize }}
             {% endcall %}
           {% endif %}
           {% if collective_offer.durationMinutes %}
