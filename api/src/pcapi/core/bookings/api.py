@@ -384,17 +384,12 @@ def _book_offer(
                     booking=booking,
                     beneficiary=beneficiary,
                 )
-                elapsedseconds = time.time() - start_time
-                external_bookings_execution_time_histogram.labels(
-                    provider_id=stock.offer.lastProviderId,
-                    provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
-                    subcategory_id=stock.offer.subcategoryId,
-                ).observe(elapsedseconds)
                 logger.info(
                     "Cinema tickets successfully booked",
                     extra=log_extra_data,
                     technical_message_id="providers.external.booking",
                 )
+                histogram_metric_status = "success"
             except Exception as e:
                 logger.warning(
                     "Unable to book cinema tickets",
@@ -405,7 +400,16 @@ def _book_offer(
                     },
                     technical_message_id="providers.external.booking",
                 )
+                histogram_metric_status = "failure"
                 raise
+            finally:
+                elapsedseconds = time.time() - start_time
+                external_bookings_execution_time_histogram.labels(
+                    provider_id=stock.offer.lastProviderId,
+                    provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
+                    subcategory_id=stock.offer.subcategoryId,
+                    status=histogram_metric_status,
+                ).observe(elapsedseconds)
 
             booking.externalBookings = [
                 models.ExternalBooking(
@@ -420,12 +424,6 @@ def _book_offer(
             try:
                 start_time = time.time()
                 tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
-                elapsedseconds = time.time() - start_time
-                external_bookings_execution_time_histogram.labels(
-                    provider_id=stock.offer.lastProviderId,
-                    provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
-                    subcategory_id=stock.offer.subcategoryId,
-                ).observe(elapsedseconds)
 
                 booking.externalBookings = [
                     models.ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
@@ -439,6 +437,7 @@ def _book_offer(
                     "Event tickets successfully booked",
                     extra=log_extra_data,
                 )
+                histogram_metric_status = "success"
             except Exception as e:
                 logger.warning(
                     "Unable to book event tickets",
@@ -448,7 +447,16 @@ def _book_offer(
                         "exception_type": e.__class__.__name__,
                     },
                 )
+                histogram_metric_status = "failure"
                 raise
+            finally:
+                elapsedseconds = time.time() - start_time
+                external_bookings_execution_time_histogram.labels(
+                    provider_id=stock.offer.lastProviderId,
+                    provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
+                    subcategory_id=stock.offer.subcategoryId,
+                    status=histogram_metric_status,
+                ).observe(elapsedseconds)
 
         stock.dnBookedQuantity += booking.quantity
         logger.info(
@@ -761,17 +769,11 @@ def _execute_cancel_booking(
                     try:
                         start_time = time.time()
                         external_bookings_api.cancel_tickets(barcodes, provider=provider, stock=stock)
-                        elapsedseconds = time.time() - start_time
-                        cancel_external_bookings_execution_time_histogram.labels(
-                            provider_id=stock.offer.lastProviderId,
-                            provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
-                            subcategory_id=stock.offer.subcategoryId,
-                        ).observe(elapsedseconds)
-
                         logger.info(
                             "[Core] Tickets successfully cancelled on provider side",
                             extra=log_extra_data,
                         )
+                        histogram_metric_status = "success"
                     except Exception as exc:
                         logger.warning(
                             "[Core] Unable to cancel tickets on provider side",
@@ -781,7 +783,16 @@ def _execute_cancel_booking(
                                 "exception_message": str(exc),
                             },
                         )
+                        histogram_metric_status = "failure"
                         raise
+                    finally:
+                        elapsedseconds = time.time() - start_time
+                        cancel_external_bookings_execution_time_histogram.labels(
+                            provider_id=stock.offer.lastProviderId,
+                            provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
+                            subcategory_id=stock.offer.subcategoryId,
+                            status=histogram_metric_status,
+                        ).observe(elapsedseconds)
             except (
                 exceptions.BookingIsAlreadyUsed,
                 exceptions.BookingIsAlreadyCancelled,
