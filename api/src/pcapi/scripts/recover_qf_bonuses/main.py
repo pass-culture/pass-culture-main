@@ -111,16 +111,19 @@ def maybe_restart_fraud_check(fraud_check: BeneficiaryFraudCheck, apply_side_eff
     if _has_eligible_quotient_familial(source_data.quotient_familial):
         given_recredit, attempts_count = _grant_bonus(fraud_check)
 
-        if given_recredit and apply_side_effects:
-            granted_after_attempts = attempts_count
-            track_has_received_bonus(user.id)
-            send_bonus_granted_email(user)
+        if given_recredit:
+            if apply_side_effects:
+                granted_after_attempts = attempts_count
+                track_has_received_bonus(user.id)
+                send_bonus_granted_email(user)
 
-            update_external_user(user)
+                update_external_user(user)
 
-            record_bonus_attempt(FraudCheckType.QF_BONUS_CREDIT, fraud_check.reasonCodes or [], granted_after_attempts)
+                record_bonus_attempt(
+                    FraudCheckType.QF_BONUS_CREDIT, fraud_check.reasonCodes or [], granted_after_attempts
+                )
 
-        return True
+            return True
 
     fraud_check.status = FraudCheckStatus.STARTED
     fraud_check.reasonCodes = None
