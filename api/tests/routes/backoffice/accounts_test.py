@@ -2126,6 +2126,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data, parent_class="registration-workflow-tab-pane")
         assert len(rows) == 5
 
+        assert rows[0]["Âge"] == "18"
         assert rows[0]["Type"] == fraud_check_type
         assert rows[0]["Statut"] == "KO"
         assert rows[0]["Explication"] == ""

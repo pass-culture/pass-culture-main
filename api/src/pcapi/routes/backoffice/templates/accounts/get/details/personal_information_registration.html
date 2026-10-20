@@ -7,6 +7,7 @@
       <thead class="table-light">
         <tr class="table-secondary fs-7 py-2">
           <th>Date de création</th>
+          <th>Âge</th>
           <th>ID technique</th>
           <th>Type</th>
           <th>Éligibilité</th>
@@ -27,6 +28,7 @@
               <td>
                 <time datetime="{{ fraud_action['creationDate'] }}">{{ fraud_action['creationDate'] | format_date_time }}</time>
               </td>
+              <td>{{ fraud_action['creationDate'] | format_age_at_date(user) }}</td>
               <td>
                 {% if fraud_action["type"] in ("dms", "educonnect", "ubble") %}
                   <span class="text-nowrap">

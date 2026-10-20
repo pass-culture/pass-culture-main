@@ -46,6 +46,7 @@ from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.ubble import api as ubble_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
+from pcapi.core.users import utils as users_utils
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
@@ -2374,6 +2375,12 @@ def format_log_severity(severity: LogSeverity) -> str:
             return severity.name.lower()
 
 
+def format_age_at_date(specified_datetime: datetime.datetime, user: users_models.User) -> str:
+    if birth_date := user.birth_date:
+        return str(users_utils.get_age_at_date(birth_date, specified_datetime))
+    return ""
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -2518,3 +2525,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_cultural_outreach_status"] = format_cultural_outreach_status
     app.jinja_env.filters["format_timestamp"] = format_timestamp
     app.jinja_env.filters["format_log_severity"] = format_log_severity
+    app.jinja_env.filters["format_age_at_date"] = format_age_at_date
