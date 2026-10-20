@@ -6,6 +6,7 @@ from pcapi.core.favorites import exceptions
 from pcapi.core.favorites import factories
 from pcapi.core.favorites.models import FavoriteArtist
 from pcapi.core.favorites.models import FavoriteOffer
+from pcapi.core.favorites.models import FavoriteVenue
 from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.factories import OfferFactory
@@ -162,3 +163,67 @@ class FavoriteArtistTest:
             api.delete_favorite_artist(user2, favorite.id)
 
         assert db.session.query(FavoriteArtist).count() == 1
+
+
+class FavoriteVenueTest:
+    def test_add_valid_venue_as_favorite(self):
+        user = UserFactory()
+        venue = VenueFactory()
+
+        api.set_venue_as_favorite(user, venue.id)
+
+        assert db.session.query(FavoriteVenue).count() == 1
+
+    @pytest.mark.settings(MAX_FAVORITES=1)
+    def test_should_raise_exception_if_max_favorites_is_reached(self):
+        user = UserFactory()
+        venue = VenueFactory()
+        venue2 = VenueFactory()
+
+        factories.FavoriteVenueFactory(
+            user=user,
+            venue=venue,
+        )
+
+        with pytest.raises(exceptions.MaxFavoritesReached):
+            api.set_venue_as_favorite(user, venue2.id)
+
+    def test_should_raise_exception_if_item_is_already_a_favorite(self):
+        user = UserFactory()
+        venue = VenueFactory()
+
+        factories.FavoriteVenueFactory(
+            user=user,
+            venue=venue,
+        )
+
+        with pytest.raises(exceptions.AlreadyAsFavorite):
+            api.set_venue_as_favorite(user, venue.id)
+
+    def test_should_delete_a_venue_favorite(self):
+        user = UserFactory()
+        venue = VenueFactory()
+
+        favorite = factories.FavoriteVenueFactory(
+            user=user,
+            venue=venue,
+        )
+
+        api.delete_favorite_venue(user, favorite.id)
+
+        assert db.session.query(FavoriteOffer).count() == 0
+
+    def test_should_raise_an_exception_on_invalid_favorite_delete_request(self):
+        user = UserFactory()
+        user2 = UserFactory()
+        venue = VenueFactory()
+
+        favorite = factories.FavoriteVenueFactory(
+            user=user,
+            venue=venue,
+        )
+
+        with pytest.raises(exceptions.FavoriteNotFound):
+            api.delete_favorite_venue(user2, favorite.id)
+
+        assert db.session.query(FavoriteVenue).count() == 1

@@ -3,6 +3,8 @@ from pcapi.core.artist.exceptions import ArtistNotFound
 from pcapi.core.favorites import exceptions
 from pcapi.core.favorites import models
 from pcapi.core.favorites import repository
+from pcapi.core.offerers import repository as offerer_repository
+from pcapi.core.offerers.exceptions import VenueNotFoundException
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.users import models as users_models
 
@@ -43,6 +45,23 @@ def set_artist_as_favorite(
     return fav
 
 
+def set_venue_as_favorite(
+    user: users_models.User,
+    venue_id: int,
+) -> models.FavoriteVenue:
+    if repository.has_reached_max_favorites_for("venue", user):
+        raise exceptions.MaxFavoritesReached
+
+    if not (venue := offerer_repository.find_venue_by_id(venue_id)):
+        raise VenueNotFoundException()
+
+    fav, is_inserted = repository.create_favorite_venue(user, venue)
+    if not is_inserted:
+        raise exceptions.AlreadyAsFavorite
+
+    return fav
+
+
 def delete_favorite_offer(
     user: users_models.User,
     favorite_id: int,
@@ -63,3 +82,14 @@ def delete_favorite_artist(
         raise exceptions.FavoriteNotFound
 
     repository.delete_favorite("artist", favorite_id)
+
+
+def delete_favorite_venue(
+    user: users_models.User,
+    favorite_id: int,
+) -> None:
+    favorite = repository.get_favorite_venues_for(user, favorite_id=favorite_id)
+    if not favorite:
+        raise exceptions.FavoriteNotFound
+
+    repository.delete_favorite("venue", favorite_id)
