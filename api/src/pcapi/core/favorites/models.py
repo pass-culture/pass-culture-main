@@ -13,6 +13,7 @@ from pcapi.utils import date as date_utils
 
 if typing.TYPE_CHECKING:
     from pcapi.core.artist.models import Artist
+    from pcapi.core.offerers.models import Venue
     from pcapi.core.offers.models import Offer
     from pcapi.core.users.models import User
 
@@ -79,5 +80,33 @@ class FavoriteArtist(PcObject, Model):
             "userId",
             "artistId",
             name="unique_user_artist_favorite",
+        ),
+    )
+
+
+class FavoriteVenue(PcObject, Model):
+    __tablename__ = "favorite_venue"
+
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], back_populates="favoriteVenues")
+
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId], back_populates="favorites")
+
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime,
+        nullable=False,
+        default=date_utils.get_naive_utc_now,
+    )
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "userId",
+            "venueId",
+            name="unique_user_venue_favorite",
         ),
     )

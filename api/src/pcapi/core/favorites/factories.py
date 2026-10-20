@@ -3,6 +3,7 @@ import factory
 from pcapi.core.artist.factories import ArtistFactory
 from pcapi.core.factories import BaseFactory
 from pcapi.core.favorites import models
+from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.users.factories import UserFactory
 
@@ -20,4 +21,12 @@ class FavoriteArtistFactory(BaseFactory):
         model = models.FavoriteArtist
 
     artist = factory.SubFactory(ArtistFactory)
+    user = factory.SubFactory(UserFactory)
+
+
+class FavoriteVenueFactory(BaseFactory):
+    class Meta:
+        model = models.FavoriteVenue
+
+    venue = factory.SubFactory(VenueFactory)
     user = factory.SubFactory(UserFactory)
