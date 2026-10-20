@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.artist.factories import ArtistFactory
 from pcapi.core.favorites import factories
 from pcapi.core.favorites import repository
+from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.users.factories import UserFactory
 
@@ -126,5 +127,65 @@ class FavoriteArtistTest:
         assert is_inserted is True
 
         favorite_2, is_inserted = repository.create_favorite_artist(user, artist)
+        assert favorite.id == favorite_2.id
+        assert is_inserted is False
+
+
+class FavoriteVenueTest:
+    def test_get_favorite_venue(self):
+        user = UserFactory()
+        venue = VenueFactory()
+        favorite = factories.FavoriteVenueFactory(
+            user=user,
+            venue=venue,
+        )
+
+        favs_from_db = repository.get_favorite_venues_for(user)
+
+        assert len(favs_from_db) == 1
+        assert favs_from_db[0].id == favorite.venue.id
+
+    def test_insert_favorite_venue(self):
+        user = UserFactory()
+        venue = VenueFactory()
+
+        repository.create_favorite_venue(user, venue)
+
+        favs_from_db = repository.get_favorite_venues_for(user)
+
+        assert len(favs_from_db) == 1
+        assert favs_from_db[0].id == venue.id
+
+    def test_delete_favorite_venue(self):
+        user = UserFactory()
+        venue = VenueFactory()
+        venue2 = VenueFactory()
+        favorite = factories.FavoriteVenueFactory(
+            user=user,
+            venue=venue,
+        )
+
+        factories.FavoriteVenueFactory(
+            user=user,
+            venue=venue2,
+        )
+
+        favs_from_db = repository.get_favorite_venues_for(user)
+        assert len(favs_from_db) == 2
+
+        repository.delete_favorite("venue", favorite.id)
+
+        favs_from_db = repository.get_favorite_venues_for(user)
+        assert len(favs_from_db) == 1
+
+    def test_should_upsert_on_re_insert(self):
+        user = UserFactory()
+        venue = VenueFactory()
+
+        favorite, is_inserted = repository.create_favorite_venue(user, venue)
+        assert favorite is not None
+        assert is_inserted is True
+
+        favorite_2, is_inserted = repository.create_favorite_venue(user, venue)
         assert favorite.id == favorite_2.id
         assert is_inserted is False
