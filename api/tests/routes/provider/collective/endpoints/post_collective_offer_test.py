@@ -146,6 +146,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     @time_machine.travel(time_travel_str)
     def test_post_offers(self, public_client, payload, venue_provider, domain, institution, national_program, venue):
         num_queries = 1  # fetch api key
+        num_queries += 1  # fetch venue_provider
         num_queries += 1  # fetch venue
         num_queries += 1  # fetch offerer
         num_queries += 1  # fetch educational domain
