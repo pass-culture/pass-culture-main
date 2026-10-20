@@ -13,15 +13,17 @@ from pcapi.core.favorites import exceptions
 from pcapi.core.favorites import models
 from pcapi.core.favorites.models import FavoriteArtist
 from pcapi.core.favorites.models import FavoriteOffer
+from pcapi.core.favorites.models import FavoriteVenue
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 
-FAVORITE_TYPES = Literal["offer", "artist"]
-FAVORITE_MODELS = type[models.FavoriteOffer] | type[models.FavoriteArtist]
+FAVORITE_TYPES = Literal["offer", "artist", "venue"]
+FAVORITE_MODELS = type[models.FavoriteOffer] | type[models.FavoriteArtist] | type[models.FavoriteVenue]
 
 
 # GET Functions
@@ -177,6 +179,24 @@ def get_favorite_artists_for(
     return [row.artist for row in results]
 
 
+def get_favorite_venues_for(
+    user: users_models.User,
+    favorite_id: int | None = None,
+    venue_id: str | None = None,
+) -> list[Venue]:
+    query = sa.select(models.FavoriteVenue).where(models.FavoriteVenue.userId == user.id)
+
+    if favorite_id:
+        query = query.filter(models.FavoriteVenue.id == favorite_id)
+
+    if venue_id:
+        query = query.filter(Venue.id == venue_id)
+
+    results = db.session.scalars(query).all()
+
+    return [row.venue for row in results]
+
+
 ## CREATE function
 def create_favorite_offer(
     user: users_models.User,
@@ -228,6 +248,29 @@ def create_favorite_artist(
     return favorite, is_inserted == 1
 
 
+def create_favorite_venue(
+    user: users_models.User,
+    venue: Venue,
+) -> tuple[models.FavoriteVenue, bool]:
+    stmt: ReturningInsert = (
+        insert(models.FavoriteVenue)
+        .values({"venueId": venue.id, "userId": user.id})
+        .on_conflict_do_update(
+            index_elements=[models.FavoriteVenue.venueId, models.FavoriteVenue.userId],
+            set_={"venueId": venue.id},
+        )
+        .returning(
+            models.FavoriteVenue,
+            sa.literal_column("xmax = 0").label("is_inserted"),
+        )
+    )
+
+    res = db.session.execute(stmt).all()
+    favorite, is_inserted = res[0]
+
+    return favorite, is_inserted == 1
+
+
 ## DELETE Functions
 def delete_favorite(
     type: FAVORITE_TYPES,
@@ -239,6 +282,8 @@ def delete_favorite(
             _model = models.FavoriteOffer
         case "artist":
             _model = models.FavoriteArtist
+        case "venue":
+            _model = models.FavoriteVenue
         case _:
             raise exceptions.UnhandledFavoriteType
 
@@ -254,7 +299,7 @@ def has_reached_max_favorites_for(
     if not settings.MAX_FAVORITES:
         return False
 
-    query: Query[FavoriteArtist] | Query[FavoriteOffer]
+    query: Query[FavoriteArtist] | Query[FavoriteOffer] | Query[FavoriteVenue]
 
     match type:
         case "offer":
@@ -268,6 +313,8 @@ def has_reached_max_favorites_for(
             )
         case "artist":
             query = db.session.query(models.FavoriteArtist).filter(models.FavoriteArtist.userId == user.id)
+        case "venue":
+            query = db.session.query(models.FavoriteVenue).filter(models.FavoriteVenue.userId == user.id)
         case _:
             raise exceptions.UnhandledFavoriteType
 
