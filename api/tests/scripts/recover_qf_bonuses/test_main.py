@@ -69,7 +69,7 @@ def test_qf_granted():
 
 
 @pytest.mark.usefixtures("db_session")
-def test_qf_ignored():
+def test_qf_ignored_because_name_does_not_match():
     user = BeneficiaryFactory.create()
     fraud_check = QFBonusCreditFraudCheckFactory.create(
         user=user,
@@ -91,3 +91,28 @@ def test_qf_ignored():
 
     assert fraud_check.status == FraudCheckStatus.KO
     assert fraud_check.reasonCodes == [FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]
+
+
+@pytest.mark.usefixtures("db_session")
+def test_qf_ignored_because_of_reason_code():
+    user = BeneficiaryFactory.create()
+    fraud_check = QFBonusCreditFraudCheckFactory.create(
+        user=user,
+        status=FraudCheckStatus.KO,
+        reasonCodes=[FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH],
+        resultContent=QuotientFamilialBonusCreditContentFactory.create(
+            children=[
+                BonusCreditPerson(
+                    last_name=user.lastName,
+                    first_names=[user.firstName],
+                    gender=user.gender,
+                    birth_date=user.birth_date,
+                )
+            ]
+        ).model_dump(mode="json"),
+    )
+
+    recover_qf_bonus_checks(from_fraud_check_id=0, apply=True)
+
+    assert fraud_check.status == FraudCheckStatus.KO
+    assert fraud_check.reasonCodes == [FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH]
