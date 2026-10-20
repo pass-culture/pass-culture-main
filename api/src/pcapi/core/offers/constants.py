@@ -33,3 +33,41 @@ MAX_EXPOSURE_EVENTS: typing.Final = 3
 class ExposureEventType(str, enum.Enum):
     HIGHLIGHT = "HIGHLIGHT"
     HEADLINE = "HEADLINE"
+
+
+class AudioAccessbilityFeatures(enum.StrEnum):
+    CCAP = "CCAP"
+
+
+class MentalAccessbilityFeatures(enum.StrEnum):
+    RELAX = "RELAX"
+
+
+class MotorAccessbilityFeatures(enum.StrEnum):
+    PMR = "PMR"
+
+
+class VisualAccessbilityFeatures(enum.StrEnum):
+    GRETA = "GRETA"
+
+
+class LanguageFeatures(enum.StrEnum):
+    VF = "VF"
+    VO = "VO"
+
+
+class SpecialEventFeatures(enum.StrEnum):
+    DEBATE = "DEBATE"
+    PREVIEW_SCREENING = "PREVIEW_SCREENING"
+    PREVIEW_SCREENING_WITH_CREW = "PREVIEW_SCREENING_WITH_CREW"
+
+
+class AudioFeatures(enum.StrEnum):
+    DOLBY_ATMOS = "DOLBY_ATMOS"
+
+
+class VideoFeatures(enum.StrEnum):
+    THREE_D = "3D"
+    ICE = "ICE"
+    IMAX = "IMAX"
+    SCREEN_X = "SCREEN_X"
