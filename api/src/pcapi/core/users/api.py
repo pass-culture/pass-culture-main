@@ -867,6 +867,9 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
         eighteen_years_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=366 * 18)
         new_pro_user.dateOfBirth = eighteen_years_ago
         new_pro_user.validatedBirthDate = new_pro_user.dateOfBirth.date()
+        # Add the user here to ensure the flush inside the upsert_deposit
+        # will not break the user - deposit relation
+        db.session.add(new_pro_user)
         deposit = deposit_api.upsert_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
         new_pro_user.deposits = [deposit]
 
