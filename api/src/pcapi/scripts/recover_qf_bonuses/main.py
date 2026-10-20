@@ -120,6 +120,8 @@ def maybe_restart_fraud_check(fraud_check: BeneficiaryFraudCheck, apply_side_eff
 
             record_bonus_attempt(FraudCheckType.QF_BONUS_CREDIT, fraud_check.reasonCodes or [], granted_after_attempts)
 
+        return True
+
     fraud_check.status = FraudCheckStatus.STARTED
     fraud_check.reasonCodes = None
 
