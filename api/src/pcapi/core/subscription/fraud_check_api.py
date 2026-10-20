@@ -608,13 +608,13 @@ def validate_beneficiary(
             user.eligibility if reviewed_eligibility is None else reviewed_eligibility
         ),  # needed condition to keep flask admin review behavior
     )
+    db.session.add(beneficiary_review)
 
     if beneficiary_review.review is not None:
         handler = REVIEW_HANDLERS.get(subscription_models.FraudReviewStatus(beneficiary_review.review))
         if handler:
             handler(user, beneficiary_review, None if user.eligibility is None else reviewed_eligibility)
 
-    db.session.add(beneficiary_review)
     db.session.flush()
     return beneficiary_review
 
