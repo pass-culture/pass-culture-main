@@ -18,7 +18,9 @@ from .serialization import movies as serializers
 
 
 @blueprint.native_route("/movie/calendar", methods=["GET"])
-@spectree_serialize(response_model=serializers.MovieCalendarResponse, api=blueprint.api, on_error_statuses=[400, 404])
+@spectree_serialize(
+    response_model=serializers.MovieCalendarResponse, api=blueprint.api, on_error_statuses=[400, 404], deprecated=True
+)
 def get_movie_screenings(query: serializers.MovieScreeningsRequest) -> serializers.MovieCalendarResponse:
     if query.allocine_id:
         product_query = db.session.query(Product).filter(Product.extraData.op("->")("allocineId") == query.allocine_id)
@@ -68,7 +70,9 @@ def get_movie_screenings(query: serializers.MovieScreeningsRequest) -> serialize
 
 @blueprint.native_route("/movie/calendar/me", methods=["GET"])
 @authenticated_and_active_user_required
-@spectree_serialize(response_model=serializers.MovieCalendarResponse, api=blueprint.api, on_error_statuses=[400, 404])
+@spectree_serialize(
+    response_model=serializers.MovieCalendarResponse, api=blueprint.api, on_error_statuses=[400, 404], deprecated=True
+)
 def get_movie_screenings_for_user(query: serializers.MovieScreeningsRequest) -> serializers.MovieCalendarResponse:
     if query.allocine_id:
         product_query = db.session.query(Product).filter(Product.extraData.op("->")("allocineId") == query.allocine_id)
@@ -131,7 +135,9 @@ def get_movie_screenings_for_user(query: serializers.MovieScreeningsRequest) -> 
 
 
 @blueprint.native_route("/venue/<int:venue_id>/movie/calendar", methods=["GET"])
-@spectree_serialize(response_model=serializers.VenueMovieCalendarResponse, api=blueprint.api, on_error_statuses=[400])
+@spectree_serialize(
+    response_model=serializers.VenueMovieCalendarResponse, api=blueprint.api, on_error_statuses=[400], deprecated=True
+)
 def get_movie_screenings_by_venue(
     venue_id: int, query: serializers.VenueMovieScreeningsRequest
 ) -> serializers.VenueMovieCalendarResponse:
@@ -171,7 +177,9 @@ def get_movie_screenings_by_venue(
 
 @blueprint.native_route("/venue/<int:venue_id>/movie/calendar/me", methods=["GET"])
 @authenticated_and_active_user_required
-@spectree_serialize(response_model=serializers.VenueMovieCalendarResponse, api=blueprint.api, on_error_statuses=[400])
+@spectree_serialize(
+    response_model=serializers.VenueMovieCalendarResponse, api=blueprint.api, on_error_statuses=[400], deprecated=True
+)
 def get_movie_screenings_by_venue_for_user(
     venue_id: int, query: serializers.VenueMovieScreeningsRequest
 ) -> serializers.VenueMovieCalendarResponse:

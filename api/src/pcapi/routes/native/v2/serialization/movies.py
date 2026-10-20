@@ -1,0 +1,362 @@
+import enum
+import logging
+import typing
+from dataclasses import dataclass
+from datetime import date
+from datetime import datetime
+from datetime import time
+from datetime import timedelta
+from decimal import Decimal
+
+import pydantic as pydantic_v2
+
+from pcapi.core.categories.genres.movie import get_movie_label
+from pcapi.core.providers import api as providers_api
+from pcapi.core.users.young_status import SubscriptionStatus
+from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
+from pcapi.utils import date as date_utils
+
+
+logger = logging.getLogger(__name__)
+
+
+DEFAULT_DAYS_RANGE = 15
+
+
+class MovieScreeningsRequestV2(HttpQueryParamsModel):
+    allocine_id: str | None = pydantic_v2.Field(default=None, pattern=r"^\d+$")
+    visa: str | None = pydantic_v2.Field(default=None, pattern=r"^[a-zA-Z0-9]+$")
+    latitude: float
+    longitude: float
+    around_radius: int = 50_000  # meters
+    from_datetime: datetime = pydantic_v2.Field(alias="from", default_factory=date_utils.get_naive_utc_now)
+    to_datetime: datetime = pydantic_v2.Field(
+        alias="to",
+        default_factory=lambda: datetime.combine(date.today(), time.max) + timedelta(days=DEFAULT_DAYS_RANGE),
+    )
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_params(self) -> typing.Self:
+        if (not self.allocine_id and not self.visa) or (self.allocine_id and self.visa):
+            raise ValueError("Only one of allocine_id and visa must be provided")
+
+        # In case `to` field's value is earlier than `from`, return empty query
+        self.to_datetime = max(self.from_datetime, self.to_datetime)
+
+        return self
+
+    @pydantic_v2.field_validator("allocine_id", mode="before")
+    @classmethod
+    def remove_leading_zeros(cls, value: str | None) -> str | None:
+        if isinstance(value, str) and value.isdigit():
+            return value.lstrip("0") or "0"
+        return value
+
+    @pydantic_v2.field_validator("from_datetime", mode="after")
+    @classmethod
+    def limit_from_datetime(cls, from_datetime: datetime) -> datetime:
+        tz_naive_from_datetime = date_utils.to_naive_utc_datetime(from_datetime)
+        # Limit the allowed start datetime to prevent sending screenings from the past
+        return max(tz_naive_from_datetime, date_utils.get_naive_utc_now())
+
+    @pydantic_v2.field_validator("to_datetime", mode="after")
+    @classmethod
+    def make_to_datetime_tz_naive(cls, to_datetime: datetime) -> datetime:
+        return date_utils.to_naive_utc_datetime(to_datetime)
+
+
+class VenueMovieScreeningsRequestV2(HttpBodyModel):
+    from_datetime: datetime = pydantic_v2.Field(alias="from", default_factory=date_utils.get_naive_utc_now)
+    to_datetime: datetime = pydantic_v2.Field(
+        alias="to", default_factory=lambda: datetime.combine(date.today(), time.max) + timedelta(days=15)
+    )
+
+    @pydantic_v2.field_validator("from_datetime", mode="after")
+    @classmethod
+    def limit_from_datetime(cls, from_datetime: datetime) -> datetime:
+        tz_naive_from_datetime = date_utils.to_naive_utc_datetime(from_datetime)
+        # Limit the allowed start datetime to prevent sending screenings from the past
+        return max(tz_naive_from_datetime, date_utils.get_naive_utc_now())
+
+    @pydantic_v2.field_validator("to_datetime", mode="after")
+    @classmethod
+    def make_to_datetime_tz_naive(cls, to_datetime: datetime) -> datetime:
+        return date_utils.to_naive_utc_datetime(to_datetime)
+
+
+class Bookability(enum.Enum):
+    BOOKABLE = "BOOKABLE"
+    STOCK_BOOKING_IS_DISABLED = "STOCK_BOOKING_IS_DISABLED"
+    STOCK_IS_SOLD_OUT = "STOCK_IS_SOLD_OUT"
+    USER_CANNOT_BOOK = "USER_CANNOT_BOOK"
+    USER_HAS_ALREADY_BOOKED_OFFER = "USER_HAS_ALREADY_BOOKED_OFFER"
+    USER_HAS_ALREADY_BOOKED_RELATED_OFFER = "USER_HAS_ALREADY_BOOKED_RELATED_OFFER"
+    USER_HAS_INSUFFICIENT_CREDIT = "USER_HAS_INSUFFICIENT_CREDIT"
+    AUTHENTICATION_REQUIRED = "AUTHENTICATION_REQUIRED"
+    FINISH_SUBSCRIPTION_REQUIRED = "FINISH_SUBSCRIPTION_REQUIRED"
+    USER_APPLICATION_STILL_PROCESSING = "USER_APPLICATION_STILL_PROCESSING"
+    USER_HAS_APPLICATION_ERROR = "USER_HAS_APPLICATION_ERROR"
+
+
+@dataclass
+class ScreeningMovieData:
+    duration: int | None
+    genres: list[str]
+    last_30_days_bookings: int
+    movie_name: str
+
+
+@dataclass
+class ScreeningVenueData:
+    city: str
+    distance: float
+    label: str
+    postal_code: str
+    street: str
+    venue_id: int
+
+
+@dataclass
+class ScreeningUserData:
+    has_already_booked_offer: bool
+    has_already_booked_related_offer: bool
+    has_enough_credit: bool
+    is_allowed_to_book: bool
+    subscription_status: SubscriptionStatus | None
+
+
+@dataclass
+class RawScreening:
+    beginning_datetime: datetime  # ⚠ Timezone-naive datetime supposed to be in UTC offset
+    features: list[str]
+    is_sold_out: bool
+    offer_id: int
+    price: Decimal
+    provider_class: str | None
+    stock_id: int
+    thumb_url: str | None
+    movie_data: ScreeningMovieData | None = None
+    user_data: ScreeningUserData | None = None
+    venue_data: ScreeningVenueData | None = None
+    timezone: str | None = None
+
+
+class ScreeningV2(HttpBodyModel):
+    beginning_datetime: pydantic_v2.AwareDatetime  # ⚠ Timezone-aware datetime in offerer address offset
+    bookability: Bookability
+    features: list[str]
+    price: float
+    stock_id: int
+
+    @classmethod
+    def _get_screening_bookability(cls, raw_screening: RawScreening) -> Bookability:
+        is_booking_disabled = providers_api.get_is_cinema_provider_disabled(raw_screening.provider_class)
+        if is_booking_disabled:
+            return Bookability.STOCK_BOOKING_IS_DISABLED
+        if raw_screening.is_sold_out:
+            return Bookability.STOCK_IS_SOLD_OUT
+        if raw_screening.user_data:
+            if raw_screening.user_data.subscription_status == SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION:
+                return Bookability.FINISH_SUBSCRIPTION_REQUIRED
+            if raw_screening.user_data.subscription_status == SubscriptionStatus.HAS_SUBSCRIPTION_PENDING:
+                return Bookability.USER_APPLICATION_STILL_PROCESSING
+            if raw_screening.user_data.subscription_status == SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES:
+                return Bookability.USER_HAS_APPLICATION_ERROR
+            if raw_screening.user_data.has_already_booked_offer:
+                return Bookability.USER_HAS_ALREADY_BOOKED_OFFER
+            if raw_screening.user_data.has_already_booked_related_offer:
+                return Bookability.USER_HAS_ALREADY_BOOKED_RELATED_OFFER
+            if not raw_screening.user_data.is_allowed_to_book:
+                return Bookability.USER_CANNOT_BOOK
+            if not raw_screening.user_data.has_enough_credit:
+                return Bookability.USER_HAS_INSUFFICIENT_CREDIT
+
+            return Bookability.BOOKABLE
+
+        return Bookability.AUTHENTICATION_REQUIRED
+
+    @classmethod
+    def from_raw_screening(cls, raw_screening: RawScreening) -> typing.Self:
+        return cls(
+            beginning_datetime=date_utils.default_timezone_to_local_datetime(
+                dt=raw_screening.beginning_datetime,
+                local_tz=raw_screening.timezone or date_utils.METROPOLE_TIMEZONE,
+            ),
+            bookability=cls._get_screening_bookability(raw_screening),
+            features=raw_screening.features,
+            price=float(raw_screening.price),
+            stock_id=raw_screening.stock_id,
+        )
+
+
+class MovieScreeningsV2(HttpBodyModel):
+    duration: int | None
+    genres: list[str]
+    last_30_days_bookings: int
+    movie_name: str
+    offer_id: int
+    thumb_url: str | None
+    day_screenings: list[ScreeningV2]
+    next_screening: ScreeningV2 | None
+
+    @classmethod
+    def from_raw_screening(cls, raw_screening: RawScreening) -> typing.Self:
+        assert raw_screening.movie_data
+        return cls(
+            duration=raw_screening.movie_data.duration,
+            genres=list(filter(bool, map(get_movie_label, raw_screening.movie_data.genres))),  # type: ignore [arg-type]
+            last_30_days_bookings=raw_screening.movie_data.last_30_days_bookings,
+            movie_name=raw_screening.movie_data.movie_name,
+            offer_id=raw_screening.offer_id,
+            thumb_url=raw_screening.thumb_url,
+            day_screenings=[],
+            next_screening=None,
+        )
+
+
+class VenueScreeningsV2(HttpBodyModel):
+    address: str
+    distance: float
+    label: str
+    offer_id: int
+    thumb_url: str | None
+    venue_id: int
+    day_screenings: list[ScreeningV2]
+    next_screening: ScreeningV2 | None
+
+    @classmethod
+    def from_raw_screening(cls, screening: RawScreening) -> typing.Self:
+        assert screening.venue_data
+        return cls(
+            address=f"{screening.venue_data.street}, {screening.venue_data.postal_code} {screening.venue_data.city}",
+            distance=screening.venue_data.distance,
+            label=screening.venue_data.label,
+            offer_id=screening.offer_id,
+            thumb_url=screening.thumb_url,
+            venue_id=screening.venue_data.venue_id,
+            day_screenings=[],
+            next_screening=None,
+        )
+
+
+class DayVenueScreeningsV2(HttpBodyModel):
+    date: date
+    screenings: list[VenueScreeningsV2]
+
+
+class MovieCalendarResponseV2(HttpBodyModel):
+    calendar: list[DayVenueScreeningsV2]
+
+    @classmethod
+    def from_raw_screenings(
+        cls,
+        raw_screenings: list[RawScreening],
+        start_date: datetime,  # ⚠ Timezone-naive
+        end_date: datetime,  # ⚠ Timezone-naive
+    ) -> typing.Self:
+        def get_venue_id(raw_screening: RawScreening) -> int:
+            assert raw_screening.venue_data
+            return raw_screening.venue_data.venue_id
+
+        def sort_venues_by_distance(venues: list[VenueScreeningsV2]) -> list[VenueScreeningsV2]:
+            return sorted(venues, key=lambda venue: (len(venue.day_screenings) == 0, venue.distance))
+
+        # Consider that all of the screenings belong to the same timezone
+        raw_screening = raw_screenings[0] if raw_screenings else None
+        raw_screening_timezone = raw_screening.timezone if raw_screening else None
+        timezone = raw_screening_timezone or date_utils.METROPOLE_TIMEZONE
+
+        calendar_list = serialize_calendar(
+            raw_screenings,
+            date_utils.default_timezone_to_local_datetime(start_date, timezone),
+            date_utils.default_timezone_to_local_datetime(end_date, timezone),
+            block_serializer=VenueScreeningsV2.from_raw_screening,
+            block_id_getter=get_venue_id,
+            sort_blocks=sort_venues_by_distance,
+        )
+
+        return cls(calendar=[DayVenueScreeningsV2(date=e["date"], screenings=e["screenings"]) for e in calendar_list])
+
+
+class DayMovieScreeningsV2(HttpBodyModel):
+    date: date
+    screenings: list[MovieScreeningsV2]
+
+
+class VenueMovieCalendarResponseV2(HttpBodyModel):
+    calendar: list[DayMovieScreeningsV2]
+
+    @classmethod
+    def from_raw_venue_screenings(
+        cls,
+        raw_screenings: list[RawScreening],
+        start_date: datetime,  # ⚠ Timezone-naive
+        end_date: datetime,  # ⚠ Timezone-naive
+    ) -> typing.Self:
+        def sort_movies_by_popularity(movies: list[MovieScreeningsV2]) -> list[MovieScreeningsV2]:
+            return sorted(movies, key=lambda movie: (len(movie.day_screenings) == 0, -movie.last_30_days_bookings))
+
+        # Consider that all of the screenings belong to the same timezone
+        raw_screening = raw_screenings[0] if raw_screenings else None
+        raw_screening_timezone = raw_screening.timezone if raw_screening else None
+        timezone = raw_screening_timezone or date_utils.METROPOLE_TIMEZONE
+
+        return cls(
+            calendar=serialize_calendar(  # type: ignore [arg-type]
+                raw_screenings,
+                date_utils.default_timezone_to_local_datetime(start_date, timezone),
+                date_utils.default_timezone_to_local_datetime(end_date, timezone),
+                block_serializer=MovieScreeningsV2.from_raw_screening,
+                block_id_getter=lambda raw_screening: raw_screening.offer_id,
+                sort_blocks=sort_movies_by_popularity,
+            )
+        )
+
+
+T = typing.TypeVar("T", MovieScreeningsV2, VenueScreeningsV2)
+
+
+def _get_best_next_screening(current_best: ScreeningV2, candidate: ScreeningV2, day: date) -> ScreeningV2:
+    current_delta_from_day = (current_best.beginning_datetime.date() - day).days
+    new_delta_from_day = (candidate.beginning_datetime.date() - day).days
+    if abs(new_delta_from_day) < abs(current_delta_from_day):
+        return candidate
+
+    return current_best
+
+
+def serialize_calendar(
+    raw_screenings: list[RawScreening],
+    start_date: datetime,  # ⚠ Timezone-aware
+    end_date: datetime,  # ⚠ Timezone-aware
+    block_serializer: typing.Callable[[RawScreening], T],
+    block_id_getter: typing.Callable[[RawScreening], int],
+    sort_blocks: typing.Callable[[list[T]], list[T]],
+) -> list[dict]:
+    calendar = {}
+    for day_delta in range((end_date.date() - start_date.date()).days + 1):
+        day = (start_date + timedelta(days=day_delta)).date()
+        blocks: dict[int, T] = {}
+        for raw_screening in raw_screenings:
+            block_id = block_id_getter(raw_screening)
+            if block_id not in blocks:
+                blocks[block_id] = block_serializer(raw_screening)
+
+            block = blocks[block_id]
+            screening = ScreeningV2.from_raw_screening(raw_screening)
+            if screening.beginning_datetime.date() == day:
+                block.day_screenings.append(screening)
+
+            if not block.next_screening:
+                block.next_screening = screening
+            else:
+                block.next_screening = _get_best_next_screening(block.next_screening, screening, day)
+
+        sorted_blocks = sort_blocks(list(blocks.values()))
+        for block in blocks.values():
+            block.day_screenings.sort(key=lambda screening: screening.beginning_datetime)
+
+        calendar[day] = sorted_blocks
+
+    return [{"date": date, "screenings": screenings} for date, screenings in calendar.items()]

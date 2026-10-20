@@ -1,0 +1,228 @@
+from flask_login import current_user
+from werkzeug.exceptions import BadRequest
+
+from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import repository
+from pcapi.core.offers.models import Product
+from pcapi.core.subscription import api as subscription_api
+from pcapi.core.users import api as users_api
+from pcapi.core.users.young_status import Eligible
+from pcapi.models import db
+from pcapi.models.utils import first_or_404
+from pcapi.routes.native.security import authenticated_and_active_user_required
+from pcapi.serialization.decorator import spectree_serialize
+
+from .. import blueprint
+from .serialization import movies as serializers
+
+
+@blueprint.native_route("/movie/calendar", version="v2", methods=["GET"])
+@spectree_serialize(response_model=serializers.MovieCalendarResponseV2, api=blueprint.api, on_error_statuses=[400, 404])
+def get_movie_screenings(query: serializers.MovieScreeningsRequestV2) -> serializers.MovieCalendarResponseV2:
+    if query.allocine_id:
+        product_query = db.session.query(Product).filter(Product.extraData.op("->")("allocineId") == query.allocine_id)
+    elif query.visa:
+        product_query = db.session.query(Product).filter(Product.extraData["visa"].astext == query.visa)
+    else:
+        raise BadRequest()  # shoud not happen
+
+    product = first_or_404(product_query)
+
+    results = repository.get_nearby_bookable_screenings_from_product(
+        product,
+        query.latitude,
+        query.longitude,
+        query.around_radius,
+        query.from_datetime,
+        query.to_datetime,
+    )
+
+    return serializers.MovieCalendarResponseV2.from_raw_screenings(
+        [
+            serializers.RawScreening(
+                beginning_datetime=row["beginning_datetime"],
+                features=row["features"],
+                is_sold_out=row["is_sold_out"],
+                offer_id=row["offer_id"],
+                price=row["price"],
+                provider_class=row["provider_class"],
+                stock_id=row["stock_id"],
+                thumb_url=row["thumb_url"],
+                timezone=row["timezone"],
+                venue_data=serializers.ScreeningVenueData(
+                    city=row["city"],
+                    distance=row["distance"],
+                    label=row["label"],
+                    postal_code=row["postal_code"],
+                    street=row["street"],
+                    venue_id=row["venue_id"],
+                ),
+            )
+            for row in results
+        ],
+        query.from_datetime,
+        query.to_datetime,
+    )
+
+
+@blueprint.native_route("/movie/calendar/me", version="v2", methods=["GET"])
+@authenticated_and_active_user_required
+@spectree_serialize(response_model=serializers.MovieCalendarResponseV2, api=blueprint.api, on_error_statuses=[400, 404])
+def get_movie_screenings_for_user(query: serializers.MovieScreeningsRequestV2) -> serializers.MovieCalendarResponseV2:
+    if query.allocine_id:
+        product_query = db.session.query(Product).filter(Product.extraData.op("->")("allocineId") == query.allocine_id)
+    elif query.visa:
+        product_query = db.session.query(Product).filter(Product.extraData["visa"].astext == query.visa)
+    else:
+        raise BadRequest()  # shoud not happen
+
+    product = first_or_404(product_query)
+    results = repository.get_nearby_bookable_screenings_from_product(
+        product,
+        query.latitude,
+        query.longitude,
+        query.around_radius,
+        query.from_datetime,
+        query.to_datetime,
+    )
+
+    user_bookings = (
+        bookings_repository.get_bookings_from_deposit(current_user.deposit.id) if current_user.deposit else []
+    )
+    booked_offers = [booking.stock.offer.id for booking in user_bookings]
+    booked_stocks = [booking.stock.id for booking in user_bookings]
+    user_domains_credit = users_api.get_domains_credit(current_user, user_bookings)
+    remaining_credit = user_domains_credit.all.remaining if user_domains_credit else 0
+    user_subscription_state = subscription_api.get_user_subscription_state(current_user)
+    young_status = user_subscription_state.young_status
+
+    raw_screenings = [
+        serializers.RawScreening(
+            beginning_datetime=row["beginning_datetime"],
+            features=row["features"],
+            is_sold_out=row["is_sold_out"],
+            offer_id=row["offer_id"],
+            price=row["price"],
+            provider_class=row["provider_class"],
+            stock_id=row["stock_id"],
+            thumb_url=row["thumb_url"],
+            timezone=row["timezone"],
+            user_data=serializers.ScreeningUserData(
+                has_already_booked_offer=row["stock_id"] in booked_stocks,
+                has_already_booked_related_offer=row["offer_id"] in booked_offers,
+                has_enough_credit=row["price"] <= remaining_credit,
+                is_allowed_to_book=current_user.is_beneficiary,
+                subscription_status=young_status.subscription_status if type(young_status) is Eligible else None,
+            ),
+            venue_data=serializers.ScreeningVenueData(
+                city=row["city"],
+                distance=row["distance"],
+                label=row["label"],
+                postal_code=row["postal_code"],
+                street=row["street"],
+                venue_id=row["venue_id"],
+            ),
+        )
+        for row in results
+    ]
+
+    return serializers.MovieCalendarResponseV2.from_raw_screenings(
+        raw_screenings, query.from_datetime, query.to_datetime
+    )
+
+
+@blueprint.native_route("/venue/<int:venue_id>/movie/calendar", version="v2", methods=["GET"])
+@spectree_serialize(response_model=serializers.VenueMovieCalendarResponseV2, api=blueprint.api, on_error_statuses=[400])
+def get_movie_screenings_by_venue(
+    venue_id: int, query: serializers.VenueMovieScreeningsRequestV2
+) -> serializers.VenueMovieCalendarResponseV2:
+    first_or_404(db.session.query(Venue).filter(Venue.id == venue_id))
+    offers = repository.get_bookable_screenings_from_venue(
+        venue_id,
+        query.from_datetime,
+        query.to_datetime,
+    )
+
+    raw_screenings = [
+        serializers.RawScreening(
+            beginning_datetime=stock.beginningDatetime,  # type: ignore[arg-type]
+            features=stock.features,
+            is_sold_out=stock.isSoldOut,
+            offer_id=offer.id,
+            price=stock.price,
+            provider_class=offer.lastProvider.localClass if offer.lastProvider else None,
+            stock_id=stock.id,
+            thumb_url=offer.thumbUrl,
+            timezone=repository.get_offer_timezone(offer),
+            movie_data=serializers.ScreeningMovieData(
+                duration=offer.product.durationMinutes if offer.product else None,
+                genres=offer.extraData.get("genres") or [] if offer.extraData else [],
+                last_30_days_bookings=offer.product.last_30_days_booking or 0 if offer.product else 0,
+                movie_name=offer.name,
+            ),
+        )
+        for offer in offers
+        for stock in offer.stocks
+    ]
+
+    return serializers.VenueMovieCalendarResponseV2.from_raw_venue_screenings(
+        raw_screenings, query.from_datetime, query.to_datetime
+    )
+
+
+@blueprint.native_route("/venue/<int:venue_id>/movie/calendar/me", version="v2", methods=["GET"])
+@authenticated_and_active_user_required
+@spectree_serialize(response_model=serializers.VenueMovieCalendarResponseV2, api=blueprint.api, on_error_statuses=[400])
+def get_movie_screenings_by_venue_for_user(
+    venue_id: int, query: serializers.VenueMovieScreeningsRequestV2
+) -> serializers.VenueMovieCalendarResponseV2:
+    first_or_404(db.session.query(Venue).filter(Venue.id == venue_id))
+    offers = repository.get_bookable_screenings_from_venue(
+        venue_id,
+        query.from_datetime,
+        query.to_datetime,
+    )
+
+    user_bookings = (
+        bookings_repository.get_bookings_from_deposit(current_user.deposit.id) if current_user.deposit else []
+    )
+    booked_offers = [booking.stock.offer.id for booking in user_bookings]
+    booked_stocks = [booking.stock.id for booking in user_bookings]
+    user_domains_credit = users_api.get_domains_credit(current_user, user_bookings)
+    remaining_credit = user_domains_credit.all.remaining if user_domains_credit else 0
+    user_subscription_state = subscription_api.get_user_subscription_state(current_user)
+    young_status = user_subscription_state.young_status
+
+    raw_screenings = [
+        serializers.RawScreening(
+            beginning_datetime=stock.beginningDatetime,  # type: ignore[arg-type]
+            features=stock.features,
+            is_sold_out=stock.isSoldOut,
+            offer_id=offer.id,
+            price=stock.price,
+            provider_class=offer.lastProvider.localClass if offer.lastProvider else None,
+            stock_id=stock.id,
+            thumb_url=offer.thumbUrl,
+            timezone=repository.get_offer_timezone(offer),
+            movie_data=serializers.ScreeningMovieData(
+                duration=offer.product.durationMinutes if offer.product else None,
+                genres=offer.extraData.get("genres") or [] if offer.extraData else [],
+                last_30_days_bookings=offer.product.last_30_days_booking or 0 if offer.product else 0,
+                movie_name=offer.name,
+            ),
+            user_data=serializers.ScreeningUserData(
+                has_already_booked_offer=stock.id in booked_stocks,
+                has_already_booked_related_offer=offer.id in booked_offers,
+                has_enough_credit=stock.price <= remaining_credit,
+                is_allowed_to_book=current_user.is_beneficiary,
+                subscription_status=young_status.subscription_status if type(young_status) is Eligible else None,
+            ),
+        )
+        for offer in offers
+        for stock in offer.stocks
+    ]
+
+    return serializers.VenueMovieCalendarResponseV2.from_raw_venue_screenings(
+        raw_screenings, query.from_datetime, query.to_datetime
+    )
