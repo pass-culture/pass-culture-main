@@ -49,7 +49,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -66,7 +66,13 @@ class MovieCalendarTest:
                             {
                                 "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "AUTHENTICATION_REQUIRED",
-                                "features": [],
+                                "features": {
+                                    "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                    "audio": None,
+                                    "language": None,
+                                    "specialEventType": None,
+                                    "video": None,
+                                },
                                 "price": float(stock.price),
                                 "stockId": stock.id,
                             }
@@ -75,7 +81,13 @@ class MovieCalendarTest:
                         "nextScreening": {
                             "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
-                            "features": [],
+                            "features": {
+                                "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                "audio": None,
+                                "language": None,
+                                "specialEventType": None,
+                                "video": None,
+                            },
                             "price": float(stock.price),
                             "stockId": stock.id,
                         },
@@ -96,7 +108,13 @@ class MovieCalendarTest:
                         "nextScreening": {
                             "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
-                            "features": [],
+                            "features": {
+                                "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                "audio": None,
+                                "language": None,
+                                "specialEventType": None,
+                                "video": None,
+                            },
                             "price": 10.1,
                             "stockId": stock.id,
                         },
@@ -107,6 +125,35 @@ class MovieCalendarTest:
                 ],
             },
         ]
+
+    def test_features_serialization(self, client):
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=tz_naive_beginning_datetime,
+            features=["VO", "CCAP", "RELAX", "DOLBY_ATMOS", "3D", "GRETA", "PREVIEW_SCREENING"],
+        )
+
+        params = {"allocineId": "12345", "latitude": 48.85, "longitude": 2.35}
+        expected_num_queries = 1  # product
+        expected_num_queries += 1  # stocks
+        expected_num_queries += 1  # screenings
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v2/movie/calendar", params=params)
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        response_features = calendar[0]["screenings"][0]["dayScreenings"][0]["features"]
+        assert response_features == {
+            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["GRETA"]},
+            "audio": "DOLBY_ATMOS",
+            "language": "VO",
+            "specialEventType": "PREVIEW_SCREENING",
+            "video": "3D",
+        }
 
     def test_get_movie_shows_with_visa(self, client):
         product = offers_factories.ProductFactory(extraData={"visa": "12345"})
@@ -130,7 +177,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(start, address.timezone).date()
@@ -145,7 +192,7 @@ class MovieCalendarTest:
         }
         expected_num_queries = 0  # should fail before fetching anything
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 400
 
     def test_cant_have_allocine_id_and_visa(self, client):
@@ -157,7 +204,7 @@ class MovieCalendarTest:
         }
         expected_num_queries = 0  # should fail before fetching anything
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 400
 
     def test_requires_location(self, client):
@@ -167,7 +214,7 @@ class MovieCalendarTest:
         }
         expected_num_queries = 0  # should fail before fetching anything
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 400
 
     def test_returns_404_if_product_not_found(self, client):
@@ -178,7 +225,7 @@ class MovieCalendarTest:
         }
         expected_num_queries = 1  # product
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 404
 
     def test_on_no_screenings_found(self, client):
@@ -196,7 +243,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(start, "UTC").date()
@@ -251,7 +298,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(start, timezone).date()
@@ -301,7 +348,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(start, address.timezone).date()
@@ -337,7 +384,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
         tomorrow = date_utils.default_timezone_to_local_datetime(
@@ -378,7 +425,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(
@@ -413,7 +460,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -448,7 +495,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -476,7 +523,7 @@ class MovieCalendarTest:
             "to": date_utils.get_naive_utc_now() + timedelta(days=1),
             field_name: value,
         }
-        response = client.get("/native/v1/movie/calendar", params=params)
+        response = client.get("/native/v2/movie/calendar", params=params)
         assert response.status_code == 400
         assert list(response.json) == [field_name]
 
@@ -497,7 +544,7 @@ class MovieCalendarTest:
             "to": date_utils.get_naive_utc_now() + timedelta(days=1),
             field_name: value,
         }
-        response = client.get("/native/v1/movie/calendar", params=params)
+        response = client.get("/native/v2/movie/calendar", params=params)
         assert response.status_code == 404
 
     def test_timezone_aware_query_params(self, client):
@@ -525,7 +572,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -580,7 +627,7 @@ class MovieCalendarTest:
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200, response.json
 
         calendar = response.json["calendar"]
@@ -637,7 +684,7 @@ class MovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar/me", params=params)
+            response = client.get("/native/v2/movie/calendar/me", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
@@ -656,7 +703,13 @@ class MovieCalendarForUserTest:
                                 {
                                     "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                     "bookability": "BOOKABLE",
-                                    "features": [],
+                                    "features": {
+                                        "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                        "audio": None,
+                                        "language": None,
+                                        "specialEventType": None,
+                                        "video": None,
+                                    },
                                     "price": float(stock.price),
                                     "stockId": stock.id,
                                 }
@@ -665,7 +718,13 @@ class MovieCalendarForUserTest:
                             "nextScreening": {
                                 "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "BOOKABLE",
-                                "features": [],
+                                "features": {
+                                    "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                    "audio": None,
+                                    "language": None,
+                                    "specialEventType": None,
+                                    "video": None,
+                                },
                                 "price": float(stock.price),
                                 "stockId": stock.id,
                             },
@@ -686,7 +745,13 @@ class MovieCalendarForUserTest:
                             "nextScreening": {
                                 "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "BOOKABLE",
-                                "features": [],
+                                "features": {
+                                    "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                    "audio": None,
+                                    "language": None,
+                                    "specialEventType": None,
+                                    "video": None,
+                                },
                                 "price": 10.1,
                                 "stockId": stock.id,
                             },
@@ -697,6 +762,40 @@ class MovieCalendarForUserTest:
                     ],
                 },
             ],
+        }
+
+    def test_features_serialization(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=tz_naive_beginning_datetime,
+            features=["VO", "CCAP", "RELAX", "DOLBY_ATMOS", "3D", "GRETA", "PREVIEW_SCREENING"],
+        )
+
+        params = {"allocineId": "12345", "latitude": 48.85, "longitude": 2.35}
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # product
+        expected_num_queries += 1  # product stocks
+        expected_num_queries += 1  # screenings
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v2/movie/calendar/me", params=params)
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        response_features = calendar[0]["screenings"][0]["dayScreenings"][0]["features"]
+        assert response_features == {
+            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["GRETA"]},
+            "audio": "DOLBY_ATMOS",
+            "language": "VO",
+            "specialEventType": "PREVIEW_SCREENING",
+            "video": "3D",
         }
 
     def test_when_stock_is_sold_out(self, client):
@@ -726,7 +825,7 @@ class MovieCalendarForUserTest:
         expected_num_queries += 1  # deposit
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar/me", params=params)
+            response = client.get("/native/v2/movie/calendar/me", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
@@ -763,7 +862,7 @@ class MovieCalendarForUserTest:
         expected_num_queries += 1  # deposit
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar/me", params=params)
+            response = client.get("/native/v2/movie/calendar/me", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
@@ -796,7 +895,7 @@ class MovieCalendarForUserTest:
         expected_num_queries += 1  # deposit
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar/me", params=params)
+            response = client.get("/native/v2/movie/calendar/me", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
@@ -831,7 +930,7 @@ class MovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar/me", params=params)
+            response = client.get("/native/v2/movie/calendar/me", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
@@ -867,7 +966,7 @@ class MovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar/me", params=params)
+            response = client.get("/native/v2/movie/calendar/me", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
@@ -903,7 +1002,7 @@ class MovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar/me", params=params)
+            response = client.get("/native/v2/movie/calendar/me", params=params)
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(date_utils.get_naive_utc_now(), address.timezone).date()
@@ -931,7 +1030,7 @@ class MovieCalendarForUserTest:
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get(
-                "/native/v1/movie/calendar/me",
+                "/native/v2/movie/calendar/me",
                 params={
                     "allocineId": "12345",
                     "latitude": 48.85,
@@ -987,7 +1086,7 @@ class MovieCalendarForUserTest:
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get(
-                "/native/v1/movie/calendar/me",
+                "/native/v2/movie/calendar/me",
                 params={
                     "allocineId": "12345",
                     "latitude": 48.85,
@@ -1044,7 +1143,7 @@ class MovieCalendarForUserTest:
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get(
-                "/native/v1/movie/calendar/me",
+                "/native/v2/movie/calendar/me",
                 params={
                     "allocineId": "12345",
                     "latitude": 48.85,
@@ -1082,7 +1181,7 @@ class MovieCalendarForUserTest:
             field_name: value,
         }
         client.with_token(user)
-        response = client.get("/native/v1/movie/calendar/me", params=params)
+        response = client.get("/native/v2/movie/calendar/me", params=params)
         assert response.status_code == 400
         assert list(response.json) == [field_name]
 
@@ -1108,7 +1207,7 @@ class MovieCalendarForUserTest:
             field_name: value,
         }
         client.with_token(user)
-        response = client.get("/native/v1/movie/calendar/me", params=params)
+        response = client.get("/native/v2/movie/calendar/me", params=params)
         assert response.status_code == 404
 
 
@@ -1133,7 +1232,7 @@ class VenueMovieCalendarTest:
         expected_num_queries = 1  # venue
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -1154,7 +1253,13 @@ class VenueMovieCalendarTest:
                             {
                                 "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "AUTHENTICATION_REQUIRED",
-                                "features": [],
+                                "features": {
+                                    "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                    "audio": None,
+                                    "language": None,
+                                    "specialEventType": None,
+                                    "video": None,
+                                },
                                 "price": 10.1,
                                 "stockId": stock.id,
                             }
@@ -1162,7 +1267,13 @@ class VenueMovieCalendarTest:
                         "nextScreening": {
                             "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
-                            "features": [],
+                            "features": {
+                                "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                "audio": None,
+                                "language": None,
+                                "specialEventType": None,
+                                "video": None,
+                            },
                             "price": 10.1,
                             "stockId": stock.id,
                         },
@@ -1183,7 +1294,13 @@ class VenueMovieCalendarTest:
                         "nextScreening": {
                             "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "AUTHENTICATION_REQUIRED",
-                            "features": [],
+                            "features": {
+                                "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                "audio": None,
+                                "language": None,
+                                "specialEventType": None,
+                                "video": None,
+                            },
                             "price": 10.1,
                             "stockId": stock.id,
                         },
@@ -1191,6 +1308,37 @@ class VenueMovieCalendarTest:
                 ],
             },
         ]
+
+    def test_features_serialization(self, client):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        address = AddressFactory(timezone="Europe/Paris")
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(minutes=10)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=tz_naive_beginning_datetime,
+            features=["VO", "CCAP", "RELAX", "DOLBY_ATMOS", "3D", "GRETA", "PREVIEW_SCREENING"],
+        )
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999) + timedelta(
+            minutes=10
+        )
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # venue
+        expected_num_queries += 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        response_features = calendar[0]["screenings"][0]["dayScreenings"][0]["features"]
+        assert response_features == {
+            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["GRETA"]},
+            "audio": "DOLBY_ATMOS",
+            "language": "VO",
+            "specialEventType": "PREVIEW_SCREENING",
+            "video": "3D",
+        }
 
     def test_day_screenings_are_sorted_by_last_30_days_bookings(self, client):
         tomorrow = date_utils.get_naive_utc_now() + timedelta(days=1)
@@ -1215,7 +1363,7 @@ class VenueMovieCalendarTest:
         expected_num_queries = 1  # venue
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
             assert response.status_code == 200
 
         movie_day = date_utils.default_timezone_to_local_datetime(
@@ -1244,7 +1392,7 @@ class VenueMovieCalendarTest:
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar",
+                f"/native/v2/venue/{venue_id}/movie/calendar",
                 params={"from": before_screenings, "to": after_screenings},
             )
             assert response.status_code == 200
@@ -1271,7 +1419,7 @@ class VenueMovieCalendarTest:
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar",
+                f"/native/v2/venue/{venue_id}/movie/calendar",
                 params={"from": before_screenings, "to": after_screenings},
             )
             assert response.status_code == 200
@@ -1298,7 +1446,7 @@ class VenueMovieCalendarTest:
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": tomorrow, "to": in_two_days}
+                f"/native/v2/venue/{venue_id}/movie/calendar", params={"from": tomorrow, "to": in_two_days}
             )
             assert response.status_code == 200
 
@@ -1318,7 +1466,7 @@ class VenueMovieCalendarTest:
         expected_num_queries = 1  # venue
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -1344,7 +1492,7 @@ class VenueMovieCalendarTest:
         expected_num_queries = 1  # venue
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -1358,7 +1506,7 @@ class VenueMovieCalendarTest:
     def test_returns_404_if_venue_not_found(self, client):
         expected_num_queries = 1  # venue
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/venue/999999999/movie/calendar")
+            response = client.get("/native/v2/venue/999999999/movie/calendar")
             assert response.status_code == 404
 
     def test_timezone_aware_query_params(self, client):
@@ -1376,7 +1524,7 @@ class VenueMovieCalendarTest:
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar",
+                f"/native/v2/venue/{venue_id}/movie/calendar",
                 params={"from": start_date.isoformat(), "to": end_date.isoformat()},
             )
             assert response.status_code == 200
@@ -1423,7 +1571,7 @@ class VenueMovieCalendarTest:
         expected_num_queries = 1  # venue
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params=params)
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar", params=params)
             assert response.status_code == 200, response.json
 
         calendar = response.json["calendar"]
@@ -1471,7 +1619,7 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -1492,7 +1640,13 @@ class VenueMovieCalendarForUserTest:
                             {
                                 "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                                 "bookability": "BOOKABLE",
-                                "features": [],
+                                "features": {
+                                    "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                    "audio": None,
+                                    "language": None,
+                                    "specialEventType": None,
+                                    "video": None,
+                                },
                                 "price": 10.1,
                                 "stockId": stock.id,
                             }
@@ -1500,7 +1654,13 @@ class VenueMovieCalendarForUserTest:
                         "nextScreening": {
                             "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "BOOKABLE",
-                            "features": [],
+                            "features": {
+                                "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                "audio": None,
+                                "language": None,
+                                "specialEventType": None,
+                                "video": None,
+                            },
                             "price": 10.1,
                             "stockId": stock.id,
                         },
@@ -1521,7 +1681,13 @@ class VenueMovieCalendarForUserTest:
                         "nextScreening": {
                             "beginningDatetime": tz_aware_beginning_datetime.isoformat(),
                             "bookability": "BOOKABLE",
-                            "features": [],
+                            "features": {
+                                "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
+                                "audio": None,
+                                "language": None,
+                                "specialEventType": None,
+                                "video": None,
+                            },
                             "price": 10.1,
                             "stockId": stock.id,
                         },
@@ -1529,6 +1695,42 @@ class VenueMovieCalendarForUserTest:
                 ],
             },
         ]
+
+    def test_features_serialization(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        address = AddressFactory(timezone="Europe/Paris")
+        tz_naive_beginning_datetime = date_utils.get_naive_utc_now() + timedelta(minutes=10)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=tz_naive_beginning_datetime,
+            features=["VO", "CCAP", "RELAX", "DOLBY_ATMOS", "3D", "GRETA", "PREVIEW_SCREENING"],
+        )
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999) + timedelta(
+            minutes=10
+        )
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # venue
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        response_features = calendar[0]["screenings"][0]["dayScreenings"][0]["features"]
+        assert response_features == {
+            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["GRETA"]},
+            "audio": "DOLBY_ATMOS",
+            "language": "VO",
+            "specialEventType": "PREVIEW_SCREENING",
+            "video": "3D",
+        }
 
     def test_sold_out_screening(self, client):
         user = users_factories.BeneficiaryFactory()
@@ -1546,7 +1748,7 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -1577,7 +1779,7 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -1606,7 +1808,7 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # deposits
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -1634,7 +1836,7 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # beneficiary_fraud_check
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
@@ -1681,7 +1883,7 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # action_history
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(
@@ -1727,7 +1929,7 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # action_history
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(
@@ -1756,7 +1958,7 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(
@@ -1785,7 +1987,7 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries += 1  # user bookings
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
+            response = client.get(f"/native/v2/venue/{venue_id}/movie/calendar/me", params={"from": start, "to": end})
             assert response.status_code == 200
 
         today = date_utils.default_timezone_to_local_datetime(
@@ -1800,7 +2002,7 @@ class VenueMovieCalendarForUserTest:
         expected_num_queries = 1  # user
         expected_num_queries += 1  # venue
         with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/venue/999999999/movie/calendar/me")
+            response = client.get("/native/v2/venue/999999999/movie/calendar/me")
             assert response.status_code == 404
 
     def test_timezone_aware_query_params(self, client):
@@ -1823,7 +2025,7 @@ class VenueMovieCalendarForUserTest:
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar/me",
+                f"/native/v2/venue/{venue_id}/movie/calendar/me",
                 params={"from": start_date.isoformat(), "to": end_date.isoformat()},
             )
             assert response.status_code == 200

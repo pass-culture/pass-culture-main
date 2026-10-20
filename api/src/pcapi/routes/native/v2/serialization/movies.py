@@ -11,6 +11,7 @@ from decimal import Decimal
 import pydantic as pydantic_v2
 
 from pcapi.core.categories.genres.movie import get_movie_label
+from pcapi.core.offers import constants as offers_constants
 from pcapi.core.providers import api as providers_api
 from pcapi.core.users.young_status import SubscriptionStatus
 from pcapi.routes.serialization import HttpBodyModel
@@ -142,10 +143,44 @@ class RawScreening:
     timezone: str | None = None
 
 
+class ScreeningAccessibilityFeatures(HttpBodyModel):
+    audio: list[str]
+    mental: list[str]
+    motor: list[str]
+    visual: list[str]
+
+    @classmethod
+    def build(cls, features: set[str]) -> typing.Self:
+        return cls(
+            audio=[f for f in offers_constants.AudioAccessbilityFeatures if f in features],
+            mental=[f for f in offers_constants.MentalAccessbilityFeatures if f in features],
+            motor=[f for f in offers_constants.MotorAccessbilityFeatures if f in features],
+            visual=[f for f in offers_constants.VisualAccessbilityFeatures if f in features],
+        )
+
+
+class ScreeningFeatures(HttpBodyModel):
+    accessibility: ScreeningAccessibilityFeatures
+    audio: str | None
+    language: str | None
+    special_event_type: str | None
+    video: str | None
+
+    @classmethod
+    def build(cls, features: set[str]) -> typing.Self:
+        return cls(
+            accessibility=ScreeningAccessibilityFeatures.build(features),
+            audio=next((f for f in offers_constants.AudioFeatures if f in features), None),
+            language=next((f for f in offers_constants.LanguageFeatures if f in features), None),
+            special_event_type=next((f for f in offers_constants.SpecialEventFeatures if f in features), None),
+            video=next((f for f in offers_constants.VideoFeatures if f in features), None),
+        )
+
+
 class ScreeningV2(HttpBodyModel):
     beginning_datetime: pydantic_v2.AwareDatetime  # ⚠ Timezone-aware datetime in offerer address offset
     bookability: Bookability
-    features: list[str]
+    features: ScreeningFeatures
     price: float
     stock_id: int
 
@@ -184,7 +219,7 @@ class ScreeningV2(HttpBodyModel):
                 local_tz=raw_screening.timezone or date_utils.METROPOLE_TIMEZONE,
             ),
             bookability=cls._get_screening_bookability(raw_screening),
-            features=raw_screening.features,
+            features=ScreeningFeatures.build(set(raw_screening.features)),
             price=float(raw_screening.price),
             stock_id=raw_screening.stock_id,
         )
