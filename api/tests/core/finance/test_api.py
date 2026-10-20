@@ -1321,41 +1321,33 @@ class CancelLatestEventTest:
 
 
 class UpdateFinanceEventPricingDateTest:
-    @time_machine.travel("2023-10-20 17:00:00", tick=False)
     def test_editing_beginning_datetime_edits_finance_event(self):
         # Given
-        new_beginning_datetime = date_utils.get_naive_utc_now() + datetime.timedelta(days=4)
+        now = date_utils.get_naive_utc_now()
+        new_beginning_datetime = now + datetime.timedelta(days=4)
 
         pricing_point = offerers_factories.VenueFactory()
-        oldest_event = _generate_finance_event_context(
-            pricing_point, date_utils.get_naive_utc_now() + datetime.timedelta(days=2), date_utils.get_naive_utc_now()
-        )
-        older_event = _generate_finance_event_context(
-            pricing_point, date_utils.get_naive_utc_now() + datetime.timedelta(days=6), date_utils.get_naive_utc_now()
-        )
-        changing_event = _generate_finance_event_context(
-            pricing_point, date_utils.get_naive_utc_now() + datetime.timedelta(days=8), date_utils.get_naive_utc_now()
-        )
-        newest_event = _generate_finance_event_context(
-            pricing_point, date_utils.get_naive_utc_now() + datetime.timedelta(days=10), date_utils.get_naive_utc_now()
-        )
+        oldest_event = _generate_finance_event_context(pricing_point, now + datetime.timedelta(days=2), now)
+        older_event = _generate_finance_event_context(pricing_point, now + datetime.timedelta(days=6), now)
+        changing_event = _generate_finance_event_context(pricing_point, now + datetime.timedelta(days=8), now)
+        newest_event = _generate_finance_event_context(pricing_point, now + datetime.timedelta(days=10), now)
         ignored_event = _generate_finance_event_context(
             pricing_point,
-            date_utils.get_naive_utc_now() + datetime.timedelta(days=12),
-            date_utils.get_naive_utc_now(),
+            now + datetime.timedelta(days=12),
+            now,
             status=models.FinanceEventStatus.NOT_TO_BE_PRICED,
         )
         cancelled_event = _generate_finance_event_context(
             pricing_point,
-            date_utils.get_naive_utc_now() + datetime.timedelta(days=12),
-            date_utils.get_naive_utc_now(),
+            now + datetime.timedelta(days=12),
+            now,
             status=models.FinanceEventStatus.CANCELLED,
         )
 
         unrelated_event = _generate_finance_event_context(
             offerers_factories.VenueFactory(),
-            date_utils.get_naive_utc_now() + datetime.timedelta(days=8),
-            date_utils.get_naive_utc_now(),
+            now + datetime.timedelta(days=8),
+            now,
         )
 
         # When
@@ -1363,32 +1355,32 @@ class UpdateFinanceEventPricingDateTest:
         api.update_finance_event_pricing_date(stock=changing_event.booking.stock)
 
         # Then
-        assert oldest_event.pricingOrderingDate == date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
+        assert oldest_event.pricingOrderingDate == now + datetime.timedelta(days=2)
         assert oldest_event.status == models.FinanceEventStatus.PRICED
         assert len(oldest_event.pricings) == 1
 
-        assert older_event.pricingOrderingDate == date_utils.get_naive_utc_now() + datetime.timedelta(days=6)
+        assert older_event.pricingOrderingDate == now + datetime.timedelta(days=6)
         assert older_event.status == models.FinanceEventStatus.READY
         assert len(older_event.pricings) == 0
 
-        assert changing_event.pricingOrderingDate == date_utils.get_naive_utc_now() + datetime.timedelta(days=4)
+        assert changing_event.pricingOrderingDate == now + datetime.timedelta(days=4)
         assert changing_event.status == models.FinanceEventStatus.READY
         assert len(changing_event.pricings) == 1
         assert changing_event.pricings[0].status == models.PricingStatus.CANCELLED
 
-        assert newest_event.pricingOrderingDate == date_utils.get_naive_utc_now() + datetime.timedelta(days=10)
+        assert newest_event.pricingOrderingDate == now + datetime.timedelta(days=10)
         assert newest_event.status == models.FinanceEventStatus.READY
         assert len(newest_event.pricings) == 0
 
-        assert unrelated_event.pricingOrderingDate == date_utils.get_naive_utc_now() + datetime.timedelta(days=8)
+        assert unrelated_event.pricingOrderingDate == now + datetime.timedelta(days=8)
         assert unrelated_event.status == models.FinanceEventStatus.PRICED
         assert len(unrelated_event.pricings) == 1
 
-        assert ignored_event.pricingOrderingDate == date_utils.get_naive_utc_now() + datetime.timedelta(days=12)
+        assert ignored_event.pricingOrderingDate == now + datetime.timedelta(days=12)
         assert ignored_event.status == models.FinanceEventStatus.NOT_TO_BE_PRICED
         assert len(ignored_event.pricings) == 0
 
-        assert cancelled_event.pricingOrderingDate == date_utils.get_naive_utc_now() + datetime.timedelta(days=12)
+        assert cancelled_event.pricingOrderingDate == now + datetime.timedelta(days=12)
         assert cancelled_event.status == models.FinanceEventStatus.CANCELLED
         assert len(cancelled_event.pricings) == 0
 
