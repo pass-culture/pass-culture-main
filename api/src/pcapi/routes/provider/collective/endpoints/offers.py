@@ -14,6 +14,7 @@ from pcapi.routes.provider import utils
 from pcapi.routes.provider.collective.serialization import offers as offers_serialization
 from pcapi.routes.provider.documentation_constants import http_responses
 from pcapi.routes.provider.documentation_constants import tags
+from pcapi.routes.provider.services import authorization
 from pcapi.routes.provider.services.authentication import api_key_required
 from pcapi.routes.provider.services.authentication import current_api_key
 from pcapi.serialization.decorator import spectree_serialize
@@ -153,6 +154,11 @@ def post_collective_offer_public(
     """
     Create Collective Offer
     """
+    try:
+        authorization.get_venue_provider_or_raise_404(body.venue_id)
+    except api_errors.ResourceNotFoundError:
+        raise api_errors.ApiErrors(errors={"venueId": ["Cette structure n'a pas été trouvée."]}, status_code=404)
+
     image_as_bytes = None
 
     if body.image_file:
