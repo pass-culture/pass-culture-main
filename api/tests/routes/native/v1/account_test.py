@@ -1566,7 +1566,16 @@ class ValidateEmailTest:
         # Ensure the refresh token is valid
         refresh_token = response.json["refreshToken"]
         client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-        refresh_response = client.post("/native/v1/refresh_access_token", json={})
+        refresh_response = client.post(
+            "/native/v2/refresh_access_token",
+            json={
+                "device_info": {
+                    "device_id": "idv_qwerty1234",
+                    "os": "testOS",
+                    "source": "somthing",
+                },
+            },
+        )
         assert refresh_response.status_code == 200
 
         user = db.session.get(users_models.User, user.id)
@@ -1614,7 +1623,16 @@ class ValidateEmailTest:
         # Ensure the refresh token is valid
         refresh_token = response.json["refreshToken"]
         client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-        refresh_response = client.post("/native/v1/refresh_access_token", json={})
+        refresh_response = client.post(
+            "/native/v2/refresh_access_token",
+            json={
+                "device_info": {
+                    "device_id": "idv_qwerty1234",
+                    "os": "testOS",
+                    "source": "somthing",
+                },
+            },
+        )
         assert refresh_response.status_code == 200
 
         user = db.session.get(users_models.User, user.id)
