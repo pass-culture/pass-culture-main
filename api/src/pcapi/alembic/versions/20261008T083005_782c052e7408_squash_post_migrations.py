@@ -1,10 +1,10 @@
-"""Squash migrations - PRE"""
+"""Squash migrations - POST"""
 
-# pre/post deployment: pre
+# pre/post deployment: post
 # revision identifiers, used by Alembic.
-revision = "3aa9d6b0a643"
+revision = "782c052e7408"
 down_revision = "f460dc2c9f93"
-branch_labels = ("pre",)
+branch_labels = ("post",)
 depends_on: list[str] | None = None
 
 
