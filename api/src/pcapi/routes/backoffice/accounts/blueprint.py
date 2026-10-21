@@ -982,9 +982,12 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
             return TunnelType.UNDERAGE_AGE18_OLD
 
     # Decree start at age 18
-    if signup_age < users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18:
-        if age_now >= users_constants.ELIGIBILITY_AGE_18:
-            return TunnelType.UNDERAGE_AGE18_OLD  # old Pass 18
+    if (
+        signup_age < users_constants.ELIGIBILITY_AGE_17
+        and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18
+        and age_now >= users_constants.ELIGIBILITY_AGE_18
+    ):
+        return TunnelType.UNDERAGE_AGE18_OLD  # old Pass 18
 
     ##########################
     # Signup at 17 years old #
@@ -1022,9 +1025,12 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
             return TunnelType.UNDERAGE_AGE18
 
     # Decree start at age 18
-    if signup_age == users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18:
-        if age_now >= users_constants.ELIGIBILITY_AGE_18:
-            return TunnelType.UNDERAGE_AGE18_OLD
+    if (
+        signup_age == users_constants.ELIGIBILITY_AGE_17
+        and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18
+        and age_now >= users_constants.ELIGIBILITY_AGE_18
+    ):
+        return TunnelType.UNDERAGE_AGE18_OLD
 
     ##########################
     # Signup at 18 years old #
@@ -2336,11 +2342,10 @@ def _get_duplicate_fraud_history(
         for check_history in check_history_items:
             reason_codes = set(check_history.reasonCodes or [])
 
-            if reason_codes.intersection(reason_codes_for_duplicates):
-                if check_history.reason:
-                    id_searched = re.search(r"\s(\d+)\D*$", check_history.reason)
-                    if id_searched:
-                        return id_searched.group(1)
+            if reason_codes.intersection(reason_codes_for_duplicates) and check_history.reason:
+                id_searched = re.search(r"\s(\d+)\D*$", check_history.reason)
+                if id_searched:
+                    return id_searched.group(1)
     return None
 
 

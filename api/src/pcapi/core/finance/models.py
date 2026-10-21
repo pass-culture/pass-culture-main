@@ -138,16 +138,17 @@ class Deposit(PcObject, Model):
 
     @property
     def initial_recredit(self) -> "Recredit | None":
-        if self.type == DepositType.GRANT_17_18:
-            if recredits_17_18 := sorted(
+        if self.type == DepositType.GRANT_17_18 and (
+            recredits_17_18 := sorted(
                 [
                     recredit
                     for recredit in self.recredits
                     if recredit.recreditType in (RecreditType.RECREDIT_17, RecreditType.RECREDIT_18)
                 ],
                 key=lambda recredit: recredit.dateCreated,
-            ):
-                return recredits_17_18[0]
+            )
+        ):
+            return recredits_17_18[0]
         return None
 
 
@@ -786,9 +787,8 @@ class CustomReimbursementRule(PcObject, ReimbursementRule, Model):
 
         if booking.stock.offerId == self.offerId:
             return True
-        if self.subcategories:
-            if booking.stock.offer.subcategoryId not in self.subcategories:
-                return False
+        if self.subcategories and booking.stock.offer.subcategoryId not in self.subcategories:
+            return False
         if get_pricing_point_link(booking).pricingPointId == self.venueId:
             return True
         return booking.offererId == self.offererId
@@ -1306,14 +1306,13 @@ class FinanceIncident(PcObject, Model):
         from pcapi.core.users.models import User
 
         author_full_name = self.details.get("author")
-        if author_id := self.details.get("authorId"):
-            if (
-                author := db.session.query(User)
-                .filter_by(id=author_id)
-                .options(sa_orm.load_only(User.firstName, User.lastName))
-                .one_or_none()
-            ):
-                author_full_name = author.full_name
+        if (author_id := self.details.get("authorId")) and (
+            author := db.session.query(User)
+            .filter_by(id=author_id)
+            .options(sa_orm.load_only(User.firstName, User.lastName))
+            .one_or_none()
+        ):
+            author_full_name = author.full_name
         return author_full_name or ""
 
     @property

@@ -134,10 +134,9 @@ def _update_user_tag(
         assert isinstance(description, str | None)  # helps mypy
         user_tag.description = description
         update = True
-    if categories is not sentinel:
-        if isinstance(categories, list) and set(user_tag.categories) != set(categories):
-            user_tag.categories = categories
-            update = True
+    if categories is not sentinel and isinstance(categories, list) and set(user_tag.categories) != set(categories):
+        user_tag.categories = categories
+        update = True
 
     if update:
         db.session.add(user_tag)

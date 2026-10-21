@@ -78,9 +78,8 @@ class CreateSpecialEventForm(FlaskForm):
         return data
 
     def validate_typeform_id(self, typeform_id: fields.PCStringField) -> fields.PCStringField:
-        if typeform_id.data:
-            if not re.match(RE_TYPEFORM_ID, typeform_id.data):
-                raise wtforms.validators.ValidationError("Le format n'est pas reconnu")
+        if typeform_id.data and not re.match(RE_TYPEFORM_ID, typeform_id.data):
+            raise wtforms.validators.ValidationError("Le format n'est pas reconnu")
         return typeform_id
 
     def validate_event_date(self, event_date: fields.PCStringField) -> fields.PCStringField:

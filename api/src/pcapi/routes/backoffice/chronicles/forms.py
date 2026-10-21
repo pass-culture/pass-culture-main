@@ -169,7 +169,9 @@ class CreateChronicleForm(forms_utils.PCForm):
     product_identifier = fields.PCIntegerField("Identifiant")
 
     def validate_product_identifier(self, product_identifier_field: fields.PCStringField) -> fields.PCStringField:
-        if self.product_identifier_type.data == chronicles_models.ChronicleProductIdentifierType.EAN.value:
-            if not len(str(product_identifier_field.data)) == 13:
-                raise ValidationError("Un EAN doit être composé de 13 chiffres")
+        if (
+            self.product_identifier_type.data == chronicles_models.ChronicleProductIdentifierType.EAN.value
+            and not len(str(product_identifier_field.data)) == 13
+        ):
+            raise ValidationError("Un EAN doit être composé de 13 chiffres")
         return product_identifier_field

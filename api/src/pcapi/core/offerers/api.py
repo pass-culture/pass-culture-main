@@ -236,9 +236,8 @@ def update_venue(
             )
             delete_venue_accessibility_provider(venue)
 
-    if criteria is not offerers_constants.UNCHANGED:
-        if set(venue.criteria) != set(criteria):
-            modifications["criteria"] = criteria
+    if criteria is not offerers_constants.UNCHANGED and set(venue.criteria) != set(criteria):
+        modifications["criteria"] = criteria
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
 
@@ -973,18 +972,17 @@ def auto_tag_new_offerer(
 ) -> None:
     tag_names_to_apply = set()
 
-    if siren_info:
-        if siren_info.ape_code:
-            tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
-            if tag_label:
-                tag = db.session.query(offerers_models.OffererTag).filter_by(label=tag_label).one_or_none()
-                if not tag:
-                    logger.error(
-                        "Could not assign tag to offerer: tag not found in DB",
-                        extra={"offerer": offerer.id, "tag_label": tag_label},
-                    )
-                else:
-                    offerer.tags.append(tag)
+    if siren_info and siren_info.ape_code:
+        tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
+        if tag_label:
+            tag = db.session.query(offerers_models.OffererTag).filter_by(label=tag_label).one_or_none()
+            if not tag:
+                logger.error(
+                    "Could not assign tag to offerer: tag not found in DB",
+                    extra={"offerer": offerer.id, "tag_label": tag_label},
+                )
+            else:
+                offerer.tags.append(tag)
 
     if user.email.split("@")[-1] in set(settings.NATIONAL_PARTNERS_EMAIL_DOMAINS.split(",")):
         tag_names_to_apply.add("partenaire-national")
@@ -1161,13 +1159,12 @@ def update_offerer(
     if name is not offerers_constants.UNCHANGED and offerer.name != name:
         modified_info["name"] = {"old_info": offerer.name, "new_info": name}
         offerer.name = name
-    if tags is not offerers_constants.UNCHANGED:
-        if set(offerer.tags) != set(tags):
-            modified_info["tags"] = {
-                "old_info": _format_tags(offerer.tags) or None,
-                "new_info": _format_tags(tags) or None,
-            }
-            offerer.tags = tags
+    if tags is not offerers_constants.UNCHANGED and set(offerer.tags) != set(tags):
+        modified_info["tags"] = {
+            "old_info": _format_tags(offerer.tags) or None,
+            "new_info": _format_tags(tags) or None,
+        }
+        offerer.tags = tags
 
     if modified_info:
         history_api.add_action(
@@ -1539,9 +1536,12 @@ def get_individual_bookings_to_cancel(
     # Do not cancel bookings which will become USED in auto_mark_as_used_after_event()
     bookings = []
     for booking in ongoing_bookings:
-        if booking.stock.offer.subcategoryId in event_subcategory_ids:
-            if booking.stock.beginningDatetime and (now - USED_EVENT_DELAY) <= booking.stock.beginningDatetime <= now:
-                continue
+        if (
+            booking.stock.offer.subcategoryId in event_subcategory_ids
+            and booking.stock.beginningDatetime
+            and (now - USED_EVENT_DELAY) <= booking.stock.beginningDatetime <= now
+        ):
+            continue
 
         bookings.append(booking)
     return bookings
@@ -2323,9 +2323,8 @@ def update_offerer_tag(
         offerer_tag.label = label
     if description is not offerers_constants.UNCHANGED:
         offerer_tag.description = description
-    if categories is not offerers_constants.UNCHANGED:
-        if set(offerer_tag.categories) != set(categories):
-            offerer_tag.categories = categories
+    if categories is not offerers_constants.UNCHANGED and set(offerer_tag.categories) != set(categories):
+        offerer_tag.categories = categories
 
     db.session.add(offerer_tag)
     db.session.flush()
@@ -2901,8 +2900,8 @@ def delete_venue_accessibility_provider(venue: models.Venue) -> None:
 def set_accessibility_provider_id(
     venue: models.Venue, id_at_provider: str | None = None, url_at_provider: str | None = None
 ) -> None:
-    if not (id_at_provider and url_at_provider):
-        if id_and_url_at_provider := accessibility_provider.get_id_at_accessibility_provider(
+    if not (id_at_provider and url_at_provider) and (
+        id_and_url_at_provider := accessibility_provider.get_id_at_accessibility_provider(
             name=venue.name,
             public_name=venue.publicName,
             siret=venue.siret,
@@ -2910,9 +2909,10 @@ def set_accessibility_provider_id(
             city=venue.offererAddress.address.city,
             postal_code=venue.offererAddress.address.postalCode,
             address=venue.offererAddress.address.street,
-        ):
-            id_at_provider = id_and_url_at_provider["slug"]
-            url_at_provider = id_and_url_at_provider["url"]
+        )
+    ):
+        id_at_provider = id_and_url_at_provider["slug"]
+        url_at_provider = id_and_url_at_provider["url"]
     if id_at_provider and url_at_provider:
         if not venue.accessibilityProvider:
             venue.accessibilityProvider = models.AccessibilityProvider(

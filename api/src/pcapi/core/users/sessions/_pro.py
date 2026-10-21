@@ -65,13 +65,16 @@ class SessionManager(_common.AbstractSessionManager):
         # persist session in the client's cookies
         flask.session.permanent = True
         internal_admin_id = flask.session.get("internal_admin_id", 0)
-        if user and internal_admin_id:
-            if (
+        if (
+            user
+            and internal_admin_id
+            and (
                 admin := db.session.query(users_models.User)
                 .filter(users_models.User.id == internal_admin_id)
                 .one_or_none()
-            ):
-                user.impersonator = admin
+            )
+        ):
+            user.impersonator = admin
         return manage_pro_session(user)
 
 

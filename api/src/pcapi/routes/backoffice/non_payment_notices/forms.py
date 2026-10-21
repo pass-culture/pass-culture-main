@@ -140,15 +140,19 @@ class CreateNonPaymentNoticeForm(FlaskForm):
         offerer_id = self.offerer.data[0] if (self.offerer.data and self.offerer.data[0]) else None
         venue_id = self.venue.data[0] if (self.venue.data and self.venue.data[0]) else None
 
-        if offerer_id and venue_id:
-            if int(offerer_id) != (
+        if (
+            offerer_id
+            and venue_id
+            and int(offerer_id)
+            != (
                 db.session.query(offerers_models.Venue)
                 .filter(offerers_models.Venue.id == venue_id)
                 .one()
                 .managingOffererId
-            ):
-                self.venue.errors = ["Le partenaire culturel doit être sur l'entité juridique sélectionnée"]
-                return False
+            )
+        ):
+            self.venue.errors = ["Le partenaire culturel doit être sur l'entité juridique sélectionnée"]
+            return False
 
         if not offerer_id and venue_id:
             self.offerer.data = [

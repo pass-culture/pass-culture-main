@@ -125,20 +125,21 @@ class AllocineStocks(LocalProvider):
             offer.isDuo = self.isDuo
 
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
-        if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
-            if not self.product.productMediations:
-                image = self.get_object_thumb()
-                if image:
-                    try:
-                        offers_api.create_movie_poster(self.product, self.provider, image)
-                        self.createdThumbs += 1
-                    except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
-                        self.erroredThumbs += 1
-                        logger.warning(
-                            "Error: Offer image could not be created. Reason: %s",
-                            e,
-                            extra={"allocineId": self.movie.internalId, "theaterId": self.theater_id},
-                        )
+        if (
+            not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date()
+        ) and not self.product.productMediations:
+            image = self.get_object_thumb()
+            if image:
+                try:
+                    offers_api.create_movie_poster(self.product, self.provider, image)
+                    self.createdThumbs += 1
+                except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
+                    self.erroredThumbs += 1
+                    logger.warning(
+                        "Error: Offer image could not be created. Reason: %s",
+                        e,
+                        extra={"allocineId": self.movie.internalId, "theaterId": self.theater_id},
+                    )
 
         self.last_offer = offer
 

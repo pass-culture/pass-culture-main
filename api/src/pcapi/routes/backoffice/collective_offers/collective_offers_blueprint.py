@@ -991,22 +991,30 @@ def _get_collective_offer_details_actions(collective_offer: educational_models.C
         and collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED
     ):
         allowed_actions.add_action(CollectiveOfferDetailsActionType.VALIDATE_BOOKING)
-    if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
-        if collective_offer.validation == offer_mixin.OfferValidationStatus.PENDING:
-            allowed_actions.add_action(CollectiveOfferDetailsActionType.VALIDATE_OFFER)
-            allowed_actions.add_action(CollectiveOfferDetailsActionType.REJECT_OFFER)
-    if access_control.has_current_user_permission(perm_models.Permissions.CREATE_INCIDENTS) and collective_booking:
-        if (
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+        and collective_offer.validation == offer_mixin.OfferValidationStatus.PENDING
+    ):
+        allowed_actions.add_action(CollectiveOfferDetailsActionType.VALIDATE_OFFER)
+        allowed_actions.add_action(CollectiveOfferDetailsActionType.REJECT_OFFER)
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.CREATE_INCIDENTS)
+        and collective_booking
+        and (
             collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED
             and finance_validation.check_commercial_gesture_collective_booking(collective_booking)
-        ):
-            allowed_actions.add_action(CollectiveOfferDetailsActionType.CREATE_COMMERCIAL_GESTURE)
-    if access_control.has_current_user_permission(perm_models.Permissions.CREATE_INCIDENTS) and collective_booking:
-        if (
+        )
+    ):
+        allowed_actions.add_action(CollectiveOfferDetailsActionType.CREATE_COMMERCIAL_GESTURE)
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.CREATE_INCIDENTS)
+        and collective_booking
+        and (
             collective_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED
             and finance_validation.check_incident_collective_booking(collective_booking)
-        ):
-            allowed_actions.add_action(CollectiveOfferDetailsActionType.CREATE_OVERPAYMENT)
+        )
+    ):
+        allowed_actions.add_action(CollectiveOfferDetailsActionType.CREATE_OVERPAYMENT)
     if (
         access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
         and collective_stock
@@ -1159,23 +1167,26 @@ def get_collective_offer_details(collective_offer_id: int) -> response_utils.Bac
         )
         kwargs.update({"last_pricing": last_pricing})
 
-    if access_control.has_current_user_permission(perm_models.Permissions.READ_INCIDENTS):
-        if collective_offer.collectiveStock and collective_offer.collectiveStock.lastBooking:
-            last_incident = (
-                db.session.query(
-                    finance_models.FinanceIncident,
-                )
-                .join(
-                    finance_models.FinanceIncident.booking_finance_incidents,
-                )
-                .filter(
-                    finance_models.BookingFinanceIncident.collectiveBookingId
-                    == collective_offer.collectiveStock.lastBooking.id,
-                )
-                .order_by(finance_models.FinanceIncident.id.desc())
-                .first()
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.READ_INCIDENTS)
+        and collective_offer.collectiveStock
+        and collective_offer.collectiveStock.lastBooking
+    ):
+        last_incident = (
+            db.session.query(
+                finance_models.FinanceIncident,
             )
-            kwargs.update({"last_incident": last_incident})
+            .join(
+                finance_models.FinanceIncident.booking_finance_incidents,
+            )
+            .filter(
+                finance_models.BookingFinanceIncident.collectiveBookingId
+                == collective_offer.collectiveStock.lastBooking.id,
+            )
+            .order_by(finance_models.FinanceIncident.id.desc())
+            .first()
+        )
+        kwargs.update({"last_incident": last_incident})
 
     if CollectiveOfferDetailsActionType.VALIDATE_BOOKING in allowed_actions:
         kwargs.update(

@@ -65,9 +65,8 @@ class UnsuspendUserForm(FlaskForm):
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
-        if suspension_type := kwargs.get("suspension_type"):
-            if suspension_type != SuspensionUserType.PUBLIC:
-                del self.reset_password
+        if (suspension_type := kwargs.get("suspension_type")) and suspension_type != SuspensionUserType.PUBLIC:
+            del self.reset_password
 
 
 def get_toggle_suspension_args(

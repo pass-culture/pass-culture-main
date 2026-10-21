@@ -51,9 +51,10 @@ def _validate_contacts(contracts: list[Contract]) -> list:
             continue
         columns = {c.name.lower() for c in table.columns}
         for contracted_column in contract.columns:
-            if contracted_column.lower() not in columns:
-                if f"{contract.table_name}.{contracted_column.lower()}" not in COLUMN_WHITELIST:
-                    errors.append(f"Column '{contracted_column}' has been removed from table '{contract.table_name}'")
+            if (contracted_column.lower() not in columns) and (
+                f"{contract.table_name}.{contracted_column.lower()}" not in COLUMN_WHITELIST
+            ):
+                errors.append(f"Column '{contracted_column}' has been removed from table '{contract.table_name}'")
     return errors
 
 

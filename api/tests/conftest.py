@@ -671,9 +671,8 @@ def pytest_collection_finish(session):
         for item in session.items
         if session.config.rootdir / routes_dir in Path(item.fspath).parents
     ]
-    if any(BO_matches) and not all(BO_matches):
-        if not session.config.option.collectonly:
-            pytest.exit("You can not run backoffice tests with non backoffice tests")
+    if any(BO_matches) and not all(BO_matches) and not session.config.option.collectonly:
+        pytest.exit("You can not run backoffice tests with non backoffice tests")
     if any(BO_matches):
         session.config.option.markexpr = "backoffice"
 
