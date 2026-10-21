@@ -7,7 +7,6 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
 from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
-from pcapi.core.categories.app_search_tree import SEARCH_NODES
 from pcapi.core.categories.models import GenreType
 from pcapi.core.external.batch import transactional_notifications
 from pcapi.core.offers import repository
@@ -132,12 +131,4 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
             for native_category in NATIVE_CATEGORIES
         ],
         genreTypes=[subcategories_v2_serializers.GenreTypeModel.model_validate(genre_type) for genre_type in GenreType],
-    )
-
-
-@blueprint.native_route("/categories", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=subcategories_v2_serializers.CategoriesResponseModel)
-def get_categories() -> subcategories_v2_serializers.CategoriesResponseModel:
-    return subcategories_v2_serializers.CategoriesResponseModel(
-        categories=[subcategories_v2_serializers.CategoryResponseModel.build(node) for node in SEARCH_NODES]
     )

@@ -7,6 +7,7 @@ from pcapi.serialization.decorator import spectree_serialize
 from .. import blueprint
 
 
+# It will break the WebApp v2 proxy in case of endpoint modification. Read https://github.com/pass-culture/pass-culture-app-native/pull/2808/files#r844891000
 @blueprint.native_route("/venue/<int:venue_id>", version="v2", methods=["GET"])
 @spectree_serialize(response_model=serializers.VenueResponse, api=blueprint.api, on_error_statuses=[404])
 def get_venue_v2(venue_id: int) -> serializers.VenueResponse:

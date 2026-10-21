@@ -1662,48 +1662,6 @@ class IdentityCheckSubscriptionStatusTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class CompleteProfileTest:
-    def test_when_profile_was_proviously_cancelled(self):
-        """
-        This was a bug when a user previously completed profile but the BeneficiaryCancelled
-        was cancelled because of "eligibility_changed" scenario
-        """
-        user = users_factories.UserFactory(
-            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
-            status=subscription_models.FraudCheckStatus.CANCELED,
-            eligibilityType=users_models.EligibilityType.AGE17_18,
-            reasonCodes=[subscription_models.FraudReasonCode.ELIGIBILITY_CHANGED],
-        )
-
-        subscription_api.complete_profile(
-            user,
-            address="address",
-            city="city",
-            postal_code="12400",
-            activity=users_models.ActivityEnum.STUDENT,
-            first_name="harry",
-            last_name="cover",
-        )
-
-        assert subscription_repository.get_completed_profile_check(user, users_models.EligibilityType.AGE17_18)
-        assert (
-            db.session.query(subscription_models.BeneficiaryFraudCheck)
-            .filter_by(
-                userId=user.id,
-                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
-                status=subscription_models.FraudCheckStatus.OK,
-                eligibilityType=users_models.EligibilityType.AGE17_18,
-            )
-            .count()
-            == 1
-        )
-
-
-@pytest.mark.usefixtures("db_session")
 class ActivateBeneficiaryIfNoMissingStepTest:
     def test_activation_success(self):
         user = users_factories.UserFactory(

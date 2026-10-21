@@ -52,7 +52,7 @@ def get_user_profile() -> serializers.UserProfileResponse:
     return serializers.UserProfileResponse.model_validate(current_user)
 
 
-@blueprint.native_route("/profile", methods=["POST", "PATCH"])
+@blueprint.native_route("/profile", methods=["PATCH"])
 @spectree_serialize(
     response_model=serializers.UserProfileResponse,
     on_success_status=200,
@@ -325,21 +325,6 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
         api.request_password_reset(user)
     else:
         api.request_email_confirmation(user)
-
-
-# TODO(dnguyen): remove route when the native app stops calling it
-@blueprint.native_route("/email_validation_remaining_resends", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=serializers.EmailValidationRemainingResendsResponse)
-def empty_email_validation_remaining_resends() -> serializers.EmailValidationRemainingResendsResponse | None:
-    logger.warning("GET /email_validation_remaining_resends called without an email")
-
-    email = ""
-    remaining_resends = api.get_remaining_email_resends(email)
-    expiration_time = api.get_email_validation_resends_limitation_expiration_time(email)
-
-    return serializers.EmailValidationRemainingResendsResponse(
-        remainingResends=remaining_resends, counterResetDatetime=expiration_time
-    )
 
 
 @blueprint.native_route("/email_validation_remaining_resends/<email>", methods=["GET"])

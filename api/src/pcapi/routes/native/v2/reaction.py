@@ -3,7 +3,7 @@ import logging
 from flask_login import current_user
 
 import pcapi.core.reactions.api as reactions_api
-import pcapi.routes.native.v1.serialization.reaction as serialization
+import pcapi.routes.native.v2.serialization.reaction as serialization
 from pcapi.core.reactions import exceptions as reactions_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native.security import authenticated_and_active_user_required

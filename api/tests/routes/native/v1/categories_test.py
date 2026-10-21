@@ -2134,10 +2134,3 @@ class SubcategoriesTest:
                 "onlineOfflinePlatform": "ONLINE",
             },
         ]
-
-
-class CategoriesTest:
-    def test_returns_200(self, client):
-        response = client.get("/native/v1/categories")
-
-        assert response.status_code == 200

@@ -7,7 +7,7 @@ from pcapi.core.reactions import exceptions as reactions_exceptions
 from pcapi.core.reactions import models as reactions_models
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.routes.native.v1.serialization.reaction import PostOneReactionRequest
+from pcapi.routes.native.v2.serialization.reaction import PostOneReactionRequest
 
 
 def bulk_update_or_create_reaction(user: User, reactions: list[PostOneReactionRequest]) -> None:

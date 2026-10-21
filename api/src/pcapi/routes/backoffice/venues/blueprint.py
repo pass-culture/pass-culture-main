@@ -911,7 +911,7 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
         update_siret = True
 
     if form.phone_number.data or venue.contact:
-        contact_data = offerers_schemas.VenueContactModelV2(
+        contact_data = offerers_schemas.VenueContactModel(
             phone_number=form.phone_number.data,
             # Use existing values, if any, to ensure that no data (website
             # for example) will be erased by mistake
