@@ -5,6 +5,7 @@ import { snackBarReducer } from '@/commons/store/snackBar/reducer'
 import { userReducer } from '@/commons/store/user/reducer'
 
 import { adageFilterReducer } from './adageFilter/reducer'
+import { colorThemeReducer } from './colorTheme/reducer'
 import { navReducer } from './nav/reducer'
 import { musicTypesReducer } from './staticData/reducer'
 
@@ -15,4 +16,5 @@ export const rootReducer = combineReducers({
   nav: navReducer,
   adageFilter: adageFilterReducer,
   staticData: musicTypesReducer,
+  colorTheme: colorThemeReducer,
 })

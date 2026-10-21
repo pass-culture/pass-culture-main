@@ -36,6 +36,7 @@
   &-icon {
     width: rem.torem(96px);
     aspect-ratio: 1/1;
+    fill: var(--color-icon-default);
   }
 
   &-text {

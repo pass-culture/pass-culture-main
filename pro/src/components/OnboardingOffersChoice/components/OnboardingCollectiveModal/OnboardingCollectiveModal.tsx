@@ -161,12 +161,9 @@ export const OnboardingCollectiveModal = ({
 function ModalStep({ icon, text }: Readonly<{ icon: string; text: string }>) {
   return (
     <li className={styles['onboarding-collective-step']}>
-      <img
-        src={icon}
-        alt=""
-        aria-hidden
-        className={styles['onboarding-collective-step-icon']}
-      />
+      <svg className={styles['onboarding-collective-step-icon']} aria-hidden>
+        <use href={icon} />
+      </svg>
       <p className={styles['onboarding-collective-step-text']}>{text}</p>
     </li>
   )

@@ -54,6 +54,7 @@
 .status-icon {
   width: rem.torem(16px);
   vertical-align: middle;
+  color: var(--color-text-default);
 
   &.active {
     color: var(--color-icon-brand-primary);

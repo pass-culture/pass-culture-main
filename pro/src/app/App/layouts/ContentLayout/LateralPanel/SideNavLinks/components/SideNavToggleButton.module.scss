@@ -6,6 +6,7 @@
 .nav-section-title {
   flex: 1;
   text-align: left;
+  color: var(--color-text-default);
 }
 
 .nav-links-item {
@@ -16,6 +17,7 @@
   width: 100%;
   background-color: transparent;
   border: none;
+  color: var(--color-text-default);
 
   &:hover {
     background-color: var(--color-background-subtle);

@@ -372,7 +372,7 @@ $action-gap: var(--size-spacing-m);
 
         border-radius: initial;
         background: initial;
-        color: initial;
+        color: inherit;
       }
 
       .orejime-Purpose-input,
@@ -428,7 +428,6 @@ $action-gap: var(--size-spacing-m);
         animation: orejime-slide-in-bottom 0.25s ease-out;
       }
     }
-
 
     .orejime-Modal {
       padding: var(--size-spacing-xxl);

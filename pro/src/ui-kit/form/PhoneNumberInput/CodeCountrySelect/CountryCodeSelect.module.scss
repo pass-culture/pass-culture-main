@@ -55,6 +55,7 @@ $text-padding-left: calc(
   min-height: $input-height;
   margin: 1px;
   background-color: transparent;
+  color: var(--color-text-default);
 
   // -- override default select style --
   border: unset;

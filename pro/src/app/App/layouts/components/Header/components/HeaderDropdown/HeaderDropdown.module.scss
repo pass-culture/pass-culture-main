@@ -55,8 +55,7 @@
   border: rem.torem(1px) solid var(--color-border-subtle);
   background-color: var(--color-background-default);
   box-shadow: var(--shadow-overlay);
-  padding: var(--size-spacing-s) var(--size-spacing-l) var(--size-spacing-l)
-    var(--size-spacing-l);
+  padding: var(--size-spacing-l);
 
   &-open {
     visibility: visible;
@@ -89,5 +88,8 @@
   &-close {
     display: flex;
     justify-content: end;
+    position: absolute;
+    top: var(--size-spacing-s);
+    right: var(--size-spacing-s);
   }
 }

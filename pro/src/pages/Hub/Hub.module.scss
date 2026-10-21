@@ -67,6 +67,7 @@
   @include fonts.body;
 
   display: block;
+  color: var(--color-text-default);
 }
 
 .venue-item-state {
