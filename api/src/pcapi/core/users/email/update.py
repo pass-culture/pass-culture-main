@@ -249,10 +249,11 @@ def request_email_update_from_admin(user: models.User, email: str, *, author: mo
 
     user.email = email
     user.isEmailValidated = False
-    sessions.disconnect_native_user_sessions(user.id)
 
     db.session.add(email_history)
     db.session.add(user)
+    sessions.disconnect_native_user_sessions(user.id)
+
     db.session.flush()
 
     api.request_email_confirmation(user)
