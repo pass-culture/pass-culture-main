@@ -49,6 +49,9 @@ def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUs
         raise AppleSignInException("Could not fetch identity token from Apple") from e
 
     try:
+        if isinstance(response, str):
+            raise ValidationError
+
         auth_response = AppleSignInAuthenticationResponse(**response)
     except ValidationError as e:
         raise AppleSignInException("Unexpected response format from Apple Token API") from e
@@ -77,7 +80,7 @@ def revoke_apple_user(refresh_token: str, is_web: bool) -> None:
             "token": refresh_token,
             "token_type_hint": "refresh_token",
         }
-        _fetch_response(settings.APPLE_REVOKE_TOKEN_ENDPOINT, payload)
+        _fetch_response(settings.APPLE_REVOKE_TOKEN_ENDPOINT, payload, should_expect_json=False)
         logger.info("Account successfully revoked from Apple services")
     except Exception as e:
         raise AppleSignInException("Could not revoke user from Apple") from e
@@ -131,7 +134,7 @@ def _generate_client_secret(is_web: bool) -> tuple[str, str]:
     return client_id, client_secret
 
 
-def _fetch_response(url: str, payload: dict) -> dict:
+def _fetch_response(url: str, payload: dict, should_expect_json: bool = True) -> str | dict:
     try:
         response = requests.post(url, data=payload)
         response.raise_for_status()
@@ -148,6 +151,9 @@ def _fetch_response(url: str, payload: dict) -> dict:
     except (KeyError, ValueError) as e:
         logger.error("Malformed response from Apple Token API", extra={"error": str(e)})
         raise
+
+    if not should_expect_json:
+        return response.text
 
     try:
         json_payload = response.json()
