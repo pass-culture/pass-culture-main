@@ -167,32 +167,22 @@ def create_user_jwt_tokens(
     return TokensContainer(access=access_token, refresh=refresh_token)
 
 
-def refresh_user_jwt_tokens(
-    user: users_models.User,
-    device_info: "DeviceInfo | DeviceInfoV2 | None" = None,
-    *,
-    legacy: bool = False,
-) -> TokensContainer:
+def refresh_user_jwt_tokens(user: users_models.User, device_info: "DeviceInfo | DeviceInfoV2") -> TokensContainer:
     db.session.query(users_models.NativeUserSession).filter(
         users_models.NativeUserSession.refreshToken == flask.g.jwt.data.jti
     ).delete(synchronize_session=False)
-    if legacy:
-        # TODO remove legacy mode when v1/refresh_access_token is removed
-        refresh_token = flask.g.jwt.raw
-    else:
-        if not device_info:
-            raise ValueError("device_info is only optional in legacy mode")
-        refresh_token = create_refresh_token(
-            identity=str(user.id),
-            expires_delta=(flask.g.jwt.data.exp - date_utils.get_naive_utc_now()),
-            additional_claims={"user_claims": {"email_hash": hashlib.sha256(user.email.encode()).hexdigest()}},
-        )
 
+    refresh_token = create_refresh_token(
+        identity=str(user.id),
+        expires_delta=(flask.g.jwt.data.exp - date_utils.get_naive_utc_now()),
+        additional_claims={"user_claims": {"email_hash": hashlib.sha256(user.email.encode()).hexdigest()}},
+    )
     access_token = create_access_token(identity=str(user.id))
+
     _register_tokens(
         access_token=access_token,
         refresh_token=refresh_token,
-        device_id=device_info.device_id if device_info else "",
+        device_id=device_info.device_id,
     )
     return TokensContainer(access=access_token, refresh=refresh_token)
 

@@ -24,10 +24,6 @@ class SSOProvider(Enum):
     GOOGLE = "google"
 
 
-class RefreshResponse(HttpBodyModel):
-    access_token: str
-
-
 class RequestPasswordResetRequest(HttpQueryParamsModel):
     email: str
     token: str | None = None

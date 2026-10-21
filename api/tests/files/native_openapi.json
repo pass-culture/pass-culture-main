@@ -7889,20 +7889,6 @@
                 "title": "RefreshRequestV2",
                 "type": "object"
             },
-            "RefreshResponse": {
-                "additionalProperties": false,
-                "properties": {
-                    "accessToken": {
-                        "title": "Accesstoken",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "accessToken"
-                ],
-                "title": "RefreshResponse",
-                "type": "object"
-            },
             "RefreshResponseV2": {
                 "additionalProperties": false,
                 "properties": {
@@ -13465,44 +13451,6 @@
                     }
                 },
                 "summary": "top_artists_playlist <GET>",
-                "tags": []
-            }
-        },
-        "/native/v1/refresh_access_token": {
-            "post": {
-                "deprecated": true,
-                "description": "",
-                "operationId": "post__native_v1_refresh_access_token",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/RefreshResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "refresh <POST>",
                 "tags": []
             }
         },
