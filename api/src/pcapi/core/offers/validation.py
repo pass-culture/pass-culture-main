@@ -780,11 +780,10 @@ def check_product_for_venue_and_subcategory(
 def check_other_offer_with_ean_does_not_exist(
     ean: str | None, venue: offerers_models.Venue, offer_id: int | None = None
 ) -> None:
-    if repository.has_active_offer_with_ean(ean, venue, offer_id):
-        if ean:
-            raise exceptions.OfferException(
-                {"ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l'onglet Offres."]}
-            )
+    if ean and repository.has_active_offer_with_ean(ean, venue, offer_id):
+        raise exceptions.OfferException(
+            {"ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l'onglet Offres."]}
+        )
 
 
 def check_offer_name_does_not_contain_ean(offer_name: str) -> None:

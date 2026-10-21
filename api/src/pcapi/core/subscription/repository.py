@@ -133,9 +133,8 @@ def _get_filled_pending_or_started_dms_fraud_checks(
     dms_fraud_checks_with_city = []
     for fraud_check in dms_fraud_checks:
         source_data = fraud_check.source_data()
-        if isinstance(source_data, dms_schemas.DMSContent):
-            if source_data.city is not None:
-                dms_fraud_checks_with_city.append(fraud_check)
+        if isinstance(source_data, dms_schemas.DMSContent) and source_data.city is not None:
+            dms_fraud_checks_with_city.append(fraud_check)
 
     return dms_fraud_checks_with_city
 

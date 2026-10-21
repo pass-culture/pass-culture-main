@@ -77,9 +77,8 @@ def get_available_providers(venue: Venue) -> sa_orm.Query:
     )
 
     local_classes_to_exclude = set(constants.CINEMA_PROVIDER_NAMES)
-    if pivot := get_cinema_provider_pivot_for_venue(venue):
-        if pivot.provider.localClass is not None:
-            local_classes_to_exclude.remove(pivot.provider.localClass)
+    if (pivot := get_cinema_provider_pivot_for_venue(venue)) and pivot.provider.localClass is not None:
+        local_classes_to_exclude.remove(pivot.provider.localClass)
 
     if not get_allocine_pivot(venue) and not get_allocine_theater(venue):
         local_classes_to_exclude.add(AllocineStocks.__name__)

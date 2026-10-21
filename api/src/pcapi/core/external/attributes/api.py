@@ -506,9 +506,8 @@ def get_bookings_categories_and_subcategories(
         music_bookings_by_type = defaultdict(list)
         for category in music_categories:
             for booking in bookings_by_categories[category]:
-                if extra_data := booking.stock.offer.extraData:
-                    if music_type := extra_data.get("musicType"):
-                        music_bookings_by_type[music_type].append(booking)
+                if (extra_data := booking.stock.offer.extraData) and (music_type := extra_data.get("musicType")):
+                    music_bookings_by_type[music_type].append(booking)
         most_booked_music_type = _get_most_booked(music_bookings_by_type)
 
     return models.BookingsAttributes(

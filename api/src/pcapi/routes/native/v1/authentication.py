@@ -109,9 +109,10 @@ def signout() -> None:
     response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401], deprecated=True
 )
 def refresh() -> authentication.RefreshResponse:
-    if email_hash := g.jwt.data.user_claims.get("email_hash", None):
-        if email_hash != sha256(current_user.email.encode()).hexdigest():
-            _raise_forbidden(current_user.id)
+    if (email_hash := g.jwt.data.user_claims.get("email_hash", None)) and email_hash != sha256(
+        current_user.email.encode()
+    ).hexdigest():
+        _raise_forbidden(current_user.id)
 
     users_api.update_last_connection_date(current_user)
     try:

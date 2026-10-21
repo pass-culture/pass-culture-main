@@ -1099,20 +1099,18 @@ def mark_as_cancelled(
     if finance_repository.has_reimbursement(booking):
         raise exceptions.BookingIsAlreadyRefunded()
 
-    if one_side_cancellation:
-        if (
-            not models.BookingCancellationReasons.is_from_backoffice(reason)
-            or (
-                booking.stock.offer.lastProvider
-                and booking.stock.offer.lastProvider.localClass
-                not in constants.ONE_SIDE_BOOKINGS_CANCELLATION_PROVIDERS
-            )
-            or (
-                booking.stock.beginningDatetime
-                and booking.stock.beginningDatetime < date_utils.get_naive_utc_now() - datetime.timedelta(days=15)
-            )
-        ):
-            raise exceptions.OneSideCancellationForbidden()
+    if one_side_cancellation and (
+        not models.BookingCancellationReasons.is_from_backoffice(reason)
+        or (
+            booking.stock.offer.lastProvider
+            and booking.stock.offer.lastProvider.localClass not in constants.ONE_SIDE_BOOKINGS_CANCELLATION_PROVIDERS
+        )
+        or (
+            booking.stock.beginningDatetime
+            and booking.stock.beginningDatetime < date_utils.get_naive_utc_now() - datetime.timedelta(days=15)
+        )
+    ):
+        raise exceptions.OneSideCancellationForbidden()
 
     _cancel_booking(
         booking=booking,
@@ -1623,10 +1621,9 @@ def cancel_ems_external_bookings() -> None:
 
 
 def is_external_event_booking_visible(offer: offers_models.Offer, stock: offers_models.Stock) -> bool:
-    if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
-        if stock.beginningDatetime:
-            delta = stock.beginningDatetime - date_utils.get_naive_utc_now()
-            return delta.total_seconds() < NUMBER_SECONDS_HIDE_QR_CODE
+    if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP and stock.beginningDatetime:
+        delta = stock.beginningDatetime - date_utils.get_naive_utc_now()
+        return delta.total_seconds() < NUMBER_SECONDS_HIDE_QR_CODE
     return True
 
 

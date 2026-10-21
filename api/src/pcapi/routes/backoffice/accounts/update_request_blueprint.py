@@ -177,16 +177,15 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
         else:
             filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])
 
-    if form.from_to_date.data:
-        if form.from_to_date.from_date is not None and form.from_to_date.to_date is not None:
-            from_date = date_utils.date_to_localized_datetime(form.from_to_date.from_date, datetime.datetime.min.time())
-            to_date = date_utils.date_to_localized_datetime(form.from_to_date.to_date, datetime.datetime.max.time())
-            filters.append(
-                sa.or_(
-                    users_models.UserAccountUpdateRequest.dateLastStatusUpdate.between(from_date, to_date),
-                    users_models.UserAccountUpdateRequest.dateLastUserMessage.between(from_date, to_date),
-                )
+    if form.from_to_date.data and form.from_to_date.from_date is not None and form.from_to_date.to_date is not None:
+        from_date = date_utils.date_to_localized_datetime(form.from_to_date.from_date, datetime.datetime.min.time())
+        to_date = date_utils.date_to_localized_datetime(form.from_to_date.to_date, datetime.datetime.max.time())
+        filters.append(
+            sa.or_(
+                users_models.UserAccountUpdateRequest.dateLastStatusUpdate.between(from_date, to_date),
+                users_models.UserAccountUpdateRequest.dateLastUserMessage.between(from_date, to_date),
             )
+        )
 
     if form.has_found_user.data and len(form.has_found_user.data) == 1:
         if form.has_found_user.data[0] == "true":
