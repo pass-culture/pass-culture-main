@@ -192,9 +192,9 @@ export type AttachImageResponseModel = {
 };
 
 /**
- * AudioDisabilityModelV2
+ * AudioDisabilityModel
  */
-export type AudioDisabilityModelV2 = {
+export type AudioDisabilityModel = {
     /**
      * Deafandhardofhearing
      */
@@ -1410,7 +1410,7 @@ export type EditVenueBodyModel = {
      * Comment
      */
     comment?: string | null;
-    contact?: VenueContactModelV2 | null;
+    contact?: VenueContactModel | null;
     /**
      * Culturaldomains
      */
@@ -1834,10 +1834,10 @@ export enum ExposureEventType {
 }
 
 /**
- * ExternalAccessibilityDataModelV2
+ * ExternalAccessibilityDataModel
  */
-export type ExternalAccessibilityDataModelV2 = {
-    audioDisability?: AudioDisabilityModelV2;
+export type ExternalAccessibilityDataModel = {
+    audioDisability?: AudioDisabilityModel;
     /**
      * Isaccessibleaudiodisability
      */
@@ -1854,9 +1854,9 @@ export type ExternalAccessibilityDataModelV2 = {
      * Isaccessiblevisualdisability
      */
     isAccessibleVisualDisability?: boolean;
-    mentalDisability?: MentalDisabilityModelV2;
-    motorDisability?: MotorDisabilityModelV2;
-    visualDisability?: VisualDisabilityModelV2;
+    mentalDisability?: MentalDisabilityModel;
+    motorDisability?: MotorDisabilityModel;
+    visualDisability?: VisualDisabilityModel;
 };
 
 /**
@@ -3433,7 +3433,7 @@ export type GetVenueResponseModel = {
      * Comment
      */
     comment: string | null;
-    contact: VenueContactModelV2 | null;
+    contact: VenueContactModel | null;
     /**
      * Criteria
      */
@@ -3446,7 +3446,7 @@ export type GetVenueResponseModel = {
      * Description
      */
     description: string | null;
-    externalAccessibilityData: ExternalAccessibilityDataModelV2 | null;
+    externalAccessibilityData: ExternalAccessibilityDataModel | null;
     /**
      * Externalaccessibilityid
      */
@@ -4322,9 +4322,9 @@ export type ManagedVenue = {
 };
 
 /**
- * MentalDisabilityModelV2
+ * MentalDisabilityModel
  */
-export type MentalDisabilityModelV2 = {
+export type MentalDisabilityModel = {
     /**
      * Trainedpersonnel
      */
@@ -4332,9 +4332,9 @@ export type MentalDisabilityModelV2 = {
 };
 
 /**
- * MotorDisabilityModelV2
+ * MotorDisabilityModel
  */
-export type MotorDisabilityModelV2 = {
+export type MotorDisabilityModel = {
     /**
      * Entrance
      */
@@ -6863,9 +6863,9 @@ export type ValidationErrorElement = {
 };
 
 /**
- * VenueContactModelV2
+ * VenueContactModel
  */
-export type VenueContactModelV2 = {
+export type VenueContactModel = {
     /**
      * Email
      */
@@ -7126,9 +7126,9 @@ export type VideoMetatdataQueryModel = {
 };
 
 /**
- * VisualDisabilityModelV2
+ * VisualDisabilityModel
  */
-export type VisualDisabilityModelV2 = {
+export type VisualDisabilityModel = {
     /**
      * Audiodescription
      */

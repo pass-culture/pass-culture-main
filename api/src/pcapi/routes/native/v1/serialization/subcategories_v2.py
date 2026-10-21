@@ -98,28 +98,3 @@ class SubcategoriesResponseModelv2(HttpBodyModel):
     homepageLabels: list[HomepageLabelResponseModelv2]
     nativeCategories: list[NativeCategoryResponseModelv2]
     genreTypes: list[GenreTypeModel]
-
-
-class CategoryResponseModel(HttpBodyModel):
-    label: str
-    parents: list[str]
-    gtls: list[str] | None = None
-    positions: dict[str, int] | None = None
-    search_filter: str | None = None
-    search_value: str | None = None
-
-    @classmethod
-    def build(cls, nativeCategory: categories_models.SearchNode) -> "CategoryResponseModel":
-        parents = [parent.name for parent in nativeCategory.parents]
-        return cls(
-            label=nativeCategory.label,
-            parents=parents,
-            gtls=nativeCategory.gtls,
-            positions=None if "LIVRES" in parents else nativeCategory.positions,
-            search_filter=getattr(nativeCategory, "search_filter", None),
-            search_value=nativeCategory.search_value,
-        )
-
-
-class CategoriesResponseModel(HttpBodyModel):
-    categories: list[CategoryResponseModel]

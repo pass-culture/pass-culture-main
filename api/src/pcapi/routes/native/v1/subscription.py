@@ -3,7 +3,6 @@ import typing
 from functools import partial
 
 from flask_login import current_user
-from pydantic import ValidationError
 
 from pcapi.connectors.beneficiaries import ubble as ubble_connector
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -35,22 +34,6 @@ from .serialization import subscription as serializers
 
 
 logger = logging.getLogger(__name__)
-
-
-@blueprint.native_route("/subscription/profile", methods=["GET"])
-@authenticated_and_active_user_required
-@spectree_serialize(on_success_status=200, on_error_statuses=[404], api=blueprint.api)
-def get_profile() -> serializers.ProfileResponse | None:
-    if (profile_data := subscription_api.get_profile_data(current_user)) is not None:
-        profile_data_dict = profile_data.model_dump(mode="json")
-        profile_data_dict.pop("origin", None)
-        try:
-            return serializers.ProfileResponse(profile=serializers.ProfileContent(**profile_data_dict))
-        except ValidationError as e:
-            logger.error("Invalid profile data for user %s: %s", current_user.id, e)
-            return serializers.ProfileResponse()
-
-    raise api_errors.ResourceNotFoundError()
 
 
 @blueprint.native_route("/subscription/profile", methods=["POST"])

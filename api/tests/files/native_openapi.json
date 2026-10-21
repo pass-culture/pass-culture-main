@@ -520,17 +520,30 @@
                 "type": "object"
             },
             "AvailableReactionBooking": {
+                "additionalProperties": false,
                 "properties": {
                     "dateUsed": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Dateused",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Dateused"
                     },
                     "image": {
-                        "nullable": true,
-                        "title": "Image",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image"
                     },
                     "name": {
                         "title": "Name",
@@ -546,6 +559,8 @@
                     }
                 },
                 "required": [
+                    "dateUsed",
+                    "image",
                     "name",
                     "offerId",
                     "subcategoryId"
@@ -2206,99 +2221,6 @@
                 "title": "CallToActionMessageV3",
                 "type": "object"
             },
-            "CategoriesResponseModel": {
-                "additionalProperties": false,
-                "properties": {
-                    "categories": {
-                        "items": {
-                            "$ref": "#/components/schemas/CategoryResponseModel"
-                        },
-                        "title": "Categories",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "categories"
-                ],
-                "title": "CategoriesResponseModel",
-                "type": "object"
-            },
-            "CategoryResponseModel": {
-                "additionalProperties": false,
-                "properties": {
-                    "gtls": {
-                        "anyOf": [
-                            {
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Gtls"
-                    },
-                    "label": {
-                        "title": "Label",
-                        "type": "string"
-                    },
-                    "parents": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "title": "Parents",
-                        "type": "array"
-                    },
-                    "positions": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": {
-                                    "type": "integer"
-                                },
-                                "type": "object"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Positions"
-                    },
-                    "searchFilter": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Searchfilter"
-                    },
-                    "searchValue": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Searchvalue"
-                    }
-                },
-                "required": [
-                    "label",
-                    "parents"
-                ],
-                "title": "CategoryResponseModel",
-                "type": "object"
-            },
             "ChangeBeneficiaryEmailBody": {
                 "additionalProperties": false,
                 "properties": {
@@ -3791,6 +3713,7 @@
                 "type": "object"
             },
             "GetAvailableReactionsResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "bookings": {
                         "items": {
@@ -3805,8 +3728,8 @@
                     }
                 },
                 "required": [
-                    "numberOfReactableBookings",
-                    "bookings"
+                    "bookings",
+                    "numberOfReactableBookings"
                 ],
                 "title": "GetAvailableReactionsResponse",
                 "type": "object"
@@ -7412,6 +7335,7 @@
                 "type": "object"
             },
             "PostOneReactionRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "offerId": {
                         "title": "Offerid",
@@ -7429,6 +7353,7 @@
                 "type": "object"
             },
             "PostReactionRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "reactions": {
                         "items": {
@@ -11587,40 +11512,6 @@
                 "tags": []
             }
         },
-        "/native/v1/categories": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v1_categories",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CategoriesResponseModel"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "get_categories <GET>",
-                "tags": []
-            }
-        },
         "/native/v1/change_password": {
             "post": {
                 "description": "",
@@ -11826,40 +11717,6 @@
                     }
                 ],
                 "summary": "get_cultural_survey_questions <GET>",
-                "tags": []
-            }
-        },
-        "/native/v1/email_validation_remaining_resends": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v1_email_validation_remaining_resends",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/EmailValidationRemainingResendsResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "empty_email_validation_remaining_resends <GET>",
                 "tags": []
             }
         },
@@ -12900,53 +12757,6 @@
                 ],
                 "summary": "patch_user_profile <PATCH>",
                 "tags": []
-            },
-            "post": {
-                "description": "",
-                "operationId": "post__native_v1_profile",
-                "parameters": [],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UserProfilePatchRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/UserProfileResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "summary": "patch_user_profile <POST>",
-                "tags": []
             }
         },
         "/native/v1/profile/email_update/cancel": {
@@ -13066,89 +12876,6 @@
                     }
                 ],
                 "summary": "get_email_update_token_expiration_date <GET>",
-                "tags": []
-            }
-        },
-        "/native/v1/reaction": {
-            "post": {
-                "deprecated": true,
-                "description": "",
-                "operationId": "post__native_v1_reaction",
-                "parameters": [],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PostReactionRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "summary": "post_reaction <POST>",
-                "tags": []
-            }
-        },
-        "/native/v1/reaction/available": {
-            "get": {
-                "deprecated": true,
-                "description": "",
-                "operationId": "get__native_v1_reaction_available",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetAvailableReactionsResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "summary": "get_available_reactions <GET>",
                 "tags": []
             }
         },
@@ -14018,39 +13745,6 @@
             }
         },
         "/native/v1/subscription/profile": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v1_subscription_profile",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "summary": "get_profile <GET>",
-                "tags": []
-            },
             "post": {
                 "description": "",
                 "operationId": "post__native_v1_subscription_profile",
@@ -14224,55 +13918,6 @@
                     }
                 },
                 "summary": "validate_email <POST>",
-                "tags": []
-            }
-        },
-        "/native/v1/venue/{venue_id}": {
-            "get": {
-                "deprecated": true,
-                "description": "",
-                "operationId": "get__native_v1_venue_{venue_id}",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "path",
-                        "name": "venue_id",
-                        "required": true,
-                        "schema": {
-                            "format": "int32",
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VenueResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "get_venue <GET>",
                 "tags": []
             }
         },

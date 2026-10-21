@@ -13,25 +13,6 @@ from pcapi.routes.serialization import HttpQueryParamsModel
 logger = logging.getLogger(__name__)
 
 
-class ProfileContent(HttpBodyModel):
-    activity: profile_options.ActivityValueEnum
-    address: str | None = None  # Address is nullable for backward compatibility
-    city: str
-    first_name: str
-    last_name: str
-    postal_code: str
-    phone_number: str | None = None
-    school_type: profile_options.SchoolTypeValueEnum | None = None
-
-    model_config = pydantic_v2.ConfigDict(
-        use_enum_values=True,
-    )
-
-
-class ProfileResponse(HttpBodyModel):
-    profile: ProfileContent | None = None
-
-
 class ProfileUpdateRequest(HttpQueryParamsModel):
     activity_id: profile_options.ActivityIdEnum
     address: str

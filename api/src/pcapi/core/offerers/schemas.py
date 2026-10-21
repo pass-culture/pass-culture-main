@@ -11,13 +11,11 @@ from pydantic.v1 import validator
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import common_models
 from pcapi.serialization import utils as serialization_utils
-from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
 
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 
-SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
 SocialMediasV2 = dict[SocialMedia, serialization_utils.ValidHttpUrlStr]
 
 
@@ -52,43 +50,7 @@ class RequiredStrippedString(pydantic_v1.ConstrainedStr):
     min_length = 1
 
 
-# NOTE(jbaudet - 02/2026): deprecated -> pydantic v2 migration ongoing
-# check VenueContactModelV2 below.
-# It has not been removed yet because it is used by another model used
-# by others models...
-class VenueContactModel(BaseModel):
-    class Config:
-        alias_generator = serialization_utils.to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-        anystr_strip_whitespace = True
-        extra = pydantic_v1.Extra.forbid
-
-    email: pydantic_v1.EmailStr | None
-    website: str | None = pydantic_v1.Field(max_length=256)
-    phone_number: str | None
-    social_medias: SocialMedias | None
-
-    @validator("phone_number")
-    def validate_phone_number(cls, phone_number: str) -> str | None:
-        if not phone_number:
-            return None
-
-        try:
-            return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
-        except Exception:
-            raise ValueError(f"numéro de téléphone invalide: {phone_number}")
-
-    @validator("website")
-    def validate_website_url(cls, website: str) -> str:
-        try:
-            serialization_utils.check_url(website, "v1")
-        except ValueError:
-            raise ValueError(f"url du site web invalide: {website}")
-        return website
-
-
-class VenueContactModelV2(BaseModelV2):
+class VenueContactModel(BaseModelV2):
     email: pydantic_v2.EmailStr | None = None
     website: str | None = pydantic_v2.Field(default=None, max_length=256)
     phone_number: str | None = None
@@ -135,13 +97,6 @@ VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH = 500
 # TODO(pydantic_v2): remove after BannerMetaModel and native's VenueResponse are migrated
 class VenueImageCredit(RequiredStrippedString):
     max_length = 255
-
-
-# TODO(pydantic_v2): remove after native's VenueResponse is migrated
-class VenueDescription(pydantic_v1.ConstrainedStr):
-    strip_whitespace = True
-    # optional, hence no `min_length`
-    max_length = VENUE_DESCRIPTION_MAX_LENGTH
 
 
 # TODO(pydantic_v2): remove once LocationModel in the file is removed
@@ -249,12 +204,6 @@ class VenueTypeCode(enum.Enum):
             raise ValueError(f"{value}: invalide")
 
         return value
-
-
-VenueTypeCodeKey = enum.Enum(  # type: ignore[misc]
-    "VenueTypeCodeKey",
-    {code.name: code.name for code in VenueTypeCode},
-)
 
 
 class GetOffererAddressesWithOffersOption(enum.Enum):

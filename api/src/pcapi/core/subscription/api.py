@@ -210,14 +210,6 @@ def get_profile_completion_subscription_item(
     )
 
 
-def get_profile_data(user: users_models.User) -> subscription_schemas.ProfileCompletionContent | None:
-    profile_completion_check = subscription_repository.get_latest_completed_profile_check(user)
-    if profile_completion_check and profile_completion_check.resultContent:
-        return typing.cast(subscription_schemas.ProfileCompletionContent, profile_completion_check.source_data())
-
-    return None
-
-
 def get_identity_check_fraud_status(
     user: users_models.User,
     eligibility: users_models.EligibilityType | None,

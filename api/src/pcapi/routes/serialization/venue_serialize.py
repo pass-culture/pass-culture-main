@@ -49,7 +49,7 @@ class PostVenueBodyModel(HttpBodyModel):
     venue_label_id: int | None
     withdrawal_details: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH)
     description: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_DESCRIPTION_MAX_LENGTH)
-    contact: offerers_schemas.VenueContactModelV2 | None
+    contact: offerers_schemas.VenueContactModel | None
     audio_disability_compliant: bool | None
     mental_disability_compliant: bool | None
     motor_disability_compliant: bool | None
@@ -90,9 +90,9 @@ def get_current_pricing_point(
 class GetVenueResponseModel(HttpBodyModel):
     name: str
     bannerUrl: str | None
-    contact: offerers_schemas.VenueContactModelV2 | None
+    contact: offerers_schemas.VenueContactModel | None
     description: str | None = pydantic_v2.Field(max_length=1000)
-    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModelV2 | None
+    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     externalAccessibilityId: str | None
     isOpenToPublic: bool
     isPermanent: bool | None
@@ -153,7 +153,7 @@ class GetVenueResponseModel(HttpBodyModel):
         external_accessibility_id = None
         if venue.accessibilityProvider:
             external_accessibility_data = (
-                acceslibre_serializers.ExternalAccessibilityDataModelV2.from_accessibility_infos(
+                acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
                     venue.accessibilityProvider.externalAccessibilityData
                 )
             )
@@ -306,7 +306,7 @@ class EditVenueBodyModel(HttpBodyModel):
     isAccessibilityAppliedOnAllOffers: bool | None = None
     isManualEdition: bool | None = None
     description: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_DESCRIPTION_MAX_LENGTH, default=None)
-    contact: offerers_schemas.VenueContactModelV2 | None = None
+    contact: offerers_schemas.VenueContactModel | None = None
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None = None
     isOpenToPublic: bool | None = None
     volunteeringUrl: typing.Annotated[HttpUrlStr, pydantic_v2.AfterValidator(validate_volunteering_url)] | None = None

@@ -260,7 +260,7 @@ class GetVenueTest:
 
     def test_get_non_existing_venue(self, client):
         with assert_num_queries(1):  # venue
-            response = client.get("/native/v1/venue/123456789")
+            response = client.get("/native/v2/venue/123456789")
             assert response.status_code == 404
 
     def test_get_venue_returns_default_banner_url(self, client):
