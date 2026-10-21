@@ -47,7 +47,7 @@ class JwtSecretManagerBackend(JwtBaseBackend):
     def _get_key_for_token(self, token: str) -> str:
         split = token.split(".")
         if not len(split) == 3:
-            raise jwt.exceptions.InvalidTokenError("jwt %s is not a valid jwt" % token)
+            raise jwt.exceptions.InvalidTokenError(f"jwt {token} is not a valid jwt")
 
         # add padding to make it compatible with b64decode: a base64 string length must be
         # a multiple of 4 and the padding must be done with the symbole '='
@@ -57,7 +57,7 @@ class JwtSecretManagerBackend(JwtBaseBackend):
             raw_headers = base64.b64decode(split[0] + padding)
             headers = json.loads(raw_headers)
         except Exception as exc:
-            raise jwt.exceptions.InvalidTokenError("jwt header %s could not be decoded" % split[0]) from exc
+            raise jwt.exceptions.InvalidTokenError(f"jwt header {split[0]} could not be decoded") from exc
 
         if "kid" not in headers:
             return settings.JWT_SECRET_KEY
@@ -65,7 +65,7 @@ class JwtSecretManagerBackend(JwtBaseBackend):
         key = self._key_by_kid.get(headers["kid"], "")
 
         if not key:
-            raise jwt.exceptions.InvalidKeyError("jwt header %s has an unknown kid" % split[0])
+            raise jwt.exceptions.InvalidKeyError(f"jwt header {split[0]} has an unknown kid")
 
         return key
 
@@ -90,7 +90,7 @@ class JwtSecretManagerBackend(JwtBaseBackend):
                 logger.warning("Could not connect to redis, jwt keyring fallback not updated")
             self._update_current()
         else:
-            raise ValueError("No versions were found for secret %s " % settings.JWT_KEY_SECRET_NAME)
+            raise ValueError(f"No versions were found for secret {settings.JWT_KEY_SECRET_NAME} ")
 
     def encode(self, payload: dict, key: str | None = None) -> str:
         from pcapi.utils.jwt.api import ALGORITHM_HS_256

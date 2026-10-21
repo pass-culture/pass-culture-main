@@ -114,7 +114,7 @@ def check_stocks_price(
     for stock in stocks:
         if stock.price_category_id not in price_categories:
             raise api_errors.ApiErrors(
-                {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % stock.price_category_id]}
+                {"price_category_id": [f"Le tarif avec l'id {stock.price_category_id} n'existe pas"]}
             )
         check_stock_price(
             price_categories[stock.price_category_id].price,

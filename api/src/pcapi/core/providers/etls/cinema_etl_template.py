@@ -335,7 +335,7 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
         :level: level defined in logging package, either `logging.INFO`, `logging.WARNING` or `logging.DEBUG`
         :data: dict to be added in extra dict under the "data" key
         """
-        log_message = "[%s] %s" % (self.__class__.__name__, message)
+        log_message = f"[{self.__class__.__name__}] {message}"
         extra: dict = {
             "venue_id": self.venue_provider.venueId,
             "provider_id": self.venue_provider.providerId,

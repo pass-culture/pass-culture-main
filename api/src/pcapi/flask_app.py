@@ -329,8 +329,7 @@ with app.app_context():
         if connection_record.info["pid"] != pid:
             connection_record.connection = connection_proxy.connection = None
             raise sa.exc.DisconnectionError(
-                "Connection record belongs to pid %s, "
-                "attempting to check out in pid %s" % (connection_record.info["pid"], pid)
+                f"Connection record belongs to pid {connection_record.info['pid']}, attempting to check out in pid {pid}"
             )
 
 

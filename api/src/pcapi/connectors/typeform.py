@@ -328,7 +328,7 @@ class TypeformBackend(BaseBackend):
                             TypeformAnswer(field_id=answer["field"]["id"], text=_strip(str(answer[answer["type"]])))
                         )
                     case _:
-                        raise ValueError("Unexpected answer type from Typeform API: %s" % (answer["type"],))
+                        raise ValueError(f"Unexpected answer type from Typeform API: {answer['type']}")
 
             if email is None and phone_number is None:
                 # Ignore forms not completed (e.g. user does not accept conditions)

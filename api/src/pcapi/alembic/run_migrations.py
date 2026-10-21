@@ -59,9 +59,9 @@ def include_object(
 def run_online_migrations() -> None:
     db_options = []
     if settings.DB_MIGRATION_LOCK_TIMEOUT:
-        db_options.append("-c lock_timeout=%i" % settings.DB_MIGRATION_LOCK_TIMEOUT)
+        db_options.append(f"-c lock_timeout={settings.DB_MIGRATION_LOCK_TIMEOUT}")
     if settings.DB_MIGRATION_STATEMENT_TIMEOUT:
-        db_options.append("-c statement_timeout=%i" % settings.DB_MIGRATION_STATEMENT_TIMEOUT)
+        db_options.append(f"-c statement_timeout={settings.DB_MIGRATION_STATEMENT_TIMEOUT}")
 
     connection_args = get_db_connection_args()
     # Override the options with the migration-specific ones
