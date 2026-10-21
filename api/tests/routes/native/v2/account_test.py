@@ -89,7 +89,14 @@ class ConfirmUserEmailUpdateTest:
 
         # ensure the refresh token is valid
         refresh_response = client.post(
-            "/native/v1/refresh_access_token",
+            "/native/v2/refresh_access_token",
+            json={
+                "device_info": {
+                    "device_id": "idv_qwerty1234",
+                    "os": "testOS",
+                    "source": "somthing",
+                },
+            },
             headers={"Authorization": f"Bearer {response.json['refreshToken']}"},
         )
         assert refresh_response.status_code == 200
