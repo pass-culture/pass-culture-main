@@ -71,8 +71,8 @@ class ProUserCreationBodyV2Model(HttpBodyModel):
 
 
 class LoginUserBodyModel(HttpBodyModel):
-    identifier: str
-    password: str
+    identifier: pydantic_v2.EmailStr
+    password: str = pydantic_v2.Field(min_length=1)
     captcha_token: str | None = None
 
 

@@ -1,10 +1,12 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate, useSearchParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
+import type { LoginUserBodyModel } from '@/apiClient/v1'
+import { zLoginUserBodyModel } from '@/apiClient/v1/zod.gen'
 import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
@@ -21,12 +23,6 @@ import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import styles from './Signin.module.scss'
 import { SigninForm } from './SigninForm'
-import { validationSchema } from './validationSchema'
-
-export interface SigninFormValues {
-  email: string
-  password: string
-}
 
 interface SigninApiErrorResponse {
   status: number
@@ -64,14 +60,12 @@ export const SignIn = (): JSX.Element => {
     }
   }, [searchParams, setSearchParams, snackBar.error, snackBar.success])
 
-  const onSubmit = async (values: SigninFormValues) => {
-    const { email, password } = values
+  const onSubmit = async (values: LoginUserBodyModel) => {
     try {
       const captchaToken = await getReCaptchaToken('loginUser')
       const user = await api.signin({
         body: {
-          identifier: email,
-          password,
+          ...values,
           captchaToken,
         },
       })
@@ -92,9 +86,11 @@ export const SignIn = (): JSX.Element => {
 
   const hookForm = useForm({
     defaultValues: SIGNIN_FORM_DEFAULT_VALUES,
-    resolver: yupResolver(validationSchema),
+    resolver: zodResolver(zLoginUserBodyModel),
     mode: 'onTouched',
   })
+
+  console.log({ hookForm: hookForm.formState.errors })
 
   // This is to reproduce a Formik behavior that reset form error status after an API error
   useEffect(() => {
@@ -119,7 +115,7 @@ export const SignIn = (): JSX.Element => {
       )
     } else if (Object.values(errors).length > 0) {
       hookForm.setError('root', { type: 'apiError' })
-      hookForm.setError('email', {
+      hookForm.setError('identifier', {
         message: 'Identifiant ou mot de passe incorrect.',
       })
       hookForm.setError('password', {

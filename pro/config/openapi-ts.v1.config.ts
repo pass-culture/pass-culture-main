@@ -26,6 +26,9 @@ export default defineConfig({
       case: 'preserve',
     },
     {
+      name: 'zod',
+    },
+    {
       name: '@hey-api/sdk',
       operations: {
         nesting: camelCaseFromOperationId,
