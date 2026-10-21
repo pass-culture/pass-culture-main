@@ -155,7 +155,6 @@ export const ComplementaryInfosDrawer = ({
                 externalAccessibilityData={
                   selectedPartnerVenue.externalAccessibilityData
                 }
-                isSubSubSection
               ></AccessibilityForm>
               <FormLayout.SubSection title="Horaires d’ouverture">
                 <FormLayout.Row className={styles['opening-hours']}>
