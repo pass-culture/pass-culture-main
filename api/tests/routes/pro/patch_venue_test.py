@@ -98,7 +98,7 @@ class Returns200Test:
             },
             venue,
         )
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 200
 
@@ -232,7 +232,7 @@ class Returns200Test:
             },
             venue,
         )
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
         assert response.status_code == 200
 
         # the venue should be updated
@@ -358,7 +358,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 200
         venue = db.session.query(offerers_models.Venue).one()
@@ -442,7 +442,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
         assert response.status_code == 200
         venue = db.session.query(offerers_models.Venue).one()
         offerer_address = db.session.query(offerers_models.OffererAddress).one()
@@ -493,7 +493,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
         assert response.status_code == 200
 
         venue = db.session.query(offerers_models.Venue).one()
@@ -530,11 +530,11 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
         assert response.status_code == 200
 
         # Ensures we can edit another time the venue just fine
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
         assert response.status_code == 200
 
     def test_should_not_create_oa_when_not_updating_location(self, client):
@@ -545,7 +545,7 @@ class Returns200Test:
         )
         update_data = {"bookingEmail": "fakeemail@fake.com"}
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        auth_request.patch("/venues/%s" % venue.id, json=update_data)
+        auth_request.patch(f"/venues/{venue.id}", json=update_data)
 
         venue = db.session.query(offerers_models.Venue).one()
         offerer_addresses = (
@@ -580,7 +580,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 200
         venue = db.session.get(offerers_models.Venue, venue_id)
@@ -620,7 +620,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 200
         assert venue.audioDisabilityCompliant is True
@@ -652,7 +652,7 @@ class Returns200Test:
         venue_data = populate_missing_data_from_venue({}, venue)
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 200
         assert response.json["siret"] == venue.siret
@@ -687,7 +687,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
         assert response.status_code == 200, response.json
         assert len(venue.action_history) == 1
 
@@ -716,7 +716,7 @@ class Returns200Test:
 
         venue_data = populate_missing_data_from_venue({"contact": None}, venue)
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
         assert response.status_code == 200
         assert len(venue.action_history) == 0
 
@@ -749,7 +749,7 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
         assert response.status_code == 200, response.json
 
         assert venue.action_history[0].extraData == {
@@ -1095,7 +1095,7 @@ class Returns200Test:
             | extra_data,
             venue,
         )
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 200, response.json
 
@@ -1278,7 +1278,7 @@ class Returns400Test:
             },
             venue,
         )
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
         assert response.json == {"activity": ["Activité non reconnue."]}
@@ -1295,7 +1295,7 @@ class Returns400Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 
         venue_data = {"isOpenToPublic": False}
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
         assert response.json == {"activity": ["Activité non reconnue."]}
@@ -1316,7 +1316,7 @@ class Returns400Test:
         venue_data = populate_missing_data_from_venue(
             {"contact": {"website": "https://example.com" + "/test" * 50}}, venue
         )
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
         assert response.json == {
@@ -1332,7 +1332,7 @@ class Returns400Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 
         venue_data = populate_missing_data_from_venue({"volunteeringUrl": "wrong-url"}, venue)
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
         assert response.json == {"volunteeringUrl": ["L'URL est invalide"]}
@@ -1346,7 +1346,7 @@ class Returns400Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 
         venue_data = populate_missing_data_from_venue({"volunteeringUrl": "https://example.com"}, venue)
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
         assert response.json == {
@@ -1364,7 +1364,7 @@ class Returns400Test:
         venue_data = populate_missing_data_from_venue(
             {"volunteeringUrl": "https://www.jeveuxaider.gouv.fr/test"}, venue
         )
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
         assert response.json == {

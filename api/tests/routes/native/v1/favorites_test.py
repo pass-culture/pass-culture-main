@@ -127,8 +127,9 @@ class GetTest:
             assert favorites[5]["offer"]["bookingAllowedDatetime"] == date_utils.format_into_utc_date(day_before_start)
             assert favorites[5]["offer"]["startDate"] == date_utils.format_into_utc_date(start)
             assert favorites[5]["offer"]["image"]["credit"] == "Pour hurlevent !"
-            assert favorites[5]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/mediations/%s" % (
-                humanize(offer1.activeMediation.id)
+            assert (
+                favorites[5]["offer"]["image"]["url"]
+                == f"http://localhost/storage/thumbs/mediations/{humanize(offer1.activeMediation.id)}"
             )
             assert favorites[5]["offer"]["expenseDomains"] == ["all"]
             assert favorites[5]["offer"]["subcategoryId"] == "SEANCE_CINE"

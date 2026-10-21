@@ -99,10 +99,8 @@ class PublicAPIEndpointBaseHelper:
         env = "test"
         prefix_id = str(uuid.uuid4())
 
-        self._api_key = offerers_factories.ApiKeyFactory(
-            provider=provider, secret=secret, prefix="%s_%s" % (env, prefix_id)
-        )
-        plain_api_key = "%s_%s_%s" % (env, prefix_id, secret)
+        self._api_key = offerers_factories.ApiKeyFactory(provider=provider, secret=secret, prefix=f"{env}_{prefix_id}")
+        plain_api_key = f"{env}_{prefix_id}_{secret}"
 
         return plain_api_key
 

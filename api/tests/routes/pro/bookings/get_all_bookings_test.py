@@ -321,8 +321,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get(
-                "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked&venueId=%s"
-                % (booking_period_beginning_date, booking_period_ending_date, venue_id)
+                f"/bookings/pro?bookingPeriodBeginningDate={booking_period_beginning_date}&bookingPeriodEndingDate={booking_period_ending_date}&bookingStatusFilter=booked&venueId={venue_id}"
             )
 
         assert response.status_code == 200

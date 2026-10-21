@@ -423,11 +423,11 @@ class CulturalSurveyQuestionsTest:
         assert response.status_code == 204
 
         answers_str = (
-            '{"user_id": %s, "submitted_at": "2020-01-01T00:00:00", "answers": '
+            f'{{"user_id": {user.id}, "submitted_at": "2020-01-01T00:00:00", "answers": '
             '[{"question_id": "SORTIES", "answer_ids": ["FESTIVAL"]}, '
             '{"question_id": "FESTIVALS", "answer_ids": ["FESTIVAL_MUSIQUE"]}, '
             '{"question_id": "PROJECTIONS", "answer_ids": ["PROJECTION_SPECTACLE", "PROJECTION_CINEMA"]}]}'
-        ) % user.id
+        )
 
         store_public_object_mock.assert_called_once_with(
             folder="QPI_exports/qpi_answers_20200101",
