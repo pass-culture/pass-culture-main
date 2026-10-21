@@ -273,7 +273,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
         assert len(rows) == 2
         assert rows[0]["ID"] == str(searched_user1.id)
         assert rows[0]["Nom"] == f"{searched_user1.firstName} {searched_user1.lastName}"
-        assert rows[0]["Date de naissance"] == "%s (18 ans)" % searched_user1.birth_date.strftime("%d/%m/%Y")
+        assert rows[0]["Date de naissance"] == f"{searched_user1.birth_date.strftime('%d/%m/%Y')} (18 ans)"
         assert rows[0]["Email"] == searched_user1.email
         assert rows[0]["Ville"] == f"{searched_user1.city} ({searched_user1.departementCode})"
         assert rows[0]["Type de crédit"] == "Pass 18"

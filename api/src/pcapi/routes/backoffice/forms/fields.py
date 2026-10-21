@@ -496,7 +496,7 @@ class PCTomSelectField(PCSelectMultipleField):
                 if isinstance(value, str) and not string_utils.is_numeric(value):
                     unacceptable.append(value)
             if unacceptable:
-                raise ValidationError("ID invalide pour %s : %s" % (self.name, ", ".join(unacceptable)))
+                raise ValidationError(f"ID invalide pour {self.name} : {', '.join(unacceptable)}")
 
         super().pre_validate(form)
 

@@ -18,8 +18,8 @@ class ProviderApiKeyRequiredTest:
         env = "test"
         prefix_id = str(uuid.uuid1())
 
-        offerers_factories.ApiKeyFactory(provider=provider, secret=secret, prefix="%s_%s" % (env, prefix_id))
-        plain_api_key = "%s_%s_%s" % (env, prefix_id, secret)
+        offerers_factories.ApiKeyFactory(provider=provider, secret=secret, prefix=f"{env}_{prefix_id}")
+        plain_api_key = f"{env}_{prefix_id}_{secret}"
 
         return plain_api_key
 

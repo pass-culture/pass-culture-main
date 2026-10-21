@@ -541,8 +541,8 @@ class TestClient:
             return
 
         print("\n===========================================")
-        print("%s :: %s" % (verb, route))
-        print("STATUS CODE :: %s" % result.status_code)
+        print(f"{verb} :: {route}")
+        print(f"STATUS CODE :: {result.status_code}")
 
         if request_body:
             print("REQUEST BODY")

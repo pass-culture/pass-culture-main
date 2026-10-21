@@ -30,7 +30,7 @@ def setup_backend(app: "Flask") -> None:
         try:
             backend_class = _BACKEND_CLASSES[settings.JWT_BACKEND]
         except KeyError:
-            raise ValueError("JWT backend %s not found." % settings.JWT_BACKEND)
+            raise ValueError(f"JWT backend {settings.JWT_BACKEND} not found.")
         setattr(app, _JWT_BACKEND_ATTR, backend_class())
 
 
