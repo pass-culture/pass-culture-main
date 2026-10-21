@@ -235,7 +235,7 @@ importers:
         version: 0.9.3(@firebase/app@0.16.2)
       '@hookform/resolvers':
         specifier: 5.7.1
-        version: 5.7.1(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(yup@1.7.1)(zod@4.6.5)
+        version: 5.7.1(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(yup@1.7.1)(zod@4.6.7)
       '@pass-culture/design-system':
         specifier: 0.12.0
         version: 0.12.0
@@ -329,6 +329,9 @@ importers:
       yup:
         specifier: 1.7.1
         version: 1.7.1
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@axe-core/playwright':
         specifier: 4.12.1
@@ -4677,8 +4680,8 @@ packages:
   yup@1.7.1:
     resolution: {integrity: sha512-GKHFX2nXul2/4Dtfxhozv701jLQHdf6J34YDh2cEkpqoo8le5Mg6/LrdseVLrFarmFygZTlfIhHx/QKfb/QWXw==}
 
-  zod@4.6.5:
-    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
 snapshots:
 
@@ -5308,7 +5311,7 @@ snapshots:
 
   '@hey-api/types@0.1.4': {}
 
-  '@hookform/resolvers@5.7.1(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(yup@1.7.1)(zod@4.6.5)':
+  '@hookform/resolvers@5.7.1(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(yup@1.7.1)(zod@4.6.7)':
     dependencies:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.89.0(@types/react@19.3.0)(react@19.3.0)
@@ -5316,7 +5319,7 @@ snapshots:
       '@standard-schema/spec': 1.1.0
       ajv: 8.20.0
       yup: 1.7.1
-      zod: 4.6.5
+      zod: 4.6.7
 
   '@istanbuljs/schema@0.1.6': {}
 
@@ -7309,7 +7312,7 @@ snapshots:
       tinyglobby: 0.2.17
       unbash: 4.0.12
       yaml: 2.9.1
-      zod: 4.6.5
+      zod: 4.6.7
 
   known-css-properties@0.37.0: {}
 
@@ -8555,4 +8558,4 @@ snapshots:
       toposort: 2.0.2
       type-fest: 2.19.0
 
-  zod@4.6.5: {}
+  zod@4.6.7: {}
