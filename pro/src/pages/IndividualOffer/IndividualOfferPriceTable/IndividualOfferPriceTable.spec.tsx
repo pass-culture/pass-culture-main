@@ -22,7 +22,7 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   MOCKED_CATEGORIES,
@@ -45,7 +45,7 @@ const renderIndividualOfferPriceTable: RenderComponentFunction<
   void,
   IndividualOfferContextValues,
   {
-    offer: GetIndividualOfferResponseModel | null
+    offer: GetIndividualOfferResponseModelV2 | null
     offerId?: number
   }
 > = (params) => {
