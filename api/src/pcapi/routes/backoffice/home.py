@@ -1,4 +1,5 @@
 import typing
+from urllib.parse import urlparse
 
 import sqlalchemy as sa
 from flask import redirect
@@ -142,8 +143,10 @@ def home() -> response_utils.BackofficeResponse:
 
     redirect_url = request.cookies.get(REDIRECT_AFTER_LOGIN_COOKIE_NAME, "")
     if redirect_url:
-        if redirect_url.startswith("/"):
-            response = redirect(redirect_url)
+        # could be if redirect_url.startswith("/") but semgrep forces to use urlparse.
+        parsed_url = urlparse(redirect_url)
+        if parsed_url.netloc == "":
+            response = redirect(parsed_url.path)
             response.delete_cookie(REDIRECT_AFTER_LOGIN_COOKIE_NAME)
             return response
 

@@ -700,13 +700,12 @@ def update_user_info(
         if city != user.city:
             snapshot.set("city", old=user.city, new=city)
         user.city = city
-    if validated_birth_date is not UNCHANGED:
-        if validated_birth_date != user.validatedBirthDate:
-            snapshot.set("validatedBirthDate", old=user.validatedBirthDate, new=validated_birth_date)
-            user.validatedBirthDate = validated_birth_date
-            if user.deposit and user.has_active_deposit and validated_birth_date is not None:
-                twenty_first_birthday = validated_birth_date + relativedelta(years=21)
-                user.deposit.expirationDate = datetime.datetime.combine(twenty_first_birthday, datetime.time.min)
+    if validated_birth_date is not UNCHANGED and validated_birth_date != user.validatedBirthDate:
+        snapshot.set("validatedBirthDate", old=user.validatedBirthDate, new=validated_birth_date)
+        user.validatedBirthDate = validated_birth_date
+        if user.deposit and user.has_active_deposit and validated_birth_date is not None:
+            twenty_first_birthday = validated_birth_date + relativedelta(years=21)
+            user.deposit.expirationDate = datetime.datetime.combine(twenty_first_birthday, datetime.time.min)
 
     if id_piece_number is not UNCHANGED:
         if id_piece_number != user.idPieceNumber:

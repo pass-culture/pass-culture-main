@@ -63,10 +63,7 @@ class Show(CineOfficeBaseModel):
         """
         if isinstance(value, bool):
             return value
-        if isinstance(value, str):
-            if not any(char.isdigit() for char in value):
-                return True
-        return False
+        return bool(isinstance(value, str) and not any(char.isdigit() for char in value))
 
 
 class Media(CineOfficeBaseModel):

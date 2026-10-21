@@ -79,11 +79,13 @@ class ReportDepositExpirationRow(ReportRow):
                 and booking.cancellationDate < deposit.expirationDate
             ):
                 continue
-            if validated_booking_incident := booking.validated_booking_incident:
-                if validation_date := validated_booking_incident.incident.validation_date:
-                    if validation_date < deposit.expirationDate:
-                        self.amount += decimal.Decimal(validated_booking_incident.newTotalAmount) / decimal.Decimal(100)
-                        continue
+            if (
+                (validated_booking_incident := booking.validated_booking_incident)
+                and (validation_date := validated_booking_incident.incident.validation_date)
+                and validation_date < deposit.expirationDate
+            ):
+                self.amount += decimal.Decimal(validated_booking_incident.newTotalAmount) / decimal.Decimal(100)
+                continue
             self.amount += booking.total_amount
 
 

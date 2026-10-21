@@ -192,7 +192,6 @@ ignore = [
 
   # These are stylistic rules that implies many modifications
   "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert);
-  "SIM102",  # nested-if : Use a single `if` statement instead of nested `if` statements
   "SIM117",  # multiple-with-statements : Use a single `with` statement with multiple contexts
   "UP031",  # printf-string-formatting : Use format specifiers instead of percent format
 

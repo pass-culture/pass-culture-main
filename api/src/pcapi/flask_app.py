@@ -281,9 +281,8 @@ def get_shell_extra_context() -> dict:
 
 @app.after_request
 def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
-    if app.config.get("USE_GLOBAL_ATOMIC", False):
-        if response.status_code >= 400:
-            transaction_manager.mark_transaction_as_invalid()
+    if app.config.get("USE_GLOBAL_ATOMIC", False) and response.status_code >= 400:
+        transaction_manager.mark_transaction_as_invalid()
     return response
 
 

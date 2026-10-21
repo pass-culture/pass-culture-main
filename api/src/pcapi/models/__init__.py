@@ -65,12 +65,13 @@ def check_database_ssl_settings() -> None:
             f"Invalid DATABASE_SSLMODE: {ssl_mode}. Allowed values are: {', '.join(DATABASE_ALLOWED_SSLMODES)}"
         )
 
-    if ssl_mode in ("verify-ca", "verify-full"):
-        if not all((settings.DATABASE_SSLROOTCERT, settings.DATABASE_SSLCERT, settings.DATABASE_SSLKEY)):
-            raise ValueError(
-                f"DATABASE_SSLROOTCERT, DATABASE_SSLCERT and DATABASE_SSLKEY are required "
-                f"when DATABASE_SSLMODE is {ssl_mode}."
-            )
+    if ssl_mode in ("verify-ca", "verify-full") and not all(
+        (settings.DATABASE_SSLROOTCERT, settings.DATABASE_SSLCERT, settings.DATABASE_SSLKEY)
+    ):
+        raise ValueError(
+            f"DATABASE_SSLROOTCERT, DATABASE_SSLCERT and DATABASE_SSLKEY are required "
+            f"when DATABASE_SSLMODE is {ssl_mode}."
+        )
 
 
 def get_db_options() -> list[str]:

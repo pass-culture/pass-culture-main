@@ -223,15 +223,14 @@ def check_can_remove_siret(
     if not venue.siret:
         raise CheckError("Ce partenaire culturel n'a pas de SIRET")
 
-    if check_offerer_has_other_siret:
-        if not any(
-            offerer_venue.siret
-            for offerer_venue in venue.managingOfferer.managedVenues
-            if offerer_venue.siret and offerer_venue.id != venue.id
-        ):
-            raise CheckError(
-                "L'entité juridique gérant ce partenaire culturel n'a pas d'autre partenaire culturel avec SIRET"
-            )
+    if check_offerer_has_other_siret and not any(
+        offerer_venue.siret
+        for offerer_venue in venue.managingOfferer.managedVenues
+        if offerer_venue.siret and offerer_venue.id != venue.id
+    ):
+        raise CheckError(
+            "L'entité juridique gérant ce partenaire culturel n'a pas d'autre partenaire culturel avec SIRET"
+        )
 
     if not comment:
         raise CheckError("Le commentaire est obligatoire")
