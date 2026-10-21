@@ -51,23 +51,26 @@ export const phoneNumberSchema = () => {
   return yup
     .string()
     .transform(stripPhoneSeparators)
-    .test('isPhoneValid', function isPhoneValidWithErrorMessage(this: yup.TestContext, value:
-      | string
-      | null
-      | undefined): boolean {
-      if (!value) {
-        return true
+    .test(
+      'isPhoneValid',
+      function isPhoneValidWithErrorMessage(
+        this: yup.TestContext,
+        value: string | null | undefined
+      ): boolean {
+        if (!value) {
+          return true
+        }
+        try {
+          validateAndParseFrenchPhoneNumber(value)
+          return true
+        } catch (error) {
+          throw this.createError({
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Veuillez renseigner un numéro de téléphone valide',
+          })
+        }
       }
-      try {
-        validateAndParseFrenchPhoneNumber(value)
-        return true
-      } catch (error) {
-        throw this.createError({
-          message:
-            error instanceof Error
-              ? error.message
-              : 'Veuillez renseigner un numéro de téléphone valide',
-        })
-      }
-    })
+    )
 }
