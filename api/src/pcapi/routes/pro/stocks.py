@@ -178,11 +178,7 @@ def bulk_update_event_stocks(
     missing_stocks_ids = {stock.id for stock in stocks_to_edit} - set(existing_stocks.keys())
     if missing_stocks_ids:
         raise api_errors.ApiErrors(
-            {
-                "stock_id": [
-                    "Pas de stocks avec les ids: %s" % ", ".join(str(stock_id) for stock_id in missing_stocks_ids)
-                ]
-            }
+            {"stock_id": [f"Pas de stocks avec les ids: {', '.join(str(stock_id) for stock_id in missing_stocks_ids)}"]}
         )
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
     stocks_with_edited_beginning_datetime = []

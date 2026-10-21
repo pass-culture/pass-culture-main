@@ -269,16 +269,14 @@ def format_deposit_used(booking: bookings_models.Booking) -> str:
 
 
 def format_deposit_state(deposit: finance_models.Deposit | None) -> str:
-    if deposit:
-        if not deposit.expirationDate or deposit.expirationDate > date_utils.get_naive_utc_now():
-            return "Actif"
+    if deposit and (not deposit.expirationDate or deposit.expirationDate > date_utils.get_naive_utc_now()):
+        return "Actif"
     return "Expiré"
 
 
 def format_active_deposit(deposit: finance_models.Deposit | None) -> str:
-    if deposit:
-        if not deposit.expirationDate or deposit.expirationDate > date_utils.get_naive_utc_now():
-            return Markup('<span class="visually-hidden">Oui</span><i class="bi bi-check-circle-fill"></i>')
+    if deposit and (not deposit.expirationDate or deposit.expirationDate > date_utils.get_naive_utc_now()):
+        return Markup('<span class="visually-hidden">Oui</span><i class="bi bi-check-circle-fill"></i>')
     return Markup('<span class="visually-hidden">Non</span><i class="bi bi-x-circle-fill"></i>')
 
 

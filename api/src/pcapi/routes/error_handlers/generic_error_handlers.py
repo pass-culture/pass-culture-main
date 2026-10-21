@@ -80,7 +80,7 @@ def unauthorized_error(error: UnauthorizedError) -> Response:
     if error.www_authenticate:
         headers["WWW-Authenticate"] = error.www_authenticate
         if error.realm:
-            headers["WWW-Authenticate"] = '%s realm="%s"' % (headers["WWW-Authenticate"], error.realm)
+            headers["WWW-Authenticate"] = '{} realm="{}"'.format(headers["WWW-Authenticate"], error.realm)
     return Response(json.dumps(error.errors), 401, headers, mimetype="application/json")
 
 

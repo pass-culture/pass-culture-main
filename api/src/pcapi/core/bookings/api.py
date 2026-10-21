@@ -724,125 +724,122 @@ def _execute_cancel_booking(
         - (DB) Update stock quantity
         - (Check) Check stock quantity is valid
     """
-    with transaction():
-        with db.session.no_autoflush:
-            stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
-            db.session.refresh(booking)
-            logger.info(
-                "Cancelling booking...",
-                extra={
+    with transaction(), db.session.no_autoflush:
+        stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
+        db.session.refresh(booking)
+        logger.info(
+            "Cancelling booking...",
+            extra={
+                "booking_id": booking.id,
+                "stock_dnBookedQuantity": stock.dnBookedQuantity,
+                "booking_quantity": booking.quantity,
+                "feature": "bookings",
+                "action": "cancel",
+            },
+        )
+        try:
+            booking.cancel_booking(
+                reason=reason,
+                cancel_even_if_used=cancel_even_if_used,
+                cancel_even_if_reimbursed=cancel_even_if_reimbursed,
+                author_id=author_id,
+            )
+            db.session.add(booking)
+            db.session.flush()
+
+            if cancel_related_finance_event and finance_api.cancel_latest_event(booking):
+                finance_api.add_event(
+                    finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
+                    booking=booking,
+                )
+            if not one_side_cancellation and booking.isExternal:
+                provider = booking.stock.offer.lastProvider
+                assert provider  # to make mypy happy
+                barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
+                log_extra_data = {
+                    "beneficiary_user_id": booking.userId,
                     "booking_id": booking.id,
-                    "stock_dnBookedQuantity": stock.dnBookedQuantity,
-                    "booking_quantity": booking.quantity,
-                    "feature": "bookings",
+                    "offer_id": booking.stock.offerId,
+                    "provider_id": provider.id,
+                    "venue_id": booking.stock.offer.venueId,
+                    "feature": "external_bookings",
                     "action": "cancel",
+                }
+                try:
+                    start_time = time.time()
+                    external_bookings_api.cancel_tickets(barcodes, provider=provider, stock=stock)
+                    logger.info(
+                        "[Core] Tickets successfully cancelled on provider side",
+                        extra=log_extra_data,
+                    )
+                    histogram_metric_status = "success"
+                except Exception as exc:
+                    logger.warning(
+                        "[Core] Unable to cancel tickets on provider side",
+                        extra={
+                            **log_extra_data,
+                            "exception_class": exc.__class__.__name__,
+                            "exception_message": str(exc),
+                        },
+                    )
+                    histogram_metric_status = "failure"
+                    raise
+                finally:
+                    elapsedseconds = time.time() - start_time
+                    cancel_external_bookings_execution_time_histogram.labels(
+                        provider_id=stock.offer.lastProviderId,
+                        provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
+                        subcategory_id=stock.offer.subcategoryId,
+                        status=histogram_metric_status,
+                    ).observe(elapsedseconds)
+        except (
+            exceptions.BookingIsAlreadyUsed,
+            exceptions.BookingIsAlreadyCancelled,
+            finance_exceptions.NonCancellablePricingError,
+        ) as e:
+            if raise_if_error:
+                raise
+            if is_managed_transaction():
+                mark_transaction_as_invalid()
+            else:
+                db.session.rollback()
+            logger.info(
+                "%s: %s",
+                type(e).__name__,
+                str(e),
+                extra={
+                    "booking": booking.id,
+                    "reason": str(reason),
                 },
             )
-            try:
-                booking.cancel_booking(
-                    reason=reason,
-                    cancel_even_if_used=cancel_even_if_used,
-                    cancel_even_if_reimbursed=cancel_even_if_reimbursed,
-                    author_id=author_id,
-                )
-                db.session.add(booking)
+            return False
+
+        stock.dnBookedQuantity -= booking.quantity
+        if booking.activationCode and stock.quantity:
+            stock.quantity -= 1
+
+        db.session.add(booking)
+        db.session.add(stock)
+        if stock.quantity is not None and stock.quantity < 0:
+            if is_managed_transaction():
+                mark_transaction_as_invalid()
+            else:
+                db.session.rollback()
+            raise ApiErrors(errors={"quantity": "La quantité doit être positive."})
+
+        try:
+            if is_managed_transaction():
                 db.session.flush()
-
-                if cancel_related_finance_event and finance_api.cancel_latest_event(booking):
-                    finance_api.add_event(
-                        finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
-                        booking=booking,
-                    )
-                if not one_side_cancellation and booking.isExternal:
-                    provider = booking.stock.offer.lastProvider
-                    assert provider  # to make mypy happy
-                    barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
-                    log_extra_data = {
-                        "beneficiary_user_id": booking.userId,
-                        "booking_id": booking.id,
-                        "offer_id": booking.stock.offerId,
-                        "provider_id": provider.id,
-                        "venue_id": booking.stock.offer.venueId,
-                        "feature": "external_bookings",
-                        "action": "cancel",
-                    }
-                    try:
-                        start_time = time.time()
-                        external_bookings_api.cancel_tickets(barcodes, provider=provider, stock=stock)
-                        logger.info(
-                            "[Core] Tickets successfully cancelled on provider side",
-                            extra=log_extra_data,
-                        )
-                        histogram_metric_status = "success"
-                    except Exception as exc:
-                        logger.warning(
-                            "[Core] Unable to cancel tickets on provider side",
-                            extra={
-                                **log_extra_data,
-                                "exception_class": exc.__class__.__name__,
-                                "exception_message": str(exc),
-                            },
-                        )
-                        histogram_metric_status = "failure"
-                        raise
-                    finally:
-                        elapsedseconds = time.time() - start_time
-                        cancel_external_bookings_execution_time_histogram.labels(
-                            provider_id=stock.offer.lastProviderId,
-                            provider_label=stock.offer.lastProvider.name if stock.offer.lastProvider else None,
-                            subcategory_id=stock.offer.subcategoryId,
-                            status=histogram_metric_status,
-                        ).observe(elapsedseconds)
-            except (
-                exceptions.BookingIsAlreadyUsed,
-                exceptions.BookingIsAlreadyCancelled,
-                finance_exceptions.NonCancellablePricingError,
-            ) as e:
-                if raise_if_error:
-                    raise
-                if is_managed_transaction():
-                    mark_transaction_as_invalid()
-                else:
-                    db.session.rollback()
-                logger.info(
-                    "%s: %s",
-                    type(e).__name__,
-                    str(e),
-                    extra={
-                        "booking": booking.id,
-                        "reason": str(reason),
-                    },
-                )
-                return False
-
-            stock.dnBookedQuantity -= booking.quantity
-            if booking.activationCode and stock.quantity:
-                stock.quantity -= 1
-
-            db.session.add(booking)
-            db.session.add(stock)
-            if stock.quantity is not None and stock.quantity < 0:
-                if is_managed_transaction():
-                    mark_transaction_as_invalid()
-                else:
-                    db.session.rollback()
-                raise ApiErrors(errors={"quantity": "La quantité doit être positive."})
-
-            try:
-                if is_managed_transaction():
-                    db.session.flush()
-                else:
-                    db.session.commit()
-            except sa_exc.InternalError as exc:
-                if is_managed_transaction():
-                    mark_transaction_as_invalid()
-                else:
-                    db.session.rollback()
-                if exc.orig and "quantity_too_low" in str(exc.orig):
-                    raise ApiErrors(
-                        errors={"quantity": "Le stock total ne peut être inférieur au nombre de réservations"}
-                    )
-                raise
+            else:
+                db.session.commit()
+        except sa_exc.InternalError as exc:
+            if is_managed_transaction():
+                mark_transaction_as_invalid()
+            else:
+                db.session.rollback()
+            if exc.orig and "quantity_too_low" in str(exc.orig):
+                raise ApiErrors(errors={"quantity": "Le stock total ne peut être inférieur au nombre de réservations"})
+            raise
     return True
 
 
@@ -1099,20 +1096,18 @@ def mark_as_cancelled(
     if finance_repository.has_reimbursement(booking):
         raise exceptions.BookingIsAlreadyRefunded()
 
-    if one_side_cancellation:
-        if (
-            not models.BookingCancellationReasons.is_from_backoffice(reason)
-            or (
-                booking.stock.offer.lastProvider
-                and booking.stock.offer.lastProvider.localClass
-                not in constants.ONE_SIDE_BOOKINGS_CANCELLATION_PROVIDERS
-            )
-            or (
-                booking.stock.beginningDatetime
-                and booking.stock.beginningDatetime < date_utils.get_naive_utc_now() - datetime.timedelta(days=15)
-            )
-        ):
-            raise exceptions.OneSideCancellationForbidden()
+    if one_side_cancellation and (
+        not models.BookingCancellationReasons.is_from_backoffice(reason)
+        or (
+            booking.stock.offer.lastProvider
+            and booking.stock.offer.lastProvider.localClass not in constants.ONE_SIDE_BOOKINGS_CANCELLATION_PROVIDERS
+        )
+        or (
+            booking.stock.beginningDatetime
+            and booking.stock.beginningDatetime < date_utils.get_naive_utc_now() - datetime.timedelta(days=15)
+        )
+    ):
+        raise exceptions.OneSideCancellationForbidden()
 
     _cancel_booking(
         booking=booking,
@@ -1623,10 +1618,9 @@ def cancel_ems_external_bookings() -> None:
 
 
 def is_external_event_booking_visible(offer: offers_models.Offer, stock: offers_models.Stock) -> bool:
-    if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
-        if stock.beginningDatetime:
-            delta = stock.beginningDatetime - date_utils.get_naive_utc_now()
-            return delta.total_seconds() < NUMBER_SECONDS_HIDE_QR_CODE
+    if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP and stock.beginningDatetime:
+        delta = stock.beginningDatetime - date_utils.get_naive_utc_now()
+        return delta.total_seconds() < NUMBER_SECONDS_HIDE_QR_CODE
     return True
 
 

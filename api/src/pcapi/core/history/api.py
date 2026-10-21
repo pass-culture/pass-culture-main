@@ -46,26 +46,26 @@ def add_action(
     db.session.flush()
 
     if user is not None and user.id is None:
-        raise RuntimeError("Unsaved user would be saved with action: %s" % (user.email,))
+        raise RuntimeError(f"Unsaved user would be saved with action: {user.email}")
 
     if offerer is not None and offerer.id is None:
-        raise RuntimeError("Unsaved offerer would be saved with action: %s" % (offerer.name,))
+        raise RuntimeError(f"Unsaved offerer would be saved with action: {offerer.name}")
 
     if venue is not None and venue.id is None:
-        raise RuntimeError("Unsaved venue would be saved with action %s" % (venue.name,))
+        raise RuntimeError(f"Unsaved venue would be saved with action {venue.name}")
 
     if bank_account is not None and bank_account.id is None:
-        raise RuntimeError("Unsaved bank account would be saved with action %s" % bank_account.label)
+        raise RuntimeError(f"Unsaved bank account would be saved with action {bank_account.label}")
 
     if rule is not None and rule.id is None:
-        raise RuntimeError("Unsaved rule would be saved with action %s" % rule.name)
+        raise RuntimeError(f"Unsaved rule would be saved with action {rule.name}")
 
     if chronicle is not None and chronicle.id is None:
-        raise RuntimeError("Unsaved chronicle would be saved with action %s" % chronicle.id)
+        raise RuntimeError(f"Unsaved chronicle would be saved with action {chronicle.id}")
 
     if user_profile_refresh_campaign and user_profile_refresh_campaign.id is None:
         raise RuntimeError(
-            "Unsaved user profile refresh campaign would be saved with action %s" % user_profile_refresh_campaign.id
+            f"Unsaved user profile refresh campaign would be saved with action {user_profile_refresh_campaign.id}"
         )
 
     if not isinstance(author, users_models.User):

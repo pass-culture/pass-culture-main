@@ -384,8 +384,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                 },
                 "custom_fields": {
                     ZendeskCustomFieldsNames.DEPARTEMENT.value: department_code,
-                    ZendeskCustomFieldsNames.INTERNAL_COMMENT.value: "Mis à jour par le produit le %s"
-                    % (datetime.date.today().strftime("%d/%m/%Y")),
+                    ZendeskCustomFieldsNames.INTERNAL_COMMENT.value: f"Mis à jour par le produit le {datetime.date.today().strftime('%d/%m/%Y')}",
                     ZendeskCustomFieldsNames.HAS_PUBLISHED_COLLECTIVE_OFFERS.value: has_collective_offers,
                     ZendeskCustomFieldsNames.JURIDIC_NAME.value: venue.name,
                     ZendeskCustomFieldsNames.PC_PRO_STATUS.value: pc_pro_status,
@@ -423,8 +422,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                     ZendeskCustomFieldsNames.DEPARTEMENT.value: list(venues_departments)[0]
                     if len(venues_departments) == 1
                     else None,
-                    ZendeskCustomFieldsNames.INTERNAL_COMMENT.value: "Mis à jour par le produit le %s"
-                    % (datetime.date.today().strftime("%d/%m/%Y"),),
+                    ZendeskCustomFieldsNames.INTERNAL_COMMENT.value: f"Mis à jour par le produit le {datetime.date.today().strftime('%d/%m/%Y')}",
                     ZendeskCustomFieldsNames.JURIDIC_NAME.value: offerer.name,
                     ZendeskCustomFieldsNames.PRODUCT_OFFERER_ID.value: offerer.id,
                     ZendeskCustomFieldsNames.REGION.value: list(venues_regions)[0]

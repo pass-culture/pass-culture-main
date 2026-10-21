@@ -281,9 +281,8 @@ def get_shell_extra_context() -> dict:
 
 @app.after_request
 def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
-    if app.config.get("USE_GLOBAL_ATOMIC", False):
-        if response.status_code >= 400:
-            transaction_manager.mark_transaction_as_invalid()
+    if app.config.get("USE_GLOBAL_ATOMIC", False) and response.status_code >= 400:
+        transaction_manager.mark_transaction_as_invalid()
     return response
 
 
@@ -330,8 +329,7 @@ with app.app_context():
         if connection_record.info["pid"] != pid:
             connection_record.connection = connection_proxy.connection = None
             raise sa.exc.DisconnectionError(
-                "Connection record belongs to pid %s, "
-                "attempting to check out in pid %s" % (connection_record.info["pid"], pid)
+                f"Connection record belongs to pid {connection_record.info['pid']}, attempting to check out in pid {pid}"
             )
 
 

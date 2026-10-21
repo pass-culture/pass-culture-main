@@ -40,9 +40,8 @@ def safe_redirect_back(request: Request, default_url: str | None = None, *, code
     """
     Ensures that the referrer is from the same host before redirecting.
     """
-    if referrer := request.referrer:
-        if urlparse(referrer).netloc == request.host:
-            return redirect(referrer, code=code)
+    if (referrer := request.referrer) and urlparse(referrer).netloc == request.host:
+        return redirect(referrer, code=code)
     if default_url:
         return redirect(default_url, code=code)
     return redirect(url_for("backoffice.home"), code=code)

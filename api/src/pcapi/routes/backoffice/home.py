@@ -141,11 +141,10 @@ def home() -> response_utils.BackofficeResponse:
         return render_template("home/login.html")
 
     redirect_url = request.cookies.get(REDIRECT_AFTER_LOGIN_COOKIE_NAME, "")
-    if redirect_url:
-        if redirect_url.startswith("/"):
-            response = redirect(redirect_url)
-            response.delete_cookie(REDIRECT_AFTER_LOGIN_COOKIE_NAME)
-            return response
+    if redirect_url and redirect_url.startswith("/"):
+        response = redirect(redirect_url)
+        response.delete_cookie(REDIRECT_AFTER_LOGIN_COOKIE_NAME)
+        return response
 
     data: dict[str, typing.Any] = {}
     subqueries = []

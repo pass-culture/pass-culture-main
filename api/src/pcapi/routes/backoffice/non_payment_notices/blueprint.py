@@ -71,11 +71,10 @@ def _get_notices(form: forms.GetNoticesSearchForm) -> list[offerers_models.NonPa
             finance_models.CashflowBatch.id.in_(form.batch.data)
         )
 
-    if form.from_to_date.data:
-        if form.from_to_date.from_date is not None and form.from_to_date.to_date is not None:
-            from_date = date_utils.date_to_localized_datetime(form.from_to_date.from_date, datetime.min.time())
-            to_date = date_utils.date_to_localized_datetime(form.from_to_date.to_date, datetime.max.time())
-            ids_query = ids_query.filter(offerers_models.NonPaymentNotice.dateReceived.between(from_date, to_date))
+    if form.from_to_date.data and form.from_to_date.from_date is not None and form.from_to_date.to_date is not None:
+        from_date = date_utils.date_to_localized_datetime(form.from_to_date.from_date, datetime.min.time())
+        to_date = date_utils.date_to_localized_datetime(form.from_to_date.to_date, datetime.max.time())
+        ids_query = ids_query.filter(offerers_models.NonPaymentNotice.dateReceived.between(from_date, to_date))
 
     if form.q.data:
         search_query = form.q.data
