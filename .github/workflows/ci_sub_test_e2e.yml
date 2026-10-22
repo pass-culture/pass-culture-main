@@ -156,9 +156,11 @@ jobs:
           IMAGE: ${{ inputs.image }}
           TAG: ${{ inputs.tag }}
           E2E_API_KEY: DummyToken
+          TEMP: ${{ runner.temp }}
+          IMAGE_NAME: ${{ steps.compute-image-name.outputs.image_name }}
         run: |
           if [ "$TAG" != "latest" ]; then
-            docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
+            docker load --input "$TEMP/$IMAGE-$TAG.tar"
           fi
           docker run \
             --name pc-api \
@@ -173,7 +175,7 @@ jobs:
             --env E2E_API_KEY=DummyToken \
             --env ENABLE_FLASK_PROMETHEUS_EXPORTER="0" \
             --env PROMETHEUS_MULTIPROC_DIR="" \
-            "${{ steps.compute-image-name.outputs.image_name }}" \
+            "$IMAGE_NAME" \
             -c "set -e ; flask install_postgres_extensions ; alembic upgrade pre@head ; alembic upgrade post@head ; flask install_data ; FLASK_USE_RELOADER=0 python src/pcapi/app.py"
 
       - name: "Wait for migrations to be run"
@@ -197,9 +199,11 @@ jobs:
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
 
       - name: "Playwright run"
-        run: E2E_API_KEY=DummyToken pnpm test:e2e:ci --reporter=blob --shard="${{ matrix.shardIndex }}/${{matrix.shardTotal }}"
+        run: E2E_API_KEY=DummyToken pnpm test:e2e:ci --reporter=blob --shard="$SHARD_INDEX/$SHARD_TOTAL"
         env:
           E2E_API_KEY: DummyToken
+          SHARD_INDEX: ${{ matrix.shardIndex }}
+          SHARD_TOTAL: ${{matrix.shardTotal }}
 
       - name: "Upload Playwright report"
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

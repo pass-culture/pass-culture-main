@@ -106,7 +106,10 @@ jobs:
             pnpm ci
 
       - name: Run tests with coverage
-        run: pnpm test:unit:ci --reporter=blob --reporter=dot --shard=${{ matrix.shardIndex }}/${{matrix.shardTotal }}
+        run: pnpm test:unit:ci --reporter=blob --reporter=dot --shard="$SHARD_INDEX/$SHARD_TOTAL"
+        env:
+          SHARD_INDEX: ${{ matrix.shardIndex }}
+          SHARD_TOTAL: ${{ matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
@@ -118,7 +121,9 @@ jobs:
           retention-days: 1
 
       - name: Rename coverage
-        run: mv coverage/coverage-final.json coverage/coverage-${{matrix.shardIndex}}.json
+        run: mv coverage/coverage-final.json "coverage/coverage-$SHARD_INDEX.json"
+        env:
+          SHARD_INDEX: ${{matrix.shardIndex}}
 
       - name: Upload coverage report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
