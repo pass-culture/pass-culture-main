@@ -67,7 +67,7 @@ jobs:
       - name: "Setup database"
         run: |
           docker run \
-            --network "$NETWOK" \
+            --network "$NETWORK" \
             --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint bash \
             "$IMAGE_NAME" \
