@@ -67,6 +67,7 @@ from pcapi.core.reminders.external import reminders_notifications
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
@@ -1009,6 +1010,39 @@ def finalize_offer(
     return offer
 
 
+def _validate_offer_before_publishing_it(offer: models.Offer, is_from_private_api: bool) -> None:
+    validation.check_offer_subcategory_is_valid(offer.subcategoryId)
+    validation.check_product_for_venue_and_subcategory(offer.product, offer.subcategoryId, offer.venue.venueTypeCode)
+
+    validation.check_accessibility_compliance(
+        audio_disability_compliant=offer.audioDisabilityCompliant,
+        mental_disability_compliant=offer.mentalDisabilityCompliant,
+        motor_disability_compliant=offer.motorDisabilityCompliant,
+        visual_disability_compliant=offer.visualDisabilityCompliant,
+    )
+
+    validation.check_offer_withdrawal(
+        withdrawal_type=offer.withdrawalType,
+        withdrawal_delay=offer.withdrawalDelay,
+        subcategory_id=offer.subcategoryId,
+        booking_contact=offer.bookingContact,
+        provider=offer.lastProvider,
+        venue_provider=None,
+    )
+
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+    validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
+    validation.check_url_and_offererAddress_are_not_both_set(offer.url, offer.offererAddress)
+
+    ean = offer.product.ean if offer.product else (offer.extraData or {}).get("ean")
+    validation.check_offer_extra_data(offer.subcategoryId, offer.extraData, offer.venue, is_from_private_api, ean=ean)
+    validation.check_is_duo_compliance(offer.isDuo, subcategory)
+    validation.check_can_input_id_at_provider(offer.lastProvider, offer.idAtProvider)
+    validation.check_can_input_id_at_provider_for_this_venue(offer.venueId, offer.idAtProvider)
+    validation.check_offer_name_does_not_contain_ean(offer.name)
+    validation.check_duration_minutes(offer.durationMinutes, is_from_private_api)
+
+
 def publish_offer(
     offer: models.Offer,
     publication_datetime: datetime.datetime | None = None,
@@ -1056,6 +1090,8 @@ def publish_offer(
             technical_message_id="offer.published",
         )
 
+    if FeatureToggle.WIP_VALIDATE_OFFER_BEFORE_PUBLISHING.is_active():
+        _validate_offer_before_publishing_it(offer, is_from_private_api=True)
     return offer
 
 
