@@ -1,5 +1,7 @@
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
 import homeShell from '../../assets/offer-home-shell.png'
-import offerShell from '../../assets/offer-shell.png'
+import offerShell from '../../assets/offer-shell.svg'
 import { ImagePreview } from '../../ImagePreview'
 import { ImagePreviewsWrapper } from '../../ImagePreviewsWrapper'
 import homeStyle from './HomeScreenPreview.module.scss'
@@ -35,11 +37,12 @@ export const AppPreviewOffer = ({
         className={offerStyle['image-preview-blur-offer-preview']}
         src={imageUrl}
       />
-      <img
+      <SvgIcon
+        src={offerShell}
         alt=""
         aria-hidden
         className={offerStyle['image-preview-shell']}
-        src={offerShell}
+        viewBox="0 0 92 166"
       />
       <img
         data-testid="app-preview-offer-img"

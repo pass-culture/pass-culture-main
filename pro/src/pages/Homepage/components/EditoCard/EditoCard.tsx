@@ -15,7 +15,7 @@ import {
 import { Card } from '@/ui-kit/Card/Card'
 
 import { ModalHighlight } from '../HighlightHome/ModalHighlight/ModalHighlight'
-import cultureSurvey from './assets/culture-survey.png'
+import cultureSurvey from './assets/culture-survey.jpg'
 import headlineOffer from './assets/headline-offer.png'
 import highlightOffer from './assets/highlight-offer.png'
 import { EditoCardItem } from './components/EditoCardItem'
