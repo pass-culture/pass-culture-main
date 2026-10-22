@@ -67,17 +67,19 @@ jobs:
       - name: "Setup database"
         run: |
           docker run \
-            --network "${{ job.container.network }}" \
+            --network "$NETWOK" \
             --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint bash \
-            "${{ steps.load-docker-image.outputs.image-name }}" \
+            "$IMAGE_NAME" \
             -c '
               set -e
               flask install_postgres_extensions
               alembic upgrade pre@head
               alembic upgrade post@head
               flask install_data
-            '
+        env:
+          NETWORK: ${{ job.container.network }}
+          IMAGE_NAME: ${{ steps.load-docker-image.outputs.image-name }}
 
       - name: "Run API server"
         run: |
@@ -85,11 +87,15 @@ jobs:
             --env RUN_ENV --env DATABASE_URL_TEST \
             --tty \
             --detach \
-            --network "${{ job.container.network }}" \
+            --network "$NETWORK" \
             --publish 5001:5001 \
             --entrypoint bash \
-            "${{ steps.load-docker-image.outputs.image-name }}" \
+            "$IMAGE_DOCKER" \
             -c "python src/pcapi/app.py"
+        env:
+          NETWORK: ${{ job.container.network }}
+          IMAGE_NAME: ${{ steps.load-docker-image.outputs.image-name }}
+
 
       - name: "Wait for migrations to be run"
         uses: iFaxity/wait-on-action@a7d13170ec542bdca4ef8ac4b15e9c6aa00a6866 # v1.2.1
