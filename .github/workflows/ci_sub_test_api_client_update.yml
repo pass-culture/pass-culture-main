@@ -91,7 +91,7 @@ jobs:
             --network "$NETWORK" \
             --publish 5001:5001 \
             --entrypoint bash \
-            "$IMAGE_DOCKER" \
+            "$IMAGE_NAME" \
             -c "python src/pcapi/app.py"
         env:
           NETWORK: ${{ job.container.network }}

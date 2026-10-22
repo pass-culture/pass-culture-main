@@ -299,7 +299,7 @@ jobs:
       fail-fast: false
       matrix:
         pytest_args:
-          - collection: "--ignore=tests/routes/backoffice"
+          - collection: "tests/routes/backoffice"
             description: "(without BO)"
           - collection: "tests/routes/backoffice"
             description: "(only BO)"
@@ -398,7 +398,7 @@ jobs:
             --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL \
             "$IMAGE_NAME" \
             -c '
-              pytest "$COLLECTION" \
+              pytest --ignore="$COLLECTION" \
               --splits 4 --group "$GROUP" \
               --store-durations --durations-path /tests/.test_durations --clean-durations \
               --durations=10 --junitxml="/tests/junit.xml" \
