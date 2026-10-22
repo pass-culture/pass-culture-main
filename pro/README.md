@@ -61,12 +61,12 @@ Il est recommandé d'utiliser **nvm** pour installer et gérer la version de Nod
 Une fois nvm installé, on peut installer et utiliser la bonne version de Node.js :
 
 ```bash
-nvm install 24.8
+nvm install 24.22.1
 
-nvm use 24.8
+nvm use 24.22.1
 
-# (Conseillé : pour utiliser la version 24.8 par défaut)
-nvm alias default 24.8
+# (Conseillé : pour utiliser la version 24.22.1 par défaut)
+nvm alias default 24.22.1
 ```
 
 ## <img src="docs/pnpm.svg" height="20" /> pnpm

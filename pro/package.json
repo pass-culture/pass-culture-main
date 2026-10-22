@@ -126,7 +126,7 @@
     "vitest-fetch-mock": "0.4.5"
   },
   "engines": {
-    "node": "24.8"
+    "node": "24.22.1"
   },
   "devEngines": {
     "packageManager": {
