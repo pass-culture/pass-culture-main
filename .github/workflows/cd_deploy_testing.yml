@@ -48,12 +48,16 @@ jobs:
           echo images="$OUTPUT" | tee -a "$GITHUB_OUTPUT"
       - name: "Summary"
         run: |
-          echo "checksum-tag : \`${{ steps.compute-api-checksum.outputs.checksum-tag }}\`"
+          echo "checksum-tag : \`$CHECKSUM_TAG\`"
           echo ""
           echo "| Image           | Exists                                                                                             |"
           echo "|-----------------|----------------------------------------------------------------------------------------------------|"
-          echo "|\`pcapi\`        | ${{ fromJSON(steps.check-images-exist.outputs.images).pcapi && ':white_check_mark: Yes' || ':x: No' }}         |"
-          echo "|\`pcapi-console\`| ${{ fromJSON(steps.check-images-exist.outputs.images).pcapi-console && ':white_check_mark: Yes' || ':x: No' }} |"
+          echo "|\`pcapi\`        | $PCAPI                                                                                             |"
+          echo "|\`pcapi-console\`| $PCAPI_CONSOLE                                                                                     |"
+        env:
+          CHECKSUM_TAG: ${{ steps.compute-api-checksum.outputs.checksum-tag }}
+          PCAPI: ${{ fromJSON(steps.check-images-exist.outputs.images).pcapi && ':white_check_mark: Yes' || ':x: No' }}
+          PCAPI_CONSOLE: ${{ fromJSON(steps.check-images-exist.outputs.images).pcapi-console && ':white_check_mark: Yes' || ':x: No' }}
 
   create-docker-images-on-registry:
     name: Build and tag version

@@ -29,11 +29,12 @@ jobs:
         env:
           date_is_excluded: steps.check-date-exclusion.outputs.schedule_exclusion == 'true'
           is_dispatch: ${{ github.event_name == 'workflow_dispatch' }}
+          reason: ${{ steps.check-date-exclusion.outputs.reason }}
         run: |
           if [[ $is_dispatch ]] || [[ ! $date_is_excluded ]]; then
             exit 0
           fi
-          echo "Today is excluded – ${{ steps.check-date-exclusion.outputs.reason }}"
+          echo "Today is excluded – $reason"
           exit 1
 
   compute-major-version-variables:
@@ -77,7 +78,7 @@ jobs:
           subject="$(git show -s --format=%s "$commit_hash")"
 
           # compute Slack message base  — backtick are interpreted so we use [] around the release number
-          message_base="de la <${{ env.RUN_URL }}|release> [v$release_number] basée sur le commit <${{ env.REPO_URL }}/commit/$commit_hash|$subject> (poussé le $commit_date)"
+          message_base="de la <$RUN_URL|release> [v$release_number] basée sur le commit <$REPO_URL/commit/$commit_hash|$subject> (poussé le $commit_date)"
           echo "message-base=$message_base" >> "$GITHUB_OUTPUT"
 
   notify-workflow-start:
@@ -139,9 +140,11 @@ jobs:
       - name: Delete old maintenance branch
         continue-on-error: true
         run: |
-          release_number="${{ needs.compute-major-version-variables.outputs.release-number }}"
+          release_number="$RELEASE_NUMBER"
           old_branch_number="$((release_number-2))"
           git push origin --delete "maint/v$old_branch_number"
+        env:
+          RELEASE_NUMBER: ${{ needs.compute-major-version-variables.outputs.release-number }}
 
   notify-success:
     name: "Send workflow success notification"
