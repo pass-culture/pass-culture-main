@@ -45,7 +45,7 @@ jobs:
 
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5
 
-      - uses: pass-culture/common-workflows/actions/setup-firebase-tools@IC-1390-create-setup-firebase-tools-action
+      - uses: pass-culture/common-workflows/actions/setup-firebase-tools@e6bcac798f0e97e8071b2e87a5c6a28c9bb538f4 # IC-1390-create-setup-firebase-tools-action
 
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
@@ -78,5 +78,7 @@ jobs:
             echo "### :rocket: Deploy PRO Storybook Summary"
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
-            echo "| [pro] preview url                    |  ${{ steps.deploy.outputs.preview_url }} |"
+            echo "| [pro] preview url                    |  $PREVIEW_URL |"
           } >> "$GITHUB_STEP_SUMMARY"
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
