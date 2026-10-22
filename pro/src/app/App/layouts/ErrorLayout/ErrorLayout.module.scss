@@ -26,14 +26,14 @@
   }
 
   .nm-redirection-link {
-    margin: var(--size-spacing-xxxl) auto;
+    margin: var(--size-spacing-3xl) auto;
   }
 }
 
 .title {
   @include fonts.title1;
 
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
   margin-bottom: var(--size-spacing-l);
   overflow-wrap: anywhere;
 }

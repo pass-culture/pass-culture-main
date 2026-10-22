@@ -20,12 +20,12 @@
     width: rem.torem(231px);
     min-width: rem.torem(231px);
     margin: 0 auto;
-    margin-bottom: var(--size-spacing-xxl);
+    margin-bottom: var(--size-spacing-2xl);
   }
 
   &-section {
     margin-top: var(--size-spacing-s);
-    margin-bottom: var(--size-spacing-xxxl);
+    margin-bottom: var(--size-spacing-3xl);
 
     &-with-divider {
       margin: 0;

@@ -10,12 +10,12 @@
 .subheading-description {
   @include fonts.body-xs;
 
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   color: var(--color-text-subtle);
 }
 
 .next-actions {
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
   display: flex;
   justify-content: center;
 }

@@ -11,11 +11,11 @@
   @include fonts.body-xs;
 
   color: var(--color-text-subtle);
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 }
 
 .next-actions {
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
   display: flex;
   justify-content: space-between;
 }
@@ -23,7 +23,7 @@
 .title {
   @include fonts.title1;
 
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
   margin-bottom: var(--size-spacing-s);
   overflow-wrap: anywhere;
 }

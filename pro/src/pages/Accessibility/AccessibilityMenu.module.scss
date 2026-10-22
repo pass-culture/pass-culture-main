@@ -17,7 +17,7 @@ $max-width-percentage: 60%;
   flex-direction: column;
   gap: var(--size-spacing-s);
   width: 100%;
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 }
 
 .page-content {
@@ -30,6 +30,6 @@ $max-width-percentage: 60%;
 .title {
   @include fonts.title1;
 
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   overflow-wrap: anywhere;
 }

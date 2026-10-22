@@ -15,7 +15,7 @@
   border-spacing: 0 rem.torem(24px);
 
   &-pagination {
-    margin-top: var(--size-spacing-xxl);
+    margin-top: var(--size-spacing-2xl);
   }
 }
 
@@ -117,7 +117,7 @@
 
 .table-select-all-tooltip {
   z-index: 99;
-  margin-left: var(--size-spacing-xxl);
+  margin-left: var(--size-spacing-2xl);
 }
 
 .table-checkbox-label {

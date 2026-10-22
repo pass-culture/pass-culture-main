@@ -18,7 +18,7 @@
   background-color: var(--color-background-default);
   display: flex;
   flex-direction: column;
-  padding: 0 var(--size-spacing-xxl);
+  padding: 0 var(--size-spacing-2xl);
   max-height: calc(
     100vh -
       (
@@ -78,7 +78,7 @@
 
   color: var(--color-text-subtle);
   display: block;
-  margin-top: var(--size-spacing-xxs);
+  margin-top: var(--size-spacing-2xs);
 }
 
 .venue-actions {
@@ -90,6 +90,6 @@
 .title {
   @include fonts.title1;
 
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   overflow-wrap: anywhere;
 }

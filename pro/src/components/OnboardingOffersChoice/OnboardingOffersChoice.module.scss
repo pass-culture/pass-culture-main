@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(rem.torem(300px), 1fr));
   gap: var(--size-spacing-xl);
-  margin: var(--size-spacing-xxs) 0 rem.torem(22px);
+  margin: var(--size-spacing-2xs) 0 rem.torem(22px);
 }
 
 .card-description-highlight {
@@ -18,6 +18,6 @@
   justify-content: center;
 
   @media (max-width: size.$laptop) {
-    margin-bottom: var(--size-spacing-xxxxl);
+    margin-bottom: var(--size-spacing-4xl);
   }
 }

@@ -29,7 +29,7 @@ $info-box-margin-left: rem.torem(24px);
   }
 
   &-section {
-    margin-bottom: var(--size-spacing-xxl);
+    margin-bottom: var(--size-spacing-2xl);
     min-width: auto;
     max-width: 100%;
 
@@ -52,7 +52,7 @@ $info-box-margin-left: rem.torem(24px);
   }
 
   &-sub-section {
-    margin-bottom: var(--size-spacing-xxl);
+    margin-bottom: var(--size-spacing-2xl);
 
     &-title-wrapper {
       display: flex;
@@ -67,7 +67,7 @@ $info-box-margin-left: rem.torem(24px);
   }
 
   &-sub-sub-section {
-    margin-bottom: var(--size-spacing-xxl);
+    margin-bottom: var(--size-spacing-2xl);
   }
 
   &-row {
@@ -111,7 +111,7 @@ $info-box-margin-left: rem.torem(24px);
 .mandatory-info {
   @include fonts.body-xs;
 
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   color: var(--color-text-subtle);
 }
 

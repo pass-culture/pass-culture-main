@@ -4,14 +4,14 @@
 .desk-advice {
   @include fonts.title4;
 
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 }
 
 .desk-form-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--size-spacing-xxl);
+  gap: var(--size-spacing-2xl);
 }
 
 .desk-form {
@@ -25,6 +25,6 @@
 .title {
   @include fonts.title1;
 
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   overflow-wrap: anywhere;
 }

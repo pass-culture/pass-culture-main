@@ -131,7 +131,7 @@
 
   .actions-bar-embedded {
     position: sticky;
-    bottom: var(--size-spacing-xxl);
+    bottom: var(--size-spacing-2xl);
     left: auto;
     right: auto;
   }
@@ -165,6 +165,6 @@ $not-saved-size: rem.torem(16px);
 
 @media (min-width: size.$tablet) {
   .draft-indicator {
-    margin-right: var(--size-spacing-xxl);
+    margin-right: var(--size-spacing-2xl);
   }
 }

@@ -5,7 +5,7 @@
 .offers-info {
   &-breadcrumb {
     display: none;
-    margin-bottom: var(--size-spacing-xxl);
+    margin-bottom: var(--size-spacing-2xl);
     padding: 0 rem.torem(8px);
   }
 
@@ -30,6 +30,6 @@
   @include fonts.title1;
 
   margin-top: var(--size-spacing-xl);
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   overflow-wrap: anywhere;
 }

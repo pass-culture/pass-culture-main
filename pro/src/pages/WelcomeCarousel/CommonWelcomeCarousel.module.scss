@@ -14,7 +14,7 @@
 }
 
 .container {
-  margin: var(--size-spacing-xxl) auto;
+  margin: var(--size-spacing-2xl) auto;
   max-width: rem.torem(640px);
 }
 
@@ -25,7 +25,7 @@
   display: flex;
   max-width: 640px;
   flex-flow: column-reverse wrap;
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
 
   @media screen and (min-width: size.$tablet) {
     flex-flow: row wrap;

@@ -14,11 +14,11 @@
 
 .pre-filters-form {
   &:not(.has-result) {
-    margin-bottom: var(--size-spacing-xxl);
+    margin-bottom: var(--size-spacing-2xl);
   }
 
   &.has-result:not(.refresh-required) {
-    margin-bottom: var(--size-spacing-xxxxl);
+    margin-bottom: var(--size-spacing-4xl);
   }
 
   &.refresh-required.has-result {
@@ -46,7 +46,7 @@
 }
 
 .button-group {
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   position: relative;
 
   &-buttons {

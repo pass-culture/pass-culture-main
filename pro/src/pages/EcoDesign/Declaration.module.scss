@@ -28,16 +28,16 @@ $max-width-percentage: 60%;
 }
 
 .back-link {
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 }
 
 .download-button {
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   margin-top: var(--size-spacing-l);
 }
 
 .criteria-list {
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 }
 
 .accordion-button {
@@ -50,13 +50,13 @@ $max-width-percentage: 60%;
 }
 
 .non-validated-button-closed {
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 }
 
 .title {
   @include fonts.title1;
 
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   overflow-wrap: anywhere;
 }
 

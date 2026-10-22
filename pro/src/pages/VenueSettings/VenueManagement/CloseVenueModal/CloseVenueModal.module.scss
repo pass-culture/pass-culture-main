@@ -42,7 +42,7 @@
 
 .impact-list {
   list-style: disc;
-  margin-left: var(--size-spacing-xxl);
+  margin-left: var(--size-spacing-2xl);
 
   &-item {
     @include fonts.body-accent;

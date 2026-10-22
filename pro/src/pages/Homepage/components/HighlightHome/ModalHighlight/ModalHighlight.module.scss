@@ -3,13 +3,13 @@
 @use "styles/mixins/_size.scss" as size;
 
 .callout {
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
 }
 
 .highlight-title {
   @include fonts.body-accent;
 
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
 }
 
 .cards-container {
@@ -25,10 +25,10 @@
 }
 
 .links-container {
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
   display: flex;
   justify-content: center;
-  gap: var(--size-spacing-xxl);
+  gap: var(--size-spacing-2xl);
 
   @media (max-width: size.$tablet) {
     flex-direction: column;

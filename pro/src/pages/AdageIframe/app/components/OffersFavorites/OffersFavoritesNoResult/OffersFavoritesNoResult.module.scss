@@ -12,10 +12,10 @@
   .no-results-title {
     @include fonts.title2;
 
-    margin: var(--size-spacing-xxxl) 0 var(--size-spacing-s) 0;
+    margin: var(--size-spacing-3xl) 0 var(--size-spacing-s) 0;
   }
 
   .no-results-text {
-    margin-bottom: var(--size-spacing-xxl);
+    margin-bottom: var(--size-spacing-2xl);
   }
 }

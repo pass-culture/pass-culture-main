@@ -3,7 +3,7 @@
 .title {
   @include fonts.title1;
 
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
   margin-bottom: var(--size-spacing-s);
   overflow-wrap: anywhere;
 }

@@ -11,7 +11,7 @@
   margin-bottom: var(--size-spacing-xl);
 
   &-subtitle {
-    margin-top: var(--size-spacing-xxl);
+    margin-top: var(--size-spacing-2xl);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -19,7 +19,7 @@
 }
 
 .next-actions {
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
   display: flex;
   justify-content: space-between;
 }
@@ -27,7 +27,7 @@
 .title {
   @include fonts.title1;
 
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
   margin-bottom: var(--size-spacing-s);
   overflow-wrap: anywhere;
 }

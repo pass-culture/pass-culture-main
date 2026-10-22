@@ -3,7 +3,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_outline.scss" as outline;
 
-$indicator-size: var(--size-spacing-xxxl);
+$indicator-size: var(--size-spacing-3xl);
 $connector-width: rem.torem(2px);
 
 .stepper {
@@ -98,7 +98,7 @@ $connector-width: rem.torem(2px);
     @include fonts.body-xs;
 
     color: var(--color-text-subtle);
-    margin-top: var(--size-spacing-xxs);
+    margin-top: var(--size-spacing-2xs);
   }
 
   .connector {

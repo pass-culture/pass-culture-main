@@ -10,7 +10,7 @@
 }
 
 .section {
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 
   &[data-last-section] {
     margin-bottom: 0;
@@ -29,7 +29,7 @@
 .day-inputs {
   display: flex;
   margin-bottom: var(--size-spacing-l);
-  gap: var(--size-spacing-xxs);
+  gap: var(--size-spacing-2xs);
 
   @media (min-width: size.$tablet) {
     gap: var(--size-spacing-l);
