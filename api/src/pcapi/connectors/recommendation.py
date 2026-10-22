@@ -51,6 +51,12 @@ def get_playlist(user: users_models.User, params: dict | None = None, body: dict
     return backend.get_playlist(user, params, body)
 
 
+def get_offer_page_playlists(offer_id: int, user: users_models.User | None = None, params: dict | None = None) -> bytes:
+    backend = _get_backend()
+    params = params or {}
+    return backend.get_offer_page_playlists(offer_id, user, params)
+
+
 class BaseBackend:
     def get_similar_offers(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
         raise NotImplementedError()
@@ -59,6 +65,9 @@ class BaseBackend:
         raise NotImplementedError()
 
     def get_playlist(self, user: users_models.User, params: dict, body: dict) -> bytes:
+        raise NotImplementedError()
+
+    def get_offer_page_playlists(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
         raise NotImplementedError()
 
 
@@ -72,6 +81,28 @@ class TestingBackend:
                 "model_origin": "default",
                 "call_id": "956bd070-cbb1-42d3-bea4-89855bf3b11c",
             },
+        }
+        return bytes(json.dumps(response), encoding="utf-8")
+
+    def get_offer_page_playlists(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
+        offers = [i + 10 * offer_id + 100 * (user.id if user else 0) for i in range(3)]
+        response = {
+            "offer_id": str(offer_id),
+            "playlists": [
+                {
+                    "title": "Les fans aiment aussi",
+                    "analytics_playlist_type": "sameCategorySimilarOffersTwoTower",
+                    "results": [str(offer) for offer in offers],
+                    "params": {
+                        "reco_origin": "similar_offer",
+                        "model_origin": "default",
+                        "call_id": "4c0364f6-9398-465f-9b30-8286a54670a3",
+                        "unique_call_id": "deebda22-4ef6-4c1f-b1cc-f772efd21a6c",
+                        "ab_test": "main",
+                    },
+                }
+            ],
+            "from_cache": False,
         }
         return bytes(json.dumps(response), encoding="utf-8")
 
@@ -148,3 +179,8 @@ class HttpBackend:
     def get_playlist(self, user: users_models.User, params: dict, body: dict) -> bytes:
         path = f"/playlist_recommendation/{user.id}"
         return self._request("post", path, params=params, body=body)
+
+    def get_offer_page_playlists(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
+        path = f"/offer_page_playlists/{offer_id}"
+        params["user_id"] = str(user.id) if user else None
+        return self._request("get", path, params=params)

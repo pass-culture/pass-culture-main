@@ -64,3 +64,31 @@ class PlaylistResponse(HttpBodyModel):
     playlist_recommended_offers: list[str]
     params: RecommendationApiParams
     from_cache: bool | None = None
+
+
+class OfferPagePlaylistQuery(HttpBodyModel):
+    user_id: str | None = None
+    longitude: float | None = None
+    latitude: float | None = None
+    preset_location: str | None = None
+
+
+class OfferPagePlaylistParams(HttpBodyModel):
+    reco_origin: str
+    model_origin: str
+    call_id: str
+    unique_call_id: str
+    ab_test: str
+
+
+class OfferPagePlaylist(HttpBodyModel):
+    title: str
+    analytics_playlist_type: str
+    results: list[str]
+    params: OfferPagePlaylistParams
+
+
+class OfferPagePlaylistResponse(HttpBodyModel):
+    offer_id: str
+    playlists: list[OfferPagePlaylist]
+    from_cache: bool
