@@ -1158,6 +1158,13 @@ export type CreateThumbnailResponseModel = {
 };
 
 /**
+ * CriteriaEnum
+ */
+export enum CriteriaEnum {
+    CLOSURE_DETECTED = 'closure_detected'
+}
+
+/**
  * CropParamsV2
  */
 export type CropParamsV2 = {
@@ -3427,6 +3434,10 @@ export type GetVenueResponseModel = {
      */
     comment: string | null;
     contact: VenueContactModelV2 | null;
+    /**
+     * Criteria
+     */
+    criteria: Array<string | CriteriaEnum>;
     /**
      * Datecreated
      */

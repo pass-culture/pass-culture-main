@@ -320,6 +320,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
     socialMedias: null,
     website: 'https://my.website@test.com',
   },
+  criteria: [],
   description: 'desc',
   externalAccessibilityData: null,
   externalAccessibilityId: null,

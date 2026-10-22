@@ -198,6 +198,7 @@ export {
   type CreateOffererBodyModel,
   type CreateThumbnailBodyModel,
   type CreateThumbnailResponseModel,
+  CriteriaEnum,
   type CropParamsV2,
   type DMSApplicationForEAC,
   DMSApplicationstatus,
