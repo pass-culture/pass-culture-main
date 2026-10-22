@@ -1,4 +1,4 @@
-import homeShell from '../../assets/partner-home-shell.png'
+import homeShell from '../../assets/partner-home-shell.jpg'
 import partnerShell from '../../assets/partner-shell.png'
 import { ImagePreview } from '../../ImagePreview'
 import { ImagePreviewsWrapper } from '../../ImagePreviewsWrapper'

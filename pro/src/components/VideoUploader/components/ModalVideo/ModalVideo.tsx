@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -10,7 +11,7 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import { useVideoUploaderContext } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/context/VideoUploaderContext/VideoUploaderContext'
 import { getUrlYoutubeError } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/getUrlYoutubeError'
 
-import youtubeLogo from './assets/youtube-logo.png'
+import youtubeLogo from './assets/youtube-logo.svg'
 import styles from './ModalVideo.module.scss'
 
 interface ModalVideoProps {
@@ -81,11 +82,11 @@ export const ModalVideo = ({
     >
       <div className={styles['modal-video']}>
         <div className={styles['modal-video-content']}>
-          <img
+          <SvgIcon
             alt=""
             aria-hidden
-            width="70px"
-            height="17px"
+            width="70"
+            viewBox="0 0 70 17"
             src={youtubeLogo}
           />
           <TextInput
