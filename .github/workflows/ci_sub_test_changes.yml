@@ -34,7 +34,7 @@ jobs:
           fetch-tags: false
           persist-credentials: false
       - name: "Run actionlint"
-        uses: pass-culture/common-workflows/actions/actionlint-check@de4d32d30c20e6649279f63c357a5d337bf4a046 # v0.4.0
+        uses: pass-culture/common-workflows/actions/actionlint-check@547f3df463509ca831922b667e6dc2d29f74e4e0 # v0.3
 
   build-backend-image:
     name: Build backend image
