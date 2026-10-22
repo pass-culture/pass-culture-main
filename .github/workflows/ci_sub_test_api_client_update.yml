@@ -77,6 +77,7 @@ jobs:
               alembic upgrade pre@head
               alembic upgrade post@head
               flask install_data
+            '
         env:
           NETWORK: ${{ job.container.network }}
           IMAGE_NAME: ${{ steps.load-docker-image.outputs.image-name }}
