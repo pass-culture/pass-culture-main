@@ -521,6 +521,9 @@ def check_offer_withdrawal(
     venue_provider: providers_models.VenueProvider | None = None,
 ) -> None:
     is_offer_withdrawable = subcategory_id in subcategories.WITHDRAWABLE_SUBCATEGORIES
+    if not is_offer_withdrawable:
+        return
+
     if is_offer_withdrawable and withdrawal_type is None:
         raise exceptions.OfferException(
             {"offer": ["Une offre qui a un ticket retirable doit avoir un type de retrait renseigné"]}

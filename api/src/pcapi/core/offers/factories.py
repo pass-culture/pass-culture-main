@@ -174,7 +174,7 @@ def build_extra_data_from_subcategory(
     return offers_models.OfferExtraData(**extradata)
 
 
-class OfferFactory(BaseFactory[models.Offer]):
+class MinimalOfferFactory(BaseFactory[models.Offer]):
     class Meta:
         model = models.Offer
 
@@ -188,10 +188,14 @@ class OfferFactory(BaseFactory[models.Offer]):
     description = factory.LazyAttributeSequence(
         lambda o, n: None if hasattr(o, "product") and o.product else f"A passionate description of offer {n}"
     )
+
     audioDisabilityCompliant = False
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
+
+
+class OfferFactory(MinimalOfferFactory):
     lastValidationType = OfferValidationType.AUTO
     validation = models.OfferValidationStatus.APPROVED
 

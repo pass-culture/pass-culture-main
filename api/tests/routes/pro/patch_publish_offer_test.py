@@ -439,3 +439,20 @@ class Returns400Test:
         assert response.json == {
             "ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l'onglet Offres."]
         }
+
+    def test_cannot_publish_invalid_offer(self, client):
+        offer = offers_factories.MinimalOfferFactory(subcategoryId=subcategories.VOD.id, url=None)
+        offers_factories.StockFactory(offer=offer)
+        user = offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        ).user
+
+        client = client.with_session_auth(user.email)
+        response = client.patch("/offers/publish", json={"id": offer.id})
+
+        assert response.status_code == 400
+        assert "url" in response.json
+
+        db.session.refresh(offer)
+        assert not offer.publicationDatetime
