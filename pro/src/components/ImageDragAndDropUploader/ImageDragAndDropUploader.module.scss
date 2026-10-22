@@ -12,12 +12,12 @@
 }
 
 .image-uploader-actions-visible {
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
   margin-left: 0;
 
   @media screen and (min-width: size.$tablet) {
     margin-top: 0;
-    margin-left: var(--size-spacing-xxl);
+    margin-left: var(--size-spacing-2xl);
   }
 }
 

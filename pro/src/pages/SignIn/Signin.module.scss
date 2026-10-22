@@ -5,8 +5,8 @@
   display: flex;
   flex-direction: column-reverse;
   gap: var(--size-spacing-xl);
-  margin-top: var(--size-spacing-xxl);
-  padding-bottom: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
+  padding-bottom: var(--size-spacing-2xl);
 
   @media (min-width: size.$desktop) {
     flex-direction: row;
@@ -42,7 +42,7 @@
 .title {
   @include fonts.title1;
 
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   overflow-wrap: anywhere;
 }
 

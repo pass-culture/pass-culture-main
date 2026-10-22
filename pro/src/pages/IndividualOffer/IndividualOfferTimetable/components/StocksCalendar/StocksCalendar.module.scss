@@ -3,7 +3,7 @@
 
 .container {
   width: 100%;
-  padding: var(--size-spacing-xxl) 0;
+  padding: var(--size-spacing-2xl) 0;
 }
 
 .title {
@@ -13,16 +13,16 @@
 .header {
   display: flex;
   align-items: center;
-  gap: var(--size-spacing-xxl);
+  gap: var(--size-spacing-2xl);
   flex-wrap: wrap;
 }
 
 .no-stocks-content {
   display: flex;
   flex-direction: column;
-  gap: var(--size-spacing-xxxl);
+  gap: var(--size-spacing-3xl);
   align-items: center;
-  padding: var(--size-spacing-xxxl) var(--size-spacing-xl);
+  padding: var(--size-spacing-3xl) var(--size-spacing-xl);
   border: 2px dashed var(--color-border-brand-primary);
   border-radius: var(--size-border-radius-m);
   margin-top: var(--size-spacing-xl);
@@ -37,7 +37,7 @@
 }
 
 .filters {
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 }
 
 .count {

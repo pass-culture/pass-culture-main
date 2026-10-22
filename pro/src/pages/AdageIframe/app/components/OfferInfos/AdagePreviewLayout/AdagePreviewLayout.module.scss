@@ -2,7 +2,7 @@
 @use "styles/mixins/_size.scss" as size;
 
 .fake-adage-page {
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
   background-color: var(--color-background-subtle);
   border: 1px solid transparent;
 
@@ -55,6 +55,6 @@
 
 @media screen and (min-width: size.$tablet) {
   .fake-adage-page-pass {
-    margin: var(--size-spacing-xxxl);
+    margin: var(--size-spacing-3xl);
   }
 }

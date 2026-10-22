@@ -3,14 +3,14 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .no-data {
-  margin: var(--size-spacing-xxl);
+  margin: var(--size-spacing-2xl);
   display: flex;
   align-items: center;
   flex-direction: column;
   text-align: center;
 
   &-icon {
-    margin-top: var(--size-spacing-xxl);
+    margin-top: var(--size-spacing-2xl);
     color: var(--color-icon-subtle);
   }
 

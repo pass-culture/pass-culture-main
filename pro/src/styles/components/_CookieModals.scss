@@ -176,7 +176,7 @@ $action-gap: var(--size-spacing-m);
     max-width: 100%;
     height: 100%;
     margin: 0;
-    padding: var(--size-spacing-xxl);
+    padding: var(--size-spacing-2xl);
     display: flex;
     flex-direction: column;
     overflow: auto;
@@ -200,7 +200,7 @@ $action-gap: var(--size-spacing-m);
 
     &-title {
       margin-bottom: var(--size-spacing-m);
-      padding-right: var(--size-spacing-xxxxl);
+      padding-right: var(--size-spacing-4xl);
 
       @include fonts.title3;
     }
@@ -429,9 +429,8 @@ $action-gap: var(--size-spacing-m);
       }
     }
 
-
     .orejime-Modal {
-      padding: var(--size-spacing-xxl);
+      padding: var(--size-spacing-2xl);
 
       &-title {
         text-align: center;

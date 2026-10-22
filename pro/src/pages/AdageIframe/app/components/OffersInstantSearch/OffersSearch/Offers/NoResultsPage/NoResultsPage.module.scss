@@ -2,7 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .no-results {
-  margin: var(--size-spacing-xxxl) 0;
+  margin: var(--size-spacing-3xl) 0;
 
   &-text {
     @include fonts.title2;

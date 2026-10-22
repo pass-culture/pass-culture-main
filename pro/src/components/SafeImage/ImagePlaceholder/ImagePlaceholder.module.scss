@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--size-spacing-l);
-  padding: var(--size-spacing-xxl);
+  padding: var(--size-spacing-2xl);
 
   &-text {
     @include fonts.body-accent-xs;

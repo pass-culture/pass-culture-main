@@ -17,7 +17,7 @@
 
   &-actions {
     max-width: rem.torem(486px);
-    margin: var(--size-spacing-xxxxl) auto 0;
+    margin: var(--size-spacing-4xl) auto 0;
     display: flex;
     flex-wrap: wrap;
     gap: var(--size-spacing-xl);
@@ -27,7 +27,7 @@
   &-title {
     @include fonts.title4;
 
-    margin-bottom: var(--size-spacing-xxl);
+    margin-bottom: var(--size-spacing-2xl);
   }
 
   &-description {

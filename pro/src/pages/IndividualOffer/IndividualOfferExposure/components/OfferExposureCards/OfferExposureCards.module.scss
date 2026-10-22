@@ -12,7 +12,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--size-spacing-l);
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 }
 
 .lifted-views {
@@ -40,11 +40,11 @@
   flex: 1 1 100%;
 }
 
-@media (min-width: size.$laptop) {   
-   .card {    
+@media (min-width: size.$laptop) {
+  .card {
     flex: 0 0 rem.torem(368px);
   }
-} 
+}
 
 .card-offer-title {
   margin-top: auto;

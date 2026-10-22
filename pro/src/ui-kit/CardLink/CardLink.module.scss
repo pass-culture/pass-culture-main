@@ -86,8 +86,8 @@
 
   // Vertical state
   @mixin cardlink-vertical-styles {
-    padding: var(--size-spacing-xxxl) var(--size-spacing-l)
-      var(--size-spacing-xxl);
+    padding: var(--size-spacing-3xl) var(--size-spacing-l)
+      var(--size-spacing-2xl);
     display: flex;
     flex-direction: column;
     justify-content: center;

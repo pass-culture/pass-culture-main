@@ -28,7 +28,7 @@
 
 .offers-grid {
   display: grid;
-  gap: var(--size-spacing-xxxxl) var(--size-spacing-l);
+  gap: var(--size-spacing-4xl) var(--size-spacing-l);
   padding: 0;
   margin: var(--size-spacing-s) 0 var(--size-spacing-xl) 0;
   grid-template-columns: repeat(auto-fill, minmax(rem.torem(216px), 0fr));

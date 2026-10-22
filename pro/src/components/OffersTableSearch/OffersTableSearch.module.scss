@@ -4,7 +4,7 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .offers-table-search {
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 
   &-name-and-toggle-row {
     display: flex;
@@ -20,11 +20,11 @@
   }
 
   &-separator-wrapper {
-      align-items: center;
-      display: flex;
-      margin-top: rem.torem(23px);
-    }
-  
+    align-items: center;
+    display: flex;
+    margin-top: rem.torem(23px);
+  }
+
   &-separator-element {
     background-color: var(--separator-color-subtle);
     flex: 1;

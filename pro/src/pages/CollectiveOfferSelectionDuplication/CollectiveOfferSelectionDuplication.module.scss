@@ -15,7 +15,7 @@
 .search-no-results {
   color: var(--color-text-subtle);
   text-align: center;
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
 
   &-icon {
     margin: rem.torem(10px) 0 rem.torem(30px);
@@ -46,6 +46,6 @@
 .title {
   @include fonts.title1;
 
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   overflow-wrap: anywhere;
 }

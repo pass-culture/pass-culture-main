@@ -11,7 +11,7 @@
 
   @include fonts.body-xs;
 
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 }
 
 .action-bar {
@@ -20,7 +20,7 @@
   justify-content: center;
   align-items: center;
   gap: var(--size-spacing-l);
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
 
   & > * {
     flex-grow: 1;

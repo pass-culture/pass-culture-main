@@ -1,7 +1,7 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .opening-hours-subsubsection {
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
 
   &-address-input {
     margin-bottom: var(--size-spacing-l);
@@ -17,7 +17,7 @@
 }
 
 .sub-section {
-  margin-top: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-2xl);
 
   &--first {
     margin-top: var(--size-spacing-l);

@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { DateAndTimePicker } from '@/ui-kit/form/DateAndTimePicker/DateAndTimePicker'
 
-import styles from './PublicationAndBookingFields.module.css'
+import styles from './PublicationAndBookingFields.module.scss'
 
 type PublicationAndBookingFieldsProps = {
   disabled?: boolean

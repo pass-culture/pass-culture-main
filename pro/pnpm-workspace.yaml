@@ -6,6 +6,8 @@ allowBuilds:
 
 # 1 week, in minutes
 minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - '@pass-culture/design-system'
 
 overrides:
   esbuild@>=0.17.0 <0.28.1: '>=0.28.1'

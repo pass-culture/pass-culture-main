@@ -12,12 +12,12 @@
   @include fonts.body-xs;
 
   color: var(--color-text-subtle);
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 }
 
 .content {
   .sign-up-infos-before-signup {
-    margin-top: var(--size-spacing-xxl);
+    margin-top: var(--size-spacing-2xl);
   }
 
   .buttons-field {
@@ -25,8 +25,8 @@
     flex-direction: column-reverse;
     justify-content: space-between;
     gap: var(--size-spacing-xl);
-    margin-top: var(--size-spacing-xxl);
-    padding-bottom: var(--size-spacing-xxl);
+    margin-top: var(--size-spacing-2xl);
+    padding-bottom: var(--size-spacing-2xl);
 
     @media (min-width: size.$tablet) {
       flex-direction: row;

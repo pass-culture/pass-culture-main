@@ -19,7 +19,7 @@ $vertical-offset-icon-from-step: calc(
   align-items: center;
   width: rem.torem(20px);
   height: auto;
-  margin-top: var(--size-spacing-xxs);
+  margin-top: var(--size-spacing-2xs);
 }
 
 .icon-container {
@@ -106,7 +106,7 @@ $vertical-offset-icon-from-step: calc(
 
 .step-content {
   margin-left: var(--size-spacing-l);
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   width: 100%;
 }
 

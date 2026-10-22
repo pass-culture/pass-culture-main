@@ -43,7 +43,8 @@
 
   border-radius: var(--size-spacing-xs);
   cursor: pointer;
-  padding: var(--size-spacing-s) var(--size-spacing-xxl) var(--size-spacing-s) var(--size-spacing-m);
+  padding: var(--size-spacing-s) var(--size-spacing-2xl) var(--size-spacing-s)
+    var(--size-spacing-m);
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;

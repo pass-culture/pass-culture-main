@@ -7,7 +7,7 @@
 .menu-list {
   display: flex;
   flex-direction: column;
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
   gap: var(--size-spacing-l);
 
   &-item {
@@ -15,8 +15,8 @@
 
     font-size: rem.torem(16px);
     padding-bottom: var(--size-spacing-s);
-    position: relative; 
-    text-align: center; 
+    position: relative;
+    text-align: center;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -54,7 +54,7 @@
 @media (min-width: size.$tablet) {
   .menu-list {
     flex-direction: row;
-    gap: var(--size-spacing-xxl);
+    gap: var(--size-spacing-2xl);
   }
 
   .menu-item {

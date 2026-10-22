@@ -30,7 +30,7 @@
   height: 100dvh;
   background-color: var(--color-background-default);
   box-shadow: var(--shadow-overlay);
-  padding: var(--size-spacing-xxl) var(--size-spacing-xxl) 0;
+  padding: var(--size-spacing-2xl) var(--size-spacing-2xl) 0;
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-l);
@@ -67,7 +67,7 @@
   justify-content: flex-start;
   gap: var(--size-spacing-s);
   flex-shrink: 0;
-  padding-right: var(--size-spacing-xxxxl);
+  padding-right: var(--size-spacing-4xl);
 }
 
 .detailed-modal-header-left {
@@ -137,7 +137,7 @@
 .detailed-modal-footer {
   border-top: rem.torem(1px) solid var(--color-border-subtle);
   padding-top: var(--size-spacing-xl);
-  padding-bottom: var(--size-spacing-xxl);
+  padding-bottom: var(--size-spacing-2xl);
   margin-top: var(--size-spacing-s);
   background-color: var(--color-background-default);
 }
@@ -222,7 +222,7 @@
   }
 
   .detailed-modal-header {
-    min-height: var(--size-spacing-xxxl);
+    min-height: var(--size-spacing-3xl);
   }
 
   .detailed-modal-go-back-button {

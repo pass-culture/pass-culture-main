@@ -10,7 +10,7 @@
   padding: 0 var(--size-spacing-l);
 
   @media (min-width: size.$laptop) {
-    padding: 0 var(--size-spacing-xxxl);
+    padding: 0 var(--size-spacing-3xl);
   }
 }
 
@@ -22,7 +22,7 @@
   text-align: center;
   gap: var(--size-spacing-xs) var(--size-spacing-s);
   width: 100%;
-  margin-bottom: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-2xl);
 
   &-icon {
     display: flex;
@@ -52,8 +52,8 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--size-spacing-xxl);
-    margin-bottom: var(--size-spacing-xxl);
+    gap: var(--size-spacing-2xl);
+    margin-bottom: var(--size-spacing-2xl);
     width: 100%;
 
     @media (min-width: size.$tablet) {
@@ -120,7 +120,7 @@
 .enhancement {
   text-align: left;
   width: 100%;
-  margin-top: var(--size-spacing-xxxl);
+  margin-top: var(--size-spacing-3xl);
 
   &-cards {
     --card-width: #{rem.torem(325px)};
