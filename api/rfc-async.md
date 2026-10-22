@@ -41,9 +41,10 @@ Ce fonctionnement est simple et convient tant que le PT répond rapidement. Il p
 ### Option A : traiter uniquement les réservations externes via des tâches Celery
 
 - Les réservations qui ne passent pas par une billetterie externe (« internes ») restent traitées de manière synchrone, avec le fonctionnement actuel : création au statut `CONFIRMED`, puis `USED` pour les `AUTOMATICALLY_USED_SUBCATEGORIES` ou après validation de la contremarque.
-- L'app choisit elle-même la route qu'elle appelle : le chemin asynchrone est exposé via une route dédiée, et `POST /native/v1/bookings` conserve son comportement synchrone actuel pour les anciennes versions.
+- L'app choisit la route qu'elle appelle : la nouvelle `POST /native/v2/bookings` qui sera la version asynchrone ou `POST /native/v1/bookings` qui conserve son comportement synchrone actuel pour la rétro-compatibilité.
 - Les réservations externes sont créées immédiatement au statut `PENDING_CONFIRMATION` et leur traitement est délégué à une tâche Celery placée dans une file prioritaire dédiée.
 - Le stock est décrémenté à la création du `Booking` (pas de survente) et la réservation compte immédiatement dans le calcul du crédit du jeune. Le verrou sur `stock` et `user` n'est tenu que le temps de cette création et est relâché avant tout appel HTTP.
+- On conserve la vérification d'une réservation déjà existante (incluant le nouveau statut `PENDING_CONFIRMATION`) pour le couple `(userId, offerId)` pour éviter les réservations concurrentes.
 - La tâche passe le `Booking` à `CONFIRMED` en cas de succès, ou à `FAILED` en cas d'échec définitif auquel cas le stock et le crédit sont restitués.
 - Les effets de bord actuellement déclenchés à la fin de `book_offer` (emails bénéficiaire et pro, événement de tracking, notification à la billetterie, indexation, mise à jour Batch/external user) sont déplacés dans la tâche, après le passage à `CONFIRMED`.
 - Annulation : la réservation passe à `PENDING_CANCELLATION` avant traitement et continue de compter dans le crédit tant que l'opération n'a pas réussi, elle passe ensuite à `CANCELLED` et le crédit est libéré. En cas d'échec, elle reste en `PENDING_CANCELLATION` : la tâche est retentée et le cron de rattrapage la reprend, avec une alerte si elle reste bloquée trop longtemps.
@@ -64,8 +65,6 @@ Ce fonctionnement est simple et convient tant que le PT répond rapidement. Il p
 - Il faut implémenter un polling côté app. Une route asynchrone dédiée évite de changer le contrat de `POST /bookings` : les anciennes versions continuent d'utiliser le chemin synchrone, qu'il faut donc maintenir pendant la transition.
 - Nouveaux statuts à gérer partout où un `Booking` est lu (« mes réservations », crédit, stats, BO, portail pro, exports, emails, crons). Un `Booking` non final ne doit pas être traité comme confirmé (email, QR code/contremarque).
 - Dépendance renforcée à Celery et à son broker pour un parcours critique.
-- Les requêtes multiples d'un même utilisateur ne sont pas résolues en elles-mêmes : sans contrainte d'unicité ou rate limiting, chaque `POST` crée un `Booking` et une tâche.
-- L'utilisateur n'est informé d'un échec qu'après coup.
 
 **Comment cette solution répond aux priorités ?**
 
