@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -6,6 +7,7 @@ from flask import current_app
 
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 import pcapi.core.educational.factories as educational_factories
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.connectors import acceslibre as acceslibre_connector
@@ -13,6 +15,7 @@ from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_
 from pcapi.core.external.zendesk_sell.backends import testing as zendesk_testing
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.history import models as history_models
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as external_testing
@@ -861,6 +864,10 @@ class Returns200Test:
         assert venue.siret == venue_data["siret"]
         if venue_data["siret"] is not None:
             assert venue.name == venue_data["name"]
+
+            assert len(mails_testing.outbox) == 1
+            assert mails_testing.outbox[0]["To"] == user.email
+            assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_CLOSED_CONFIRMATION.value)
 
     def test_accessibility_fields_are_updated(self, app, client) -> None:
         user = users_factories.UserFactory()

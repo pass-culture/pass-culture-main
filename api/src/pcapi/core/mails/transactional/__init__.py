@@ -61,6 +61,7 @@ from .pro.venue_closure_request import send_venue_closure_request_email
 from .pro.venue_provider_deleted import send_venue_provider_deleted_email
 from .pro.venue_provider_disabled import send_venue_provider_disabled_email
 from .pro.venue_reopened import send_venue_reopened_email
+from .pro.venue_update import send_updated_siret_notification
 from .pro.welcome_to_pro import send_welcome_to_pro_email
 from .send_transactional_email import send_transactional_email
 from .users.accepted_as_beneficiary import send_accepted_as_beneficiary_email
