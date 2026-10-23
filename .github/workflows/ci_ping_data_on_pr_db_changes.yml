@@ -30,7 +30,7 @@ jobs:
         id: changes
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          changes="$(python api/bin/alembic_detect_significant_changes.py ${{ steps.changed-files.outputs.all_changed_files }})"
+          changes="$(python api/bin/alembic_detect_significant_changes.py "$ALL_CHANGED_FILES")"
           # See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
           EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
           {
@@ -38,6 +38,8 @@ jobs:
             echo "$changes"
             echo "$EOF" 
           } >> "$GITHUB_OUTPUT"
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
 
   send-slack-notification:
     name: "Send DB changes notification"

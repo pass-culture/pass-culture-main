@@ -74,13 +74,21 @@ jobs:
         run: |
           {
             echo "### Changes summary"
-            echo "**commit:** \`${{ github.sha }}\`"
+            echo "**commit:** \`$sha\`"
             echo "| Folder               | Status |"
             echo "| -------------------- | ------ |"
-            echo "| \`/api\`               | ${{ steps.check-api-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-            echo "| \`/api/documentation\` | ${{ steps.check-api-documentation-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-            echo "| \`/api/**/alembic\`    | ${{ steps.check-alembic-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-            echo "| \`/pro\`               | ${{ steps.check-pro-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-            echo "| \`/.github\`           | ${{ steps.check-github-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-            echo "| \`/maintenance-site\`  | ${{ steps.check-maintenance-site-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
+            echo "| \`/api\`               | $check-api-changes               |"
+            echo "| \`/api/documentation\` | $check-api-documentation-changes |"
+            echo "| \`/api/**/alembic\`    | $check-alembic-changes           |"
+            echo "| \`/pro\`               | $check-pro-changes               |"
+            echo "| \`/.github\`           | $check-github-changes            |"
+            echo "| \`/maintenance-site\`  | $check-maintenance-site-changes  |"
           } >> "$GITHUB_STEP_SUMMARY"
+        env:
+          sha: ${{ github.sha }}
+          check-api-changes: "${{ steps.check-api-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }}"
+          check-api-documentation-changes: "${{ steps.check-api-documentation-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }}"
+          check-alembic-changes: "${{ steps.check-alembic-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }}"
+          check-pro-changes: "${{ steps.check-pro-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }}"
+          check-github-changes: "${{ steps.check-github-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }}"
+          check-maintenance-site-changes: "${{ steps.check-maintenance-site-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }}"

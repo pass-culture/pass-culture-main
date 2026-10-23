@@ -26,12 +26,15 @@ jobs:
         id: mypy-cop
         working-directory: api
         run: |
-          body="$(./mypy_cop.sh "${{ steps.mypy-ignore-counter.outputs.master_ignore_count }}" "${{ steps.mypy-ignore-counter.outputs.this_branch_ignore_count }}" )"
+          body="$(./mypy_cop.sh "$MASTER_IGNORE_COUNT" "$THIS_BRANCH_IGNORE_COUNT" )"
           # See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
           EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
           echo "body<<$EOF" | tee -a "$GITHUB_OUTPUT"
           echo "$body" | tee -a "$GITHUB_OUTPUT"
           echo "$EOF" | tee -a "$GITHUB_OUTPUT"
+        env:
+          MASTER_IGNORE_COUNT: ${{ steps.mypy-ignore-counter.outputs.master_ignore_count }}
+          THIS_BRANCH_IGNORE_COUNT: ${{ steps.mypy-ignore-counter.outputs.this_branch_ignore_count }}
       - name: "Find Comment"
         id: "fc"
         uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0

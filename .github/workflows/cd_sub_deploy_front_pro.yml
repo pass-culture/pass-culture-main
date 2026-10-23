@@ -190,5 +190,7 @@ jobs:
             echo "### :rocket: Deploy PRO summary"
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
-            echo "| [pro] preview url                    |  ${{ steps.deploy.outputs.preview_url }} |"
+            echo "| [pro] preview url                    |  $PREVIEW_URL |"
           } >> "$GITHUB_STEP_SUMMARY"
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}

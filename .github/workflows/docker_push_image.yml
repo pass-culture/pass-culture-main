@@ -75,8 +75,9 @@ jobs:
         env:
           IMAGE: ${{ inputs.image }}
           TAG: ${{ inputs.tag }}
+          TEMP: ${{ runner.temp }}
         run: |
-          docker load --input "${{ runner.temp }}/${IMAGE}-${TAG}.tar"
+          docker load --input "${TEMP}/${IMAGE}-${TAG}.tar"
           docker images
       - name: Push image using passdirector
         shell: bash

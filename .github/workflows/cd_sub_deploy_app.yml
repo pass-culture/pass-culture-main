@@ -190,9 +190,11 @@ jobs:
     steps:
       - name: Check deploy jobs status
         run: |
-          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+          if [ "$CHECK" = "true" ]; then
             echo "Not all deploy jobs have succeeded :("
             exit 1
           fi
+        env:
+          CHECK: "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}"
       - name: Deployments Success
         run: echo "All deploy jobs for $ENV are successful !"
