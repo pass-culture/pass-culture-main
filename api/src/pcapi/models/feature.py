@@ -143,6 +143,9 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_CLOSE_VENUE = "Active la fermeture d'une venue depuis l'espace partenaire"
     WIP_HOME_STATS_V2 = "Active la V2 des statistiques de réservations de la page d'accueil"
+    WIP_VALIDATE_OFFER_BEFORE_PUBLISHING = (
+        "Active la validation des données d'une offre avant sa publication sur le portail pro"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
