@@ -12,7 +12,6 @@ from pydantic import BeforeValidator
 from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import field_validator
-from pydantic import model_validator
 
 from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
@@ -35,7 +34,6 @@ from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.serialization.common_models import LatitudeFloat
 from pcapi.serialization.common_models import LongitudeFloat
 from pcapi.utils import date as date_utils
@@ -486,54 +484,3 @@ class OffersStocksResponseV2(HttpBodyModel):
 
 class OffersStocksRequest(HttpBodyModel):
     offer_ids: list[int]
-
-
-# TODO: Will be deleted in PR #24783 after native code deletion
-class OfferProAdviceQuery(HttpQueryParamsModel):
-    max_content_length: int | None = None
-    page: int = Field(default=1, ge=1, le=20)
-    results_per_page: int = Field(default=20, ge=1, le=50)
-    latitude: float | None = Field(default=None, ge=-90, le=90)
-    longitude: float | None = Field(default=None, ge=-180, le=180)
-
-    @model_validator(mode="after")
-    def validate_params(self) -> "OfferProAdviceQuery":
-        if (self.latitude and not self.longitude) or (not self.latitude and self.longitude):
-            raise ValueError("Latitude and longitude must be provided together")
-
-        return self
-
-
-# TODO: Will be deleted in PR #24783 after native code deletion
-class OfferProAdvice(HttpBodyModel):
-    author: str | None = None
-    content: str
-    distance: int | None = None
-    publication_datetime: datetime
-    venue_id: int
-    venue_name: str
-    venue_thumb_url: str | None = None
-
-    @classmethod
-    def build(
-        cls, pro_advice: models.ProAdvice, distance: int | None, max_content_length: int | None
-    ) -> "OfferProAdvice":
-        content = pro_advice.content
-        if max_content_length:
-            content = textwrap.shorten(content, width=max_content_length, placeholder="…")
-
-        return cls(
-            author=pro_advice.author,
-            content=content,
-            distance=distance if pro_advice.venue.isOpenToPublic else None,
-            venue_id=pro_advice.venue.id,
-            venue_name=pro_advice.venue.publicName,
-            venue_thumb_url=pro_advice.venue.bannerUrl,
-            publication_datetime=pro_advice.updatedAt,
-        )
-
-
-# TODO: Will be deleted in PR #24783 after native code deletion
-class OfferProAdvices(HttpBodyModel):
-    pro_advices: list[OfferProAdvice]
-    nb_results: int

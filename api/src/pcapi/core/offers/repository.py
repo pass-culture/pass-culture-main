@@ -414,8 +414,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
         .options(sa_orm.selectinload(models.Offer.mediations))
         .options(sa_orm.with_expression(models.Offer.chroniclesCount, get_offer_chronicles_count_subquery()))
         .options(sa_orm.with_expression(models.Offer.likesCount, get_offer_reaction_count_subquery()))
-        # TODO: Will be deleted in PR #24783 after native code deletion
-        .options(sa_orm.with_expression(models.Offer.hasProAdvice, get_offer_has_pro_advice_subquery()))
         .options(
             sa_orm.joinedload(models.Offer.product)
             .load_only(
@@ -427,7 +425,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
                 models.Product.durationMinutes,
                 models.Product.chroniclesCount,
                 models.Product.likesCount,
-                models.Product.proAdvicesCount,
             )
             .joinedload(models.Product.productMediations)
         )
@@ -591,21 +588,6 @@ def get_bookable_screenings_from_venue(
     return list(offers)
 
 
-# TODO: Will be deleted in PR #24783 after native code deletion
-def get_product_pro_advices_count(product_id: int) -> int:
-    query = (
-        sa.select(sa.func.count())
-        .select_from(models.ProAdvice)
-        .join(models.ProAdvice.offer)
-        .join(models.Offer.venue)
-        .join(offerers_models.Venue.managingOfferer)
-        .where(models.Offer.productId == product_id)
-        .where(models.Offer.isPublished)
-        .where(offerers_models.Offerer.isValidated)
-    )
-    return db.session.scalar(query) or 0
-
-
 def _get_distance_column(latitude: float, longitude: float) -> sa.ColumnElement:
     request_location = sa.cast(sa.func.ST_MakePoint(longitude, latitude), Geography(None))
     address_location = sa.cast(
@@ -616,66 +598,6 @@ def _get_distance_column(latitude: float, longitude: float) -> sa.ColumnElement:
         Geography(None),
     )
     return sa.func.round(ST_Distance(address_location, request_location).cast(sa.Integer))
-
-
-# TODO: Will be deleted in PR #24783 after native code deletion
-def get_pro_advices(
-    offer_id: int,
-    product_id: int | None,
-    latitude: float | None,
-    longitude: float | None,
-    offset: int,
-    limit: int | None,
-) -> list[tuple[models.ProAdvice, int | None]]:
-    query = (
-        sa.select(models.ProAdvice)
-        .join(models.ProAdvice.venue)
-        .join(offerers_models.Venue.managingOfferer)
-        .options(
-            sa_orm.contains_eager(models.ProAdvice.venue).options(
-                sa_orm.load_only(
-                    offerers_models.Venue.id,
-                    offerers_models.Venue.isOpenToPublic,
-                    offerers_models.Venue.publicName,
-                    offerers_models.Venue._bannerUrl,
-                    offerers_models.Venue.venueTypeCode,
-                ),
-                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo).load_only(
-                    offerers_models.GooglePlacesInfo.bannerUrl,
-                ),
-            )
-        )
-        .where(offerers_models.Offerer.isActive, offerers_models.Offerer.isValidated)
-    )
-    if latitude is None or longitude is None:
-        query = query.add_columns(sa.null().label("distance"))
-    else:
-        distance = _get_distance_column(latitude, longitude).label("distance")
-        query = (
-            query.add_columns(distance)
-            .join(offerers_models.Venue.offererAddress)
-            .join(offerers_models.OffererAddress.address)
-        )
-
-    if not product_id:
-        query = (
-            query.join(models.ProAdvice.offer)
-            .where(models.ProAdvice.offerId == offer_id)
-            .where(models.Offer.isPublished)
-        )
-    else:
-        query = (
-            query.join(models.ProAdvice.offer)
-            .where(models.Offer.productId == product_id)
-            .where(models.Offer.isPublished)
-            .order_by(models.ProAdvice.updatedAt.desc())
-            .offset(offset)
-        )
-        if limit:
-            query = query.limit(limit)
-
-    rows = db.session.execute(query).unique().all()
-    return [(row[0], row[1]) for row in rows]
 
 
 def get_offers_by_filters(
@@ -1155,16 +1077,6 @@ def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
         .correlate(models.Offer)
         .scalar_subquery()
     )
-
-
-# TODO: Will be deleted in PR #24783 after native code deletion
-def get_offer_has_pro_advice_subquery() -> sa.sql.selectable.ScalarSelect:
-    return sa.select(
-        sa.select(models.ProAdvice.id)
-        .where(models.ProAdvice.offerId == models.Offer.id)
-        .correlate(models.Offer)
-        .exists()
-    ).scalar_subquery()
 
 
 def get_current_headline_offer(venue_id: int) -> models.HeadlineOffer | None:

@@ -473,14 +473,3 @@ class OfferQualityFactory(BaseFactory):
 
     offer = factory.SubFactory(OfferFactory)
     completionScore = 5.0
-
-
-# TODO: Will be deleted in PR #24783 after native code deletion
-class ProAdviceFactory(BaseFactory[offers_models.ProAdvice]):
-    class Meta:
-        model = models.ProAdvice
-
-    author = "Author"
-    content = "Content"
-    offer = factory.SubFactory(OfferFactory)
-    venue = factory.SelfAttribute("offer.venue")

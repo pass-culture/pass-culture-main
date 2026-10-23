@@ -1186,7 +1186,7 @@ def create_pro_advices() -> None:
     # - ✘ Autres offres
     # - ✘ Avis sur les autres offres
     venue_1 = offerers_factories.VenueFactory.create(
-        name="Lieu avec headlines et advices 1",
+        name="Lieu avec headlines 1",
         description="Lieu avec une offre à la une sans avis",
         activity=offerers_models.Activity.ART_GALLERY,
         isOpenToPublic=True,
@@ -1208,7 +1208,7 @@ def create_pro_advices() -> None:
     # - ✘ Autres offres
     # - ✘ Avis sur les autres offres
     venue_2 = offerers_factories.VenueFactory.create(
-        name="Lieu avec headlines et advices 2",
+        name="Lieu avec headlines 2",
         description="Lieu avec une offre à la une avec un avis sur celle-ci",
         activity=offerers_models.Activity.BOOKSTORE,
         isOpenToPublic=True,
@@ -1230,7 +1230,7 @@ def create_pro_advices() -> None:
     # - ✔︎ Autres offres x1
     # - ✔︎ Avis sur les autres offres
     venue_3 = offerers_factories.VenueFactory.create(
-        name="Lieu avec headlines et advices 3",
+        name="Lieu avec headlines 3",
         description="Lieu avec une offre à la une sans avis, mais avec un avis sur une autre offre",
         activity=offerers_models.Activity.CINEMA,
         isOpenToPublic=True,
@@ -1252,7 +1252,7 @@ def create_pro_advices() -> None:
     # - ✔︎ Autres offres
     # - ✔︎ Avis sur les autres offres
     venue_4 = offerers_factories.VenueFactory.create(
-        name="Lieu avec headlines et advices 4",
+        name="Lieu avec headlines 4",
         description="Lieu avec une offre à la une avec un avis, mais aussi avec d'autres avis sur d'autres offres.",
         activity=offerers_models.Activity.DISTRIBUTION_STORE,
         isOpenToPublic=True,
@@ -1274,7 +1274,7 @@ def create_pro_advices() -> None:
     # - ✔︎ Autres offres x3
     # - ✔︎ Avis sur les autres offres
     venue_5 = offerers_factories.VenueFactory.create(
-        name="Lieu avec headlines et advices 5",
+        name="Lieu avec headlines 5",
         description="Lieu avec offre à la une sans avis mais avec des avis sur d'autres offres.",
         activity=offerers_models.Activity.PERFORMANCE_HALL,
         isOpenToPublic=True,

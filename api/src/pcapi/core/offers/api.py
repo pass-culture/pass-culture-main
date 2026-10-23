@@ -2021,22 +2021,6 @@ def move_event_offer(
                 )
             db.session.flush()
 
-        # Delete pro_advice when changing venue
-        if offer.proAdvice is not None:
-            db.session.delete(offer.proAdvice)
-            logger.info(
-                "Pro advice deleted",
-                extra={
-                    "analyticsSource": "backoffice",
-                    "offerId": offer.id,
-                    "venueId": offer.venueId,
-                    "Reason": "Offer venue was changed in backoffice",
-                    "feature": "pro_advice",
-                    "action": "deleted",
-                },
-                technical_message_id="pro_advice.deleted",
-            )
-
         offer.venue = destination_venue
         db.session.add(offer)
 
