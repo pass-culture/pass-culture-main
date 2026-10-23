@@ -446,6 +446,7 @@ jobs:
         # overrides workflow default
         working-directory: /
         run: |
+          # shellcheck disable=SC2086
           jq -s 'add' $TEMP/test-durations-after-partial-*/.test_durations \
           | jq 'to_entries | sort_by(.key) | from_entries' \
           > "$TEMP/.test_durations"
