@@ -87,7 +87,7 @@ class AccountTest:
         )
 
         client.with_explicit_token(token)
-        with assert_num_queries(1):  # user
+        with assert_num_queries(2):  # user + rollback
             response = client.get("/native/v1/me")
             assert response.status_code == 401
 
@@ -98,7 +98,7 @@ class AccountTest:
         token = create_access_token(identity=str(user.id))
 
         client.with_explicit_token(token)
-        with assert_num_queries(1):  # user
+        with assert_num_queries(2):  # user + rollback
             response = client.get("/native/v1/me")
             assert response.status_code == 401
 
@@ -108,7 +108,7 @@ class AccountTest:
         user = users_factories.UserFactory(isActive=False)
 
         client.with_token(user)
-        with assert_num_queries(1):  # user
+        with assert_num_queries(2):  # user + rollback
             response = client.get("/native/v1/me")
             assert response.status_code == 401
 
@@ -1979,7 +1979,7 @@ class GetAccountSuspendedDateTest:
         def assert_no_suspension_date_returned(self, client, user) -> None:
             client.with_token(user)
 
-            expected_num_queries = 2  # user + action_history
+            expected_num_queries = 4  # user + action_history + rollback + rollback
             with assert_num_queries(expected_num_queries):
                 response = client.get("/native/v1/account/suspension_date")
                 assert response.status_code == 403

@@ -195,7 +195,7 @@ def update_bo_user(user_id: int) -> response_utils.BackofficeResponse:
         return render_bo_user_page(user_id, form), 400
 
     snapshot = users_api.update_user_info(
-        user, author=current_user, first_name=form.first_name.data, last_name=form.last_name.data, commit=False
+        user, author=current_user, first_name=form.first_name.data, last_name=form.last_name.data, add_action=False
     )
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
@@ -209,7 +209,6 @@ def update_bo_user(user_id: int) -> response_utils.BackofficeResponse:
         snapshot.set("email", old=old_email, new=form.email.data)
 
     snapshot.add_action()
-    db.session.add(user)
     db.session.flush()
 
     flash("Les informations ont été mises à jour", "success")

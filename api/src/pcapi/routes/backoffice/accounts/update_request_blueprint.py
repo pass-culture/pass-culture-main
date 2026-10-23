@@ -407,7 +407,7 @@ def accept(ds_application_id: int) -> response_utils.BackofficeResponse:
         raise NotFound()
 
     try:
-        snapshot = users_api.update_user_info(
+        users_api.update_user_info(
             user,
             author=current_user,
             first_name=(
@@ -423,10 +423,7 @@ def accept(ds_application_id: int) -> response_utils.BackofficeResponse:
             phone_number=(
                 update_request.newPhoneNumber if update_request.has_phone_number_update else users_api.UNCHANGED
             ),
-            commit=False,
         )
-        snapshot.add_action()
-        db.session.flush()
     except sa.exc.IntegrityError as exc:
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")

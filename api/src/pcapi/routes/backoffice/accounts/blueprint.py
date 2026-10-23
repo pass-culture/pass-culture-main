@@ -1846,8 +1846,8 @@ def update_public_account(user_id: int) -> response_utils.BackofficeResponse:
                 address=form.street.data,
                 postal_code=form.postal_code.data,
                 city=form.city.data,
-                commit=False,
                 marketing_email_subscription=form.marketing_email_subscription.data,
+                add_action=False,
             )
             db.session.flush()
     except phone_number_utils.InvalidPhoneNumber:
