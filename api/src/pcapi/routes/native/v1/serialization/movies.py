@@ -1,4 +1,5 @@
 import enum
+import itertools
 import logging
 import typing
 from dataclasses import dataclass
@@ -317,15 +318,6 @@ class VenueMovieCalendarResponse(HttpBodyModel):
 T = typing.TypeVar("T", MovieScreenings, VenueScreenings)
 
 
-def _get_best_next_screening(current_best: Screening, candidate: Screening, day: date) -> Screening:
-    current_delta_from_day = (current_best.beginning_datetime.date() - day).days
-    new_delta_from_day = (candidate.beginning_datetime.date() - day).days
-    if abs(new_delta_from_day) < abs(current_delta_from_day):
-        return candidate
-
-    return current_best
-
-
 def serialize_calendar(
     raw_screenings: list[RawScreening],
     start_date: datetime,  # ⚠ Timezone-aware
@@ -335,23 +327,25 @@ def serialize_calendar(
     sort_blocks: typing.Callable[[list[T]], list[T]],
 ) -> list[dict]:
     calendar = {}
+    screenings_by_block = itertools.groupby(sorted(raw_screenings, key=block_id_getter), block_id_getter)
+    earliest_screening_by_block = {
+        block_id: Screening.from_raw_screening(min(screenings, key=lambda screening: screening.beginning_datetime))
+        for block_id, screenings in screenings_by_block
+    }
     for day_delta in range((end_date.date() - start_date.date()).days + 1):
         day = (start_date + timedelta(days=day_delta)).date()
         blocks: dict[int, T] = {}
         for raw_screening in raw_screenings:
-            block_id = block_id_getter(raw_screening)
+            block_id = block_id_getter(raw_screening)  # returns venue_id or offer_id
             if block_id not in blocks:
                 blocks[block_id] = block_serializer(raw_screening)
 
             block = blocks[block_id]
-            screening = Screening.from_raw_screening(raw_screening)
-            if screening.beginning_datetime.date() == day:
-                block.day_screenings.append(screening)
-
             if not block.next_screening:
-                block.next_screening = screening
-            else:
-                block.next_screening = _get_best_next_screening(block.next_screening, screening, day)
+                block.next_screening = earliest_screening_by_block[block_id]
+
+            if raw_screening.beginning_datetime.date() == day:
+                block.day_screenings.append(Screening.from_raw_screening(raw_screening))
 
         sorted_blocks = sort_blocks(list(blocks.values()))
         for block in blocks.values():

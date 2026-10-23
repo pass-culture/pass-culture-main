@@ -360,25 +360,25 @@ class MovieCalendarTest:
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
         address = AddressFactory(latitude=48.85, longitude=2.35)
         venue = offerers_factories.VenueFactory(offererAddress__address=address)
-        closest_stock_from_tomorrow = offers_factories.EventStockFactory(
+        earliest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue=venue,
-            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(hours=2),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=3),
         )
-        _furthest_stock_from_tomorrow = offers_factories.EventStockFactory(
+        _latest_stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue=venue,
-            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=3, hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=4),
         )
 
         start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
-        in_three_days = (date_utils.get_naive_utc_now() + timedelta(days=3)).replace(hour=12)
+        in_five_days = (date_utils.get_naive_utc_now() + timedelta(days=5)).replace(hour=12)
         params = {
             "allocineId": "12345",
             "latitude": 48.85,
             "longitude": 2.35,
             "from": start,
-            "to": in_three_days,
+            "to": in_five_days,
         }
         expected_num_queries = 1  # product
         expected_num_queries += 1  # stocks
@@ -393,7 +393,15 @@ class MovieCalendarTest:
         tomorrow_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == tomorrow.isoformat()][
             0
         ]
-        assert tomorrow_screenings[0]["nextScreening"]["stockId"] == closest_stock_from_tomorrow.id
+        assert tomorrow_screenings[0]["nextScreening"]["stockId"] == earliest_stock.id
+
+        in_five_days_local = date_utils.default_timezone_to_local_datetime(
+            start + timedelta(days=5, hours=12), address.timezone
+        ).date()
+        in_five_days_screenings = [
+            e["screenings"] for e in response.json["calendar"] if e["date"] == in_five_days_local.isoformat()
+        ][0]
+        assert in_five_days_screenings[0]["nextScreening"]["stockId"] == earliest_stock.id
 
     def test_screenings_are_within_around_radius(self, client):
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
@@ -1402,17 +1410,15 @@ class VenueMovieCalendarTest:
         assert tomorrow_screenings[0]["dayScreenings"][0]["stockId"] == first_screened_stock.id
         assert tomorrow_screenings[0]["dayScreenings"][1]["stockId"] == last_screened_stock.id
 
-    def test_next_screening_is_closest_requested_day(self, client):
+    def test_next_screening_is_closest_from_start_date(self, client):
         tomorrow = date_utils.get_naive_utc_now() + timedelta(days=1)
         in_two_days = date_utils.get_naive_utc_now() + timedelta(days=2)
         in_three_days = date_utils.get_naive_utc_now() + timedelta(days=3)
-        in_four_days = date_utils.get_naive_utc_now() + timedelta(days=4)
         before_screenings = tomorrow.replace(hour=0)
         after_screenings = date_utils.get_naive_utc_now() + timedelta(days=5)
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         offer = offers_factories.OfferFactory(product=product)
         tomorrow_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=tomorrow)
-        in_four_days_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_four_days)
 
         venue_id = offer.venue.id
         expected_num_queries = 1  # venue
@@ -1434,7 +1440,7 @@ class VenueMovieCalendarTest:
         in_two_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_two_days_day.isoformat()][0]
         in_three_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_three_days_day.isoformat()][0]
         assert in_two_days_screenings[0]["nextScreening"]["stockId"] == tomorrow_stock.id
-        assert in_three_days_screenings[0]["nextScreening"]["stockId"] == in_four_days_stock.id
+        assert in_three_days_screenings[0]["nextScreening"]["stockId"] == tomorrow_stock.id
 
     def test_calendar_is_empty_if_no_screenings_found(self, client):
         tomorrow = (date_utils.get_naive_utc_now() + timedelta(days=1)).date()
