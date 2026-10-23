@@ -2823,29 +2823,6 @@
                 "title": "DayMovieScreenings",
                 "type": "object"
             },
-            "DayMovieScreeningsV2": {
-                "additionalProperties": false,
-                "properties": {
-                    "date": {
-                        "format": "date",
-                        "title": "Date",
-                        "type": "string"
-                    },
-                    "screenings": {
-                        "items": {
-                            "$ref": "#/components/schemas/MovieScreeningsV2"
-                        },
-                        "title": "Screenings",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "date",
-                    "screenings"
-                ],
-                "title": "DayMovieScreeningsV2",
-                "type": "object"
-            },
             "DayVenueScreenings": {
                 "additionalProperties": false,
                 "properties": {
@@ -2867,29 +2844,6 @@
                     "screenings"
                 ],
                 "title": "DayVenueScreenings",
-                "type": "object"
-            },
-            "DayVenueScreeningsV2": {
-                "additionalProperties": false,
-                "properties": {
-                    "date": {
-                        "format": "date",
-                        "title": "Date",
-                        "type": "string"
-                    },
-                    "screenings": {
-                        "items": {
-                            "$ref": "#/components/schemas/VenueScreeningsV2"
-                        },
-                        "title": "Screenings",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "date",
-                    "screenings"
-                ],
-                "title": "DayVenueScreeningsV2",
                 "type": "object"
             },
             "DepositAmountsByAge": {
@@ -4056,23 +4010,6 @@
                 "title": "MovieCalendarResponse",
                 "type": "object"
             },
-            "MovieCalendarResponseV2": {
-                "additionalProperties": false,
-                "properties": {
-                    "calendar": {
-                        "items": {
-                            "$ref": "#/components/schemas/DayVenueScreeningsV2"
-                        },
-                        "title": "Calendar",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "calendar"
-                ],
-                "title": "MovieCalendarResponseV2",
-                "type": "object"
-            },
             "MovieScreenings": {
                 "additionalProperties": false,
                 "properties": {
@@ -4206,141 +4143,6 @@
                     "longitude"
                 ],
                 "title": "MovieScreeningsRequest",
-                "type": "object"
-            },
-            "MovieScreeningsRequestV2": {
-                "additionalProperties": false,
-                "properties": {
-                    "allocineId": {
-                        "anyOf": [
-                            {
-                                "pattern": "^\\d+$",
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Allocineid"
-                    },
-                    "aroundRadius": {
-                        "default": 50000,
-                        "title": "Aroundradius",
-                        "type": "integer"
-                    },
-                    "from": {
-                        "format": "date-time",
-                        "title": "From",
-                        "type": "string"
-                    },
-                    "latitude": {
-                        "title": "Latitude",
-                        "type": "number"
-                    },
-                    "longitude": {
-                        "title": "Longitude",
-                        "type": "number"
-                    },
-                    "to": {
-                        "format": "date-time",
-                        "title": "To",
-                        "type": "string"
-                    },
-                    "visa": {
-                        "anyOf": [
-                            {
-                                "pattern": "^[a-zA-Z0-9]+$",
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Visa"
-                    }
-                },
-                "required": [
-                    "latitude",
-                    "longitude"
-                ],
-                "title": "MovieScreeningsRequestV2",
-                "type": "object"
-            },
-            "MovieScreeningsV2": {
-                "additionalProperties": false,
-                "properties": {
-                    "dayScreenings": {
-                        "items": {
-                            "$ref": "#/components/schemas/ScreeningV2"
-                        },
-                        "title": "Dayscreenings",
-                        "type": "array"
-                    },
-                    "duration": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Duration"
-                    },
-                    "genres": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "title": "Genres",
-                        "type": "array"
-                    },
-                    "last30DaysBookings": {
-                        "title": "Last30Daysbookings",
-                        "type": "integer"
-                    },
-                    "movieName": {
-                        "title": "Moviename",
-                        "type": "string"
-                    },
-                    "nextScreening": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/ScreeningV2"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    },
-                    "offerId": {
-                        "title": "Offerid",
-                        "type": "integer"
-                    },
-                    "thumbUrl": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Thumburl"
-                    }
-                },
-                "required": [
-                    "duration",
-                    "genres",
-                    "last30DaysBookings",
-                    "movieName",
-                    "offerId",
-                    "thumbUrl",
-                    "dayScreenings",
-                    "nextScreening"
-                ],
-                "title": "MovieScreeningsV2",
                 "type": "object"
             },
             "MovieType": {
@@ -5483,151 +5285,6 @@
                 "title": "OfferExtraDataResponseV2",
                 "type": "object"
             },
-            "OfferForStocksResponse": {
-                "additionalProperties": false,
-                "properties": {
-                    "address": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/OfferAddressResponse"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null
-                    },
-                    "bookingAllowedDatetime": {
-                        "anyOf": [
-                            {
-                                "format": "date-time",
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Bookingalloweddatetime"
-                    },
-                    "expenseDomains": {
-                        "items": {
-                            "$ref": "#/components/schemas/ExpenseDomain"
-                        },
-                        "title": "Expensedomains",
-                        "type": "array"
-                    },
-                    "externalTicketOfficeUrl": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Externalticketofficeurl"
-                    },
-                    "id": {
-                        "title": "Id",
-                        "type": "integer"
-                    },
-                    "images": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": {
-                                    "$ref": "#/components/schemas/OfferImageResponse"
-                                },
-                                "type": "object"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Images"
-                    },
-                    "isDuo": {
-                        "title": "Isduo",
-                        "type": "boolean"
-                    },
-                    "isExpired": {
-                        "title": "Isexpired",
-                        "type": "boolean"
-                    },
-                    "isExternalBookingsDisabled": {
-                        "title": "Isexternalbookingsdisabled",
-                        "type": "boolean"
-                    },
-                    "isReleased": {
-                        "title": "Isreleased",
-                        "type": "boolean"
-                    },
-                    "isSoldOut": {
-                        "title": "Issoldout",
-                        "type": "boolean"
-                    },
-                    "last30DaysBookings": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Last30Daysbookings"
-                    },
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    },
-                    "publicationDate": {
-                        "anyOf": [
-                            {
-                                "format": "date-time",
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Publicationdate"
-                    },
-                    "stocks": {
-                        "items": {
-                            "$ref": "#/components/schemas/StockResponse"
-                        },
-                        "title": "Stocks",
-                        "type": "array"
-                    },
-                    "subcategoryId": {
-                        "title": "Subcategoryid",
-                        "type": "string"
-                    },
-                    "venue": {
-                        "$ref": "#/components/schemas/OfferVenueResponse"
-                    }
-                },
-                "required": [
-                    "id",
-                    "bookingAllowedDatetime",
-                    "expenseDomains",
-                    "isDuo",
-                    "isExpired",
-                    "isExternalBookingsDisabled",
-                    "isReleased",
-                    "isSoldOut",
-                    "name",
-                    "publicationDate",
-                    "stocks",
-                    "subcategoryId",
-                    "venue"
-                ],
-                "title": "OfferForStocksResponse",
-                "type": "object"
-            },
             "OfferImageResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -5731,155 +5388,6 @@
                     "name"
                 ],
                 "title": "OfferOffererResponseV2",
-                "type": "object"
-            },
-            "OfferProAdvice": {
-                "additionalProperties": false,
-                "properties": {
-                    "author": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Author"
-                    },
-                    "content": {
-                        "title": "Content",
-                        "type": "string"
-                    },
-                    "distance": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Distance"
-                    },
-                    "publicationDatetime": {
-                        "format": "date-time",
-                        "title": "Publicationdatetime",
-                        "type": "string"
-                    },
-                    "venueId": {
-                        "title": "Venueid",
-                        "type": "integer"
-                    },
-                    "venueName": {
-                        "title": "Venuename",
-                        "type": "string"
-                    },
-                    "venueThumbUrl": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Venuethumburl"
-                    }
-                },
-                "required": [
-                    "content",
-                    "publicationDatetime",
-                    "venueId",
-                    "venueName"
-                ],
-                "title": "OfferProAdvice",
-                "type": "object"
-            },
-            "OfferProAdviceQuery": {
-                "additionalProperties": false,
-                "properties": {
-                    "latitude": {
-                        "anyOf": [
-                            {
-                                "maximum": 90,
-                                "minimum": -90,
-                                "type": "number"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Latitude"
-                    },
-                    "longitude": {
-                        "anyOf": [
-                            {
-                                "maximum": 180,
-                                "minimum": -180,
-                                "type": "number"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Longitude"
-                    },
-                    "maxContentLength": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Maxcontentlength"
-                    },
-                    "page": {
-                        "default": 1,
-                        "maximum": 20,
-                        "minimum": 1,
-                        "title": "Page",
-                        "type": "integer"
-                    },
-                    "resultsPerPage": {
-                        "default": 20,
-                        "maximum": 50,
-                        "minimum": 1,
-                        "title": "Resultsperpage",
-                        "type": "integer"
-                    }
-                },
-                "title": "OfferProAdviceQuery",
-                "type": "object"
-            },
-            "OfferProAdvices": {
-                "additionalProperties": false,
-                "properties": {
-                    "nbResults": {
-                        "title": "Nbresults",
-                        "type": "integer"
-                    },
-                    "proAdvices": {
-                        "items": {
-                            "$ref": "#/components/schemas/OfferProAdvice"
-                        },
-                        "title": "Proadvices",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "proAdvices",
-                    "nbResults"
-                ],
-                "title": "OfferProAdvices",
                 "type": "object"
             },
             "OfferResponse": {
@@ -6059,10 +5567,6 @@
                         "title": "Name",
                         "type": "string"
                     },
-                    "proAdvicesCount": {
-                        "title": "Proadvicescount",
-                        "type": "integer"
-                    },
                     "publicationDate": {
                         "anyOf": [
                             {
@@ -6121,7 +5625,6 @@
                     "artists",
                     "bookingAllowedDatetime",
                     "chronicles",
-                    "proAdvicesCount",
                     "expenseDomains",
                     "isDigital",
                     "isDuo",
@@ -6686,18 +6189,30 @@
                 "additionalProperties": false,
                 "properties": {
                     "latitude": {
-                        "title": "Latitude",
-                        "type": "number"
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Latitude"
                     },
                     "longitude": {
-                        "title": "Longitude",
-                        "type": "number"
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Longitude"
                     }
                 },
-                "required": [
-                    "latitude",
-                    "longitude"
-                ],
                 "title": "OfferVenueCoordinates",
                 "type": "object"
             },
@@ -7006,23 +6521,6 @@
                     "offerIds"
                 ],
                 "title": "OffersStocksRequest",
-                "type": "object"
-            },
-            "OffersStocksResponse": {
-                "additionalProperties": false,
-                "properties": {
-                    "offers": {
-                        "items": {
-                            "$ref": "#/components/schemas/OfferForStocksResponse"
-                        },
-                        "title": "Offers",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "offers"
-                ],
-                "title": "OffersStocksResponse",
                 "type": "object"
             },
             "OffersStocksResponseV2": {
@@ -8014,141 +7512,6 @@
                 "title": "Screening",
                 "type": "object"
             },
-            "ScreeningAccessibilityFeatures": {
-                "additionalProperties": false,
-                "properties": {
-                    "audio": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "title": "Audio",
-                        "type": "array"
-                    },
-                    "mental": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "title": "Mental",
-                        "type": "array"
-                    },
-                    "motor": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "title": "Motor",
-                        "type": "array"
-                    },
-                    "visual": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "title": "Visual",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "audio",
-                    "mental",
-                    "motor",
-                    "visual"
-                ],
-                "title": "ScreeningAccessibilityFeatures",
-                "type": "object"
-            },
-            "ScreeningFeatures": {
-                "additionalProperties": false,
-                "properties": {
-                    "accessibility": {
-                        "$ref": "#/components/schemas/ScreeningAccessibilityFeatures"
-                    },
-                    "audio": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Audio"
-                    },
-                    "language": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Language"
-                    },
-                    "specialEventType": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Specialeventtype"
-                    },
-                    "video": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Video"
-                    }
-                },
-                "required": [
-                    "accessibility",
-                    "audio",
-                    "language",
-                    "specialEventType",
-                    "video"
-                ],
-                "title": "ScreeningFeatures",
-                "type": "object"
-            },
-            "ScreeningV2": {
-                "additionalProperties": false,
-                "properties": {
-                    "beginningDatetime": {
-                        "format": "date-time",
-                        "title": "Beginningdatetime",
-                        "type": "string"
-                    },
-                    "bookability": {
-                        "$ref": "#/components/schemas/Bookability"
-                    },
-                    "features": {
-                        "$ref": "#/components/schemas/ScreeningFeatures"
-                    },
-                    "price": {
-                        "title": "Price",
-                        "type": "number"
-                    },
-                    "stockId": {
-                        "title": "Stockid",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "beginningDatetime",
-                    "bookability",
-                    "features",
-                    "price",
-                    "stockId"
-                ],
-                "title": "ScreeningV2",
-                "type": "object"
-            },
             "SearchGroupResponseModelv2": {
                 "additionalProperties": false,
                 "properties": {
@@ -8594,130 +7957,6 @@
                     "params"
                 ],
                 "title": "SimilarOffersResponse",
-                "type": "object"
-            },
-            "StockResponse": {
-                "additionalProperties": false,
-                "properties": {
-                    "activationCode": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/OfferStockActivationCodeResponse"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null
-                    },
-                    "beginningDatetime": {
-                        "anyOf": [
-                            {
-                                "format": "date-time",
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Beginningdatetime"
-                    },
-                    "bookingLimitDatetime": {
-                        "anyOf": [
-                            {
-                                "format": "date-time",
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Bookinglimitdatetime"
-                    },
-                    "cancellationLimitDatetime": {
-                        "anyOf": [
-                            {
-                                "format": "date-time",
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Cancellationlimitdatetime"
-                    },
-                    "id": {
-                        "title": "Id",
-                        "type": "integer"
-                    },
-                    "isBookable": {
-                        "title": "Isbookable",
-                        "type": "boolean"
-                    },
-                    "isExpired": {
-                        "title": "Isexpired",
-                        "type": "boolean"
-                    },
-                    "isForbiddenToUnderage": {
-                        "title": "Isforbiddentounderage",
-                        "type": "boolean"
-                    },
-                    "isSoldOut": {
-                        "title": "Issoldout",
-                        "type": "boolean"
-                    },
-                    "price": {
-                        "title": "Price",
-                        "type": "integer"
-                    },
-                    "priceCategoryLabel": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Pricecategorylabel"
-                    },
-                    "remainingQuantity": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Remainingquantity"
-                    },
-                    "screeningFeatures": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/ScreeningFeatures"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null
-                    }
-                },
-                "required": [
-                    "id",
-                    "isBookable",
-                    "isExpired",
-                    "isForbiddenToUnderage",
-                    "isSoldOut",
-                    "price"
-                ],
-                "title": "StockResponse",
                 "type": "object"
             },
             "SubcategoriesResponseModelv2": {
@@ -10098,23 +9337,6 @@
                 "title": "VenueMovieCalendarResponse",
                 "type": "object"
             },
-            "VenueMovieCalendarResponseV2": {
-                "additionalProperties": false,
-                "properties": {
-                    "calendar": {
-                        "items": {
-                            "$ref": "#/components/schemas/DayMovieScreeningsV2"
-                        },
-                        "title": "Calendar",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "calendar"
-                ],
-                "title": "VenueMovieCalendarResponseV2",
-                "type": "object"
-            },
             "VenueMovieScreeningsRequest": {
                 "additionalProperties": false,
                 "properties": {
@@ -10130,136 +9352,6 @@
                     }
                 },
                 "title": "VenueMovieScreeningsRequest",
-                "type": "object"
-            },
-            "VenueMovieScreeningsRequestV2": {
-                "additionalProperties": false,
-                "properties": {
-                    "from": {
-                        "format": "date-time",
-                        "title": "From",
-                        "type": "string"
-                    },
-                    "to": {
-                        "format": "date-time",
-                        "title": "To",
-                        "type": "string"
-                    }
-                },
-                "title": "VenueMovieScreeningsRequestV2",
-                "type": "object"
-            },
-            "VenueProAdvice": {
-                "additionalProperties": false,
-                "properties": {
-                    "author": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Author"
-                    },
-                    "content": {
-                        "title": "Content",
-                        "type": "string"
-                    },
-                    "offerCategoryLabel": {
-                        "title": "Offercategorylabel",
-                        "type": "string"
-                    },
-                    "offerId": {
-                        "title": "Offerid",
-                        "type": "integer"
-                    },
-                    "offerName": {
-                        "title": "Offername",
-                        "type": "string"
-                    },
-                    "offerThumbUrl": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Offerthumburl"
-                    },
-                    "publicationDatetime": {
-                        "format": "date-time",
-                        "title": "Publicationdatetime",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "content",
-                    "offerId",
-                    "offerName",
-                    "offerCategoryLabel",
-                    "publicationDatetime"
-                ],
-                "title": "VenueProAdvice",
-                "type": "object"
-            },
-            "VenueProAdviceQuery": {
-                "additionalProperties": false,
-                "properties": {
-                    "maxContentLength": {
-                        "anyOf": [
-                            {
-                                "exclusiveMinimum": 0,
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Maxcontentlength"
-                    },
-                    "page": {
-                        "default": 1,
-                        "exclusiveMinimum": 0,
-                        "title": "Page",
-                        "type": "integer"
-                    },
-                    "resultsPerPage": {
-                        "default": 20,
-                        "exclusiveMinimum": 0,
-                        "title": "Resultsperpage",
-                        "type": "integer"
-                    }
-                },
-                "title": "VenueProAdviceQuery",
-                "type": "object"
-            },
-            "VenueProAdvices": {
-                "additionalProperties": false,
-                "properties": {
-                    "nbResults": {
-                        "title": "Nbresults",
-                        "type": "integer"
-                    },
-                    "proAdvices": {
-                        "items": {
-                            "$ref": "#/components/schemas/VenueProAdvice"
-                        },
-                        "title": "Proadvices",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "proAdvices",
-                    "nbResults"
-                ],
-                "title": "VenueProAdvices",
                 "type": "object"
             },
             "VenueResponse": {
@@ -10576,71 +9668,6 @@
                     "nextScreening"
                 ],
                 "title": "VenueScreenings",
-                "type": "object"
-            },
-            "VenueScreeningsV2": {
-                "additionalProperties": false,
-                "properties": {
-                    "address": {
-                        "title": "Address",
-                        "type": "string"
-                    },
-                    "dayScreenings": {
-                        "items": {
-                            "$ref": "#/components/schemas/ScreeningV2"
-                        },
-                        "title": "Dayscreenings",
-                        "type": "array"
-                    },
-                    "distance": {
-                        "title": "Distance",
-                        "type": "number"
-                    },
-                    "label": {
-                        "title": "Label",
-                        "type": "string"
-                    },
-                    "nextScreening": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/ScreeningV2"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    },
-                    "offerId": {
-                        "title": "Offerid",
-                        "type": "integer"
-                    },
-                    "thumbUrl": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Thumburl"
-                    },
-                    "venueId": {
-                        "title": "Venueid",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "address",
-                    "distance",
-                    "label",
-                    "offerId",
-                    "thumbUrl",
-                    "venueId",
-                    "dayScreenings",
-                    "nextScreening"
-                ],
-                "title": "VenueScreeningsV2",
                 "type": "object"
             },
             "VisualDisability": {
@@ -12108,7 +11135,6 @@
         },
         "/native/v1/movie/calendar": {
             "get": {
-                "deprecated": true,
                 "description": "",
                 "operationId": "get__native_v1_movie_calendar",
                 "parameters": [
@@ -12241,7 +11267,6 @@
         },
         "/native/v1/movie/calendar/me": {
             "get": {
-                "deprecated": true,
                 "description": "",
                 "operationId": "get__native_v1_movie_calendar_me",
                 "parameters": [
@@ -12527,138 +11552,6 @@
                     }
                 },
                 "summary": "sso_authorize <POST>",
-                "tags": []
-            }
-        },
-        "/native/v1/offer/{offer_id}/advices": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v1_offer_{offer_id}_advices",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "path",
-                        "name": "offer_id",
-                        "required": true,
-                        "schema": {
-                            "format": "int32",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "maxContentLength",
-                        "required": false,
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "type": "integer"
-                                },
-                                {
-                                    "type": "null"
-                                }
-                            ],
-                            "default": null,
-                            "title": "Maxcontentlength"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "page",
-                        "required": false,
-                        "schema": {
-                            "default": 1,
-                            "maximum": 20,
-                            "minimum": 1,
-                            "title": "Page",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "resultsPerPage",
-                        "required": false,
-                        "schema": {
-                            "default": 20,
-                            "maximum": 50,
-                            "minimum": 1,
-                            "title": "Resultsperpage",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "latitude",
-                        "required": false,
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "maximum": 90,
-                                    "minimum": -90,
-                                    "type": "number"
-                                },
-                                {
-                                    "type": "null"
-                                }
-                            ],
-                            "default": null,
-                            "title": "Latitude"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "longitude",
-                        "required": false,
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "maximum": 180,
-                                    "minimum": -180,
-                                    "type": "number"
-                                },
-                                {
-                                    "type": "null"
-                                }
-                            ],
-                            "default": null,
-                            "title": "Longitude"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OfferProAdvices"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "get_offer_pro_advices <GET>",
                 "tags": []
             }
         },
@@ -13921,100 +12814,8 @@
                 "tags": []
             }
         },
-        "/native/v1/venue/{venue_id}/advices": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v1_venue_{venue_id}_advices",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "path",
-                        "name": "venue_id",
-                        "required": true,
-                        "schema": {
-                            "format": "int32",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "maxContentLength",
-                        "required": false,
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "exclusiveMinimum": 0,
-                                    "type": "integer"
-                                },
-                                {
-                                    "type": "null"
-                                }
-                            ],
-                            "default": null,
-                            "title": "Maxcontentlength"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "page",
-                        "required": false,
-                        "schema": {
-                            "default": 1,
-                            "exclusiveMinimum": 0,
-                            "title": "Page",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "resultsPerPage",
-                        "required": false,
-                        "schema": {
-                            "default": 20,
-                            "exclusiveMinimum": 0,
-                            "title": "Resultsperpage",
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VenueProAdvices"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "get_venue_advices <GET>",
-                "tags": []
-            }
-        },
         "/native/v1/venue/{venue_id}/movie/calendar": {
             "get": {
-                "deprecated": true,
                 "description": "",
                 "operationId": "get__native_v1_venue_{venue_id}_movie_calendar",
                 "parameters": [
@@ -14085,7 +12886,6 @@
         },
         "/native/v1/venue/{venue_id}/movie/calendar/me": {
             "get": {
-                "deprecated": true,
                 "description": "",
                 "operationId": "get__native_v1_venue_{venue_id}_movie_calendar_me",
                 "parameters": [
@@ -14303,275 +13103,6 @@
                 "tags": []
             }
         },
-        "/native/v2/movie/calendar": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v2_movie_calendar",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "allocineId",
-                        "required": false,
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "pattern": "^\\d+$",
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "null"
-                                }
-                            ],
-                            "default": null,
-                            "title": "Allocineid"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "visa",
-                        "required": false,
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "pattern": "^[a-zA-Z0-9]+$",
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "null"
-                                }
-                            ],
-                            "default": null,
-                            "title": "Visa"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "latitude",
-                        "required": true,
-                        "schema": {
-                            "title": "Latitude",
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "longitude",
-                        "required": true,
-                        "schema": {
-                            "title": "Longitude",
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "aroundRadius",
-                        "required": false,
-                        "schema": {
-                            "default": 50000,
-                            "title": "Aroundradius",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "from",
-                        "required": false,
-                        "schema": {
-                            "format": "date-time",
-                            "title": "From",
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "to",
-                        "required": false,
-                        "schema": {
-                            "format": "date-time",
-                            "title": "To",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MovieCalendarResponseV2"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "get_movie_screenings <GET>",
-                "tags": []
-            }
-        },
-        "/native/v2/movie/calendar/me": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v2_movie_calendar_me",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "allocineId",
-                        "required": false,
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "pattern": "^\\d+$",
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "null"
-                                }
-                            ],
-                            "default": null,
-                            "title": "Allocineid"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "visa",
-                        "required": false,
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "pattern": "^[a-zA-Z0-9]+$",
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "null"
-                                }
-                            ],
-                            "default": null,
-                            "title": "Visa"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "latitude",
-                        "required": true,
-                        "schema": {
-                            "title": "Latitude",
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "longitude",
-                        "required": true,
-                        "schema": {
-                            "title": "Longitude",
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "aroundRadius",
-                        "required": false,
-                        "schema": {
-                            "default": 50000,
-                            "title": "Aroundradius",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "from",
-                        "required": false,
-                        "schema": {
-                            "format": "date-time",
-                            "title": "From",
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "to",
-                        "required": false,
-                        "schema": {
-                            "format": "date-time",
-                            "title": "To",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MovieCalendarResponseV2"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "summary": "get_movie_screenings_for_user <GET>",
-                "tags": []
-            }
-        },
         "/native/v2/oauth/state": {
             "get": {
                 "description": "",
@@ -14668,7 +13199,6 @@
         },
         "/native/v2/offers/stocks": {
             "post": {
-                "deprecated": true,
                 "description": "",
                 "operationId": "post__native_v2_offers_stocks",
                 "parameters": [],
@@ -15170,151 +13700,6 @@
                 "tags": []
             }
         },
-        "/native/v2/venue/{venue_id}/movie/calendar": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v2_venue_{venue_id}_movie_calendar",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "path",
-                        "name": "venue_id",
-                        "required": true,
-                        "schema": {
-                            "format": "int32",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "from",
-                        "required": false,
-                        "schema": {
-                            "format": "date-time",
-                            "title": "From",
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "to",
-                        "required": false,
-                        "schema": {
-                            "format": "date-time",
-                            "title": "To",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VenueMovieCalendarResponseV2"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "get_movie_screenings_by_venue <GET>",
-                "tags": []
-            }
-        },
-        "/native/v2/venue/{venue_id}/movie/calendar/me": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v2_venue_{venue_id}_movie_calendar_me",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "path",
-                        "name": "venue_id",
-                        "required": true,
-                        "schema": {
-                            "format": "int32",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "from",
-                        "required": false,
-                        "schema": {
-                            "format": "date-time",
-                            "title": "From",
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "to",
-                        "required": false,
-                        "schema": {
-                            "format": "date-time",
-                            "title": "To",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VenueMovieCalendarResponseV2"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "summary": "get_movie_screenings_by_venue_for_user <GET>",
-                "tags": []
-            }
-        },
         "/native/v3/offer/{offer_id}": {
             "get": {
                 "description": "",
@@ -15360,50 +13745,6 @@
                     }
                 },
                 "summary": "get_offer_v3 <GET>",
-                "tags": []
-            }
-        },
-        "/native/v3/offers/stocks": {
-            "post": {
-                "description": "",
-                "operationId": "post__native_v3_offers_stocks",
-                "parameters": [],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/OffersStocksRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OffersStocksResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "get_offers_and_stocks <POST>",
                 "tags": []
             }
         },

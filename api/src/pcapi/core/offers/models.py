@@ -237,13 +237,6 @@ class Product(PcObject, Model, HasThumbMixin):
         nullable=False,
         server_default=sa.text("0"),
     )
-    # TODO: Will be deleted in PR #24783 after native code deletion
-    proAdvicesCount: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.Integer,
-        sa.CheckConstraint('"proAdvicesCount" >= 0', name="check_pro_advices_count_is_positive"),
-        nullable=False,
-        server_default=sa.text("0"),
-    )
 
     artists: sa_orm.Mapped[list["Artist"]] = sa_orm.relationship(
         "Artist", back_populates="products", secondary="artist_product_link"
@@ -818,15 +811,6 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     quality: sa_orm.Mapped["OfferQuality | None"] = sa_orm.relationship(
         "OfferQuality", foreign_keys="OfferQuality.offerId", back_populates="offer", uselist=False
     )
-    # TODO: Will be deleted in PR #24783 after native code deletion
-    proAdvice: sa_orm.Mapped["ProAdvice | None"] = sa_orm.relationship(
-        "ProAdvice",
-        foreign_keys="ProAdvice.offerId",
-        back_populates="offer",
-        uselist=False,
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-    )
     rankingWeight: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
     subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
     url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
@@ -890,8 +874,6 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     hasPendingBookings: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     chroniclesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
-    # TODO: Will be deleted in PR #24783 after native code deletion
-    hasProAdvice: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     __table_args__ = (
         sa.Index(
             "idx_offer_lastValidationAuthorUserId",
@@ -1821,22 +1803,3 @@ class OfferQuality(PcObject, Model):
     updatedAt: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
     )
-
-
-# TODO: Will be deleted in PR #24783 after native code deletion
-class ProAdvice(PcObject, Model):
-    __tablename__ = "pro_advice"
-
-    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
-    )
-    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="proAdvice")
-    content: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
-    author: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    updatedAt: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
-    )
-    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False, unique=False
-    )
-    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId], back_populates="proAdvices")

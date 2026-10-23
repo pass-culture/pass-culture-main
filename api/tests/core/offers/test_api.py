@@ -5023,29 +5023,6 @@ class ReplacePriceCategoriesTest:
 
 @pytest.mark.usefixtures("db_session")
 class MoveEventOfferTest:
-    def test_move_event_offer_deletes_pro_advice(self):
-        offerer = offerers_factories.OffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offerers_factories.VenuePricingPointLinkFactory(
-            venue=venue,
-            pricingPoint=venue,
-            timespan=[date_utils.get_naive_utc_now() - timedelta(days=1), None],
-        )
-        offer = factories.EventOfferFactory(venue=venue)
-        factories.ProAdviceFactory(offer=offer, venue=venue)
-
-        new_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offerers_factories.VenuePricingPointLinkFactory(
-            venue=new_venue,
-            pricingPoint=new_venue,
-            timespan=[date_utils.get_naive_utc_now() - timedelta(days=1), None],
-        )
-        api.move_event_offer(offer, new_venue)
-
-        db.session.refresh(offer)
-        assert offer.venue == new_venue
-        assert offer.proAdvice is None
-
     def test_move_event_offer_ends_active_headline_offer(self):
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
