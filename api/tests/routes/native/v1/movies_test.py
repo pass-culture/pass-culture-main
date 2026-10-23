@@ -1254,17 +1254,15 @@ class VenueMovieCalendarTest:
         assert tomorrow_screenings[0]["dayScreenings"][0]["stockId"] == first_screened_stock.id
         assert tomorrow_screenings[0]["dayScreenings"][1]["stockId"] == last_screened_stock.id
 
-    def test_next_screening_is_closest_requested_day(self, client):
+    def test_next_screening_is_closest_from_start_date(self, client):
         tomorrow = date_utils.get_naive_utc_now() + timedelta(days=1)
         in_two_days = date_utils.get_naive_utc_now() + timedelta(days=2)
         in_three_days = date_utils.get_naive_utc_now() + timedelta(days=3)
-        in_four_days = date_utils.get_naive_utc_now() + timedelta(days=4)
         before_screenings = tomorrow.replace(hour=0)
         after_screenings = date_utils.get_naive_utc_now() + timedelta(days=5)
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         offer = offers_factories.OfferFactory(product=product)
         tomorrow_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=tomorrow)
-        in_four_days_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_four_days)
 
         venue_id = offer.venue.id
         expected_num_queries = 1  # venue
@@ -1286,7 +1284,7 @@ class VenueMovieCalendarTest:
         in_two_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_two_days_day.isoformat()][0]
         in_three_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_three_days_day.isoformat()][0]
         assert in_two_days_screenings[0]["nextScreening"]["stockId"] == tomorrow_stock.id
-        assert in_three_days_screenings[0]["nextScreening"]["stockId"] == in_four_days_stock.id
+        assert in_three_days_screenings[0]["nextScreening"]["stockId"] == tomorrow_stock.id
 
     def test_calendar_is_empty_if_no_screenings_found(self, client):
         tomorrow = (date_utils.get_naive_utc_now() + timedelta(days=1)).date()
