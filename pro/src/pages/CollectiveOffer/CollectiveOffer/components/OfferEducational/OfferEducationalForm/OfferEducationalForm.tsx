@@ -186,6 +186,7 @@ export const OfferEducationalForm = ({
         >
           <Button
             type="submit"
+            isLoading={isSubmitting}
             disabled={
               !isEligible ||
               !canEditDetails ||

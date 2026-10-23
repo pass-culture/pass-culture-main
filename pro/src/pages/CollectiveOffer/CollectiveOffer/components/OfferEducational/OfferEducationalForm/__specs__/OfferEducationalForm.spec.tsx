@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React, { forwardRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -151,6 +151,33 @@ const defaultProps: OfferEducationalFormProps = {
 }
 
 describe('OfferEducationalForm', () => {
+  it.each([false, true])(
+    'should display a spinner only while submitting (isSubmitting=%s)',
+    async (isSubmitting) => {
+      renderOfferEducationalForm({ ...defaultProps, isSubmitting })
+
+      const submitButton = await screen.findByRole('button', {
+        name: /Enregistrer et continuer/,
+      })
+
+      if (isSubmitting) {
+        expect(within(submitButton).getByRole('status')).toHaveTextContent(
+          'Chargement en cours'
+        )
+        expect(submitButton).toBeDisabled()
+      } else {
+        expect(
+          within(submitButton).queryByRole('status')
+        ).not.toBeInTheDocument()
+        await waitFor(() => expect(submitButton).toBeEnabled())
+      }
+
+      expect(
+        screen.getByRole('link', { name: 'Annuler et quitter' })
+      ).not.toHaveAttribute('aria-disabled', 'true')
+    }
+  )
+
   it('should render without accessibility violations', async () => {
     const { container } = renderOfferEducationalForm({
       ...defaultProps,
