@@ -396,7 +396,7 @@ jobs:
             --volume "$WORKSPACE/pass-culture-main/api/tests/:/tests" \
             --network "$NETWORK" \
             --entrypoint bash \
-            --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL \
+            --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL --env COLLECTION --env GROUP \
             "$IMAGE_NAME" \
             -c '
               pytest $COLLECTION \
