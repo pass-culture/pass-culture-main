@@ -52,11 +52,6 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     Gets the lowest Quotient Familial from the fraud check custodian, over the year when the beneficiary is 17
     and updates the fraud check. Then gives the bonus recredit to the beneficiary if eligible.
     """
-    user = quotient_familial_fraud_check.user
-    if not deposit_api.can_receive_bonus_credit(user):
-        logger.warning("trying to apply for bonus when not able to receive said bonus")
-        return
-
     cache_name = f"{_QF_CACHE_KEY}:{quotient_familial_fraud_check.id}"
     qf_result = _get_qf_most_relevant_result(quotient_familial_fraud_check, cache_name)
     if not qf_result:
@@ -66,13 +61,15 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
         )
         return
 
+    user = quotient_familial_fraud_check.user
     granted_after_attempts: int | None = None
     with atomic():
         if qf_result.status == subscription_models.FraudCheckStatus.KO:
             _update_quotient_familial_fraud_check_content(quotient_familial_fraud_check, qf_result)
             _decline_bonus(quotient_familial_fraud_check, qf_result)
 
-            transactional_mails.send_bonus_declined_email(user)
+            if not user.received_bonus_credit:
+                transactional_mails.send_bonus_declined_email(user)
 
         elif qf_result.status == subscription_models.FraudCheckStatus.OK:
             given_recredit, attempts_count = _grant_bonus(quotient_familial_fraud_check, qf_result)
@@ -330,10 +327,6 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
     Refer to the ADR about degraded implementation of health information if needed.
     """
     user = aah_fraud_check.user
-    if not deposit_api.can_receive_bonus_credit(user):
-        logger.warning("trying to apply for bonus when not able to receive said bonus")
-        return
-
     source_data = aah_fraud_check.source_data()
     if not isinstance(source_data, bonus_schemas.AdultDisabilityBonusCreditContent):
         raise ValueError(f"AdultDisabilityBonusCreditContent was expected while {type(source_data)} was given")
@@ -356,9 +349,10 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
         if aah_result.status == subscription_models.FraudCheckStatus.KO:
             _decline_bonus(aah_fraud_check, aah_result)
 
-            if aah_fraud_check.reason and aah_fraud_check.reason.startswith(
+            is_manual_attempt = aah_fraud_check.reason and aah_fraud_check.reason.startswith(
                 (bonus_constants.BACKOFFICE_ORIGIN_START, bonus_constants.DISABILITY_ENDPOINT_ORIGIN)
-            ):
+            )
+            if is_manual_attempt and not user.received_bonus_credit:
                 transactional_mails.send_bonus_declined_email(user)
 
         elif aah_result.status == subscription_models.FraudCheckStatus.OK:
@@ -399,10 +393,6 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
     Refer to the ADR about degraded implementation of health information if needed.
     """
     user = aeeh_fraud_check.user
-    if not deposit_api.can_receive_bonus_credit(user):
-        logger.warning("trying to apply for bonus when not able to receive said bonus")
-        return
-
     source_data = aeeh_fraud_check.source_data()
     if not isinstance(source_data, bonus_schemas.DisabledChildEducationBonusCreditContent):
         raise ValueError(f"DisabledChildEducationBonusCreditContent was expected while {type(source_data)} was given")
@@ -427,9 +417,10 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
         if aeeh_result.status == subscription_models.FraudCheckStatus.KO:
             _decline_bonus(aeeh_fraud_check, aeeh_result)
 
-            if aeeh_fraud_check.reason and aeeh_fraud_check.reason.startswith(
+            is_manual_attempt = aeeh_fraud_check.reason and aeeh_fraud_check.reason.startswith(
                 (bonus_constants.BACKOFFICE_ORIGIN_START, bonus_constants.DISABILITY_ENDPOINT_ORIGIN)
-            ):
+            )
+            if is_manual_attempt and not user.received_bonus_credit:
                 transactional_mails.send_bonus_declined_email(user)
 
         elif aeeh_result.status == subscription_models.FraudCheckStatus.OK:
@@ -473,6 +464,15 @@ def _call_api_particulier[
     """
     Run fetch() and format the API Particulier business errors into a result.
     """
+    if not deposit_api.can_receive_bonus_credit(fraud_check.user):
+        return _ApiParticulierResult(
+            response=None,
+            status=subscription_models.FraudCheckStatus.KO,
+            reason_codes=[subscription_models.FraudReasonCode.NOT_ELIGIBLE],
+            http_status_code=None,
+            error_code=None,
+        )
+
     response: ResponseT | None = None
     reason_codes = []
     error_code: str | None = None
@@ -591,14 +591,14 @@ def get_user_qf_bonification_status(user: users_models.User) -> bonus_schemas.QF
     if not deposit:
         return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
 
-    if deposit.type != finance_models.DepositType.GRANT_17_18:
-        return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
-
     has_received_bonus = finance_models.RecreditType.BONUS_CREDIT in [
         recredit.recreditType for recredit in deposit.recredits
     ]
     if has_received_bonus:
         return bonus_schemas.QFBonificationStatus.GRANTED
+
+    if not deposit_api.can_receive_bonus_credit(user):
+        return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
 
     has_eligible_age = _has_quotient_familial_eligible_age(user)
     if not has_eligible_age:
@@ -692,14 +692,14 @@ def get_user_disability_bonification_status(user: users_models.User) -> bonus_sc
     if not deposit:
         return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
 
-    if deposit.type != finance_models.DepositType.GRANT_17_18:
-        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
-
     has_received_bonus = finance_models.RecreditType.BONUS_CREDIT in [
         recredit.recreditType for recredit in deposit.recredits
     ]
     if has_received_bonus:
         return bonus_schemas.DisabilityBonificationStatus.GRANTED
+
+    if not deposit_api.can_receive_bonus_credit(user):
+        return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
 
     has_eligible_age = False
     if user.age == 18:

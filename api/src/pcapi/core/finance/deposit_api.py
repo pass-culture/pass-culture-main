@@ -551,6 +551,9 @@ def can_receive_bonus_credit(user: users_models.User) -> bool:
     if deposit.type != models.DepositType.GRANT_17_18:
         return False
 
+    if not user.received_pass_18_v3:
+        return False
+
     has_received_bonus = models.RecreditType.BONUS_CREDIT in [recredit.recreditType for recredit in deposit.recredits]
     return not has_received_bonus
 

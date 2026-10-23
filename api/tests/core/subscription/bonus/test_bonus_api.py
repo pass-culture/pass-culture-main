@@ -739,8 +739,27 @@ class QuotientFamilialApplicationTest:
             assert mock.call_count == 0
 
         mock_recredit.assert_not_called()
-        assert len(push_testing.requests) == 0
+        assert len(push_testing.requests) == 2
         assert len(mails_testing.outbox) == 0
+
+    def test_credit_18_missing(self):
+        last_year = date_utils.get_naive_utc_now() - relativedelta(years=1, days=1)
+        with time_machine.travel(last_year):
+            user = users_factories.BeneficiaryFactory(age=17)
+        qf_bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        bonus_api.apply_for_quotient_familial_bonus(qf_bonus_fraud_check)
+
+        assert qf_bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert qf_bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
 
 
 def _build_user_from_fixture(quotient_familial_json_response: dict) -> users_models.User:
@@ -1050,8 +1069,27 @@ class DisabledAdultAllowanceTest:
             assert mock.call_count == 0
 
         mock_recredit.assert_not_called()
-        assert len(push_testing.requests) == 0
+        assert len(push_testing.requests) == 2
         assert len(mails_testing.outbox) == 0
+
+    def test_credit_18_missing(self):
+        last_year = date_utils.get_naive_utc_now() - relativedelta(years=1, days=1)
+        with time_machine.travel(last_year):
+            user = users_factories.BeneficiaryFactory(age=17)
+        aah_bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        bonus_api.apply_for_adult_disability_bonus(aah_bonus_fraud_check)
+
+        assert aah_bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert aah_bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1362,13 +1400,32 @@ class DisabledChildEducationAllowanceTest:
         )
 
         with requests_mock.Mocker() as mock:
-            bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+            bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
 
             assert mock.call_count == 0
 
         mock_recredit.assert_not_called()
-        assert len(push_testing.requests) == 0
+        assert len(push_testing.requests) == 2
         assert len(mails_testing.outbox) == 0
+
+    def test_credit_18_missing(self):
+        last_year = date_utils.get_naive_utc_now() - relativedelta(years=1, days=1)
+        with time_machine.travel(last_year):
+            user = users_factories.BeneficiaryFactory(age=17)
+        aeeh_bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        bonus_api.apply_for_disabled_child_education_bonus(aeeh_bonus_fraud_check)
+
+        assert aeeh_bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert aeeh_bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
 
 
 class NameMatchingTest:
