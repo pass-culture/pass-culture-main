@@ -1254,39 +1254,52 @@ class VenueMovieCalendarTest:
         assert tomorrow_screenings[0]["dayScreenings"][0]["stockId"] == first_screened_stock.id
         assert tomorrow_screenings[0]["dayScreenings"][1]["stockId"] == last_screened_stock.id
 
-    def test_next_screening_is_closest_requested_day(self, client):
-        tomorrow = date_utils.get_naive_utc_now() + timedelta(days=1)
-        in_two_days = date_utils.get_naive_utc_now() + timedelta(days=2)
-        in_three_days = date_utils.get_naive_utc_now() + timedelta(days=3)
-        in_four_days = date_utils.get_naive_utc_now() + timedelta(days=4)
-        before_screenings = tomorrow.replace(hour=0)
-        after_screenings = date_utils.get_naive_utc_now() + timedelta(days=5)
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
-        offer = offers_factories.OfferFactory(product=product)
-        tomorrow_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=tomorrow)
-        in_four_days_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_four_days)
+    def test_next_screening_is_closest_from_today(self, client):
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        venue = offerers_factories.VenueFactory(offererAddress__address=address)
+        earliest_stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue=venue,
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=3),
+        )
+        _latest_stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue=venue,
+            beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=4),
+        )
 
-        venue_id = offer.venue.id
-        expected_num_queries = 1  # venue
-        expected_num_queries += 1  # offers
+        start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
+        in_five_days = (date_utils.get_naive_utc_now() + timedelta(days=5)).replace(hour=12)
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": start,
+            "to": in_five_days,
+        }
+        expected_num_queries = 1  # product
+        expected_num_queries += 1  # stocks
+        expected_num_queries += 1  # screenings
         with assert_num_queries(expected_num_queries):
-            response = client.get(
-                f"/native/v1/venue/{venue_id}/movie/calendar",
-                params={"from": before_screenings, "to": after_screenings},
-            )
+            response = client.get("/native/v2/movie/calendar", params=params)
             assert response.status_code == 200
 
-        calendar = response.json["calendar"]
-        in_two_days_day = date_utils.default_timezone_to_local_datetime(
-            in_two_days, offer.offererAddress.address.timezone
+        tomorrow = date_utils.default_timezone_to_local_datetime(
+            start + timedelta(days=1, hours=12), address.timezone
         ).date()
-        in_three_days_day = date_utils.default_timezone_to_local_datetime(
-            in_three_days, offer.offererAddress.address.timezone
+        tomorrow_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == tomorrow.isoformat()][
+            0
+        ]
+        assert tomorrow_screenings[0]["nextScreening"]["stockId"] == earliest_stock.id
+
+        in_five_days_local = date_utils.default_timezone_to_local_datetime(
+            start + timedelta(days=5, hours=12), address.timezone
         ).date()
-        in_two_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_two_days_day.isoformat()][0]
-        in_three_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_three_days_day.isoformat()][0]
-        assert in_two_days_screenings[0]["nextScreening"]["stockId"] == tomorrow_stock.id
-        assert in_three_days_screenings[0]["nextScreening"]["stockId"] == in_four_days_stock.id
+        in_five_days_screenings = [
+            e["screenings"] for e in response.json["calendar"] if e["date"] == in_five_days_local.isoformat()
+        ][0]
+        assert in_five_days_screenings[0]["nextScreening"]["stockId"] == earliest_stock.id
 
     def test_calendar_is_empty_if_no_screenings_found(self, client):
         tomorrow = (date_utils.get_naive_utc_now() + timedelta(days=1)).date()
