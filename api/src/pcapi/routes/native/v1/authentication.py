@@ -1,11 +1,8 @@
 import logging
-from hashlib import sha256
 
-from flask import g
 from flask import request
 from flask_login import current_user
 from flask_login import logout_user
-from sqlalchemy import exc as sa_exc
 from sqlalchemy.ext.mutable import MutableDict
 
 import pcapi.core.token as token_utils
@@ -23,17 +20,13 @@ from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.core.users.sessions import disconnect_native_user_sessions
-from pcapi.core.users.sessions import refresh_user_jwt_tokens
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.models.api_errors import InternalError
 from pcapi.models.feature import FeatureToggle
-from pcapi.routes.native.security import _raise_forbidden
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
-from pcapi.routes.native.security import authenticated_with_refresh_token
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
@@ -100,25 +93,6 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 )
 def signout() -> None:
     logout_user()
-
-
-@blueprint.native_route("/refresh_access_token", methods=["POST"])
-@atomic()
-@authenticated_with_refresh_token
-@spectree_serialize(
-    response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401], deprecated=True
-)
-def refresh() -> authentication.RefreshResponse:
-    if email_hash := g.jwt.data.user_claims.get("email_hash", None):
-        if email_hash != sha256(current_user.email.encode()).hexdigest():
-            _raise_forbidden(current_user.id)
-
-    users_api.update_last_connection_date(current_user)
-    try:
-        tokens = refresh_user_jwt_tokens(user=current_user, device_info=None, legacy=True)
-    except sa_exc.IntegrityError:
-        raise InternalError()
-    return authentication.RefreshResponse(access_token=tokens.access)
 
 
 @blueprint.native_route("/request_password_reset", methods=["POST"])
