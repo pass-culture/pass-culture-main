@@ -146,7 +146,7 @@ class AccountTest:
         booking = BookingFactory(user=user, amount=Decimal("123.45"))
         CancelledBookingFactory(user=user, amount=Decimal("123.45"))
 
-        expected_num_queries = 7  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + achievement + fraud check + action_history
+        expected_num_queries = 8  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + achievement + fraud check + action_history + recredits
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
@@ -726,6 +726,20 @@ class AccountTest:
     def test_get_user_profile_bonification_status_is_not_eligible_for_under_17(self, client):
         user = users_factories.BeneficiaryFactory(age=17)
         response = client.with_token(user).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE.value
+        assert (
+            response.json["disabilityBonificationStatus"]
+            == bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE.value
+        )
+
+    def test_get_user_profile_bonification_status_is_not_eligible_before_credit_18(self, client):
+        last_year = date_utils.get_naive_utc_now() - relativedelta(years=1, days=1)
+        with time_machine.travel(last_year):
+            user = users_factories.BeneficiaryFactory(age=17)
+
+        response = client.with_token(user).get("/native/v1/me")
+
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE.value
         assert (
