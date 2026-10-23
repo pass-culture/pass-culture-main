@@ -31,6 +31,7 @@ from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.criteria.models import VenueCriterion
 from pcapi.core.educational import models as educational_models
+from pcapi.core.favorites.models import FavoriteVenue
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.offerers import constants
@@ -513,6 +514,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     state: sa_orm.Mapped[VenueState | None] = sa_orm.mapped_column(
         db_utils.MagicEnum(VenueState), nullable=True, default=None
+    )
+
+    favorites: sa_orm.Mapped[FavoriteVenue] = sa_orm.relationship(
+        "FavoriteVenue", foreign_keys="FavoriteVenue.venueId", back_populates="venue"
     )
 
     __table_args__ = (
