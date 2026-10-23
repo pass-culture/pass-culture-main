@@ -299,7 +299,7 @@ jobs:
       fail-fast: false
       matrix:
         pytest_args:
-          - collection: "tests/routes/backoffice"
+          - collection: "--ignore=tests/routes/backoffice"
             description: "(without BO)"
           - collection: "tests/routes/backoffice"
             description: "(only BO)"
@@ -391,6 +391,7 @@ jobs:
         # > Removes the test duration info for tests which are not present while running the suite with > '--store-durations'.
       - name: "Run pytest"
         run: |
+          # shellcheck disable=SC2086
           docker run \
             --volume "$WORKSPACE/pass-culture-main/api/tests/:/tests" \
             --network "$NETWORK" \
@@ -398,7 +399,7 @@ jobs:
             --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL \
             "$IMAGE_NAME" \
             -c '
-              pytest --ignore="$COLLECTION" \
+              pytest $COLLECTION \
               --splits 4 --group $GROUP \
               --store-durations --durations-path /tests/.test_durations --clean-durations \
               --durations=10 --junitxml="/tests/junit.xml" \
