@@ -7,6 +7,7 @@ from flask_login import login_required
 from pydantic import ValidationError
 from sqlalchemy import orm as sa_orm
 
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi import settings
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
@@ -179,6 +180,10 @@ def edit_venue(venue_id: int, body: venue_serialize.EditVenueBodyModel) -> venue
         cultural_domains=body.culturalDomains,
         is_manual_edition=body.isManualEdition or False,
     )
+
+    if "siret" in modifications:
+        recipients = [current_user.email]
+        on_commit(partial(transactional_mails.send_updated_siret_notification, venue.id, recipients))
 
     if have_accessibility_changes and body.isAccessibilityAppliedOnAllOffers:
         edited_accessibility = {field: getattr(venue, field) for field in accessibility_fields}
