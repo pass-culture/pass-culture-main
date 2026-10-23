@@ -177,7 +177,7 @@ jobs:
         run: |
           docker run \
             --network "$NETWORK" \
-            --env RUN_ENV --env DATABASE_URL_TEST \
+            --env RUN_ENV --env DATABASE_URL_TEST --env PRE --env POST \
             --entrypoint bash \
             "$IMAGE_NAME" \
             -c '
@@ -208,7 +208,7 @@ jobs:
         run: |
           docker run \
             --network "$NETWORK" \
-            --env RUN_ENV --env DATABASE_URL_TEST \
+            --env RUN_ENV --env DATABASE_URL_TEST --env PRE --env POST \
             --entrypoint bash \
             "$IMAGE_NAME" \
             -c '
