@@ -758,6 +758,20 @@ class EditOfferVenueForm(FlaskForm):
         ]
 
 
+class SetInstructorForm(empty_forms.DynamicForm):
+    instructor = fields.PCTomSelectField(
+        "Responsable",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice.autocomplete_bo_users",
+    )
+
+
+class BatchSetInstructorForm(empty_forms.BatchForm, SetInstructorForm):
+    pass
+
+
 class EditStockForm(FlaskForm):
     class Meta:
         locales = ["fr_FR", "fr"]

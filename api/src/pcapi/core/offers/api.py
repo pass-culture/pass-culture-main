@@ -1399,6 +1399,7 @@ def reject_inappropriate_products(
             "lastValidationDate": date_utils.get_naive_utc_now(),
             "lastValidationType": OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
             "lastValidationAuthorUserId": author.id if author else None,
+            "instructorId": None,
         },
         synchronize_session=False,
     )

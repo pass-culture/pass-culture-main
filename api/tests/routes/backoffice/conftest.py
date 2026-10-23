@@ -117,6 +117,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "conformite": [
         perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
         perm_models.Permissions.MANAGE_OFFERS,
+        perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
@@ -208,6 +209,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_PRO_ENTREPRISE_INFO,
         perm_models.Permissions.READ_PRO_SENSITIVE_INFO,
+        perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
         perm_models.Permissions.CONNECT_AS_PRO,
         perm_models.Permissions.VALIDATE_OFFERER,

@@ -99,6 +99,11 @@ def _get_collective_offer_templates_query() -> sa_orm.Query:
                 users_models.User.firstName,
                 users_models.User.lastName,
             ),
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.instructor).load_only(
+                users_models.User.id,
+                users_models.User.firstName,
+                users_models.User.lastName,
+            ),
         )
     )
 
@@ -234,7 +239,7 @@ def get_validate_collective_offer_template_form(collective_offer_template_id: in
     }
 
     if kwargs["ajax_submit"]:
-        kwargs["target_id"] = (f"#collective-offer-template-row-{collective_offer_template_id}",)
+        kwargs["target_id"] = f"#collective-offer-template-row-{collective_offer_template_id}"
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -279,7 +284,7 @@ def get_reject_collective_offer_template_form(collective_offer_template_id: int)
         "ajax_submit": request_utils.is_request_from_htmx(),
     }
     if kwargs["ajax_submit"]:
-        kwargs["target_id"] = (f"#collective-offer-template-row-{collective_offer_template_id}",)
+        kwargs["target_id"] = f"#collective-offer-template-row-{collective_offer_template_id}"
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -347,6 +352,7 @@ def _batch_validate_or_reject_collective_offer_templates(
             collective_offer_template.lastValidationDate = date_utils.get_naive_utc_now()
             collective_offer_template.lastValidationType = OfferValidationType.MANUAL
             collective_offer_template.lastValidationAuthorUserId = current_user.id
+            collective_offer_template.instructorId = None
             if validation is OfferValidationStatus.APPROVED:
                 collective_offer_template.isActive = True
                 collective_offer_template.rejectionReason = None
@@ -472,6 +478,140 @@ def batch_reject_collective_offer_templates() -> response_utils.BackofficeRespon
         educational_models.CollectiveOfferRejectionReason(form.reason.data),
     )
     return _render_collective_offers_templates(form.object_ids_list)
+
+
+@list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/instructor", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR)
+def get_set_instructor_form(collective_offer_template_id: int) -> response_utils.BackofficeResponse:
+    collective_offer_template = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter_by(id=collective_offer_template_id)
+        .one_or_none()
+    )
+    if not collective_offer_template:
+        raise NotFound()
+
+    form = collective_offer_forms.SetInstructorForm()
+
+    kwargs = {
+        "form": form,
+        "dst": url_for(
+            "backoffice.collective_offer_template.set_instructor",
+            collective_offer_template_id=collective_offer_template.id,
+        ),
+        "div_id": f"set-instructor-modal-{collective_offer_template.id}",
+        "title": f"Attribuer un responsable {collective_offer_template.name}",
+        "button_text": "Attribuer",
+        "ajax_submit": request_utils.is_request_from_htmx(),
+    }
+
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = f"#collective-offer-template-row-{collective_offer_template_id}"
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        **kwargs,
+    )
+
+
+@list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/instructor", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR)
+def set_instructor(collective_offer_template_id: int) -> response_utils.BackofficeResponse:
+    form = collective_offer_forms.SetInstructorForm()
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        if request_utils.is_request_from_htmx():
+            return _render_collective_offers_templates()
+        return request_utils.safe_redirect_back(
+            request, url_for("backoffice.collective_offer_template.list_collective_offer_templates")
+        )
+
+    _set_instructor([collective_offer_template_id], form.instructor.data[0])
+
+    if request_utils.is_request_from_htmx():
+        return _render_collective_offers_templates([collective_offer_template_id])
+    return request_utils.safe_redirect_back(
+        request, url_for("backoffice.collective_offer_template.list_collective_offer_templates")
+    )
+
+
+@list_collective_offer_templates_blueprint.route("/batch/instructor", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR)
+def get_batch_set_instructor_form() -> response_utils.BackofficeResponse:
+    form = collective_offer_forms.BatchSetInstructorForm(request.args)
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id="#collective-offer-template-table",
+        form=form,
+        dst=url_for("backoffice.collective_offer_template.batch_set_instructor"),
+        div_id="batch-set-instructor-modal",
+        title="Voulez-vous attribuer un responsable aux offres sélectionnées ?",
+        button_text="Attribuer",
+    )
+
+
+@list_collective_offer_templates_blueprint.route("/batch/instructor", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFER_INSTRUCTOR)
+def batch_set_instructor() -> response_utils.BackofficeResponse:
+    form = collective_offer_forms.BatchSetInstructorForm()
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return _render_collective_offers_templates()
+
+    _set_instructor(form.object_ids_list, form.instructor.data[0])
+
+    return _render_collective_offers_templates(form.object_ids_list)
+
+
+def _set_instructor(
+    collective_offer_template_ids: list[int],
+    instructor_data: str,
+) -> bool:
+    collective_offer_templates = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter(
+            educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids),
+            educational_models.CollectiveOfferTemplate.validation == OfferValidationStatus.PENDING,
+        )
+        .all()
+    )
+
+    if len(collective_offer_template_ids) != len(collective_offer_templates):
+        flash(("Seules les offres collectives vitrines en attente peuvent avoir un responsable"), "warning")
+        return False
+
+    if len(instructor_data) == 0:
+        instructor = None
+    else:
+        instructor = (
+            db.session.query(users_models.User).filter(users_models.User.id == int(instructor_data)).one_or_none()
+        )
+        if instructor is None:
+            raise NotFound()
+
+    for collective_offer_template in collective_offer_templates:
+        collective_offer_template.instructor = instructor
+
+    if instructor:
+        flash(
+            (
+                f"{instructor.full_name} est maintenant responsable de l'offre"
+                if len(collective_offer_template_ids) == 1
+                else f"{instructor.full_name} est maintenant responsable de ces offres"
+            ),
+            "success",
+        )
+    else:
+        flash(
+            (
+                "Vous avez supprimé le responsable de cette offre"
+                if len(collective_offer_template_ids) == 1
+                else "Vous avez supprimé le responsable de ces offres"
+            ),
+            "success",
+        )
+
+    return True
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/details", methods=["GET"])

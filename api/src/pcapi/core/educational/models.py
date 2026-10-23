@@ -555,6 +555,13 @@ class CollectiveOffer(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
 
+    instructorId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True
+    )
+    instructor: sa_orm.Mapped["User | None"] = sa_orm.relationship(
+        "User", back_populates="instructedCollectiveOffers", foreign_keys=[instructorId]
+    )
+
     templateId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=True
     )
@@ -994,6 +1001,13 @@ class CollectiveOfferTemplate(
 
     interventionArea: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
+    )
+
+    instructorId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True
+    )
+    instructor: sa_orm.Mapped["User | None"] = sa_orm.relationship(
+        "User", back_populates="instructedCollectiveOfferTemplates", foreign_keys=[instructorId]
     )
 
     domains: sa_orm.Mapped[list["EducationalDomain"]] = sa_orm.relationship(
