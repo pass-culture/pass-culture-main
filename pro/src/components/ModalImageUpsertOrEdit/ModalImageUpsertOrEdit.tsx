@@ -18,6 +18,8 @@ import {
   UploaderModeEnum,
   type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
+import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/components/ImageDragAndDrop/constants'
 import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -113,6 +115,7 @@ export const ModalImageUpsertOrEdit = ({
     !draftImage && !!previouslyUploadedImageUrl
   )
   const [isPaintingImage, setIsPaintingImage] = useState(true)
+  const [isPreparingImage, setIsPreparingImage] = useState(false)
   const [image, setImage] = useState<File | undefined>(draftImage)
   const [previewImageUrl, setPreviewImageUrl] = useState<string | undefined>(
     previouslyUploadedImageUrl
@@ -208,30 +211,45 @@ export const ModalImageUpsertOrEdit = ({
     handleImageChange()
   }
 
-  const onEditedImageSave = (
+  const onEditedImageSave = async (
     credit: string | null,
     imageDataUrl: string,
     croppedRect: CroppedRect,
     alternativeText: string | null
   ) => {
-    if (image) {
-      logEvent(Events.CLICKED_SAVE_IMAGE, {
-        imageType: mode,
-        imageCreationStage: 'save',
-      })
+    if (image && !isPreparingImage) {
+      setIsPreparingImage(true)
+      try {
+        const imageFile = await prepareImageForUpload(image, {
+          cropWidth: croppedRect.width,
+          minSizes:
+            mode === UploaderModeEnum.OFFER_COLLECTIVE
+              ? MIN_COLLECTIVE_IMAGE_DIMENSIONS
+              : undefined,
+        })
 
-      onImageUpload(
-        {
-          imageFile: image,
-          imageCroppedDataUrl: imageDataUrl,
-          cropParams: croppedRect,
-          credit: credit,
-          alternativeText: isInformative ? alternativeText : null,
-        },
-        previouslyUploadedImageUrl
-          ? 'Vos modifications ont bien été prises en compte'
-          : 'Votre image a bien été importée'
-      )
+        logEvent(Events.CLICKED_SAVE_IMAGE, {
+          imageType: mode,
+          imageCreationStage: 'save',
+        })
+
+        onImageUpload(
+          {
+            imageFile,
+            imageCroppedDataUrl: imageDataUrl,
+            cropParams: croppedRect,
+            credit: credit,
+            alternativeText: isInformative ? alternativeText : null,
+          },
+          previouslyUploadedImageUrl
+            ? 'Vos modifications ont bien été prises en compte'
+            : 'Votre image a bien été importée'
+        )
+      } catch {
+        snackBar.error('Une erreur est survenue. Merci de réessayer plus tard')
+      } finally {
+        setIsPreparingImage(false)
+      }
     }
   }
 
@@ -282,6 +300,10 @@ export const ModalImageUpsertOrEdit = ({
   const onImageSave = () => handleImageChange(onEditedImageSave)
 
   const handleOpenChange = (open: boolean) => {
+    if (isPreparingImage) {
+      return
+    }
+
     if (!open) {
       resetWithInitialValues()
     }
@@ -303,6 +325,7 @@ export const ModalImageUpsertOrEdit = ({
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
           onClick={() => handleOpenChange(false)}
+          disabled={isPreparingImage}
           label="Annuler"
         />
       }
@@ -310,12 +333,13 @@ export const ModalImageUpsertOrEdit = ({
         <Button
           type="button"
           onClick={onImageSave}
-          disabled={!image}
+          disabled={!image || isPreparingImage}
           label="Importer"
         />
       }
     >
       <div className={style['modal-image-crop']}>
+        {isPreparingImage && <Spinner testId="spinner-img-prepare" />}
         <div className={style['modal-image-crop-content']}>
           {isLoadingImage && <Spinner testId="spinner-img-load" />}
           {!isLoadingImage && image && (
@@ -342,6 +366,7 @@ export const ModalImageUpsertOrEdit = ({
                     <Button
                       icon={fullDownloadIcon}
                       onClick={onImageReplace}
+                      disabled={isPreparingImage}
                       variant={ButtonVariant.SECONDARY}
                       color={ButtonColor.NEUTRAL}
                       size={ButtonSize.SMALL}
@@ -350,6 +375,7 @@ export const ModalImageUpsertOrEdit = ({
 
                     <Button
                       icon={fullTrashIcon}
+                      disabled={isPreparingImage}
                       onClick={() => {
                         onImageDelete?.()
                         handleOpenChange(false)
@@ -422,10 +448,7 @@ export const ModalImageUpsertOrEdit = ({
               onDropOrSelected={onImageReplacementDropOrSelected}
               {...(mode === UploaderModeEnum.OFFER_COLLECTIVE
                 ? {
-                    minSizes: {
-                      width: 400,
-                      height: 600,
-                    },
+                    minSizes: MIN_COLLECTIVE_IMAGE_DIMENSIONS,
                   }
                 : {})}
             />

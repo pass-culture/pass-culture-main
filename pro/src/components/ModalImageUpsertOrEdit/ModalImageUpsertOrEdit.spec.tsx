@@ -5,7 +5,9 @@ import React, { forwardRef } from 'react'
 import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import * as imageUtils from '@/commons/utils/image'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/components/ImageDragAndDrop/constants'
 
 import {
   ModalImageUpsertOrEdit,
@@ -14,6 +16,10 @@ import {
 
 const onImageUpload = vi.fn()
 const onImageDelete = vi.fn()
+
+vi.mock('@/commons/utils/prepareImageForUpload', () => ({
+  prepareImageForUpload: vi.fn(async (file: File) => file),
+}))
 
 vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
   getImageDimensions: vi.fn((file) => {
@@ -78,6 +84,7 @@ const renderModalImageCrop = (props: ModalImageUpsertOrEditTestProps = {}) => {
 
 describe('ModalImageUpsertOrEdit', () => {
   beforeEach(() => {
+    vi.mocked(prepareImageForUpload).mockImplementation(async (file) => file)
     fetchMock.mockResponse((request) => {
       if (
         request.url === 'http://example.com/image.jpg' &&
@@ -91,6 +98,78 @@ describe('ModalImageUpsertOrEdit', () => {
       }
 
       return { status: 404 }
+    })
+  })
+
+  it.each([UploaderModeEnum.OFFER, UploaderModeEnum.VENUE])(
+    'should upload the prepared file without changing the cropping parameters in %s mode',
+    async (mode) => {
+      const compressed = new File(['small'], 'photo.jpg', {
+        type: 'image/jpeg',
+      })
+      vi.mocked(prepareImageForUpload).mockResolvedValue(compressed)
+      renderModalImageCrop({ mode })
+      await waitForRender()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Importer' }))
+
+      await waitFor(() => {
+        expect(onImageUpload).toHaveBeenCalledWith(
+          expect.objectContaining({
+            imageFile: compressed,
+            imageCroppedDataUrl: 'my img',
+            cropParams: { x: 0, y: 0, width: 100, height: 100 },
+          }),
+          expect.any(String)
+        )
+      })
+      expect(prepareImageForUpload).toHaveBeenCalledWith(
+        defaultProps.initialValues?.draftImage,
+        { cropWidth: 100, minSizes: undefined }
+      )
+      expect(onImageUpload.mock.calls[0][0].imageFile).toBe(compressed)
+    }
+  )
+
+  it('should prepare collective images with the same minimum dimensions as validation', async () => {
+    renderModalImageCrop({ mode: UploaderModeEnum.OFFER_COLLECTIVE })
+    await waitForRender()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Importer' }))
+
+    expect(prepareImageForUpload).toHaveBeenCalledWith(
+      defaultProps.initialValues?.draftImage,
+      { cropWidth: 100, minSizes: MIN_COLLECTIVE_IMAGE_DIMENSIONS }
+    )
+  })
+
+  it('should disable actions until image preparation completes', async () => {
+    let finishPreparation!: (file: File) => void
+    vi.mocked(prepareImageForUpload).mockReturnValue(
+      new Promise((resolve) => {
+        finishPreparation = resolve
+      })
+    )
+    renderModalImageCrop()
+    await waitForRender()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Importer' }))
+
+    expect(screen.getByRole('button', { name: 'Importer' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Annuler' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'Remplacer l’image' })
+    ).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'Supprimer l’image' })
+    ).toBeDisabled()
+    expect(onImageUpload).not.toHaveBeenCalled()
+
+    finishPreparation(new File(['small'], 'photo.jpg', { type: 'image/jpeg' }))
+
+    await waitFor(() => {
+      expect(onImageUpload).toHaveBeenCalledOnce()
+      expect(screen.getByRole('button', { name: 'Importer' })).toBeEnabled()
     })
   })
 

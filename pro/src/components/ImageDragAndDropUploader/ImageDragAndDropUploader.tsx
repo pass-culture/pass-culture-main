@@ -6,6 +6,7 @@ import {
   UploaderModeEnum,
   type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
+import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/components/ImageDragAndDrop/constants'
 import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
 import {
   ModalImageUpsertOrEdit,
@@ -220,10 +221,7 @@ export const ImageDragAndDropUploader = ({
           disabled={disabled}
           {...(mode === UploaderModeEnum.OFFER_COLLECTIVE
             ? {
-                minSizes: {
-                  width: 400,
-                  height: 600,
-                },
+                minSizes: MIN_COLLECTIVE_IMAGE_DIMENSIONS,
               }
             : {})}
         />
