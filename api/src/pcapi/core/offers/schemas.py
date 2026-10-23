@@ -13,6 +13,7 @@ from pydantic.v1 import validator
 from pcapi.core.offers import models as offers_models
 from pcapi.routes.provider.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import artist_serialize
 from pcapi.serialization import utils as serialization_utils
 
@@ -92,7 +93,7 @@ class CreateOrUpdateEANOffersRequest(BaseModelV2):
     )
 
 
-class CreateOfferHighlightRequestBodyModel(BaseModel):
+class CreateOfferHighlightRequestBodyModel(HttpBodyModel):
     highlight_ids: list[int]
 
 

@@ -70,7 +70,7 @@ export function OfferHighlightForm({
       const updatedOffer = await api.postHighlightRequestOffer({
         path: { offer_id: offerId },
         body: {
-          highlight_ids: highlightIdsToSubmit,
+          highlightIds: highlightIdsToSubmit,
         },
       })
       await mutate([GET_OFFER_QUERY_KEY, offerId], updatedOffer, {
