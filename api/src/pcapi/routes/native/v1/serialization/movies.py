@@ -351,7 +351,7 @@ def serialize_calendar(
             if not block.next_screening:
                 block.next_screening = screening
             else:
-                block.next_screening = _get_best_next_screening(block.next_screening, screening, day)
+                block.next_screening = _get_best_next_screening(block.next_screening, screening, start_date.date())
 
         sorted_blocks = sort_blocks(list(blocks.values()))
         for block in blocks.values():
