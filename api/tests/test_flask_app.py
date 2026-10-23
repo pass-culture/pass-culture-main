@@ -69,6 +69,7 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "native.native_v1.get_venue",  # → response.status_code = 404
     "native.native_v1.sso_oauth_state",  # → response.status_code = 200
     "native.native_v1.offer_chronicles",  # → response.status_code = 404
+    "native.native_v1.offer_page_playlists",  # → response.status_code = 200
     "native.native_v1.similar_offers",  # → response.status_code = 200
     "native.native_v2.get_movie_screenings_by_venue",  # → response.status_code = 200
     "native.native_v2.get_offer_v2",  # → response.status_code = 404

@@ -5810,6 +5810,153 @@
                 "title": "OfferOffererResponseV2",
                 "type": "object"
             },
+            "OfferPagePlaylist": {
+                "additionalProperties": false,
+                "properties": {
+                    "analyticsPlaylistType": {
+                        "title": "Analyticsplaylisttype",
+                        "type": "string"
+                    },
+                    "params": {
+                        "$ref": "#/components/schemas/OfferPagePlaylistParams"
+                    },
+                    "results": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Results",
+                        "type": "array"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "title",
+                    "analyticsPlaylistType",
+                    "results",
+                    "params"
+                ],
+                "title": "OfferPagePlaylist",
+                "type": "object"
+            },
+            "OfferPagePlaylistParams": {
+                "additionalProperties": false,
+                "properties": {
+                    "abTest": {
+                        "title": "Abtest",
+                        "type": "string"
+                    },
+                    "callId": {
+                        "title": "Callid",
+                        "type": "string"
+                    },
+                    "modelOrigin": {
+                        "title": "Modelorigin",
+                        "type": "string"
+                    },
+                    "recoOrigin": {
+                        "title": "Recoorigin",
+                        "type": "string"
+                    },
+                    "uniqueCallId": {
+                        "title": "Uniquecallid",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "recoOrigin",
+                    "modelOrigin",
+                    "callId",
+                    "uniqueCallId",
+                    "abTest"
+                ],
+                "title": "OfferPagePlaylistParams",
+                "type": "object"
+            },
+            "OfferPagePlaylistQuery": {
+                "additionalProperties": false,
+                "properties": {
+                    "latitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Latitude"
+                    },
+                    "longitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Longitude"
+                    },
+                    "presetLocation": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Presetlocation"
+                    },
+                    "userId": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Userid"
+                    }
+                },
+                "title": "OfferPagePlaylistQuery",
+                "type": "object"
+            },
+            "OfferPagePlaylistResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "fromCache": {
+                        "title": "Fromcache",
+                        "type": "boolean"
+                    },
+                    "offerId": {
+                        "title": "Offerid",
+                        "type": "string"
+                    },
+                    "playlists": {
+                        "items": {
+                            "$ref": "#/components/schemas/OfferPagePlaylist"
+                        },
+                        "title": "Playlists",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "offerId",
+                    "playlists",
+                    "fromCache"
+                ],
+                "title": "OfferPagePlaylistResponse",
+                "type": "object"
+            },
             "OfferProAdvice": {
                 "additionalProperties": false,
                 "properties": {
@@ -13149,6 +13296,123 @@
                     }
                 ],
                 "summary": "get_available_reactions <GET>",
+                "tags": []
+            }
+        },
+        "/native/v1/recommendation/offer_page_playlists/{offer_id}": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_recommendation_offer_page_playlists_{offer_id}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "offer_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "userId",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Userid"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "longitude",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Longitude"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "latitude",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Latitude"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "presetLocation",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Presetlocation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OfferPagePlaylistResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "offer_page_playlists <GET>",
                 "tags": []
             }
         },
