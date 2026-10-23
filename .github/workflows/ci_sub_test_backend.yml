@@ -399,7 +399,7 @@ jobs:
             "$IMAGE_NAME" \
             -c '
               pytest --ignore="$COLLECTION" \
-              --splits 4 --group "$GROUP" \
+              --splits 4 --group $GROUP \
               --store-durations --durations-path /tests/.test_durations --clean-durations \
               --durations=10 --junitxml="/tests/junit.xml" \
               -q --color=yes
