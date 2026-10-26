@@ -2,7 +2,7 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
-import { DMSApplicationstatus } from '@/apiClient/v1'
+import { CriteriaEnum, DMSApplicationstatus } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
@@ -24,6 +24,7 @@ import {
   TABS,
   type TabKey,
 } from './commons/utils'
+import { BannerVenueClosureDetected } from './components/BannerVenueClosureDetected'
 import { CollectiveOffersCardsContainer } from './components/CollectiveOffersCardsContainer/CollectiveOffersCardsContainer'
 import { EditoCard } from './components/EditoCard/EditoCard'
 import { IncomeCard } from './components/IncomeCard/IncomeCard'
@@ -54,6 +55,9 @@ export const Homepage = (): JSX.Element => {
   )
   const individualId = useId()
   const collectiveId = useId()
+  const isVenueClosureDetected = selectedPartnerVenue.criteria.includes(
+    CriteriaEnum.CLOSURE_DETECTED
+  )
 
   if (!hasIndividualTab && !hasCollectiveTab) {
     return (
@@ -61,6 +65,11 @@ export const Homepage = (): JSX.Element => {
         <h1 className={styles['title']}>
           Diffusez votre première offre et pilotez ici votre activité !
         </h1>
+        {isVenueClosureDetected && (
+          <div className={styles['venue-banner']}>
+            <BannerVenueClosureDetected />
+          </div>
+        )}
         {withVenueHelpers(selectedPartnerVenue).isClosed &&
           (selectedPartnerVenue.isPricingPoint ? (
             <div className={styles['venue-banner']}>
@@ -125,6 +134,11 @@ export const Homepage = (): JSX.Element => {
       <h1
         className={styles['title-2']}
       >{`Votre espace ${selectedPartnerVenue.publicName}`}</h1>
+      {isVenueClosureDetected && (
+        <div className={styles['venue-banner']}>
+          <BannerVenueClosureDetected />
+        </div>
+      )}
       {withVenueHelpers(selectedPartnerVenue).isClosed &&
         (selectedPartnerVenue.isPricingPoint ? (
           <div className={styles['venue-banner']}>

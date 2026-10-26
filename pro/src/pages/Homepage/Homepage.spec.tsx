@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import {
+  CriteriaEnum,
   DMSApplicationstatus,
   type GetVenueResponseModel,
   VenueState,
@@ -132,6 +133,37 @@ describe('Homepage', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'Votre espace Nom public de la structure'
     )
+  })
+
+  describe('venue closure detected banner', () => {
+    it('should be displayed when closure is detected', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        criteria: [CriteriaEnum.CLOSURE_DETECTED],
+        hasNonDraftOffers: true,
+      })
+
+      expect(
+        screen.getByText(
+          'Votre structure n’est plus à jour, merci d’en modifier le SIRET ou d’en demander la fermeture depuis vos paramètres.'
+        )
+      ).toBeVisible()
+    })
+
+    it('should be displayed when closure is detected and no tab is available', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        criteria: [CriteriaEnum.CLOSURE_DETECTED],
+        allowedOnAdage: false,
+        hasNonDraftOffers: false,
+      })
+
+      expect(
+        screen.getByText(
+          'Votre structure n’est plus à jour, merci d’en modifier le SIRET ou d’en demander la fermeture depuis vos paramètres.'
+        )
+      ).toBeVisible()
+    })
   })
 
   describe('venue validation banner', () => {
