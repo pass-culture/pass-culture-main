@@ -276,7 +276,7 @@ profile="jinja"
 
 [tool.uv]
 exclude-newer = "7 days"
-exclude-newer-package = { certifi = false }
+exclude-newer-package = { certifi = false, brotli = false, brotlicffi = false }
 override-dependencies = [
     "pyopenssl>=26.0.0",
 ]
