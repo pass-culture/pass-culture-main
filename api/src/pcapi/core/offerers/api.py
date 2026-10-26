@@ -3811,6 +3811,14 @@ def _mark_as_closed_and_send_warning_email(venue: offerers_models.Venue, *, appl
             venue=venue,
         )
 
+        db.session.add(
+            history_api.add_action(
+                action_type=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG,
+                author=None,
+                venue=venue,
+            )
+        )
+
         on_commit(partial(logger.info, "Adding closure tag to venue: done.", extra={"venue_id": venue.id}))
         if not venue.bookingEmail:
             return
@@ -3857,3 +3865,21 @@ def detect_unexpected_venue_status(apply: bool, days_count: int) -> None:
             _mark_as_closed_and_send_warning_email(venue, apply=apply)
         elif siret_data_says_open and venue.is_closed:
             logger.warning("Venue is closed but SIRET data says it is open", extra={"venue_id": venue.id})
+
+
+def notify_tagged_venues_still_closed(days_count: int) -> None:
+    for event in history_repository.get_events_regarding_venue_closure_before(days_count):
+        if not event.venue.bookingEmail:
+            continue
+
+        send(
+            recipients=[event.venue.bookingEmail],
+            data=mails_models.TransactionalEmailData(
+                template=TransactionalEmail.VENUE_STILL_NOT_CLOSED_REMINDER.value,
+                params={
+                    "VENUE_DETECTED_AS_CLOSED_DATE": event.actionDate,
+                    "SIRET": event.venue.siret,
+                    "VENUE_PUBLIC_NAME": event.venue.publicName,
+                },
+            ),
+        )
