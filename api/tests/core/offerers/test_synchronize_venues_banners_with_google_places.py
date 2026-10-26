@@ -58,3 +58,31 @@ class SynchronizeVenuesBannersWithGooglePlacesTest:
             synchronize_venues_banners_with_google_places.synchronize_venues_banners_with_google_places([venue])
 
         assert caplog.records[0].message == f"[gmaps_banner_synchro]venue id: {venue.id} error: INVALID_REQUEST"
+
+    @patch("pcapi.core.offerers.synchronize_venues_banners_with_google_places.get_place_id")
+    @patch(
+        "pcapi.core.offerers.synchronize_venues_banners_with_google_places.get_place_photos_and_owner",
+        side_effect=[
+            synchronize_venues_banners_with_google_places.PlaceDetails(
+                name="Nom du lieu",
+                photos=[
+                    synchronize_venues_banners_with_google_places.PlacePhoto(
+                        height=200, photo_reference="banner_id", width=200, html_attributions=[]
+                    )
+                ],
+            ),
+        ],
+    )
+    @patch(
+        "pcapi.core.offerers.synchronize_venues_banners_with_google_places.save_photo_to_gcp",
+        return_value=["banner_id", "banner_url"],
+    )
+    def test_update_banner_url_and_id(
+        self, _mock_get_place_photos_and_owner, _mock_get_place_id, _mock_save_photo_to_gcp
+    ):
+        venue = VenueFactory()
+        venue.googlePlacesInfo = GooglePlacesInfoFactory()
+        synchronize_venues_banners_with_google_places.synchronize_venues_banners_with_google_places([venue])
+
+        assert venue.googlePlacesInfo.bannerId == "banner_id"
+        assert venue.googlePlacesInfo.bannerUrl == "banner_url"

@@ -113,7 +113,7 @@ def get_owner_photo(photos: list[PlacePhoto], owner_name: str) -> PlacePhoto | N
     return None
 
 
-def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> str:
+def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> tuple[str, str]:
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
     photos_result = gmaps.places_photo(
         photo_reference=photo.photo_reference,
@@ -136,7 +136,7 @@ def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> str:
         ),
         "image/jpeg",
     )
-    return settings.OBJECT_STORAGE_URL + "/" + GOOGLE_PLACES_BANNER_STORAGE_FOLDER + "/" + object_id
+    return object_id, settings.OBJECT_STORAGE_URL + "/" + GOOGLE_PLACES_BANNER_STORAGE_FOLDER + "/" + object_id
 
 
 def synchronize_venues_banners_with_google_places(
@@ -197,7 +197,9 @@ def synchronize_venues_banners_with_google_places(
             else:
                 photo = place_details.photos[0]
                 photo_prefix = ""
-            venue.googlePlacesInfo._bannerUrl = save_photo_to_gcp(venue.id, photo, photo_prefix)
+            banner_id, banner_url = save_photo_to_gcp(venue.id, photo, photo_prefix)
+            venue.googlePlacesInfo.bannerId = banner_id
+            venue.googlePlacesInfo._bannerUrl = banner_url
             venue.googlePlacesInfo.bannerMeta = photo.model_dump()
             banner_synchronized_venue_ids.add(venue.id)
             db.session.commit()
