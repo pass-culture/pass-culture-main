@@ -943,6 +943,7 @@ class GooglePlacesInfo(PcObject, Model):
     # Google Places, so this column cannot be unique.
     placeId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, unique=False)
     _bannerUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, name="bannerUrl")
+    bannerId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     bannerMeta: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(MutableDict.as_mutable(JSONB), nullable=True)
     updateDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
