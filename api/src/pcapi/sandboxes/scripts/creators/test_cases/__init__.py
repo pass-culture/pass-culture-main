@@ -1307,7 +1307,7 @@ def create_venues_with_gmaps_image() -> None:
         _bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/thumbs/offerers/FY",
     )
     offerers_factories.GooglePlacesInfoFactory.create(
-        _bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
+        bannerId="Google_Maps_Logo_2020.png",
         venue=venue_with_user_image_and_gmaps_image,
         bannerMeta={"html_attributions": ['<a href="http://parhumans.wordpress.com">JC mc Crae</a>']},
     )
@@ -1318,7 +1318,7 @@ def create_venues_with_gmaps_image() -> None:
         _bannerUrl=None,
     )
     offerers_factories.GooglePlacesInfoFactory.create(
-        _bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
+        bannerId="Google_Maps_Logo_2020.png",
         venue=venue_without_user_image_and_with_gmaps_image,
         bannerMeta={"html_attributions": ['<a href="http://python.com">Average python enjoyer</a>']},
     )
