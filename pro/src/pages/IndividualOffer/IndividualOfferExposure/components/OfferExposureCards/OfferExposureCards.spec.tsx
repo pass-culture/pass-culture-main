@@ -39,6 +39,14 @@ const renderOfferExposureCards = ({
 }
 
 describe('OfferExposureCards', () => {
+  beforeEach(() => {
+    vi.setSystemTime(NOW)
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('should render without accessibility violations', async () => {
     const { container } = renderOfferExposureCards()
 

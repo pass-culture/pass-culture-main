@@ -17,7 +17,9 @@ const renderCumulatedViews = (props: CumulatedViewsProps) => {
 
 describe('CumulatedViews', () => {
   const periodStats: VenueOffersPeriodStatsModel =
-    venueOffersPeriodStatsModelFactory()
+    venueOffersPeriodStatsModelFactory({
+      viewsByMonth: [{ month: '2026-10-01', views: 0 }],
+    })
 
   it('should render component', async () => {
     const { container } = renderCumulatedViews({ periodStats })
