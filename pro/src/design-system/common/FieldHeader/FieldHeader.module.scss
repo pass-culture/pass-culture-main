@@ -36,3 +36,18 @@
   color: var(--color-text-subtle);
   overflow-wrap: anywhere;
 }
+
+//  LABEL VARIANTS
+.label-variant-title3 {
+  .label {
+    @include fonts.title3;
+  }
+
+  .label-mandatory-symbol {
+    @include fonts.body;
+  }
+
+  .description {
+    @include fonts.body;
+  }
+}

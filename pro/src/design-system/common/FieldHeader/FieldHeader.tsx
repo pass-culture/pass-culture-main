@@ -10,6 +10,7 @@ type FieldHeaderProps = {
   requiredIndicator?: RequiredIndicator
   description?: string
   descriptionId?: string
+  labelVariant?: 'body' | 'title3'
 }
 
 export function FieldHeader({
@@ -19,11 +20,13 @@ export function FieldHeader({
   requiredIndicator,
   description,
   descriptionId,
+  labelVariant = 'body',
 }: Readonly<FieldHeaderProps>) {
   return (
     <div
       className={classNames(styles['field-header'], {
         [styles['has-description']]: Boolean(description),
+        [styles['label-variant-title3']]: labelVariant === 'title3',
       })}
     >
       <div>
