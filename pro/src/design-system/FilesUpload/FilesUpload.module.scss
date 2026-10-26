@@ -1,0 +1,15 @@
+.files-upload {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+  width: 100%;
+}
+
+.files-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
