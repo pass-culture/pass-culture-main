@@ -13,6 +13,7 @@ def install_routes(app: Flask) -> None:
     from . import finance
     from . import headline_offer
     from . import highlights
+    from . import nature_format_domain
     from . import offerers
     from . import offers
     from . import public_information

@@ -1878,6 +1878,28 @@ export type FeatureResponseModel = {
 };
 
 /**
+ * FormatEnum
+ */
+export enum FormatEnum {
+    CD_VINYLE = 'CD_VINYLE',
+    DVD_BLU_RAY = 'DVD_BLU_RAY',
+    INSTRUMENT_DE_MUSIQUE = 'INSTRUMENT_DE_MUSIQUE',
+    LIVRE_PAPIER = 'LIVRE_PAPIER',
+    MATERIEL_ARTS_CREATIFS = 'MATERIEL_ARTS_CREATIFS'
+}
+
+/**
+ * FormatResponseModel
+ */
+export type FormatResponseModel = {
+    format: FormatEnum;
+    /**
+     * Label
+     */
+    label: string;
+};
+
+/**
  * GetActiveEANOfferResponseModel
  */
 export type GetActiveEANOfferResponseModel = {
@@ -4383,6 +4405,36 @@ export type NationalProgramResponseModel = {
      * Name
      */
     name: string;
+};
+
+/**
+ * NatureEnum
+ */
+export enum NatureEnum {
+    BIEN = 'BIEN',
+    CARTE_ABONNEMENT = 'CARTE_ABONNEMENT',
+    EVENEMENT = 'EVENEMENT',
+    NUMERIQUE = 'NUMERIQUE'
+}
+
+/**
+ * NatureFormatDomainListResponseModel
+ */
+export type NatureFormatDomainListResponseModel = Array<NatureFormatDomainResponseModel>;
+
+/**
+ * NatureFormatDomainResponseModel
+ */
+export type NatureFormatDomainResponseModel = {
+    /**
+     * Formats
+     */
+    formats: Array<FormatResponseModel>;
+    /**
+     * Label
+     */
+    label: string;
+    name: NatureEnum;
 };
 
 /**
@@ -9170,6 +9222,35 @@ export type getHighlightsResponses = {
 };
 
 export type getHighlightsResponse = getHighlightsResponses[keyof getHighlightsResponses];
+
+export type getNatureFormatDomainData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/nature-format-domain';
+};
+
+export type getNatureFormatDomainErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getNatureFormatDomainError = getNatureFormatDomainErrors[keyof getNatureFormatDomainErrors];
+
+export type getNatureFormatDomainResponses = {
+    /**
+     * OK
+     */
+    200: NatureFormatDomainListResponseModel;
+};
+
+export type getNatureFormatDomainResponse = getNatureFormatDomainResponses[keyof getNatureFormatDomainResponses];
 
 export type postOfferersData = {
     body: CreateOffererBodyModel;
