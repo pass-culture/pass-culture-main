@@ -149,6 +149,7 @@ def _recredit_user_if_no_missing_step(user: users_models.User) -> None:
     if recredit.recreditType == models.RecreditType.RECREDIT_18:
         user.add_beneficiary_role()
 
+    if can_receive_bonus_credit(user):
         fraud_check_api.create_disability_bonus_credit_fraud_checks(
             user, origin=f"{bonus_constants.AUTOMATIC_ORIGIN} through recredit cron"
         )
@@ -554,8 +555,7 @@ def can_receive_bonus_credit(user: users_models.User) -> bool:
     if not user.received_pass_18_v3:
         return False
 
-    has_received_bonus = models.RecreditType.BONUS_CREDIT in [recredit.recreditType for recredit in deposit.recredits]
-    return not has_received_bonus
+    return not user.received_bonus_credit
 
 
 def recredit_bonus_credit(user: users_models.User) -> models.Recredit | None:
