@@ -366,49 +366,64 @@ describe('<CollectiveOfferStockForm />', () => {
     expect(screen.getByText('Enregistrer et continuer')).toBeVisible()
   })
 
-  it('should send all data if the stock does not already exists', async () => {
-    const user = userEvent.setup()
-
-    const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
-    const testProps: CollectiveOfferStockFormProps = {
-      ...defaultProps,
-      allowedActions: [
-        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
-      ],
-      initialStock: {
-        // no id given => stock doesn't exists
-        startDatetime: format(tomorrow, FORMAT_ISO_DATE_ONLY),
-        numberOfTickets: 10,
-        numberOfTeachers: 1,
-        servicePrice: 100,
-        collectiveAdditionalFees: [],
-      },
-      departementCode: '75',
-    }
-    renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
-
-    const eventTime = '11:00'
-    const expectedEventTime = '09:00' // due to departementCode: '75';
-    const today = format(new Date(), FORMAT_ISO_DATE_ONLY)
-
-    await user.type(screen.getByLabelText(/Date de fin/), tomorrow)
-    await user.type(screen.getByLabelText(/Horaire/), eventTime)
-    await user.type(screen.getByLabelText(/Date limite/), today)
-
-    await user.click(screen.getByRole('radio', { name: 'Non' }))
-    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
-
-    expect(testProps.onAfterSubmit).toHaveBeenCalledExactlyOnceWith({
-      startDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
-      endDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
-      bookingLimitDatetime: `${today}T21:59:59Z`,
-      numberOfTickets: 10,
-      numberOfTeachers: 1,
-      servicePrice: 100,
-      price: 100,
-      collectiveAdditionalFees: [],
+  describe('when the stock does not already exists', () => {
+    afterEach(() => {
+      vi.useRealTimers()
     })
+
+    // Paris is UTC+1 in winter (CET) and UTC+2 in summer (CEST)
+    it.each`
+      season      | today           | tomorrow        | expectedEventTime | expectedBookingLimitTime
+      ${'winter'} | ${'2030-01-15'} | ${'2030-01-16'} | ${'10:00'}        | ${'22:59:59'}
+      ${'summer'} | ${'2030-07-15'} | ${'2030-07-16'} | ${'09:00'}        | ${'21:59:59'}
+    `(
+      'should send all data converted from Paris time to UTC in $season',
+      async ({
+        today,
+        tomorrow,
+        expectedEventTime,
+        expectedBookingLimitTime,
+      }) => {
+        vi.setSystemTime(`${today}T10:00:00Z`)
+        const user = userEvent.setup()
+
+        const testProps: CollectiveOfferStockFormProps = {
+          ...defaultProps,
+          allowedActions: [
+            CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+            CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+          ],
+          initialStock: {
+            // no id given => stock doesn't exists
+            startDatetime: tomorrow,
+            numberOfTickets: 10,
+            numberOfTeachers: 1,
+            servicePrice: 100,
+            collectiveAdditionalFees: [],
+          },
+          departementCode: '75',
+        }
+        renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
+
+        await user.type(screen.getByLabelText(/Date de fin/), tomorrow)
+        await user.type(screen.getByLabelText(/Horaire/), '11:00')
+        await user.type(screen.getByLabelText(/Date limite/), today)
+
+        await user.click(screen.getByRole('radio', { name: 'Non' }))
+        await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+        expect(testProps.onAfterSubmit).toHaveBeenCalledExactlyOnceWith({
+          startDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
+          endDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
+          bookingLimitDatetime: `${today}T${expectedBookingLimitTime}Z`,
+          numberOfTickets: 10,
+          numberOfTeachers: 1,
+          servicePrice: 100,
+          price: 100,
+          collectiveAdditionalFees: [],
+        })
+      }
+    )
   })
 
   it('should send only dirty data if the stock already exists', async () => {
