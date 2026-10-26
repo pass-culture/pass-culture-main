@@ -4633,7 +4633,7 @@ class CloseVenueTest:
             offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
-        tag = criteria_api.get_closure_request_tag()
+        tag = criteria_api.get_siret_shift_pending_tag()
 
         assert venue.state is offerers_models.VenueState.CLOSED
         assert venue.criteria == [tag]

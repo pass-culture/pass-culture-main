@@ -50,7 +50,7 @@ def unlink_criterion_from_venue(criterion: criteria_models.Criterion, venue: off
     ).delete()
 
 
-def get_closure_request_tag() -> criteria_models.Criterion:
+def get_siret_shift_pending_tag() -> criteria_models.Criterion:
     return get_or_create_criteria(
         name=constants.SIRET_SHIFT_PENDING_LABEL,
         description=constants.SIRET_SHIFT_PENDING_DESCRIPTION,
