@@ -2655,6 +2655,32 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert is_user_activated
 
+    def test_no_automatic_bonus_credit_attempts_if_bonus_already_granted(self):
+        last_year = date_utils.get_naive_utc_now() - relativedelta(years=1, days=1)
+        with time_machine.travel(last_year):
+            user = users_factories.BeneficiaryFactory.create(age=17)
+
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
+        )
+        subscription_factories.HonorStatementFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.received_pass_18_v3
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
 
 @pytest.mark.usefixtures("db_session")
 class HasCompletedProfileTest:
