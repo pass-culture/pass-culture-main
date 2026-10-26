@@ -155,7 +155,7 @@ class MoveSiretTest:
     def move_siret_on_closed_pricing_point(self):
         SIRET = "12345678900001"
         user = users_factories.ProFactory()
-        closure_request_tag = criteria_api.get_closure_request_tag()
+        closure_request_tag = criteria_api.get_siret_shift_pending_tag()
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(
             managingOfferer=offerer, siret=SIRET, state=offerers_models.VenueState.CLOSED
