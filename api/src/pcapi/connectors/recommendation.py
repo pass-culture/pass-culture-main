@@ -7,6 +7,7 @@ API, and this module returns the raw response.
 import json
 import logging
 import warnings
+from uuid import uuid4
 
 from urllib3 import exceptions as urllib_execptions
 
@@ -17,6 +18,12 @@ from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
+
+TOP_ARTISTS_CATEGORIES = ("LIVRES", "MUSIQUE", "CINEMA")
+
+
+class RecommendationApiValidationException(Exception):
+    pass
 
 
 class RecommendationApiException(Exception):
@@ -51,6 +58,11 @@ def get_playlist(user: users_models.User, params: dict | None = None, body: dict
     return backend.get_playlist(user, params, body)
 
 
+def get_top_artists_playlist(search_group_name: str) -> bytes:
+    backend = _get_backend()
+    return backend.get_top_artists_playlist(search_group_name)
+
+
 class BaseBackend:
     def get_similar_offers(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
         raise NotImplementedError()
@@ -59,6 +71,9 @@ class BaseBackend:
         raise NotImplementedError()
 
     def get_playlist(self, user: users_models.User, params: dict, body: dict) -> bytes:
+        raise NotImplementedError()
+
+    def get_top_artists_playlist(self, search_group_name: str) -> bytes:
         raise NotImplementedError()
 
 
@@ -95,6 +110,24 @@ class TestingBackend:
                 "call_id": "1dc4c5f2-303c-4d8a-94c3-77c0085c0c70",
             },
         }
+        return bytes(json.dumps(response), encoding="utf-8")
+
+    def get_top_artists_playlist(self, search_group_name: str) -> bytes:
+        name = search_group_name.upper()
+
+        if name not in TOP_ARTISTS_CATEGORIES:
+            raise RecommendationApiValidationException
+
+        artists = [str(uuid4()) for _ in range(10)]
+        response = {
+            "playlist_artists": artists,
+            "params": {
+                "search_group_name": search_group_name,
+                "score_name": "score",
+                "call_id": str(uuid4()),
+            },
+        }
+
         return bytes(json.dumps(response), encoding="utf-8")
 
 
@@ -148,3 +181,12 @@ class HttpBackend:
     def get_playlist(self, user: users_models.User, params: dict, body: dict) -> bytes:
         path = f"/playlist_recommendation/{user.id}"
         return self._request("post", path, params=params, body=body)
+
+    def get_top_artists_playlist(self, search_group_name: str) -> bytes:
+        name = search_group_name.upper()
+
+        if name not in TOP_ARTISTS_CATEGORIES:
+            raise RecommendationApiValidationException
+
+        path = f"/playlist_top_artists/{name}"
+        return self._request("get", path, params={})

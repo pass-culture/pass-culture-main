@@ -64,3 +64,14 @@ class PlaylistResponse(HttpBodyModel):
     playlist_recommended_offers: list[str]
     params: RecommendationApiParams
     from_cache: bool | None = None
+
+
+class TopArtistsPlaylistParams(HttpBodyModel):
+    search_group_name: str | None = None
+    score_name: str | None = None
+    call_id: str | None = None
+
+
+class TopArtistsPlaylistResponse(HttpBodyModel):
+    playlist_artists: list[str]
+    params: TopArtistsPlaylistParams
