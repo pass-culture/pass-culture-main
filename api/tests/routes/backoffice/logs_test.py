@@ -62,7 +62,7 @@ class GetListLogsTest(GetEndpointHelper):
             "search_type": "OFFER_CREATION",
             "search-0-search_field": "LOG_DATE",
             "search-0-operator": "LESS_THAN",
-            "search-0-date": "2026-06-15",
+            "search-0-datetime": "2026-06-15T01:01:06",
         }
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -71,7 +71,7 @@ class GetListLogsTest(GetEndpointHelper):
         search_data = self._get_search_data(response.text)
         assert search_data
         assert search_data["filters"]
-        assert search_data["end_date"] == 1781481600.0
+        assert search_data["end_date"] == 1781485266.0
         assert search_data["start_date"] == search_data["end_date"] - DEFAULT_INTERVAL
         assert search_data["original_start_date"] == search_data["start_date"]
         assert "last_insert_id" in search_data
@@ -81,7 +81,7 @@ class GetListLogsTest(GetEndpointHelper):
             "search_type": "OFFER_CREATION",
             "search-0-search_field": "LOG_DATE",
             "search-0-operator": "GREATER_THAN_OR_EQUAL_TO",
-            "search-0-date": "2026-06-15",
+            "search-0-datetime": "2026-06-15T01:01:06",
         }
         before = time.time()
 
@@ -95,7 +95,7 @@ class GetListLogsTest(GetEndpointHelper):
         assert search_data
         assert search_data["filters"]
         assert before < search_data["end_date"] < after
-        assert search_data["start_date"] == 1781481600.0
+        assert search_data["start_date"] == 1781485266.0
         assert search_data["original_start_date"] == search_data["start_date"]
         assert "last_insert_id" in search_data
 

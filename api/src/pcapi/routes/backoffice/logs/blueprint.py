@@ -34,9 +34,9 @@ MAXIMUM_LOG_TIME = 12 * 60 * 60  # 12h
 LOG_SEARCH_EXPIRATION = datetime.timedelta(hours=2)
 SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "LOG_DATE": {
-        "field": "date",
+        "field": "datetime",
         "log_field_name": "timestamp",
-        "special": lambda d: datetime.datetime.combine(d, datetime.time.min).timestamp(),
+        "special": lambda d: d.timestamp(),
     },
     "OFFER": {
         "field": "integer",

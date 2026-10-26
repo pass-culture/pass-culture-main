@@ -317,6 +317,12 @@ class PCDateTimeField(wtforms.DateTimeField):
     widget = partial(widget, template="components/forms/date_field.html")
     input_type = "datetime-local"
 
+    def __init__(self, label: str, *, seconds: bool = False, **kwargs: typing.Any):
+        format = kwargs.pop("format", ["%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M"])
+        if seconds:
+            self.step = 1
+        super().__init__(label, format=format, **kwargs)
+
     def gettext(self, string: str) -> str:
         match string:
             case "Not a valid date value.":

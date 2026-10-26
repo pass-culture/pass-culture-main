@@ -23,13 +23,13 @@ class LogSearchType(enum.StrEnum):
 operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
-    "LOG_DATE": {"field": "date", "operator": ["GREATER_THAN_OR_EQUAL_TO", "LESS_THAN"]},
+    "LOG_DATE": {"field": "datetime", "operator": ["GREATER_THAN_OR_EQUAL_TO", "LESS_THAN"]},
     "OFFER": {"field": "integer", "operator": ["EQUALS"]},
     "PRODUCT": {"field": "integer", "operator": ["EQUALS"]},
 }
 
 
-class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
+class LogsAdvancedSearchSubForm(forms_utils.PCForm):
     class Meta:
         csrf = False
 
@@ -37,7 +37,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         {
             "display_configuration": form_field_configuration,
             "all_available_fields": [
-                "date",
+                "datetime",
                 "integer",
             ],
             "sub_rule_type_field_name": "search_field",
@@ -72,10 +72,12 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         ],
     )
 
-    date = fields.PCDateField(
+    datetime = fields.PCDateTimeField(
+        "Date et heure",
+        seconds=True,
         validators=[
             wtforms.validators.Optional(""),
-        ]
+        ],
     )
 
 
@@ -93,7 +95,7 @@ class SearchForm(forms_utils.PCForm):
     )
 
     search = fields.PCFieldListField(
-        fields.PCFormField(CollectiveOfferAdvancedSearchSubForm),
+        fields.PCFormField(LogsAdvancedSearchSubForm),
         label="recherches",
         min_entries=1,
     )

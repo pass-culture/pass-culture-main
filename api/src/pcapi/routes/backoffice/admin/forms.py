@@ -47,7 +47,6 @@ class EditBOUserForm(utils.PCForm):
 class UserProfileRefreshCampaignForm(utils.PCForm):
     campaign_date = fields.PCDateTimeField(
         "Date de début de la campagne",
-        format="%Y-%m-%dT%H:%M",
         validators=[
             wtforms.validators.InputRequired("Information obligatoire"),
         ],
