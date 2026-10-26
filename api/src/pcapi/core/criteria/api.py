@@ -56,3 +56,11 @@ def get_siret_shift_pending_tag() -> criteria_models.Criterion:
         description=constants.SIRET_SHIFT_PENDING_DESCRIPTION,
         category_labels=[constants.SUPPORT_CATEGORY_LABEL],
     )
+
+
+def get_closure_request_tag() -> criteria_models.Criterion:
+    return get_or_create_criteria(
+        name=constants.CLOSURE_DETECTED_LABEL,
+        description=constants.CLOSURE_DETECTED_DESCRIPTION,
+        category_labels=[constants.SUPPORT_CATEGORY_LABEL],
+    )
