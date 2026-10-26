@@ -152,7 +152,7 @@ class Returns200Test:
                 "socialMedias": venue.contact.social_medias,
             },
             "comment": venue.comment,
-            "criteria": ["CLOSURE_DETECTED"],
+            "criteria": ["closure_detected"],
             "pricingPoint": {
                 "id": venue_currently_used_for_pricing.id,
                 "venueName": venue_currently_used_for_pricing.publicName,

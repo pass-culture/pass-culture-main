@@ -32,7 +32,7 @@ class CriteriaEnum(enum.Enum):
     CLOSURE_DETECTED = criteria_constants.CLOSURE_DETECTED_LABEL
 
 
-CRITERIA_MAPPINGS = {c.value: c.name for c in CriteriaEnum}
+CRITERIA_MAPPINGS = {c.value: c.value for c in CriteriaEnum}
 
 
 class PostVenueBodyModel(HttpBodyModel):
