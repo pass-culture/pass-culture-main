@@ -641,7 +641,7 @@ def get_pro_advices(
                     offerers_models.Venue.venueTypeCode,
                 ),
                 sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo).load_only(
-                    offerers_models.GooglePlacesInfo.bannerUrl,
+                    offerers_models.GooglePlacesInfo._bannerUrl,
                 ),
             )
         )

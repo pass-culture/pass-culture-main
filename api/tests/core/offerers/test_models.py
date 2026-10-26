@@ -95,13 +95,13 @@ class VenueBannerUrlTest:
         venue = factories.VenueFactory(
             bannerUrl=expected_banner_url,
         )
-        factories.GooglePlacesInfoFactory(bannerUrl=google_maps_banner_url, venue=venue)
+        factories.GooglePlacesInfoFactory(_bannerUrl=google_maps_banner_url, venue=venue)
         assert venue.bannerUrl == expected_banner_url
 
     def test_can_get_google_maps_banner_url_if_no_user_defined_banner(self):
         google_maps_banner_url = "http://example.com/google_maps_banner_url"
         venue = factories.VenueFactory(bannerUrl=None)
-        factories.GooglePlacesInfoFactory(bannerUrl=google_maps_banner_url, venue=venue)
+        factories.GooglePlacesInfoFactory(_bannerUrl=google_maps_banner_url, venue=venue)
 
         assert venue.bannerUrl == google_maps_banner_url
 

@@ -197,7 +197,7 @@ def synchronize_venues_banners_with_google_places(
             else:
                 photo = place_details.photos[0]
                 photo_prefix = ""
-            venue.googlePlacesInfo.bannerUrl = save_photo_to_gcp(venue.id, photo, photo_prefix)
+            venue.googlePlacesInfo._bannerUrl = save_photo_to_gcp(venue.id, photo, photo_prefix)
             venue.googlePlacesInfo.bannerMeta = photo.model_dump()
             banner_synchronized_venue_ids.add(venue.id)
             db.session.commit()
@@ -232,7 +232,7 @@ def delete_venues_banners(venues: list[offerers_models.Venue]) -> None:
         db.session.query(offerers_models.GooglePlacesInfo)
         .filter(
             offerers_models.GooglePlacesInfo.venueId.in_(venue_ids),
-            offerers_models.GooglePlacesInfo.bannerUrl.is_not(None),
+            offerers_models.GooglePlacesInfo._bannerUrl.is_not(None),
         )
         .order_by(offerers_models.GooglePlacesInfo.venueId)
     )
@@ -253,7 +253,7 @@ def delete_venues_banners(venues: list[offerers_models.Venue]) -> None:
             )
             continue
         nb_deleted_banners += 1
-        place_info.bannerUrl = None
+        place_info._bannerUrl = None
         place_info.bannerMeta = None
         venues_ids_with_deleted_banners.add(place_info.venueId)
     db.session.commit()

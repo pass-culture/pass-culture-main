@@ -586,7 +586,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
             )
             .options(
                 sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo).load_only(
-                    offerers_models.GooglePlacesInfo.bannerUrl
+                    offerers_models.GooglePlacesInfo._bannerUrl
                 )
             )
         )

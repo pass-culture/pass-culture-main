@@ -160,7 +160,7 @@ def get_active_venue_page_data(venue_id: int) -> models.Venue | None:
             .options(
                 sa_orm.joinedload(models.Venue.googlePlacesInfo).load_only(
                     models.GooglePlacesInfo.bannerMeta,
-                    models.GooglePlacesInfo.bannerUrl,
+                    models.GooglePlacesInfo._bannerUrl,
                 )
             )
             .options(
