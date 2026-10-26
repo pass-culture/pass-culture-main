@@ -697,7 +697,7 @@ class GetProAdvicesTest:
 
     def test_venue_thumb_url_falls_back_to_google_places(self, client):
         venue = offerers_factories.VenueFactory(_bannerUrl=None)
-        offerers_factories.GooglePlacesInfoFactory(venue=venue, bannerUrl="https://maps.google.com/photo.jpg")
+        offerers_factories.GooglePlacesInfoFactory(venue=venue, _bannerUrl="https://maps.google.com/photo.jpg")
         offer = offers_factories.OfferFactory(venue=venue)
         offers_factories.ProAdviceFactory(offer=offer)
 

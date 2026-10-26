@@ -942,11 +942,15 @@ class GooglePlacesInfo(PcObject, Model):
     # Some venues are duplicated in our database. They are all linked to the same item on
     # Google Places, so this column cannot be unique.
     placeId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, unique=False)
-    bannerUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, name="bannerUrl")
+    _bannerUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, name="bannerUrl")
     bannerMeta: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(MutableDict.as_mutable(JSONB), nullable=True)
     updateDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
     )
+
+    @property
+    def bannerUrl(self) -> str | None:
+        return self._bannerUrl
 
 
 class AccessibilityProvider(PcObject, Model):
