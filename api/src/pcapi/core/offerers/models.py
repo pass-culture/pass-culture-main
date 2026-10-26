@@ -65,6 +65,7 @@ if typing.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+GOOGLE_PLACES_BANNER_STORAGE_FOLDER = settings.THUMBS_FOLDER_NAME + "/google_places"
 
 PERMENANT_VENUE_TYPES = [
     VenueTypeCode.CREATIVE_ARTS_STORE,
@@ -553,7 +554,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     def bannerUrl(self) -> str | None:
         if self._bannerUrl:
             return self._bannerUrl
-        if self.googlePlacesInfo and self.googlePlacesInfo.bannerUrl:
+        if self.googlePlacesInfo and self.googlePlacesInfo.bannerId:
             return self.googlePlacesInfo.bannerUrl
         return self._get_type_banner_url()
 
@@ -947,7 +948,6 @@ class GooglePlacesInfo(PcObject, Model):
     # Some venues are duplicated in our database. They are all linked to the same item on
     # Google Places, so this column cannot be unique.
     placeId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, unique=False)
-    _bannerUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, name="bannerUrl")
     bannerId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     bannerMeta: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(MutableDict.as_mutable(JSONB), nullable=True)
     updateDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
@@ -956,7 +956,9 @@ class GooglePlacesInfo(PcObject, Model):
 
     @property
     def bannerUrl(self) -> str | None:
-        return self._bannerUrl
+        if self.bannerId:
+            return settings.OBJECT_STORAGE_URL + "/" + GOOGLE_PLACES_BANNER_STORAGE_FOLDER + "/" + self.bannerId
+        return None
 
 
 class AccessibilityProvider(PcObject, Model):

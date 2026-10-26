@@ -91,19 +91,19 @@ class VenueBannerUrlTest:
 
         assert venue.bannerUrl == expected_banner_url
         # with google maps banner
-        google_maps_banner_url = "http://example.com/google_maps_banner_url"
+        google_maps_banner_url = "google_maps_banner_url"
         venue = factories.VenueFactory(
             bannerUrl=expected_banner_url,
         )
-        factories.GooglePlacesInfoFactory(_bannerUrl=google_maps_banner_url, venue=venue)
+        factories.GooglePlacesInfoFactory(bannerId=google_maps_banner_url, venue=venue)
         assert venue.bannerUrl == expected_banner_url
 
     def test_can_get_google_maps_banner_url_if_no_user_defined_banner(self):
-        google_maps_banner_url = "http://example.com/google_maps_banner_url"
+        google_maps_banner_id = "google_maps_banner_id"
         venue = factories.VenueFactory(bannerUrl=None)
-        factories.GooglePlacesInfoFactory(_bannerUrl=google_maps_banner_url, venue=venue)
+        factories.GooglePlacesInfoFactory(bannerId=google_maps_banner_id, venue=venue)
 
-        assert venue.bannerUrl == google_maps_banner_url
+        assert google_maps_banner_id in venue.bannerUrl
 
 
 class VenueIsEligibleForSearchTest:

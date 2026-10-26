@@ -75,7 +75,7 @@ class SynchronizeVenuesBannersWithGooglePlacesTest:
     )
     @patch(
         "pcapi.core.offerers.synchronize_venues_banners_with_google_places.save_photo_to_gcp",
-        return_value=["banner_id", "banner_url"],
+        return_value="banner_id",
     )
     def test_update_banner_url_and_id(
         self, _mock_get_place_photos_and_owner, _mock_get_place_id, _mock_save_photo_to_gcp
@@ -85,4 +85,3 @@ class SynchronizeVenuesBannersWithGooglePlacesTest:
         synchronize_venues_banners_with_google_places.synchronize_venues_banners_with_google_places([venue])
 
         assert venue.googlePlacesInfo.bannerId == "banner_id"
-        assert venue.googlePlacesInfo.bannerUrl == "banner_url"
