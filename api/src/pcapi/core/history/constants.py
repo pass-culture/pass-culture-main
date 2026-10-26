@@ -63,6 +63,7 @@ class ActionType(enum.Enum):
     VENUE_REIMBURSEMENT_SUSPENDED = "VENUE_REIMBURSEMENT_SUSPENDED"
     VENUE_CLOSED = "VENUE_CLOSED"
     VENUE_REOPENED = "VENUE_REOPENED"
+    VENUE_ADD_CLOSURE_TAG = "VENUE_ADD_CLOSURE_TAG"
 
     # Permissions role changes:
     ROLE_PERMISSIONS_CHANGED = "ROLE_PERMISSIONS_CHANGED"
@@ -137,6 +138,7 @@ ACTION_TYPE_TO_STRING = {
     ActionType.SYNC_VENUE_TO_PROVIDER: "Synchronisation du partenaire culturel avec un partenaire technique",
     ActionType.VENUE_CLOSED: "Fermeture du partenaire culturel",
     ActionType.VENUE_REOPENED: "Réouverture du partenaire culturel",
+    ActionType.VENUE_ADD_CLOSURE_TAG: "Le partenaire culturel devrait être fermé (SIRET)",
     ActionType.VENUE_REGULARIZATION: "Régularisation des partenaires culturels",
     ActionType.VENUE_SOFT_DELETED: "Suppression réversible",
     ActionType.VENUE_REIMBURSEMENT_SUSPENDED: "Blocage des remboursements",
