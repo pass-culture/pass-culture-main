@@ -18,7 +18,7 @@ dependencies = [
   "boto3 ==1.43.6",
   "brevo-python==5.0.2",
   "celery[redis] ==5.6.3",
-  "certifi ==2026.10.19",
+  "certifi ==2026.10.23",
   "click==8.5.0",
   "clickhouse-connect[sqlalchemy]==1.10.1",
   "cryptography==50.0.2",
@@ -120,7 +120,7 @@ dev = [
 ]
 
 [build-system]
-requires = ["uv_build>=0.12.3,<0.14"]
+requires = ["uv_build>=0.13.5,<0.14"]
 build-backend = "uv_build"
 
 [tool.mypy]
@@ -276,7 +276,7 @@ profile="jinja"
 
 [tool.uv]
 exclude-newer = "7 days"
-exclude-newer-package = { certifi = false, brotli = false, brotlicffi = false }
+exclude-newer-package = { certifi = "2 days", brotli = false, brotlicffi = false, uv_build = "4 days" }
 override-dependencies = [
     "pyopenssl>=26.0.0",
 ]
