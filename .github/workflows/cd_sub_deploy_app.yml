@@ -98,7 +98,7 @@ jobs:
       - name: Install passdirector
         uses: pass-culture/common-workflows/actions/setup-passdirector@b470d76b19d7f3ebcda367f5e17484228021d388 # v1.0.0
         with:
-          version: v0.8.4
+          version: v0.9.0
           github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
           github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
 
@@ -121,8 +121,14 @@ jobs:
         env:
           PCAPI_ENVIRONMENT_SHORT_NAME: ${{ inputs.environment_short_name }}
           PCAPI_VERSION: ${{ inputs.app_version }}
+          # Variables are defined in GitHub environment
+          DATABASE_SSL: ${{ vars.DATABASE_SSL }} # --database-ssl or --no-database-ssl
+          DATABASE_SSL_MODE: ${{ vars.DATABASE_SSL_MODE }} # verify-ca, verify-full or "" (empty string)
         run: |
-          passdirector pcapi deploy -e "${PCAPI_ENVIRONMENT_SHORT_NAME}" --app-version "${PCAPI_VERSION}"
+          passdirector pcapi deploy --environment "${PCAPI_ENVIRONMENT_SHORT_NAME}" \
+            --app-version "${PCAPI_VERSION}" \
+            --database-ssl-mode "${DATABASE_SSL_MODE}" \
+            "${DATABASE_SSL}"
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
