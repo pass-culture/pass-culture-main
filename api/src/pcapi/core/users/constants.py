@@ -22,6 +22,7 @@ MAX_SUSPICIOUS_LOGIN_EMAILS = 5
 MAX_EMAIL_UPDATE_ATTEMPTS_FOR_PRO = 5
 EMAIL_PRO_UPDATE_ATTEMPTS_TTL = 24 * 60 * 60  # 1 day in seconds
 ANONYMIZED_USER_EMAIL = "@anonymized.passculture"
+ANONYMIZED_BACKOFFICE_USER_EMAIL_PREFIX = "ex_backoffice_user"
 DELETED_USER_EMAIL = "@email.supprime"
 
 ELIGIBILITY_FREE_RANGE = [15, 16]
@@ -121,3 +122,22 @@ PUBLIC_SUSPENSION_REASON_CHOICES = {
 SUSPENSION_REASON_CHOICES = PRO_SUSPENSION_REASON_CHOICES | PUBLIC_SUSPENSION_REASON_CHOICES
 
 assert set(SUSPENSION_REASON_CHOICES) == set(SuspensionReason)
+
+
+USER_PROFILE_EDIT_LABELS = {
+    "activity": "Activité",
+    "address": "Adresse",
+    "city": "Ville",
+    "deposit.expirationDate": "Date d'expiration du crédit",
+    "email": "Email",
+    "firstName": "Prénom",
+    "idPieceNumber": "N° de pièce d'identité",
+    "isActive": "Actif",
+    "lastName": "Nom",
+    "notificationSubscriptions.marketing_email": "Abonné aux emails marketing",
+    "notificationSubscriptions.marketing_push": "Abonné aux notifications push",
+    "phoneNumber": "Téléphone",
+    "phoneValidationStatus": "Statut de validation du téléphone",
+    "postalCode": "Code postal",
+    "validatedBirthDate": "Date de naissance",
+}
