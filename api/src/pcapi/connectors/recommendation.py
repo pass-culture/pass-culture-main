@@ -63,6 +63,12 @@ def get_top_artists_playlist(search_group_name: str) -> bytes:
     return backend.get_top_artists_playlist(search_group_name)
 
 
+def get_offer_page_playlists(offer_id: int, user: users_models.User | None = None, params: dict | None = None) -> bytes:
+    backend = _get_backend()
+    params = params or {}
+    return backend.get_offer_page_playlists(offer_id, user, params)
+
+
 class BaseBackend:
     def get_similar_offers(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
         raise NotImplementedError()
@@ -76,6 +82,9 @@ class BaseBackend:
     def get_top_artists_playlist(self, search_group_name: str) -> bytes:
         raise NotImplementedError()
 
+    def get_offer_page_playlists(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
+        raise NotImplementedError()
+
 
 class TestingBackend:
     def get_similar_offers(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
@@ -87,6 +96,41 @@ class TestingBackend:
                 "model_origin": "default",
                 "call_id": "956bd070-cbb1-42d3-bea4-89855bf3b11c",
             },
+        }
+        return bytes(json.dumps(response), encoding="utf-8")
+
+    def get_offer_page_playlists(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
+        offers = [i + 10 * offer_id + 100 * (user.id if user else 0) for i in range(10)]
+        other_offers = [i + 10 * offer_id + 100 * (user.id if user else 0) for i in range(10)]
+        response = {
+            "offer_id": str(offer_id),
+            "playlists": [
+                {
+                    "title": "Les fans aiment aussi",
+                    "analytics_playlist_type": "sameCategorySimilarOffersTwoTower",
+                    "results": [str(offer) for offer in offers],
+                    "params": {
+                        "reco_origin": "similar_offer",
+                        "model_origin": "default",
+                        "call_id": str(uuid4()),
+                        "unique_call_id": str(uuid4()),
+                        "ab_test": "main",
+                    },
+                },
+                {
+                    "title": "Ça peut aussi te plaire",
+                    "analytics_playlist_type": "otherCategoriesSimilarOffersTwoTower",
+                    "results": [str(offer) for offer in other_offers],
+                    "params": {
+                        "reco_origin": "similar_offer",
+                        "model_origin": "default",
+                        "call_id": str(uuid4()),
+                        "unique_call_id": str(uuid4()),
+                        "ab_test": "main",
+                    },
+                },
+            ],
+            "from_cache": False,
         }
         return bytes(json.dumps(response), encoding="utf-8")
 
@@ -190,3 +234,8 @@ class HttpBackend:
 
         path = f"/playlist_top_artists/{name}"
         return self._request("get", path, params={})
+
+    def get_offer_page_playlists(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
+        path = f"/offer_page_playlists/{offer_id}"
+        params["user_id"] = str(user.id) if user else None
+        return self._request("get", path, params=params)

@@ -31,6 +31,30 @@ def similar_offers(
     return serializers.SimilarOffersResponse.parse_raw(raw_response, content_type="application/json")
 
 
+@blueprint.native_route("/recommendation/offer_page_playlists/<int:offer_id>", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=serializers.OfferPagePlaylistResponse)
+def offer_page_playlists(
+    offer_id: int,
+    query: serializers.OfferPagePlaylistQuery,
+) -> serializers.OfferPagePlaylistResponse:
+    user = current_user if not current_user.is_anonymous else None
+    try:
+        raw_response = recommendation_api.get_offer_page_playlists(
+            offer_id,
+            user,
+            params=query.model_dump(mode="json"),
+        )
+    except recommendation_api.RecommendationApiTimeoutException:
+        raise ApiErrors({"code": "RECOMMENDATION_API_TIMEOUT"}, status_code=504)
+    except recommendation_api.RecommendationApiException:
+        raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=502)
+    if not raw_response:
+        return serializers.OfferPagePlaylistResponse(offer_id=str(offer_id), playlists=[], from_cache=False)
+
+    print(raw_response)
+    return serializers.OfferPagePlaylistResponse.parse_raw(raw_response, content_type="application/json")
+
+
 @blueprint.native_route("/recommendation/playlist", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.PlaylistResponse)
 @authenticated_and_active_user_required
@@ -53,6 +77,7 @@ def playlist(
         return serializers.PlaylistResponse(
             playlist_recommended_offers=[], params=serializers.RecommendationApiParams()
         )
+
     return serializers.PlaylistResponse.parse_raw(raw_response, content_type="application/json")
 
 
