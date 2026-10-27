@@ -3,8 +3,8 @@ import logging
 import factory
 
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
-from pcapi.core.history import models as history_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import find_user_by_email
@@ -30,7 +30,7 @@ def create_user_account_update_requests() -> None:
         lastInstructor=instructor,
     )
     history_factories.ActionHistoryFactory.create(
-        actionType=history_models.ActionType.INFO_MODIFIED,
+        actionType=history_constants.ActionType.INFO_MODIFIED,
         actionDate=date_utils.get_naive_utc_now(),
         user=accepted_request.user,
         authorUser=instructor,

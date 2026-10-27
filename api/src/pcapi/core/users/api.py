@@ -15,6 +15,7 @@ import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.history.api as history_api
+import pcapi.core.history.constants as history_constants
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
@@ -400,7 +401,7 @@ def suspend_account(
         db.session.add(user)
 
         history_api.add_action(
-            history_models.ActionType.USER_SUSPENDED,
+            history_constants.ActionType.USER_SUSPENDED,
             author=actor,
             user=user,
             reason=reason.value,
@@ -542,7 +543,7 @@ def unsuspend_account(
     db.session.add(user)
     db.session.query(models.GdprUserAnonymization).filter(models.GdprUserAnonymization.userId == user.id).delete()
 
-    history_api.add_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
+    history_api.add_action(history_constants.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
 
     db.session.flush()
     if not transaction_manager.is_managed_transaction():
@@ -738,7 +739,7 @@ def update_user_info(
 
 def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
     history_api.add_action(
-        action_type=history_models.ActionType.COMMENT,
+        action_type=history_constants.ActionType.COMMENT,
         author=author_user,
         user=user,
         comment=comment,
@@ -876,7 +877,7 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
     db.session.add(new_pro_user)
     db.session.flush()
 
-    history_api.add_action(history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user)
+    history_api.add_action(history_constants.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user)
 
     return new_pro_user
 
@@ -1148,7 +1149,7 @@ def validate_pro_user_email(user: models.User, author_user: models.User | None =
     user.isEmailValidated = True
 
     if author_user:
-        history_api.add_action(history_models.ActionType.USER_EMAIL_VALIDATED, author=author_user, user=user)
+        history_api.add_action(history_constants.ActionType.USER_EMAIL_VALIDATED, author=author_user, user=user)
 
     db.session.add(user)
     if transaction_manager.is_managed_transaction():
@@ -1346,7 +1347,7 @@ def _get_users_with_suspended_account() -> sa_orm.Query:
         .distinct(history_models.ActionHistory.userId)
         .join(models.User.action_history)
         .filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED,
+            history_models.ActionHistory.actionType == history_constants.ActionType.USER_SUSPENDED,
             models.User.isActive.is_(False),
         )
         .order_by(history_models.ActionHistory.userId, history_models.ActionHistory.actionDate.desc())
@@ -1456,7 +1457,7 @@ def _get_latest_profile_modification(user: models.User) -> history_models.Action
 def _has_modified_user_profile(action: history_models.ActionHistory) -> bool:
     profile_fields = ["activity", "address", "city", "postalCode", "schoolType"]
     return bool(
-        action.actionType == history_models.ActionType.INFO_MODIFIED
+        action.actionType == history_constants.ActionType.INFO_MODIFIED
         and action.extraData
         and "modified_info" in action.extraData
         and any(action.extraData["modified_info"].get(field) is not None for field in profile_fields)
@@ -1507,7 +1508,7 @@ def extend_deposit_validity(user: models.User, new_expiration_date: datetime.dat
     ).replace(tzinfo=None)
 
     history_api.add_action(
-        history_models.ActionType.INFO_MODIFIED,
+        history_constants.ActionType.INFO_MODIFIED,
         author=author,
         user=user,
         modified_info={

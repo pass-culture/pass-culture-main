@@ -6,6 +6,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.providers.tasks as providers_tasks
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers.models import VenueProvider
@@ -33,7 +34,7 @@ class Returns201Test:
         assert venue_provider.providerId == provider.id
         assert "id" in response.json
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.SYNC_VENUE_TO_PROVIDER
+        assert action.actionType == history_constants.ActionType.SYNC_VENUE_TO_PROVIDER
         assert action.authorUser == user
         assert action.extraData["provider_name"] == venue_provider.provider.name
 

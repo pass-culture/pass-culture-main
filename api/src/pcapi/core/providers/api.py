@@ -12,7 +12,7 @@ import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.educational import tasks as educational_tasks
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import tasks as offers_tasks
 from pcapi.core.users import models as users_models
@@ -58,7 +58,7 @@ def create_venue_provider(
         new_venue_provider = connect_venue_to_provider(venue, provider)
 
     history_api.add_action(
-        history_models.ActionType.SYNC_VENUE_TO_PROVIDER,
+        history_constants.ActionType.SYNC_VENUE_TO_PROVIDER,
         author=current_user,
         venue=venue,
         provider_name=provider.name,
@@ -103,7 +103,7 @@ def delete_venue_provider(
     venue_id = venue_provider.venueId
     provider_id = venue_provider.provider.id
     history_api.add_action(
-        history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
+        history_constants.ActionType.LINK_VENUE_PROVIDER_DELETED,
         author=author,
         venue=venue_provider.venue,
         provider_id=venue_provider.providerId,
@@ -124,7 +124,7 @@ def activate_or_deactivate_venue_provider(
 ) -> None:
     if venue_provider.isActive != set_active:
         history_api.add_action(
-            history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED,
+            history_constants.ActionType.LINK_VENUE_PROVIDER_UPDATED,
             author=author,
             venue=venue_provider.venue,
             provider_id=venue_provider.providerId,

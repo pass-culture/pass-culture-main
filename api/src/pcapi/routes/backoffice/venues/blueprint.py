@@ -29,6 +29,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import siret_api
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -665,12 +666,12 @@ def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
     history_filter = history_models.ActionHistory.venueId == venue_id
     if not access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         history_filter = sa.and_(
-            history_filter, history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED
+            history_filter, history_models.ActionHistory.actionType != history_constants.ActionType.FRAUD_INFO_MODIFIED
         )
     if not access_control.has_current_user_permission(perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION):
         history_filter = sa.and_(
             history_filter,
-            history_models.ActionHistory.actionType != history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED,
+            history_models.ActionHistory.actionType != history_constants.ActionType.VENUE_REIMBURSEMENT_SUSPENDED,
         )
 
     venue = (
@@ -1602,7 +1603,7 @@ def _suspend_venue_reimbursement(venue_id: int, suspend: bool) -> response_utils
 
     if venue.isReimbursementSuspended != suspend:
         history_api.add_action(
-            history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED,
+            history_constants.ActionType.VENUE_REIMBURSEMENT_SUSPENDED,
             author=current_user,
             venue=venue,
             offerer=venue.managingOfferer,

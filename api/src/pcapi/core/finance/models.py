@@ -1318,7 +1318,7 @@ class FinanceIncident(PcObject, Model):
 
     @property
     def validation_date(self) -> datetime.datetime | None:
-        from pcapi.core.history import models as history_models
+        from pcapi.core.history import constants as history_constants
 
         if self.status not in [IncidentStatus.VALIDATED, IncidentStatus.INVOICED]:
             return None
@@ -1326,7 +1326,7 @@ class FinanceIncident(PcObject, Model):
         if validated_actions := [
             action
             for action in self.action_history
-            if action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+            if action.actionType == history_constants.ActionType.FINANCE_INCIDENT_VALIDATED
         ]:
             return validated_actions[0].actionDate
 

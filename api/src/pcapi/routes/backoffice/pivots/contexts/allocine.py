@@ -6,7 +6,7 @@ from flask_login import current_user
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
@@ -104,7 +104,7 @@ class AllocineContext(PivotContext):
 
         if pivot.venue:
             history_api.add_action(
-                history_models.ActionType.PIVOT_DELETED,
+                history_constants.ActionType.PIVOT_DELETED,
                 author=current_user,
                 venue=pivot.venue,
                 comment=f"Pivot {cls.pivot_name()}",

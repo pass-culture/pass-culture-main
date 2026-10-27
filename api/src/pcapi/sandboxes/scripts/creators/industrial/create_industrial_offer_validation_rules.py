@@ -1,5 +1,5 @@
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
-from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -99,7 +99,7 @@ def create_rule_history_data_from_rule(rule: offers_models.OfferValidationRule) 
     history_factories.ActionHistoryFactory.create(
         ruleId=rule.id,
         authorUser=None,
-        actionType=history_models.ActionType.RULE_CREATED,
+        actionType=history_constants.ActionType.RULE_CREATED,
         comment=None,
         extraData={
             "sub_rules_info": {

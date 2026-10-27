@@ -5,6 +5,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
@@ -101,17 +102,17 @@ class BlacklistDomainNameTest(PostEndpointHelper):
         # ensure the suspension action has been logged
         action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.USER_SUSPENDED)
+            .filter_by(actionType=history_constants.ActionType.USER_SUSPENDED)
             .one()
         )
-        assert action.actionType == history_models.ActionType.USER_SUSPENDED
+        assert action.actionType == history_constants.ActionType.USER_SUSPENDED
 
         fraud_action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.BLACKLIST_DOMAIN_NAME)
+            .filter_by(actionType=history_constants.ActionType.BLACKLIST_DOMAIN_NAME)
             .one()
         )
-        assert fraud_action.actionType == history_models.ActionType.BLACKLIST_DOMAIN_NAME
+        assert fraud_action.actionType == history_constants.ActionType.BLACKLIST_DOMAIN_NAME
         assert fraud_action.extraData["domain"] == domain
 
         # ensure only those two actions have been logged
@@ -149,7 +150,7 @@ class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
         assert db.session.query(fraud_models.BlacklistedDomainName).filter_by(domain=other_domain).first() is not None
 
         # action has been logged
-        action_type = history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME
+        action_type = history_constants.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME
         assert db.session.query(history_models.ActionHistory).filter_by(actionType=action_type).one() is not None
 
     def test_unknown_blacklisted_domain(self, authenticated_client):

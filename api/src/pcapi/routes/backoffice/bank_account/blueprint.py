@@ -16,6 +16,7 @@ from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -271,7 +272,7 @@ def update_bank_account(bank_account_id: int) -> response_utils.BackofficeRespon
 
     if bank_account.label != form.label.data:
         history_api.add_action(
-            history_models.ActionType.INFO_MODIFIED,
+            history_constants.ActionType.INFO_MODIFIED,
             author=current_user,
             bank_account=bank_account,
             modified_info={"label": {"old_info": bank_account.label, "new_info": form.label.data}},

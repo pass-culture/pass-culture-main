@@ -29,6 +29,7 @@ from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.users.personal_data_updated import send_beneficiary_personal_data_updated
 from pcapi.core.offerers import models as offerers_models
@@ -352,7 +353,7 @@ def _load_birth_date_modification_actions(query: sa_orm.Query) -> sa_orm.Query:
     return query.options(
         sa_orm.selectinload(
             users_models.User.action_history.and_(
-                history_models.ActionHistory.actionType == history_models.ActionType.INFO_MODIFIED
+                history_models.ActionHistory.actionType == history_constants.ActionType.INFO_MODIFIED
             )
         )
     )
@@ -387,7 +388,7 @@ def tag_public_account(user_id: int) -> response_utils.BackofficeResponse:
 
     if added_tags or removed_tags:
         history_api.add_action(
-            history_models.ActionType.INFO_MODIFIED,
+            history_constants.ActionType.INFO_MODIFIED,
             author=current_user,
             user=user,
             modified_info={"tags": {"old_info": sorted(removed_tags) or None, "new_info": sorted(added_tags) or None}},
@@ -2349,7 +2350,7 @@ def get_public_account_history(
     # All data should have been joinloaded with user
     history: list[history_models.ActionHistory | user_actions.AccountAction] = list(user.action_history)
 
-    if history_models.ActionType.USER_CREATED not in (action.actionType for action in user.action_history):
+    if history_constants.ActionType.USER_CREATED not in (action.actionType for action in user.action_history):
         history.append(user_actions.AccountCreatedAction(user))
 
     for change in user.email_history:
@@ -2492,7 +2493,7 @@ def disconnect_public_account(user_id: int) -> response_utils.BackofficeResponse
 
     if count:
         history_api.add_action(
-            action_type=history_models.ActionType.USER_DISCONNECTED,
+            action_type=history_constants.ActionType.USER_DISCONNECTED,
             author=current_user,
             user=user,
             comment=form.comment.data,
@@ -2540,7 +2541,7 @@ def invalidate_public_account_password(user_id: int) -> response_utils.Backoffic
 
     users_api.update_user_password(user, random_password())
 
-    history_api.add_action(history_models.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user)
+    history_api.add_action(history_constants.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user)
     flash("Le mot de passe du compte a bien été invalidé", "success")
     return redirect(_get_public_account_link(user_id, active_tab="history"), code=303)
 
@@ -2753,7 +2754,7 @@ def batch_invalidate_public_account_password() -> response_utils.BackofficeRespo
 
     for user in users:
         users_api.update_user_password(user, random_password())
-        history_api.add_action(history_models.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user)
+        history_api.add_action(history_constants.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user)
     flash("Les mots de passe ont été invalidés", "success")
 
     return _render_public_account_rows(form.object_ids_list)

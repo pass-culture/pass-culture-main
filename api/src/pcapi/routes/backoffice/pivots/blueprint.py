@@ -7,7 +7,7 @@ from flask_login import current_user
 from markupsafe import Markup
 
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
@@ -97,7 +97,7 @@ def create_pivot(name: str) -> response_utils.BackofficeResponse:
         can_create_pivot = pivot_context.create_pivot(form)
         if can_create_pivot:
             history_api.add_action(
-                history_models.ActionType.PIVOT_CREATED,
+                history_constants.ActionType.PIVOT_CREATED,
                 author=current_user,
                 venue=venue,
                 cinema_id=pivot_context.get_cinema_id(form),

@@ -5,6 +5,7 @@ import pytest
 import time_machine
 
 from pcapi.connectors.entreprise.models import SirenInfo
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import tasks as offerers_tasks
@@ -74,7 +75,7 @@ class CheckOffererSirenTaskTest:
         )
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId is None
         assert action.offererId == offerer.id

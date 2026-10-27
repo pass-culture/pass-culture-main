@@ -28,6 +28,7 @@ from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -545,7 +546,7 @@ class AccountTest:
         user = users_factories.PhoneValidatedUserFactory(dateCreated=before_profile_expiry_date)
         history_factories.ActionHistoryFactory(
             user=user,
-            actionType=history_models.ActionType.INFO_MODIFIED,
+            actionType=history_constants.ActionType.INFO_MODIFIED,
             extraData={
                 "modified_info": {
                     "city": {"new_info": "Paris", "old_info": None},
@@ -1351,7 +1352,7 @@ class UserProfileUpdateTest:
         assert ios_batch_attributes.get("ut.permanent_theme_preference") is None
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.authorUser == user
         assert action.user == user
         assert action.extraData == {

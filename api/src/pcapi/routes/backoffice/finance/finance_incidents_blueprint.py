@@ -24,6 +24,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
 from pcapi.core.offerers import models as offerers_models
@@ -156,7 +157,7 @@ def _get_incidents(
             history_models.ActionHistory,
             sa.and_(
                 history_models.ActionHistory.financeIncidentId == finance_models.FinanceIncident.id,
-                history_models.ActionHistory.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED,
+                history_models.ActionHistory.actionType == history_constants.ActionType.FINANCE_INCIDENT_CREATED,
             ),
         )
 
@@ -1054,7 +1055,7 @@ def comment_incident(finance_incident_id: int) -> response_utils.BackofficeRespo
         mark_transaction_as_invalid()
     else:
         history_api.add_action(
-            history_models.ActionType.COMMENT,
+            history_constants.ActionType.COMMENT,
             author=current_user,
             finance_incident=incident,
             comment=form.comment.data,
@@ -1465,7 +1466,7 @@ def force_debit_note(finance_incident_id: int) -> response_utils.BackofficeRespo
     db.session.add(finance_incident)
 
     history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE,
+        history_constants.ActionType.FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE,
         author=current_user,
         finance_incident=finance_incident,
         modified_info={
@@ -1517,7 +1518,7 @@ def cancel_debit_note(finance_incident_id: int) -> response_utils.BackofficeResp
     db.session.add(finance_incident)
 
     history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE,
+        history_constants.ActionType.FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE,
         author=current_user,
         finance_incident=finance_incident,
         modified_info={

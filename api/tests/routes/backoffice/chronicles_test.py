@@ -5,6 +5,7 @@ from flask import url_for
 
 import pcapi.core.chronicles.models as chronicles_models
 from pcapi.core.chronicles import factories as chronicles_factories
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
@@ -437,7 +438,7 @@ class PublishChronicleTest(PostEndpointHelper):
         assert response.status_code == 200
         assert chronicle.isActive
         action_log = db.session.query(history_models.ActionHistory).one()
-        assert action_log.actionType == history_models.ActionType.CHRONICLE_PUBLISHED
+        assert action_log.actionType == history_constants.ActionType.CHRONICLE_PUBLISHED
         assert action_log.chronicle is chronicle
         assert action_log.authorUser is legit_user
 
@@ -463,7 +464,7 @@ class PublishChronicleTest(PostEndpointHelper):
         assert cells[5] == "Oui"
 
         action_log = db.session.query(history_models.ActionHistory).one()
-        assert action_log.actionType == history_models.ActionType.CHRONICLE_PUBLISHED
+        assert action_log.actionType == history_constants.ActionType.CHRONICLE_PUBLISHED
         assert action_log.chronicle is chronicle
         assert action_log.authorUser is legit_user
 
@@ -507,7 +508,7 @@ class UnpublishChronicleTest(PostEndpointHelper):
         assert response.status_code == 200
         assert not chronicle.isActive
         action_log = db.session.query(history_models.ActionHistory).one()
-        assert action_log.actionType == history_models.ActionType.CHRONICLE_UNPUBLISHED
+        assert action_log.actionType == history_constants.ActionType.CHRONICLE_UNPUBLISHED
         assert action_log.chronicle is chronicle
         assert action_log.authorUser is legit_user
 
@@ -533,7 +534,7 @@ class UnpublishChronicleTest(PostEndpointHelper):
         assert cells[5] == "Non"
 
         action_log = db.session.query(history_models.ActionHistory).one()
-        assert action_log.actionType == history_models.ActionType.CHRONICLE_UNPUBLISHED
+        assert action_log.actionType == history_constants.ActionType.CHRONICLE_UNPUBLISHED
         assert action_log.chronicle is chronicle
         assert action_log.authorUser is legit_user
 
@@ -845,7 +846,7 @@ class CommentChronicleTest(PostEndpointHelper):
         assert comment in content_as_text
         assert html_parser.extract_alerts(response.data) == ["Le commentaire a été enregistré"]
         action_log = db.session.query(history_models.ActionHistory).one()
-        assert action_log.actionType == history_models.ActionType.COMMENT
+        assert action_log.actionType == history_constants.ActionType.COMMENT
         assert action_log.chronicle is chronicle
         assert action_log.comment == comment
 

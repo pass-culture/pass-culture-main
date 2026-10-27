@@ -4,6 +4,7 @@ import decimal
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import models as subscription_models
@@ -30,7 +31,7 @@ class AccountAction(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def actionType(self) -> history_models.ActionType | str:
+    def actionType(self) -> history_constants.ActionType | str:
         pass
 
     @property
@@ -56,7 +57,7 @@ class EmailChangeAction(AccountAction):
         self._email_change = user_email_history
 
     @property
-    def actionType(self) -> history_models.ActionType | str:
+    def actionType(self) -> history_constants.ActionType | str:
         match self._email_change.eventType:
             case users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST:
                 return "Demande de changement d'email"
@@ -101,7 +102,7 @@ class FraudCheckAction(AccountAction):
         self._bo_user = bo_user
 
     @property
-    def actionType(self) -> history_models.ActionType | str:
+    def actionType(self) -> history_constants.ActionType | str:
         return "Étape de vérification"
 
     @property
@@ -136,7 +137,7 @@ class ReviewAction(AccountAction):
         self._review = review
 
     @property
-    def actionType(self) -> history_models.ActionType | str:
+    def actionType(self) -> history_constants.ActionType | str:
         return "Revue manuelle"
 
     @property
@@ -158,7 +159,7 @@ class ImportStatusAction(AccountAction):
         self._status = status
 
     @property
-    def actionType(self) -> history_models.ActionType | str:
+    def actionType(self) -> history_constants.ActionType | str:
         return f"Import {self._import.source}"
 
     @property
@@ -179,7 +180,7 @@ class DepositAction(AccountAction):
         self._deposit = deposit
 
     @property
-    def actionType(self) -> history_models.ActionType | str:
+    def actionType(self) -> history_constants.ActionType | str:
         return "Attribution d'un crédit"
 
     @property
@@ -202,7 +203,7 @@ class RecreditAction(AccountAction):
         self._recredit = recredit
 
     @property
-    def actionType(self) -> history_models.ActionType | str:
+    def actionType(self) -> history_constants.ActionType | str:
         return "Recrédit du compte"
 
     @property
@@ -224,8 +225,8 @@ class AccountCreatedAction(AccountAction):
         self._user = user
 
     @property
-    def actionType(self) -> history_models.ActionType:
-        return history_models.ActionType.USER_CREATED
+    def actionType(self) -> history_constants.ActionType:
+        return history_constants.ActionType.USER_CREATED
 
     @property
     def actionDate(self) -> datetime.datetime | None:
@@ -240,7 +241,7 @@ def get_default_user_history(user: users_models.User) -> list[AccountAction | hi
     # All data should have been joinloaded with user
     history: list[history_models.ActionHistory | AccountAction] = list(user.action_history)
 
-    if history_models.ActionType.USER_CREATED not in (action.actionType for action in user.action_history):
+    if history_constants.ActionType.USER_CREATED not in (action.actionType for action in user.action_history):
         history.append(AccountCreatedAction(user))
 
     for change in user.email_history:

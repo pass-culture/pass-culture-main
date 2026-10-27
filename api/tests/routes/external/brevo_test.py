@@ -8,6 +8,7 @@ from pcapi import settings
 from pcapi.connectors.recommendation import RecommendationApiException
 from pcapi.connectors.recommendation import RecommendationApiTimeoutException
 from pcapi.core.categories import subcategories
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
@@ -43,7 +44,7 @@ class SubscribeOrUnsubscribeTestHelper:
         action = (
             db.session.query(history_models.ActionHistory)
             .filter(
-                history_models.ActionHistory.actionType == history_models.ActionType.INFO_MODIFIED,
+                history_models.ActionHistory.actionType == history_constants.ActionType.INFO_MODIFIED,
                 history_models.ActionHistory.authorUserId == existing_user.id,
                 history_models.ActionHistory.userId == existing_user.id,
             )

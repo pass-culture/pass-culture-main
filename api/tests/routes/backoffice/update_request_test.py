@@ -11,6 +11,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi import settings
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -974,7 +975,7 @@ class AcceptTest(PostEndpointHelper):
 
         action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED)
+            .filter_by(actionType=history_constants.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED)
             .one()
         )
         assert action.authorUser == legit_user
@@ -1038,7 +1039,7 @@ class AcceptTest(PostEndpointHelper):
         assert len(update_request.user.action_history) == 2
         action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.INFO_MODIFIED)
+            .filter_by(actionType=history_constants.ActionType.INFO_MODIFIED)
             .one()
         )
         assert action.authorUser == legit_user
@@ -1077,7 +1078,7 @@ class AcceptTest(PostEndpointHelper):
         assert len(update_request.user.action_history) == 2
         action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.INFO_MODIFIED)
+            .filter_by(actionType=history_constants.ActionType.INFO_MODIFIED)
             .one()
         )
         assert action.authorUser == legit_user
@@ -1210,7 +1211,7 @@ class AcceptTest(PostEndpointHelper):
         assert not duplicate_user.isActive
         assert duplicate_user.email != update_request.newEmail
         assert len(duplicate_user.action_history) == 1
-        assert duplicate_user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+        assert duplicate_user.action_history[0].actionType == history_constants.ActionType.USER_SUSPENDED
         assert duplicate_user.action_history[0].authorUser == legit_user
         assert len(duplicate_user.email_history) == 1
         assert duplicate_user.email_history[0].author == legit_user

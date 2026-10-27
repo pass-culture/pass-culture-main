@@ -22,6 +22,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -503,7 +504,7 @@ class SuspendOffererTest(DeactivateOffererHelper):
         assert not updated_offerer.isActive
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.OFFERER_SUSPENDED
+        assert action.actionType == history_constants.ActionType.OFFERER_SUSPENDED
         assert action.authorUser == legit_user
         assert action.comment == "Test suspension"
 
@@ -552,7 +553,7 @@ class UnsuspendOffererTest(ActivateOffererHelper):
         assert updated_offerer.isActive
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.OFFERER_UNSUSPENDED
+        assert action.actionType == history_constants.ActionType.OFFERER_UNSUSPENDED
         assert action.authorUser == legit_user
         assert action.comment == "Test réactivation"
 
@@ -667,7 +668,7 @@ class UpdateOffererTest(PostEndpointHelper):
         assert offerer_to_edit.name == new_name
 
         assert len(offerer_to_edit.action_history) == 1
-        assert offerer_to_edit.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert offerer_to_edit.action_history[0].actionType == history_constants.ActionType.INFO_MODIFIED
         assert offerer_to_edit.action_history[0].authorUser == legit_user
         assert set(offerer_to_edit.action_history[0].extraData["modified_info"].keys()) == {"name"}
 
@@ -752,7 +753,7 @@ class UpdateForFraudTest(PostEndpointHelper):
         assert offerer.confidenceLevel == offerers_models.OffererConfidenceLevel.WHITELIST
         assert len(offerer.action_history) == 1
         action = offerer.action_history[0]
-        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.FRAUD_INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.comment == "Test"
         assert action.extraData == {
@@ -781,7 +782,7 @@ class UpdateForFraudTest(PostEndpointHelper):
         assert offerer.confidenceLevel == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
         assert len(offerer.action_history) == 1
         action = offerer.action_history[0]
-        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.FRAUD_INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.comment == "Test"
         assert action.extraData == {
@@ -811,7 +812,7 @@ class UpdateForFraudTest(PostEndpointHelper):
         assert db.session.query(offerers_models.OffererConfidenceRule).count() == 0
         assert len(offerer.action_history) == 1
         action = offerer.action_history[0]
-        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.FRAUD_INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.comment == "Test"
         assert action.extraData == {
@@ -1028,7 +1029,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         action = history_factories.ActionHistoryFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
             # displayed because legit_user has fraud permission
-            actionType=history_models.ActionType.FRAUD_INFO_MODIFIED,
+            actionType=history_constants.ActionType.FRAUD_INFO_MODIFIED,
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
             authorUser=pro_fraud_admin,
             offerer=offerer,
@@ -1075,7 +1076,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         user_offerer = offerers_factories.UserOffererFactory()
         offerer = user_offerer.offerer
         action = history_factories.ActionHistoryFactory(
-            offerer=offerer, actionType=history_models.ActionType.OFFERER_NEW, authorUser=None
+            offerer=offerer, actionType=history_constants.ActionType.OFFERER_NEW, authorUser=None
         )
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
@@ -1099,9 +1100,9 @@ class GetOffererHistoryTest(GetEndpointHelper):
     def test_get_history_without_fraud_permission(self, client, read_only_bo_user):
         user_offerer = offerers_factories.UserOffererFactory()
         offerer = user_offerer.offerer
-        history_factories.ActionHistoryFactory(actionType=history_models.ActionType.COMMENT, offerer=offerer)
+        history_factories.ActionHistoryFactory(actionType=history_constants.ActionType.COMMENT, offerer=offerer)
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.FRAUD_INFO_MODIFIED, offerer=offerer
+            actionType=history_constants.ActionType.FRAUD_INFO_MODIFIED, offerer=offerer
         )
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
@@ -1140,7 +1141,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         user_offerer_2 = offerers_factories.UserOffererFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 13, 1),
-            actionType=history_models.ActionType.OFFERER_NEW,
+            actionType=history_constants.ActionType.OFFERER_NEW,
             authorUser=admin_user,
             user=user_offerer_1.user,
             offerer=offerer,
@@ -1148,7 +1149,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 5, 13, 1),
-            actionType=history_models.ActionType.USER_OFFERER_NEW,
+            actionType=history_constants.ActionType.USER_OFFERER_NEW,
             authorUser=admin_user,
             user=user_offerer_2.user,
             offerer=offerer,
@@ -1170,7 +1171,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         user_offerer = offerers_factories.UserOffererFactory()
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 13, 1),
-            actionType=history_models.ActionType.OFFERER_NEW,
+            actionType=history_constants.ActionType.OFFERER_NEW,
             authorUser=user_offerer.user,
             user=user_offerer.user,
             offerer=user_offerer.offerer,
@@ -1178,7 +1179,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 4, 14, 2),
-            actionType=history_models.ActionType.OFFERER_PENDING,
+            actionType=history_constants.ActionType.OFFERER_PENDING,
             authorUser=admin,
             user=user_offerer.user,
             offerer=user_offerer.offerer,
@@ -1186,7 +1187,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 5, 15, 3),
-            actionType=history_models.ActionType.COMMENT,
+            actionType=history_constants.ActionType.COMMENT,
             authorUser=legit_user,
             user=user_offerer.user,
             offerer=user_offerer.offerer,
@@ -1194,7 +1195,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 6, 16, 4),
-            actionType=history_models.ActionType.OFFERER_VALIDATED,
+            actionType=history_constants.ActionType.OFFERER_VALIDATED,
             authorUser=admin,
             user=user_offerer.user,
             offerer=user_offerer.offerer,
@@ -1202,7 +1203,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 6, 17, 5),
-            actionType=history_models.ActionType.COMMENT,
+            actionType=history_constants.ActionType.COMMENT,
             authorUser=admin,
             user=user_offerer.user,
             offerer=offerers_factories.UserOffererFactory(user=user_offerer.user).offerer,
@@ -1241,7 +1242,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         bo_user = users_factories.AdminFactory()
         offerer = offerers_factories.RejectedOffererFactory()
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.OFFERER_REJECTED,
+            actionType=history_constants.ActionType.OFFERER_REJECTED,
             authorUser=bo_user,
             offerer=offerer,
             comment="Relancé 3 fois",
@@ -1266,7 +1267,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         bo_user = users_factories.AdminFactory()
         offerer = offerers_factories.ClosedOffererFactory()
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.OFFERER_CLOSED,
+            actionType=history_constants.ActionType.OFFERER_CLOSED,
             authorUser=bo_user,
             offerer=offerer,
             comment="Demande de l'acteur culturel avant arrêt de son activité",
@@ -1303,7 +1304,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             ),
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+            actionType=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
             authorUser=None,
             offerer=offerer,
             venue=venue,
@@ -1589,7 +1590,7 @@ class DeleteOffererAttachmentTest(PostEndpointHelper):
         assert users_offerers[0].validationStatus == ValidationStatus.DELETED
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.USER_OFFERER_DELETED
+        assert action.actionType == history_constants.ActionType.USER_OFFERER_DELETED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user_offerer.user.id
@@ -2034,7 +2035,7 @@ class CommentOffererTest(PostEndpointHelper):
         db.session.refresh(offerer)
         assert len(offerer.action_history) == 1
         action = offerer.action_history[0]
-        assert action.actionType == history_models.ActionType.COMMENT
+        assert action.actionType == history_constants.ActionType.COMMENT
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId is None
@@ -2077,7 +2078,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         for _ in range(4):
             user_offerer = offerers_factories.UserNotValidatedOffererFactory()
             history_factories.ActionHistoryFactory(
-                actionType=history_models.ActionType.OFFERER_NEW,
+                actionType=history_constants.ActionType.OFFERER_NEW,
                 authorUser=users_factories.AdminFactory(),
                 offerer=user_offerer.offerer,
                 user=user_offerer.user,
@@ -2136,7 +2137,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 12, 0),
-            actionType=history_models.ActionType.OFFERER_NEW,
+            actionType=history_constants.ActionType.OFFERER_NEW,
             authorUser=commenter,
             offerer=offerer,
             user=user_offerer.user,
@@ -2144,21 +2145,21 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 13, 1),
-            actionType=history_models.ActionType.COMMENT,
+            actionType=history_constants.ActionType.COMMENT,
             authorUser=commenter,
             offerer=offerer,
             comment="Bla blabla",
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 14, 2),
-            actionType=history_models.ActionType.OFFERER_PENDING,
+            actionType=history_constants.ActionType.OFFERER_PENDING,
             authorUser=commenter,
             offerer=offerer,
             comment="Houlala",
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 15, 3),
-            actionType=history_models.ActionType.USER_OFFERER_VALIDATED,
+            actionType=history_constants.ActionType.USER_OFFERER_VALIDATED,
             authorUser=commenter,
             offerer=offerer,
             user=user_offerer.user,
@@ -2591,19 +2592,19 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         other_instructor = users_factories.AdminFactory()
 
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.OFFERER_PENDING,
+            actionType=history_constants.ActionType.OFFERER_PENDING,
             authorUser=instructor,
             offerer=pending1,
         )
 
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
-            actionType=history_models.ActionType.OFFERER_PENDING,
+            actionType=history_constants.ActionType.OFFERER_PENDING,
             authorUser=other_instructor,
             offerer=pending2,
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            actionType=history_constants.ActionType.USER_OFFERER_PENDING,
             authorUser=instructor,
             user=users_factories.NonAttachedProFactory(),
             offerer=pending2,
@@ -2611,12 +2612,12 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
-            actionType=history_models.ActionType.OFFERER_PENDING,
+            actionType=history_constants.ActionType.OFFERER_PENDING,
             authorUser=instructor,
             offerer=pending3,
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.OFFERER_PENDING,
+            actionType=history_constants.ActionType.OFFERER_PENDING,
             authorUser=other_instructor,
             offerer=pending3,
         )
@@ -2881,7 +2882,7 @@ class ValidateOffererTest(ActivateOffererHelper):
         assert not user_offerer.user.has_non_attached_pro_role
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
+        assert action.actionType == history_constants.ActionType.OFFERER_VALIDATED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user_offerer.user.id
@@ -3038,7 +3039,7 @@ class RejectOffererTest(DeactivateOffererHelper):
 
         action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.OFFERER_REJECTED)
+            .filter_by(actionType=history_constants.ActionType.OFFERER_REJECTED)
             .one()
         )
         assert action.actionDate is not None
@@ -3050,7 +3051,7 @@ class RejectOffererTest(DeactivateOffererHelper):
 
         action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.USER_OFFERER_REJECTED)
+            .filter_by(actionType=history_constants.ActionType.USER_OFFERER_REJECTED)
             .one()
         )
         assert action.actionDate is not None
@@ -3180,7 +3181,7 @@ class SetOffererPendingTest(DeactivateOffererHelper):
         assert set(offerer.tags) == {non_homologation_tag, offerer_tags[0], offerer_tags[2]}
         action = db.session.query(history_models.ActionHistory).one()
 
-        assert action.actionType == history_models.ActionType.OFFERER_PENDING
+        assert action.actionType == history_constants.ActionType.OFFERER_PENDING
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId is None
@@ -3317,7 +3318,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 11, 5, 12),
-            actionType=history_models.ActionType.USER_OFFERER_NEW,
+            actionType=history_constants.ActionType.USER_OFFERER_NEW,
             authorUser=commenter,
             offerer=new_user_offerer.offerer,
             user=new_user_offerer.user,
@@ -3325,7 +3326,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 11, 6, 13),
-            actionType=history_models.ActionType.COMMENT,
+            actionType=history_constants.ActionType.COMMENT,
             authorUser=commenter,
             offerer=new_user_offerer.offerer,
             user=new_user_offerer.user,
@@ -3333,7 +3334,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 11, 5, 14, 2),
-            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            actionType=history_constants.ActionType.USER_OFFERER_PENDING,
             authorUser=commenter,
             offerer=new_user_offerer.offerer,
             user=new_user_offerer.user,
@@ -3459,7 +3460,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         other_instructor = users_factories.AdminFactory()
 
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            actionType=history_constants.ActionType.USER_OFFERER_PENDING,
             authorUser=instructor,
             user=pending1.user,
             offerer=pending1.offerer,
@@ -3467,13 +3468,13 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
 
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
-            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            actionType=history_constants.ActionType.USER_OFFERER_PENDING,
             authorUser=other_instructor,
             user=pending2.user,
             offerer=pending2.offerer,
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            actionType=history_constants.ActionType.USER_OFFERER_PENDING,
             authorUser=instructor,
             user=users_factories.NonAttachedProFactory(),
             offerer=pending2.offerer,
@@ -3481,13 +3482,13 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
 
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
-            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            actionType=history_constants.ActionType.USER_OFFERER_PENDING,
             authorUser=instructor,
             user=pending3.user,
             offerer=pending3.offerer,
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            actionType=history_constants.ActionType.USER_OFFERER_PENDING,
             authorUser=other_instructor,
             user=pending3.user,
             offerer=pending3.offerer,
@@ -3662,7 +3663,7 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
         assert not user_offerer.user.has_non_attached_pro_role
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.USER_OFFERER_VALIDATED
+        assert action.actionType == history_constants.ActionType.USER_OFFERER_VALIDATED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user_offerer.user.id
@@ -3741,7 +3742,7 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
         assert users_offerers[0].validationStatus == ValidationStatus.REJECTED
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.USER_OFFERER_REJECTED
+        assert action.actionType == history_constants.ActionType.USER_OFFERER_REJECTED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user_offerer.user.id
@@ -3791,7 +3792,7 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
         assert not user_offerer.isValidated
         assert user_offerer.validationStatus == ValidationStatus.PENDING
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.USER_OFFERER_PENDING
+        assert action.actionType == history_constants.ActionType.USER_OFFERER_PENDING
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user_offerer.user.id
@@ -4080,7 +4081,7 @@ class BatchOffererValidateTest(PostEndpointHelper):
                 )
                 .one()
             )
-            assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
+            assert action.actionType == history_constants.ActionType.OFFERER_VALIDATED
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
             assert action.userId is None
@@ -4146,7 +4147,7 @@ class SetBatchOffererPendingTest(PostEndpointHelper):
                 .one()
             )
 
-            assert action.actionType == history_models.ActionType.OFFERER_PENDING
+            assert action.actionType == history_constants.ActionType.OFFERER_PENDING
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
             assert action.userId is None
@@ -4207,7 +4208,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
                 )
                 .one()
             )
-            assert action.actionType == history_models.ActionType.OFFERER_REJECTED
+            assert action.actionType == history_constants.ActionType.OFFERER_REJECTED
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
             assert action.userId is None
@@ -4248,7 +4249,7 @@ class BatchOffererAttachmentValidateTest(PostEndpointHelper):
                 )
                 .one()
             )
-            assert action.actionType == history_models.ActionType.USER_OFFERER_VALIDATED
+            assert action.actionType == history_constants.ActionType.USER_OFFERER_VALIDATED
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
             assert action.userId == user_offerer.user.id
@@ -4314,7 +4315,7 @@ class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
                 )
                 .one()
             )
-            assert action.actionType == history_models.ActionType.USER_OFFERER_PENDING
+            assert action.actionType == history_constants.ActionType.USER_OFFERER_PENDING
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
             assert action.userId == user_offerer.user.id
@@ -4367,7 +4368,7 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
                 )
                 .one()
             )
-            assert action.actionType == history_models.ActionType.USER_OFFERER_REJECTED
+            assert action.actionType == history_constants.ActionType.USER_OFFERER_REJECTED
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
             assert action.userId == user_offerer.user.id
@@ -5449,7 +5450,7 @@ class CloseOffererTest(PostEndpointHelper):
         assert user_offerer.user.has_non_attached_pro_role
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.OFFERER_CLOSED
+        assert action.actionType == history_constants.ActionType.OFFERER_CLOSED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId is None

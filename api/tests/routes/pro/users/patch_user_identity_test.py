@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 
 import pcapi.core.users.factories as users_factories
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 
 
 @pytest.mark.usefixtures("db_session")
@@ -19,7 +19,7 @@ def test_patch_user_identity(client: Any) -> None:
     assert user.lastName == "Ere"
 
     assert len(user.action_history) == 1
-    assert user.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+    assert user.action_history[0].actionType == history_constants.ActionType.INFO_MODIFIED
     assert user.action_history[0].user == user
     assert user.action_history[0].extraData["modified_info"] == {
         "firstName": {"new_info": "Axel", "old_info": "jean"},

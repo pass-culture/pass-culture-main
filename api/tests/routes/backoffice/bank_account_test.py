@@ -13,8 +13,8 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
-from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
@@ -243,7 +243,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         action = history_factories.ActionHistoryFactory(
             bankAccount=bank_account,
             venue=venue,
-            actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+            actionType=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
             authorUser=legit_user,
             user=legit_user,
         )
@@ -272,7 +272,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         link_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 13, 1),
             venue=venue,
-            actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+            actionType=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
             authorUser=legit_user,
             user=legit_user,
             bankAccount=bank_account,
@@ -280,7 +280,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         unlink_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 4, 14, 2),
             venue=venue,
-            actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+            actionType=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
             authorUser=legit_user,
             user=legit_user,
             bankAccount=bank_account,
@@ -320,7 +320,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
             ),
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+            actionType=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
             authorUser=None,
             offerer=offerer,
             venue=venue,
@@ -596,7 +596,7 @@ class UpdateBankAccountTest(PostEndpointHelper):
         assert bank_account.label == new_label
 
         assert len(bank_account.action_history) == 1
-        assert bank_account.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert bank_account.action_history[0].actionType == history_constants.ActionType.INFO_MODIFIED
         assert bank_account.action_history[0].authorUser == legit_user
         assert bank_account.action_history[0].extraData["modified_info"] == {
             "label": {"old_info": old_label, "new_info": new_label}

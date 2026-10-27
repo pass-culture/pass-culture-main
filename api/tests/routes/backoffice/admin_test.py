@@ -4,6 +4,7 @@ import pytest
 import sqlalchemy.orm as sa_orm
 from flask import url_for
 
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import api as perm_api
@@ -164,7 +165,7 @@ class UpdateRoleTest(PostEndpointHelper):
         assert response.status_code == 303
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.ROLE_PERMISSIONS_CHANGED
+        assert action.actionType == history_constants.ActionType.ROLE_PERMISSIONS_CHANGED
         assert action.authorUserId == legit_user.id
         assert action.comment == "Test"
         assert action.extraData == {
@@ -249,7 +250,7 @@ class GetRolesHistoryTest(GetEndpointHelper):
         role = perm_factories.RoleFactory(permissions=[permission1, permission2])
 
         action = history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.ROLE_PERMISSIONS_CHANGED,
+            actionType=history_constants.ActionType.ROLE_PERMISSIONS_CHANGED,
             authorUser=legit_user,
             comment=None,
             extraData={
@@ -517,7 +518,7 @@ class GetBoUserTest(GetEndpointHelper):
         )
 
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
             authorUser=legit_user,
             user=user,
@@ -659,7 +660,7 @@ class UpdateBoUserTest(PostEndpointHelper):
         assert user.email == "sholmes@example.com"
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.authorUserId == legit_user.id
         assert action.userId == user.id
         assert action.extraData["modified_info"] == {
@@ -859,7 +860,7 @@ class CreateUserProfileRefreshCampaignTest(PostEndpointHelper):
         actions = campaign.action_history
         assert len(actions) == 1
         action = actions[0]
-        assert action.actionType == history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED
+        assert action.actionType == history_constants.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED
         assert action.authorUser == legit_user
 
     def test_create_active_campaign_deactivates_existing_one(self, authenticated_client):
@@ -997,7 +998,7 @@ class EditUserProfileRefreshCampaignTest(PostEndpointHelper):
         actions = campaign.action_history
         assert len(actions) == 1
         action = actions[0]
-        assert action.actionType == history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED
+        assert action.actionType == history_constants.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED
         assert action.authorUser == legit_user
         assert action.extraData == {"modified_info": {"isActive": {"new_info": False, "old_info": True}}}
 

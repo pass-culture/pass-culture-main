@@ -30,6 +30,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import api as geography_api
 from pcapi.core.geography import models as geography_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -155,7 +156,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.roles == [users_models.UserRole.ANONYMIZED]
         assert user_to_anonymize.trusted_devices == []
         assert len(user_to_anonymize.action_history) == 1
-        assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
+        assert user_to_anonymize.action_history[0].actionType == history_constants.ActionType.USER_ANONYMIZED
         assert user_to_anonymize.action_history[0].authorUserId is None
 
     def test_anonymize_non_pro_non_beneficiary_user_force_iris_not_found(self) -> None:
@@ -182,7 +183,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
             authorUser=user_to_anonymize,
             user=user_to_anonymize,
             offerer=offerers_factories.OffererFactory(),
-            actionType=history_models.ActionType.OFFERER_VALIDATED,
+            actionType=history_constants.ActionType.OFFERER_VALIDATED,
         )
 
         gdpr_api.anonymize_non_pro_non_beneficiary_users()
@@ -236,7 +237,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         )
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             reason=reason,
             user=user_to_anonymize,
         )
@@ -256,7 +257,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         )
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             reason=users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
             user=user_to_anonymize,
         )
@@ -276,7 +277,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         )
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             reason=users_constants.SuspensionReason.DEVICE_AT_RISK,
             user=user_to_anonymize,
         )
@@ -441,7 +442,7 @@ def _assert_user_is_anonymized(user, prefix="anonymous"):
     assert user.trusted_devices == []
     assert user.roles == [users_models.UserRole.ANONYMIZED]
     assert len(user.action_history) == 1
-    assert user.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
+    assert user.action_history[0].actionType == history_constants.ActionType.USER_ANONYMIZED
     assert user.action_history[0].authorUserId is None
     assert user.action_history[0].comment is None
     assert user.backoffice_profile is None
@@ -1295,7 +1296,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             reason=reason,
             user=user_to_anonymize,
         )
@@ -1314,7 +1315,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             reason=users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
             user=user_to_anonymize,
         )
@@ -1352,7 +1353,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         )
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             reason=reason,
             user=user_to_anonymize,
         )
@@ -1374,7 +1375,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         )
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             reason=users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
             user=user_to_anonymize,
         )
@@ -1408,7 +1409,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         )
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             reason=reason,
             user=user_to_anonymize,
         )
@@ -1598,12 +1599,12 @@ def generate_beneficiary():
     )
     history_factories.ActionHistoryFactory(
         actionDate=now - datetime.timedelta(days=2),
-        actionType=history_models.ActionType.USER_SUSPENDED,
+        actionType=history_constants.ActionType.USER_SUSPENDED,
         user=user,
     )
     history_factories.ActionHistoryFactory(
         actionDate=now,
-        actionType=history_models.ActionType.USER_UNSUSPENDED,
+        actionType=history_constants.ActionType.USER_UNSUSPENDED,
         user=user,
     )
     subscription_factories.BeneficiaryFraudCheckFactory(
@@ -1740,7 +1741,7 @@ def generate_minimal_beneficiary():
     )
     action_history = history_models.ActionHistory(
         user=user,
-        actionType=history_models.ActionType.USER_SUSPENDED,
+        actionType=history_constants.ActionType.USER_SUSPENDED,
     )
     db.session.add(action_history)
     db.session.flush()

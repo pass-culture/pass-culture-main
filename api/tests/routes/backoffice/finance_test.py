@@ -18,6 +18,7 @@ from pcapi.core.finance import api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -343,7 +344,7 @@ class ListIncidentsTest(GetEndpointHelper):
     def test_list_incident_by_dates(self, authenticated_client):
         incident = finance_factories.IndividualBookingFinanceIncidentFactory().incident
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
+            actionType=history_constants.ActionType.FINANCE_INCIDENT_CREATED,
             financeIncident=incident,
             actionDate=(datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
         )
@@ -438,7 +439,7 @@ class CancelIncidentTest(PostEndpointHelper):
         assert "Annulé" in badges
 
         action_history = db.session.query(history_models.ActionHistory).one()
-        assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CANCELLED
+        assert action_history.actionType == history_constants.ActionType.FINANCE_INCIDENT_CANCELLED
         assert action_history.authorUser == legit_user
         assert action_history.comment == self.form_data["comment"]
 
@@ -523,7 +524,7 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         )
 
         assert validation_action
-        assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        assert validation_action.actionType == history_constants.ActionType.FINANCE_INCIDENT_VALIDATED
         assert (
             validation_action.comment == "Génération d'une note de débit à la prochaine échéance."
             if force_debit_note
@@ -532,7 +533,7 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
 
         assert (
             beneficiary_action
-            and beneficiary_action.actionType == history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT
+            and beneficiary_action.actionType == history_constants.ActionType.FINANCE_INCIDENT_USER_RECREDIT
         )
 
         last_finance_event = (
@@ -626,7 +627,7 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         )
 
         assert validation_action
-        assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        assert validation_action.actionType == history_constants.ActionType.FINANCE_INCIDENT_VALIDATED
         assert (
             validation_action.comment == "Génération d'une note de débit à la prochaine échéance."
             if force_debit_note
@@ -943,12 +944,12 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         )
 
         assert validation_action
-        assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        assert validation_action.actionType == history_constants.ActionType.FINANCE_INCIDENT_VALIDATED
         assert validation_action.comment == "Geste commercial remboursé au prochain virement"
 
         assert (
             beneficiary_action
-            and beneficiary_action.actionType == history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT
+            and beneficiary_action.actionType == history_constants.ActionType.FINANCE_INCIDENT_USER_RECREDIT
         )
 
         last_finance_event = (
@@ -1028,7 +1029,7 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         )
 
         assert validation_action
-        assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        assert validation_action.actionType == history_constants.ActionType.FINANCE_INCIDENT_VALIDATED
         assert validation_action.comment == "Geste commercial remboursé au prochain virement"
         assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == decimal.Decimal("0.10")
         assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == decimal.Decimal("0.10")
@@ -1725,7 +1726,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
         assert booking_finance_incident.incident.zendeskId == zendesk_id
 
         action_history = db.session.query(history_models.ActionHistory).one()
-        assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
+        assert action_history.actionType == history_constants.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
         assert action_history.comment == comment
 
@@ -1857,7 +1858,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         action_history = db.session.query(history_models.ActionHistory).one()
-        assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
+        assert action_history.actionType == history_constants.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
         assert action_history.comment == comment
 
@@ -2095,7 +2096,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         assert booking_finance_incident.incident.zendeskId == zendesk_id
 
         action_history = db.session.query(history_models.ActionHistory).one()
-        assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
+        assert action_history.actionType == history_constants.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
         assert action_history.comment == comment
 
@@ -2142,7 +2143,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
         action_history = db.session.query(history_models.ActionHistory).one()
-        assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
+        assert action_history.actionType == history_constants.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
 
     def test_create_commercial_gesture_incident_from_used_booking(self, legit_user, authenticated_client):
@@ -2368,7 +2369,7 @@ class GetIncidentHistoryTest(GetEndpointHelper):
         finance_incident = finance_factories.FinanceIncidentFactory()
         action = history_factories.ActionHistoryFactory(
             financeIncident=finance_incident,
-            actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
+            actionType=history_constants.ActionType.FINANCE_INCIDENT_CREATED,
             actionDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=-1),
         )
         author = users_factories.UserFactory()

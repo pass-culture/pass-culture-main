@@ -28,6 +28,7 @@ from sqlalchemy.sql.selectable import ScalarSelect
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance.models import DepositType
 from pcapi.core.geography.models import IrisFrance
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.users import constants
 from pcapi.core.users import utils as users_utils
@@ -641,7 +642,6 @@ class User(PcObject, Model, DeactivableMixin):
     @property
     # list[history_models.ActionHistory] -> None, untyped due to import loop
     def suspension_action_history(self) -> list:
-        import pcapi.core.history.models as history_models
 
         return sorted(
             [
@@ -649,8 +649,8 @@ class User(PcObject, Model, DeactivableMixin):
                 for action in self.action_history
                 if action.actionType
                 in (
-                    history_models.ActionType.USER_SUSPENDED,
-                    history_models.ActionType.USER_UNSUSPENDED,
+                    history_constants.ActionType.USER_SUSPENDED,
+                    history_constants.ActionType.USER_UNSUSPENDED,
                 )
             ],
             key=lambda action: action.actionDate.isoformat() if action.actionDate else "",
@@ -661,13 +661,12 @@ class User(PcObject, Model, DeactivableMixin):
         """
         Reason for the active suspension.
         """
-        import pcapi.core.history.models as history_models
 
         suspension_action_history = self.suspension_action_history
         if (
             not self.isActive
             and suspension_action_history
-            and suspension_action_history[-1].actionType == history_models.ActionType.USER_SUSPENDED
+            and suspension_action_history[-1].actionType == history_constants.ActionType.USER_SUSPENDED
         ):
             reason = suspension_action_history[-1].extraData.get("reason")
             if reason:
@@ -686,7 +685,7 @@ class User(PcObject, Model, DeactivableMixin):
                 sa.and_(
                     history_models.ActionHistory.userId == User.id,
                     history_models.ActionHistory.actionType.in_(
-                        [history_models.ActionType.USER_SUSPENDED, history_models.ActionType.USER_UNSUSPENDED]
+                        [history_constants.ActionType.USER_SUSPENDED, history_constants.ActionType.USER_UNSUSPENDED]
                     ),
                 )
             )
@@ -701,13 +700,12 @@ class User(PcObject, Model, DeactivableMixin):
         """
         Date and time when the inactive account was suspended for the last time.
         """
-        import pcapi.core.history.models as history_models
 
         suspension_action_history = self.suspension_action_history
         if (
             not self.isActive
             and suspension_action_history
-            and suspension_action_history[-1].actionType == history_models.ActionType.USER_SUSPENDED
+            and suspension_action_history[-1].actionType == history_constants.ActionType.USER_SUSPENDED
         ):
             return suspension_action_history[-1].actionDate
         return None
@@ -724,7 +722,7 @@ class User(PcObject, Model, DeactivableMixin):
                 sa.and_(
                     history_models.ActionHistory.userId == User.id,
                     history_models.ActionHistory.actionType.in_(
-                        [history_models.ActionType.USER_SUSPENDED, history_models.ActionType.USER_UNSUSPENDED]
+                        [history_constants.ActionType.USER_SUSPENDED, history_constants.ActionType.USER_UNSUSPENDED]
                     ),
                 )
             )
@@ -736,7 +734,6 @@ class User(PcObject, Model, DeactivableMixin):
 
     @property
     def account_state(self) -> AccountState:
-        import pcapi.core.history.models as history_models
 
         if UserRole.ANONYMIZED in self.roles:
             return AccountState.ANONYMIZED
@@ -748,7 +745,7 @@ class User(PcObject, Model, DeactivableMixin):
         if suspension_action_history:
             last_suspension_action = suspension_action_history[-1]
 
-            if last_suspension_action.actionType == history_models.ActionType.USER_SUSPENDED:
+            if last_suspension_action.actionType == history_constants.ActionType.USER_SUSPENDED:
                 match self.suspension_reason:
                     case constants.SuspensionReason.DELETED:
                         return AccountState.DELETED

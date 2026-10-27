@@ -14,7 +14,7 @@ from pcapi.connectors.googledrive import GoogleDriveBackend
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.internal_notifications.transactional import import_test_user_failure
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -129,7 +129,7 @@ def _create_pro_user(row: dict) -> User:
     db.session.add(offerer)
 
     history_api.add_action(
-        history_models.ActionType.OFFERER_VALIDATED,
+        history_constants.ActionType.OFFERER_VALIDATED,
         author=None,
         user=user,
         offerer=offerer,

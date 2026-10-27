@@ -17,7 +17,7 @@ from pcapi import settings
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -573,12 +573,12 @@ def _get_serialized_user_offerer_last_comment(
             and action.userId == user_id
             and action.actionType
             in (
-                history_models.ActionType.USER_OFFERER_NEW,
-                history_models.ActionType.USER_OFFERER_PENDING,
-                history_models.ActionType.USER_OFFERER_VALIDATED,
-                history_models.ActionType.USER_OFFERER_REJECTED,
-                history_models.ActionType.USER_OFFERER_DELETED,
-                history_models.ActionType.COMMENT,
+                history_constants.ActionType.USER_OFFERER_NEW,
+                history_constants.ActionType.USER_OFFERER_PENDING,
+                history_constants.ActionType.USER_OFFERER_VALIDATED,
+                history_constants.ActionType.USER_OFFERER_REJECTED,
+                history_constants.ActionType.USER_OFFERER_DELETED,
+                history_constants.ActionType.COMMENT,
             )
         ),
         key=lambda action: action.actionDate,

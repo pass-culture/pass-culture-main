@@ -30,7 +30,7 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
@@ -198,7 +198,7 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
 
         db.session.add(offerer)
         history_api.add_action(
-            history_models.ActionType.OFFERER_VALIDATED,
+            history_constants.ActionType.OFFERER_VALIDATED,
             author=None,
             offerer=offerer,
             comment=f"Création des acteurs culturels calédoniens par script - {comment}",
@@ -244,7 +244,7 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
 
         db.session.add(venue)
         history_api.add_action(
-            history_models.ActionType.VENUE_CREATED,
+            history_constants.ActionType.VENUE_CREATED,
             author=None,
             venue=venue,
             comment=f"Création des acteurs culturels calédoniens par script - {comment}",

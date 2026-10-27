@@ -23,6 +23,7 @@ from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -57,7 +58,7 @@ def _assert_user_action_history_as_expected(
     action: history_models.ActionHistory,
     user: users_models.User,
     author: users_models.User,
-    actionType: history_models.ActionType,
+    actionType: history_constants.ActionType,
     reason: users_constants.SuspensionReason,
     comment: str | None = None,
 ):
@@ -206,7 +207,7 @@ class SuspendAccountTest:
         history = db.session.query(history_models.ActionHistory).filter_by(userId=user.id).all()
         assert len(history) == 1
         _assert_user_action_history_as_expected(
-            history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason
+            history[0], user, author, history_constants.ActionType.USER_SUSPENDED, reason
         )
 
         assert len(brevo_testing.brevo_requests) == 1
@@ -244,7 +245,7 @@ class SuspendAccountTest:
         history = db.session.query(history_models.ActionHistory).filter_by(userId=user.id).all()
         assert len(history) == 1
         _assert_user_action_history_as_expected(
-            history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason, comment
+            history[0], user, author, history_constants.ActionType.USER_SUSPENDED, reason, comment
         )
 
         assert len(brevo_testing.brevo_requests) == 1
@@ -270,7 +271,7 @@ class SuspendAccountTest:
         history = db.session.query(history_models.ActionHistory).filter_by(userId=pro.id).all()
         assert len(history) == 1
         _assert_user_action_history_as_expected(
-            history[0], pro, author, history_models.ActionType.USER_SUSPENDED, reason
+            history[0], pro, author, history_constants.ActionType.USER_SUSPENDED, reason
         )
 
         assert len(brevo_testing.brevo_requests) == 1
@@ -320,7 +321,7 @@ class UnsuspendAccountTest:
         history = db.session.query(history_models.ActionHistory).filter_by(userId=user.id).all()
         assert len(history) == 1
         _assert_user_action_history_as_expected(
-            history[0], user, author, history_models.ActionType.USER_UNSUSPENDED, reason=None, comment=comment
+            history[0], user, author, history_constants.ActionType.USER_UNSUSPENDED, reason=None, comment=comment
         )
 
         assert len(brevo_testing.brevo_requests) == 1
@@ -1568,7 +1569,7 @@ class UserEmailValidationTest:
 
         assert db.session.query(history_models.ActionHistory).count() == 1
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.USER_EMAIL_VALIDATED
+        assert action.actionType == history_constants.ActionType.USER_EMAIL_VALIDATED
         assert action.user == user_offerer.user
         assert action.authorUser == backoffice_user
 

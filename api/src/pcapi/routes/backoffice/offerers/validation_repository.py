@@ -11,6 +11,7 @@ import sqlalchemy.orm as sa_orm
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.educational import models as educational_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -216,12 +217,12 @@ def list_offerers_to_be_validated(
             history_models.ActionHistory.comment.is_not(None),
             history_models.ActionHistory.actionType.in_(
                 [
-                    history_models.ActionType.OFFERER_NEW,
-                    history_models.ActionType.OFFERER_PENDING,
-                    history_models.ActionType.OFFERER_VALIDATED,
-                    history_models.ActionType.OFFERER_REJECTED,
-                    history_models.ActionType.OFFERER_CLOSED,
-                    history_models.ActionType.COMMENT,
+                    history_constants.ActionType.OFFERER_NEW,
+                    history_constants.ActionType.OFFERER_PENDING,
+                    history_constants.ActionType.OFFERER_VALIDATED,
+                    history_constants.ActionType.OFFERER_REJECTED,
+                    history_constants.ActionType.OFFERER_CLOSED,
+                    history_constants.ActionType.COMMENT,
                 ]
             ),
             history_models.ActionHistory.userId.is_(None),
@@ -338,10 +339,10 @@ def list_offerers_to_be_validated(
                 history_models.ActionHistory.offererId == offerers_models.Offerer.id,
                 history_models.ActionHistory.actionType.in_(
                     (
-                        history_models.ActionType.OFFERER_PENDING,
-                        history_models.ActionType.OFFERER_VALIDATED,
-                        history_models.ActionType.OFFERER_REJECTED,
-                        history_models.ActionType.OFFERER_CLOSED,
+                        history_constants.ActionType.OFFERER_PENDING,
+                        history_constants.ActionType.OFFERER_VALIDATED,
+                        history_constants.ActionType.OFFERER_REJECTED,
+                        history_constants.ActionType.OFFERER_CLOSED,
                     )
                 ),
             )
@@ -375,12 +376,12 @@ def list_users_offerers_to_be_validated(
             history_models.ActionHistory.comment.is_not(None),
             history_models.ActionHistory.actionType.in_(
                 [
-                    history_models.ActionType.USER_OFFERER_NEW,
-                    history_models.ActionType.USER_OFFERER_PENDING,
-                    history_models.ActionType.USER_OFFERER_VALIDATED,
-                    history_models.ActionType.USER_OFFERER_REJECTED,
-                    history_models.ActionType.USER_OFFERER_DELETED,
-                    history_models.ActionType.COMMENT,
+                    history_constants.ActionType.USER_OFFERER_NEW,
+                    history_constants.ActionType.USER_OFFERER_PENDING,
+                    history_constants.ActionType.USER_OFFERER_VALIDATED,
+                    history_constants.ActionType.USER_OFFERER_REJECTED,
+                    history_constants.ActionType.USER_OFFERER_DELETED,
+                    history_constants.ActionType.COMMENT,
                 ]
             ),
         )
@@ -447,9 +448,9 @@ def list_users_offerers_to_be_validated(
                 history_models.ActionHistory.offererId == offerers_models.UserOfferer.offererId,
                 history_models.ActionHistory.actionType.in_(
                     (
-                        history_models.ActionType.USER_OFFERER_PENDING,
-                        history_models.ActionType.USER_OFFERER_VALIDATED,
-                        history_models.ActionType.USER_OFFERER_REJECTED,
+                        history_constants.ActionType.USER_OFFERER_PENDING,
+                        history_constants.ActionType.USER_OFFERER_VALIDATED,
+                        history_constants.ActionType.USER_OFFERER_REJECTED,
                     )
                 ),
             )

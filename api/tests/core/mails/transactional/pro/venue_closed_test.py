@@ -3,8 +3,8 @@ from dataclasses import asdict
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
-from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.pro import venue_closed
 from pcapi.core.offerers import factories as offerers_factories
@@ -17,7 +17,7 @@ class SendVenueClosedEmailToAuthorTest:
         author = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         history_event = history_factories.ActionHistoryFactory(
-            authorUser=author, venue=venue, actionType=history_models.ActionType.VENUE_CLOSED
+            authorUser=author, venue=venue, actionType=history_constants.ActionType.VENUE_CLOSED
         )
 
         venue_closed.send_venue_closed_email_to_author(venue.id)
@@ -46,7 +46,7 @@ class SendVenueClosedEmailToAuthorTest:
     def test_no_email_sent_if_closed_event_has_no_author(self):
         venue = offerers_factories.VenueFactory()
         history_factories.ActionHistoryFactory(
-            authorUser=None, venue=venue, actionType=history_models.ActionType.VENUE_CLOSED
+            authorUser=None, venue=venue, actionType=history_constants.ActionType.VENUE_CLOSED
         )
 
         venue_closed.send_venue_closed_email_to_author(venue.id)

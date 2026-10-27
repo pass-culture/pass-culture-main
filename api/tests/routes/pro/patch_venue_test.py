@@ -12,6 +12,7 @@ from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.external.zendesk_sell.backends import testing as zendesk_testing
 from pcapi.core.geography import factories as geography_factories
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import factories as users_factories
@@ -154,7 +155,7 @@ class Returns200Test:
             for action in venue.action_history
             if action.extraData["modified_info"].get("offererAddress.address.street")
         ][0]
-        assert update_action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert update_action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert update_action.venueId == venue.id
         assert update_action.authorUser.id == user_offerer.user.id
         update_snapshot = update_action.extraData["modified_info"]
@@ -386,7 +387,7 @@ class Returns200Test:
             if action.extraData["modified_info"].get("offererAddress.address.street")
         ][0]
         update_snapshot = update_action.extraData["modified_info"]
-        assert update_action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert update_action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert update_action.venueId == venue_id
         assert update_action.authorUser.id == user_offerer.user.id
         assert update_snapshot["offererAddress.address.street"] == {
@@ -463,7 +464,7 @@ class Returns200Test:
         assert response.json["location"]["city"] == current_address.city
         assert response.json["location"]["postalCode"] == current_address.postalCode
 
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].actionType == history_constants.ActionType.INFO_MODIFIED
         assert venue.action_history[0].venueId == venue_id
         assert venue.action_history[0].authorUser.id == user_offerer.user.id
         assert venue.action_history[0].extraData["modified_info"]["offererAddress.address.street"] == {
@@ -637,7 +638,7 @@ class Returns200Test:
         )
 
         assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].actionType == history_constants.ActionType.INFO_MODIFIED
         assert venue.action_history[0].extraData["modified_info"] == {
             "publicName": {"new_info": venue_data["publicName"], "old_info": "old name"},
             "audioDisabilityCompliant": {"new_info": True, "old_info": False},
@@ -694,7 +695,7 @@ class Returns200Test:
         assert response.json["openingHours"]["TUESDAY"] == [["10:00", "13:00"], ["14:00", "19:30"]]
         assert response.json["openingHours"]["FRIDAY"] is None
 
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].actionType == history_constants.ActionType.INFO_MODIFIED
         assert venue.action_history[0].extraData == {
             "modified_info": {
                 "openingHours.MONDAY.timespan": {
@@ -992,7 +993,7 @@ class Returns200Test:
 
         # contact info added => an action should be logged in history
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.authorUserId == user.id
         assert action.venueId == venue.id
         assert action.extraData["modified_info"] == {

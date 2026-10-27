@@ -6,6 +6,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -135,7 +136,7 @@ def move_siret(
         # Add actions in the history for both venues to track who/when it was changed
         db.session.add(
             history_models.ActionHistory(
-                actionType=history_models.ActionType.INFO_MODIFIED,
+                actionType=history_constants.ActionType.INFO_MODIFIED,
                 authorUserId=author_user.id,
                 offererId=source_venue.managingOffererId,
                 venueId=source_venue.id,
@@ -149,7 +150,7 @@ def move_siret(
         )
         db.session.add(
             history_models.ActionHistory(
-                actionType=history_models.ActionType.INFO_MODIFIED,
+                actionType=history_constants.ActionType.INFO_MODIFIED,
                 authorUserId=author_user.id,
                 offererId=target_venue.managingOffererId,
                 venueId=target_venue.id,
@@ -314,7 +315,7 @@ def remove_siret(
     for modified_venue_id, modified_info in modified_info_by_venue.items():
         db.session.add(
             history_models.ActionHistory(
-                actionType=history_models.ActionType.INFO_MODIFIED,
+                actionType=history_constants.ActionType.INFO_MODIFIED,
                 authorUserId=author_user_id,
                 offererId=venue.managingOffererId,
                 venueId=modified_venue_id,
@@ -385,7 +386,7 @@ def remove_pricing_point_link(
 
         db.session.add(
             history_models.ActionHistory(
-                actionType=history_models.ActionType.INFO_MODIFIED,
+                actionType=history_constants.ActionType.INFO_MODIFIED,
                 authorUserId=author_user_id,
                 offererId=venue.managingOffererId,
                 venueId=venue.id,

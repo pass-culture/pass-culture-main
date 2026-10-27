@@ -15,6 +15,7 @@ from sqlalchemy import orm as sa_orm
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
+import pcapi.core.history.constants as history_constants
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
@@ -188,7 +189,7 @@ def anonymize_user(
         )
         db.session.add(
             history_models.ActionHistory(
-                actionType=history_models.ActionType.USER_ANONYMIZED,
+                actionType=history_constants.ActionType.USER_ANONYMIZED,
                 authorUser=author,
                 userId=user.id,
                 comment=action_history_comment,
@@ -606,7 +607,7 @@ def anonymize_internal_users() -> None:
         )
         .filter(
             history_models.ActionHistory.userId == models.User.id,
-            history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED,
+            history_models.ActionHistory.actionType == history_constants.ActionType.USER_SUSPENDED,
         )
         .correlate(
             models.User,
@@ -859,10 +860,10 @@ def _extract_gdpr_action_history(user: models.User) -> list[schemas.GdprActionHi
             history_models.ActionHistory.userId == user.id,
             history_models.ActionHistory.actionType.in_(
                 [
-                    history_models.ActionType.USER_SUSPENDED,
-                    history_models.ActionType.USER_UNSUSPENDED,
-                    history_models.ActionType.USER_PHONE_VALIDATED,
-                    history_models.ActionType.USER_EMAIL_VALIDATED,
+                    history_constants.ActionType.USER_SUSPENDED,
+                    history_constants.ActionType.USER_UNSUSPENDED,
+                    history_constants.ActionType.USER_PHONE_VALIDATED,
+                    history_constants.ActionType.USER_EMAIL_VALIDATED,
                 ],
             ),
         )
@@ -1030,7 +1031,7 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
         name=f"{extract.id}.zip",
         archive=archive.getvalue(),
     )
-    add_action(history_models.ActionType.USER_EXTRACT_DATA, author=extract.authorUser, user=user)
+    add_action(history_constants.ActionType.USER_EXTRACT_DATA, author=extract.authorUser, user=user)
     db.session.flush()
 
 

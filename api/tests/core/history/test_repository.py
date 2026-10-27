@@ -1,7 +1,7 @@
 import pytest
 
+import pcapi.core.history.constants as history_constants
 import pcapi.core.history.factories as history_factories
-import pcapi.core.history.models as history_models
 import pcapi.core.history.repository as history_repository
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
@@ -22,7 +22,7 @@ def test_get_closing_action_when_the_venue_is_closed():
     other_user = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=other_user, offerer=venue.managingOfferer)
     history_factories.ActionHistoryFactory(
-        actionType=history_models.ActionType.VENUE_CREATED,
+        actionType=history_constants.ActionType.VENUE_CREATED,
         authorUser=other_user,
         venue=venue,
     )
@@ -48,7 +48,7 @@ def test_get_latest_closing_user_when_the_venue_is_closed_several_times():
     for user in closing_users:
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.VENUE_CLOSED,
+            actionType=history_constants.ActionType.VENUE_CLOSED,
             authorUser=user,
             venue=venue,
         )

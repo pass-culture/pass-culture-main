@@ -17,6 +17,7 @@ from pcapi.core.external.batch import serialization as batch_serialization
 from pcapi.core.external.batch import tasks as batch_tasks
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -111,7 +112,7 @@ def get_details(user_id: int) -> response_utils.BackofficeResponse:
             history_models.ActionHistory,
             sa.and_(
                 history_models.ActionHistory.userId == user_id,
-                history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED,
+                history_models.ActionHistory.actionType != history_constants.ActionType.FRAUD_INFO_MODIFIED,
             ),
         )
         .options(
@@ -368,7 +369,7 @@ def disconnect_pro_user(user_id: int) -> response_utils.BackofficeResponse:
 
     if count:
         history_api.add_action(
-            action_type=history_models.ActionType.USER_DISCONNECTED,
+            action_type=history_constants.ActionType.USER_DISCONNECTED,
             author=current_user,
             user=user,
             comment=form.comment.data,

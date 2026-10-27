@@ -1,6 +1,7 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
 
+from pcapi.core.history import constants
 from pcapi.core.history import factories
 from pcapi.core.history import models
 from pcapi.core.offerers import factories as offerers_factories
@@ -20,7 +21,7 @@ class HistoryFactoriesTest:
             authorUser=author, user=user, offerer=offerer, venue=venue, extraData={"test": "ok"}
         )
 
-        assert action.actionType == models.ActionType.COMMENT
+        assert action.actionType == constants.ActionType.COMMENT
         assert action.actionDate is not None
         assert action.authorUserId == author.id
         assert action.authorUser == author

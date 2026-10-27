@@ -6,6 +6,7 @@ from flask import url_for
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -202,7 +203,7 @@ class ApplyMoveSiretTest(MoveSiretTestHelper):
         actions = db.session.query(history_models.ActionHistory).all()
         assert len(actions) == 2
         for action in actions:
-            assert action.actionType == history_models.ActionType.INFO_MODIFIED
+            assert action.actionType == history_constants.ActionType.INFO_MODIFIED
             assert action.offererId == self.offerer.id
             assert action.venueId in (self.venue1.id, self.venue2.id)
             assert action.extraData.get("modified_info")

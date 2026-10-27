@@ -9,6 +9,7 @@ from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.favorites import factories as favorite_factories
 from pcapi.core.favorites import models as favorites_models
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -238,7 +239,7 @@ class UpdateProUserTest(PostEndpointHelper):
         assert pro_user.email_history[0].author == legit_user
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.user == pro_user
         assert action.offererId is None
@@ -270,7 +271,7 @@ class UpdateProUserTest(PostEndpointHelper):
         assert pro_user.notificationSubscriptions["marketing_email"] is False
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.user == pro_user
         assert action.offererId is None
@@ -329,7 +330,7 @@ class GetProUserHistoryTest(GetEndpointHelper):
         )
         action2 = history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=2),
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             user=pro_user,
             comment="Test de suspension",
             extraData={"reason": users_constants.SuspensionReason.FRAUD_USURPATION_PRO.value},
@@ -767,7 +768,7 @@ class DisconnectProUserTest(PostEndpointHelper):
             db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id.desc()).first()
         )
         assert action_history.userId == user_id
-        assert action_history.actionType == history_models.ActionType.USER_DISCONNECTED
+        assert action_history.actionType == history_constants.ActionType.USER_DISCONNECTED
 
     def test_disconnect_user_with_comment(self, authenticated_client, legit_user):
         user = offerers_factories.UserOffererFactory(user__isActive=False).user
@@ -785,7 +786,7 @@ class DisconnectProUserTest(PostEndpointHelper):
             db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id.desc()).first()
         )
         assert action_history.userId == user_id
-        assert action_history.actionType == history_models.ActionType.USER_DISCONNECTED
+        assert action_history.actionType == history_constants.ActionType.USER_DISCONNECTED
         assert action_history.comment == "because"
         assert action_history.authorUser == legit_user
 

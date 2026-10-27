@@ -6,7 +6,7 @@ from flask import url_for
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
@@ -89,7 +89,7 @@ class SuspendUserTest(PostEndpointHelper):
         assert not user.isActive
         assert "email.supprime" not in user.email
         assert len(user.action_history) == 1
-        assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+        assert user.action_history[0].actionType == history_constants.ActionType.USER_SUSPENDED
         assert user.action_history[0].authorUser == beneficiary_fraud_admin
         assert user.action_history[0].user == user
         assert user.action_history[0].offererId is None
@@ -184,7 +184,7 @@ class SuspendUserTest(PostEndpointHelper):
 
         assert not user.isActive
         assert len(user.action_history) == 1
-        assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+        assert user.action_history[0].actionType == history_constants.ActionType.USER_SUSPENDED
         assert user.action_history[0].authorUser == pro_fraud_admin
         assert user.action_history[0].user == user
         assert user.action_history[0].offererId is None
@@ -314,7 +314,7 @@ class SuspendUserTest(PostEndpointHelper):
         assert not user.backoffice_profile.roles
 
         assert len(user.action_history) == 1
-        assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+        assert user.action_history[0].actionType == history_constants.ActionType.USER_SUSPENDED
         assert user.action_history[0].authorUser == super_admin
         assert user.action_history[0].user == user
         assert user.action_history[0].offererId is None
@@ -397,7 +397,7 @@ class UnsuspendUserTest(PostEndpointHelper):
 
         assert user.isActive
         assert len(user.action_history) == 1
-        assert user.action_history[0].actionType == history_models.ActionType.USER_UNSUSPENDED
+        assert user.action_history[0].actionType == history_constants.ActionType.USER_UNSUSPENDED
         assert user.action_history[0].authorUser == legit_user
         assert user.action_history[0].user == user
         assert user.action_history[0].offererId is None
@@ -418,7 +418,7 @@ class UnsuspendUserTest(PostEndpointHelper):
 
         assert user.isActive
         assert len(user.action_history) == 1
-        assert user.action_history[0].actionType == history_models.ActionType.USER_UNSUSPENDED
+        assert user.action_history[0].actionType == history_constants.ActionType.USER_UNSUSPENDED
         assert user.action_history[0].authorUser == legit_user
         assert user.action_history[0].user == user
         assert user.action_history[0].offererId is None
@@ -457,7 +457,7 @@ class UnsuspendUserTest(PostEndpointHelper):
 
         assert user.isActive
         assert len(user.action_history) == 1
-        assert user.action_history[0].actionType == history_models.ActionType.USER_UNSUSPENDED
+        assert user.action_history[0].actionType == history_constants.ActionType.USER_UNSUSPENDED
         assert user.action_history[0].authorUser == legit_user
         assert user.action_history[0].user == user
         assert user.action_history[0].offererId is None
@@ -518,7 +518,7 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert not user.backoffice_profile.roles
 
         assert len(user.action_history) == 1
-        assert user.action_history[0].actionType == history_models.ActionType.USER_UNSUSPENDED
+        assert user.action_history[0].actionType == history_constants.ActionType.USER_UNSUSPENDED
         assert user.action_history[0].authorUser == super_admin
         assert user.action_history[0].user == user
         assert user.action_history[0].comment == "Test"
@@ -663,7 +663,7 @@ class ConfirmBatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
             assert users[0].suspension_reason == users_constants.SuspensionReason.FRAUD_HACK
 
             assert len(user.action_history) == 1
-            assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+            assert user.action_history[0].actionType == history_constants.ActionType.USER_SUSPENDED
             assert user.action_history[0].authorUser == legit_user
             assert user.action_history[0].user == user
             assert user.action_history[0].offererId is None

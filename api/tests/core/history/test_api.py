@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
@@ -19,7 +20,7 @@ class LogActionTest:
         user_offerer = offerers_factories.UserOffererFactory()
 
         returned_action = history_api.add_action(
-            history_models.ActionType.OFFERER_REJECTED,
+            history_constants.ActionType.OFFERER_REJECTED,
             author=admin,
             user=user_offerer.user,
             offerer=user_offerer.offerer,
@@ -29,7 +30,7 @@ class LogActionTest:
         db.session.commit()
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.OFFERER_REJECTED
+        assert action.actionType == history_constants.ActionType.OFFERER_REJECTED
         assert action.authorUserId == admin.id
         assert action.authorUser == admin
         assert action.userId == user_offerer.user.id
@@ -47,7 +48,7 @@ class LogActionTest:
         admin = users_factories.AdminFactory()
 
         with pytest.raises(ValueError) as err:
-            history_api.add_action(history_models.ActionType.OFFERER_PENDING, author=admin)
+            history_api.add_action(history_constants.ActionType.OFFERER_PENDING, author=admin)
             db.session.commit()
 
         assert "No resource" in str(err.value)
@@ -58,7 +59,7 @@ class LogActionTest:
         user_offerer = offerers_factories.UserOffererFactory()
 
         action = history_api.add_action(
-            history_models.ActionType.OFFERER_VALIDATED,
+            history_constants.ActionType.OFFERER_VALIDATED,
             author=admin,
             user=user_offerer.user,
             offerer=user_offerer.offerer,
@@ -66,7 +67,7 @@ class LogActionTest:
         # commit() not called here
 
         assert action.id is None
-        assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
+        assert action.actionType == history_constants.ActionType.OFFERER_VALIDATED
         assert action.authorUser == admin
         assert action.user == user_offerer.user
         assert action.offerer == user_offerer.offerer
@@ -81,7 +82,7 @@ class LogActionTest:
 
         with pytest.raises(RuntimeError):
             history_api.add_action(
-                history_models.ActionType.OFFERER_VALIDATED,
+                history_constants.ActionType.OFFERER_VALIDATED,
                 author=admin,
                 user=user,
                 offerer=unsaved_offerer,
@@ -95,7 +96,7 @@ class LogActionTest:
         pro.impersonator = admin
 
         history_api.add_action(
-            history_models.ActionType.OFFERER_REJECTED,
+            history_constants.ActionType.OFFERER_REJECTED,
             author=pro,
             offerer=user_offerer.offerer,
             custom_data="Test",
@@ -120,7 +121,7 @@ class ObjectUpdateSnapshotTest:
 
         action = db.session.query(history_models.ActionHistory).one()
 
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.offererId == offerer.id
         assert action.authorUser.id == author.id
         assert action.extraData == {
@@ -176,7 +177,7 @@ class ObjectUpdateSnapshotTest:
         action = db.session.query(history_models.ActionHistory).one()
 
         assert not snapshot.is_empty
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.venueId == venue.id
         assert action.authorUser.id == author.id
         assert action.extraData == {

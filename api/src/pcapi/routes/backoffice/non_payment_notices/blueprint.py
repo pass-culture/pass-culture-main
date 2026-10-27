@@ -12,7 +12,7 @@ from markupsafe import Markup
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.mails.transactional.pro import non_payment_notice_notification
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -205,7 +205,7 @@ def _create_or_update_non_payment_notice(
         if has_offerer_or_venue_changed:
             db.session.flush()  # mandatory to get notice.id
             history_api.add_action(
-                history_models.ActionType.NON_PAYMENT_NOTICE_CREATED,
+                history_constants.ActionType.NON_PAYMENT_NOTICE_CREATED,
                 author=current_user,
                 offerer=data["offerer"],
                 venue=data["venue"],

@@ -12,6 +12,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
@@ -111,7 +112,7 @@ class DeleteVenueProviderTest:
         )
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_DELETED
+        assert action.actionType == history_constants.ActionType.LINK_VENUE_PROVIDER_DELETED
         assert action.authorUserId == user.id
         assert action.venueId == venue.id
         assert action.extraData["provider_id"] == provider.id
@@ -137,7 +138,7 @@ class DisableVenueProviderTest:
         )
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED
+        assert action.actionType == history_constants.ActionType.LINK_VENUE_PROVIDER_UPDATED
         assert action.authorUserId == user.id
         assert action.venueId == venue.id
         assert action.extraData["provider_id"] == venue_provider.provider.id
