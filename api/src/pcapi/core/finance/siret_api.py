@@ -312,17 +312,18 @@ def remove_siret(
                 "new_info": None,
             }
 
-    for modified_venue_id, modified_info in modified_info_by_venue.items():
-        db.session.add(
-            history_models.ActionHistory(
-                actionType=history_constants.ActionType.INFO_MODIFIED,
-                authorUserId=author_user_id,
-                offererId=venue.managingOffererId,
-                venueId=modified_venue_id,
-                comment=comment,
-                extraData={"modified_info": modified_info},
-            )
+    actions = [
+        history_models.ActionHistory(
+            actionType=history_constants.ActionType.INFO_MODIFIED,
+            authorUserId=author_user_id,
+            offererId=venue.managingOffererId,
+            venueId=modified_venue_id,
+            comment=comment,
+            extraData={"modified_info": modified_info},
         )
+        for modified_venue_id, modified_info in modified_info_by_venue.items()
+    ]
+    db.session.add_all(actions)
     db.session.flush()
 
 
