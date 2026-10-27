@@ -253,7 +253,6 @@ class OfferFactory(MinimalOfferFactory):
             db.session.flush()  # Flush is needed otherwise venue.offererAddress will be empty.
             if venue:
                 kwargs["offererAddress"] = offerers_api.get_or_create_offer_location(
-                    offerer_id=venue.managingOffererId,
                     venue_id=venue.id,
                     address_id=venue.offererAddress.addressId,
                     label=None,

@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 def create_industrial_offerer_addresses() -> None:
     logger.info("create_industrial_offerer_addresses")
     offerer_with_addresses = offerers_factories.OffererFactory.create(name="2 - Structure avec plusieurs adresses")
+    venue_with_addresses = offerers_factories.VenueFactory.create(
+        managingOfferer=offerer_with_addresses, name="Lieu de la structure avec plusieurs adresses"
+    )
     bercy_address = geography_factories.AddressFactory.create(
         street="8 Boulevard de Bercy",
         postalCode="75012",
@@ -42,18 +45,15 @@ def create_industrial_offerer_addresses() -> None:
     )
     offerer_adresses = [
         offerers_factories.OfferLocationFactory.create(
-            label="Accor Arena", address=bercy_address, offerer=offerer_with_addresses
+            label="Accor Arena", address=bercy_address, venue=venue_with_addresses
         ),
         offerers_factories.OfferLocationFactory.create(
-            label="Musée Grévin", address=grevin_address, offerer=offerer_with_addresses
+            label="Musée Grévin", address=grevin_address, venue=venue_with_addresses
         ),
         offerers_factories.OfferLocationFactory.create(
-            label="La cigale", address=lacigale_address, offerer=offerer_with_addresses
+            label="La cigale", address=lacigale_address, venue=venue_with_addresses
         ),
     ]
-    venue_with_addresses = offerers_factories.VenueFactory.create(
-        managingOfferer=offerer_with_addresses, name="Lieu de la structure avec plusieurs adresses"
-    )
     for offerer_address in offerer_adresses:
         offers_factories.OfferFactory.create(
             venue=venue_with_addresses,
@@ -62,11 +62,11 @@ def create_industrial_offerer_addresses() -> None:
         )
 
     offerer_with_one_address = offerers_factories.OffererFactory.create(name="2 - Structure avec une adresse")
-    offerer_address_one = offerers_factories.OfferLocationFactory.create(
-        label="Bercy Accor Arena", address=bercy_address, offerer=offerer_with_one_address
-    )
     venue_with_one_address = offerers_factories.VenueFactory.create(
         managingOfferer=offerer_with_one_address, name="Lieu de la structure avec une adresse"
+    )
+    offerer_address_one = offerers_factories.OfferLocationFactory.create(
+        label="Bercy Accor Arena", address=bercy_address, venue=venue_with_one_address
     )
     offers_factories.OfferFactory.create(
         venue=venue_with_one_address, name="Offre avec une adresse", offererAddress=offerer_address_one

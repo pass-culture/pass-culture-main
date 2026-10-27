@@ -105,7 +105,6 @@ class AllocineStocks(LocalProvider):
         assert self.provider  # helps mypy
         offer.venueId = self.venue.id
         destination_oa = offerers_api.get_or_create_offer_location(
-            offerer_id=self.venue.managingOffererId,
             venue_id=self.venue.id,
             address_id=self.venue.offererAddress.addressId,
             label=None,
