@@ -1564,10 +1564,10 @@ class OffererAddress(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("address.id"), index=True, nullable=False
     )
     address: sa_orm.Mapped[geography_models.Address] = sa_orm.relationship("Address", foreign_keys=[addressId])
-    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+    # offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+    #     sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
+    # )
+    # offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
     type: sa_orm.Mapped[LocationType] = sa_orm.mapped_column(
         db_utils.MagicEnum(LocationType, use_values=True), nullable=False
     )
