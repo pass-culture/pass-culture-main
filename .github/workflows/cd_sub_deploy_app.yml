@@ -121,8 +121,14 @@ jobs:
         env:
           PCAPI_ENVIRONMENT_SHORT_NAME: ${{ inputs.environment_short_name }}
           PCAPI_VERSION: ${{ inputs.app_version }}
+          DATABASE_SSL: --no-database-ssl # --database-ssl or --no-database-ssl
+          DATABASE_SSL_MODE: "" # verify-ca, verify-full or "" (empty string)
         run: |
-          passdirector pcapi deploy -e "${PCAPI_ENVIRONMENT_SHORT_NAME}" --app-version "${PCAPI_VERSION}"
+          # shellcheck disable=SC2086
+          passdirector pcapi deploy --environment "${PCAPI_ENVIRONMENT_SHORT_NAME}" \
+            --app-version "${PCAPI_VERSION}" \
+            --database-ssl-mode "${DATABASE_SSL_MODE}" \
+            ${DATABASE_SSL}
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
