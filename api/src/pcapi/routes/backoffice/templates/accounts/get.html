@@ -57,7 +57,7 @@
     {{ action_bar_button("person-wheelchair", "Demander la bonification AAH/AEEH", modal_id="#request-disability-bonus-credit-modal") }}
   {% endif %}
   {% if allowed_actions.actions.EXTRACT in allowed_actions.inline_actions %}
-    {{ action_bar_button("clipboard-data", "Extraire les données", submit_form="extract-user-data-form") }}
+    {{ action_bar_button("clipboard-data", "Extraire les données", modal_id="#create-extract-user-gdpr-data-modal") }}
   {% endif %}
   {% if allowed_actions.actions.DISCONNECT in allowed_actions.inline_actions %}
     {{ action_bar_button("ban", "Déconnecter les sessions", modal_id="#disconnect-public-account-modal") }}
@@ -111,7 +111,7 @@
         <li>{{ action_bar_additional_button("person-wheelchair", "Demander la bonification AAH/AEEH", modal_id="#request-disability-bonus-credit-modal") }}</li>
       {% endif %}
       {% if allowed_actions.actions.EXTRACT in allowed_actions.additional_actions %}
-        <li>{{ action_bar_additional_button("clipboard-data", "Extraire les données", submit_form="extract-user-data-form") }}</li>
+        <li>{{ action_bar_additional_button("clipboard-data", "Extraire les données", modal_id="#create-extract-user-gdpr-data-modal") }}</li>
       {% endif %}
       {% if allowed_actions.actions.DISCONNECT in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("ban", "Déconnecter les sessions", modal_id="#disconnect-public-account-modal") }}</li>
@@ -333,11 +333,7 @@
     {{ build_dynamic_modal(url_for('backoffice.public_accounts.get_request_disability_bonus_credit_form', user_id=user.id) , "request-disability-bonus-credit-modal") }}
   {% endif %}
   {% if allowed_actions.actions.EXTRACT in allowed_actions %}
-    <form action="{{ url_for('backoffice.public_accounts.create_extract_user_gdpr_data', user_id=user.id) }}"
-          name="extract-user-data-form"
-          method="post">
-      {{ extract_user_form.csrf_token }}
-    </form>
+    {{ build_simple_modal_form("create-extract-user-gdpr-data", create_extract_user_gdpr_data_dst, create_extract_user_gdpr_data_form, "Extraire les données", "Confirmer l'extraction") }}
   {% endif %}
   {% if allowed_actions.actions.DISCONNECT in allowed_actions %}
     {{ build_simple_modal_form("disconnect-public-account", disconnect_user_dst, disconnect_user_form,
