@@ -387,7 +387,6 @@ def _create_or_update_ean_offers(
     with repository.transaction():
         if address_id:
             offerer_address = offerers_api.get_or_create_offer_location(
-                offerer_id=venue.managingOffererId,
                 venue_id=venue.id,
                 address_id=address_id,
                 label=address_label,

@@ -1134,7 +1134,7 @@ def create_complete_collective_offers_with_template() -> None:
     template = educational_factories.CollectiveOfferTemplateFactory.create(
         name="a full offer with a full template",
         educational_domains=domains,
-        venue=offerer_address.offerer.managedVenues[0],
+        venue=offerer_address.venue,
         motorDisabilityCompliant=True,
         durationMinutes=300,
         offererAddress=offerer_address,
@@ -1147,7 +1147,7 @@ def create_complete_collective_offers_with_template() -> None:
         name="a full offer with a full template",
         institution=institution,
         educational_domains=domains,
-        venue=offerer_address.offerer.managedVenues[0],
+        venue=offerer_address.venue,
         motorDisabilityCompliant=True,
         durationMinutes=300,
         template=template,
