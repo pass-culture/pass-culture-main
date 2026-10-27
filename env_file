@@ -1,8 +1,8 @@
 POSTGRES_USER=pass_culture
 POSTGRES_PASSWORD=passq
-POSTGRES_DB=pass_culture
+POSTGRES_DBS=pass_culture,pass_culture_test
 DATABASE_URL=postgresql://pass_culture:passq@postgres/pass_culture
-DATABASE_URL_TEST=postgresql://pytest:pytest@postgres-test/pass_culture
+DATABASE_URL_TEST=postgresql://pass_culture:passq@postgres/pass_culture_test
 REDIS_URL=redis://redis:6379
 GUNICORN_PORT="5001"
 GUNICORN_LOG_LEVEL="debug"
