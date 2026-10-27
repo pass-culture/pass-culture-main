@@ -36,19 +36,29 @@ class ExposureEventType(str, enum.Enum):
 
 
 class AudioAccessbilityFeatures(enum.StrEnum):
-    CCAP = "CCAP"
+    SUBTITLE_CCAP = "SUBTITLE_CCAP"
+    AUDIO_HI = "AUDIO_HI"
+    STSME = "STSME"
+    BOUCLE_MAG = "BOUCLE_MAG"
+    RENFO_SONORE = "RENFO_SONORE"
+    AUDITION = "AUDITION"
 
 
 class MentalAccessbilityFeatures(enum.StrEnum):
     RELAX = "RELAX"
+    COGNITIF = "COGNITIF"
 
 
 class MotorAccessbilityFeatures(enum.StrEnum):
     PMR = "PMR"
+    MOBILITE = "MOBILITE"
 
 
 class VisualAccessbilityFeatures(enum.StrEnum):
-    GRETA = "GRETA"
+    AD_GRETA = "AD_GRETA"
+    AUDIO_DESCRIPTION = "AUDIO_DESCRIPTION"
+    VAST = "VAST"
+    VISION = "VISION"
 
 
 class LanguageFeatures(enum.StrEnum):
@@ -57,17 +67,56 @@ class LanguageFeatures(enum.StrEnum):
 
 
 class SpecialEventFeatures(enum.StrEnum):
-    DEBATE = "DEBATE"
-    PREVIEW_SCREENING = "PREVIEW_SCREENING"
-    PREVIEW_SCREENING_WITH_CREW = "PREVIEW_SCREENING_WITH_CREW"
+    PLEIN_AIR = "PLEIN_AIR"
+    DRIVE_IN = "DRIVE_IN"
+    CINE_CONCERT = "CINE_CONCERT"
+    AVANT_PREMIERE = "AVANT_PREMIERE"
+    AVANT_PREMIERE_EQUIPE = "AVANT_PREMIERE_EQUIPE"
+    CINE_DEBAT = "CINE_DEBAT"
+    DERNIERE_DIFFUSION = "DERNIERE_DIFFUSION"
+    SEANCE_UNIQUE = "SEANCE_UNIQUE"
+    PREMIERE_DIFFUSION = "PREMIERE_DIFFUSION"
+    RENCONTRE = "RENCONTRE"
+    REPLAY = "REPLAY"
+    LIVE = "LIVE"
+    ATELIER = "ATELIER"
+    ANIMATION_15_25 = "ANIMATION_15_25"
+    PUBLIC_ADAPTE = "PUBLIC_ADAPTE"
+    CINE_CLUB = "CINE_CLUB"
+    FESTIVAL = "FESTIVAL"
+    CINE_RELAX = "CINE_RELAX"
 
 
 class AudioFeatures(enum.StrEnum):
-    DOLBY_ATMOS = "DOLBY_ATMOS"
+    SEVEN_1 = "71"
+    ATMOS = "ATMOS"
+    SON_IMMERSIF = "SON_IMMERSIF"
+    AURO_3D = "AURO_3D"
+    DSTX = "DSTX"
+    MONO = "MONO"
+    DOLBY_31 = "DOLBY_31"
+    DOLBY_51 = "DOLBY_51"
+    DOLBY_71 = "DOLBY_71"
 
 
 class VideoFeatures(enum.StrEnum):
-    THREE_D = "3D"
-    ICE = "ICE"
+    FOUR_DX = "4DX"
+    FOUR_DX_3D = "4DX_3D"
     IMAX = "IMAX"
+    IMAX_3D = "IMAX_3D"
     SCREEN_X = "SCREEN_X"
+    DOLBY_VISION = "DOLBY_VISION"
+    DOLBY_VISION_3D = "DOLBY_VISION_3D"
+    TWO_D = "2D"
+    THREE_D = "3D"
+    FOUR_K = "4K"
+    ODYSEE = "ODYSEE"
+    SPHERA = "SPHERA"
+    HFR = "HFR"
+    ONYX = "ONYX"
+    SEVENTY_MM = "70MM"
+    OMNIMAX = "OMNIMAX"
+    IMMERSIF = "IMMERSIF"
+    LASER = "LASER"
+    MX_4D = "MX_4D"
+    MX_4D_3D = "MX_4D_3D"

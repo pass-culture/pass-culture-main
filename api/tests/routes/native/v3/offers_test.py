@@ -17,9 +17,9 @@ from pcapi.core.categories import subcategories
 from pcapi.core.geography.factories import AddressFactory
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.factories import VenueFactory
+from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers.models import ImageType
 from pcapi.core.providers.constants import BookFormat
-from pcapi.core.providers.etls.cinema_etl_template import ShowFeatures
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
@@ -84,9 +84,9 @@ class OffersV3Test:
             quantity=2,
             priceCategory__label="bookable",
             features=[
-                ShowFeatures.VF.value,
-                ShowFeatures.THREE_D.value,
-                ShowFeatures.ICE.value,
+                offers_constants.LanguageFeatures.VF,
+                offers_constants.VideoFeatures.HFR,
+                offers_constants.VideoFeatures.THREE_D,
             ],
         )
         another_bookable_stock = offers_factories.EventStockFactory(
@@ -95,8 +95,8 @@ class OffersV3Test:
             quantity=3,
             priceCategory=bookable_stock.priceCategory,
             features=[
-                ShowFeatures.VO.value,
-                ShowFeatures.THREE_D.value,
+                offers_constants.LanguageFeatures.VO,
+                offers_constants.VideoFeatures.THREE_D,
             ],
         )
         expired_stock = offers_factories.EventStockFactory(
@@ -105,8 +105,8 @@ class OffersV3Test:
             beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1),
             priceCategory__label="expired",
             features=[
-                ShowFeatures.VF.value,
-                ShowFeatures.ICE.value,
+                offers_constants.LanguageFeatures.VF,
+                offers_constants.VideoFeatures.HFR,
             ],
         )
         exhausted_stock = offers_factories.EventStockFactory(
@@ -114,7 +114,7 @@ class OffersV3Test:
             price=89.00,
             quantity=1,
             priceCategory__label="exhausted",
-            features=[ShowFeatures.VO.value],
+            features=[offers_constants.LanguageFeatures.VO],
         )
 
         BookingFactory(stock=bookable_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
@@ -133,71 +133,77 @@ class OffersV3Test:
             "motorDisability": False,
             "visualDisability": True,
         }
-        assert sorted(response.json["stocks"], key=lambda stock: stock["id"]) == sorted(
-            [
-                {
-                    "id": bookable_stock.id,
-                    "price": 1234,
-                    "beginningDatetime": "2020-01-31T00:00:00Z",
-                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
-                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
-                    "features": ["VF", "3D", "ICE"],
-                    "isBookable": True,
-                    "isForbiddenToUnderage": False,
-                    "isSoldOut": False,
-                    "isExpired": False,
-                    "activationCode": None,
-                    "priceCategoryLabel": "bookable",
-                    "remainingQuantity": 1,
-                },
-                {
-                    "id": another_bookable_stock.id,
-                    "price": 1234,
-                    "beginningDatetime": "2020-01-31T00:00:00Z",
-                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
-                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
-                    "features": ["VO", "3D"],
-                    "isBookable": True,
-                    "isForbiddenToUnderage": False,
-                    "isSoldOut": False,
-                    "isExpired": False,
-                    "activationCode": None,
-                    "priceCategoryLabel": "bookable",
-                    "remainingQuantity": 3,
-                },
-                {
-                    "id": expired_stock.id,
-                    "price": 4567,
-                    "beginningDatetime": "2019-12-31T00:00:00Z",
-                    "bookingLimitDatetime": "2019-12-30T23:00:00Z",
-                    "cancellationLimitDatetime": "2020-01-01T00:00:00Z",
-                    "features": ["VF", "ICE"],
-                    "isBookable": False,
-                    "isForbiddenToUnderage": False,
-                    "isSoldOut": True,
-                    "isExpired": True,
-                    "activationCode": None,
-                    "priceCategoryLabel": "expired",
-                    "remainingQuantity": 1000,
-                },
-                {
-                    "id": exhausted_stock.id,
-                    "price": 8900,
-                    "beginningDatetime": "2020-01-31T00:00:00Z",
-                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
-                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
-                    "features": ["VO"],
-                    "isBookable": False,
-                    "isForbiddenToUnderage": False,
-                    "isSoldOut": True,
-                    "isExpired": False,
-                    "activationCode": None,
-                    "priceCategoryLabel": "exhausted",
-                    "remainingQuantity": 0,
-                },
-            ],
-            key=lambda stock: stock["id"],
-        )
+        assert len(response.json["stocks"]) == 4
+        assert {e["id"] for e in response.json["stocks"]} == {
+            bookable_stock.id,
+            another_bookable_stock.id,
+            expired_stock.id,
+            exhausted_stock.id,
+        }
+        stock1 = [e for e in response.json["stocks"] if e["id"] == bookable_stock.id][0]
+        stock2 = [e for e in response.json["stocks"] if e["id"] == another_bookable_stock.id][0]
+        stock3 = [e for e in response.json["stocks"] if e["id"] == expired_stock.id][0]
+        stock4 = [e for e in response.json["stocks"] if e["id"] == exhausted_stock.id][0]
+        assert stock1 == {
+            "id": bookable_stock.id,
+            "price": 1234,
+            "beginningDatetime": "2020-01-31T00:00:00Z",
+            "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+            "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+            "features": ["VF", "HFR", "3D"],
+            "isBookable": True,
+            "isForbiddenToUnderage": False,
+            "isSoldOut": False,
+            "isExpired": False,
+            "activationCode": None,
+            "priceCategoryLabel": "bookable",
+            "remainingQuantity": 1,
+        }
+        assert stock2 == {
+            "id": another_bookable_stock.id,
+            "price": 1234,
+            "beginningDatetime": "2020-01-31T00:00:00Z",
+            "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+            "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+            "features": ["VO", "3D"],
+            "isBookable": True,
+            "isForbiddenToUnderage": False,
+            "isSoldOut": False,
+            "isExpired": False,
+            "activationCode": None,
+            "priceCategoryLabel": "bookable",
+            "remainingQuantity": 3,
+        }
+        assert stock3 == {
+            "id": expired_stock.id,
+            "price": 4567,
+            "beginningDatetime": "2019-12-31T00:00:00Z",
+            "bookingLimitDatetime": "2019-12-30T23:00:00Z",
+            "cancellationLimitDatetime": "2020-01-01T00:00:00Z",
+            "features": ["VF", "HFR"],
+            "isBookable": False,
+            "isForbiddenToUnderage": False,
+            "isSoldOut": True,
+            "isExpired": True,
+            "activationCode": None,
+            "priceCategoryLabel": "expired",
+            "remainingQuantity": 1000,
+        }
+        assert stock4 == {
+            "id": exhausted_stock.id,
+            "price": 8900,
+            "beginningDatetime": "2020-01-31T00:00:00Z",
+            "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+            "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+            "features": ["VO"],
+            "isBookable": False,
+            "isForbiddenToUnderage": False,
+            "isSoldOut": True,
+            "isExpired": False,
+            "activationCode": None,
+            "priceCategoryLabel": "exhausted",
+            "remainingQuantity": 0,
+        }
         assert response.json["description"] == "desk cryption"
         assert response.json["externalTicketOfficeUrl"] == "https://url.com"
         assert response.json["expenseDomains"] == ["all"]
@@ -996,7 +1002,7 @@ class OffersStocksV3Test:
         offers_factories.MediationFactory(offer=offer)
 
         bookable_stock = offers_factories.EventStockFactory(
-            offer=offer, priceCategory__label="bookable", features=["VF", "ICE"]
+            offer=offer, priceCategory__label="bookable", features=["VF", "HFR"]
         )
         another_bookable_stock = offers_factories.EventStockFactory(offer=offer, features=["VO", "3D"])
         expired_stock = offers_factories.EventStockFactory(
@@ -1043,7 +1049,7 @@ class OffersStocksV3Test:
                         "audio": None,
                         "language": "VF",
                         "specialEventType": None,
-                        "video": "ICE",
+                        "video": "HFR",
                     },
                 },
                 {
@@ -1144,7 +1150,7 @@ class OffersStocksV3Test:
     def test_return_screening_features(self, client):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, name="séance de ciné")
         stock = offers_factories.EventStockFactory(
-            offer=offer, features=["VF", "IMAX", "CCAP", "PREVIEW_SCREENING", "DOLBY_ATMOS"]
+            offer=offer, features=["VF", "IMAX", "SUBTITLE_CCAP", "AVANT_PREMIERE", "ATMOS"]
         )
 
         payload = {"offer_ids": [offer.id]}
@@ -1157,14 +1163,13 @@ class OffersStocksV3Test:
             assert response.status_code == 200
 
         response_offer = response.json["offers"][0]
-        print(response_offer)
         response_stock = response.json["offers"][0]["stocks"][0]
         assert response_offer["id"] == offer.id
         assert response_stock["id"] == stock.id
         assert response_stock["screeningFeatures"] == {
-            "accessibility": {"audio": ["CCAP"], "mental": [], "motor": [], "visual": []},
-            "audio": "DOLBY_ATMOS",
+            "accessibility": {"audio": ["SUBTITLE_CCAP"], "mental": [], "motor": [], "visual": []},
+            "audio": "ATMOS",
             "language": "VF",
-            "specialEventType": "PREVIEW_SCREENING",
+            "specialEventType": "AVANT_PREMIERE",
             "video": "IMAX",
         }

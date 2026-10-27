@@ -134,7 +134,7 @@ class MovieCalendarTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             beginningDatetime=tz_naive_beginning_datetime,
-            features=["VO", "CCAP", "RELAX", "DOLBY_ATMOS", "3D", "GRETA", "PREVIEW_SCREENING"],
+            features=["VO", "SUBTITLE_CCAP", "RELAX", "ATMOS", "3D", "AD_GRETA", "AVANT_PREMIERE"],
         )
 
         params = {"allocineId": "12345", "latitude": 48.85, "longitude": 2.35}
@@ -148,10 +148,10 @@ class MovieCalendarTest:
         calendar = response.json["calendar"]
         response_features = calendar[0]["screenings"][0]["dayScreenings"][0]["features"]
         assert response_features == {
-            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["GRETA"]},
-            "audio": "DOLBY_ATMOS",
+            "accessibility": {"audio": ["SUBTITLE_CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["AD_GRETA"]},
+            "audio": "ATMOS",
             "language": "VO",
-            "specialEventType": "PREVIEW_SCREENING",
+            "specialEventType": "AVANT_PREMIERE",
             "video": "3D",
         }
 
@@ -773,7 +773,7 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             beginningDatetime=tz_naive_beginning_datetime,
-            features=["VO", "CCAP", "RELAX", "DOLBY_ATMOS", "3D", "GRETA", "PREVIEW_SCREENING"],
+            features=["VO", "SUBTITLE_CCAP", "RELAX", "ATMOS", "3D", "AD_GRETA", "AVANT_PREMIERE"],
         )
 
         params = {"allocineId": "12345", "latitude": 48.85, "longitude": 2.35}
@@ -791,10 +791,10 @@ class MovieCalendarForUserTest:
         calendar = response.json["calendar"]
         response_features = calendar[0]["screenings"][0]["dayScreenings"][0]["features"]
         assert response_features == {
-            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["GRETA"]},
-            "audio": "DOLBY_ATMOS",
+            "accessibility": {"audio": ["SUBTITLE_CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["AD_GRETA"]},
+            "audio": "ATMOS",
             "language": "VO",
-            "specialEventType": "PREVIEW_SCREENING",
+            "specialEventType": "AVANT_PREMIERE",
             "video": "3D",
         }
 
@@ -1317,7 +1317,7 @@ class VenueMovieCalendarTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             beginningDatetime=tz_naive_beginning_datetime,
-            features=["VO", "CCAP", "RELAX", "DOLBY_ATMOS", "3D", "GRETA", "PREVIEW_SCREENING"],
+            features=["VO", "SUBTITLE_CCAP", "RELAX", "ATMOS", "3D", "AD_GRETA", "AVANT_PREMIERE"],
         )
         start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
         end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999) + timedelta(
@@ -1333,10 +1333,10 @@ class VenueMovieCalendarTest:
         calendar = response.json["calendar"]
         response_features = calendar[0]["screenings"][0]["dayScreenings"][0]["features"]
         assert response_features == {
-            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["GRETA"]},
-            "audio": "DOLBY_ATMOS",
+            "accessibility": {"audio": ["SUBTITLE_CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["AD_GRETA"]},
+            "audio": "ATMOS",
             "language": "VO",
-            "specialEventType": "PREVIEW_SCREENING",
+            "specialEventType": "AVANT_PREMIERE",
             "video": "3D",
         }
 
@@ -1705,7 +1705,7 @@ class VenueMovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             beginningDatetime=tz_naive_beginning_datetime,
-            features=["VO", "CCAP", "RELAX", "DOLBY_ATMOS", "3D", "GRETA", "PREVIEW_SCREENING"],
+            features=["VO", "SUBTITLE_CCAP", "RELAX", "ATMOS", "3D", "AD_GRETA", "AVANT_PREMIERE"],
         )
         start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
         end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999) + timedelta(
@@ -1725,10 +1725,10 @@ class VenueMovieCalendarForUserTest:
         calendar = response.json["calendar"]
         response_features = calendar[0]["screenings"][0]["dayScreenings"][0]["features"]
         assert response_features == {
-            "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["GRETA"]},
-            "audio": "DOLBY_ATMOS",
+            "accessibility": {"audio": ["SUBTITLE_CCAP"], "mental": ["RELAX"], "motor": [], "visual": ["AD_GRETA"]},
+            "audio": "ATMOS",
             "language": "VO",
-            "specialEventType": "PREVIEW_SCREENING",
+            "specialEventType": "AVANT_PREMIERE",
             "video": "3D",
         }
 
