@@ -106,7 +106,7 @@ D'autres informations sont disponibles sur le [README de Pro](./pro/README.md)
 Dans une session de terminal (ou en mode daemon via l'option `-d` placée après la commande `up`) :
 
 ```sh
-docker compose -f ./docker-compose-backend.yml up postgres postgres-test redis # start only databases
+docker compose -f ./docker-compose-backend.yml up postgres redis # start only databases
 ```
 
 Puis :

@@ -26,17 +26,12 @@ Pour peupler la base de données, le script `pc` exécutera `flask` dans l'image
 
 Il est possible de se connecter aux bases de données lancées via docker compose en utilisant les informations ci-dessous
 
-- _pc-postgres_
-  - user : pass_culture
-  - password : passq
-  - port : 5434
-  - database : pass_culture
-
-- _pc-postgres-test_
-  - user : pytest
-  - password : pytest
-  - port : 5433
-  - database : pass_culture
+- _user_ : pass_culture
+- _password_ : passq
+- _port_ : 5434
+- _database_ :
+  - _pc-postgres_: pass_culture
+  - _pc-postgres-test_ : pass_culture_test
 
 #### Exposition des métriques prometheus
 
@@ -67,8 +62,8 @@ PostgreSQL et Redis sont lancés par docker compose.
 
 ```sh
 cd pass-culture-main
-sed 's|@postgres/|@localhost:5434/|g; s|@postgres-test/|@localhost:5433/|g' env_file >> api/.env.local.secret
-docker compose -f docker-compose-backend.yml up --detach postgres postgres-test redis
+sed 's|@postgres/|@localhost:5434/|g' env_file >> api/.env.local.secret
+docker compose -f docker-compose-backend.yml up --detach postgres redis
 ```
 
 #### Lancement de l'application
@@ -173,8 +168,8 @@ pc sandbox -n industrial     # setup avec docker
 
 Notre backend expose des métriques prometheus. Pour pouvoir travailler avec ces métriques en local il faut deux conditions :
 
-* Que le backend soit lancé avec gunicorn (cf options présentées plus haut)
-* Utiliser ces variables d'environnement (mise en place par défaut par le script `entrypoint.sh`)
+- Que le backend soit lancé avec gunicorn (cf options présentées plus haut)
+- Utiliser ces variables d'environnement (mise en place par défaut par le script `entrypoint.sh`)
 
 ```
   ENABLE_FLASK_PROMETHEUS_EXPORTER="1"
@@ -229,7 +224,7 @@ Si les tests ne se lancent pas avec Docker, il faut recréer la base de données
   _redis_ via docker compose
 
 ```shell
-    docker compose -f ../docker-compose-backend.yml up -d postgres-test redis
+    docker compose -f ../docker-compose-backend.yml up -d postgres redis
 ```
 
 - Soit en démarrant ces conteneurs via docker
@@ -376,7 +371,6 @@ Quelques commandes VSCode utiles lorsqu'on est dans un fichier de test, avec leu
 - `Test: Rerun Failed Tests`
 
 Voir <https://code.visualstudio.com/docs/python/testing> pour plus d'informations.
-
 
 ## Contributing
 
